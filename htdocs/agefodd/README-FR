@@ -1,0 +1,75 @@
+README (french)
+--------------------------------
+Documentation demarrage rapide
+--------------------------------
+
+1) Installer Agefodd
+2) Ce qui est nouveau dans cette version
+3) Ce que peux faire Agefodd
+4) Ce que ne peux pas faire Agefodd (pas encore)
+
+
+I - INSTALLER AGEFODD
+----------------------
+
+Pour pouvoir installer Agefodd, il faut que Dolibarr (>= v 2.7.1) soit déjà
+installé et configuré sur votre serveur. Il doit être parfaitement opérationnel.
+Ensuite, et après avoir télécharger la dernière version du module Agefodd sur le
+site http://agefodd.sourceforge.net, vous devez l'installez de la manière
+suivante:
+
+- Copiez le fichier tar.gz dans le répertoire dans lequel vous avez installé 
+  dolibarr.
+  Par exemple, si vous avez installé dolibarr dans le répertoire 
+  /var/www/dolibarr copier le fichier module_agefodd-x.x.x.tar.gz dans 
+  var/www/dolibarr.
+  Placez vous alors dans ce répertoire: 'cd /var www/dolibarr' et désarchivez le 
+  fichier à l'aide de la commande 'tar -xvf module_agefodd-x.x.x.tar.gz'
+- Editez le fichier agefodd/pre.inc.php et adaptez à votre situation les
+  variables globales définies entre les balises
+  /**** Debut des variables globales *************/
+  et
+  /**** Fin des variables globales ***************/
+- Depuis votre navigateur, connectez vous à dolibarr en tant qu'administrateur
+  et cliquez à gauche sur le menu "configuration".
+  Cliquez alors sur le sous menu "module".
+  Sur l'écran qui apparait et dans la rubrique "métier", vous devriez voir
+  apparaitre le menu "agefodd". Pour activer le module, il suffit de cliquer sur
+  le bouton rouge à droite de la ligne (colonne "état").
+  Le statut du menu devrait alors passer à "activé" et le menu "gestion de la 
+  formation" devrait apparaitre tout en haut de l'application.
+- Par defaut, les utilisateurs enregistrés n'ont que des droits de lecture dans
+  agefodd. Pensez à modifier ces droits au regard des priviléges réels de vos
+  utilisateurs.
+
+
+II - CE QUI EST NOUVEAU
+------------------------
+
+Voir fichier ChangeLog.
+
+
+III - CE QU'AGEFODD PEUT FAIRE
+-------------------------------
+
+- gérer un catalogue de formation,
+- gérer un annuaire (stagiaires, formateurs, correspondants formations,
+  structures),
+- gérer le planning et simplifier l'organisation de sessions de formations
+  (ces sessions peuvent être intra ou inter entreprise et multiformateurs),
+- permettre la gestion des tâches administratives liées à l'organisation
+  de ces session,
+- automatiser la classification de ces tâches par ordre de priorités réelles,
+- produire de façon automatisée la quasie totalité de la documentation
+  administrative,
+- afficher des statistiques sur l'état de la formation à l'instant t.
+
+
+IV - CE QU'AGEFODD NE PEUT PAS FAIRE (TACHES A FAIRE)
+------------------------------------------------------
+
+Voici un liste de fonctionnalites pas encore gerees par Agefodd:
+- Pas de gestion logistique (reservation des salles et des moyens).
+- Agefodd ne gére qu'un seul centre de formation (et donc un seul catalogue).
+- Agefodd ne gére pas les formations longues.
+- Agefodd ne fait pas le cafe (comme Dolibarr d'ailleurs).
