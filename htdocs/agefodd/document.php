@@ -22,9 +22,9 @@
 	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
-require_once('./pre.inc.php');
-require_once(DOL_DOCUMENT_ROOT."/html.formfile.class.php");
-require_once(DOL_DOCUMENT_ROOT.'/agefodd/pdf_document.php');
+require_once('../main.inc.php');
+require_once(DOL_DOCUMENT_ROOT."/core/class/html.formfile.class.php");
+require_once(DOL_DOCUMENT_ROOT.'/agefodd/inc/models/pdf/pdf_document.php');
 
 
 print "prout";

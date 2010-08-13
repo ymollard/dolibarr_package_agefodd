@@ -24,7 +24,7 @@
  *	\version	$Id: agefodd_session.class.php 54 2010-03-30 18:58:28Z ebullier $
  */
 
-require_once("../commonobject.class.php");
+require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
  *	\class		Agefodd

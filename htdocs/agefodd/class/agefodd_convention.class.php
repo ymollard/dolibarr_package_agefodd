@@ -24,7 +24,7 @@
  *	\version	$Id: agefodd_stagiaire.class.php 51 2010-03-28 17:06:42Z ebullier $
  */
 
-require_once("../commonobject.class.php");
+require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
  *	\class		Agefodd_convention

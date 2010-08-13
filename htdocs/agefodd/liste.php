@@ -26,8 +26,8 @@
 	\version	$Id: liste.php 42 2010-03-21 16:17:59Z ebullier $
 */
 
-require("./pre.inc.php");
-require_once("./formation_catalogue.class.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/formation_catalogue.class.php");
 
 $langs->load("companies");
 $langs->load("users");

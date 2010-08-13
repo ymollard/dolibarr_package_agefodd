@@ -24,9 +24,9 @@
  *  \brief      	Page fiche d'une operation sur CCA
  *  \version		$Id: f_fiche.php 54 2010-03-30 18:58:28Z ebullier $
  */
-require("./pre.inc.php");
-require_once("./agefodd_formation_catalogue.class.php");
-require_once("./lib/lib.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 
 $langs->load("@agefodd");
 
@@ -444,7 +444,7 @@ else
 					//if ($user->rights->agefodd->creer)
 					{
 					    //print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
-					    print '<input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
+					    print '<input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
 					}
 					print '&nbsp;';
 					if ($user->rights->agefodd->creer)
@@ -457,7 +457,7 @@ else
 					if ($user->rights->agefodd->creer)
 					{
 					    //print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNew").'">';
-					    print '<input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNew").'">';
+					    print '<input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNew").'">';
 					}
 				    
 				    }

@@ -22,7 +22,7 @@
 	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
-require_once("./pre.inc.php");
+require_once("../../../../main.inc.php");
 
 /**
  *	\brief   	Crée un document PDF
@@ -37,7 +37,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	$langs->load("@agefodd");
 
 	// Charge le modele
-	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/pdf_'.$typeModele.'_modele.php';
+	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/inc/models/pdf/pdf_'.$typeModele.'_modele.php';
 	
 	if (file_exists($nomModele))
 	{

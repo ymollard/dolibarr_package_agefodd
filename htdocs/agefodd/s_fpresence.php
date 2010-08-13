@@ -26,7 +26,7 @@
 	\Version	$Id: index.php 51 2010-03-28 17:06:42Z ebullier $
 */
 
-require("./pre.inc.php");
+require("../main.inc.php");
 
 $langs->load("@agefodd");
 

@@ -21,13 +21,13 @@
  *  \brief      	Page fiche session de formation
  *  \version		$Id: s_fiche.php 54 2010-03-30 18:58:28Z ebullier $
  */
-require("./pre.inc.php");
-require_once("./agefodd_session.class.php");
-require_once("./agefodd_sessadm.class.php");
-require_once("./agefodd_session_calendrier.class.php");
-require_once("./agefodd_session_formateur.class.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_calendrier.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_formateur.class.php");
 
-require_once("./lib/lib.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 
 $langs->load("@agefodd");
 
@@ -483,7 +483,7 @@ llxHeader();
 
 $html = new Form($db);
 
-if (ereg ('-', $_GET['id']))
+if (preg_match('/\-/', $_GET['id']))
 {
 	$GET_array = explode('-', $_GET['id']);
 	$id = $GET_array[1];
@@ -685,7 +685,7 @@ else
 							print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
 							if ($user->rights->agefodd->modifier)
 							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
 							print '</td>';
 						}
@@ -738,7 +738,7 @@ else
 					print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
 					if ($user->rights->agefodd->modifier)
 					{
-						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
+						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
 					}
 					print '</td>';
 					print '</form>';
@@ -817,7 +817,7 @@ else
 					
 							if ($user->rights->agefodd->modifier)
 							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
 						}
 						else
@@ -908,7 +908,7 @@ else
 					print '</td>';
 					if ($user->rights->agefodd->modifier)
 					{
-						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" ">';
+						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" ">';
 					}
 					print '</td>';
 					print '</form>';
@@ -970,7 +970,7 @@ else
 							}
 							if ($user->rights->agefodd->modifier)
 							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
 							print '</td>';
 						}
@@ -1039,7 +1039,7 @@ else
 						}
 						if ($user->rights->agefodd->modifier)
 						{
-							print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
+							print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
 						}
 					print '</td>';
 					print '</form>';

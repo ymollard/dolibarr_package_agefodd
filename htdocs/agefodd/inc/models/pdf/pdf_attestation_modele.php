@@ -23,10 +23,10 @@
 			l'ensemble des stagiaires d'une structure pour une session donnée.
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
-require_once('./pre.inc.php');
-require_once('./pdf_document.php');
-require_once('./agefodd_session.class.php');
-require_once('./agefodd_formation_catalogue.class.php');
+require_once('../../../../main.inc.php');
+require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
 
 require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
 require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');

@@ -24,8 +24,8 @@
  *  \brief      	Page fiche d'une operation sur CCA
  *  \version		$Id: u_info.php 51 2010-03-28 17:06:42Z ebullier $
  */
-require("./pre.inc.php");
-require_once("./agefodd_stagiaire.class.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_stagiaire.class.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
 $langs->load("@agefodd");

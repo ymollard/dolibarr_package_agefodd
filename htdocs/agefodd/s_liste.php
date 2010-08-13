@@ -26,9 +26,9 @@
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
 
-require("./pre.inc.php");
-require_once("./agefodd_session.class.php");
-require_once("./lib/lib.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 
 
 // Security check

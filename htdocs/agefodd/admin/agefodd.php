@@ -24,7 +24,7 @@
  *	\version    $Id: agefodd_setup.php 46 2010-03-21 20:28:31Z ebullier $
  */
 
-require("./pre.inc.php");
+require("../../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/admin.lib.php");
 
 $langs->load("admin");

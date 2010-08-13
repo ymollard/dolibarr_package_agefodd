@@ -24,9 +24,9 @@
  *  \brief      	Page fiche stagiaire
  *  \version		$Id: u_fiche.php 54 2010-03-30 18:58:28Z ebullier $
  */
-require("./pre.inc.php");
-require_once("./agefodd_stagiaire.class.php");
-require_once("./lib/lib.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_stagiaire.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 
 $langs->load("@agefodd");
 
@@ -150,7 +150,7 @@ if ($_GET["action"] == 'nfcontact' && $_GET["ph"] == 2 && $user->rights->agefodd
 {
 	// traitement de l'import d'un contact
 
-	include_once(DOL_DOCUMENT_ROOT."/contact.class.php");
+	include_once(DOL_DOCUMENT_ROOT."/contact/class/contact.class.php");
 
 	$contact = new Contact($db);
 	$result = $contact->fetch($_POST["contact"]);

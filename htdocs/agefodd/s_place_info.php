@@ -24,8 +24,8 @@
  *  \brief      	Page fiche d'info sur site de formation
  *  \version		$Id: f_info.php 51 2010-03-28 17:06:42Z ebullier $
  */
-require("./pre.inc.php");
-require_once("./agefodd_session_place.class.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_place.class.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
 $langs->load("@agefodd");

@@ -22,17 +22,17 @@
 	\brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
-require_once('./pre.inc.php');
-require_once('./pdf_document.php');
-require_once('./agefodd_session.class.php');
-require_once('./agefodd_formation_catalogue.class.php');
-require_once('./agefodd_facture.class.php');
-require_once('./agefodd_contact.class.php');
+require_once('../../../../main.inc.php');
+require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_contact.class.php");
 
 require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
 require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/includes/fpdf/fpdfi/fpdi_protection.php');
-require_once(DOL_DOCUMENT_ROOT.'/societe.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 
 class agf_pdf_document extends FPDF
 {
@@ -712,10 +712,10 @@ class agf_pdf_document extends FPDF
 		$line = explode("\n", $text);
 		foreach ($line as $row)
 		{
-			if (preg_match('/^\!# /', $row)) $str.= ereg_replace('!# ', '', $row)."\n";
-			elseif (preg_match('/^# /', $row)) $str.= chr(149).' '.ereg_replace('#', '', $row)."\n";
-			elseif (preg_match('/^## /', $row)) $str.= '   '.'-'.ereg_replace('##', '', $row)."\n";
-			elseif (preg_match('/^### /', $row)) $str.= '   '.'  '.chr(155).' '.ereg_replace('###', '', $row)."\n";
+			if (preg_match('/^\!# /', $row)) $str.= preg_replace('/^\!# /', '', $row)."\n";
+			elseif (preg_match('/^# /', $row)) $str.= chr(149).' '.preg_replace('/^#/', '', $row)."\n";
+			elseif (preg_match('/^## /', $row)) $str.= '   '.'-'.preg_replace('/^##/', '', $row)."\n";
+			elseif (preg_match('/^### /', $row)) $str.= '   '.'  '.chr(155).' '.preg_replace('/^###/', '', $row)."\n";
 			else $str.= '   '.$row."\n";
 		}
 		return $str;

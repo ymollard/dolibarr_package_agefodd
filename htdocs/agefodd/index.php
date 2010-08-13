@@ -26,11 +26,11 @@
 	\Version	$Id: index.php 51 2010-03-28 17:06:42Z ebullier $
 */
 
-require("./pre.inc.php");
-require_once("./agefodd_index.class.php");
-require_once("./agefodd_sessadm.class.php");
-require_once("./lib/lib.php");
-require_once("../lib/date.lib.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_index.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+require_once(DOL_DOCUMENT_ROOT."/lib/date.lib.php");
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -71,7 +71,7 @@ $agf = new Agefodd_index($db);
 // Nbre de formation au catalogue actuellement
 $resql = $agf->fetch_formation_nb();
 	print '<tr class="liste"><td>formation au catalogue actuellement: </td><td align="right">';
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/f_liste.php?mainmenu=&leftmenu=agefodd">';
+	print '<a href="'.DOL_URL_ROOT.'/agefodd/f_liste.php?mainmenu=agefodd">';
 	print $agf->num.'</a>&nbsp;</td></tr>';
 
 
@@ -152,7 +152,7 @@ print '<td width="50px" align="right">Nombre</td></tr>';
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(0);
 	print '<td colspan="2" >sessions en cours</td><td align="right">';	
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?mainmenu=&leftmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 $agf1 = new Agefodd_sessadm($db);
 
@@ -222,7 +222,7 @@ $resql = $agf->fetch_session(1);
 if ($resql)
 {	
 	print '<td colspan="2" >sessions archivées</td><td align="right">';	
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?arch=1&mainmenu=&leftmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?arch=1&mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 	//$db->free($resql);
 }
 else

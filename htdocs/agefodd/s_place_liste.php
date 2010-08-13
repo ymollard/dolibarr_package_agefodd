@@ -26,9 +26,9 @@
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
 
-require("./pre.inc.php");
-require_once("./agefodd_session_place.class.php");
-require_once("./lib/lib.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_place.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 
 
 // Security check
@@ -53,8 +53,6 @@ $pagenext = $page + 1;
 
 if (!isset($_GET["arch"])) $arch = 0;
 else $arch = $_GET["arch"];
-
-$db->begin();
 
 $agf = new Agefodd_splace($db);
 
@@ -107,7 +105,6 @@ if ($resql)
 }
 else
 {
-    dol_print_error($db);
     dol_syslog("agefodd::f_liste::query::fetch ".$errmsg, LOG_ERR);
 }
 print '<div class="tabsAction">';

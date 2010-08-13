@@ -37,7 +37,7 @@ define('AGF_ORGANISME_NUM', '9134 06XXX 34');
 // Préfecture ayant enregistré l'organisme de formation
 define('AGF_ORGANISME_PREF', 'Hérault');
 // Logo a utiliser sur les documents (par défaut jpg de 200x250)
-define('AGF_ORGANISME_LOGO', DOL_DOCUMENT_ROOT.'/agefodd/images/logo.jpg');
+define('AGF_ORGANISME_LOGO', DOL_DOCUMENT_ROOT.'/agefodd/img/logo.jpg');
 // Siége de l'organisme de formation
 define('AGF_ORGANISME_SIEGE', 'Montpellier');
 // Baseline de l'oganisme (par défaut url de la société)
@@ -61,7 +61,7 @@ function llxHeader($head = "") {
 	global $user, $conf, $langs;
 	
 	top_menu($head);
-	
+/*	
 	$menu = new Menu();
 	
 	if ($conf->agefodd->enabled)
@@ -109,10 +109,11 @@ function llxHeader($head = "") {
 		if ($user->rights->agefodd->lire)  $menu->add(DOL_URL_ROOT."/agefodd/not_implemented.php?mainmenu=&leftmenu=agefodd", $langs->trans("AgfMenuSAdmBilanDRTEFP"),1);
 
 		// Tests
-		//$menu->add(DOL_URL_ROOT."/agefodd/pdf_document.php?mainmenu=&leftmenu=agefodd", "TEST");
+		//$menu->add(DOL_URL_ROOT."/agefodd/inc/models/pdf/pdf_document.php?mainmenu=&leftmenu=agefodd", "TEST");
 
 	}
 	left_menu($menu->liste);
+	*/
 }
 
 ?>

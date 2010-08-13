@@ -17,7 +17,7 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/lib/lib.php $
+ *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/lib/agefodd.lib.php $
  *  \brief      	Page fiche d'une operation sur CCA
  *  \version		$Id: lib.php 54 2010-03-30 18:58:28Z ebullier $
  */
@@ -370,7 +370,7 @@ function ebi_select_contacts($name='place', $socid=0)
 	
 	$sql = "SELECT p.rowid, p.name, p.firstname, p.fk_soc";
 	$sql.= " FROM ".MAIN_DB_PREFIX."socpeople as p";
-	if (!empty($socid)) $sql.= " WHERE = p.fk_soc = ".$socid;
+	if (!empty($socid)) $sql.= " WHERE p.fk_soc = ".$socid;
 	$sql.= " ORDER BY p.name, p.firstname";
 
 	$result = $db->query($sql);
@@ -685,27 +685,27 @@ function ebi_liste_a_puce($text, $html=false)
 				if ($level == 1) $str.= '</ul>'."\n";
 				if ($level == 2) $str.= '<ul>'."\n".'</ul>'."\n";
 				if ($level == 3) $str.= '</ul>'."\n".'</ul>'."\n".'</ul>'."\n";
-				$str.= ereg_replace('!# ', '', $row.'<br />')."\n";
+				$str.= preg_replace('/^\!# /', '', $row.'<br />')."\n";
 			}
 			elseif (preg_match('/^# /', $row))
 			{
 				if ($level == 0) $str.= '<ul>';
 				if ($level == 2) $str.= '</ul>'."\n";
 				if ($level == 3) $str.= '</ul>'."\n".'</ul>'."\n";
-				$str.= '<li>'.ereg_replace('# ', '', $row).'</li>'."\n";
+				$str.= '<li>'.preg_replace('/^# /', '', $row).'</li>'."\n";
 				$level = 1;
 			}
 			elseif (preg_match('/^## /', $row))
 			{
 				if ($level == 1) $str.= '<ul>';
 				if ($level == 3) $str.= '</ul>'."\n";
-				$str.= '<li>'.ereg_replace('## ', '', $row).'</li>'."\n";
+				$str.= '<li>'.preg_replace('/^## /', '', $row).'</li>'."\n";
 				$level = 2;
 			}
 			elseif (preg_match('/^### /', $row)) 
 			{
 				if ($level == 2) $str.= '<ul>';
-				$str.= '<li>'.ereg_replace('### ', '', $row).'</li>'."\n";
+				$str.= '<li>'.preg_replace('/^### /', '', $row).'</li>'."\n";
 				$level = 3;
 			}
 			else $str.= '   '.$row.'<br />'."\n";
@@ -713,10 +713,10 @@ function ebi_liste_a_puce($text, $html=false)
 		}
 		else
 		{
-			if (preg_match('/^\!# /', $row)) $str.= ereg_replace('!# ', '', $row)."\n";
-			elseif (preg_match('/^# /', $row)) $str.= chr(149).' '.ereg_replace('#', '', $row)."\n";
-			elseif (preg_match('/^## /', $row)) $str.= '   '.'-'.ereg_replace('##', '', $row)."\n";
-			elseif (preg_match('/^### /', $row)) $str.= '   '.'  '.chr(155).' '.ereg_replace('###', '', $row)."\n";
+			if (preg_match('/^\!# /', $row)) $str.= preg_replace('/^\!# /', '', $row)."\n";
+			elseif (preg_match('/^# /', $row)) $str.= chr(149).' '.preg_replace('/^#/', '', $row)."\n";
+			elseif (preg_match('/^## /', $row)) $str.= '   '.'-'.preg_replace('/^##/', '', $row)."\n";
+			elseif (preg_match('/^### /', $row)) $str.= '   '.'  '.chr(155).' '.preg_replace('/^###/', '', $row)."\n";
 			else $str.= '   '.$row."\n";
 		}
 	}

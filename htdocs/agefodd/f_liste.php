@@ -26,12 +26,14 @@
 	\version	$Id: f_liste.php 53 2010-03-30 05:39:02Z ebullier $
 */
 
-require("./pre.inc.php");
-require_once("./agefodd_formation_catalogue.class.php");
+require("../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
+
+$langs->load("@agefodd");
 
 llxHeader();
 
