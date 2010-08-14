@@ -590,7 +590,7 @@ class agf_pdf_document extends FPDF
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 		
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
-		$pdf->SetFont('Nasalization','',9);
+		$pdf->SetFont('Arial','',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
