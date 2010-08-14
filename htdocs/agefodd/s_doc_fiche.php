@@ -551,17 +551,6 @@ if ($id)
 	}
 
 }
-else
-{
-	dol_print_error($db);
-}
-
-
-
-
-
-
-
 
 $db->close();
 
