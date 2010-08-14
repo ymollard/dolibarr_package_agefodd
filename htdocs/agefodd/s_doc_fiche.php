@@ -139,9 +139,9 @@ if (($_GET["action"] == 'create' || $_GET["action"] == 'refresh' ) && $user->rig
 if ($_GET["action"] == 'del' && $user->rights->agefodd->creer)
 {
 	if (!empty($_GET["cour"])) 
-	    $file = DOL_DOCUMENT_ROOT.'/agefodd/documents/'.$_GET["model"].'-'.$_GET["cour"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
+	    $file = $conf->agefodd->dir_output.'/'.$_GET["model"].'-'.$_GET["cour"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
 	else 
-	    $file = DOL_DOCUMENT_ROOT.'/agefodd/documents/'.$_GET["model"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
+	    $file = $conf->agefodd->dir_output.'/'.$_GET["model"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
 	if (is_file($file)) unlink($file);
 	else
 	{
@@ -250,11 +250,11 @@ if ($id)
 			// Si la convention a déjà été complété (création d'un entrée dans la table)
 			if ($agf->id)
 			{
-				if (is_file(DOL_DOCUMENT_ROOT.'/agefodd/documents/'.$file))
+				if (is_file($conf->agefodd->dir_output.'/'.$file))
 				{
 					// afficher
 					$legende = $langs->trans("AgfDocOpen");
-					#$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/documents/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
+					#$mess = '<a href="'.$conf->agefodd->dir_output.'/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	
@@ -305,11 +305,11 @@ if ($id)
 			$model = $file;
 			if(!empty($nom_courrier)) $file = $file.'-'.$nom_courrier.'_'.$id.'_'.$socid.'.pdf';
 			else $file = $file.'_'.$id.'_'.$socid.'.pdf';
-			if (is_file(DOL_DOCUMENT_ROOT.'/agefodd/documents/'.$file))
+			if (is_file($conf->agefodd->dir_output.'/'.$file))
 			{
 				// afficher
 				$legende = $langs->trans("AgfDocOpen");
-				//$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/documents/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
+				//$mess = '<a href="'.$conf->agefodd->dir_output.'/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 

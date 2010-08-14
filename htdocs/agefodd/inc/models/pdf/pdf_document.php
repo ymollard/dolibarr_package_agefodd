@@ -22,7 +22,10 @@
 	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
-require_once("../../../../main.inc.php");
+require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
+require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/includes/fpdf/fpdfi/fpdi_protection.php');
+require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 
 /**
  *	\brief   	Crée un document PDF

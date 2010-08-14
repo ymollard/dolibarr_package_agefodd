@@ -22,8 +22,6 @@
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
 
-require_once('../../../../main.inc.php');
-
 $posX = 100;
 $posY = 110;
 

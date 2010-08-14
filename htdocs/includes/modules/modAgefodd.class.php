@@ -70,7 +70,7 @@ class modAgefodd extends DolibarrModules
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
-		$this->dirs = array("/agefodd/documents");
+		$this->dirs = array("/agefodd/temp");
 		$r=0;
 
 		// Relative path to module style sheet if exists. Example: '/mymodule/mycss.css'.

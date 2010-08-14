@@ -159,7 +159,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 			$db->commit();
 			
 			// Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
-			foreach (glob(DOL_DOCUMENT_ROOT."/agefodd/documents/*_".$_GET["id"]."_*.pdf") as $filename) {
+			foreach (glob($conf->agefodd->dir_output."/*_".$_GET["id"]."_*.pdf") as $filename) {
 			    //echo "$filename effacé <br>";
 			    if(is_file($filename)) unlink("$filename");
 			}

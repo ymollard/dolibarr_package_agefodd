@@ -23,14 +23,9 @@
 			l'ensemble des stagiaires d'une structure pour une session donnée.
 	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
 */
-require_once('../../../../main.inc.php');
 require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
-
-require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
-require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');
-require_once(DOL_DOCUMENT_ROOT.'/includes/fpdf/fpdfi/fpdi_protection.php');
 
 
 class agf_pdf_document extends FPDF
@@ -97,7 +92,7 @@ class agf_pdf_document extends FPDF
 		}
 
 		// Definition of $dir and $file
-		$dir = DOL_DOCUMENT_ROOT.'/agefodd/documents';
+		$dir = $conf->agefodd->dir_output;
 		$file = $dir.'/'.$file;
 
 		if (! file_exists($dir))
