@@ -121,10 +121,10 @@ class agf_pdf_document extends FPDF
 			}
 
 			//On ajoute les polices "maisons"
-			define('FPDF_FONTPATH','../../../../agefodd/font/');
-			$pdf->AddFont('URWPalladioL-Ital','','p052023l.php');
-			$pdf->AddFont('URWPalladioL-BoldItal','','p052024l.php');
-			$pdf->AddFont('Nasalization','','nasalization.php');
+			//define('FPDF_FONTPATH','../../../../agefodd/font/');
+			//$pdf->AddFont('URWPalladioL-Ital','','p052023l.php');
+			//$pdf->AddFont('URWPalladioL-BoldItal','','p052024l.php');
+			//$pdf->AddFont('Nasalization','','nasalization.php');
 
 			$pdf->Open();
 			$pagenb=0;
@@ -204,7 +204,7 @@ class agf_pdf_document extends FPDF
 					$this->str1 = "Ce document atteste que  " .ucfirst(strtolower($agf2->line[$i]->civilitel)).' ';
 					$this->width1 = $pdf->GetStringWidth($this->str1);
 					
-					$pdf->SetFont('URWPalladioL-Ital','', 16);
+					$pdf->SetFont('Arial','', 16);
 					$this->str2 = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
 					$this->width2 = $pdf->GetStringWidth($this->str2);
 					
@@ -214,7 +214,7 @@ class agf_pdf_document extends FPDF
 					$pdf->SetXY ($this->debut_cell , $newY);
 					$pdf->Cell($this->width1, 0, $this->str1, 0, 0, 'C', 0);
 					
-					$pdf->SetFont('URWPalladioL-Ital','', 16);
+					$pdf->SetFont('Arial','', 16);
 					$pdf->Cell($this->width2, -1, $this->str2, 0, 0, 'C', 0);
 					
 					$pdf->SetFont('Arial','', 12);
@@ -223,7 +223,7 @@ class agf_pdf_document extends FPDF
 					$this->str = 'a effectivement suivi avec assiduité le module de formation intitulé';
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 					
-					$pdf->SetFont('URWPalladioL-BoldItal','', 18);
+					$pdf->SetFont('Arial','', 18);
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
@@ -273,7 +273,7 @@ class agf_pdf_document extends FPDF
 					$this->str = "fait à ".AGF_ORGANISME_SIEGE.", le ";
 					$pdf->Cell(80, 0, $outputlangs->transnoentities($this->str), 0, 0, 'R', 0);
 					
-					$pdf->SetFont('URWPalladioL-Ital','', 12);
+					$pdf->SetFont('Arial','', 12);
 					$this->str = date("d/m/Y");
 					$this->str = dol_print_date($agf->datef);
 					$this->width = $pdf->GetStringWidth($this->str);

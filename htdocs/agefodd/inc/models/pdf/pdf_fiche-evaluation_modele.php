@@ -123,11 +123,11 @@ class agf_pdf_document extends FPDF
 			}
 
 			//On ajoute les polices "maisons"
-			define('FPDF_FONTPATH','../../../../agefodd/font/');
-			$pdf->AddFont('URWPalladioL-Ital','','p052023l.php');
-			$pdf->AddFont('URWPalladioL-BoldItal','','p052024l.php');
-			$pdf->AddFont('Nasalization','','nasalization.php');
-			$pdf->AddFont('Borg9','','BORG9.php');
+			//define('FPDF_FONTPATH','../../../../agefodd/font/');
+			//$pdf->AddFont('URWPalladioL-Ital','','p052023l.php');
+			//$pdf->AddFont('URWPalladioL-BoldItal','','p052024l.php');
+			//$pdf->AddFont('Nasalization','','nasalization.php');
+			//$pdf->AddFont('Borg9','','BORG9.php');
 			//$pdf->AddFont('Borg9','I','BORG9i.php');
 
 			$pdf->Open();
@@ -167,7 +167,7 @@ class agf_pdf_document extends FPDF
 				 * Header société
 				 */
 
-				$pdf->SetFont('Nasalization','',9);
+				$pdf->SetFont('Arial','',9);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY( $this->marge_gauche + 25, $this->marge_haute -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
@@ -193,7 +193,7 @@ class agf_pdf_document extends FPDF
 				if (is_file(AGF_ORGANISME_LOGO)) $pdf->Image(AGF_ORGANISME_LOGO, $posX, $this->marge_haute, 20);
 				
 				// Mise en page de la baseline
-				$pdf->SetFont('Borg9','',18);
+				$pdf->SetFont('Arial','',18);
 				$this->str = $outputlangs->transnoentities(AGF_ORGANISME_BASELINE);
 				$this->width = $pdf->GetStringWidth($this->str);
 				// alignement du bord droit du container avec le haut de la page
@@ -222,7 +222,7 @@ class agf_pdf_document extends FPDF
 				
 				/***** Titre *****/
 				
-				$pdf->SetFont('Nasalization','',15);
+				$pdf->SetFont('Arial','',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Fiche d'évaluation de la formation";
