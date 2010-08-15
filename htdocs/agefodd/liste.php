@@ -34,7 +34,7 @@ $langs->load("users");
 
 
 // Security check
-if (!$user->rights->cca->lire) accessforbidden();
+if (!$user->rights->agefodd->lire) accessforbidden();
 
 llxHeader();
 

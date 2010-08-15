@@ -28,8 +28,6 @@ require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_stagiaire.class.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
-$langs->load("@agefodd");
-
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();

@@ -33,8 +33,6 @@ require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-$langs->load("@agefodd");
-
 llxHeader();
 
 $sortorder=$_GET["sortorder"];

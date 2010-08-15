@@ -26,8 +26,6 @@
  */
 require("../main.inc.php");
 
-$langs->load("@agefodd");
-
 
 // If socid provided by ajax company selector
 if (! empty($_REQUEST['socid_id']))

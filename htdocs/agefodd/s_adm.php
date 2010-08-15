@@ -25,7 +25,6 @@ require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 
-$langs->load("@agefodd");
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();

@@ -28,8 +28,6 @@
 
 require("../main.inc.php");
 
-$langs->load("@agefodd");
-
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();

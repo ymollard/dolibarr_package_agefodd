@@ -24,7 +24,7 @@
  *  \brief      	Page fiche convention de formation
  *  \version		$Id: u_fiche.php 54 2010-03-30 18:58:28Z ebullier $
  */
-require_once("../main.inc.php");
+require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
@@ -35,10 +35,6 @@ require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_convention.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_place.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_calendrier.class.php");
 
-require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
-require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
-
-$langs->load("@agefodd");
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();

@@ -161,7 +161,7 @@ class modAgefodd extends DolibarrModules
 		    'mainmenu'=>'agefodd',
 		    'leftmenu'=>'0',
 		    'url'=>'/agefodd/index.php',
-		    'langs'=>'agefodd',
+		    'langs'=>'@agefodd',
 		    'position'=>100,
 		    'enabled'=>'1',
 		    'perms'=>'$user->rights->agefodd->lire',

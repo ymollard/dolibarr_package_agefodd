@@ -28,6 +28,8 @@ require("../main.inc.php");
 
 $langs->load("@agefodd");
 
+// TODO déplacer la configuration dans le fichier admin du module et supprimer ce fichier
+
 /**** Debut des variables globales **********************************************/
 
 // Nom de l'organisme de formation
