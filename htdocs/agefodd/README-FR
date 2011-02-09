@@ -12,7 +12,7 @@ Documentation demarrage rapide
 I - INSTALLER AGEFODD
 ----------------------
 
-Pour pouvoir installer Agefodd, il faut que Dolibarr (>= v 2.7.1) soit déjà
+Pour pouvoir installer Agefodd, il faut que Dolibarr (>= v 2.9) soit déjà
 installé et configuré sur votre serveur. Il doit être parfaitement opérationnel.
 Ensuite, et après avoir télécharger la dernière version du module Agefodd sur le
 site http://agefodd.sourceforge.net, vous devez l'installez de la manière
