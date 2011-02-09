@@ -1,5 +1,8 @@
 <?php
- /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
+ * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
+ * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
+ * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +28,6 @@ require("./pre.inc.php");
 require_once("./agefodd_session.class.php");
 require_once("./agefodd_sessadm.class.php");
 require_once("./agefodd_session_calendrier.class.php");
-require_once("./agefodd_session_formateur.class.php");
 
 require_once("./lib/lib.php");
 
@@ -53,31 +55,6 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 	{
 		$db->commit();
 		Header ( "Location: s_liste.php");
-		exit;
-	}
-	else
-	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-	}
-}
-
-
-/*
- * Actions delete formateur
- */
-
-if ($_POST["action"] == 'confirm_delete_form' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
-{
-	$GET_array = explode('-',$_GET["id"]);
-
-	$agf = new Agefodd_session_formateur($db);
-	$result = $agf->remove($GET_array[0]);
-
-	if ($result > 0)
-	{
-		$db->commit();
-		Header ( "Location: s_fiche.php?id=".$GET_array[1]);
 		exit;
 	}
 	else
@@ -203,25 +180,6 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
 		if ($result > 0)
 		{
 			$db->commit();
-			// Si OK et maj des formateurs
-			$error = 0;
-			if ($_POST["nbf"])
-			{
-				$agf = new Agefodd_session_formateur($db);
-
-				for ($i = 0; $i < $_POST["nbf"]; $i++)
-				{
-					$agf->formateur = $_POST["formateur"];
-					$result = $agf->update($user->id);
-				}
-				if ($result > 0) $db->commit();
-				else
-				{
-					$error = 1;
-					$db->rollback();
-					dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-				}
-			}
 			Header ( "Location: s_fiche.php?id=".$_POST["id"]);
 			exit;
 		}
@@ -241,10 +199,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
 
 
 /*
- * Action update
- * - changement ou ajout stagiaire dans fiche session
- * - changement ou ajout periode dans fiche session
- * - changement ou ajout formateur dans fiche session
+ * Action update (changement ou ajout stagiaire ou periode dans fiche session)
  */
 if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 {
@@ -255,7 +210,6 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		$agf->id = $_POST["stagerowid"];
 		$agf->sessid = $_POST["sessid"];
 		$agf->stagiaire = $_POST["stagiaire"];
-		$agf->type = $_POST["stagiaire_type"];
 		$result = $agf->update_stag_in_session($user->id);
 	
 		if ($result > 0)
@@ -341,49 +295,6 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		}
 	}
 
-	if($_POST["form_update_x"])
-	{
-		$agf = new Agefodd_session_formateur($db);
-		
-		$agf->opsid = $_POST["opsid"];
-		$agf->formid = $_POST["formid"];
-		$result = $agf->update($user->id);
-	
-		if ($result > 0)
-		{
-			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
-			exit;
-		}
-		else
-		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-		}
-	}
-	
-	if($_POST["form_add_x"])
-	{
-		$agf = new Agefodd_session_formateur($db);
-		
-		$agf->sessid = $_POST["sessid"];
-		$agf->formid = $_POST["formid"];
-		$agf->datec = $db->idate(mktime());
-		$result = $agf->create($user->id);
-	
-		if ($result > 0)
-		{
-			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
-			exit;
-		}
-		else
-		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-		}
-	}
-
 }
 
 /*
@@ -399,7 +310,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 
 		$agf->formid = $_POST["formation"];
 		$agf->place = $_POST["place"];
-		//$agf->formateur = $_POST["formateur"];
+		$agf->formateur = $_POST["formateur"];
 		$agf->dated = $_POST["dadyear"].'-'.$_POST["dadmonth"].'-'.$_POST["dadday"];
 		$agf->datef = $_POST["dafyear"].'-'.$_POST["dafmonth"].'-'.$_POST["dafday"];
 		$agf->notes = $_POST["notes"];
@@ -456,7 +367,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 				}
 			}
 			
-			Header ( "Location: s_fiche.php?action=edit&id=".$agf->id.'&nbf='.$_POST["nb_formateur"]);
+			Header ( "Location: s_fiche.php?action=edit&id=".$agf->id);
 			exit;
 		}
 		else
@@ -514,11 +425,10 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 	print '<td>'.ebi_select_formation("", 'formation').'</a></td></tr>';
 
-	//print '<tr><td>'.$langs->trans("AgfFormateurNb").'</td><td>';
-	//print ebi_select_number('nb_formateur',1);
-	//print ebi_select_formateur("", 'formateur');
-	//print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
-	//print '</td></tr>';
+	print '<tr><td>'.$langs->trans("AgfFormateur").'</td><td>';
+	print ebi_select_formateur("", 'formateur');
+	print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
+	print '</td></tr>';
 	
 	print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
 	$html->select_date("", 'dad','','','','add');
@@ -599,15 +509,12 @@ else
 				//print '<td>'.ebi_select_formation($agf->id, 'formation', 'code').'</a></td></tr>';
 				print '<td>'.$agf->formref.'</a></td></tr>';
 				
-				/*
 				print '<tr><td>'.$langs->trans("AgfFormateur").'</td><td>';
 				//$html->select_users($agf->rowid);
 				print ebi_select_formateur($agf->teacherid, 'formateur');
 				print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
 				//print $html->textwithpicto("","test");
-				print '</td>;
-				*/
-				print '</tr>';
+				print '</td></tr>';
 				
 				print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
 				$html->select_date($agf->dated, 'dad','','','','update');
@@ -638,133 +545,7 @@ else
 
 				print '</table>';
 				print '</form>';
-
-
-
-				/*
-				 * Gestion formateur
-				 */
-
-				print_barre_liste($langs->trans("AgfFormateur"),"", "","","","",'',0);
-
-				/*
-				 * Confirmation de la suppression
-				 */
-				if ($_POST["form_remove_x"])
-				{
-					// Param url = id de la ligne formateur dans session - id session 
-					$ret=$html->form_confirm("s_fiche.php?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form");
-					if ($ret == 'html') print '<br>';
-				}
-
-
-				print '<div class="tabBar">';
-				print '<table class="border" width="100%">';
-
-				// Bloc d'affichage et de modification des formateurs
-				$formateurs = new Agefodd_session_formateur($db);
-				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-				if ($nbform > 0)
-				{
-					for ($i=0; $i < $nbform; $i++)
-					{
-						if ($formateurs->line[$i]->opsid == $_POST["opsid"] && $_POST["form_remove_x"]) print '<tr bgcolor="#d5baa8">';
-						else print '<tr>';
-						print '<form name="form_update_'.$i.'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
-						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-						print '<input type="hidden" name="action" value="edit">'."\n";
-						print '<input type="hidden" name="sessid" value="'.$formateurs->line[$i]->sessid.'">'."\n";
-						//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
-						print '<input type="hidden" name="opsid" value="'.$formateurs->line[$i]->opsid.'">'."\n";
-					
-						print '<td width="20px" align="center">'.($i+1).'</td>';
-					
-						if ($formateurs->line[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
-						{
-							print '<td width="300px" style="border-right: 0px">';
-							print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
-							if ($user->rights->agefodd->modifier)
-							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
-							}
-							print '</td>';
-						}
-						else
-						{
-							print '<td width="300px"style="border-right: 0px;">';
-							// info formateur
-							if (strtolower($formateurs->line[$i]->name) == "undefined")
-							{
-								print $langs->trans("AgfUndefinedStagiaire");
-							}
-							else
-							{
-								print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
-								print img_object($langs->trans("ShowContact"),"contact").' ';
-								print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-		                         		}
-                                        		print '</td>';
-							print '<td>';
-							
-							
-							if ($user->rights->agefodd->modifier)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="form_edit" alt="'.$langs->trans("AgfModSave").'">';
-							}
-							print '&nbsp;';
-							if ($user->rights->agefodd->creer)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="form_remove" alt="'.$langs->trans("AgfModSave").'">';
-							}
-							print '</td>'."\n";
-						}
-						print '</form>'."\n";
-						print '</tr>'."\n";
-					}
-				}
 				
-				// Champs nouveau formateur
-				if (isset($_POST["newform"]))
-				{
-					print '<tr>';
-					print '<form name="form_update_'.($i + 1).'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
-					print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-					//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
-					print '<td width="20px" align="center">'.($i+1).'</td>';
-					print '<td>';
-					print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
-					if ($user->rights->agefodd->modifier)
-					{
-						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
-					}
-					print '</td>';
-					print '</form>';
-					print '</tr>'."\n";
-				} 
-
-				print '</table>';
-				if (!isset($_POST["newform"]))
-				{
-					print '</div>';
-					//print '&nbsp';
-					print '<table style="border:0;" width="100%">';
-					print '<tr><td align="right">';
-					print '<form name="newform" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					print '<input type="hidden" name="newform" value="1">'."\n";
-					print '<input type="submit" class="butAction" value="'.$langs->trans("AgfFormateurAdd").'">';
-					print '</td></tr>';
-					print '</form>';
-					print '</table>';
-				}
-				print '</div>';
-				
-		
-
 				/*
 				 * Gestion Calendrier
 				 */
@@ -962,12 +743,6 @@ else
 						{
 							print '<td colspan=2>';
 							print ebi_select_stagiaire($stagiaires->line[$i]->id);
-							
-							if (USE_STAGIAIRE_TYPE == 'OK')
-							{
-								print '<br /> '.$langs->trans("AgfStagiaireModeFinancement").': ';
-								print ebi_select_type_stagiaire($stagiaires->line[$i]->typeid);
-							}
 							if ($user->rights->agefodd->modifier)
 							{
 								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -977,7 +752,6 @@ else
 						else
 						{
 							print '<td width="300px"style="border-right: 0px;">';
-							// info stagiaire
 							if (strtolower($stagiaires->line[$i]->nom) == "undefined")
 							{
 								print $langs->trans("AgfUndefinedStagiaire");
@@ -991,7 +765,6 @@ else
                                         		}
                                         		print '</td>';
 							print '<td width="200px" style="border-left: 0px;">';
-							// Affichage de l'organisme auquel est rattaché le stagiaire
 							if ($stagiaires->line[$i]->socid)
 							{
 								print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
@@ -1002,8 +775,6 @@ else
 								print '&nbsp;';
 							}
 							print '</td><td>';
-							
-							
 							if ($user->rights->agefodd->modifier)
 							{
 								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="stag_edit" alt="'.$langs->trans("AgfModSave").'">';
@@ -1032,11 +803,7 @@ else
 					print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 					print '<td width="20px" align="center">'.($i+1).'</td>';
 					print '<td colspan=2>';
-						print ebi_select_stagiaire();
-						if (USE_STAGIAIRE_TYPE == 'OK')
-						{
-							print ebi_select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
-						}
+						print ebi_select_stagiaire($stagiaires->line[$i]->id);
 						if ($user->rights->agefodd->modifier)
 						{
 							print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/images/save.png" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -1137,8 +904,8 @@ else
 				print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 				print '<td>'.$agf->formref.'</td></tr>';
 
-				//print '<tr><td>'.$langs->trans("AgfFormateur").'</td>';
-				//print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->teacherid.'">'.$agf->teachername.'</a>';
+				print '<tr><td>'.$langs->trans("AgfFormateur").'</td>';
+				print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->teacherid.'">'.$agf->teachername.'</a>';
 				
 				print '<tr><td>'.$langs->trans("AgfDateDebut").'</td>';
 				print '<td>'.dol_print_date($agf->dated).'</td></tr>';
@@ -1157,42 +924,6 @@ else
 				print '</table>';
 				
 				print '&nbsp';
-
-
-				/*
-				 * Gestion des formateurs
-				 */
-				print '&nbsp';
-				print '<table class="border" width="100%">';
-				
-				$formateurs = new Agefodd_session_formateur($db);
-				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-				print '<tr><td width="20%" valign="top">';
-				print $langs->trans("AgfFormateur");
-				if ($nbform > 0) print ' ('.$nbform.')';
-				print '</td>';
-				if ($nbform < 1)
-				{
-				    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
-				}
-				else
-				{
-				    print '<td>';
-				    for ($i=0; $i < $nbform; $i++)
-				    {
-					// Infos formateurs
-					print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
-					//print img_object($langs->trans("ShowContact"),"contact").' ';
-					print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-					if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
-                                        
-				    }
-                                    print '</td>';
-				    print "</tr>\n";
-				}
-				print "</table>";
-				//print '</div>';
-
 
 				/*
 				 * Gestion du calendrier
@@ -1276,15 +1007,11 @@ else
 				}
 				else
 				{
-				    print ' rowspan='.($nbstag).'>'.$langs->trans("AgfParticipants");
-				    if ($nbstag > 1) print ' ('.$nbstag.')';
-				    print '</td>';
-				    
+				    print ' rowspan='.($nbstag).'>'.$langs->trans("AgfParticipants").'</td>';
 				    for ($i=0; $i < $nbstag; $i++)
 				    {
 					print '<td witdth="20px" align="center">'.($i+1).'</td>';
 					print '<td width="300px"style="border-right: 0px;">';
-					// Infos stagiaires
 					if (strtolower($stagiaires->line[$i]->nom) == "undefined")
 					{
 						print $langs->trans("AgfUndefinedStagiaire");
@@ -1297,25 +1024,11 @@ else
 						print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
                                         }
                                         print '</td>';
-					print '<td style="border-left: 0px; border-right: 0px;">';
-					// Infos organisme de rattachement
+					print '<td style="border-left: 0px;">';
 					if ($stagiaires->line[$i]->socid)
 					{
 						print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
 						print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
-					}
-					else
-					{
-						print '&nbsp;';
-					}
-					print '</td>';
-					print '<td style="border-left: 0px;">';
-					// Infos mode de financement
-					if ($stagiaires->line[$i]->type)
-					{
-						print '<div class=adminaction><a href="# ">';
-						print $langs->trans("AgfStagiaireModeFinancement");
-						print '<span>'.stripslashes($stagiaires->line[$i]->type).'</span></a></div>';
 					}
 					else
 					{

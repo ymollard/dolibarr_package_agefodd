@@ -28,7 +28,6 @@ require_once('./agefodd_session.class.php');
 require_once('./agefodd_formation_catalogue.class.php');
 require_once('./agefodd_facture.class.php');
 require_once('./agefodd_contact.class.php');
-require_once('./agefodd_session_formateur.class.php');
 
 require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
 require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');
@@ -258,20 +257,8 @@ class agf_pdf_document extends FPDF
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 4;
 
-				$formateurs = new Agefodd_session_formateur($this->db);
-				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-				$form_str = "";
-				for ($i=0; $i < $nbform; $i++)
-				{
-				    // Infos formateurs
-				    $forma_str .= strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);
-				    if ($i < ($nbform - 1)) $forma_str .= ', ';
-				}
-				
 				$pdf->SetXY($posX, $posY);
-				//$this->str = "formateur: ".$agf->teachername;
-				($nbform > 1) ? $this->str = "formateurs : " : $this->str = "formateur :";
-				$this->str .= $forma_str;
+				$this->str = "formateur: ".$agf->teachername;
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 5 + 10;
 

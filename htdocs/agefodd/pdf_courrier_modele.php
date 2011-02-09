@@ -66,7 +66,7 @@ class agf_pdf_document extends FPDF
 		$this->format = array($this->page_largeur,$this->page_hauteur);
 		$this->marge_gauche=15;
 		$this->marge_droite=15;
-		$this->marge_haute=10;
+		$this->marge_haute=12;
 		$this->marge_basse=10;
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;

@@ -1,5 +1,9 @@
 <?php
- /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
+ * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
+ * Copyright (C) 2004		Eric Seigne		<eric.seigne@ryxeo.com>
+ * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
+ * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

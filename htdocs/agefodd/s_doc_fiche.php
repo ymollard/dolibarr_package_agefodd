@@ -254,8 +254,7 @@ if ($id)
 				{
 					// afficher
 					$legende = $langs->trans("AgfDocOpen");
-					#$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/documents/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/download.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/documents/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	
 					// Regenerer
@@ -309,8 +308,7 @@ if ($id)
 			{
 				// afficher
 				$legende = $langs->trans("AgfDocOpen");
-				//$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/documents/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/download.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess = '<a href="'.DOL_URL_ROOT.'/agefodd/documents/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 				// Regenerer

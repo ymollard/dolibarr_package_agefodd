@@ -135,7 +135,7 @@ class Agefodd_session
      *      \param      notrigger	0=launch triggers after, 1=disable triggers
      *      \return     int         	<0 if KO, Id of created object if OK
      */
-     function create_stag_in_session($user, $notrigger=0)
+   function create_stag_in_session($user, $notrigger=0)
     {
     	global $conf, $langs;
 		$error=0;
@@ -149,11 +149,10 @@ class Agefodd_session
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_stagiaire (";
-		$sql.= "fk_session, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author, datec";
+		$sql.= "fk_session, fk_stagiaire, fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->sessid.'", ';
 		$sql.= '"'.$this->stagiaire.'", ';
-		$sql.= '"'.$this->stagiaire_type.'", ';
 		$sql.= '"'.$user.'", ';
 		$sql.= '"'.$this->datec.'" ';
 		$sql.= ")";
@@ -270,12 +269,10 @@ class Agefodd_session
     	global $langs;
                             
 	$sql = "SELECT";
-	$sql.= " s.rowid as sessid,";
-	$sql.= " ss.rowid, ss.fk_stagiaire, ss.fk_agefodd_stagiaire_type,";
+	$sql.= " s.rowid as sessid, ss.fk_stagiaire, ss.rowid,";
 	$sql.= " sa.nom, sa.prenom,";
 	$sql.= " civ.code as civilite, civ.civilite as civilitel,";
-	$sql.= " so.nom as socname, so.rowid as socid,";
-	$sql.= " st.rowid as typeid, st.intitule as type";
+	$sql.= " so.nom as socname, so.rowid as socid";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 	$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 	$sql.= " ON s.rowid = ss.fk_session";
@@ -285,8 +282,6 @@ class Agefodd_session
 	$sql.= " ON civ.rowid = sa.fk_c_civilite";
 	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 	$sql.= " ON so.rowid = sa.fk_soc";
- 	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_type as st";
-	$sql.= " ON st.rowid = ss.fk_agefodd_stagiaire_type";
         $sql.= " WHERE s.rowid = ".$id;
 	if (!empty($socid)) $sql.= " AND so.rowid = ".$socid;
 	$sql.= " ORDER BY sa.nom";
@@ -312,8 +307,6 @@ class Agefodd_session
                 	$this->line[$i]->civilitel = $obj->civilitel;
                 	$this->line[$i]->socname = $obj->socname;
 			$this->line[$i]->socid = $obj->socid;
-			$this->line[$i]->typeid = $obj->typeid;
-			$this->line[$i]->type = $obj->type;
 			$i++;
 		}
             	$this->db->free($resql);
@@ -501,7 +494,7 @@ class Agefodd_session
 
     /**
      *      \brief      Update database
-     *      \param      stagiaire        Stagiaire who is added to a formation
+     *      \param      stagiaire        Stagiaire who is added ti a formation
      *      \param      notrigger	0=launch triggers after, 1=disable triggers
      *      \return     int         	<0 if KO, >0 if OK
      */
@@ -513,7 +506,7 @@ class Agefodd_session
 	// Clean parameters
 	$this->sessid = addslashes(trim($this->sessid));
 	$this->stagiaire = addslashes(trim($this->stagiaire));
-	$this->type = addslashes(trim($this->type));
+
         
 
 	// Check parameters
@@ -525,8 +518,7 @@ class Agefodd_session
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire as s SET";
 	$sql.= " s.fk_session='".$this->sessid."',";
 	$sql.= " s.fk_stagiaire='".$this->stagiaire."',";
-        $sql.= " s.fk_user_mod='".$user."',";
-        $sql.= " s.fk_agefodd_stagiaire_type='".$this->type."'";
+        $sql.= " s.fk_user_mod='".$user."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 
 	$this->db->begin();

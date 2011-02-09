@@ -47,12 +47,6 @@ function ebi_print_text($str,$length=30)
 }
 
 
-/**
- *    \brief	affiche un champs select contenant la liste des civilites.
- *    \param	str	valeur à preselectionner (code ou libelle)
- *		str	nom du champs select
- *    \return	str	la chaine formatée
- */
 function ebi_select_civilite($selectid, $name='civilite')
 {
 	global $db;
@@ -90,7 +84,7 @@ function ebi_select_civilite($selectid, $name='civilite')
 }
 
 /**
- *    \brief	affiche un champs select contenant les pays repertories. 
+ *    \brief	affiche un champs selecte contenat les pays repertories. 
  *		Permet la préselection par code ou libelle.
  *    \param	str	valeur à preselectionner (code ou libelle)
  *		str	nom du champs select
@@ -135,13 +129,6 @@ function ebi_select_pays($select_value, $name='pays', $type='libelle')
 }
 
 
-/**
- *    \brief	affiche un champs select contenant la liste des formations disponibles. 
- *    \param	str	valeur à preselectionner
- *		str	nom du champs select
- *		str	trie effectué sur le code (code) ou sur le libelle (intitule).
- *    \return	str	la chaine formatée
- */
 function ebi_select_formation($selectid, $name='formation', $return='intitule')
 {
 	global $db;
@@ -169,7 +156,7 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
 		else $selected = '';
 		$options .= '<option value="'.$obj->rowid.'"'.$selected.'>';
 		if ($return == 'code') $options .= $obj->ref_interne.'</option>'."\n";
-		else $options .= stripslashes($obj->intitule).'</option>'."\n";
+		else $options .= $obj->intitule.'</option>'."\n";
 		$i++;
 	    }
 		$db->free($result);
@@ -183,12 +170,6 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
 }
 
 
-/**
- *    \brief	affiche un champs select contenant la liste des sites de formation déjà référéencés.
- *    \param	str	valeur à preselectionner
- *		str	nom du champs select
- *    \return	str	la chaine formatée
- */
 function ebi_select_site_forma($selectid, $name='place')
 {
 	global $db;
@@ -223,14 +204,7 @@ function ebi_select_site_forma($selectid, $name='place')
 	}
 }
 
-
-/**
- *    \brief	affiche un champs select contenant la liste des stagiaires déjà référéencés.
- *    \param	str	valeur à preselectionner
- *		str	nom du champs select
- *    \return	str	la chaine formatée
- */
-function ebi_select_stagiaire($selectid='', $name='stagiaire')
+function ebi_select_stagiaire($selectid, $name='stagiaire')
 {
 	global $db;
 	
@@ -271,12 +245,6 @@ function ebi_select_stagiaire($selectid='', $name='stagiaire')
 }
 
 
-/**
- *    \brief	affiche un champs select contenant la liste des sociétés (tiers).
- *    \param	str	valeur à preselectionner
- *		str	nom du champs select
- *    \return	str	la chaine formatée
- */
 function ebi_select_societe($selectid, $name='societe')
 {
 	global $db;
@@ -313,13 +281,7 @@ function ebi_select_societe($selectid, $name='societe')
 }
 
 
-/**
- *    \brief	affiche un champs select contenant la liste des formateurs déjà référéencés.
- *    \param	str	valeur à preselectionner
- *		str	nom du champs select
- *    \return	str	la chaine formatée
- */
-function ebi_select_formateur($selectid='', $name='formateur')
+function ebi_select_formateur($selectid, $name='formateur')
 {
 	global $db;
 	
@@ -426,82 +388,6 @@ function ebi_select_time($name='period',$preselect='')
 }
 
 
-/**
- *    \brief	affiche un champs select contenant une liste incrémenter de "incr" à partir de "deb" jusqu'à "fin". 
- *    \param	str	nom du champs select
- *    \param	str	valeur de l'incrément
- *    \param	str	valeur de début
- *    \param	str	valeur de fin
- *    \return	str	la liste html formatée
- */
-function ebi_select_number($name='nombre',$preselect='', $incr=1, $deb=1, $fin=10)
-{
-
-	$number = $deb;
-	$options = '<option value=""></option>'."\n";
-	while ($number <= $fin)
-	{
-		if ($preselect == $number) $selected = ' selected="true"';
-		else $selected = '';
-		$options .= '<option value="'.$number.'"'.$selected.'>'.$number.'</option>'."\n";
-		$number++;
-	}
-	return '<select class="flat" name="'.$name.'">'."\n".$options."\n".'</select>'."\n";
-}
-
-
-/**
- *    \brief	affiche un champs select contenant la liste des financements possible pour un stagiaire
- *		(nécessaire pour la Declaration annuelle de Formation Professionnelle). 
- *    \param	int	id du champs préselectionné
- *    \param	str	nom du champs select
- *    \return	str	la liste html formatée
- */
-function ebi_select_type_stagiaire($selectid, $name='stagiaire_type')
-{
-	global $db;
-	
-	$sql = "SELECT t.rowid, t.intitule";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_type as t";
-	//$sql.= " ORDER BY t.intitule";
-	$sql.= " ORDER BY t.order";
-
-        $result = $db->query($sql);
-	if ($result)
-	{
-	    $var = True;
-	    $num = $db->num_rows($result);
-	    $i = 0;
-	    $options = '<option value=""></option>'."\n";
-
-	    while ($i < $num)
-	    {
-		$obj = $db->fetch_object($result);
-		if ($obj->rowid == $selectid) $selected = ' selected="true"';
-		else $selected = '';
-		$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.stripslashes($obj->intitule).'</option>'."\n";
-		$i++;
-	    }
-	    $db->free($result);
-		
-		return '<select class="flat" name="'.$name.'">'."\n".$options."\n".'</select>'."\n";
-	}
-	else
-        {
-		$error="Error ".$db->lasterror();
-		return -1;
-        }
-}
-
-
-/**
- *    \brief	formate une chaine de type string avant sont utilisation dans une requête SQL.
- *    \param	str	la chaine
- *		str	En fonction du système installé, on devra utiliser
- *			- la nouvelle syntaxe "mysql_real_escape_string" ($real="new")
- *			- l'ancienne syntaxe "mysql_escape_string" ($real="old")
- *    \return	str	la chaine formatée
- */
 function ebi_mysql_escape_string($string, $real='old')
 {
 	$string = addslashes($string);
@@ -517,13 +403,6 @@ function ebi_mysql_escape_string($string, $real='old')
 }
 
 
-/**
- *    \brief	formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
- *    \param	int	valeur de l'état actuel
- *    \param	int	valeur de l'état quand toutes les tâches sont remplies
- *    \param	str	légende précédent la jauge
- *    \return	str	la jauge formatée au format html
- */
 function ebi_level_graph($actual_level, $total_level, $title)
 {
 	$str = '<table style="border:0px; margin:0px; padding:0px">'."\n";
@@ -542,8 +421,10 @@ function ebi_level_graph($actual_level, $total_level, $title)
 
 
 /**
- *    \brief	Calcule le nombre de regroupement par premier niveau des  tâches adminsitratives
- *    \return	str	nbre de niveaux
+ *    \brief	Formate une chaine à une longeur donnée en incluant les points finaux
+ *    \param	str	la chaine
+ *		length	la longueur souhaitée
+ *    \return	str	la chaine formatée
  */
 function ebi_get_adm_level_number()
 {
@@ -575,11 +456,6 @@ function ebi_get_adm_level_number()
 }
 
 
-/**
- *    \brief	Calcule le nombre de regroupement par premier niveau terminés pour une session donnée
- *    \param	int	rowid de la session
- *    \return	str	nbre de niveaux
- */
 function ebi_get_adm_lastFinishLevel($sessid)
 {
 	global $db;
@@ -613,13 +489,6 @@ function ebi_get_adm_lastFinishLevel($sessid)
 	}
 }
 
-
-/**
- *    \brief	Formatage d'un menu aide en html (icone + curseur)
- *    \param	str	l'aide à afficher quand la souris survole l'icône
- *    \param	str	légende à afficher pour l'image
- *    \return	str	chaine formatée en html
- */
 function ebi_help($desc, $legend="")
 {
 	global $conf;

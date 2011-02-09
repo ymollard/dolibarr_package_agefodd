@@ -29,7 +29,6 @@ require_once('./agefodd_session.class.php');
 require_once('./agefodd_formation_catalogue.class.php');
 require_once('./agefodd_session_place.class.php');
 require_once('./agefodd_session_calendrier.class.php');
-require_once('./agefodd_session_formateur.class.php');
 
 require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
 require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');
@@ -259,7 +258,7 @@ class agf_pdf_document extends FPDF
 				$larg_col4 = 82;
 				$haut_col2 = 0;
 				$haut_col4 = 0;
-				
+
 				// Intitulé
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont('Arial','',9);
@@ -315,9 +314,8 @@ class agf_pdf_document extends FPDF
 			 	$pdf->Cell(0,4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 				$posY+= 2;
 
-				$cadre_tableau = array($posX - 2 , $posY);
-				$h_ligne = 6;
-
+				$cadre_tableau=array($posX -2 , $posY);
+			
 				$larg_col1 = 10;
 				$larg_col2 = 70;
 				$larg_col3 = 120;
@@ -325,44 +323,6 @@ class agf_pdf_document extends FPDF
 				$haut_col2 = 0;
 				$haut_col4 = 0;
 
-				$formateurs = new Agefodd_session_formateur($this->db);
-				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-				
-				for ($i=0; $i < $nbform; $i++)
-				{
-					// Nom
-					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont('Arial','',9);
-					$this->str = "Nom :";
-					$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-					
-					$pdf->SetXY($posX + $larg_col1, $posY);
-					$pdf->SetFont('Arial','',9);
-					//$this->str = $agf->teachername;
-					$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);;
-					$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-					
-					$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
-					$pdf->SetFont('Arial','',9);
-					$this->str = "le formateur atteste par la présente avoir dispensé la formation ci-dessus nommée";
-					$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-					
-					$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY);
-					$pdf->SetFont('Arial','',9);
-					$this->str = "signature: ";
-					$pdf->Cell($larg_col4, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-					
-					// Cadre
-					($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
-					$pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $h_ligne);
-					
-					$cadre_tableau[1] += 6; 
-					$posY += +6;
-
-				}
-				
-
-/*
 				// ligne
 				$h_ligne = 7;
 				for ($y = 0; $y < count($agf->teachername); $y++)
@@ -395,7 +355,6 @@ class agf_pdf_document extends FPDF
 					$posY += +6;
 					
 				}
-*/
 				$posY+= 4;
 
 				

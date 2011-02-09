@@ -64,7 +64,7 @@ class agf_pdf_document extends FPDF
 		$this->format = array($this->page_largeur,$this->page_hauteur);
 		$this->marge_gauche=15;
 		$this->marge_droite=15;
-		$this->marge_haute=10;
+		$this->marge_haute=12;
 		$this->marge_basse=10;
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
@@ -221,7 +221,7 @@ class agf_pdf_document extends FPDF
 				 */
 
 				$posX = $this->marge_gauche;
-				$posY = 30;
+				$posY = $this->marge_gauche +20;
 				
 				/***** Titre *****/
 				$pdf->SetFont('Nasalization','',15);
@@ -271,7 +271,6 @@ class agf_pdf_document extends FPDF
 					$pdf->Cell(10, 4, $agf_op->line[$y]->priorite.'. ', 0, 0, 'L', 0);
 					$pdf->MultiCell($width, 4, 
 					$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
-					
 				}
 				$posY+= 8;
 				
@@ -293,22 +292,23 @@ class agf_pdf_document extends FPDF
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY+= $hauteur + 8;
 
+
 				
-				/***** Pré requis *****/
+				/***** Pré-requis *****/
 				
 				$pdf->SetFont('','B','');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Pré-requis";
+				$this->str = "Pré requis";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
 				$pdf->SetFont('','','');
 				$this->str = $agf_op->prerequis;
-				if (empty($this->str)) $this->str = "Aucun";
-				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
+				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 4);
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY+= $hauteur + 8;
+				
 
 				
 				/***** Programme *****/
@@ -334,12 +334,12 @@ class agf_pdf_document extends FPDF
 				$largeur_col = ($this->espaceH_dispo - $espace_entre_col) / 2;
 				
 				$pdf->SetXY( $posX, $posY);
-				$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J',0, $hauteur_nb_lines);
+				$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'L',0, $hauteur_nb_lines);
 				
 				$pdf->Line ($this->milieu + $this->marge_gauche, $posY, $this->milieu  + $this->marge_gauche, $posY + $hauteur_col);
 				
 				$pdf->SetXY( $posX + $largeur_col + $espace_entre_col, $posY);
-				$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col, $txt,0,'J',0, $hauteur_nb_lines);
+				$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col, $txt,0,'L',0, $hauteur_nb_lines);
 				
 				// Nbre de ligne * hauteur ligne + decallage titre niv 2
 				$posY += $hauteur_col + 8;

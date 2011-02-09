@@ -382,7 +382,7 @@ else
 				// Chargement de la liste des sociétés dans $options
 				$sql = "SELECT so.rowid, so.nom";
 				$sql.= " FROM ".MAIN_DB_PREFIX."societe as so";
-				$sql.= " WHERE so.fournisseur = 0";
+				$sql.= " WHERE so.client = 1";
 				$sql.= " ORDER BY so.nom";
 				
 				$result3 = $db->query($sql);

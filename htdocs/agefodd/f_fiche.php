@@ -542,9 +542,10 @@ else
 				print '<tr class="liste_titre"><td valign="top">'.$langs->trans("AgfProgramme").'</td>';
 				print '<td align="left" colspan=2>';
 				print '<a href="javascript:DivStatus(\'prog\');" title="afficher detail" style="font-size:14px;">+</a></td></tr>';
-				if (!empty($agf->programme)) $programme = nl2br($agf->programme);
+				//if (!empty($agf->programme)) $programme = nl2br($agf->programme);
+				if (!empty($agf->programme)) $programme = ebi_liste_a_puce(stripslashes($agf->programme),true);
 				else $programme = $langs->trans("AgfUndefinedProg");
-				print '<tr><td></td><td><div id="prog" style="display:none;">'.stripslashes($programme).'</div></td></tr>';
+				print '<tr><td></td><td><div id="prog" style="display:none;">'.$programme.'</div></td></tr>';
 
 				print '</table>';
 				print '&nbsp';

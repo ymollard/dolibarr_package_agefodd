@@ -39,36 +39,36 @@ class Agefodd
 	var $table_element='agefodd';
         var $id;
 
-	/**
-	*	\brief		Constructor
-	*	\param		DB	Database handler
-	*/
-	function Agefodd($DB) 
-	{
-		$this->db = $DB;
-		return 1;
-	}
-	
-	
-	/**
-	*      \brief      Create in database
-	*      \param      user        	User that create
-	*      \param      notrigger	0=launch triggers after, 1=disable triggers
-	*      \return     int         	<0 if KO, Id of created object if OK
-	*/
-	function create($user, $notrigger=0)
-	{
-	global $conf, $langs;
+    /**
+     *	\brief		Constructor
+     *	\param		DB	Database handler
+     */
+    function Agefodd($DB) 
+    {
+        $this->db = $DB;
+        return 1;
+    }
+
+
+    /**
+     *      \brief      Create in database
+     *      \param      user        	User that create
+     *      \param      notrigger	0=launch triggers after, 1=disable triggers
+     *      \return     int         	<0 if KO, Id of created object if OK
+     */
+    function create($user, $notrigger=0)
+    {
+    	global $conf, $langs;
 		$error=0;
-	
+    	
 		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
-		$this->public = ebi_mysql_escape_string($this->public);
-		$this->methode = ebi_mysql_escape_string($this->methode);
-		$this->prerequis = ebi_mysql_escape_string($this->prerequis);
-		$this->programme = ebi_mysql_escape_string($this->programme);
-	
-	
+		$this->intitule = trim($this->intitule);
+		//$this->public = addslashes(trim($this->public));
+		//$this->methode = addslashes(trim($this->methode));
+		//$this->methode = addslashes(trim($this->prerequis));
+		//$this->programme = addslashes(trim($this->programme));
+
+
 		// Check parameters
 		// Put here code to add control on parameters value
 		
@@ -78,44 +78,44 @@ class Agefodd
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->datec.'", ';
 		$sql.= '"'.$this->ref_interne.'", ';
-		$sql.= '"'.$this->intitule.'", ';
+		$sql.= '"'.ebi_mysql_escape_string($this->intitule).'", ';
 		$sql.= '"'.$this->duree.'", ';
-		$sql.= '"'.$this->public.'",';
-		$sql.= '"'.$this->methode.'",';
-		$sql.= '"'.$this->prerequis.'",';
-		$sql.= '"'.$this->programme.'",';
+		$sql.= '"'.ebi_mysql_escape_string($this->public).'",';
+		$sql.= '"'.ebi_mysql_escape_string($this->methode).'",';
+		$sql.= '"'.ebi_mysql_escape_string($this->prerequis).'",';
+		$sql.= '"'.ebi_mysql_escape_string($this->programme).'",';
 		$sql.= '"'.$user.'"';
 		$sql.= ")";
-	
+
 		$this->db->begin();
 		
-		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
+	   	$resql=$this->db->query($sql);
+	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
-			if (! $notrigger)
-			{
-			// Uncomment this and change MYOBJECT to your own tag if you
-			// want this action call a trigger.
-			
-			//// Call triggers
-			//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-			//$interface=new Interfaces($this->db);
-			//$result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-			//if ($result < 0) { $error++; $this->errors=$interface->errors; }
-			//// End call triggers
-			}
+		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
+		    if (! $notrigger)
+		    {
+	            // Uncomment this and change MYOBJECT to your own tag if you
+	            // want this action call a trigger.
+	            
+	            //// Call triggers
+	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+	            //$interface=new Interfaces($this->db);
+	            //$result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
+	            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
+	            //// End call triggers
+		    }
 		}
-	
+
 		// Commit or rollback
-		if ($error)
+    		if ($error)
 		{
 			foreach($this->errors as $errmsg)
 			{
-				dol_syslog(get_class($this)."::create ".$errmsg, LOG_ERR);
-				$this->error.=($this->error?', '.$errmsg:$errmsg);
+			    dol_syslog(get_class($this)."::create ".$errmsg, LOG_ERR);
+			    $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
 			return -1*$error;
@@ -125,160 +125,159 @@ class Agefodd
 			$this->db->commit();
 			return $this->id;
 		}
-	}
+    }
 
 
-	/**
-	*    \brief	Load object in memory from database
-	*    \param	id	id object
-	*			arch	archive (0=no, 1=yes, 2=all)
-	*    \return     int         <0 if KO, >0 if OK
-	*/
-	function fetch($id)
-	{
-	global $langs;
-	
-	$sql = "SELECT";
+    /**
+     *    \brief	Load object in memory from database
+     *    \param	id	id object
+     *			arch	archive (0=no, 1=yes, 2=all)
+     *    \return     int         <0 if KO, >0 if OK
+     */
+    function fetch($id)
+    {
+    	global $langs;
+    	
+        $sql = "SELECT";
 	$sql.= " c.rowid, c.ref_interne, c.intitule, c.duree,";
 	$sql.= " c.public, c.methode, c.prerequis, c.programme, archive";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-	$sql.= " WHERE c.rowid = ".$id;
-	
+        $sql.= " WHERE c.rowid = ".$id;
+
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-	$resql=$this->db->query($sql);
-	if ($resql)
-	{
-		if ($this->db->num_rows($resql))
-		{
-		$obj = $this->db->fetch_object($resql);
-		$this->id = $obj->rowid;
-		$this->ref_interne = $obj->ref_interne;
-		$this->intitule = stripslashes($obj->intitule);
-		$this->duree = $obj->duree;
-		$this->public = stripslashes($obj->public);
-		$this->methode = stripslashes($obj->methode);
-		$this->prerequis = stripslashes($obj->prerequis);
-		$this->programme = stripslashes($obj->programme);
-		$this->archive = $obj->archive;
-		}
-		$this->db->free($resql);
-	
-		return 1;
-	}
-	else
-	{
-		$this->error="Error ".$this->db->lasterror();
-		dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-		return -1;
-	}
-	}
-	
-	
-	/**
-	*    \brief      Load info object in memory from database
-	*    \param      id          id object
-	*    \return     int         <0 if KO, >0 if OK
-	*/
-	function info($id)
-	{
-	global $langs;
-	
-	$sql = "SELECT";
+        $resql=$this->db->query($sql);
+        if ($resql)
+        {
+            if ($this->db->num_rows($resql))
+            {
+                $obj = $this->db->fetch_object($resql);
+                $this->id = $obj->rowid;
+                $this->ref_interne = $obj->ref_interne;
+                $this->intitule = stripslashes($obj->intitule);
+                $this->duree = $obj->duree;
+                $this->public = stripslashes($obj->public);
+                $this->methode = stripslashes($obj->methode);
+                $this->prerequis = stripslashes($obj->prerequis);
+                $this->programme = stripslashes($obj->programme);
+                $this->archive = $obj->archive;
+	    }
+            $this->db->free($resql);
+
+            return 1;
+        }
+        else
+        {
+      	    $this->error="Error ".$this->db->lasterror();
+            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+            return -1;
+        }
+    }
+
+
+    /**
+     *    \brief      Load info object in memory from database
+     *    \param      id          id object
+     *    \return     int         <0 if KO, >0 if OK
+     */
+    function info($id)
+    {
+    	global $langs;
+    	
+        $sql = "SELECT";
 	$sql.= " c.rowid, c.datec, c.tms, c.fk_user";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-	$sql.= " WHERE c.rowid = ".$id;
-	
+        $sql.= " WHERE c.rowid = ".$id;
+
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-	$resql=$this->db->query($sql);
-	if ($resql)
-	{
-		if ($this->db->num_rows($resql))
+        $resql=$this->db->query($sql);
+        if ($resql)
+        {
+            if ($this->db->num_rows($resql))
+            {
+                $obj = $this->db->fetch_object($resql);
+                $this->id = $obj->rowid;
+                $this->datec = $obj->datec;
+                $this->tms = $obj->tms;
+                $this->fk_user = $obj->fk_user;
+	    }
+            $this->db->free($resql);
+
+            return 1;
+        }
+        else
+        {
+      	    $this->error="Error ".$this->db->lasterror();
+            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+            return -1;
+        }
+    }
+
+
+    /**
+     *      \brief      Update database
+     *      \param      user        	User that modify
+     *      \param      notrigger	    0=launch triggers after, 1=disable triggers
+     *      \return     int         	<0 if KO, >0 if OK
+     */
+    function update($user=0, $notrigger=0)
+    {
+	global $conf, $langs;
+	$error=0;
+	
+	// Clean parameters
+	//$this->intitule = trim($this->intitule);
+        //$this->public = addslashes(trim($this->public));
+        //$this->methode = addslashes(trim($this->methode));
+        //$this->programme = addslashes(trim($this->programme));
+
+        
+
+	// Check parameters
+	// Put here code to add control on parameters values
+
+
+        // Update request
+        if (!isset($this->archive)) $this->archive = 0; 
+        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
+	$sql.= " c.ref_interne='".$this->ref_interne."',";
+	$sql.= " c.intitule='".ebi_mysql_escape_string($this->intitule)."',";
+	$sql.= " c.duree='".$this->duree."',";
+        $sql.= " c.public='".ebi_mysql_escape_string($this->public)."',";
+        $sql.= " c.methode='".ebi_mysql_escape_string($this->methode)."',";
+        $sql.= " c.prerequis='".ebi_mysql_escape_string($this->prerequis)."',";
+        $sql.= " c.programme='".ebi_mysql_escape_string($this->programme)."',";
+        $sql.= " c.fk_user='".$user."',";
+        $sql.= " c.archive='".$this->archive."'";
+        $sql.= " WHERE c.rowid = ".$this->id;
+
+	$this->db->begin();
+
+	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+	$resql = $this->db->query($sql);
+	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		if (! $error)
 		{
-		$obj = $this->db->fetch_object($resql);
-		$this->id = $obj->rowid;
-		$this->datec = $obj->datec;
-		$this->tms = $obj->tms;
-		$this->fk_user = $obj->fk_user;
-		}
-		$this->db->free($resql);
-	
-		return 1;
-	}
-	else
-	{
-		$this->error="Error ".$this->db->lasterror();
-		dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-		return -1;
-	}
-	}
-	
-	
-	/**
-	*      \brief      Update database
-	*      \param      user        	User that modify
-	*      \param      notrigger	    0=launch triggers after, 1=disable triggers
-	*      \return     int         	<0 if KO, >0 if OK
-	*/
-	function update($user=0, $notrigger=0)
-	{
-		global $conf, $langs;
-		$error=0;
-		
-		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
-		$this->public = ebi_mysql_escape_string($this->public);
-		$this->methode = ebi_mysql_escape_string($this->methode);
-		$this->prerequis = ebi_mysql_escape_string($this->prerequis);
-		$this->programme = ebi_mysql_escape_string($this->programme);
-		
-		
-		
-		// Check parameters
-		// Put here code to add control on parameters values
-		
-		
-		// Update request
-		if (!isset($this->archive)) $this->archive = 0; 
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
-		$sql.= " c.ref_interne='".$this->ref_interne."',";
-		$sql.= " c.intitule='".$this->intitule."',";
-		$sql.= " c.duree='".$this->duree."',";
-		$sql.= " c.public='".$this->public."',";
-		$sql.= " c.methode='".$this->methode."',";
-		$sql.= " c.prerequis='".$this->prerequis."',";
-		$sql.= " c.programme='".$this->programme."',";
-		$sql.= " c.fk_user='".$user."',";
-		$sql.= " c.archive='".$this->archive."'";
-		$sql.= " WHERE c.rowid = ".$this->id;
-		
-		$this->db->begin();
-		
-		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-			if (! $error)
+			if (! $notrigger)
 			{
-				if (! $notrigger)
-				{
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-					
-				//// Call triggers
-				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				//$interface=new Interfaces($this->db);
-				//$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				//// End call triggers
-			}
+	            // Uncomment this and change MYOBJECT to your own tag if you
+	            // want this action call a trigger.
+				
+	            //// Call triggers
+	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+	            //$interface=new Interfaces($this->db);
+	            //$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
+	            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
+	            //// End call triggers
+	    	}
 		}
-			
+		
 		// Commit or rollback
 		if ($error)
 		{
 			foreach($this->errors as $errmsg)
 			{
-			dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
-			$this->error.=($this->error?', '.$errmsg:$errmsg);
+	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}	
 			$this->db->rollback();
 			return -1*$error;
@@ -288,7 +287,7 @@ class Agefodd
 			$this->db->commit();
 			return 1;
 		}		
-	}
+    }
 
 	
 	/**
@@ -316,19 +315,90 @@ class Agefodd
         }
 
 
+
+
 	/**
-	*      \brief      Create in database
-	*      \param      user        	User that create
-	*      \param      notrigger	0=launch triggers after, 1=disable triggers
-	*      \return     int         	<0 if KO, Id of created object if OK
-	*/
-	function create_objpeda($user=0)
+	 *	\brief		Load an object from its id and create a new one in database
+	 *	\param		fromid		Id of object to clone
+	 * 	\return		int		New id of clone
+	 */
+	function createFromClone($fromid)
 	{
-		global $conf, $langs;
+		global $user,$langs;
+		
+		$error=0;
+		
+		$object=new Agefodd($this->db);
+
+		$this->db->begin();
+
+		// Load source object
+		$object->fetch($fromid);
+		$object->id=0;
+		$object->statut=0;
+
+		// Clear fields
+		// ...
+				
+		// Create clone
+		$result=$object->create($user);
+
+		// Other options
+		if ($result < 0) 
+		{
+			$this->error=$object->error;
+			$error++;
+		}
+		
+		if (! $error)
+		{
+			
+			
+			
+		}
+		
+		// End
+		if (! $error)
+		{
+			$this->db->commit();
+			return $object->id;
+		}
+		else
+		{
+			$this->db->rollback();
+			return -1;
+		}
+	}
+
+	
+	/**
+	 *		\brief		Initialise object with example values
+	 *		\remarks	id must be 0 if object instance is a specimen.
+	 */
+	function initAsSpecimen()
+	{
+		$this->id=0;
+		
+
+		
+	}
+
+
+    /**
+     *      \brief      Create in database
+     *      \param      user        	User that create
+     *      \param      notrigger	0=launch triggers after, 1=disable triggers
+     *      \return     int         	<0 if KO, Id of created object if OK
+     */
+    function create_objpeda($user=0)
+    {
+    	global $conf, $langs;
 		$error=0;
     	
 		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
+		$this->intitule = addslashes(trim($this->intitule));
+
+
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -381,47 +451,47 @@ class Agefodd
 			$this->db->commit();
 			return $this->id;
 		}
-	}
+    }
 
 
-	/**
-	*    \brief	Load object in memory from database
-	*    \param	id	id object
-	*    \return	int	<0 if KO, >0 if OK
-	*/
-	function fetch_objpeda($id_formation)
-	{
-		global $langs;
-		
-		$sql = "SELECT";
-		$sql.= " o.intitule, o.priorite";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda";
-		$sql.= " as o";
-		$sql.= " WHERE o.rowid = ".$id_formation;
-		
-		
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
-			if ($this->db->num_rows($resql))
-			{
-			$obj = $this->db->fetch_object($resql);
-			$this->id = $obj->rowid;
-			$this->intitule = stripslashes($obj->intitule);
-			$this->priorite = $obj->priorite;
-			}
-			$this->db->free($resql);
-		
-			return 1;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-			return -1;
-		}
-	}
+    /**
+     *    \brief	Load object in memory from database
+     *    \param	id	id object
+     *    \return	int	<0 if KO, >0 if OK
+     */
+    function fetch_objpeda($id_formation)
+    {
+    	global $langs;
+    	
+        $sql = "SELECT";
+	$sql.= " o.intitule, o.priorite";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda";
+	$sql.= " as o";
+        $sql.= " WHERE o.rowid = ".$id_formation;
+        
+
+	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+        $resql=$this->db->query($sql);
+        if ($resql)
+        {
+            if ($this->db->num_rows($resql))
+            {
+                $obj = $this->db->fetch_object($resql);
+                $this->id = $obj->rowid;
+                $this->intitule = stripslashes($obj->intitule);
+                $this->priorite = $obj->priorite;
+	    }
+            $this->db->free($resql);
+
+            return 1;
+        }
+        else
+        {
+      	    $this->error="Error ".$this->db->lasterror();
+            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+            return -1;
+        }
+    }
 
 
 	/**
@@ -469,53 +539,53 @@ class Agefodd
 	}
 
 
-	/**
-	*      \brief      Update database
-	*      \param      user        	User that modify
-	*      \param      notrigger	0=launch triggers after, 1=disable triggers
-	*      \return     int         	<0 if KO, >0 if OK
-	*/
-	function update_objpeda($user=0)
-	{
-		global $conf, $langs;
-		$error=0;
-		
-		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
-		
-		
-		// Check parameters
-		// Put here code to add control on parameters values
-		
-		
-		// Update request
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
-		$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
-		$sql.= " o.intitule='".$this->intitule."',";
-		//$sql.= " o.fk_user='".$this->fk_user."',";
-		$sql.= " o.fk_user='".$user."',";
-		$sql.= " o.priorite='".$this->priorite."'";
-		$sql.= " WHERE o.rowid = ".$this->id;
-		
-		$this->db->begin();
-		
-		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-			if (! $error)
+    /**
+     *      \brief      Update database
+     *      \param      user        	User that modify
+     *      \param      notrigger	0=launch triggers after, 1=disable triggers
+     *      \return     int         	<0 if KO, >0 if OK
+     */
+    function update_objpeda($user=0)
+    {
+	global $conf, $langs;
+	$error=0;
+	
+	// Clean parameters
+	$this->intitule = addslashes(trim($this->intitule));
+        
+
+	// Check parameters
+	// Put here code to add control on parameters values
+
+
+        // Update request
+        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
+	$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
+	$sql.= " o.intitule='".$this->intitule."',";
+	//$sql.= " o.fk_user='".$this->fk_user."',";
+	$sql.= " o.fk_user='".$user."',";
+	$sql.= " o.priorite='".$this->priorite."'";
+	$sql.= " WHERE o.rowid = ".$this->id;
+
+	$this->db->begin();
+
+	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+	$resql = $this->db->query($sql);
+	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		if (! $error)
+		{
+			if (! $notrigger)
 			{
-				if (! $notrigger)
-				{
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-					
-				//// Call triggers
-				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				//$interface=new Interfaces($this->db);
-				//$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				//// End call triggers
-			}
+	            // Uncomment this and change MYOBJECT to your own tag if you
+	            // want this action call a trigger.
+				
+	            //// Call triggers
+	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+	            //$interface=new Interfaces($this->db);
+	            //$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
+	            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
+	            //// End call triggers
+	    	}
 		}
 		
 		// Commit or rollback
@@ -523,8 +593,8 @@ class Agefodd
 		{
 			foreach($this->errors as $errmsg)
 			{
-			dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
-			$this->error.=($this->error?', '.$errmsg:$errmsg);
+	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}	
 			$this->db->rollback();
 			return -1*$error;
