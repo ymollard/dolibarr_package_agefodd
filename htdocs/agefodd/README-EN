@@ -12,7 +12,7 @@ Quick Start
 I - INSTALL AGEFODD
 ----------------------
 
-You need Dolibarr (v 2.7.1 or upper) )already installed. 
+You need Dolibarr (v 2.8 or upper) )already installed. 
 _ Download latest realease http://agefodd.sourceforge.net
 - Copy downloaded file  (tar.gz) in your installed dolibarr (e.g. /var/www/dolibarr).
   Move to  your dolibarr's dir (/var www/dolibarr) and extract it 'tar -xvf module_agefodd-x.x.x.tar.gz'
