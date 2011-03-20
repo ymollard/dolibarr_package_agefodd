@@ -53,6 +53,7 @@ $pagenext = $page + 1;
 if (!isset($_GET["arch"])) $arch = 0;
 else $arch = $_GET["arch"];
 
+// TODO move sql query to Model Class
 $db->begin();
 
 $sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.datec, c.duree,";
@@ -105,7 +106,7 @@ if ($resql)
 	}
 	else 
 	{
-	    $db->roolback();
+	    $db->rollback();
 	    dol_print_error($db);
 	    dol_syslog("agefodd::f_liste::num_rows ".$errmsg, LOG_ERR);
 	}
