@@ -71,7 +71,7 @@ $agf = new Agefodd_index($db);
 // Nbre de formation au catalogue actuellement
 $resql = $agf->fetch_formation_nb();
 print '<tr class="liste"><td>formation au catalogue actuellement: </td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/f_liste.php',1).'?mainmenu=agefodd">';
+print '<a href="'.dol_buildpath('/agefodd/training/list.php',1).'?mainmenu=agefodd">';
 print $agf->num.'</a>&nbsp;</td></tr>';
 
 
