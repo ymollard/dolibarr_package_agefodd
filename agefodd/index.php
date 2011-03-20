@@ -1,9 +1,9 @@
 <?php
 /* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2004		Eric Seigne		<eric.seigne@ryxeo.com>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2004-2008	Laurent Destailleur		<eldy@users.sourceforge.net>
+ * Copyright (C) 2004		Eric Seigne				<eric.seigne@ryxeo.com>
+ * Copyright (C) 2005-2011	Regis Houssin			<regis@dolibarr.fr>
+ * Copyright (C) 2009-2010	Erick Bullier			<eb.dev@ebiconsulting.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +21,18 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/index.php $
-	\brief		Tableau de bord du module de formation pro. (Agefodd).
-	\Version	$Id: index.php 51 2010-03-28 17:06:42Z ebullier $
-*/
+ * 	\file		/agefodd/index.php
+ * 	\brief		Tableau de bord du module de formation pro. (Agefodd).
+ * 	\Version	$Id: index.php 51 2010-03-28 17:06:42Z ebullier $
+ */
 
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_index.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+$res=@include("../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../main.inc.php");							// For root directory
+if (! $res) @include("../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_index.class.php");
+require_once("./class/agefodd_sessadm.class.php");
+require_once("./lib/agefodd.lib.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/date.lib.php");
 
 // Security check
