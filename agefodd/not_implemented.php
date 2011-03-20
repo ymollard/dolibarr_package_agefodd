@@ -23,7 +23,7 @@
 /**
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/index.php $
 	\brief		Page temporaire pour non implementation d'une focntion.
-	\Version	$Id: index.php 51 2010-03-28 17:06:42Z ebullier $
+	\Version	$Id$
 */
 
 require("../main.inc.php");

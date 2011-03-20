@@ -21,7 +21,7 @@
  *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session_formateur.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
- *	\version	$Id: agefodd_stagiaire.class.php 51 2010-03-28 17:06:42Z ebullier $
+ *	\version	$Id$
  */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");

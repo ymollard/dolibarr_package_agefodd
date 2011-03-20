@@ -23,7 +23,7 @@
 /**
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/liste.php $
 	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
-	\version	$Id: liste.php 42 2010-03-21 16:17:59Z ebullier $
+	\version	$Id$
 */
 
 require("../main.inc.php");

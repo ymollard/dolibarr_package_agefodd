@@ -19,7 +19,7 @@
 /**
  *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/lib/agefodd.lib.php $
  *  \brief      	Page fiche d'une operation sur CCA
- *  \version		$Id: lib.php 54 2010-03-30 18:58:28Z ebullier $
+ *  \version		$Id$
  */
 
 $langs->load("@agefodd");

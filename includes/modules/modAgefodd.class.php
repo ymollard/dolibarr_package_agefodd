@@ -26,7 +26,7 @@
  *      \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/includes/modules/modAgefodd.class.php $
  *      \ingroup    	agefodd
  *      \brief      	Description and activation file for module agefodd
- *	\version	$Id: modAgefodd.class.php 46 2010-03-21 20:28:31Z ebullier $
+ *	\version	$Id$
  */
 include_once(DOL_DOCUMENT_ROOT ."/includes/modules/DolibarrModules.class.php");
 

@@ -20,7 +20,7 @@
 /**
  * 	\file		/agefodd/index.php
  * 	\brief		Tableau de bord du module de formation pro. (Agefodd).
- * 	\Version	$Id: index.php 51 2010-03-28 17:06:42Z ebullier $
+ * 	\Version	$Id$
  */
 
 $res=@include("../../main.inc.php");									// For "custom" directory

@@ -20,7 +20,7 @@
 /**
  * 	\file		/agefodd/f_liste.php
  * 	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
- * 	\version	$Id: f_liste.php 53 2010-03-30 05:39:02Z ebullier $
+ * 	\version	$Id$
  */
 
 $res=@include("../../main.inc.php");									// For "custom" directory

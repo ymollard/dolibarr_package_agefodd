@@ -22,7 +22,7 @@
 /**
  *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/f_fiche.php $
  *  \brief      	Page fiche d'une operation sur CCA
- *  \version		$Id: f_fiche.php 54 2010-03-30 18:58:28Z ebullier $
+ *  \version		$Id$
  */
 require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");

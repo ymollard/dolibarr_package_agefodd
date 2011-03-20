@@ -21,7 +21,7 @@
 /**	\file       $HeadURL: https://192.168.22.4/dolidev/trunk/admin/agefodd_setup.php $
  *	\ingroup    agefodd
  *	\brief      agefood module setup page
- *	\version    $Id: agefodd_setup.php 46 2010-03-21 20:28:31Z ebullier $
+ *	\version    $Id$
  */
 
 require("../../main.inc.php");

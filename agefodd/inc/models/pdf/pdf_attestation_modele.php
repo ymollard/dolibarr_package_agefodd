@@ -21,7 +21,7 @@
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
 	\brief		Page permettant la création du fichier pdf contenant les attestations de formation de 
 			l'ensemble des stagiaires d'une structure pour une session donnée.
-	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
+	\version	$Id$
 */
 require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");

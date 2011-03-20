@@ -19,7 +19,7 @@
 /**
  *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_fiche.php $
  *  \brief      	Page fiche session de formation
- *  \version		$Id: s_fiche.php 54 2010-03-30 18:58:28Z ebullier $
+ *  \version		$Id$
  */
 require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");

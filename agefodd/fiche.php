@@ -22,7 +22,7 @@
 /**
  *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/fiche.php $
  *  \brief      	Page fiche d'une operation sur CCA
- *  \version		$Id: fiche.php 42 2010-03-21 16:17:59Z ebullier $
+ *  \version		$Id$
  */
 require("../main.inc.php");
 

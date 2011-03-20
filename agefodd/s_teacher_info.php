@@ -22,7 +22,7 @@
 /**
  *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/f_info.php $
  *  \brief      	Page fiche d'info sur site de formation
- *  \version		$Id: f_info.php 51 2010-03-28 17:06:42Z ebullier $
+ *  \version		$Id$
  */
 require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formateur.class.php");

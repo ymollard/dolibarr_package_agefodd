@@ -23,7 +23,7 @@
 /**
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/u_liste.php $
 	\brief		Page présentant la liste des stagiaires enregistrés
-	\version	$Id: u_liste.php 51 2010-03-28 17:06:42Z ebullier $
+	\version	$Id$
 */
 
 require("../main.inc.php");

@@ -22,7 +22,7 @@
 	\brief		Page permettant la création d'un courrier type au format pdf
 			Le paramètre "courrier" transmis à la fonction "write_file" permet de préciser
 			le contenu (body) à y inclure ( /agefodd/inc/models/pdf/pdf_courrier-'.$courrier.'_modele.php').
-	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
+	\version	$Id$
 */
 require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");

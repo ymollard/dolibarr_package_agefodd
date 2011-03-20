@@ -23,7 +23,7 @@
 /**
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
 	\brief		Page présentant la liste des formateurs
-	\version	$Id: s_liste.php 54 2010-03-30 18:58:28Z ebullier $
+	\version	$Id$
 */
 
 require("../main.inc.php");
