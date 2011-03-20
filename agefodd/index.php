@@ -70,20 +70,20 @@ $agf = new Agefodd_index($db);
 
 // Nbre de formation au catalogue actuellement
 $resql = $agf->fetch_formation_nb();
-	print '<tr class="liste"><td>formation au catalogue actuellement: </td><td align="right">';
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/f_liste.php?mainmenu=agefodd">';
-	print $agf->num.'</a>&nbsp;</td></tr>';
+print '<tr class="liste"><td>formation au catalogue actuellement: </td><td align="right">';
+print '<a href="'.dol_buildpath('/agefodd/f_liste.php',1).'?mainmenu=agefodd">';
+print $agf->num.'</a>&nbsp;</td></tr>';
 
 
 // nbre de stagiaires formés
 $resql = $agf->fetch_student_nb();
-	print '<tr class="liste"><td>stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';	
 
 
 // nbre de sessions realisées
 $resql = $agf->fetch_session_nb();
-	$nb_total_session = $agf->num;
-	print '<tr class="liste"><td>sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';	
+$nb_total_session = $agf->num;
+print '<tr class="liste"><td>sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';	
 
 
 // Nbre d'heure/session délivrées

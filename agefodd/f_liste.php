@@ -1,9 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2004		Eric Seigne		<eric.seigne@ryxeo.com>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +18,16 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/f_liste.php $
-	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
-	\version	$Id: f_liste.php 53 2010-03-30 05:39:02Z ebullier $
-*/
+ * 	\file		/agefodd/f_liste.php
+ * 	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
+ * 	\version	$Id: f_liste.php 53 2010-03-30 05:39:02Z ebullier $
+ */
 
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
+$res=@include("../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../main.inc.php");							// For root directory
+if (! $res) @include("../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_formation_catalogue.class.php");
 
 
 // Security check
