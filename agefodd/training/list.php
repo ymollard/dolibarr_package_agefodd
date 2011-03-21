@@ -18,7 +18,7 @@
  */
 
 /**
- * 	\file		/agefodd/f_liste.php
+ * 	\file		/agefodd/list.php
  * 	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
  * 	\version	$Id$
  */
@@ -70,21 +70,21 @@ $resql = $db->query($sql);
 
 if ($resql)
 {
-    dol_syslog("agefodd::f_liste::query sql=".$sql, LOG_DEBUG);
+    dol_syslog("agefodd::training::list::query sql=".$sql, LOG_DEBUG);
     $num = $db->num_rows($resql);
 
-    print_barre_liste($langs->trans("AgfFormationList"), $page, "f_liste.php","&socid=$socid", $sortfield, $sortorder,'', $num);
+    print_barre_liste($langs->trans("AgfFormationList"), $page, $_SERVER['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
 
     $i = 0;
     print '<table class="noborder" width="100%">';
     print "<tr class=\"liste_titre\">";
-    print_liste_field_titre($langs->trans("Id"),"f_liste.php","c.rowid","","&socid=$socid",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfIntitule"),"f_liste.php","c.intitule","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfRefInterne"),"f_liste.php","c.ref_interne","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfDateC"),"f_liste.php","c.datec","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfDuree"),"f_liste.php","c.duree","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfDateLastAction"),"f_liste.php","a.dated","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfNbreAction"),"f_liste.php",'' ,'','',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","","&socid=$socid",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref_interne","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfNbreAction"),$_SERVER['PHP_SELF'],'' ,'','',$sortfield,$sortorder);
     print "</tr>\n";
 
     $var=true;
@@ -102,13 +102,13 @@ if ($resql)
 	$resql2 = $db->query($sql2);
 	if ($resql2) {
 	    $count = $db->num_rows($resql2);
-	    dol_syslog("agefodd::f_liste::num_rows sql=".$sql2, LOG_DEBUG);
+	    dol_syslog("agefodd::training::list::num_rows sql=".$sql2, LOG_DEBUG);
 	}
 	else 
 	{
 	    $db->rollback();
 	    dol_print_error($db);
-	    dol_syslog("agefodd::f_liste::num_rows ".$errmsg, LOG_ERR);
+	    dol_syslog("agefodd::training::list::num_rows ".$errmsg, LOG_ERR);
 	}
 	
 	// Affichage tableau des formations
@@ -133,7 +133,7 @@ if ($resql)
 else
 {
     dol_print_error($db);
-    dol_syslog("agefodd::f_liste::query::update ".$errmsg, LOG_ERR);
+    dol_syslog("agefodd::training::list::query::update ".$errmsg, LOG_ERR);
 }
 
 $db->close();

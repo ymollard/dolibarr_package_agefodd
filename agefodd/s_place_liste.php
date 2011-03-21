@@ -105,7 +105,7 @@ if ($resql)
 }
 else
 {
-    dol_syslog("agefodd::f_liste::query::fetch ".$errmsg, LOG_ERR);
+    dol_syslog("agefodd::s_place_liste::query::fetch ".$errmsg, LOG_ERR);
 }
 print '<div class="tabsAction">';
 

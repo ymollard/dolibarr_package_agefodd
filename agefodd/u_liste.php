@@ -74,7 +74,7 @@ $resql = $db->query($sql);
 if ($resql)
 {
 
-    dol_syslog("agefodd::f_liste::query sql=".$sql, LOG_DEBUG);
+    dol_syslog("agefodd::u_liste::query sql=".$sql, LOG_DEBUG);
     $num = $db->num_rows($resql);
     
     print_barre_liste($langs->trans("AgfStagiaireList"), $page, "u_liste.php","&socid=$socid", $sortfield, $sortorder,'', $num);

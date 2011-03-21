@@ -102,7 +102,7 @@ $linenum = count($agf->line);
 
 if ($resql)
 {
-	dol_syslog("agefodd::f_liste::query sql=".$sql, LOG_DEBUG);
+	dol_syslog("agefodd::s_adm_liste::query sql=".$sql, LOG_DEBUG);
 	
 	print_barre_liste($langs->trans("AgfSessAdmList"), $page, "s_adm_liste.php","&filtre=".$_GET["filtre"], $sortfield, $sortorder,'', $linenum);
 	
@@ -136,7 +136,7 @@ if ($resql)
 else
 {
     dol_print_error($db);
-    dol_syslog("agefodd::f_liste::query::update ".$errmsg, LOG_ERR);
+    dol_syslog("agefodd::s_adm_liste::query::update ".$errmsg, LOG_ERR);
 }
 
 $db->close();

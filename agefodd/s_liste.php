@@ -131,7 +131,7 @@ if ($resql)
 else
 {
     dol_print_error($db);
-    dol_syslog("agefodd::f_liste::query::update ".$errmsg, LOG_ERR);
+    dol_syslog("agefodd::s_liste::query::update ".$errmsg, LOG_ERR);
 }
 
 $db->close();

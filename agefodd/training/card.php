@@ -49,7 +49,7 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: f_liste.php");
+		Header ( "Location: list.php");
 		exit;
 	}
 	else
