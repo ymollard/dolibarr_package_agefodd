@@ -209,7 +209,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuCatNew',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/f_fiche.php?action=create',
+								'url'=>'/agefodd/training/card.php?action=create',
 								'langs'=>'@agefodd',
 								'position'=>104,
 								'enabled'=>1,

@@ -20,12 +20,16 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/f_info.php $
+ *  \file       	/agefodd/training/info.php
  *  \brief      	Page fiche d'une operation sur CCA
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_formation_catalogue.class.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
 
@@ -48,12 +52,12 @@ $agf->info($_GET["id"]);
 
 $h=0;
 
-$head[$h][0] = DOL_URL_ROOT."/agefodd/f_fiche.php?id=$agf->id";
+$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
 $head[$h][1] = $langs->trans("Card");
 $hselected = $h;
 $h++;
 
-$head[$h][0] = DOL_URL_ROOT."/agefodd/f_info.php?id=$agf->id";
+$head[$h][0] = dol_buildpath("/agefodd/training/info.php",1).'?id='.$agf->id;
 $head[$h][1] = $langs->trans("Info");
 $hselected = $h;
 $h++;

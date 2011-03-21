@@ -20,12 +20,16 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/f_info.php $
+ *  \file       	/agefodd/s_place_info.php
  *  \brief      	Page fiche d'info sur site de formation
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_place.class.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_session_place.class.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
 

@@ -130,7 +130,7 @@ $resql = $agf->fetch_top_formations(5);
 	for ($i=0; $i < $num; $i++)
 	{
 		print '<tr class="liste"><td>';
-		print '<a href="'.DOL_URL_ROOT.'/agefodd/f_fiche.php?id='.$agf->line[$i]->idforma.'">';
+		print '<a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->line[$i]->idforma.'">';
 		print img_object($langs->trans("AgfShowDetails"),"service").' '.$agf->line[$i]->idforma.'</a></td>';
 		//print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num *100)/$nb_total_session)).'</td></tr>';
 		// On calcul le % en focntion du nombre d'heure de cette session sur le nombre d'heure total

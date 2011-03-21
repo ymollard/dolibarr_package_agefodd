@@ -1131,7 +1131,7 @@ else
 				//print '<td>'.$html->showrefnav($agf,$id).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
-				print '<td><a href="f_fiche.php?id='.$agf->formid.'">'.$agf->formintitule.'</a></td></tr>';
+				print '<td><a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->formid.'">'.$agf->formintitule.'</a></td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 				print '<td>'.$agf->formref.'</td></tr>';

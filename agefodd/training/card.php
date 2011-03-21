@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +18,17 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/f_fiche.php $
+ *  \file       	/agefodd/training/card.php
  *  \brief      	Page fiche d'une operation sur CCA
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_formation_catalogue.class.php");
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -75,7 +77,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 	if ($result > 0)
 	{
 	    $db->commit();
-	    Header ( "Location: f_fiche.php?id=".$_GET["id"]);
+	    Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
 	    exit;
 	}
 	else
@@ -87,7 +89,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 }
 else
 {
-	Header ( "Location: f_fiche.php?id=".$_GET["id"]);
+	Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
 	exit;
 	}
 }
@@ -116,7 +118,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
 		if ($result)
 		{
 			$db->commit();
-			Header ( "Location: f_fiche.php?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 			exit;
 		}
 		else
@@ -128,7 +130,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: f_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -157,7 +159,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: f_fiche.php?id=".$result);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
 			exit;
 		}
 		else
@@ -169,7 +171,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: f_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -212,7 +214,7 @@ if ($_POST["action"] == "obj_update" && $user->rights->agefodd->creer)
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: f_fiche.php?action=edit&id=".$_POST["idforma"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_POST["idforma"]);
 		exit;
 	}
 	else
@@ -243,14 +245,14 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 {
 	$h=0;
 	
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/f_fiche.php?id=$agf->id";
+	$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
 	$head[$h][1] = $langs->trans("Card");
 	$hselected = $h;
 	$h++;
 
 	dol_fiche_head($head, $hselected, $langs->trans("AgfCatalogDetail"), 0, 'label');
 
-	print "<form name='create' action=\"f_fiche.php\" method=\"post\">\n";
+	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="create">';
 
@@ -323,18 +325,18 @@ else
 			{
 				$h=0;
 				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/f_fiche.php?id=$agf->id";
+				$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
 				$head[$h][1] = $langs->trans("Card");
 				$hselected = $h;
 				$h++;
 
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/f_info.php?id=$agf->id";
+				$head[$h][0] = dol_buildpath("/agefodd/training/info.php",1).'?id='.$agf->id;
 				$head[$h][1] = $langs->trans("Info");
 				$h++;
 
 				dol_fiche_head($head, $hselected, $langs->trans("AgfCatalogDetail"), 0, 'label');
 
-				print "<form name='update' action=\"f_fiche.php\" method=\"post\">\n";
+				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
 				print '<input type="hidden" name="id" value="'.$id.'">';
@@ -411,7 +413,7 @@ else
 				while ($i < $num)
 				{
 				    $objp = $db->fetch_object($resql);
-				    print '<form name="obj_update_'.$i.'" action="f_fiche.php" method="post">'."\n";
+				    print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 				    print '<input type="hidden" name="action" value="obj_update">'."\n";
 				    
@@ -473,12 +475,12 @@ else
 				// Affichage en mode "consultation"
 				$h=0;
 				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/f_fiche.php?id=$agf->id";
+				$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
 				$head[$h][1] = $langs->trans("Card");
 				$hselected = $h;
 				$h++;
 
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/f_info.php?id=$agf->id";
+				$head[$h][0] = dol_buildpath("/agefodd/training/info.php",1).'?id='.$agf->id;
 				$head[$h][1] = $langs->trans("Info");
 				$h++;
 
@@ -489,13 +491,13 @@ else
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm("f_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
 				if (isset($_GET["archive"]))
 				{
-					$ret=$html->form_confirm("f_fiche.php?archive=".$_GET["archive"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?archive=".$_GET["archive"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -587,7 +589,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 {
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butAction" href="f_fiche.php?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
 	else
 	{
@@ -595,7 +597,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	}
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butActionDelete" href="f_fiche.php?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
+		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
 	else
 	{
@@ -607,7 +609,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	    $button_action = $langs->trans('AgfArchiver');
 	    if ($user->rights->agefodd->creer)
 	    {
-		print '<a class="butActionDelete" href="f_fiche.php?archive=1&id='.$id.'">';
+		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?archive=1&id='.$id.'">';
 		print $button_action.'</a>';
 	    }
 	    else
@@ -621,7 +623,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	    $button_action = $langs->trans('AgfActiver');
 	    if ($user->rights->agefodd->creer)
 	    {
-		    print '<a class="butActionDelete" href="f_fiche.php?archive=0&id='.$id.'">';
+		    print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?archive=0&id='.$id.'">';
 		    print $button_action.'</a>';
 	    }
 	    else
