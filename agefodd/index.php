@@ -28,7 +28,7 @@ if (! $res) $res=@include("../main.inc.php");							// For root directory
 if (! $res) @include("../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
 
 require_once("./class/agefodd_index.class.php");
-require_once("./class/agefodd_sessadm.class.php");
+require_once("./session/class/agefodd_sessadm.class.php");
 require_once("./lib/agefodd.lib.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/date.lib.php");
 
@@ -108,7 +108,7 @@ $resql = $agf->fetch_last_formations(5);
 	for ($i=0; $i < $num; $i++)
 	{
 		print '<tr class="liste"><td>';
-		print '<a href="'.DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$agf->line[$i]->id.'">';
+		print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->line[$i]->id.'">';
 		print img_object($langs->trans("AgfShowDetails"),"generic").' '.$agf->line[$i]->id.'</a></td>';
 		print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">';
 		
@@ -152,7 +152,7 @@ print '<td width="50px" align="right">Nombre</td></tr>';
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(0);
 	print '<td colspan="2" >sessions en cours</td><td align="right">';	
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 $agf1 = new Agefodd_sessadm($db);
 
@@ -206,7 +206,7 @@ $num = $agf->fetch_session_to_archive();
 if ($num > 0)
 {	
 	print '<td colspan="2" >sessions prêtes à être archivées</td><td align="right">';	
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?arch=2"">'.$num.'</a>&nbsp;</td></tr>' ;	
+	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=2"">'.$num.'</a>&nbsp;</td></tr>' ;	
 }
 else
 {
@@ -222,7 +222,7 @@ $resql = $agf->fetch_session(1);
 if ($resql)
 {	
 	print '<td colspan="2" >sessions archivées</td><td align="right">';	
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_liste.php?arch=1&mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=1&mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 	//$db->free($resql);
 }
 else
