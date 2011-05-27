@@ -1,7 +1,6 @@
 <?php
-/* Copyright (C) 2003      Rodolphe Quiedeville <rodolphe@quiedeville.org>
- * Copyright (C) 2004-2009 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2010-2009 Erick Bullier  <eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,15 +22,16 @@
  */
 
 /**
- *      \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/includes/modules/modAgefodd.class.php $
+ *      \file       	/includes/modules/modAgefodd.class.php
  *      \ingroup    	agefodd
  *      \brief      	Description and activation file for module agefodd
- *	\version	$Id$
+ *		\version		$Id$
  */
 include_once(DOL_DOCUMENT_ROOT ."/includes/modules/DolibarrModules.class.php");
 
 
-/**     \class      modAgefodd
+/**     
+ * 		\class      modAgefodd
  *      \brief      Description and activation class for module agefodd
  */
 class modAgefodd extends DolibarrModules
@@ -222,7 +222,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuSess',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/s_liste.php',
+								'url'=>'/agefodd/session/list.php',
 								'langs'=>'@agefodd',
 								'position'=>201,
 								'enabled'=>1,
@@ -235,7 +235,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuSessActList',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/s_liste.php',
+								'url'=>'/agefodd/session/list.php',
 								'langs'=>'@agefodd',
 								'position'=>202,
 								'enabled'=>1,
@@ -248,7 +248,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuSessArchList',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/s_liste.php?arch=1',
+								'url'=>'/agefodd/session/list.php?arch=1',
 								'langs'=>'@agefodd',
 								'position'=>203,
 								'enabled'=>1,
@@ -261,7 +261,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuSessNew',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/s_fiche.php?action=create',
+								'url'=>'/agefodd/session/card.php?action=create',
 								'langs'=>'@agefodd',
 								'position'=>204,
 								'enabled'=>1,

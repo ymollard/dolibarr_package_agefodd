@@ -1,9 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2004		Eric Seigne		<eric.seigne@ryxeo.com>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +18,17 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
-	\version	$Id$
-*/
+ * 	\file		/agefodd/session/list.php
+ * 	\brief		Page présentant la liste des formation enregistrées (passées, actuelles et à venir
+ * 	\version	$Id$
+ */
 
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_session.class.php");
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -36,9 +36,9 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 llxHeader();
 
-$sortorder=$_GET["sortorder"];
-$sortfield=$_GET["sortfield"];
-$page=$_GET["page"];
+$sortorder=GETPOST("sortorder");
+$sortfield=GETPOST("sortfield");
+$page=GETPOST("page");
 
 if (! $sortorder) $sortorder="DESC";
 if (! $sortfield) $sortfield="c.rowid";
@@ -91,18 +91,18 @@ if ($resql)
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($_GET["arch"] == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
-	print_barre_liste($menu, $page, "s_liste.php","&socid=$socid", $sortfield, $sortorder,'', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
-	print "<tr class=\"liste_titre\">";
-	print_liste_field_titre($langs->trans("Id"),"s_liste.php","s.rowid","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"),"s_liste.php","s.intitule","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"),"s_liste.php","s.ref_interne","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"),"s_liste.php","s.dated","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"),"s_liste.php","s.datef","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"),"s_liste.php","s.lieu","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfNbreParticipants"),"s_liste.php","num",'' ,'','',$sortfield,$sortorder);
+	print '<tr class="liste_titre">';
+	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"s.intitule","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"s.ref_interne","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"s.lieu","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"num",'' ,'','',$sortfield,$sortorder);
 	print "</tr>\n";
 	
 	$var=true;
@@ -114,7 +114,7 @@ if ($resql)
 		// Affichage tableau des sessions
 		$var=!$var;
 		print "<tr $bc[$var]>";
-		print '<td><a href="s_fiche.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
+		print '<td><a href="card.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
 		print '<td>'.stripslashes(dol_trunc($objp->intitule, 60)).'</td>';
 		print '<td>'.$objp->ref_interne.'</td>';
 		print '<td>'.dol_print_date($objp->dated,'day').'</td>';

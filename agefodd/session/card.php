@@ -1,5 +1,7 @@
 <?php
- /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +19,21 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_fiche.php $
+ *  \file       	/agefodd/session/card.php
  *  \brief      	Page fiche session de formation
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_calendrier.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_formateur.class.php");
 
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_session.class.php");
+require_once("./class/agefodd_sessadm.class.php");
+require_once("./class/agefodd_session_calendrier.class.php");
+require_once("./class/agefodd_session_formateur.class.php");
+
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -76,7 +82,7 @@ if ($_POST["action"] == 'confirm_delete_form' && $_POST["confirm"] == "yes" && $
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: s_fiche.php?id=".$GET_array[1]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
 		exit;
 	}
 	else
@@ -101,7 +107,7 @@ if ($_POST["action"] == 'confirm_delete_stag' && $_POST["confirm"] == "yes" && $
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: s_fiche.php?id=".$GET_array[1]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
 		exit;
 	}
 	else
@@ -125,7 +131,7 @@ if ($_POST["action"] == 'confirm_delete_period' && $_POST["confirm"] == "yes" &&
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: s_fiche.php?id=".$GET_array[1]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
 		exit;
 	}
 	else
@@ -163,7 +169,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 			    if(is_file($filename)) unlink("$filename");
 			}
 			
-			Header ( "Location: s_fiche.php?id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -175,7 +181,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: s_fiche.php?id=".$_GET["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
 		exit;
 	}
 }
@@ -221,7 +227,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
 					dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
 				}
 			}
-			Header ( "Location: s_fiche.php?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 			exit;
 		}
 		else
@@ -233,7 +239,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
 	}
 	else
 	{
-		Header ( "Location: s_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -260,7 +266,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -282,7 +288,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -306,7 +312,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -330,7 +336,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -351,7 +357,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -373,7 +379,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_fiche.php?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -389,7 +395,7 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
  * Action create (nouvelle session de formation)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($_POST["action"] == 'add' && $user->rights->agefodd->creer)
 {
 	
 	if (! $_POST["cancel"])
@@ -455,7 +461,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 				}
 			}
 			
-			Header ( "Location: s_fiche.php?action=edit&id=".$agf->id.'&nbf='.$_POST["nb_formateur"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$agf->id.'&nbf='.$_POST["nb_formateur"]);
 			exit;
 		}
 		else
@@ -467,7 +473,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: s_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -497,16 +503,16 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 {
 	$h=0;
 	
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/s_fiche.php?action=create&id=$agf->id";
+	$head[$h][0] = "";
 	$head[$h][1] = $langs->trans("Card");
 	$hselected = $h;
 	$h++;
 
 	dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
 
-	print '<form name="update" action="s_fiche.php" method="post">'."\n";
+	print '<form name="add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="create">';
+	print '<input type="hidden" name="action" value="add">';
 
 	print '<table class="border" width="100%">';
 
@@ -566,18 +572,18 @@ else
 			{
 				$h=0;
 				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/s_fiche.php?id=$agf->id";
+				$head[$h][0] = $_SERVER['PHP_SELF']."?id=$agf->id";
 				$head[$h][1] = $langs->trans("Card");
 				$hselected = $h;
 				$h++;
 
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/s_info.php?id=$agf->id";
+				$head[$h][0] = dol_buildpath("/agefodd/session/info.php",1)."?id=$agf->id";
 				$head[$h][1] = $langs->trans("Info");
 				$h++;
 
 				dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
 
-				print '<form name="update" action="s_fiche.php" method="post">'."\n";
+				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
 				print '<input type="hidden" name="id" value="'.$id.'">';
@@ -652,7 +658,7 @@ else
 				if ($_POST["form_remove_x"])
 				{
 					// Param url = id de la ligne formateur dans session - id session 
-					$ret=$html->form_confirm("s_fiche.php?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -669,7 +675,7 @@ else
 					{
 						if ($formateurs->line[$i]->opsid == $_POST["opsid"] && $_POST["form_remove_x"]) print '<tr bgcolor="#d5baa8">';
 						else print '<tr>';
-						print '<form name="form_update_'.$i.'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+						print '<form name="form_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 						print '<input type="hidden" name="action" value="edit">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$formateurs->line[$i]->sessid.'">'."\n";
@@ -684,7 +690,7 @@ else
 							print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
 							if ($user->rights->agefodd->modifier)
 							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
 							print '</td>';
 						}
@@ -726,7 +732,7 @@ else
 				if (isset($_POST["newform"]))
 				{
 					print '<tr>';
-					print '<form name="form_update_'.($i + 1).'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+					print '<form name="form_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 					print '<input type="hidden" name="action" value="edit">'."\n";
 					//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
@@ -737,7 +743,7 @@ else
 					print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
 					if ($user->rights->agefodd->modifier)
 					{
-						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
+						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
 					}
 					print '</td>';
 					print '</form>';
@@ -751,7 +757,7 @@ else
 					//print '&nbsp';
 					print '<table style="border:0;" width="100%">';
 					print '<tr><td align="right">';
-					print '<form name="newform" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+					print '<form name="newform" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 					print '<input type="hidden" name="action" value="edit">'."\n";
 					print '<input type="hidden" name="newform" value="1">'."\n";
@@ -776,7 +782,7 @@ else
 				if ($_POST["period_remove_x"])
 				{
 					// Param url = id de la periode à supprimer - id session 
-					$ret=$html->form_confirm('s_fiche.php?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
 					if ($ret == 'html') print '<br>';
 				}
 				print '<div class="tabBar">';
@@ -797,7 +803,7 @@ else
 					for ($i = 0; $i < $blocNumber; $i++)
 					{
 						print '<tr>'."\n";;
-						print '<form name="obj_update_'.$i.'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+						print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 						print '<input type="hidden" name="action" value="edit">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$calendrier->line[$i]->sessid.'">'."\n";
@@ -816,7 +822,7 @@ else
 					
 							if ($user->rights->agefodd->modifier)
 							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
 						}
 						else
@@ -879,7 +885,7 @@ else
 					//print '&nbsp';
 					print '<table style="border:0;" width="100%">';
 					print '<tr><td align="right">';
-					print '<form name="newperiod" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+					print '<form name="newperiod" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 					print '<input type="hidden" name="action" value="edit">'."\n";
 					print '<input type="hidden" name="newperiod" value="1">'."\n";
@@ -890,7 +896,7 @@ else
 				else
 				{
 					print '<tr>';
-					print '<form name="obj_update_'.($i + 1).'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+					print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 					print '<input type="hidden" name="action" value="edit">'."\n";
 					print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
@@ -907,7 +913,7 @@ else
 					print '</td>';
 					if ($user->rights->agefodd->modifier)
 					{
-						print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" ">';
+						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" ">';
 					}
 					print '</td>';
 					print '</form>';
@@ -930,7 +936,7 @@ else
 				if ($_POST["stag_remove_x"])
 				{
 					// Param url = id de la ligne stagiaire dans session - id session 
-					$ret=$html->form_confirm("s_fiche.php?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -948,7 +954,7 @@ else
 					{
 						if ($stagiaires->line[$i]->id == $_POST["modstagid"] && $_POST["stag_remove_x"]) print '<tr bgcolor="#d5baa8">';
 						else print '<tr>';
-						print '<form name="obj_update_'.$i.'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+						print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 						print '<input type="hidden" name="action" value="edit">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
@@ -969,7 +975,7 @@ else
 							}
 							if ($user->rights->agefodd->modifier)
 							{
-								print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
 							print '</td>';
 						}
@@ -1023,7 +1029,7 @@ else
 				if (isset($_POST["newstag"]))
 				{
 					print '<tr>';
-					print '<form name="obj_update_'.($i + 1).'" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+					print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 					print '<input type="hidden" name="action" value="edit">'."\n";
 					//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
@@ -1038,7 +1044,7 @@ else
 						}
 						if ($user->rights->agefodd->modifier)
 						{
-							print '</td><td><input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
+							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
 						}
 					print '</td>';
 					print '</form>';
@@ -1052,7 +1058,7 @@ else
 					//print '&nbsp';
 					print '<table style="border:0;" width="100%">';
 					print '<tr><td align="right">';
-					print '<form name="newstag" action="s_fiche.php?action=edit&id='.$id.'"  method="post">'."\n";
+					print '<form name="newstag" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 					print '<input type="hidden" name="action" value="edit">'."\n";
 					print '<input type="hidden" name="newstag" value="1">'."\n";
@@ -1071,12 +1077,12 @@ else
 				// Affichage en mode "consultation"
 				$h=0;
 				
-				$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$agf->id;
+				$head[$h][0] = $_SERVER['PHP_SELF'].'?id='.$agf->id;
 				$head[$h][1] = $langs->trans("Card");
 				$hselected = $h;
 				$h++;
 
-				$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_info.php?id='.$agf->id;
+				$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$agf->id;
 				$head[$h][1] = $langs->trans("AgfSuiviActions");
 				$h++;
 
@@ -1099,7 +1105,7 @@ else
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm("s_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -1108,7 +1114,7 @@ else
 				*/
 				if (isset($_GET["arch"]))
 				{
-					$ret=$html->form_confirm("s_fiche.php?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -1348,7 +1354,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 {
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butAction" href="s_fiche.php?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
 	else
 	{
@@ -1356,7 +1362,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	}
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butActionDelete" href="s_fiche.php?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
+		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
 	else
 	{
@@ -1374,7 +1380,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	}
 	if ($user->rights->agefodd->modifier)
 	{
-		print '<a class="butAction" href="s_fiche.php?arch='.$arch.'&id='.$id.'">'.$button.'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'&id='.$id.'">'.$button.'</a>';
 	}
 	else
 	{

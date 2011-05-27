@@ -18,8 +18,8 @@
  */
 
 /**
- * 	\file		/agefodd/list.php
- * 	\brief		Page présentant la liste des formation enregsitrées (passées, actuelles et à venir
+ * 	\file		/agefodd/training/list.php
+ * 	\brief		Page présentant la liste des formation enregistrées (passées, actuelles et à venir
  * 	\version	$Id$
  */
 
