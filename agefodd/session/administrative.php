@@ -1,5 +1,6 @@
 <?php
- /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +18,17 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_fiche.php $
+ *  \file       	/agefodd/session/administrative.php
  *  \brief      	Page de gestion des tâches administratives (session de formation)
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_sessadm.class.php");
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -158,22 +163,9 @@ $id = $_GET['id'];
  */
 if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
+	$head = session_prepare_head($agf);
 	
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/s_fiche.php?id=".$id;
-	$head[$h][1] = $langs->trans("Card");
-	$h++;
-
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/s_adm.php?id=".$id;
-	$head[$h][1] = $langs->trans("AgfAdmSuivi");
-	$hselected = $h;
-	$h++;
-
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/s_doc_fiche.php?id=$id";
-	$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+	dol_fiche_head($head, 'administrative', $langs->trans("AgfSessionDetail"), 0, 'user');
 	
 	$admlevel = new Agefodd_sessadm($db);
 	$result = $admlevel->fetch_adminlevel_infos($_GET["admlevel"]);
@@ -247,22 +239,9 @@ else
 			$agf = new Agefodd_sessadm($db);
 			$result = $agf->fetch_admin_action_rens_from_id($_GET["actid"]);
 
-			$h=0;
+			$head = session_prepare_head($agf);
 			
-			$head[$h][0] = DOL_URL_ROOT."/agefodd/s_fiche.php?id=".$id;
-			$head[$h][1] = $langs->trans("Card");
-			$h++;
-
-			$head[$h][0] = DOL_URL_ROOT."/agefodd/s_adm.php?id=".$id;
-			$head[$h][1] = $langs->trans("AgfAdmSuivi");
-			$hselected = $h;
-			$h++;
-
-			$head[$h][0] = DOL_URL_ROOT."/agefodd/s_doc_fiche.php?id=$id";
-			$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-			$h++;
-
-			dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+			dol_fiche_head($head, 'administrative', $langs->trans("AgfSessionDetail"), 0, 'user');
 			
 			/*
 			* Confirmation de la suppression
@@ -358,24 +337,12 @@ else
 		{
 			// Affichage en mode "consultation"
 			$agf = new Agefodd_sessadm($db);
+			$res = $agf->fetch($id);
 			$result = $agf->get_admlevel_table();
 		
-			$h=0;
+			$head = session_prepare_head($agf);
 			
-			$head[$h][0] = DOL_URL_ROOT."/agefodd/s_fiche.php?id=".$id;
-			$head[$h][1] = $langs->trans("Card");
-			$h++;
-
-			$head[$h][0] = DOL_URL_ROOT."/agefodd/s_adm.php?id=".$id;
-			$head[$h][1] = $langs->trans("AgfAdmSuivi");
-			$hselected = $h;
-			$h++;
-
-			$head[$h][0] = DOL_URL_ROOT."/agefodd/s_doc_fiche.php?id=$id";
-			$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-			$h++;
-
-			dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+			dol_fiche_head($head, 'administrative', $langs->trans("AgfSessionDetail"), 0, 'user');
 
 
 			print '<div width=100% align="center" style="margin: 0 0 3px 0;">';

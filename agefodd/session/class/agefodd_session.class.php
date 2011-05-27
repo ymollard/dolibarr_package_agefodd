@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session.class.php $
+ *	\file		/agefodd/session/agefodd_session.class.php
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$

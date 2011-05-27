@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +18,17 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_info.php $
+ *  \file       	/agefodd/session/info.php
  *  \brief      	Page fiche d'une operation sur CCA
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_session.class.php");
+require_once("../lib/agefodd.lib.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
 
@@ -45,19 +48,9 @@ llxHeader();
 $agf = new Agefodd_session($db);
 $agf->info($_GET["id"]);
 
-$h=0;
+$head = session_prepare_head($agf);
 
-$head[$h][0] = DOL_URL_ROOT."/agefodd/s_fiche.php?id=$agf->id";
-$head[$h][1] = $langs->trans("Card");
-$hselected = $h;
-$h++;
-
-$head[$h][0] = DOL_URL_ROOT."/agefodd/s_info.php?id=$agf->id";
-$head[$h][1] = $langs->trans("Info");
-$hselected = $h;
-$h++;
-
-dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+dol_fiche_head($head, 'info', $langs->trans("AgfSessionDetail"), 0, 'user');
 
 
 print '<table width="100%">';

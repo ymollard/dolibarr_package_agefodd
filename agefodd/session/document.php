@@ -1,5 +1,6 @@
 <?php
-/* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +18,21 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
-	\version	$Id$
-*/
+ * 	\file		/agefodd/session/document.php
+ * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
+ * 	\version	$Id$
+ */
 
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_convention.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_session.class.php");
+require_once("./class/agefodd_sessadm.class.php");
+require_once("../class/agefodd_facture.class.php");
+require_once("../class/agefodd_convention.class.php");
+require_once("../inc/models/pdf/pdf_document.php");
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -153,23 +157,9 @@ if ($_GET["action"] == 'del' && $user->rights->agefodd->creer)
 // Selection du bon de commande ou de la facture à lier
 if (($_GET["action"] == 'link' ) && $user->rights->agefodd->creer)
 {
-
-	$h=0;
+	$head = session_prepare_head($agf);
 	
-	$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$id;
-	$head[$h][1] = $langs->trans("Card");
-	$h++;
-
-	$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_adm.php?id='.$id;
-	$head[$h][1] = $langs->trans("AgfAdmSuivi");
-	$h++;
-	
-	$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id;
-	$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
 	
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 	print ebi_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
@@ -229,6 +219,8 @@ if (($_GET["action"] == 'link' ) && $user->rights->agefodd->creer)
 if ($id)
 {
 	$agf = new Agefodd_session($db);
+	$agf->fetch($id);
+	
 	$result = $agf->fetch_societe_per_session($id);
 
 	if ($result)
@@ -457,22 +449,9 @@ if ($id)
 		
 
 		// Affichage en mode "consultation"
-		$h=0;
+		$head = session_prepare_head($agf);
 		
-		$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$id;
-		$head[$h][1] = $langs->trans("Card");
-		$h++;
-
-		$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_adm.php?id='.$id;
-		$head[$h][1] = $langs->trans("AgfAdmSuivi");
-		$h++;
-
-		$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id;
-		$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-		$hselected = $h;
-		$h++;
-
-		dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
 
 		
 		/*

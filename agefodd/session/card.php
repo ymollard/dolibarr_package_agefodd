@@ -1075,30 +1075,10 @@ else
 			else
 			{
 				// Affichage en mode "consultation"
-				$h=0;
 				
-				$head[$h][0] = $_SERVER['PHP_SELF'].'?id='.$agf->id;
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
+				$head = session_prepare_head($agf);
 
-				$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$agf->id;
-				$head[$h][1] = $langs->trans("AgfSuiviActions");
-				$h++;
-
-				/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$agf->id;
-				$head[$h][1] = $langs->trans("AgfFichePresence");
-				$h++;*/
-
-				$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_adm.php?id='.$agf->id;
-				$head[$h][1] = $langs->trans("AgfAdmSuivi");
-				$h++;
-
-				$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$agf->id;
-				$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-				$h++;
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'user');
 
 				/*
 				 * Confirmation de la suppression

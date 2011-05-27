@@ -24,6 +24,46 @@
 
 $langs->load("@agefodd");
 
+function session_prepare_head($object)
+{
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+	
+	$head[$h][0] = dol_buildpath('/agefodd/session/card.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Card");
+	$head[$h][2] = 'card';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfSuiviActions");
+	$head[$h][2] = 'info';
+	$h++;
+	
+	/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfFichePresence");
+	$head[$h][2] = 'presence';
+	$h++;*/
+
+	$head[$h][0] = dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfAdmSuivi");
+	$head[$h][2] = 'administrative';
+	$h++;
+
+	$head[$h][0] = dol_buildpath('/agefodd/session/document.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfLinkedDocuments");
+	$head[$h][2] = 'document';
+	$h++;
+
+    // Show more tabs from modules
+    // Entries must be declared in modules descriptor with line
+    // $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+    // $this->tabs = array('entity:-tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to remove a tab
+    complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_session');
+
+	return $head;
+}
 
 /**
  *    \brief	Formate une chaine à une longeur donnée en incluant les points finaux
