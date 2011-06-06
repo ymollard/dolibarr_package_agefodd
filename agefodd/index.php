@@ -88,14 +88,14 @@ print '<tr class="liste"><td>sessions réalisées: </td><td align="right">'.$nb_
 
 // Nbre d'heure/session délivrées
 $resql = $agf->fetch_heures_sessions_nb();
-	print '<tr class="liste"><td>heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
-	$total_heures = $agf->total;
+print '<tr class="liste"><td>heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
+$total_heures = $agf->total;
 
 
 
 // Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
-	print '<tr class="liste"><td>heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
 
 print '<table>';
 print '&nbsp;';
@@ -104,20 +104,20 @@ print '<table class="noborder" width="400px">';
 // Les 5 dernieres sessions
 print '<tr class="liste_titre"><td colspan=4>5 dernières sessions réalisées</td></tr>';	
 $resql = $agf->fetch_last_formations(5);
-	$num = count($agf->line);
-	for ($i=0; $i < $num; $i++)
-	{
-		print '<tr class="liste"><td>';
-		print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->line[$i]->id.'">';
-		print img_object($langs->trans("AgfShowDetails"),"generic").' '.$agf->line[$i]->id.'</a></td>';
-		print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">';
-		
-		$today_mktime = mktime(0, 0, 0, date("m"), date("d"), date("y"));
-		$endsession_mktime = (mysql2timestamp($agf->line[$i]->datef));
-		$ilya = (num_between_day($endsession_mktime, $today_mktime) + 1);
-		print "il y a ".$ilya." j.";
-		print '</td></tr>';
-	}
+$num = count($agf->line);
+for ($i=0; $i < $num; $i++)
+{
+	print '<tr class="liste"><td>';
+	print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->line[$i]->id.'">';
+	print img_object($langs->trans("AgfShowDetails"),"generic").' '.$agf->line[$i]->id.'</a></td>';
+	print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">';
+	
+	$today_mktime = mktime(0, 0, 0, date("m"), date("d"), date("y"));
+	$endsession_mktime = (mysql2timestamp($agf->line[$i]->datef));
+	$ilya = (num_between_day($endsession_mktime, $today_mktime) + 1);
+	print "il y a ".$ilya." j.";
+	print '</td></tr>';
+}
 
 print '<table>';
 print '&nbsp;';
@@ -126,16 +126,16 @@ print '<table class="noborder" width="400px">';
 // top 5 des formations
 print '<tr class="liste_titre"><td colspan=4>top 5 des formations délivrées (nb d\'occurence, % pondéré à la durée)</td></tr>';
 $resql = $agf->fetch_top_formations(5);
-	$num = count($agf->line);
-	for ($i=0; $i < $num; $i++)
-	{
-		print '<tr class="liste"><td>';
-		print '<a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->line[$i]->idforma.'">';
-		print img_object($langs->trans("AgfShowDetails"),"service").' '.$agf->line[$i]->idforma.'</a></td>';
-		//print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num *100)/$nb_total_session)).'</td></tr>';
-		// On calcul le % en focntion du nombre d'heure de cette session sur le nombre d'heure total
-		print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num * $agf->line[$i]->duree * 100)/$total_heures) ).'</td></tr>';
-	}
+$num = count($agf->line);
+for ($i=0; $i < $num; $i++)
+{
+	print '<tr class="liste"><td>';
+	print '<a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->line[$i]->idforma.'">';
+	print img_object($langs->trans("AgfShowDetails"),"service").' '.$agf->line[$i]->idforma.'</a></td>';
+	//print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num *100)/$nb_total_session)).'</td></tr>';
+	// On calcul le % en focntion du nombre d'heure de cette session sur le nombre d'heure total
+	print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num * $agf->line[$i]->duree * 100)/$total_heures) ).'</td></tr>';
+}
 print "</table>";
 print '&nbsp;';
 
@@ -151,29 +151,29 @@ print '<td width="50px" align="right">Nombre</td></tr>';
 // sessions en cours
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(0);
-	print '<td colspan="2" >sessions en cours</td><td align="right">';	
-	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<td colspan="2" >sessions en cours</td><td align="right">';	
+print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 $agf1 = new Agefodd_sessadm($db);
 
 // tâches en retard
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="red">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $resql = $agf->fetch_tache_en_retard(0);
-	print '<td>'.$langs->trans("AgfAlertLevel0").'</td><td align="right">';
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_adm_liste.php?filtre=0">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<td>'.$langs->trans("AgfAlertLevel0").'</td><td align="right">';
+print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'"?filtre=0">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 // Taches urgentes (3 jours avant limite)
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="orange">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 
 $agf1->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 3, 1);
 $nbre = count($agf1->line);
-	print '<td >'.$langs->trans("AgfAlertLevel1").'</td><td align="right">';
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_adm_liste.php?filtre=1">'.$nbre.'</a>&nbsp;</td></tr>' ;	
+print '<td >'.$langs->trans("AgfAlertLevel1").'</td><td align="right">';
+print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=1">'.$nbre.'</a>&nbsp;</td></tr>' ;	
 // $resql = $agf->fetch_tache_en_retard(3);
 // if ($resql)
 // {	
 // 	print '<td >'.$langs->trans("AgfAlertLevel1").'</td><td align="right">';
-// 	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_adm_liste.php?filtre=3">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+// 	print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=3">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 // 	$db->free($resql);
 // }
 // else dol_print_error($db);
@@ -182,13 +182,13 @@ $nbre = count($agf1->line);
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="#ffe27d">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $agf1->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 8, 3);
 $nbre = count($agf1->line);
-	print '<td >'.$langs->trans("AgfAlertLevel2").'</td><td align="right">';
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_adm_liste.php?filtre=2">'.$nbre.'</a>&nbsp;</td></tr>' ;	
+print '<td >'.$langs->trans("AgfAlertLevel2").'</td><td align="right">';
+print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=2">'.$nbre.'</a>&nbsp;</td></tr>' ;	
 // $resql = $agf->fetch_tache_en_retard(5);
 // if ($resql)
 // {	
 // 	print '<td >'.$langs->trans("AgfAlertLevel2").'</td><td align="right">';
-// 	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_adm_liste.php?filtre=5">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+// 	print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=5">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 // 	$db->free($resql);
 // }
 // else dol_print_error($db);
@@ -197,8 +197,8 @@ $nbre = count($agf1->line);
 // tâches en cours
 print '<tr class="liste"><td width="10px">&nbsp;</td><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $resql = $agf->fetch_tache_en_cours();
-	print '<td>'.$langs->trans("AgfAlertLevel3").'</td><td align="right">';
-	print '<a href="'.DOL_URL_ROOT.'/agefodd/s_adm_liste.php?filtre=3">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<td>'.$langs->trans("AgfAlertLevel3").'</td><td align="right">';
+print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=3">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 // sessions à archiver
 print '<tr class="liste"><td width="10px" valign="top">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';

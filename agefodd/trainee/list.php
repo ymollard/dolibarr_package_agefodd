@@ -1,9 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2004		Eric Seigne		<eric.seigne@ryxeo.com>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +18,16 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/u_liste.php $
-	\brief		Page présentant la liste des stagiaires enregistrés
-	\version	$Id$
-*/
+ * 	\file		/agefodd/trainee/list.php
+ * 	\brief		Page présentant la liste des stagiaires enregistrés
+ * 	\version	$Id$
+ */
 
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_stagiaire.class.php");
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_stagiaire.class.php");
 
 
 // Security check
@@ -77,17 +77,17 @@ if ($resql)
     dol_syslog("agefodd::u_liste::query sql=".$sql, LOG_DEBUG);
     $num = $db->num_rows($resql);
     
-    print_barre_liste($langs->trans("AgfStagiaireList"), $page, "u_liste.php","&socid=$socid", $sortfield, $sortorder,'', $num);
+    print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
 
     $i = 0;
     print '<table class="noborder" width="100%">';
-    print "<tr class=\"liste_titre\">";
-    print_liste_field_titre($langs->trans("Id"),"u_liste.php","s.rowid","","&socid=$socid",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfNomPrenom"),"u_liste.php","s.nom","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfCivilite"),"u_liste.php","civ.code","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Company"),"u_liste.php","so.nom","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Phone"),"u_liste.php","s.tel1","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Mail"),"u_liste.php","s.mail","","",'',$sortfield,$sortorder);
+    print '<tr class="liste_titre">';
+    print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","","&socid=$socid",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfNomPrenom"),$_SERVER['PHP_SELF'],"s.nom","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"civ.code","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"so.nom","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel1","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.mail","","",'',$sortfield,$sortorder);
     print "</tr>\n";
 
     $var=true;
@@ -98,20 +98,20 @@ if ($resql)
 	// Affichage liste des stagiaires
 	$var=!$var;
 	print "<tr $bc[$var]>";
-	print '<td><a href="u_fiche.php?id='.$agf->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"user").' '.$agf->rowid.'</a></td>';
+	print '<td><a href="card.php?id='.$agf->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"user").' '.$agf->rowid.'</a></td>';
 	print '<td>'.strtoupper($agf->nom).' '.ucfirst($agf->prenom).'</td>';
 	print '<td>'.$agf->civilite.'</td>';
 	print '<td>';
 	if ($agf->socid)
-        {
-            print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
-            print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
-        }
-        else
-        {
-            print '&nbsp;';
-        }
-        print '</td>';
+	{
+		print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
+		print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
+	}
+	else
+	{
+		print '&nbsp;';
+	}
+	print '</td>';
 	print '<td>'.dol_print_phone($agf->tel1).'</td>';
 	print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td>';
 	print "</tr>\n";

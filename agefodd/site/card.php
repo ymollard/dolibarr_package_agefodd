@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +18,17 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/u_fiche.php $
+ *  \file       	/agefodd/site/card.php $
  *  \brief      	Page fiche site de formation
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_place.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("../class/agefodd_session_place.class.php");
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -48,7 +50,7 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: s_place_liste.php");
+		Header ( "Location: list.php");
 		exit;
 	}
 	else
@@ -76,7 +78,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_place_fiche.php?id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
 			exit;
 		}
 		else
@@ -88,7 +90,7 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: s_teacher_fiche.php?id=".$_GET["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
 		exit;
 	}
 }
@@ -120,7 +122,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_place_fiche.php?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 			exit;
 		}
 		else
@@ -132,7 +134,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: s_place_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -162,7 +164,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: s_place_fiche.php?action=edit&id=".$result);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
 			exit;
 		}
 		else
@@ -174,7 +176,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: s_place_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -199,14 +201,14 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 {
 	$h=0;
 	
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/s_place_fiche.php?id=$agf->id";
+	$head[$h][0] = $_SERVER['PHP_SELF']."?id=$agf->id";
 	$head[$h][1] = $langs->trans("Card");
 	$hselected = $h;
 	$h++;
 
 	dol_fiche_head($head, $hselected, $langs->trans("AgfSessPlace"), 0, 'user');
 
-	print '<form name="create" action="s_place_fiche.php" method="post">'."\n";
+	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create">'."\n";
 
@@ -265,18 +267,9 @@ else
 			// Affichage en mode "édition"
 			if ($_GET["action"] == 'edit')
 			{
-				$h=0;
+				$head = site_prepare_head($agf);
 				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/s_place_fiche.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
-
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/s_place_info.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfSessPlace"), 0, 'user');
+				dol_fiche_head($head, 'card', $langs->trans("AgfSessPlace"), 0, 'user');
 
 				print '<form name="update" action="s_place.php" method="post">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
@@ -329,25 +322,17 @@ else
 			else
 			{
 				// Affichage en mode "consultation"
-				$h=0;
 				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/s_place_fiche.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
-
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/s_place_info.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfSessPlace"), 0, 'user');
+				$head = site_prepare_head($agf);
+				
+				dol_fiche_head($head, 'card', $langs->trans("AgfSessPlace"), 0, 'user');
 
 				/*
 				 * Confirmation de la suppression
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm("s_place_fiche.php?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 				/*
@@ -355,7 +340,7 @@ else
 				*/
 				if (isset($_GET["arch"]))
 				{
-					$ret=$html->form_confirm("s_place_fiche.php?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -420,7 +405,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 {
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butAction" href="s_place_fiche.php?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
 	else
 	{
@@ -428,7 +413,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 	}
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butActionDelete" href="s_place_fiche.php?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
+		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
 	else
 	{
@@ -446,7 +431,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 	}
 	if ($user->rights->agefodd->modifier)
 	{
-		print '<a class="butAction" href="s_place_fiche.php?arch='.$arch.'&id='.$id.'">'.$button.'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'&id='.$id.'">'.$button.'</a>';
 	}
 	else
 	{

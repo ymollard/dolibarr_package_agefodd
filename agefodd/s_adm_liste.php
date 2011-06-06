@@ -1,5 +1,6 @@
 <?php
- /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +18,17 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page présentant la liste des tâches administratives de gestion des actions de formation en cours
-	\version	$Id$
-*/
+ * 	\file		/agefodd/s_adm_liste.php
+ * 	\brief		Page présentant la liste des tâches administratives de gestion des actions de formation en cours
+ * 	\version	$Id$
+ */
 
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_sessadm.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+$res=@include("../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../main.inc.php");							// For root directory
+if (! $res) @include("../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./session/class/agefodd_sessadm.class.php");
+require_once("./lib/agefodd.lib.php");
 
 
 // Security check
@@ -104,16 +108,16 @@ if ($resql)
 {
 	dol_syslog("agefodd::s_adm_liste::query sql=".$sql, LOG_DEBUG);
 	
-	print_barre_liste($langs->trans("AgfSessAdmList"), $page, "s_adm_liste.php","&filtre=".$_GET["filtre"], $sortfield, $sortorder,'', $linenum);
+	print_barre_liste($langs->trans("AgfSessAdmList"), $page, $_SERVER['PHP_SELF'],"&filtre=".$_GET["filtre"], $sortfield, $sortorder,'', $linenum);
 	
 	print $linenum.' '.$legende;
 	$i = 0;
 	print '<table class="noborder" width="100%">';
-	print "<tr class=\"liste_titre\">";
-	print_liste_field_titre($langs->trans("Id"),"s_adm_liste.php","s.rowid","","&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"),"s_adm_liste.php","s.intitule","", "&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfLimitDate"),"s_adm_liste.php","s.datea","","&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfSessionDetail"),"s_adm_liste.php","f.intitule","","&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
+	print '<tr class="liste_titre">';
+	print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","","&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"s.intitule","", "&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfLimitDate"),$_SERVER['PHP_SELF'],"s.datea","","&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfSessionDetail"),$_SERVER['PHP_SELF'],"f.intitule","","&filtre=".$_GET["filtre"],'',$sortfield,$sortorder);
 	print "</tr>\n";
 	
 	$var=true;
@@ -122,7 +126,7 @@ if ($resql)
 		// Affichage tableau des sessions
 		$var=!$var;
 		print "<tr $bc[$var]>";
-		print '<td><span style="background-color:'.$bgcolor.';"><a href="s_adm.php?action=edit&id='.$agf->line[$i]->sessid.'&actid='.$agf->line[$i]->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$agf->line[$i]->rowid.'</a></span></td>';
+		print '<td><span style="background-color:'.$bgcolor.';"><a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?action=edit&id='.$agf->line[$i]->sessid.'&actid='.$agf->line[$i]->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$agf->line[$i]->rowid.'</a></span></td>';
 		print '<td>'.dol_trunc($agf->line[$i]->intitule, 60).'</td>';
 		print '<td>'.dol_print_date($agf->line[$i]->datea).'</td>';
 		print '<td>'.$agf->line[$i]->titre.' (du '.dol_print_date($agf->line[$i]->sessdated).' au '.dol_print_date($agf->line[$i]->sessdatef).')</td>';

@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +18,17 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/u_fiche.php $
+ *  \file       	/agefodd/trainee/card.php
  *  \brief      	Page fiche stagiaire
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_stagiaire.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_stagiaire.class.php");
+require_once("../lib/agefodd.lib.php");
 
 
 // Security check
@@ -48,7 +50,7 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 	if ($result > 0)
 	{
 		$db->commit();
-		Header ( "Location: u_liste.php");
+		Header ( "Location: list.php");
 		exit;
 	}
 	else
@@ -85,7 +87,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: u_fiche.php?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 			exit;
 		}
 		else
@@ -97,7 +99,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: u_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -128,7 +130,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 		if ($result > 0)
 		{
 			$db->commit();
-			Header ( "Location: u_fiche.php?action=edit&id=".$result);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
 			exit;
 		}
 		else
@@ -140,7 +142,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: u_fiche.php?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
 		exit;
 	}
 }
@@ -174,7 +176,7 @@ if ($_GET["action"] == 'nfcontact' && $_GET["ph"] == 2 && $user->rights->agefodd
 		if ($result2 > 0)
 		{
 			$db->commit();
-			Header ( "Location: u_fiche.php?id=".$agf->id."&action=edit");
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id."&action=edit");
 			exit;
 		}
 	}
@@ -197,7 +199,7 @@ if ($_GET["action"] == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefo
 	// Affichage du formulaire d'import de contact
 	$h=0;
 	
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/u_fiche.php";
+	$head[$h][0] = $_SERVER['PHP_SELF'];
 	$head[$h][1] = $langs->trans("Card");
 	$hselected = $h;
 	$h++;
@@ -206,7 +208,7 @@ if ($_GET["action"] == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefo
 
 	//print '<div class="error">&nbsp;Cette fonction n\'est pas encore implémentée.</div>';
 
-	print '<form name="update" action="u_fiche.php?action=nfcontact&ph=2&id=" method="post">'."\n";
+	print '<form name="update" action="'.$_SERVER['PHP_SELF'].'"?action=nfcontact&ph=2&id=" method="post">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="update">'."\n";
 	print '<input type="hidden" name="id" value="'.$id.'">'."\n";
@@ -224,14 +226,14 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 {
 	$h=0;
 	
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/u_fiche.php?id=$agf->id";
+	$head[$h][0] = $_SERVER['PHP_SELF']."?id=".$agf->id;
 	$head[$h][1] = $langs->trans("Card");
 	$hselected = $h;
 	$h++;
 
 	dol_fiche_head($head, $hselected, $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
-	print "<form name='create' action=\"u_fiche.php\" method=\"post\">\n";
+	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="create">';
 
@@ -343,20 +345,11 @@ else
 			// Affichage en mode "édition"
 			if ($_GET["action"] == 'edit')
 			{
-				$h=0;
-				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/u_fiche.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
+				$head = trainee_prepare_head($agf);
 
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/u_info.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
+				dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
-				dol_fiche_head($head, $hselected, $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
-				print "<form name='update' action=\"u_fiche.php\" method=\"post\">\n";
+				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
 				print '<input type="hidden" name="id" value="'.$id.'">';
@@ -437,25 +430,17 @@ else
 			else
 			{
 				// Affichage en mode "consultation"
-				$h=0;
 				
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/u_fiche.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
+				$head = trainee_prepare_head($agf);
 
-				$head[$h][0] = DOL_URL_ROOT."/agefodd/u_info.php?id=$agf->id";
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfStagiaireDetail"), 0, 'user');
+				dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
 				/*
 				 * Confirmation de la suppression
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm("u_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -527,7 +512,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 {
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butAction" href="u_fiche.php?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
 	else
 	{
@@ -535,7 +520,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 	}
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butActionDelete" href="u_fiche.php?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
+		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
 	else
 	{

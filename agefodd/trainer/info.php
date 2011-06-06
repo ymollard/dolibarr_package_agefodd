@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +18,17 @@
  */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/u_info.php $
- *  \brief      	Page fiche d'une operation sur CCA
+ *  \file       	/agefodd/trainer/info.php
+ *  \brief      	Page fiche d'info sur site de formation
  *  \version		$Id$
  */
-require("../main.inc.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_stagiaire.class.php");
+
+$res=@include("../../../main.inc.php");									// For "custom" directory
+if (! $res) $res=@include("../../main.inc.php");						// For root directory
+if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+
+require_once("./class/agefodd_formateur.class.php");
+require_once("../lib/agefodd.lib.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");
 
 
@@ -42,33 +45,19 @@ $db->begin();
 
 llxHeader();
 
-$agf = new Agefodd_stagiaire($db);
-//$agf->fetch($_GET["id"]);
+$agf = new Agefodd_teacher($db);
 $agf->info($_GET["id"]);
 
-$h=0;
+$head = trainer_prepare_head($agf);
 
-$head[$h][0] = DOL_URL_ROOT."/agefodd/u_fiche.php?id=$agf->id";
-$head[$h][1] = $langs->trans("Card");
-$hselected = $h;
-$h++;
+dol_fiche_head($head, 'info', $langs->trans("AgfTeacherDetail"), 0, 'bill');
 
-$head[$h][0] = DOL_URL_ROOT."/agefodd/u_info.php?id=$agf->id";
-$head[$h][1] = $langs->trans("Info");
-$hselected = $h;
-$h++;
-
-dol_fiche_head($head, $hselected, $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
-
-print '<table width="100%">';
 print '<table class="border" width="100%">';
-
 print "<tr>";
 print '<td width="20%">'.$langs->trans("Ref").'</td><td>'.$agf->id.'</td></tr>';
 
 $userstatic1 = new User($db);
-$userstatic1->id = $agf->fk_userc;
+$userstatic1->id = $agf->fk_user_author;
 $userstatic1->fetch();
 print '<tr><td>'.$langs->trans("CreatedBy").'</td><td>';
 print $userstatic1->getNomUrl(1).' ';
@@ -76,9 +65,9 @@ print $langs->trans("AgfLe").' '.dol_print_date($agf->datec).'</td></tr>';
 
 
 $userstatic2 = new User($db);
-$userstatic2->id = $agf->fk_userm;
+$userstatic2->id = $agf->fk_user_mod;
 $userstatic2->fetch();
-if (!$agf->fk_userm)
+if (!$agf->fk_user_mod)
 {
     print '<tr><td>'.$langs->trans("DateLastModification").'</td><td>';
     print $langs->trans("AgfNoMod").'</td></tr>';
