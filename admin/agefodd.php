@@ -31,7 +31,7 @@ if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used 
 require_once(DOL_DOCUMENT_ROOT."/lib/admin.lib.php");
 
 $langs->load("admin");
-$langs->load("@agefodd");
+$langs->load('agefodd@agefodd');
 
 if (!$user->admin) accessforbidden();
 

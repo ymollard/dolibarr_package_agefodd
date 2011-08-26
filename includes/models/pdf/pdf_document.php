@@ -37,7 +37,7 @@ require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier='')
 {
 	global $conf,$langs;
-	$langs->load("@agefodd");
+	$langs->load('agefodd@agefodd');
 
 	// Charge le modele
 	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/includes/models/pdf/pdf_'.$typeModele.'_modele.php';

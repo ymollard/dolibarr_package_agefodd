@@ -23,7 +23,7 @@
  *  \version		$Id$
  */
 
-$langs->load("@agefodd");
+$langs->load('agefodd@agefodd');
 
 function session_prepare_head($object)
 {

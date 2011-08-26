@@ -26,7 +26,7 @@
 
 require("../main.inc.php");
 
-$langs->load("@agefodd");
+$langs->load('agefodd@agefodd');
 
 // TODO déplacer la configuration dans le fichier admin du module et supprimer ce fichier
 
