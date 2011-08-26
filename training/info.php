@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +23,8 @@
  *  \version		$Id$
  */
 
-$res=@include("../../../main.inc.php");									// For "custom" directory
-if (! $res) $res=@include("../../main.inc.php");						// For root directory
-if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+$res=@include("../../main.inc.php");				// For root directory
+if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 require_once("./class/agefodd_formation_catalogue.class.php");
 require_once(DOL_DOCUMENT_ROOT."/lib/functions2.lib.php");

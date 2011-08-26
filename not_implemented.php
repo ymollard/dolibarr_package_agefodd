@@ -1,9 +1,6 @@
 <?php
-/* Copyright (C) 2003		Rodolphe Quiedeville	<rodolphe@quiedeville.org>
- * Copyright (C) 2004-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
- * Copyright (C) 2004		Eric Seigne		<eric.seigne@ryxeo.com>
- * Copyright (C) 2005-2009	Regis Houssin		<regis@dolibarr.fr>
- * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +18,13 @@
  */
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/index.php $
-	\brief		Page temporaire pour non implementation d'une focntion.
-	\Version	$Id$
-*/
+ * 	\file		/agefodd/not_implemented.php
+ * 	\brief		Page temporaire pour non implementation d'une focntion.
+ * 	\Version	$Id$
+ */
 
-require("../main.inc.php");
+$res=@include("../main.inc.php");					// For root directory
+if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
 
 
 // Security check

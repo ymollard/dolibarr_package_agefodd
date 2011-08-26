@@ -23,9 +23,8 @@
  *  \version		$Id$
  */
 
-$res=@include("../../../main.inc.php");									// For "custom" directory
-if (! $res) $res=@include("../../main.inc.php");						// For root directory
-if (! $res) @include("../../../../../../dolibarr/htdocs/main.inc.php");	// Used on dev env only
+$res=@include("../../main.inc.php");				// For root directory
+if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 require_once("./class/agefodd_formation_catalogue.class.php");
 require_once("../lib/agefodd.lib.php");
