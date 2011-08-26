@@ -26,7 +26,7 @@
  */
 require("../main.inc.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/inc/models/pdf/pdf_document.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/includes/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");

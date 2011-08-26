@@ -40,7 +40,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	$langs->load("@agefodd");
 
 	// Charge le modele
-	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/inc/models/pdf/pdf_'.$typeModele.'_modele.php';
+	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/includes/models/pdf/pdf_'.$typeModele.'_modele.php';
 	
 	if (file_exists($nomModele))
 	{
