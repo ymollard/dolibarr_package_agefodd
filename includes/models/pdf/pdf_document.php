@@ -18,12 +18,11 @@
 
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
-	\version	$Id$
-*/
-require_once(DOL_DOCUMENT_ROOT."/lib/company.lib.php");
-require_once(DOL_DOCUMENT_ROOT.'/lib/pdf.lib.php');
+ *	\file		/agefodd/includes/models/pdf/pdf_documents.php
+ *	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
+ */
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/includes/fpdf/fpdfi/fpdi_protection.php');
 require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 

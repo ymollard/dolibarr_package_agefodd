@@ -29,7 +29,7 @@ if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
 require_once("./class/agefodd_index.class.php");
 require_once("./session/class/agefodd_sessadm.class.php");
 require_once("./lib/agefodd.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/lib/date.lib.php");
+require_once(DOL_DOCUMENT_ROOT."/core/lib/date.lib.php");
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
