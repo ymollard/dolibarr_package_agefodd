@@ -21,10 +21,10 @@
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
 	\brief		Page permettant la création d'un courrier type au format pdf
 			Le paramètre "courrier" transmis à la fonction "write_file" permet de préciser
-			le contenu (body) à y inclure ( /agefodd/includes/models/pdf/pdf_courrier-'.$courrier.'_modele.php').
+			le contenu (body) à y inclure ( /agefodd/core/models/pdf/pdf_courrier-'.$courrier.'_modele.php').
 	\version	$Id$
 */
-require_once(DOL_DOCUMENT_ROOT."/agefodd/includes/models/pdf/pdf_document.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/core/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
@@ -359,7 +359,7 @@ class agf_pdf_document extends FPDF
 	{
 		global $user, $conf, $langs;
 		
-		require(DOL_DOCUMENT_ROOT.'/agefodd/includes/models/pdf/pdf_courrier-'.$courrier.'_modele.php');
+		require(DOL_DOCUMENT_ROOT.'/agefodd/core/models/pdf/pdf_courrier-'.$courrier.'_modele.php');
 		
 		return $posY;
 	}

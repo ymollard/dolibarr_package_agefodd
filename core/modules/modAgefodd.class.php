@@ -22,12 +22,12 @@
  */
 
 /**
- *      \file       	/includes/modules/modAgefodd.class.php
+ *      \file       	/core/modules/modAgefodd.class.php
  *      \ingroup    	agefodd
  *      \brief      	Description and activation file for module agefodd
  *		\version		$Id$
  */
-include_once(DOL_DOCUMENT_ROOT ."/includes/modules/DolibarrModules.class.php");
+include_once(DOL_DOCUMENT_ROOT ."/core/modules/DolibarrModules.class.php");
 
 
 /**     

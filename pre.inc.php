@@ -111,7 +111,7 @@ function llxHeader($head = "") {
 		if ($user->rights->agefodd->lire)  $menu->add(DOL_URL_ROOT."/agefodd/not_implemented.php?mainmenu=&leftmenu=agefodd", $langs->trans("AgfMenuSAdmBilanDRTEFP"),1);
 
 		// Tests
-		//$menu->add(DOL_URL_ROOT."/agefodd/includes/models/pdf/pdf_document.php?mainmenu=&leftmenu=agefodd", "TEST");
+		//$menu->add(DOL_URL_ROOT."/agefodd/core/models/pdf/pdf_document.php?mainmenu=&leftmenu=agefodd", "TEST");
 
 	}
 	left_menu($menu->liste);

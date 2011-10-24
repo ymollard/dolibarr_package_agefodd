@@ -19,14 +19,15 @@
 
 /**
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
+	\brief		Page permettant la création de la fiche d'évaluation propre à une formation au format pdf
 	\version	$Id$
 */
-require_once(DOL_DOCUMENT_ROOT."/agefodd/includes/models/pdf/pdf_document.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/core/models/pdf/pdf_document.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_contact.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_formateur.class.php");
 
 
 class agf_pdf_document extends FPDF
@@ -50,7 +51,7 @@ class agf_pdf_document extends FPDF
 
 		$this->db = $db;
 		$this->name = "ebic";
-		$this->description = $langs->trans('Modèle de document pour les fiches pédagogiques');
+		$this->description = $langs->trans('Modèle de document pour les fiches d\'évaluation');
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
@@ -218,11 +219,13 @@ class agf_pdf_document extends FPDF
 				$posX = $this->marge_gauche;
 				$posY = 30;
 				
+				
 				/***** Titre *****/
+				
 				$pdf->SetFont('Arial','',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Fiche pédagogique";
+				$this->str = "Fiche d'évaluation de la formation";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 15;
 
@@ -236,156 +239,189 @@ class agf_pdf_document extends FPDF
 				// texte
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
-				$posY+= $hauteur + 10;
+				$posY+= $hauteur + 1;
 
+				
+				/***** Date et formateur *****/
+				
+				$pdf->SetFont('Arial','I',9);
+
+				$pdf->SetXY($posX, $posY);
+				$this->str = "Session du ";
+				if ($agf->dated == $agf->dated) $this->str .= dol_print_date($agf->dated);
+				else $this->str .= dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
+				$posY+= 4;
+
+				$formateurs = new Agefodd_session_formateur($this->db);
+				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
+				$form_str = "";
+				for ($i=0; $i < $nbform; $i++)
+				{
+				    // Infos formateurs
+				    $forma_str .= strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);
+				    if ($i < ($nbform - 1)) $forma_str .= ', ';
+				}
+				
+				$pdf->SetXY($posX, $posY);
+				//$this->str = "formateur: ".$agf->teachername;
+				($nbform > 1) ? $this->str = "formateurs : " : $this->str = "formateur :";
+				$this->str .= $forma_str;
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
+				$posY+= 5 + 10;
+
+				
 				/***** Objectifs pedagogique de la formation *****/
 				
 				// Récuperation
 				$agf_op = new Agefodd($this->db,"",$id);
 				$result2 = $agf_op->fetch_objpeda_per_formation($agf->formid);
 				
-				$pdf->SetFont('Arial','B',9);
+				$pdf->SetFont('Arial','',10);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Objectifs pédagogiques";
+				$this->str = "Les objectifs sont-ils atteints?";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
+				$posY+= 5 + 1;
 				
 				
-				$pdf->SetFont('Arial','',9);
-				$hauteur = 0;
-				$width = 160;
+				$pdf->SetFont('Arial','',10);
 				for ( $y = 0; $y < count($agf_op->line); $y++)
 				{
+					// Intitulé
 					if ($y > 0) $posY+= $hauteur;
 					$pdf->SetXY ($posX, $posY);
-					$hauteur = $this->NbLines($pdf, $width, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 4);
-					//$StringWidth = $pdf->GetStringWidth($agf_op->line[$y]->intitule);
-					//if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
-					//else $nblines = 1;
-					//$hauteur = $nblines * 5;
-					$pdf->Cell(10, 4, $agf_op->line[$y]->priorite.'. ', 0, 0, 'L', 0);
-					$pdf->MultiCell($width, 4, 
-					$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
+					$width = 160;
+					$hauteur = $this->NbLines($pdf, 160, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 5);
+					$pdf->MultiCell(160, 5, 
+					$outputlangs->transnoentities($agf_op->line[$y]->intitule), 1,'L',0);
+
+					// Oui
+					$pdf->SetXY ($posX + 160, $posY);
+					$pdf->Cell(10, 5, $outputlangs->convToOutputCharset("oui"),0,0,'C');
+					$pdf->Rect($posX + 160, $posY, 10, $hauteur);
+				
+					// Non
+					$pdf->SetXY ($posX + 160 + 10, $posY);
+					$pdf->Cell(10, 5, $outputlangs->convToOutputCharset("non"),0,0,'C');
+					$pdf->Rect($posX + 160 + 10, $posY, 10, $hauteur);
+				
 					
 				}
-				$posY+= 8;
+				$posY+= 15;
 				
-				/***** Public *****/
 				
-				// Récuperation
-				$agf_op->fetch($agf->formid);
-				
-				$pdf->SetFont('','B','');
+				/***** présentation echelle de notation *****/
+
+				$pdf->SetFont('Arial','B',10);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Publics";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
+				$this->str = "Indiquez votre degré d'accord envers chacun des énnoncés présentés ci-dessous, en utilisant l'échelle suivante (pour chaque affirmation, indiquez le chiffre correspondant le plus à votre appréciation):";
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0,'C',0);
+				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 4);
+				$posY+= $hauteur + 1;
+				
+
+				$col_larg = $this->espaceH_dispo / 5;
+				
+				// ligne 1
+				$pdf->SetFont('Arial','B',10);
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("1"),1,0,'C');
+				$pdf->SetXY($posX + (1 * $col_larg), $posY);
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("2"),1,0,'C');
+				$pdf->SetXY($posX + (2 * $col_larg), $posY);
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("3"),1,0,'C');
+				$pdf->SetXY($posX + (3 * $col_larg), $posY);
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("4"),1,0,'C');
+				$pdf->SetXY($posX + (4 * $col_larg), $posY);
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("5"),1,0,'C');
 				$posY+= 5;
 				
-				$pdf->SetFont('','','');
-				$this->str = ucfirst($agf_op->public);
-				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
-
-				
-				/***** Pré requis *****/
-				
-				$pdf->SetFont('','B','');
+				// ligne 2
+				$pdf->SetFont('Arial','',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Pré-requis";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont('','','');
-				$this->str = $agf_op->prerequis;
-				if (empty($this->str)) $this->str = "Aucun";
-				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("pas du tout d'accord"),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("en désaccord partiel"),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("plus ou moins d'accord"),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("en accord partiel"),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("tout à fait d'accord"),1,0,'C');
+				$posY+= 5 + 10;
 
 				
-				/***** Programme *****/
-				
-				// Récuperation
-				//$agf_op->fetch($agf->formid);
-				
-				$pdf->SetFont('','B','');
+				/***** lignes d'évaluations *****/
+
+				$pdf->SetFont('Arial','',10);
+				$hauteur_ligne = 6;
+
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Programme";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont('','','');
-				$this->str = $this->liste_a_puce($agf_op->programme);
-				
-				$hauteur_ligne_dans_col = 5;
-				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str),$hauteur_ligne_dans_col);
-				
-				$hauteur_col = $hauteur / 2;
-				$hauteur_nb_lines = ($hauteur / $hauteur_ligne_dans_col)  /2;
-				$espace_entre_col = 10; // ici 1cm 
-				$largeur_col = ($this->espaceH_dispo - $espace_entre_col) / 2;
-				
-				$pdf->SetXY( $posX, $posY);
-				$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J',0, $hauteur_nb_lines);
-				
-				$pdf->Line ($this->milieu + $this->marge_gauche, $posY, $this->milieu  + $this->marge_gauche, $posY + $hauteur_col);
-				
-				$pdf->SetXY( $posX + $largeur_col + $espace_entre_col, $posY);
-				$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col, $txt,0,'J',0, $hauteur_nb_lines);
-				
-				// Nbre de ligne * hauteur ligne + decallage titre niv 2
-				$posY += $hauteur_col + 8;
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("J'étais motivé pour suivre ce stage."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
 
-				
-				/***** Methode pedago *****/
-				
-				// Récuperation
-				$agf_op->fetch($agf->formid);
-				
-				$pdf->SetFont('','B','');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Méthode pédagogique";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Les objectifs de la formation étaient clairs et précis."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
 				
-				$pdf->SetFont('','','');
-				$this->str = $agf_op->methode;
-				$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
-				
-
-				/***** Duree *****/
-				
-				// Durée
-				//$agf_op->fetch($agf->formid);
-				
-				$pdf->SetFont('','B','');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Durée";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Le contenu de la formation correspondait à mes besoins et à mes préoccupations."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
 				
-				$pdf->SetFont('','','');
-				// calcul de la duree en nbre de jours
-				$jour = $agf_op->duree / 7;
-				if ($jour < 1) $this->str = $agf_op->duree.' heures.';
-				else
-				{
-					$this->str = $agf_op->duree.' heures ('.ceil($jour).' jour';
-					if (ceil($jour) > 1) $this->str.='s';
-					$this->str.=').';
-				}
-				$pdf->SetXY( $posX, $posY);
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5 + 8;
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("L'enchainement des modules a favorisé mon apprentissage."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Les exercices et les activités étaient pertinents."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Le(s) formateur(s) communiquai(en)t de façon claire et dynamique."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Le déroulement de la formation a respecté le rythme d'apprentissage des participants."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Cette formation m'a permit d'augmenter mon niveau de connaissance et de compétence."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Si cela était possible, je serai en mesure d'utiliser ces compétences dès mon retour au travail."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Je parlerai positivement de cette formation à mon entourage."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= $hauteur_ligne;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Je suis satisfait des conditions matérielles dans lesquelles s'est déroulée la formation."),1,0,'L');
+				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
+				$posY+= 5 + $hauteur_ligne;
+				
+				$pdf->SetFont('Arial','I',11);
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(0, $hauteur_ligne, $outputlangs->convToOutputCharset("Merci de bien vouloir commenter chacun des points dont le score est inférieur ou égal à 3."),0,0,'C');
+				$posY+= $hauteur_ligne;
 
 
+				/***** bloc commentaire *****/
 
+				$pdf->SetFont('Arial','B',10);
+				$pdf->SetXY($posX, $posY);
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset("Commentaires et/ou recommandations"),0,0,'L');
+
+				$hauteur = $this->page_hauteur - 20 - $posY - 5;
+
+				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur);
 
 				// Pied de page	
 				$this->_pagefoot($pdf,$agf,$outputlangs);

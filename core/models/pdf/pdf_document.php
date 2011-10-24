@@ -18,7 +18,7 @@
 
 
 /**
- *	\file		/agefodd/includes/models/pdf/pdf_documents.php
+ *	\file		/agefodd/core/models/pdf/pdf_documents.php
  *	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
  */
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
@@ -39,7 +39,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	$langs->load('agefodd@agefodd');
 
 	// Charge le modele
-	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/includes/models/pdf/pdf_'.$typeModele.'_modele.php';
+	$nomModele = DOL_DOCUMENT_ROOT.'/agefodd/core/models/pdf/pdf_'.$typeModele.'_modele.php';
 	
 	if (file_exists($nomModele))
 	{

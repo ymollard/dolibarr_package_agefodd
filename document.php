@@ -28,7 +28,7 @@ $res=@include("../main.inc.php");					// For root directory
 if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/html.formfile.class.php");
-require_once('./includes/models/pdf/pdf_document.php');
+require_once('./core/models/pdf/pdf_document.php');
 
 
 print "prout";

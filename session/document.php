@@ -30,7 +30,7 @@ require_once("./class/agefodd_session.class.php");
 require_once("./class/agefodd_sessadm.class.php");
 require_once("../class/agefodd_facture.class.php");
 require_once("../class/agefodd_convention.class.php");
-require_once("../includes/models/pdf/pdf_document.php");
+require_once("../core/models/pdf/pdf_document.php");
 require_once("../lib/agefodd.lib.php");
 
 
@@ -317,7 +317,7 @@ if ($id)
 			else
 			{
 				// Génereration des documents
-				if (file_exists(DOL_DOCUMENT_ROOT.'/agefodd/includes/models/pdf/pdf_'.$model.'_modele.php'))
+				if (file_exists(DOL_DOCUMENT_ROOT.'/agefodd/core/models/pdf/pdf_'.$model.'_modele.php'))
 				{
 
 					$legende = $langs->trans("AgfDocCreate");
