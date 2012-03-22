@@ -188,7 +188,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 $id = $_GET['id'];
 
@@ -331,7 +331,7 @@ else
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 				/*
@@ -339,7 +339,7 @@ else
 				*/
 				if (isset($_GET["arch"]))
 				{
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 

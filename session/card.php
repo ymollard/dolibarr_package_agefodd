@@ -485,7 +485,7 @@ if ($_POST["action"] == 'add' && $user->rights->agefodd->creer)
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 if (preg_match('/\-/', $_GET['id']))
 {
@@ -525,11 +525,11 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 	//print '</td></tr>';
 	
 	print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
-	$html->select_date("", 'dad','','','','add');
+	$form->select_date("", 'dad','','','','add');
 	print '</td></tr>';
 
 	print '<tr><td>'.$langs->trans("AgfDateFin").'</td><td>';
-	$html->select_date("", 'daf','','','','add');
+	$form->select_date("", 'daf','','','','add');
 	print '</td></tr>';
 
 	print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
@@ -592,7 +592,7 @@ else
 				print '<table class="border" width="100%">';
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 				print '<td>'.$agf->id.'</td></tr>';
-				//print '<td>'.$html->showrefnav('session', $agf->id).'</td></tr>';
+				//print '<td>'.$form->showrefnav('session', $agf->id).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 				//print '<td>'.ebi_select_formation($agf->id, 'formation').'</a></td></tr>';
@@ -605,20 +605,20 @@ else
 				
 				/*
 				print '<tr><td>'.$langs->trans("AgfFormateur").'</td><td>';
-				//$html->select_users($agf->rowid);
+				//$form->select_users($agf->rowid);
 				print ebi_select_formateur($agf->teacherid, 'formateur');
 				print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
-				//print $html->textwithpicto("","test");
+				//print $form->textwithpicto("","test");
 				print '</td>;
 				*/
 				print '</tr>';
 				
 				print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
-				$html->select_date($agf->dated, 'dad','','','','update');
+				$form->select_date($agf->dated, 'dad','','','','update');
 				print '</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfDateFin").'</td><td>';
-				$html->select_date($agf->datef, 'daf','','','','update');
+				$form->select_date($agf->datef, 'daf','','','','update');
 				print '</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
@@ -657,7 +657,7 @@ else
 				if ($_POST["form_remove_x"])
 				{
 					// Param url = id de la ligne formateur dans session - id session 
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -781,7 +781,7 @@ else
 				if ($_POST["period_remove_x"])
 				{
 					// Param url = id de la periode à supprimer - id session 
-					$ret=$html->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
 					if ($ret == 'html') print '<br>';
 				}
 				print '<div class="tabBar">';
@@ -811,7 +811,7 @@ else
 						if ($calendrier->line[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
 						{
 							print '<td  width="20%">'.$langs->trans("AgfPeriodDate").' ';
-							$html->select_date($calendrier->line[$i]->date, 'date','','','','date');
+							$form->select_date($calendrier->line[$i]->date, 'date','','','','date');
 							print '</td>';
 							print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
 							print ebi_select_time("heured", $calendrier->line[$i]->heured);
@@ -902,7 +902,7 @@ else
 					print '<input type="hidden" name="periodid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 					//print '<td width="20px" align="center">'.($i+1).'</td>';
 					print '<td>'.$langs->trans("AgfPeriodDate").' ';
-					$html->select_date($agf->dated, 'date','','','','date');
+					$form->select_date($agf->dated, 'date','','','','date');
 					print '</td>';
 					print '<td width="150px">'.$langs->trans("AgfPeriodTimeB").' ';
 					print ebi_select_time("heured");
@@ -935,7 +935,7 @@ else
 				if ($_POST["stag_remove_x"])
 				{
 					// Param url = id de la ligne stagiaire dans session - id session 
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -1084,7 +1084,7 @@ else
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -1093,7 +1093,7 @@ else
 				*/
 				if (isset($_GET["arch"]))
 				{
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -1113,7 +1113,7 @@ else
 				print '<td>'.$agf->id.'</td></tr>';
 
 				//print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-				//print '<td>'.$html->showrefnav($agf,$id).'</td></tr>';
+				//print '<td>'.$form->showrefnav($agf,$id).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 				print '<td><a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->formid.'">'.$agf->formintitule.'</a></td></tr>';

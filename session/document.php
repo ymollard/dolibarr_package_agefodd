@@ -20,7 +20,6 @@
 /**
  * 	\file		/agefodd/session/document.php
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
- * 	\version	$Id$
  */
 
 $res=@include("../../main.inc.php");				// For root directory
@@ -121,7 +120,7 @@ if($_GET["action"] == 'unlink' && $user->rights->agefodd->creer)
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 $id = $_GET['id'];
 
@@ -229,7 +228,7 @@ if ($id)
 		
 		function show_conv($file, $socid)
 		{
-			global $langs, $conf, $db, $id, $html, ${'flag_bc_'.$socid};
+			global $langs, $conf, $db, $id, $form, ${'flag_bc_'.$socid};
 
 			$model = $file;
 			$file = $file.'_'.$id.'_'.$socid.'.pdf';
@@ -335,7 +334,7 @@ if ($id)
 		
 		function show_fac($file, $socid, $mdle)
 		{
-			global $langs, $conf, $db, $id, $html, ${'flag_bc_'.$socid};
+			global $langs, $conf, $db, $id, $form, ${'flag_bc_'.$socid};
 
 			$agf = new Agefodd_facture($db);
 			$result = $agf->fetch($id, $socid);
@@ -458,7 +457,7 @@ if ($id)
 		*/
 		if ($_GET["action"] == 'delete')
 		{
-			$ret=$html->form_confirm("s_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+			$ret=$form->form_confirm("s_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 			if ($ret == 'html') print '<br>';
 		}
 

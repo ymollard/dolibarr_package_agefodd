@@ -152,7 +152,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 $id = $_GET['id'];
 
@@ -197,11 +197,11 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 	print '<td>'.dol_print_date($sessinfos->dated).'</td></tr>';
 	
 	print '<tr><td>'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
-	$html->select_date(date("Y-m-d H:i:s", $alertday_mktime),'datea','','','','create');
+	$form->select_date(date("Y-m-d H:i:s", $alertday_mktime),'datea','','','','create');
 	print '</td></tr>';
 	
 	print '<tr><td>'.$langs->trans("AgfSessDateDebut").' ('.$langs->trans("AgfPar").' '.$user->login.')</td><td>';
-	$html->select_date("", 'dad','','','','create');
+	$form->select_date("", 'dad','','','','create');
 	print '</td></tr>';
 	
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -247,7 +247,7 @@ else
 			*/
 			if ($_GET["delete"] == '1')
 			{
-				$ret = $html->form_confirm("s_adm.php?id=".$id."&actid=".$_GET["actid"], $langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+				$ret = $form->form_confirm("s_adm.php?id=".$id."&actid=".$_GET["actid"], $langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 				if ($ret == 'html') print '<br>';
 			}
 			print '<form name="update" action="s_adm.php?id='.$agf->sessid.'" method="post">'."\n";
@@ -289,12 +289,12 @@ else
 			print dol_print_date($agf->datea);
 			print '<a href="javascript:DivStatus(\'datea\');" title="afficher detail""> ('.$langs->trans("AgfDefinir").')</a>';
 			print '<span id="datea" style="display:none;">';
-			$html->select_date($agf->datea,'datea','','','','update');
+			$form->select_date($agf->datea,'datea','','','','update');
 			print '</span>';
 			print '</td></tr>';
 			
 			print '<tr><td valign="top">'.$langs->trans("AgfSessDateDebut").' ('.$langs->trans("AgfPar").' '.$user->login.')</td><td>';
-			$html->select_date($agf->dated, 'dad','','','','update');
+			$form->select_date($agf->dated, 'dad','','','','update');
 			print '</td></tr>';
 			print '<tr><td valign="top">'.$langs->trans("AgfSessDateFin").' ('.$langs->trans("AgfPar").' '.$user->login.')</td><td>';
 			
@@ -303,13 +303,13 @@ else
 			    print $langs->trans("AgfNoDefined");
 			    print '<a href="javascript:DivStatus(\'datef\');" title="afficher detail""> ('.$langs->trans("AgfDefinir").')</a>';
 			    print '<span id="datef" style="display:none;">';
-			    $html->select_date($agf->datef, 'daf','','','','update');
+			    $form->select_date($agf->datef, 'daf','','','','update');
 			    print '</span>';
 			
 			}
 			else
 			{
-			    $html->select_date($datef->datef, 'daf','','','','update');
+			    $form->select_date($datef->datef, 'daf','','','','update');
 			}
 			print '</td></tr>';
 			

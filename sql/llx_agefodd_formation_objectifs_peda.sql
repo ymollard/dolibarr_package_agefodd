@@ -18,6 +18,13 @@
 --
 -- ============================================================================
 
-
-ALTER TABLE llx_agefodd_contact ADD INDEX idx_agefodd_contact_fk_socpeople (fk_socpeople);
-
+CREATE TABLE IF NOT EXISTS llx_agefodd_formation_objectifs_peda (
+  rowid int(11) NOT NULL auto_increment,
+  fk_formation_catalogue int(11) NOT NULL,
+  intitule varchar(150) NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  priorite int(2) default NULL,
+  fk_user int(11) default NULL,
+  PRIMARY KEY  (rowid),
+  KEY fk_formation_catalogue (fk_formation_catalogue)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

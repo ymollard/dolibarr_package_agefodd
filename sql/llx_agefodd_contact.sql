@@ -16,7 +16,6 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
--- $Id: llx_agefodd_contact.sql 39 2011-03-14 09:47:59Z hregis $
 -- ============================================================================
 
 create table llx_agefodd_contact

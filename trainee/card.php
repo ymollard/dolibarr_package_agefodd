@@ -188,7 +188,7 @@ if ($_GET["action"] == 'nfcontact' && $_GET["ph"] == 2 && $user->rights->agefodd
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 $id = $_GET['id'];
 
@@ -439,7 +439,7 @@ else
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 

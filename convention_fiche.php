@@ -215,7 +215,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 $id = $_GET['id'];
 
@@ -618,7 +618,7 @@ else
 			*/
 			if ($_GET["action"] == 'delete')
 			{
-				$ret=$html->form_confirm("convention_fiche.php?id=".$convid.'-'.$agf->sessid,$langs->trans("AgfDeleteConvention"),$langs->trans("AgfConfirmDeleteConvention"),"confirm_delete");
+				$ret=$form->form_confirm("convention_fiche.php?id=".$convid.'-'.$agf->sessid,$langs->trans("AgfDeleteConvention"),$langs->trans("AgfConfirmDeleteConvention"),"confirm_delete");
 				if ($ret == 'html') print '<br>';
 			}
 			/*
@@ -626,7 +626,7 @@ else
 			*/
 			if (isset($_GET["arch"]))
 			{
-				$ret=$html->form_confirm("convention_fiche.php?arch=".$_GET["arch"]."&convid=".$convid,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+				$ret=$form->form_confirm("convention_fiche.php?arch=".$_GET["arch"]."&convid=".$convid,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 				if ($ret == 'html') print '<br>';
 			}
 

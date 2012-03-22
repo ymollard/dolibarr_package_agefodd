@@ -153,7 +153,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 
 llxHeader();
 
-$html = new Form($db);
+$form = new Form($db);
 
 $id = $_GET['id'];
 
@@ -313,7 +313,7 @@ else
 				 */
 				if ($_GET["action"] == 'delete')
 				{
-					$ret=$html->form_confirm("s_place.php?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
+					$ret=$form->form_confirm("s_place.php?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 

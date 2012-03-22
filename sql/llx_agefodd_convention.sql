@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2010-2012	Regis Houssin	<regis@dolibarr.fr>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,6 +18,27 @@
 --
 -- ============================================================================
 
-
-ALTER TABLE llx_agefodd_contact ADD INDEX idx_agefodd_contact_fk_socpeople (fk_socpeople);
-
+CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
+  rowid int(11) NOT NULL auto_increment,
+  fk_agefodd_session int(11) NOT NULL,
+  fk_societe int(11) NOT NULL,
+  intro1 text NOT NULL,
+  intro2 text NOT NULL,
+  art1 text NOT NULL,
+  art2 text NOT NULL,
+  art3 text NOT NULL,
+  art4 text NOT NULL,
+  art5 text NOT NULL,
+  art6 text NOT NULL,
+  art7 text NOT NULL,
+  art8 text NOT NULL,
+  sig tinytext NOT NULL,
+  notes text NOT NULL,
+  fk_user_author int(11) NOT NULL,
+  datec datetime NOT NULL,
+  fk_user_mod int(11) NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (rowid),
+  KEY idx_fk_agefodd_session (fk_agefodd_session),
+  KEY idx_fk_societe (fk_societe)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

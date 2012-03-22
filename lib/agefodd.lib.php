@@ -812,7 +812,7 @@ function mysql2timestamp($datetime)
  *   \param	bool	html sortie au format html (true) ou texte (false)
  *   \return	str	liste formatée
  */
-function ebi_liste_a_puce($text, $html=false)
+function ebi_liste_a_puce($text, $form=false)
 {
 	// 1er niveau: remplacement de '# ' en debut de ligne par une puce de niv 1 (petit rond noir)
 	// 2éme niveau: remplacement de '## ' en début de ligne par une puce de niv 2 (tiret)
@@ -823,7 +823,7 @@ function ebi_liste_a_puce($text, $html=false)
 	$level = 0;
 	foreach ($line as $row)
 	{
-		if ($html)
+		if ($form)
 		{
 			if (preg_match('/^\!# /', $row))
 			{

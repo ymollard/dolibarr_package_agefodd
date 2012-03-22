@@ -18,6 +18,9 @@
 --
 -- ============================================================================
 
-
-ALTER TABLE llx_agefodd_contact ADD INDEX idx_agefodd_contact_fk_socpeople (fk_socpeople);
-
+CREATE TABLE IF NOT EXISTS llx_agefodd_reg_interieur (
+  rowid int(11) NOT NULL auto_increment,
+  file varchar(80) NOT NULL,
+  notes tinytext NOT NULL,
+  PRIMARY KEY  (rowid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
