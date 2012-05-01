@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,12 +35,13 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 llxHeader();
 
-$sortorder=$_GET["sortorder"];
-$sortfield=$_GET["sortfield"];
-$page=$_GET["page"];
+$sortorder=GETPOST('sortorder','alpha');
+$sortfield=GETPOST('sortfield','alpha');
+$page=GETPOST('page','alpha');
+$arch=GETPOST('arch','int');
 
-if (! $sortorder) $sortorder="DESC";
-if (! $sortfield) $sortfield="c.rowid";
+if (empty($sortorder)) $sortorder="DESC";
+if (empty($sortfield)) $sortfield="c.rowid";
 
 
 if ($page == -1) { $page = 0 ; }
@@ -49,8 +51,7 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-if (!isset($_GET["arch"])) $arch = 0;
-else $arch = $_GET["arch"];
+if (empty($arch)) $arch = 0;
 
 // TODO move sql query to Model Class
 $db->begin();
@@ -127,6 +128,7 @@ if ($resql)
     }
     
     print "</table>";
+    $db->free($resql2);
     $db->free($resql);
 }
 else

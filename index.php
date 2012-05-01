@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,34 +27,15 @@
 $res=@include("../main.inc.php");					// For root directory
 if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_index.class.php");
-require_once("./session/class/agefodd_sessadm.class.php");
-require_once("./lib/agefodd.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/date.lib.php");
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/class/agefodd_index.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_sessadm.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
-$db->begin();
-
 llxHeader();
-
-$sortorder=$_GET["sortorder"];
-$sortfield=$_GET["sortfield"];
-$page=$_GET["page"];
-
-if (! $sortorder) $sortorder="DESC";
-if (! $sortfield) $sortfield="c.date";
-
-
-if ($page == -1) { $page = 0 ; }
-
-$limit = $conf->liste_limit;
-$offset = $limit * $page ;
-$pageprev = $page - 1;
-$pagenext = $page + 1;
-
 
 print_barre_liste($langs->trans("AgfBilanGlobal"), $page, "index.php","&socid=$socid",$sortfield,$sortorder,'',$num);
 

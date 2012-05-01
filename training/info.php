@@ -26,16 +26,15 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_formation_catalogue.class.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/functions2.lib.php");
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/training/class/agefodd_formation_catalogue.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
-
-$db->begin();
 
 /*
  * View
@@ -47,42 +46,15 @@ $agf = new Agefodd($db);
 $agf->fetch($_GET["id"]);
 $agf->info($_GET["id"]);
 
-$h=0;
+$head = training_prepare_head($agf);
 
-$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
-$head[$h][1] = $langs->trans("Card");
-$hselected = $h;
-$h++;
+dol_fiche_head($head, 'info', $langs->trans("AgfCatalogDetail"), 0, 'bill');
 
-$head[$h][0] = dol_buildpath("/agefodd/training/info.php",1).'?id='.$agf->id;
-$head[$h][1] = $langs->trans("Info");
-$hselected = $h;
-$h++;
-
-dol_fiche_head($head, $hselected, $langs->trans("AgfCatalogDetail"), 0, 'bill');
-
-
-print '<table width="100%">';
-print '<table class="border" width="100%">';
-
-print "<tr>";
-print '<td width="20%">'.$langs->trans("Ref").'</td><td>'.$agf->id.'</td></tr>';
-
-print '<tr><td>'.$langs->trans("AgfDateC").'</td><td>';
-print dol_print_date($agf->datec).'</td></tr>';
-
-print '<tr><td>'.$langs->trans("DateLastModification").'</td><td>';
-print dol_print_date($agf->tms,"dayhourtext").'</td></tr>';
-
-$userstatic = new User($db);
-$userstatic->id=$agf->fk_user;
-$userstatic->fetch();
-
-print '<tr><td>'.$langs->trans("ModifiedBy").'</td><td>';
-print $userstatic->getNomUrl(1).'</td></tr>';
-
-print '</table>';
+print '<table width="100%"><tr><td>';
+dol_print_object_info($agf);
+print '</td></tr></table>';
 print '</div>';
+
 
 $db->close();
 

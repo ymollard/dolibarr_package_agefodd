@@ -25,6 +25,31 @@
 
 $langs->load('agefodd@agefodd');
 
+function training_prepare_head($object)
+{
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+	
+	$head[$h][0] = dol_buildpath('/agefodd/training/card.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Card");
+	$head[$h][2] = 'card';
+	$hselected = $h;
+	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/training/info.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Info");
+	$head[$h][2] = 'info';
+	$hselected = $h;
+	$h++;
+	
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_training');
+
+	return $head;
+}
+
+
 function session_prepare_head($object)
 {
 	global $langs, $conf, $user;

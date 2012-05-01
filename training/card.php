@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +27,8 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_formation_catalogue.class.php");
-require_once("../lib/agefodd.lib.php");
-
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/training/class/agefodd_formation_catalogue.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -36,100 +36,89 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
 
-$db->begin();
-
+$action= GETPOST('action','alpha');
+$confirm=GETPOST('confirm','alpha');
+$id=GETPOST('id','int');
+$archive=GETPOST('archive','int');
+$arch=GETPOST('arch','int');
 
 /*
  * Actions delete
  */
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd($db);
-	$result = $agf->remove($_GET["id"]);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: list.php");
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 
 }
 
-//if ($_POST["action"] == 'arch_confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
-if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-    if ($_POST["confirm"] == "yes")
-    {
 	$agf = new Agefodd($db);
 
-	$result = $agf->fetch($_GET["id"]);
+	$result = $agf->fetch($id);
 
-	$agf->archive = $_GET["archive"];
+	$agf->archive = $archive;
 	$result = $agf->update($user->id);
 
 	if ($result > 0)
 	{
-	    $db->commit();
-	    Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+	    Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 	    exit;
 	}
 	else
 	{
-	    $db->rollback();
-	    dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-	}
-
-}
-else
-{
-	Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
-	exit;
+	    dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+	    $mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
-
 
 /*
  * Action update (fiche de formation)
  */
-if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd($db);
 
-		$result = $agf->fetch($_POST["id"]);
+		$result = $agf->fetch($id);
 
-		$agf->intitule = $_POST["intitule"];
-		$agf->ref_interne = $_POST["ref_interne"];
-		$agf->duree = $_POST["duree"];
-		$agf->public = $_POST["public"];
-		$agf->methode = $_POST["methode"];
-		$agf->prerequis = $_POST["prerequis"];
-		$agf->programme = $_POST["programme"];
+		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->ref_interne = GETPOST('ref_interne','alpha');
+		$agf->duree = GETPOST('duree','int');
+		$agf->public = GETPOST('public','alpha');
+		$agf->methode = GETPOST('methode','alpha');
+		$agf->prerequis = GETPOST('prerequis','alpha');
+		$agf->programme = GETPOST('programme','alpha');
 		$result = $agf->update($user->id);
 
 		if ($result)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -139,38 +128,36 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
  * Action create (fiche formation)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd($db);
 
-		$agf->datec = $db->idate(mktime());
-		$agf->intitule = $_POST["intitule"];
-		$agf->ref_interne = $_POST["ref_interne"];
-		$agf->duree = $_POST["duree"];
-		$agf->public = $_POST["public"];
-		$agf->methode = $_POST["methode"];
-		$agf->prerequis = $_POST["prerequis"];
-		$agf->programme = $_POST["programme"];
+		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->ref_interne = GETPOST('ref_interne','alpha');
+		$agf->duree = GETPOST('duree','int');
+		$agf->public = GETPOST('public','alpha');
+		$agf->methode = GETPOST('methode','alpha');
+		$agf->prerequis = GETPOST('prerequis','alpha');
+		$agf->programme = GETPOST('programme','alpha');
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -180,14 +167,14 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
  * Action create (objectif pedagogique)
  */
 
-if ($_POST["action"] == "obj_update" && $user->rights->agefodd->creer)
+if ($action == "obj_update" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd($db);
 	
 	// MAJ d'un objectif pedagogique
-	if ($_POST["obj_update_x"])
+	if (GETPOST('obj_update_x'))
 	{
-		$result = $agf->fetch_objpeda($_POST["id"]);
+		$result = $agf->fetch_objpeda($id);
 
 		$agf->intitule = $_POST["intitule"];
 		$agf->priorite = $_POST["priorite"];
@@ -212,14 +199,13 @@ if ($_POST["action"] == "obj_update" && $user->rights->agefodd->creer)
 
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_POST["idforma"]);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
 		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
@@ -233,24 +219,13 @@ llxHeader();
 
 $form = new Form($db);
 
-$id = $_GET['id'];
-
-
+dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
-	
-	$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfCatalogDetail"), 0, 'label');
-
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="create">';
@@ -297,19 +272,19 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 else
 {
 	// Affichage de la fiche "formation"
-	if ($id)
+	if (!empty($id))
 	{
-		if ($_GET["arch"]) $arch = $_GET["arch"];
-		else $arch = 0;
+		if (empty($arch)) $arch = 0;
 		
 		$agf = new Agefodd($db);
-		$result = $agf->fetch($id,$arch);
+		$result = $agf->fetch($id);
+		
+		$head = training_prepare_head($agf);
+
+		dol_fiche_head($head, 'card', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
 		if ($result)
-		{
-
-			if ($mesg) print $mesg."<br>";
-			
+		{			
 			// recuperation des objectifs pedagogique de la formation
 			$sql = "SELECT";
 			$sql.= " o.rowid, o.intitule, o.priorite, o.fk_formation_catalogue, o.tms, o.fk_user";
@@ -320,21 +295,8 @@ else
 			if ($resql) $num = $db->num_rows($resql);
 			
 			// Affichage en mode "édition"
-			if ($_GET["action"] == 'edit')
+			if ($action == 'edit')
 			{
-				$h=0;
-				
-				$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
-
-				$head[$h][0] = dol_buildpath("/agefodd/training/info.php",1).'?id='.$agf->id;
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfCatalogDetail"), 0, 'label');
-
 				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
@@ -441,25 +403,21 @@ else
 				    {
 				    
 				    	if ($user->rights->agefodd->modifier)
-					//if ($user->rights->agefodd->creer)
-					{
-					    //print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
-					    print '<input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
-					}
-					print '&nbsp;';
-					if ($user->rights->agefodd->creer)
-					{
-					    print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="obj_remove" alt="'.$langs->trans("AgfModSave").'">';
-					}
+						{
+						    print '<input type="image" src="'.DOL_URL_ROOT_ALT.'/agefodd/img/save.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
+						}
+						print '&nbsp;';
+						if ($user->rights->agefodd->creer)
+						{
+						    print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="obj_remove" alt="'.$langs->trans("AgfModSave").'">';
+						}
 				    }
 				    else
 				    {
-					if ($user->rights->agefodd->creer)
-					{
-					    //print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNew").'">';
-					    print '<input type="image" src="'.DOL_URL_ROOT.'/agefodd/img/save.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNew").'">';
-					}
-				    
+						if ($user->rights->agefodd->creer)
+						{
+						    print '<input type="image" src="'.DOL_URL_ROOT_ALT.'/agefodd/img/save.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNewObjAdd").'">';
+						}
 				    }
 
 				    print '</td></tr>'."\n";
@@ -471,32 +429,21 @@ else
 			}
 			else
 			{
-				// Affichage en mode "consultation"
-				$h=0;
-				
-				$head[$h][0] = dol_buildpath("/agefodd/training/card.php",1).'?id='.$agf->id;
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
-
-				$head[$h][0] = dol_buildpath("/agefodd/training/info.php",1).'?id='.$agf->id;
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfCatalogDetail"), 0, 'label');
-
 				/*
 				 * Confirmation de la suppression
 				 */
-				if ($_GET["action"] == 'delete')
+				if ($action == 'delete')
 				{
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
-				if (isset($_GET["archive"]))
-				{
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?archive=".$_GET["archive"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+				if ($action == 'archive' || $action == 'active')
+				{   
+					if ($action == 'archive') $value=1;
+					if ($action == 'active') $value=0;
+					
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?archive=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -594,6 +541,16 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
+	
+	if ($user->rights->agefodd->creer)
+	{
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=clone&id='.$id.'">'.$langs->trans('ToClone').'</a>';
+	}
+	else
+	{
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('ToClone').'</a>';
+	}
+	
 	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
@@ -608,7 +565,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	    $button_action = $langs->trans('AgfArchiver');
 	    if ($user->rights->agefodd->creer)
 	    {
-		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?archive=1&id='.$id.'">';
+		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=archive&id='.$id.'">';
 		print $button_action.'</a>';
 	    }
 	    else
@@ -622,7 +579,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	    $button_action = $langs->trans('AgfActiver');
 	    if ($user->rights->agefodd->creer)
 	    {
-		    print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?archive=0&id='.$id.'">';
+		    print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=active&id='.$id.'">';
 		    print $button_action.'</a>';
 	    }
 	    else
@@ -630,6 +587,8 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
 	    }
 	}
+	
+	
 }
 
 print '</div>';

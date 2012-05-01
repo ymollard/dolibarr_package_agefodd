@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry       <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +38,7 @@ class Agefodd
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-        var $id;
+    var $id;
 
 	/**
 	*	\brief		Constructor
@@ -58,7 +59,7 @@ class Agefodd
 	*/
 	function create($user, $notrigger=0)
 	{
-	global $conf, $langs;
+		global $conf, $langs;
 		$error=0;
 	
 		// Clean parameters
@@ -76,7 +77,7 @@ class Agefodd
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
 		$sql.= "datec, ref_interne, intitule, duree, public, methode, prerequis, programme, fk_user";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->datec.'", ';
+	  	$sql.= $this->db->idate(dol_now()) .', ';
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
@@ -181,35 +182,35 @@ class Agefodd
 	*/
 	function info($id)
 	{
-	global $langs;
-	
-	$sql = "SELECT";
-	$sql.= " c.rowid, c.datec, c.tms, c.fk_user";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-	$sql.= " WHERE c.rowid = ".$id;
-	
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-	$resql=$this->db->query($sql);
-	if ($resql)
-	{
-		if ($this->db->num_rows($resql))
+		global $langs;
+		
+		$sql = "SELECT";
+		$sql.= " c.rowid, c.datec, c.tms, c.fk_user";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+		$sql.= " WHERE c.rowid = ".$id;
+		
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
 		{
-		$obj = $this->db->fetch_object($resql);
-		$this->id = $obj->rowid;
-		$this->datec = $obj->datec;
-		$this->tms = $obj->tms;
-		$this->fk_user = $obj->fk_user;
+			if ($this->db->num_rows($resql))
+			{
+			$obj = $this->db->fetch_object($resql);
+			$this->id = $obj->rowid;
+			$this->date_creation = $this->db->jdate($obj->datec);
+			$this->tms = $obj->tms;
+			$this->user_creation = $obj->fk_user;
+			}
+			$this->db->free($resql);
+		
+			return 1;
 		}
-		$this->db->free($resql);
-	
-		return 1;
-	}
-	else
-	{
-		$this->error="Error ".$this->db->lasterror();
-		dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-		return -1;
-	}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			return -1;
+		}
 	}
 	
 	
@@ -231,12 +232,8 @@ class Agefodd
 		$this->prerequis = ebi_mysql_escape_string($this->prerequis);
 		$this->programme = ebi_mysql_escape_string($this->programme);
 		
-		
-		
 		// Check parameters
 		// Put here code to add control on parameters values
-		
-		
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
@@ -313,7 +310,7 @@ class Agefodd
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
+    }
 
 
 	/**
@@ -322,7 +319,7 @@ class Agefodd
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, Id of created object if OK
 	*/
-	function create_objpeda($user=0)
+	function create_objpeda($user=0,$notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -337,10 +334,10 @@ class Agefodd
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda(";
 		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user";
 		$sql.= ") VALUES (";
-                $sql.= '"'.$this->fk_formation_catalogue.'", ';
-                $sql.= '"'.$this->intitule.'", ';
-                $sql.= '"'.$this->priorite.'", ';
-                $sql.= '"'.$user.'"';
+        $sql.= '"'.$this->fk_formation_catalogue.'", ';
+        $sql.= '"'.$this->intitule.'", ';
+        $sql.= '"'.$this->priorite.'", ';
+        $sql.= '"'.$user.'"';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -475,7 +472,7 @@ class Agefodd
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update_objpeda($user=0)
+	function update_objpeda($user=0, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -483,10 +480,8 @@ class Agefodd
 		// Clean parameters
 		$this->intitule = ebi_mysql_escape_string($this->intitule);
 		
-		
 		// Check parameters
 		// Put here code to add control on parameters values
-		
 		
 		// Update request
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
@@ -558,7 +553,9 @@ class Agefodd
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
+    }
+    
+    //TODO : createFromClone
 
 }
 
