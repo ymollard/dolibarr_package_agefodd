@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012 Florian Henry  <florien.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,12 +52,12 @@ class modAgefodd extends DolibarrModules
 		$this->rights_class = 'agefodd';
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
-		$this->family = "Métier";
+		//It is used to group modules in module setup page
+		$this->family = "hr";
 		// Module label, used if translation string 'ModuleXXXName' not found (where XXX is value of numeric property 'numero' of module)
 		$this->name = preg_replace('/^mod/i','',get_class($this));
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
-		//$this->description = "Formation Management Assistant Module";
-		$this->description = "Assistant de Gestion de la Formation dans Dolibarr";
+		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 		$this->version = '1.1';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
@@ -70,7 +71,7 @@ class modAgefodd extends DolibarrModules
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
-		$this->dirs = array("/agefodd/temp");
+		$this->dirs = array("/agefodd/documents");
 		$r=0;
 
 		// Relative path to module style sheet if exists. Example: '/mymodule/mycss.css'.
@@ -83,13 +84,91 @@ class modAgefodd extends DolibarrModules
 		$this->depends = array();		// List of modules id that must be enabled if this module is enabled
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->phpmin = array(4,3);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(2,9);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(3,1);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array('agefodd@agefodd');
 
 		// Constants
-		$this->const = array();			// List of particular constants to add when module is enabled
-		//Example: $this->const=array(0=>array('MYMODULE_MYNEWCONST1','chaine','myvalue','This is a constant to add',0),
-		//                            1=>array('MYMODULE_MYNEWCONST2','chaine','myvalue','This is another constant to add',0) );
+		$this->const = array();			// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 0 or 'allentities')
+		$r=0;
+		
+		$this->const[$r][0] = "AGF_ORGANISME_NAME";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "XXXXXXX";
+		$this->const[$r][3] = 'Organisme Name';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_NUM";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "XXXXXXX";
+		$this->const[$r][3] = 'Organisme Number';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_PREF";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "Hérault";
+		$this->const[$r][3] = 'Organisme Preference';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_SIEGE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "Montpellier";
+		$this->const[$r][3] = 'Organisme Localisation';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_BASELINE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = $conf->global->MAIN_INFO_SOCIETE_WEB;
+		$this->const[$r][3] = 'Organisme baseline';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_RESPONSABLE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'Marc DACIER';
+		$this->const[$r][3] = 'Organisme Leader';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_REPRESENTANT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'Paul Pitron';
+		$this->const[$r][3] = 'Organisme Sales Man';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_USE_STAGIAIRE_TYPE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'OK';
+		$this->const[$r][3] = 'Use traine type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_DEFAULT_STAGIAIRE_TYPE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '3';
+		$this->const[$r][3] = 'Type of  traine funding';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_LOGO";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = DOL_DOCUMENT_ROOT_ALT.'/agefodd/img/logo.jpg';
+		$this->const[$r][3] = 'Type of  traine funding';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		// Array to add new pages in new tabs
 		//$this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');

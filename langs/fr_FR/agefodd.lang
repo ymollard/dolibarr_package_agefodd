@@ -1,6 +1,12 @@
 # Language file - fr_FR - agefodd
 CHARSET=UTF-8
-Agefodd = Assistant de GEstion de la FOrmation Dans Dolibarr
+Module103000Name=Gestion Formation
+Module103000Desc=Assistant de Gestion de la Formation dans Dolibarr
+Permission103001=Voir les assortiments
+Permission103002=Modifiée les assortiements 
+Permission103003=Crée les assortiments
+Permission103004=Supprimer les assortiments
+Agefodd = Assistant de Gestion de la Formation Dans Dolibarr
 AgefoddShort = Gestion de la formation
 AgefoddSetupDesc = Configuration d'Agefodd
 AgefoddSetupParamChoice = Selection des paramètres :
