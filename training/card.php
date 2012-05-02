@@ -128,7 +128,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
  * Action create (fiche formation)
  */
 
-if ($action == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
@@ -228,7 +228,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="create">';
+	print '<input type="hidden" name="action" value="create_confirm">';
 
 	print '<table class="border" width="100%">';
 
