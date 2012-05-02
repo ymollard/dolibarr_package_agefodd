@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +27,8 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_session.class.php");
-require_once("../lib/agefodd.lib.php");
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
 
 
 // Security check
@@ -35,13 +36,14 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 llxHeader();
 
-$sortorder=GETPOST("sortorder");
-$sortfield=GETPOST("sortfield");
-$page=GETPOST("page");
+$sortorder=GETPOST('sortorder','alpha');
+$sortfield=GETPOST('sortfield','alpha');
+$page=GETPOST('page','int');
+$arch=GETPOST('arch','int');
 
-if (! $sortorder) $sortorder="DESC";
-if (! $sortfield) $sortfield="c.rowid";
-
+if (empty($sortorder)) $sortorder="DESC";
+if (empty($sortfield)) $sortfield="c.rowid";
+if (empty($arch)) $arch = 0;
 
 if ($page == -1) { $page = 0 ; }
 
@@ -49,9 +51,6 @@ $limit = $conf->liste_limit;
 $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-
-if (!isset($_GET["arch"])) $arch = 0;
-else $arch = $_GET["arch"];
 
 $db->begin();
 
@@ -69,7 +68,7 @@ $sql.= " ON s.rowid = ss.fk_session";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
 $sql.= " ON s.rowid = sa.fk_agefodd_session";
 
-if ($_GET["arch"] == 2)
+if ($arch == 2)
 {
 	$sql.= " WHERE s.archive LIKE 0";
 	$sql.= " AND sa.indice=";
@@ -88,7 +87,7 @@ if ($resql)
 	$num = $db->num_rows($resql);
 	
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
-	elseif ($_GET["arch"] == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
+	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
 	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
 	

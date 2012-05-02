@@ -31,13 +31,13 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd
+class Agefodd extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
+	var $table_element='agefodd_formation_catalogue';
     var $id;
 
 	/**
@@ -77,7 +77,7 @@ class Agefodd
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
 		$sql.= "datec, ref_interne, intitule, duree, public, methode, prerequis, programme, fk_user";
 		$sql.= ") VALUES (";
-	  	$sql.= $this->db->idate(dol_now()) .', ';
+	  	$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
@@ -153,6 +153,7 @@ class Agefodd
 		{
 		$obj = $this->db->fetch_object($resql);
 		$this->id = $obj->rowid;
+		$this->ref = $obj->rowid; // Use for show_next_prev
 		$this->ref_interne = $obj->ref_interne;
 		$this->intitule = stripslashes($obj->intitule);
 		$this->duree = $obj->duree;

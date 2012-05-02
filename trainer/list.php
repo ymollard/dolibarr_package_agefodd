@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +27,8 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_formateur.class.php");
-require_once("../lib/agefodd.lib.php");
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/trainer/class/agefodd_formateur.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
 
 
 // Security check
@@ -35,13 +36,14 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 llxHeader();
 
-$sortorder=$_GET["sortorder"];
-$sortfield=$_GET["sortfield"];
-$page=$_GET["page"];
+$sortorder=GETPOST('sortorder','alpha');
+$sortfield=GETPOST('sortfield','alpha');
+$page=GETPOST('page','int');
+$arch=GETPOST('arch','int');
 
-if (! $sortorder) $sortorder="ASC";
-if (! $sortfield) $sortfield="s.name, s.firstname";
-
+if (empty($sortorder)) $sortorder="ASC";
+if (empty($sortfield)) $sortfield="s.name, s.firstname";
+if (empty($arch)) $arch = 0;
 
 if ($page == -1) { $page = 0 ; }
 
@@ -50,9 +52,6 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-if (!isset($_GET["arch"])) $arch = 0;
-else $arch = $_GET["arch"];
-
 $agf = new Agefodd_teacher($db);
 
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
@@ -60,33 +59,32 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 $linenum = count($agf->line);
 
 
+print_barre_liste($langs->trans("AgfTeacher"), $page, $_SERVER['PHP_SELF'],'', $sortfield, $sortorder, "", $linenum);
+
+print '<div width=100%" align="right">';
+if ($arch == 2)
+{
+	print '<a href="'.$_SERVER['PHP_SELF'].'?arch=0">'.$langs->trans("AgfCacherFormateursArchives").'</a>'."\n";
+}
+else
+{
+	print '<a href="'.$_SERVER['PHP_SELF'].'?arch=2">'.$langs->trans("AgfAfficherFormateursArchives").'</a>'."\n";
+
+}
+print '<a href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'">'.$txt.'</a>'."\n";
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","&arch=".$arch,"",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Name"),$_SERVER['PHP_SELF'],"s.name","", "",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Firstname"),$_SERVER['PHP_SELF'],"s.firstname","","",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"s.civilite","","",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.phone","","",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("PhoneMobile"),$_SERVER['PHP_SELF'],"s.phone","","",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.email","","",'',$sortfield,$sortorder);
+print "</tr>\n";
+	
 if ($resql)
 {
-
-	print_barre_liste($langs->trans("AgfTeacher"), $page, $_SERVER['PHP_SELF'],"prout", $sortfield, $sortorder, "", $linenum);
-	
-	print '<div width=100%" align="right">';
-	if ($arch == 2)
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?arch=0">'.$langs->trans("AgfCacherFormateursArchives").'</a>'."\n";
-	}
-	else
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?arch=2">'.$langs->trans("AgfAfficherFormateursArchives").'</a>'."\n";
-	
-	}
-	print '<a href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'">'.$txt.'</a>'."\n";
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","&arch=".$arch,"",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Name"),$_SERVER['PHP_SELF'],"s.name","", "",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Firstname"),$_SERVER['PHP_SELF'],"s.firstname","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"s.civilite","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.phone","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("PhoneMobile"),$_SERVER['PHP_SELF'],"s.phone","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.email","","",'',$sortfield,$sortorder);
-	print "</tr>\n";
-	
 	$var=true;
 	$i = 0;
 	while ($i < $linenum)
@@ -109,13 +107,13 @@ if ($resql)
 	
 		$i++;
 	}
-	
-	print "</table>";
 }
 else
 {
     dol_syslog("agefodd::s_teacher_liste::query::fetch ".$errmsg, LOG_ERR);
 }
+
+print "</table>";
 print '<div class="tabsAction">';
 
 

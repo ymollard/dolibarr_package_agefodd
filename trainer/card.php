@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +27,14 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_formateur.class.php");
-require_once("../lib/agefodd.lib.php");
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/trainer/class/agefodd_formateur.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
 
+
+$action=GETPOST('action','alpha');
+$confirm=GETPOST('action','alpha');
+$id=GETPOST('id','int');
+$arch=GETPOST('arch','int');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -36,60 +42,48 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
 
-$db->begin();
 
 /*
  * Actions delete
  */
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_teacher($db);
-	$result = $agf->remove($_GET["id"]);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: list.php");
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
+		$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
 	}
 }
 
 /*
  * Actions archive/active
  */
-if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confirm == "yes")
 {
-	if ($_POST["confirm"] == "yes")
+	$agf = new Agefodd_teacher($db);
+
+	$result = $agf->fetch($id);
+
+	$agf->archive = $_GET["arch"];
+	$result = $agf->update($user->id);
+
+	if ($result > 0)
 	{
-		$agf = new Agefodd_teacher($db);
-	
-		$result = $agf->fetch($_GET["id"]);
-	
-		$agf->archive = $_GET["arch"];
-		$result = $agf->update($user->id);
-	
-		if ($result > 0)
-		{
-		$db->commit();
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
-		}
-		else
-		{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-		}
-	
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
-		exit;
+		dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
+		$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
 	}
 }
 
@@ -98,36 +92,32 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
  * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_teacher($db);
 
-		$agf->datec = $db->idate(mktime());
 		$agf->spid = $_POST["spid"];
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
 		}
-
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
-
 
 
 /*
@@ -138,26 +128,15 @@ llxHeader();
 
 $form = new Form($db);
 
-$id = $_GET['id'];
-
-
+dol_htmloutput_mesg($mesg);
 /*
  * Action create
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
-	
-	$head[$h][0] = $_SERVER['PHP_SELF']."?id=$agf->id";
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfTeacher"), 0, 'user');
-
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="create">'."\n";
+	print '<input type="hidden" name="action" value="create_confirm">'."\n";
 
 	print '<div class="warning">La fiche formateur ne peut être créée qu\'à partir d\'un contact déjà existant dans Dolibarr.';
 	print '<br>Si ce contact n\'existe pas, vous devez le créer à partir de la fiche de création d\'un <a href="'.DOL_URL_ROOT.'/contact/fiche.php?action=create">nouveau contact</a>. Sinon, selectionnez le contact dans la liste déroulante ci dessous.</div>';
@@ -201,16 +180,16 @@ else
 			/*
 				* Confirmation de la suppression
 				*/
-			if ($_GET["action"] == 'delete')
+			if ($action == 'delete')
 			{
-				$ret=$form->form_confirm("s_teacher_fiche.php?id=".$id,$langs->trans("AgfDeleteTeacher"),$langs->trans("AgfConfirmDeleteTeacher"),"confirm_delete");
+				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteTeacher"),$langs->trans("AgfConfirmDeleteTeacher"),"confirm_delete");
 				if ($ret == 'html') print '<br>';
 			}
 			
 			/*
 			* Confirmation de l'archivage/activation suppression
 			*/
-			if (isset($_GET["arch"]))
+			if (!empty($arch))
 			{
 				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
 				if ($ret == 'html') print '<br>';
@@ -219,7 +198,7 @@ else
 			print '<table class="border" width="100%">';
 
 			print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-			print '<td>'.$agf->id.'</td></tr>';
+			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id');'</td></tr>';
 
 			print '<tr><td>'.$langs->trans("Name").'</td>';
 			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->name).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
@@ -244,7 +223,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] != 'nfcontact')
+if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
 	if ($user->rights->agefodd->creer)
 	{

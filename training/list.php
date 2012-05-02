@@ -73,7 +73,7 @@ if ($resql)
     dol_syslog("agefodd::training::list::query sql=".$sql, LOG_DEBUG);
     $num = $db->num_rows($resql);
 
-    print_barre_liste($langs->trans("AgfFormationList"), $page, $_SERVER['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
+    print_barre_liste($langs->trans("AgfFormationList"), $page, $_SERVER['PHP_SELF'],'', $sortfield, $sortorder,'', $num);
 
     $i = 0;
     print '<table class="noborder" width="100%">';

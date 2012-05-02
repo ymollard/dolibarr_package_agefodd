@@ -451,10 +451,10 @@ else
 
 				print "<tr>";
 				print '<td width="20%">'.$langs->trans("Ref").'</td><td colspan=2>';
-				print $agf->id;
+				print $form->showrefnav($agf,'id','',1,'rowid','id');
 				print '</td></tr>';
-
-				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td colspan=2>';
+				
+				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td>';
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';

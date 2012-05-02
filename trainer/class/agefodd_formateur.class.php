@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +31,13 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_teacher
+class Agefodd_teacher extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
+	var $table_element='agefodd_formateur';
         var $id;
 
 	/**
@@ -48,7 +49,6 @@ class Agefodd_teacher
 		$this->db = $DB;
 		return 1;
 	}
-
 
 
 	/**
@@ -74,7 +74,7 @@ class Agefodd_teacher
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->spid.'", ';
 		$sql.= '"'.$user.'",';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
 		$this->db->begin();
@@ -144,6 +144,7 @@ class Agefodd_teacher
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->ref = $obj->rowid; // Use for show_next_prev
 				$this->spid = $obj->spid;
 				$this->name = $obj->name;
 				$this->firstname = $obj->firstname;
@@ -243,10 +244,10 @@ class Agefodd_teacher
 			{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->datec = $obj->datec;
+			$this->date_creation = $obj->datec;
 			$this->tms = $obj->tms;
-			$this->fk_user_mod = $obj->fk_user_mod;
-			$this->fk_user_author = $obj->fk_user_author;
+			$this->user_modification = $obj->fk_user_mod;
+			$this->user_creation = $obj->fk_user_author;
 			}
 			$this->db->free($resql);
 		

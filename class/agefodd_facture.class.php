@@ -75,7 +75,7 @@ class Agefodd_facture
 		$sql.= '"'.$this->sessid.'", ';
 		$sql.= '"'.$this->socid.'", ';
 		$sql.= '"'.$user.'", ';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 		
 		$this->db->begin();
@@ -242,10 +242,10 @@ class Agefodd_facture
 			{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->datec = $obj->datec;
+			$this->date_creation = $obj->datec;
 			$this->tms = $obj->tms;
-			$this->fk_userc = $obj->fk_user_author;
-			$this->fk_userm = $obj->fk_user_mod;
+			$this->user_creation = $obj->fk_user_author;
+			$this->user_modification = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
 		

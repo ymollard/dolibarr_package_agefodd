@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,30 +23,35 @@
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
  */
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_session.class.php");
-require_once("./class/agefodd_sessadm.class.php");
-require_once("../class/agefodd_facture.class.php");
-require_once("../class/agefodd_convention.class.php");
-require_once("../core/models/pdf/pdf_document.php");
-require_once("../lib/agefodd.lib.php");
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_sessadm.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/class/agefodd_facture.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/class/agefodd_convention.class.php');
+require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
+$action=GETPOST('action','alpha');
+$id=GETPOST('id','int');
+$socid=GETPOST('socid','int');
+
 
 $mesg = '';
 
-$db->begin();
-
 // lie une facture ou un bon de commande à la session
-if($_POST["bt_save_x"] && $_GET["action"] == 'link' && $user->rights->agefodd->creer)
+if($_POST["bt_save_x"] && $action == 'link' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
-	$result = $agf->fetch($_GET["id"], $_POST["socid"]);
+	$result = $agf->fetch($id, $socid);
 	
 	// si existe déjà, on met à jour
 	if ($agf->id)
@@ -62,32 +68,31 @@ if($_POST["bt_save_x"] && $_GET["action"] == 'link' && $user->rights->agefodd->c
 			$agf->comid=$_POST["select"];
 			$agf->facid="";
 		}
-		$agf->sessid = $_GET["id"];
-		$agf->socid = $_POST["socid"];
-		$agf->datec  =$db->idate(mktime());;
+		$agf->sessid = $id;
+		$agf->socid = $socid;
+		$agf->datec  =$db->idate(dol_now());;
 		$result2 = $agf->create($user->id);
 	}
 
 	if ($result2)
 	{
-		$db->commit();
-		Header( "Location: s_doc_fiche.php?id=".$_GET["id"]);
+		Header( "Location: s_doc_fiche.php?id=".$id);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-		$mesg = "Document linked error";
+		
+		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		$mesg = "Document linked error" . $agf->error;
 
 	}
 }
 
 // Casse le lien entre une facture ou un bon de commande et la session
-if($_GET["action"] == 'unlink' && $user->rights->agefodd->creer)
+if($action == 'unlink' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
-	$result = $agf->fetch($_GET["id"], $_GET["socid"]);
+	$result = $agf->fetch($id, $socid);
 	
 	// si existe déjà, on met à jour
 	if ($agf->id)
@@ -98,20 +103,17 @@ if($_GET["action"] == 'unlink' && $user->rights->agefodd->creer)
 	}
 	if ($result2)
 	{
-		$db->commit();
 		Header( "Location: s_doc_fiche.php?id=".$_GET["id"]);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
-		$mesg = "Document unlink error";
+		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		$mesg = "Document unlink error".$agf->error;
 
 	}
 
 }
-
 
 
 /*
@@ -122,12 +124,10 @@ llxHeader();
 
 $form = new Form($db);
 
-$id = $_GET['id'];
-
 /*
  * Action create and refresh pdf document
  */
-if (($_GET["action"] == 'create' || $_GET["action"] == 'refresh' ) && $user->rights->agefodd->creer)
+if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->creer)
 {
 	if (!empty($_GET["cour"])) $file = $_GET["model"].'-'.$_GET["cour"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
 	else $file = $_GET["model"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
@@ -137,7 +137,7 @@ if (($_GET["action"] == 'create' || $_GET["action"] == 'refresh' ) && $user->rig
 /*
  * Action delete pdf document
  */
-if ($_GET["action"] == 'del' && $user->rights->agefodd->creer)
+if ($action == 'del' && $user->rights->agefodd->creer)
 {
 	if (!empty($_GET["cour"])) 
 	    $file = $conf->agefodd->dir_output.'/'.$_GET["model"].'-'.$_GET["cour"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
@@ -153,7 +153,7 @@ if ($_GET["action"] == 'del' && $user->rights->agefodd->creer)
 
 
 // Selection du bon de commande ou de la facture à lier
-if (($_GET["action"] == 'link' ) && $user->rights->agefodd->creer)
+if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
 	$head = session_prepare_head($agf);
 	
@@ -226,7 +226,7 @@ if ($id)
 		if ($mesg) print $mesg."<br>";
 		
 		
-		function show_conv($file, $socid)
+		function show_conv($file, $socid,$nom_courrier)
 		{
 			global $langs, $conf, $db, $id, $form, ${'flag_bc_'.$socid};
 
@@ -249,26 +249,26 @@ if ($id)
 	
 					// Regenerer
 					$legende = $langs->trans("AgfDocRefresh");
-					$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					
 					// Supprimer
 					$legende = $langs->trans("AgfDocDel");
-					$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				}
 				else
 				{
 					// Création de la convention au format PDF
 					$legende = $langs->trans("AgfDocCreate");
-					$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 						$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 				}
 				
 				// editer la convention pour modification
 				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/convention_fiche.php?id='.$id.'&action=edit&convid='.$agf->id.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&action=edit&convid='.$agf->id.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 
@@ -277,7 +277,7 @@ if ($id)
 			{
 				// Si la convention n'a pas encore été renseignée, il faut le faire maintenant
 				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/convention_fiche.php?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			}
@@ -304,23 +304,23 @@ if ($id)
 
 				// Regenerer
 				$legende = $langs->trans("AgfDocRefresh");
-				$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Supprimer
 				$legende = $langs->trans("AgfDocDel");
-				$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			}
 			else
 			{
 				// Génereration des documents
-				if (file_exists(DOL_DOCUMENT_ROOT.'/agefodd/core/models/pdf/pdf_'.$model.'_modele.php'))
+				if (file_exists(DOL_DOCUMENT_ROOT_ALT.'/agefodd/core/models/pdf/pdf_'.$model.'_modele.php'))
 				{
 
 					$legende = $langs->trans("AgfDocCreate");
-					$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				}
 				else
@@ -353,7 +353,7 @@ if ($id)
 
 					// Délier le bon de commande
 					$legende = $langs->trans("AgfFactureUnselectBon");
-					$mess.= '<a href="s_doc_fiche.php?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 					//$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/undo.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/agefodd/img/unlink.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				}
@@ -369,7 +369,7 @@ if ($id)
 					// Lier un bon de commande existant
 					$legende = $langs->trans("AgfFactureSelectBon");
 					//$mess.= '<a href="#" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/redo.png" border="0" align="absmiddle" hspace="2px" ></a>';
-					$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.DOL_URL_ROOT.'/agefodd/img/link.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.DOL_URL_ROOT.'/agefodd/img/link.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					
 					
 						
@@ -388,7 +388,7 @@ if ($id)
 
 					// Délier la facture
 					$legende = $langs->trans("AgfFactureUnselectFac");
-					$mess.= '<a href="s_doc_fiche.php?action=unlink&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?action=unlink&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/agefodd/img/unlink.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 				}
@@ -405,7 +405,7 @@ if ($id)
 
 						// lier une facture existante
 						$legende = $langs->trans("AgfFactureSelectFac");
-						$mess.= '<a href="'.DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.DOL_URL_ROOT.'/agefodd/img/link.png" border="0" align="absmiddle" hspace="2px" ></a>';
+						$mess.= '<a href="'.DOL_URL_ROOT_ALT.'/agefodd/convention_fiche.php?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.DOL_URL_ROOT.'/agefodd/img/link.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					}
 					else
 					{
@@ -437,7 +437,7 @@ if ($id)
 			}
 			elseif ( $mdle == 'convention')
 			{
-				print '<td width="200px" style="border-left:0px; text-align:right;">'.show_conv($mdle, $socid).'</td></tr>'."\n";
+				print '<td width="200px" style="border-left:0px; text-align:right;">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
 			}
 			else
 			{
@@ -455,7 +455,7 @@ if ($id)
 		/*
 		* Confirmation de la suppression
 		*/
-		if ($_GET["action"] == 'delete')
+		if ($action == 'delete')
 		{
 			$ret=$form->form_confirm("s_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 			if ($ret == 'html') print '<br>';

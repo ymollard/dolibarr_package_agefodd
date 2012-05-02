@@ -327,7 +327,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuSessArchList',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/session/list.php?arch=1',
+								'url'=>'/agefodd/session/list.php?arch=2',
 								'langs'=>'agefodd@agefodd',
 								'position'=>203,
 								'enabled'=>1,

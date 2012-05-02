@@ -3,6 +3,7 @@
 	<name>agefodd</name>
 	<comment></comment>
 	<projects>
+		<project>DolibarrDevGit</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
