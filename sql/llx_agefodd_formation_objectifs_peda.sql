@@ -17,7 +17,6 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
-
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_objectifs_peda (
   rowid int(11) NOT NULL auto_increment,
   fk_formation_catalogue int(11) NOT NULL,
