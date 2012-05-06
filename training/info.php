@@ -26,9 +26,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/training/class/agefodd_formation_catalogue.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
-require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
+dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/functions2.lib.php');
 
 
 // Security check

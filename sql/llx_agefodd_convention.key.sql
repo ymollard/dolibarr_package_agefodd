@@ -1,6 +1,7 @@
 -- ============================================================================
 -- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
 -- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,14 +18,8 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
+--
+-- Contraintes pour la table llx_agefodd_convention
+--
+ALTER TABLE llx_agefodd_convention ADD CONSTRAINT llx_agefodd_convention_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_contact
-(
-	rowid int(11) NOT NULL auto_increment,
-	fk_socpeople	integer	NOT NULL,
-	fk_user_author	integer	NOT NULL,
-	datec	datetime  NOT NULL,
-	fk_user_mod integer NOT NULL,
-	tms timestamp NOT NULL default CURRENT_TIMESTAMP,
-	PRIMARY KEY  (rowid)	
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
