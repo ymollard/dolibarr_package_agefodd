@@ -56,7 +56,7 @@ if (empty($arch)) $arch = 0;
 // TODO move sql query to Model Class
 $db->begin();
 
-$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.datec, c.duree,";
+$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree,";
 $sql.= " IF(a.archive LIKE '1',c.datec, '') as lastsession,";
 $sql.= " a.dated";
 $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
@@ -64,7 +64,7 @@ $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as a";
 $sql.= " ON c.rowid = a.fk_formation_catalogue";
 $sql.= " WHERE c.archive LIKE ".$arch;
 
-$sql.= " GROUP BY c.ref_interne";
+$sql.= " GROUP BY c.ref";
 $sql.= " ORDER BY $sortfield $sortorder " . $db->plimit( $limit + 1 ,$offset);
 $resql = $db->query($sql);
 
@@ -80,7 +80,7 @@ if ($resql)
     print "<tr class=\"liste_titre\">";
     print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","","&socid=$socid",'',$sortfield,$sortorder);
     print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref_interne","","",'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref","","",'',$sortfield,$sortorder);
     print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","","",'',$sortfield,$sortorder);
     print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","","",'',$sortfield,$sortorder);
     print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","","",'',$sortfield,$sortorder);
@@ -90,41 +90,40 @@ if ($resql)
     $var=true;
     while ($i < $num)
     {
-	$objp = $db->fetch_object($resql);
-
-
-	// Totalisation des sessions réalisées par type de formation
-	$sql2 = "SELECT a.rowid";
-	$sql2.= " FROM ".MAIN_DB_PREFIX."agefodd_session as a";
-	$sql2.= " WHERE fk_formation_catalogue = ".$objp->rowid;
-	$sql2.= " AND archive LIKE '1'";
+		$objp = $db->fetch_object($resql);
 	
-	$resql2 = $db->query($sql2);
-	if ($resql2) {
-	    $count = $db->num_rows($resql2);
-	    dol_syslog("agefodd::training::list::num_rows sql=".$sql2, LOG_DEBUG);
-	}
-	else 
-	{
-	    $db->rollback();
-	    dol_print_error($db);
-	    dol_syslog("agefodd::training::list::num_rows ".$errmsg, LOG_ERR);
-	}
 	
-	// Affichage tableau des formations
-	$var=!$var;
-	print "<tr $bc[$var]>";
-	print '<td><a href="card.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
-	print '<td>'.stripslashes($objp->intitule).'</td>';
-	print '<td>'.$objp->ref_interne.'</td>';
-	print '<td>'.dol_print_date($objp->datec,'day').'</td>';
-	print '<td>'.$objp->duree.'</td>';
-	//print '<td>'.dol_print_date($objp->dated,'day').'</td>';
-	print '<td>'.dol_print_date($objp->lastsession,'day').'</td>';
-	print '<td>'.$count.'</td>';
-	print "</tr>\n";
-
-	$i++;
+		// Totalisation des sessions réalisées par type de formation
+		$sql2 = "SELECT a.rowid";
+		$sql2.= " FROM ".MAIN_DB_PREFIX."agefodd_session as a";
+		$sql2.= " WHERE fk_formation_catalogue = ".$objp->rowid;
+		$sql2.= " AND archive LIKE '1'";
+		
+		$resql2 = $db->query($sql2);
+		if ($resql2) {
+		    $count = $db->num_rows($resql2);
+		    dol_syslog("agefodd::training::list::num_rows sql=".$sql2, LOG_DEBUG);
+		}
+		else 
+		{
+		    $db->rollback();
+		    dol_print_error($db);
+		    dol_syslog("agefodd::training::list::num_rows ".$errmsg, LOG_ERR);
+		}
+	
+		// Affichage tableau des formations
+		$var=!$var;
+		print "<tr $bc[$var]>";
+		print '<td><a href="card.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
+		print '<td>'.stripslashes($objp->intitule).'</td>';
+		print '<td>'.$objp->ref_interne.'</td>';
+		print '<td>'.dol_print_date($objp->datec,'day').'</td>';
+		print '<td>'.$objp->duree.'</td>';
+		print '<td>'.dol_print_date($objp->lastsession,'day').'</td>';
+		print '<td>'.$count.'</td>';
+		print "</tr>\n";
+	
+		$i++;
     }
     
     print "</table>";

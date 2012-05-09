@@ -134,6 +134,8 @@ dol_htmloutput_mesg($mesg);
  */
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
+	print_fiche_titre($langs->trans("AgfFormateurAdd"));
+	
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm">'."\n";

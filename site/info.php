@@ -26,9 +26,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("../class/agefodd_session_place.class.php");
-require_once("../lib/agefodd.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/functions2.lib.php");
+dol_include_once('/agefodd/site/class/agefodd_session_place.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/functions2.lib.php');
 
 
 // Security check
@@ -36,51 +36,26 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
 
+$id=GETPOST('id','int');
+
 $db->begin();
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
-$agf = new Agefodd_splace($db);
-$agf->fetch($_GET["id"]);
-$agf->info($_GET["id"]);
+$agf = new Agefodd_session_place($db);
+$agf->info($id);
 
 $head = site_prepare_head($agf);
-				
-dol_fiche_head($head, 'info', $langs->trans("AgfCatalogDetail"), 0, 'bill');
 
-print '<table class="border" width="100%">';
-print "<tr>";
-print '<td width="20%">'.$langs->trans("Ref").'</td><td>'.$agf->id.'</td></tr>';
+dol_fiche_head($head, 'info', $langs->trans("AgfTeacherSite"), 0, 'bill');
 
-$userstatic1 = new User($db);
-$userstatic1->id = $agf->fk_user_author;
-$userstatic1->fetch();
-print '<tr><td>'.$langs->trans("CreatedBy").'</td><td>';
-print $userstatic1->getNomUrl(1).' ';
-print $langs->trans("AgfLe").' '.dol_print_date($agf->datec).'</td></tr>';
-
-
-$userstatic2 = new User($db);
-$userstatic2->id = $agf->fk_user_mod;
-$userstatic2->fetch();
-if (!$agf->fk_user_mod)
-{
-    print '<tr><td>'.$langs->trans("DateLastModification").'</td><td>';
-    print $langs->trans("AgfNoMod").'</td></tr>';
-}
-else 
-{
-    
-    print '<tr><td>'.$langs->trans("ModifiedBy").'</td><td>';
-    print $userstatic2->getNomUrl(1).' ';
-    print $langs->trans("AgfLe").' '.dol_print_date($agf->tms,"dayhourtext").'</td></tr>';
-}
-
-print '</table>';
+print '<table width="100%"><tr><td>';
+dol_print_object_info($agf);
+print '</td></tr></table>';
 print '</div>';
 
 $db->close();

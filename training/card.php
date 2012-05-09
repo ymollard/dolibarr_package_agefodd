@@ -96,7 +96,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($id);
 
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->ref_interne = GETPOST('ref_interne','alpha');
+		$agf->ref = GETPOST('ref','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
 		$agf->methode = GETPOST('methode','alpha');
@@ -135,7 +135,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf = new Agefodd($db);
 
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->ref_interne = GETPOST('ref_interne','alpha');
+		$agf->ref = GETPOST('ref','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
 		$agf->methode = GETPOST('methode','alpha');
@@ -176,10 +176,10 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 	{
 		$result = $agf->fetch_objpeda($id);
 
-		$agf->intitule = $_POST["intitule"];
-		$agf->priorite = $_POST["priorite"];
-		$agf->fk_formation_catalogue = $_POST["idforma"];
-		$agf->id = $_POST["id"];
+		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->priorite = GETPOST('priorite','alpha');
+		$agf->fk_formation_catalogue = GETPOST('idforma','int');
+		$agf->id = $id;
 		
 		$result = $agf->update_objpeda($user->id);
 	}
@@ -190,9 +190,9 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 	// Creation d'un nouvel objectif pedagogique
 	if ($_POST["obj_add_x"]) 
 	{
-	    $agf->intitule = $_POST["intitule"];
-	    $agf->priorite = $_POST["priorite"];
-	    $agf->fk_formation_catalogue = $_POST["idforma"];
+		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->priorite = GETPOST('priorite','alpha');
+		$agf->fk_formation_catalogue = GETPOST('idforma','int');
 	    
 	    $result = $agf->create_objpeda($user->id);
 	}
@@ -226,17 +226,33 @@ dol_htmloutput_mesg($mesg);
  */
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
+	print_fiche_titre($langs->trans("AgfMenuCatNew"));
+	
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="create_confirm">';
 
 	print '<table class="border" width="100%">';
 
-	print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td><td>';
+	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfIntitule").'</span></td><td>';
 	print '<input name="intitule" class="flat" size="50" value=""></td></tr>';
-
-	print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
-	print '<input name="ref_interne" class="flat" size="50" value=""></td></tr>';
+	
+	$agf = new Agefodd($db);
+	
+	$defaultref='';
+	$obj = empty($conf->global->AGF_ADDON)?'mod_agefodd_simple':$conf->global->AGF_ADDON;
+	if (! empty($conf->global->AGF_ADDON) && is_readable(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/".$conf->global->AGF_ADDON.".php"))
+	{
+		require_once(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/".$conf->global->AGF_ADDON.".php");
+		$modAgefodd = new $obj;
+		$defaultref = $modAgefodd->getNextValue($soc,$project);
+	}
+	
+	if (is_numeric($defaultref) && $defaultref <= 0) $defaultref='';
+	
+	
+	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfRefInterne").'</span></td><td>';
+	print '<input name="ref" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
 
 	print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
 	print '<input name="duree" class="flat" size="50" value=""></td></tr>';
@@ -313,7 +329,7 @@ else
 				print '<input name="intitule" class="flat" size="50" value="'.stripslashes($agf->intitule).'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
-				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
+				print '<input name="ref" class="flat" size="50" value="'.$agf->ref.'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
 				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
@@ -458,7 +474,7 @@ else
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';
-				print $agf->ref_interne.'</td></tr>';
+				print $agf->ref.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfDuree").'</td><td colspan=2>';
 				print $agf->duree.'</td></tr>';

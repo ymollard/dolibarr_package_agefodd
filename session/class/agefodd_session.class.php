@@ -30,7 +30,7 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_session
+class Agefodd_session extends CommonObject
 {
 	var $db;
 	var $error;
@@ -63,10 +63,10 @@ class Agefodd_session
     	
 		// Clean parameters
 		$this->fk_formation_catalogue = trim($this->nom);
-    		$this->fk_session_place = trim($this->prenom);
-    		$this->fk_agefodd_formateur = addslashes(trim($this->fonction));
-    		$this->dated = addslashes(trim($this->dated));
-    		$this->datef = addslashes(trim($this->datef));
+    	$this->fk_session_place = trim($this->prenom);
+    	$this->fk_agefodd_formateur = addslashes(trim($this->fonction));
+    	$this->dated = addslashes(trim($this->dated));
+    	$this->datef = addslashes(trim($this->datef));
 		$this->notes = addslashes(trim($this->notes));
 		$this->fk_user_author = addslashes(trim($this->mail));
     		
@@ -81,11 +81,11 @@ class Agefodd_session
 		$sql.= '"'.$this->formid.'", ';
 		$sql.= '"'.$this->place.'", ';
 		$sql.= '"'.$this->formateur.'", ';
-		$sql.= '"'.$this->dated.'", ';
-		$sql.= '"'.$this->datef.'", ';
+		$sql.= '"'.($this->dated != '' ? $this->db->idate($this->dated) : 'null').'", ';
+		$sql.= '"'.($this->datef != '' ? $this->db->idate($this->datef) : 'null').'", ';
 		$sql.= '"'.ebi_mysql_escape_string($this->notes).'",';
 		$sql.= '"'.$user.'", ';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
 		$this->db->begin();
@@ -207,25 +207,25 @@ class Agefodd_session
     {
     	global $langs;
                             
-	$sql = "SELECT";
-	$sql.= " s.rowid, s.fk_formation_catalogue, s.fk_session_place, s.fk_agefodd_formateur, s.dated, s.datef, s.notes, s.archive,";
-	$sql.= " c.intitule, c.ref_interne, c.duree,";
-	$sql.= " p.rowid as placeid, p.code,";
-	$sql.= " CONCAT(sp.name,' ',sp.firstname) as teachername";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-	$sql.= " ON c.rowid = s.fk_formation_catalogue";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_place as p";
-	$sql.= " ON p.rowid = s.fk_session_place";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
-	$sql.= " ON ss.fk_session = c.rowid";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
-	$sql.= " ON f.rowid = s.fk_agefodd_formateur";
+		$sql = "SELECT";
+		$sql.= " s.rowid, s.fk_formation_catalogue, s.fk_session_place, s.fk_agefodd_formateur, s.dated, s.datef, s.notes, s.archive,";
+		$sql.= " c.intitule, c.ref_interne, c.duree,";
+		$sql.= " p.rowid as placeid, p.code,";
+		$sql.= " CONCAT(sp.name,' ',sp.firstname) as teachername";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+		$sql.= " ON c.rowid = s.fk_formation_catalogue";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " ON p.rowid = s.fk_session_place";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
+		$sql.= " ON ss.fk_session = c.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
+		$sql.= " ON f.rowid = s.fk_agefodd_formateur";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
-	$sql.= " ON sp.rowid = f.fk_socpeople";
+		$sql.= " ON sp.rowid = f.fk_socpeople";
         $sql.= " WHERE s.rowid = ".$id;
 
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -235,13 +235,13 @@ class Agefodd_session
                 $this->id = $obj->rowid;
                 $this->formid = stripslashes($obj->fk_formation_catalogue);
                 $this->place = stripslashes($obj->fk_session_place);
-		$this->teacherid = stripslashes($obj->fk_agefodd_formateur);
+				$this->teacherid = stripslashes($obj->fk_agefodd_formateur);
                 $this->formref = stripslashes($obj->ref_interne);
                 $this->formintitule = stripslashes($obj->intitule);
-		$this->duree = $obj->duree;
+				$this->duree = $obj->duree;
                 $this->placeid = stripslashes($obj->placeid);
-		$this->teachername = stripslashes($obj->teachername);
-		$this->placecode = stripslashes($obj->code);
+				$this->teachername = stripslashes($obj->teachername);
+				$this->placecode = stripslashes($obj->code);
                 $this->dated = $obj->dated;
                 $this->datef = $obj->datef;
                 $this->notes = stripslashes($obj->notes);
@@ -269,56 +269,55 @@ class Agefodd_session
     {
     	global $langs;
                             
-	$sql = "SELECT";
-	$sql.= " s.rowid as sessid,";
-	$sql.= " ss.rowid, ss.fk_stagiaire, ss.fk_agefodd_stagiaire_type,";
-	$sql.= " sa.nom, sa.prenom,";
-	$sql.= " civ.code as civilite, civ.civilite as civilitel,";
-	$sql.= " so.nom as socname, so.rowid as socid,";
-	$sql.= " st.rowid as typeid, st.intitule as type";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
-	$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
-	$sql.= " ON s.rowid = ss.fk_session";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
-	$sql.= " ON sa.rowid = ss.fk_stagiaire";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-	$sql.= " ON civ.rowid = sa.fk_c_civilite";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
-	$sql.= " ON so.rowid = sa.fk_soc";
- 	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_type as st";
-	$sql.= " ON st.rowid = ss.fk_agefodd_stagiaire_type";
+		$sql = "SELECT";
+		$sql.= " s.rowid as sessid,";
+		$sql.= " ss.rowid, ss.fk_stagiaire, ss.fk_agefodd_stagiaire_type,";
+		$sql.= " sa.nom, sa.prenom,";
+		$sql.= " civ.code as civilite, civ.civilite as civilitel,";
+		$sql.= " so.nom as socname, so.rowid as socid,";
+		$sql.= " st.rowid as typeid, st.intitule as type";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
+		$sql.= " ON s.rowid = ss.fk_session";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
+		$sql.= " ON sa.rowid = ss.fk_stagiaire";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
+		$sql.= " ON civ.rowid = sa.fk_c_civilite";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = sa.fk_soc";
+	 	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_type as st";
+		$sql.= " ON st.rowid = ss.fk_agefodd_stagiaire_type";
         $sql.= " WHERE s.rowid = ".$id;
-	if (!empty($socid)) $sql.= " AND so.rowid = ".$socid;
-	$sql.= " ORDER BY sa.nom";
+		if (!empty($socid)) $sql.= " AND so.rowid = ".$socid;
+		$sql.= " ORDER BY sa.nom";
 
-	dol_syslog(get_class($this)."::fetch_stagiaire_per_session sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_stagiaire_per_session sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
             $this->line = array();
             $num = $this->db->num_rows($resql);
 
-		$i = 0;
-            	while( $i < $num)
+			$i = 0;
+           	while( $i < $num)
 		//for ($i=0; $i < $num; $i++)
-		{
-                	$obj = $this->db->fetch_object($resql);
-			$this->line[$i]->stagerowid = $obj->rowid;
-                	$this->line[$i]->sessid = $obj->sessid;
-			$this->line[$i]->id = $obj->fk_stagiaire;
-                	$this->line[$i]->nom = $obj->nom;
-                	$this->line[$i]->prenom = $obj->prenom;
-                	$this->line[$i]->civilite = $obj->civilite;
-                	$this->line[$i]->civilitel = $obj->civilitel;
-                	$this->line[$i]->socname = $obj->socname;
-			$this->line[$i]->socid = $obj->socid;
-			$this->line[$i]->typeid = $obj->typeid;
-			$this->line[$i]->type = $obj->type;
-			$i++;
-		}
-            	$this->db->free($resql);
-		return $num;
-
+			{
+	           	$obj = $this->db->fetch_object($resql);
+				$this->line[$i]->stagerowid = $obj->rowid;
+	           	$this->line[$i]->sessid = $obj->sessid;
+				$this->line[$i]->id = $obj->fk_stagiaire;
+               	$this->line[$i]->nom = $obj->nom;
+               	$this->line[$i]->prenom = $obj->prenom;
+               	$this->line[$i]->civilite = $obj->civilite;
+               	$this->line[$i]->civilitel = $obj->civilitel;
+               	$this->line[$i]->socname = $obj->socname;
+				$this->line[$i]->socid = $obj->socid;
+				$this->line[$i]->typeid = $obj->typeid;
+				$this->line[$i]->type = $obj->type;
+				$i++;
+			}
+			$this->db->free($resql);
+			return $num;
         }
         else
         {
@@ -338,43 +337,41 @@ class Agefodd_session
     {
     	global $langs;
                             
-	$sql = "SELECT";
-	$sql.= " DISTINCT so.rowid as socid,";
-	$sql.= " s.rowid, so.nom as socname ";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
-	$sql.= " ON s.rowid = ss.fk_session";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
-	$sql.= " ON sa.rowid = ss.fk_stagiaire";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
-	$sql.= " ON so.rowid = sa.fk_soc";
+		$sql = "SELECT";
+		$sql.= " DISTINCT so.rowid as socid,";
+		$sql.= " s.rowid, so.nom as socname ";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
+		$sql.= " ON s.rowid = ss.fk_session";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
+		$sql.= " ON sa.rowid = ss.fk_stagiaire";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = sa.fk_soc";
         $sql.= " WHERE s.rowid = ".$id;
-	$sql.= " ORDER BY so.nom";
+		$sql.= " ORDER BY so.nom";
 
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql = $this->db->query($sql);
         if ($resql)
         {
             $this->line = array();
             $num = $this->db->num_rows($resql);
 
-		if ($num)
-		{
-			$i = 0;
-			while( $i < $num)
+			if ($num)
 			{
-                		$obj = $this->db->fetch_object($resql);
-                		$this->line[$i]->sessid = $obj->sessid;
-				$this->line[$i]->socname = $obj->socname;
-                		$this->line[$i]->socid = $obj->socid;
-				$i++;
+				$i = 0;
+				while( $i < $num)
+				{
+	                		$obj = $this->db->fetch_object($resql);
+	                		$this->line[$i]->sessid = $obj->sessid;
+					$this->line[$i]->socname = $obj->socname;
+	                		$this->line[$i]->socid = $obj->socid;
+					$i++;
+				}
 			}
-			//$this->db->free($resql);
-		}
 		
-		$this->db->free($resql);
-		return $num;
-
+			$this->db->free($resql);
+			return $num;
         }
         else
         {
@@ -395,11 +392,11 @@ class Agefodd_session
     	global $langs;
     	
         $sql = "SELECT";
-	$sql.= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
         $sql.= " WHERE s.rowid = ".$id;
 
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -407,10 +404,10 @@ class Agefodd_session
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
-                $this->datec = $obj->datec;
+                $this->date_creation = $obj->datec;
                 $this->tms = $obj->tms;
-                $this->fk_userc = $obj->fk_user_author;
-                $this->fk_userm = $obj->fk_user_mod;
+                $this->user_creation = $obj->fk_user_author;
+                $this->user_modification = $obj->fk_user_mod;
 	    }
             $this->db->free($resql);
 
@@ -433,24 +430,21 @@ class Agefodd_session
      */
     function update($user=0, $notrigger=0)
     {
-	global $conf, $langs;
-	$error=0;
-	
-	// Clean parameters
-	$this->fk_session_place = ebi_mysql_escape_string(trim($this->fk_session_place));
+		global $conf, $langs;
+		$error=0;
+		
+		// Clean parameters
+		$this->fk_session_place = ebi_mysql_escape_string(trim($this->fk_session_place));
         $this->notes = ebi_mysql_escape_string(trim($this->notes));
 
-        
-
-	// Check parameters
-	// Put here code to add control on parameters values
-
+		// Check parameters
+		// Put here code to add control on parameters values
 
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session as s SET";
-	$sql.= " s.fk_session_place='".$this->fk_session_place."',";
-	$sql.= " s.fk_agefodd_formateur='".$this->formateur."',";
+		$sql.= " s.fk_session_place='".$this->fk_session_place."',";
+		$sql.= " s.fk_agefodd_formateur='".$this->formateur."',";
         $sql.= " s.dated='".$this->dated."',";
         $sql.= " s.datef='".$this->datef."',";
         $sql.= " s.notes='".$this->notes."',";
@@ -458,26 +452,26 @@ class Agefodd_session
         $sql.= " s.archive='".$this->archive."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 
-	$this->db->begin();
+		$this->db->begin();
 
-	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-	$resql = $this->db->query($sql);
-	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-		if (! $error)
-		{
-			if (! $notrigger)
+		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+			if (! $error)
 			{
-	            // Uncomment this and change MYOBJECT to your own tag if you
-	            // want this action call a trigger.
-				
-	            //// Call triggers
-	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-	            //$interface=new Interfaces($this->db);
-	            //$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-	            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
-	            //// End call triggers
-	    	}
-		}
+				if (! $notrigger)
+				{
+		            // Uncomment this and change MYOBJECT to your own tag if you
+		            // want this action call a trigger.
+					
+		            //// Call triggers
+		            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+		            //$interface=new Interfaces($this->db);
+		            //$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
+		            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
+		            //// End call triggers
+	    		}
+			}
 		
 		// Commit or rollback
 		if ($error)
@@ -507,48 +501,46 @@ class Agefodd_session
      */
     function update_stag_in_session($user=0, $notrigger=0)
     {
-	global $conf, $langs;
-	$error=0;
-	
-	// Clean parameters
-	$this->sessid = addslashes(trim($this->sessid));
-	$this->stagiaire = addslashes(trim($this->stagiaire));
-	$this->type = addslashes(trim($this->type));
-        
-
-	// Check parameters
-	// Put here code to add control on parameters values
-
+		global $conf, $langs;
+		$error=0;
+		
+		// Clean parameters
+		$this->sessid = addslashes(trim($this->sessid));
+		$this->stagiaire = addslashes(trim($this->stagiaire));
+		$this->type = addslashes(trim($this->type));
+	        
+		// Check parameters
+		// Put here code to add control on parameters values
 
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire as s SET";
-	$sql.= " s.fk_session='".$this->sessid."',";
-	$sql.= " s.fk_stagiaire='".$this->stagiaire."',";
+		$sql.= " s.fk_session='".$this->sessid."',";
+		$sql.= " s.fk_stagiaire='".$this->stagiaire."',";
         $sql.= " s.fk_user_mod='".$user."',";
         $sql.= " s.fk_agefodd_stagiaire_type='".$this->type."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 
-	$this->db->begin();
+		$this->db->begin();
 
-	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-	$resql = $this->db->query($sql);
-	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-		if (! $error)
-		{
-			if (! $notrigger)
+		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+			if (! $error)
 			{
-	            // Uncomment this and change MYOBJECT to your own tag if you
-	            // want this action call a trigger.
-				
-	            //// Call triggers
-	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-	            //$interface=new Interfaces($this->db);
-	            //$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-	            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
-	            //// End call triggers
-	    	}
-		}
+				if (! $notrigger)
+				{
+		            // Uncomment this and change MYOBJECT to your own tag if you
+		            // want this action call a trigger.
+					
+		            //// Call triggers
+		            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+		            //$interface=new Interfaces($this->db);
+		            //$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
+		            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
+		            //// End call triggers
+		    	}
+			}
 		
 		// Commit or rollback
 		if ($error)
@@ -623,8 +615,9 @@ class Agefodd_session
 	 *	\param		fromid		Id of object to clone
 	 * 	\return		int		New id of clone
 	 */
-	function createFromContact($fromid)
+	/*function createFromContact($fromid)
 	{
+	 //TODO : What is this code for ?
 		global $user,$langs;
 		
 		$error=0;
@@ -669,7 +662,7 @@ class Agefodd_session
 			$this->db->rollback();
 			return -1;
 		}
-	}
+	}*/
 
 	
 	/**
@@ -679,9 +672,6 @@ class Agefodd_session
 	function initAsSpecimen()
 	{
 		$this->id=0;
-		
-
-		
 	}
 }
 

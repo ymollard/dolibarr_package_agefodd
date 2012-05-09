@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,23 +31,23 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_splace
+class Agefodd_session_place extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
-        var $id;
+	var $table_element='agefodd_session_place';
+    var $id;
 
 	/**
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_splace($DB) 
+	function Agefodd_session_place($DB) 
 	{
-	$this->db = $DB;
-	return 1;
+		$this->db = $DB;
+		return 1;
 	}
 	
 	
@@ -69,9 +70,9 @@ class Agefodd_splace
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_place(";
-		$sql.= "code, adresse, cp, ville, pays, tel, fk_societe, notes, datec, fk_user_author";
+		$sql.= "ref, adresse, cp, ville, pays, tel, fk_societe, notes, datec, fk_user_author";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->code.'", ';
+		$sql.= '"'.$this->ref.'", ';
 		$sql.= '"'.$this->adresse.'", ';
 		$sql.= '"'.$this->cp.'", ';
 		$sql.= '"'.$this->ville.'", ';
@@ -80,7 +81,7 @@ class Agefodd_splace
 		$sql.= '"'.$this->fk_societe.'",';
 		$sql.= '"'.ebi_mysql_escape_string($this->notes).'",';
 		$sql.= '"'.$user.'",';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
 		$this->db->begin();
@@ -90,7 +91,7 @@ class Agefodd_splace
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_session_place");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
@@ -134,14 +135,14 @@ class Agefodd_splace
     	global $langs;
     	
         $sql = "SELECT";
-	$sql.= " p.rowid, p.code, p.adresse, p.cp, p.ville, p.pays, p.tel, p.fk_societe, p.notes, p.archive,";
-	$sql.= " s.rowid as socid, s.nom as socname";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " p.rowid, p.ref, p.adresse, p.cp, p.ville, p.pays, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql.= " s.rowid as socid, s.nom as socname";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " WHERE p.rowid = ".$id;
 	//$sql.= " AND p.archive LIKE 0";
 	
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -149,7 +150,7 @@ class Agefodd_splace
 		{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->code =  stripslashes($obj->code);
+			$this->ref = $obj->ref;
 			$this->adresse = stripslashes($obj->adresse);
 			$this->cp = $obj->cp;
 			$this->ville = stripslashes($obj->ville);
@@ -185,50 +186,50 @@ class Agefodd_splace
     	global $langs;
     	
         $sql = "SELECT";
-	$sql.= " p.rowid, p.code, p.adresse, p.cp, p.ville, p.pays, p.tel, p.fk_societe, p.notes, p.archive,";
-	$sql.= " s.rowid as socid, s.nom as socname";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " p.rowid, p.ref, p.adresse, p.cp, p.ville, p.pays, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql.= " s.rowid as socid, s.nom as socname";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
-	if ($arch == 0 || $arch == 1) $sql.= " WHERE p.archive LIKE ".$arch;
-	$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+		if ($arch == 0 || $arch == 1) $sql.= " WHERE p.archive LIKE ".$arch;
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 	
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
         
-		$this->line = array();
-		$num = $this->db->num_rows($resql);
-
-		$i = 0;
-		while( $i < $num)
-		{
-                	$obj = $this->db->fetch_object($resql);
-
-			$this->line[$i]->id = $obj->rowid;
-			$this->line[$i]->code =  stripslashes($obj->code);
-			$this->line[$i]->adresse = stripslashes($obj->adresse);
-			$this->line[$i]->cp = $obj->cp;
-			$this->line[$i]->ville = stripslashes($obj->ville);
-			$this->line[$i]->pays = stripslashes($obj->pays);
-			$this->line[$i]->tel = stripslashes($obj->tel);
-			$this->line[$i]->fk_societe = $obj->fk_societe;
-			$this->line[$i]->notes = stripslashes($obj->notes);
-			$this->line[$i]->socid = $obj->socid;
-			$this->line[$i]->socname = stripslashes($obj->socname);
-			$this->line[$i]->archive = $obj->archive;
-
-			$i++;
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+	
+			$i = 0;
+			while( $i < $num)
+			{
+	            $obj = $this->db->fetch_object($resql);
+	
+				$this->line[$i]->id = $obj->rowid;
+				$this->line[$i]->ref =  stripslashes($obj->ref);
+				$this->line[$i]->adresse = stripslashes($obj->adresse);
+				$this->line[$i]->cp = $obj->cp;
+				$this->line[$i]->ville = stripslashes($obj->ville);
+				$this->line[$i]->pays = stripslashes($obj->pays);
+				$this->line[$i]->tel = stripslashes($obj->tel);
+				$this->line[$i]->fk_societe = $obj->fk_societe;
+				$this->line[$i]->notes = stripslashes($obj->notes);
+				$this->line[$i]->socid = $obj->socid;
+				$this->line[$i]->socname = stripslashes($obj->socname);
+				$this->line[$i]->archive = $obj->archive;
+	
+				$i++;
+			}
+	        $this->db->free($resql);
+			return $num;
 		}
-            	$this->db->free($resql);
-		return $num;
+		else
+	   	{
+	    	$this->error="Error ".$this->db->lasterror();
+	        dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+	        return -1;
 	    }
-    	    else
-    	    {
-      		$this->error="Error ".$this->db->lasterror();
-        	dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-        	return -1;
-    	    }
     }
 
 
@@ -242,11 +243,11 @@ class Agefodd_splace
     	global $langs;
     	
         $sql = "SELECT";
-	$sql.= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
         $sql.= " WHERE p.rowid = ".$id;
 
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -254,10 +255,10 @@ class Agefodd_splace
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
-                $this->datec = $obj->datec;
+                $this->date_creation = $obj->datec;
                 $this->tms = $obj->tms;
-                $this->fk_user_mod = $obj->fk_user_mod;
-                $this->fk_user_author = $obj->fk_user_author;
+                $this->user_modification = $obj->fk_user_mod;
+                $this->user_creation = $obj->fk_user_author;
 	    }
             $this->db->free($resql);
             return 1;
@@ -279,41 +280,38 @@ class Agefodd_splace
      */
     function update($user=0, $notrigger=0)
     {
-	global $conf, $langs;
-	$error=0;
+		global $conf, $langs;
+		$error=0;
 	
-	// Clean parameters
-	$this->intitule = trim($this->intitule);
-        $this->public = addslashes(trim($this->public));
+		// Clean parameters
+		$this->intitule = trim($this->intitule);
+		$this->public = addslashes(trim($this->public));
         $this->methode = addslashes(trim($this->methode));
         $this->programme = addslashes(trim($this->programme));
 
-        
-
-	// Check parameters
-	// Put here code to add control on parameters values
-
-
+		// Check parameters
+		// Put here code to add control on parameters values
+		
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
         $sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_place as p SET';
-	$sql.= ' p.code="'.$this->code.'", ';
-	$sql.= ' p.adresse="'.$this->adresse.'", ';
-	$sql.= ' p.cp="'.$this->cp.'", ';
-	$sql.= ' p.ville="'.$this->ville.'", ';
-	$sql.= ' p.pays="'.ebi_mysql_escape_string($this->pays).'",';
-	$sql.= ' p.tel="'.ebi_mysql_escape_string($this->tel).'",';
-	$sql.= ' p.fk_societe="'.$this->fk_societe.'",';
-	$sql.= ' p.notes="'.ebi_mysql_escape_string($this->notes).'",';
-	$sql.= ' p.fk_user_mod="'.$user.'",';
-	$sql.= ' p.archive="'.$this->archive.'"';
+		$sql.= ' p.ref="'.$this->ref.'", ';
+		$sql.= ' p.adresse="'.$this->adresse.'", ';
+		$sql.= ' p.cp="'.$this->cp.'", ';
+		$sql.= ' p.ville="'.$this->ville.'", ';
+		$sql.= ' p.pays="'.ebi_mysql_escape_string($this->pays).'",';
+		$sql.= ' p.tel="'.ebi_mysql_escape_string($this->tel).'",';
+		$sql.= ' p.fk_societe="'.$this->fk_societe.'",';
+		$sql.= ' p.notes="'.ebi_mysql_escape_string($this->notes).'",';
+		$sql.= ' p.fk_user_mod="'.$user.'",';
+		$sql.= ' p.archive="'.$this->archive.'"';
         $sql.= " WHERE p.rowid LIKE ".$this->id;
 
-	$this->db->begin();
-
-	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-	$resql = $this->db->query($sql);
-	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		$this->db->begin();
+	
+		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
 			if (! $notrigger)
@@ -371,13 +369,8 @@ class Agefodd_splace
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
-
+	}
 }
-
-
-
-
 
 # $Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $
 ?>

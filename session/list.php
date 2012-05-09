@@ -27,8 +27,8 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 // Security check
@@ -55,7 +55,7 @@ $pagenext = $page + 1;
 $db->begin();
 
 $sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.datef,";
-$sql.= " c.intitule, c.ref_interne,";
+$sql.= " c.intitule, c.ref,";
 $sql.= " p.code,";
 $sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session=s.rowid) as num";
 $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
@@ -96,7 +96,7 @@ if ($resql)
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"s.intitule","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"s.ref_interne","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"s.ref","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"s.lieu","","",'',$sortfield,$sortorder);
@@ -129,7 +129,7 @@ if ($resql)
 else
 {
     dol_print_error($db);
-    dol_syslog("agefodd::s_liste::query::update ".$errmsg, LOG_ERR);
+    dol_syslog("agefodd::session:list::query: ".$errmsg, LOG_ERR);
 }
 
 $db->close();

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   rowid int(6) NOT NULL auto_increment,
   datec date default NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  ref_interne varchar(40) NOT NULL,
+  ref varchar(40) NOT NULL,
   intitule varchar(80) NOT NULL,
   duree int(6) NOT NULL,
   public tinytext,
@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   fk_user int(11) default NULL,
   archive enum('0','1') NOT NULL default '0',
   PRIMARY KEY  (rowid),
-  UNIQUE KEY ref_interne (ref_interne)
+  UNIQUE KEY ref (ref)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

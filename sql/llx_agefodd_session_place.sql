@@ -24,7 +24,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_place (
   rowid int(11) NOT NULL auto_increment,
-  code varchar(80) NOT NULL,
+  ref varchar(80) NOT NULL,
   adresse varchar(255) NOT NULL,
   cp varchar(10) NOT NULL,
   ville varchar(50) NOT NULL,

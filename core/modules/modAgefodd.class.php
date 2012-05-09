@@ -166,7 +166,23 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][0] = "AGF_ORGANISME_LOGO";
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = DOL_DOCUMENT_ROOT_ALT.'/agefodd/img/logo.jpg';
-		$this->const[$r][3] = 'Type of  traine funding';
+		$this->const[$r][3] = 'logo';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_UNIVERSAL_MASK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Mask of training number ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ADDON";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'mod_agefodd_simple';
+		$this->const[$r][3] = 'Use simple mask for training ref';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 

@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,36 +27,38 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("../class/agefodd_session_place.class.php");
-require_once("../lib/agefodd.lib.php");
 
+dol_include_once('/agefodd/site/class/agefodd_session_place.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT."/core/class/html.formcompany.class.php");
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
 $mesg = '';
 
-$db->begin();
+$action=GETPOST('action','alpha');
+$confirm=GETPOST('action','alpha');
+$id=GETPOST('id','int');
+$arch=GETPOST('arch','int');
 
 /*
  * Actions delete
  */
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_splace($db);
-	$result = $agf->remove($_GET["id"]);
+	$agf = new Agefodd_session_place($db);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: list.php");
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
+		$mesg='<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
 	}
 }
 
@@ -63,77 +66,72 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 /*
  * Actions archive/active
  */
-if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
-	if ($_POST["confirm"] == "yes")
+	if ($confirm == "yes")
 	{
-		$agf = new Agefodd_splace($db);
+		$agf = new Agefodd_session_place($db);
 	
-		$result = $agf->fetch($_GET["id"]);
+		$result = $agf->fetch($id);
 	
-		$agf->archive = $_GET["arch"];
+		$agf->archive = $arch;
 		$result = $agf->update($user->id);
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
 	
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
 
-
-
-
 /*
  * Action update (fiche site de formation)
  */
-if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
-		$agf = new Agefodd_splace($db);
+		$agf = new Agefodd_session_place($db);
 
-		$result = $agf->fetch($_POST["id"]);
+		$result = $agf->fetch($id);
 
-		$agf->code = $_POST["code"];
-		$agf->adresse = $_POST["adresse"];
-		$agf->cp = $_POST["cp"];
-		$agf->ville = $_POST["ville"];
-		$agf->pays = $_POST["pays"];
-		$agf->tel = $_POST["phone"];
-		$agf->fk_societe = $_POST["societe"];
-		$agf->notes = $_POST["notes"];
+		$agf->ref = GETPOST('ref','alpha');
+		$agf->adresse = GETPOST('adresse','alpha');
+		$agf->cp = GETPOST('cp','alpha');
+		$agf->ville = GETPOST('ville','alpha');
+		$agf->pays = GETPOST('pays','alpha');
+		$agf->tel = GETPOST('phone','alpha');
+		$agf->fk_societe = GETPOST('societe','int');
+		$agf->notes = GETPOST('notes','alpha');
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -143,39 +141,37 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
  * Action create (fiche site de formation)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
-		$agf = new Agefodd_splace($db);
+		$agf = new Agefodd_session_place($db);
 
-		$agf->code = $_POST["code"];
-		$agf->adresse = $_POST["adresse"];
-		$agf->cp = $_POST["cp"];
-		$agf->ville = $_POST["ville"];
-		$agf->pays = $_POST["pays"];
-		$agf->datec = $db->idate(mktime());
-		$agf->tel = $_POST["tel"];
-		$agf->fk_societe = $_POST["fk_societe"];
-		$agf->notes = $_POST["notes"];
+		$agf->ref = GETPOST('ref','alpha');
+		$agf->adresse = GETPOST('adresse','alpha');
+		$agf->cp = GETPOST('cp','alpha');
+		$agf->ville = GETPOST('ville','alpha');
+		$agf->pays = GETPOST('pays','alpha');
+		$agf->tel = GETPOST('phone','alpha');
+		$agf->fk_societe = GETPOST('societe','int');
+		$agf->notes = GETPOST('notes','alpha');
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -190,22 +186,16 @@ llxHeader();
 
 $form = new Form($db);
 
-$id = $_GET['id'];
 
+dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
-	
-	$head[$h][0] = $_SERVER['PHP_SELF']."?id=$agf->id";
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfSessPlace"), 0, 'user');
+	$formcompany = new FormCompany($db);
+	print_fiche_titre($langs->trans("AgfCreatePlace"));
 
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
@@ -213,23 +203,30 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 
 	print '<table class="border" width="100%">'."\n";
 
-	print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
-	print '<td><input name="code" class="flat" size="50" value=""></td></tr>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfSessPlaceCode").'</span></td>';
+	print '<td><input name="ref" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td>'.$langs->trans("Societe").'</td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("Societe").'</span></td>';
 	print '<td>'.ebi_select_societe("").'</td></tr>';
 
 	print '<tr><td>'.$langs->trans("Address").'</td>';
 	print '<td><input name="adresse" class="flat" size="50" value=""></td></tr>';
 	
-	print '<tr><td>'.$langs->trans("CP").'</td>';
+	print '<tr><td>'.$langs->trans('CP').'</td><td>';
+	print $formcompany->select_ziptown('','cp',array('ville','pays'),6).'</tr>';
+	print '<tr></td><td>'.$langs->trans('Ville').'</td><td>';
+	print $formcompany->select_ziptown('','ville',array('cp','pays')).'</tr>';
+	
+	/*print '<tr><td>'.$langs->trans("CP").'</td>';
 	print '<td><input name="cp" class="flat" size="50" value=""></td></tr>';
 	
 	print '<tr><td>'.$langs->trans("Ville").'</td>';
-	print '<td><input name="ville" class="flat" size="50" value=""></td></tr>';
+	print '<td><input name="ville" class="flat" size="50" value=""></td></tr>';*/
+	
 	
 	print '<tr><td>'.$langs->trans("Pays").'</td>';
-	print '<td>'.ebi_select_pays($agf->pays).'</td></tr>';
+	print '<td>'.$form->select_country('','pays').'</td></tr>';
+	
 	
 	print '<tr><td>'.$langs->trans("Phone").'</td>';
 	print '<td><input name="phone" class="flat" size="50" value=""></td></tr>';
@@ -242,7 +239,7 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
-	print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+	print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=create_confirm&id='.$id.'">'.$langs->trans('Save').'</a>';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 	print '</td></tr>';
 	print '</table>';
@@ -254,17 +251,13 @@ else
 	// Affichage de la fiche "site de formation"
 	if ($id)
 	{
-		$agf = new Agefodd_splace($db);
+		$agf = new Agefodd_session_place($db);
 		$result = $agf->fetch($id);
 
 		if ($result)
 		{
-
-			if ($mesg) print $mesg."<br>";
-			
-			
 			// Affichage en mode "édition"
-			if ($_GET["action"] == 'edit')
+			if ($action == 'edit')
 			{
 				$head = site_prepare_head($agf);
 				
@@ -276,11 +269,11 @@ else
 				print '<input type="hidden" name="id" value="'.$id.'">'."\n";
 
 				print '<table class="border" width="100%">'."\n";
-				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
+				print '<tr><td width="20%">'.$langs->trans("Id").'</td>';
 				print '<td>'.$agf->id.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
-				print '<td><input name="code" class="flat" size="50" value="'.$agf->code.'"></td></tr>';
+				print '<td><input name="ref" class="flat" size="50" value="'.$agf->ref.'"></td></tr>';
 
 				print '<tr><td>'.$langs->trans("Societe").'</td>';
 				print '<td>'.ebi_select_societe($agf->socid,"societe").'</td></tr>';
@@ -310,7 +303,7 @@ else
 				print '</div>';
 				print '<table style=noborder align="right">';
 				print '<tr><td align="center" colspan=2>';
-				print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+				print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=create_confirm&id='.$id.'">'.$langs->trans('Save').'</a>';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 				print '</td></tr>';
 				print '</table>';
@@ -329,7 +322,7 @@ else
 				/*
 				 * Confirmation de la suppression
 				 */
-				if ($_GET["action"] == 'delete')
+				if ($action == 'delete')
 				{
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
@@ -345,11 +338,11 @@ else
 
 				print '<table class="border" width="100%">';
 
-				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
+				print '<tr><td width="20%">'.$langs->trans("Id").'</td>';
 				print '<td>'.$agf->id.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
-				print '<td>'.$agf->code.'</td></tr>';
+				print '<td>'.$agf->ref.'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 				if ($agf->socid)
@@ -400,7 +393,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] != 'nfcontact')
+if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
 	if ($user->rights->agefodd->creer)
 	{
@@ -441,8 +434,6 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 }
 
 print '</div>';
-
-$db->close();
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

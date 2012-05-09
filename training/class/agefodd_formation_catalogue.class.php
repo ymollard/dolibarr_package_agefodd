@@ -75,10 +75,10 @@ class Agefodd extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref_interne, intitule, duree, public, methode, prerequis, programme, fk_user";
+		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
-		$sql.= '"'.$this->ref_interne.'", ';
+		$sql.= '"'.$this->ref.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
 		$sql.= '"'.$this->public.'",';
@@ -140,7 +140,7 @@ class Agefodd extends CommonObject
 	global $langs;
 	
 	$sql = "SELECT";
-	$sql.= " c.rowid, c.ref_interne, c.intitule, c.duree,";
+	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
 	$sql.= " c.public, c.methode, c.prerequis, c.programme, archive";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	$sql.= " WHERE c.rowid = ".$id;
@@ -151,17 +151,16 @@ class Agefodd extends CommonObject
 	{
 		if ($this->db->num_rows($resql))
 		{
-		$obj = $this->db->fetch_object($resql);
-		$this->id = $obj->rowid;
-		$this->ref = $obj->rowid; // Use for show_next_prev
-		$this->ref_interne = $obj->ref_interne;
-		$this->intitule = stripslashes($obj->intitule);
-		$this->duree = $obj->duree;
-		$this->public = stripslashes($obj->public);
-		$this->methode = stripslashes($obj->methode);
-		$this->prerequis = stripslashes($obj->prerequis);
-		$this->programme = stripslashes($obj->programme);
-		$this->archive = $obj->archive;
+			$obj = $this->db->fetch_object($resql);
+			$this->id = $obj->rowid;
+			$this->ref = $obj->ref;
+			$this->intitule = stripslashes($obj->intitule);
+			$this->duree = $obj->duree;
+			$this->public = stripslashes($obj->public);
+			$this->methode = stripslashes($obj->methode);
+			$this->prerequis = stripslashes($obj->prerequis);
+			$this->programme = stripslashes($obj->programme);
+			$this->archive = $obj->archive;
 		}
 		$this->db->free($resql);
 	
@@ -238,7 +237,7 @@ class Agefodd extends CommonObject
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
-		$sql.= " c.ref_interne='".$this->ref_interne."',";
+		$sql.= " c.ref='".$this->ref."',";
 		$sql.= " c.intitule='".$this->intitule."',";
 		$sql.= " c.duree='".$this->duree."',";
 		$sql.= " c.public='".$this->public."',";
@@ -488,7 +487,6 @@ class Agefodd extends CommonObject
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
 		$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
 		$sql.= " o.intitule='".$this->intitule."',";
-		//$sql.= " o.fk_user='".$this->fk_user."',";
 		$sql.= " o.fk_user='".$user."',";
 		$sql.= " o.priorite='".$this->priorite."'";
 		$sql.= " WHERE o.rowid = ".$this->id;
@@ -554,6 +552,25 @@ class Agefodd extends CommonObject
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
+    }
+    
+    /**
+     *	Initialise object with example values
+     *	Id must be 0 if object instance is a specimen
+     *
+     *	@return	void
+     */
+    function initAsSpecimen()
+    {
+    	$this->id=0;
+    	$this->ref = '';
+    	$this->intitule = '';
+    	$this->duree = '';
+    	$this->public = '';
+    	$this->methode = '';
+    	$this->prerequis = '';
+    	$this->programme = '';
+    	$this->archive = '';
     }
     
     //TODO : createFromClone

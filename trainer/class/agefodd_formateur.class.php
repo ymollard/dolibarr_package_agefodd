@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,9 +70,10 @@ class Agefodd_teacher extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formateur(";
-		$sql.= "fk_socpeople, fk_user_author, datec";
+		$sql.= "fk_socpeople, fk_user_author, fk_user_mod, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->spid.'", ';
+		$sql.= '"'.$user.'",';
 		$sql.= '"'.$user.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";

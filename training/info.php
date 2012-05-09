@@ -34,6 +34,8 @@ dol_include_once('/core/lib/functions2.lib.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
+$id=GETPOST('id','int');
+
 $mesg = '';
 
 /*
@@ -43,8 +45,8 @@ $mesg = '';
 llxHeader();
 
 $agf = new Agefodd($db);
-$agf->fetch($_GET["id"]);
-$agf->info($_GET["id"]);
+$agf->fetch($id);
+$agf->info($id);
 
 $head = training_prepare_head($agf);
 

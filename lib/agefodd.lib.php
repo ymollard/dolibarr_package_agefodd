@@ -316,10 +316,10 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
 {
 	global $db;
 	
-	if ($return == 'code') $order = 'c.ref_interne';
+	if ($return == 'code') $order = 'c.ref';
 	else $order = 'c.intitule';
 		
-	$sql = "SELECT c.rowid, c.intitule, c.ref_interne";
+	$sql = "SELECT c.rowid, c.intitule, c.ref";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	$sql.= " WHERE archive LIKE 0";
 	$sql.= " ORDER BY ".$order;
@@ -338,7 +338,7 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
 		if ($obj->rowid == $selectid) $selected = ' selected="true"';
 		else $selected = '';
 		$options .= '<option value="'.$obj->rowid.'"'.$selected.'>';
-		if ($return == 'code') $options .= $obj->ref_interne.'</option>'."\n";
+		if ($return == 'code') $options .= $obj->ref.'</option>'."\n";
 		else $options .= stripslashes($obj->intitule).'</option>'."\n";
 		$i++;
 	    }
@@ -363,9 +363,9 @@ function ebi_select_site_forma($selectid, $name='place')
 {
 	global $db;
 	
-	$sql = "SELECT p.rowid, p.code";
+	$sql = "SELECT p.rowid, p.ref";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
-	$sql.= " ORDER BY p.code";
+	$sql.= " ORDER BY p.ref";
 
 	$result = $db->query($sql);
 	if ($result)
@@ -379,7 +379,7 @@ function ebi_select_site_forma($selectid, $name='place')
 			$obj = $db->fetch_object($result);
 			if ($obj->rowid == $selectid) $selected = ' selected="true"';
 			else $selected = '';
-			$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->code.'</option>'."\n";
+			$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->ref.'</option>'."\n";
 			$i++;
 	    	}
 	    	$db->free($result);

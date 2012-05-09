@@ -23,18 +23,18 @@
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
  */
 
-error_reporting(E_ALL);
+/*error_reporting(E_ALL);
 ini_set('display_errors', true);
-ini_set('html_errors', false);
+ini_set('html_errors', false);*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_sessadm.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/class/agefodd_facture.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/class/agefodd_convention.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/class/agefodd_facture.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 // Security check

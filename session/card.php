@@ -27,11 +27,11 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_sessadm.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session_calendrier.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_session_formateur.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 // Security check
@@ -40,28 +40,31 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
 
-$db->begin();
+$action= GETPOST('action','alpha');
+$confirm=GETPOST('confirm','alpha');
+$id=GETPOST('id','alpha');
+$archive=GETPOST('archive','int');
+$arch=GETPOST('arch','int');
 
 
 /*
  * Actions delete session
  */
 
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_session($db);
-	$result = $agf->remove($_GET["id"]);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: list.php");
 		exit;
 	}
 	else
 	{
-		$db->rollback();
 		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		$mesg = '<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
 	}
 }
 
@@ -70,23 +73,22 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
  * Actions delete formateur
  */
 
-if ($_POST["action"] == 'confirm_delete_form' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$GET_array = explode('-',$_GET["id"]);
+	$GET_array = explode('-',$id);
 
 	$agf = new Agefodd_session_formateur($db);
-	$result = $agf->remove($GET_array[0]);
+	$result = $agf->remove($id);
 
 	if ($result > 0)
 	{
-		$db->commit();
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
@@ -95,23 +97,22 @@ if ($_POST["action"] == 'confirm_delete_form' && $_POST["confirm"] == "yes" && $
  * Actions delete stagiaire
  */
 
-if ($_POST["action"] == 'confirm_delete_stag' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$GET_array = explode('-',$_GET["id"]);
+	$GET_array = explode('-',$id);
 
 	$agf = new Agefodd_session($db);
 	$result = $agf->remove_stagiaire($GET_array[0]);
 
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
@@ -119,23 +120,22 @@ if ($_POST["action"] == 'confirm_delete_stag' && $_POST["confirm"] == "yes" && $
  * Actions delete period
  */
 
-if ($_POST["action"] == 'confirm_delete_period' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$GET_array = explode('-',$_GET["id"]);
+	$GET_array = explode('-',$id);
 
 	$agf = new Agefodd_sesscalendar($db);
 	$result = $agf->remove($GET_array[0]);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
@@ -143,15 +143,15 @@ if ($_POST["action"] == 'confirm_delete_period' && $_POST["confirm"] == "yes" &&
  * Actions archive/active
  */
 
-if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
-	if ($_POST["confirm"] == "yes")
+	if ($confirm == "yes")
 	{
-		//$GET_array = explode('-',$_GET["id"]);
+		//$GET_array = explode('-',$id);
 		
 		$agf = new Agefodd_session($db);
 	
-		$result = $agf->fetch($_GET["id"]);
+		$result = $agf->fetch($id);
 		$agf->formateur = $agf->teacherid;
 		$agf->fk_session_place = $agf->placeid;
 		$agf->archive = $_GET["arch"];
@@ -159,27 +159,25 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			
 			// Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
-			foreach (glob($conf->agefodd->dir_output."/*_".$_GET["id"]."_*.pdf") as $filename) {
+			foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
 			    //echo "$filename effacé <br>";
 			    if(is_file($filename)) unlink("$filename");
 			}
 			
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -188,13 +186,13 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 /*
  * Action update (fiche session)
  */
-if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_update_x"] && ! $_POST["period_update_x"])
+if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_update_x"] && ! $_POST["period_update_x"])
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_session($db);
 
-		$result = $agf->fetch($_POST["id"]);
+		$result = $agf->fetch($id);
 
 		$agf->formateur = $_POST["formateur"];
 		$agf->dated = $_POST["dadyear"].'-'.$_POST["dadmonth"].'-'.$_POST["dadday"];
@@ -205,7 +203,6 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
 
 		if ($result > 0)
 		{
-			$db->commit();
 			// Si OK et maj des formateurs
 			$error = 0;
 			if ($_POST["nbf"])
@@ -221,23 +218,23 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
 				else
 				{
 					$error = 1;
-					$db->rollback();
-					dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+					dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+					$mesg = '<div class="error">'.$agf->error.'</div>';
 				}
 			}
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -249,7 +246,7 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer && ! $_POST["s
  * - changement ou ajout periode dans fiche session
  * - changement ou ajout formateur dans fiche session
  */
-if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
+if ($action == 'edit' && $user->rights->agefodd->creer)
 {
 	if($_POST["stag_update_x"])
 	{
@@ -263,14 +260,13 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
 	
@@ -285,14 +281,13 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
 
@@ -309,14 +304,13 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
 	
@@ -333,14 +327,13 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
 
@@ -354,14 +347,13 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
 	
@@ -376,14 +368,13 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_GET["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
 
@@ -393,26 +384,21 @@ if ($_POST["action"] == 'edit' && $user->rights->agefodd->creer)
  * Action create (nouvelle session de formation)
  */
 
-if ($_POST["action"] == 'add' && $user->rights->agefodd->creer)
+if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 {
-	
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_session($db);
 
 		$agf->formid = $_POST["formation"];
 		$agf->place = $_POST["place"];
-		//$agf->formateur = $_POST["formateur"];
 		$agf->dated = $_POST["dadyear"].'-'.$_POST["dadmonth"].'-'.$_POST["dadday"];
 		$agf->datef = $_POST["dafyear"].'-'.$_POST["dafmonth"].'-'.$_POST["dafday"];
 		$agf->notes = $_POST["notes"];
-		$agf->datec= $db->idate(mktime());
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
-			
 			// Si la création de la session s'est bien passée, 
 			// on crée automatiquement toutes les tâches administratives associées...
 			$admlevel = new Agefodd_sessadm($db);
@@ -427,7 +413,7 @@ if ($_POST["action"] == 'add' && $user->rights->agefodd->creer)
 					// Calcul de la date d'alerte
 					$sec_before_alert = ($admlevel->line[$i]->alerte * 86400);
 					//print '$sec_before_alert = '.$sec_before_alert;
-					$today_mktime = mktime(0, 0, 0, date("m"), date("d"), date("y"));
+					$today_mktime = dol_mktime(0, 0, 0, date("m"), date("d"), date("y"));
 						
 					($admlevel->line[$i]->alerte > 0) ? $date_ref = $agf->datef : $date_ref = $agf->dated;
 					
@@ -448,12 +434,12 @@ if ($_POST["action"] == 'add' && $user->rights->agefodd->creer)
 					$result3 = $actions->create($user->id);
 
 					if ($result3 > 0) {
-						$db->commit();
+						// TODO :I don't know let see it !!!
 					}
 					else
 					{
-						$db->rollback();
-						dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+						dol_syslog("CommonObject::agefodd error=".$actions->error, LOG_ERR);
+						$mesg = '<div class="error">'.$actions->error.'</div>';
 					}
 				
 				}
@@ -464,14 +450,14 @@ if ($_POST["action"] == 'add' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -486,31 +472,25 @@ llxHeader();
 
 $form = new Form($db);
 
-if (preg_match('/\-/', $_GET['id']))
+dol_htmloutput_mesg($mesg);
+
+if (preg_match('/\-/', $id))
 {
-	$GET_array = explode('-', $_GET['id']);
+	$GET_array = explode('-', $id);
 	$id = $GET_array[1];
 }
-else $id = $id = $_GET['id'];
 
 
 /*
  * Action create
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
-	
-	$head[$h][0] = "";
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
+	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
 	print '<form name="add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="add">';
+	print '<input type="hidden" name="action" value="add_confirm">';
 
 	print '<table class="border" width="100%">';
 
@@ -566,18 +546,9 @@ else
 			
 			
 			// Affichage en mode "édition"
-			if ($_GET["action"] == 'edit')
+			if ($action == 'edit')
 			{
-				$h=0;
-				
-				$head[$h][0] = $_SERVER['PHP_SELF']."?id=$agf->id";
-				$head[$h][1] = $langs->trans("Card");
-				$hselected = $h;
-				$h++;
-
-				$head[$h][0] = dol_buildpath("/agefodd/session/info.php",1)."?id=$agf->id";
-				$head[$h][1] = $langs->trans("Info");
-				$h++;
+				$head = session_prepare_head($agf);
 
 				dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
 
@@ -1081,7 +1052,7 @@ else
 				/*
 				 * Confirmation de la suppression
 				 */
-				if ($_GET["action"] == 'delete')
+				if ($action == 'delete')
 				{
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 					if ($ret == 'html') print '<br>';
@@ -1328,7 +1299,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
+if ($action != 'create' && $action != 'edit')
 {
 	if ($user->rights->agefodd->creer)
 	{
@@ -1367,8 +1338,6 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 }
 
 print '</div>';
-
-$db->close();
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

@@ -28,7 +28,7 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/trainer/class/agefodd_formateur.class.php');
-dol_include_once(.'/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/functions2.lib.php');
 
 
@@ -36,6 +36,8 @@ dol_include_once('/core/lib/functions2.lib.php');
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
+
+$id=GETPOST('id','int');
 
 $db->begin();
 
@@ -46,7 +48,7 @@ $db->begin();
 llxHeader();
 
 $agf = new Agefodd_teacher($db);
-$agf->info($_GET["id"]);
+$agf->info($id);
 
 $head = trainer_prepare_head($agf);
 
