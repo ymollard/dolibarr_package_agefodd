@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +27,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_contact.class.php");
-require_once("../lib/agefodd.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/functions2.lib.php");
+dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/functions2.lib.php');
 
 
 // Security check
@@ -36,53 +37,29 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
 
+$id=GETPOST('id','int');
+
 $db->begin();
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
 $agf = new Agefodd_contact($db);
-$agf->info($_GET["id"]);
+$agf->info($id);
 
 $head = contact_prepare_head($agf);
-			
-dol_fiche_head($head, 'info', $langs->trans("AgfContactDetail"), 0, 'bill');
 
-print '<table class="border" width="100%">';
-print "<tr>";
-print '<td width="20%">'.$langs->trans("Ref").'</td><td>'.$agf->id.'</td></tr>';
+dol_fiche_head($head, 'info', $langs->trans("AgfTeacherDetail"), 0, 'user');
 
-$userstatic1 = new User($db);
-$userstatic1->id = $agf->fk_user_author;
-$userstatic1->fetch();
-print '<tr><td>'.$langs->trans("CreatedBy").'</td><td>';
-print $userstatic1->getNomUrl(1).' ';
-print $langs->trans("AgfLe").' '.dol_print_date($agf->datec).'</td></tr>';
-
-
-$userstatic2 = new User($db);
-$userstatic2->id = $agf->fk_user_mod;
-$userstatic2->fetch();
-if (!$agf->fk_user_mod)
-{
-    print '<tr><td>'.$langs->trans("DateLastModification").'</td><td>';
-    print $langs->trans("AgfNoMod").'</td></tr>';
-}
-else 
-{
-    
-    print '<tr><td>'.$langs->trans("ModifiedBy").'</td><td>';
-    print $userstatic2->getNomUrl(1).' ';
-    print $langs->trans("AgfLe").' '.dol_print_date($agf->tms,"dayhourtext").'</td></tr>';
-}
-
-print '</table>';
+print '<table width="100%"><tr><td>';
+dol_print_object_info($agf);
+print '</td></tr></table>';
 print '</div>';
 
 $db->close();
 
-#llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
+llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
 ?>

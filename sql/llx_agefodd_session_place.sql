@@ -24,11 +24,11 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_place (
   rowid int(11) NOT NULL auto_increment,
-  ref varchar(80) NOT NULL,
+  ref_interne varchar(80) NOT NULL,
   adresse varchar(255) NOT NULL,
   cp varchar(10) NOT NULL,
   ville varchar(50) NOT NULL,
-  pays varchar(30) NOT NULL,
+  fk_pays int(11) NOT NULL,
   tel varchar(20) default NULL,
   fk_societe int(11) NOT NULL,
   fk_agefodd_reg_interieur int(11) NOT NULL,

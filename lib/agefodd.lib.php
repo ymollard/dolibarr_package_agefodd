@@ -363,9 +363,9 @@ function ebi_select_site_forma($selectid, $name='place')
 {
 	global $db;
 	
-	$sql = "SELECT p.rowid, p.ref";
+	$sql = "SELECT p.rowid, p.ref_interne";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
-	$sql.= " ORDER BY p.ref";
+	$sql.= " ORDER BY p.ref_interne";
 
 	$result = $db->query($sql);
 	if ($result)
@@ -379,7 +379,7 @@ function ebi_select_site_forma($selectid, $name='place')
 			$obj = $db->fetch_object($result);
 			if ($obj->rowid == $selectid) $selected = ' selected="true"';
 			else $selected = '';
-			$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->ref.'</option>'."\n";
+			$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->ref_interne.'</option>'."\n";
 			$i++;
 	    	}
 	    	$db->free($result);
@@ -388,7 +388,6 @@ function ebi_select_site_forma($selectid, $name='place')
 	else
 	{
 		$error="Error ".$db->lasterror();
-		//print $error;
 		return -1;
 	}
 }

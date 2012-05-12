@@ -24,10 +24,6 @@
  * 	\version	$Id$
  */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
@@ -45,7 +41,7 @@ $page=GETPOST('page','int');
 $arch=GETPOST('arch','int');
 
 if (empty($sortorder)) $sortorder="ASC";
-if (empty($sortfield)) $sortfield="p.code";
+if (empty($sortfield)) $sortfield="p.ref_interne";
 if (empty($arch)) $arch = 0;
 
 if ($page == -1) { $page = 0 ; }

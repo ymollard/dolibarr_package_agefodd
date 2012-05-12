@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +35,9 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 llxHeader();
 
-$sortorder=$_GET["sortorder"];
-$sortfield=$_GET["sortfield"];
-$page=$_GET["page"];
+$sortorder=GETPOST('sortorder','alpha');
+$sortfield=GETPOST('sortfield','alpha');
+$page=GETPOST('page','alpha');
 
 if (! $sortorder) $sortorder="DESC";
 if (! $sortfield) $sortfield="s.rowid";
@@ -52,7 +53,7 @@ $pagenext = $page + 1;
 
 $db->begin();
 
-
+//TODO :move sql into object class
 //$agf = new Agefodd_stagiaire($db);
 //$result = $agf->fetch_liste_globale($sortorder, $sortfield, $limit, $offset);
 

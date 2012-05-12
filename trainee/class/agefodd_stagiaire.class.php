@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +31,14 @@ require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_stagiaire
+class Agefodd_stagiaire extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
-        var $id;
+	var $table_element='agefodd_stagiaire';
+    var $id;
 
     /**
      *	\brief		Constructor
@@ -63,17 +64,17 @@ class Agefodd_stagiaire
     	
 		// Clean parameters
 		$this->nom = trim($this->nom);
-    		$this->prenom = trim($this->prenom);
-    		$this->fonction = addslashes(trim($this->fonction));
-    		$this->tel1 = addslashes(trim($this->tel1));
-    		$this->tel2 = addslashes(trim($this->tel2));
+    	$this->prenom = trim($this->prenom);
+    	$this->fonction = addslashes(trim($this->fonction));
+    	$this->tel1 = addslashes(trim($this->tel1));
+    	$this->tel2 = addslashes(trim($this->tel2));
 		$this->mail = addslashes(trim($this->mail));
-    		$this->note = addslashes(trim($this->note));
+    	$this->note = addslashes(trim($this->note));
 
 		// Check parameters
 		// Put here code to add control on parameters value
 		$this->nom = strtoupper($this->nom);
-    		$this->prenom = ucfirst(strtolower($this->prenom));
+    	$this->prenom = ucfirst(strtolower($this->prenom));
 
 		
 		// Insert request
@@ -85,7 +86,7 @@ class Agefodd_stagiaire
 		$sql.= '"'.$this->prenom.'", ';
 		$sql.= '"'.$this->civilite.'", ';
 		$sql.= '"'.$user.'", ';
-		$sql.= '"'.$this->datec.'", ';
+		$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->socid.'", ';
 		$sql.= '"'.ebi_mysql_escape_string($this->fonction).'", ';
 		$sql.= '"'.$this->tel1.'", ';
@@ -145,19 +146,19 @@ class Agefodd_stagiaire
     {
     	global $langs;
                             
-	$sql = "SELECT";
-	$sql.= " so.rowid as socid, so.nom as socname,";
-	$sql.= " civ.code as civilite,";
-	$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
-	$sql.= " s.tel1, s.tel2, s.mail, s.note";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
-	$sql.= " ON s.fk_soc = so.rowid";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-	$sql.= " ON s.fk_c_civilite = civ.rowid";
+		$sql = "SELECT";
+		$sql.= " so.rowid as socid, so.nom as socname,";
+		$sql.= " civ.code as civilite,";
+		$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON s.fk_soc = so.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
+		$sql.= " ON s.fk_c_civilite = civ.rowid";
         $sql.= " WHERE s.rowid = ".$id;
 
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -165,6 +166,7 @@ class Agefodd_stagiaire
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
+                $this->ref = $obj->rowid; // use for next prev refs
                 $this->nom = $obj->nom;
                 $this->prenom = $obj->prenom;
                 $this->civilite_code = $obj->civilite;
@@ -203,19 +205,19 @@ class Agefodd_stagiaire
     {
     	global $langs;
                             
-	$sql = "SELECT";
-	$sql.= " so.rowid as socid, so.nom as socname,";
-	$sql.= " civ.code as civilite,";
-	$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
-	$sql.= " s.tel1, s.tel2, s.mail, s.note";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
-	$sql.= " ON s.fk_soc = so.rowid";
-	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-	$sql.= " ON s.fk_c_civilite = civ.rowid";
-	$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
-
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		$sql = "SELECT";
+		$sql.= " so.rowid as socid, so.nom as socname,";
+		$sql.= " civ.code as civilite,";
+		$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON s.fk_soc = so.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
+		$sql.= " ON s.fk_c_civilite = civ.rowid";
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+	
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -257,11 +259,11 @@ class Agefodd_stagiaire
     	global $langs;
     	
         $sql = "SELECT";
-	$sql.= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
+		$sql.= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
         $sql.= " WHERE s.rowid = ".$id;
 
-	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -269,10 +271,10 @@ class Agefodd_stagiaire
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
-                $this->datec = $obj->datec;
+                $this->date_creation = $this->db->jdate($obj->datec);
                 $this->tms = $obj->tms;
-                $this->fk_userc = $obj->fk_user_author;
-                $this->fk_userm = $obj->fk_user_mod;
+                $this->user_modification = $obj->fk_user_author;
+                $this->user_creation = $obj->fk_user_mod;
 	    }
             $this->db->free($resql);
 
@@ -295,30 +297,27 @@ class Agefodd_stagiaire
      */
     function update($user=0, $notrigger=0)
     {
-	global $conf, $langs;
-	$error=0;
+		global $conf, $langs;
+		$error=0;
 	
-	// Clean parameters
-	$this->nom = trim($this->nom);
+		// Clean parameters
+		$this->nom = trim($this->nom);
         $this->prenom = trim($this->prenom);
         $this->fonction = addslashes(trim($this->fonction));
         $this->tel1 = addslashes(trim($this->tel1));
         $this->tel2 = addslashes(trim($this->tel2));
-	$this->mail = addslashes(trim($this->mail));
+		$this->mail = addslashes(trim($this->mail));
         $this->note = addslashes(trim($this->note));
 
-        
-
-	// Check parameters
-	// Put here code to add control on parameters values
-
+		// Check parameters
+		// Put here code to add control on parameters values
 
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire as s SET";
-	$sql.= " s.nom='".$this->nom."',";
-	$sql.= " s.prenom='".$this->prenom."',";
-	$sql.= " s.fk_c_civilite='".$this->civilite."',";
+		$sql.= " s.nom='".$this->nom."',";
+		$sql.= " s.prenom='".$this->prenom."',";
+		$sql.= " s.fk_c_civilite='".$this->civilite."',";
         $sql.= " s.fk_user_mod='".$user."',";
         $sql.= " s.fk_soc='".$this->socid."',";
         $sql.= " s.fonction='".$this->fonction."',";
@@ -328,11 +327,11 @@ class Agefodd_stagiaire
         $sql.= " s.note='".ebi_mysql_escape_string($this->note)."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 
-	$this->db->begin();
-
-	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-	$resql = $this->db->query($sql);
-	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		$this->db->begin();
+	
+		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
 			if (! $notrigger)
@@ -398,7 +397,8 @@ class Agefodd_stagiaire
 	 *	\param		fromid		Id of object to clone
 	 * 	\return		int		New id of clone
 	 */
-	function createFromContact($fromid)
+    //TODO : Is this method is use somewhere ?
+	/*function createFromContact($fromid)
 	{
 		global $user,$langs;
 		
@@ -444,7 +444,7 @@ class Agefodd_stagiaire
 			$this->db->rollback();
 			return -1;
 		}
-	}
+	}*/
 
 }
 

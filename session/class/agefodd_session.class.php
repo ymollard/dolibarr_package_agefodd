@@ -36,8 +36,8 @@ class Agefodd_session extends CommonObject
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
-        var $id;
+	var $table_element='agefodd_session';
+    var $id;
 
     /**
      *	\brief		Constructor
@@ -68,7 +68,6 @@ class Agefodd_session extends CommonObject
     	$this->dated = addslashes(trim($this->dated));
     	$this->datef = addslashes(trim($this->datef));
 		$this->notes = addslashes(trim($this->notes));
-		$this->fk_user_author = addslashes(trim($this->mail));
     		
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -209,8 +208,8 @@ class Agefodd_session extends CommonObject
                             
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_formation_catalogue, s.fk_session_place, s.fk_agefodd_formateur, s.dated, s.datef, s.notes, s.archive,";
-		$sql.= " c.intitule, c.ref_interne, c.duree,";
-		$sql.= " p.rowid as placeid, p.code,";
+		$sql.= " c.intitule, c.ref, c.duree,";
+		$sql.= " p.rowid as placeid, p.ref_interne,";
 		$sql.= " CONCAT(sp.name,' ',sp.firstname) as teachername";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
@@ -233,15 +232,16 @@ class Agefodd_session extends CommonObject
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
+                $this->ref = $obj->rowid; //use for prev next ref
                 $this->formid = stripslashes($obj->fk_formation_catalogue);
                 $this->place = stripslashes($obj->fk_session_place);
 				$this->teacherid = stripslashes($obj->fk_agefodd_formateur);
-                $this->formref = stripslashes($obj->ref_interne);
+                $this->formref = stripslashes($obj->ref);
                 $this->formintitule = stripslashes($obj->intitule);
 				$this->duree = $obj->duree;
                 $this->placeid = stripslashes($obj->placeid);
 				$this->teachername = stripslashes($obj->teachername);
-				$this->placecode = stripslashes($obj->code);
+				$this->placecode = stripslashes($obj->ref_interne);
                 $this->dated = $obj->dated;
                 $this->datef = $obj->datef;
                 $this->notes = stripslashes($obj->notes);
@@ -673,6 +673,31 @@ class Agefodd_session extends CommonObject
 	{
 		$this->id=0;
 	}
+	
+	/**
+	 *      Return description of session
+	 *
+	 *		@param	int			$type		trainning
+	 *		@return	string					HTML translated description
+	 */
+	function getToolTip($type)
+	{
+		global $conf;
+		
+		$langs->load("admin");
+		
+		$s='';
+		if (type=='training')
+		{
+			dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+			
+			$agf_training = new Agefodd($db);
+			$agf_training->fetch($this->formid);
+			$s=$agf_training->getToolTip();
+		}
+		return $s;
+	}
+	
 }
 
 # $Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $

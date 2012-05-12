@@ -30,14 +30,14 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_contact
+class Agefodd_contact extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
-        var $id;
+	var $table_element='agefodd_contact';
+       var $id;
 
 	/**
 	*	\brief		Constructor
@@ -74,7 +74,7 @@ class Agefodd_contact
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->spid.'", ';
 		$sql.= '"'.$user.'",';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
 		$this->db->begin();
@@ -142,6 +142,7 @@ class Agefodd_contact
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->ref = $obj->rowid; // Use for next prev ref
 				$this->spid = $obj->spid;
 				$this->name = $obj->name;
 				$this->firstname = $obj->firstname;
@@ -199,6 +200,7 @@ class Agefodd_contact
 				{
 					$obj = $this->db->fetch_object($resql);
 					$this->line[$i]->id = $obj->rowid;
+					$this->line[$i]->ref = $obj->rowid; // Use for next prev ref
 					$this->line[$i]->spid = $obj->spid;
 					$this->line[$i]->socid = $obj->socid;
 					$this->line[$i]->socname = $obj->socname;
@@ -246,10 +248,10 @@ class Agefodd_contact
 			{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->datec = $obj->datec;
+			$this->date_creation = $this->db->jdate($obj->datec);
 			$this->tms = $obj->tms;
-			$this->fk_user_mod = $obj->fk_user_mod;
-			$this->fk_user_author = $obj->fk_user_author;
+			$this->user_modification = $obj->fk_user_mod;
+			$this->user_creation = $obj->fk_user_author;
 			}
 			$this->db->free($resql);
 		
@@ -280,7 +282,6 @@ class Agefodd_contact
 	
 	// Check parameters
 	// Put here code to add control on parameters values
-	
 	
 	// Update request
 	if (!isset($this->archive)) $this->archive = 0; 
@@ -351,9 +352,7 @@ class Agefodd_contact
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
-
-
+       }
 }
 # $Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $
 ?>

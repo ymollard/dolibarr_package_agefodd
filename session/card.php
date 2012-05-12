@@ -63,7 +63,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("agefodd:session:card error=".$error, LOG_ERR);
 		$mesg = '<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
 	}
 }
@@ -87,7 +87,7 @@ if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agef
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
@@ -111,7 +111,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
@@ -134,7 +134,7 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+		dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
@@ -146,9 +146,7 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($confirm == "yes")
-	{
-		//$GET_array = explode('-',$id);
-		
+	{		
 		$agf = new Agefodd_session($db);
 	
 		$result = $agf->fetch($id);
@@ -170,7 +168,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	
@@ -218,7 +216,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 				else
 				{
 					$error = 1;
-					dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+					dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 					$mesg = '<div class="error">'.$agf->error.'</div>';
 				}
 			}
@@ -227,7 +225,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
@@ -265,7 +263,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
@@ -286,7 +284,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
@@ -309,7 +307,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
@@ -332,7 +330,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
@@ -352,7 +350,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
@@ -373,7 +371,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
@@ -438,7 +436,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 					}
 					else
 					{
-						dol_syslog("CommonObject::agefodd error=".$actions->error, LOG_ERR);
+						dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
 						$mesg = '<div class="error">'.$actions->error.'</div>';
 					}
 				
@@ -450,7 +448,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
@@ -542,750 +540,743 @@ else
 
 		if ($result)
 		{
-			if ($mesg) print $mesg."<br>";
-			
-			
-			// Affichage en mode "édition"
-			if ($action == 'edit')
+			if (!(empty($agf->id)))
 			{
 				$head = session_prepare_head($agf);
-
-				dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'user');
-
-				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
-				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-				print '<input type="hidden" name="action" value="update">';
-				print '<input type="hidden" name="id" value="'.$id.'">';
-				print '<input type="hidden" name="action" value="update">';
 				
-
-				print '<table class="border" width="100%">';
-				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-				print '<td>'.$agf->id.'</td></tr>';
-				//print '<td>'.$form->showrefnav('session', $agf->id).'</td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
-				//print '<td>'.ebi_select_formation($agf->id, 'formation').'</a></td></tr>';
-				print '<td>'.$agf->formintitule.'</a></td></tr>';
-
-
-				print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
-				//print '<td>'.ebi_select_formation($agf->id, 'formation', 'code').'</a></td></tr>';
-				print '<td>'.$agf->formref.'</a></td></tr>';
+				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 				
-				/*
-				print '<tr><td>'.$langs->trans("AgfFormateur").'</td><td>';
-				//$form->select_users($agf->rowid);
-				print ebi_select_formateur($agf->teacherid, 'formateur');
-				print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
-				//print $form->textwithpicto("","test");
-				print '</td>;
-				*/
-				print '</tr>';
-				
-				print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
-				$form->select_date($agf->dated, 'dad','','','','update');
-				print '</td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfDateFin").'</td><td>';
-				$form->select_date($agf->datef, 'daf','','','','update');
-				print '</td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
-				print '<td>';
-				print ebi_select_site_forma($agf->placeid,'place');
-				print '</td></tr>';
-
-				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
-				if (!empty($agf->note)) $notes = nl2br($agf->note);
-				else $notes =  $langs->trans("AgfUndefinedNote");
-				print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->notes).'</textarea></td></tr>';
-
-				print '</table>';
-				print '</div>';
-
-				print '<table style=noborder align="right">';
-				print '<tr><td align="center" colspan=2>';
-				print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
-				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
-				print '</td></tr>';
-
-				print '</table>';
-				print '</form>';
-
-
-
-				/*
-				 * Gestion formateur
-				 */
-
-				print_barre_liste($langs->trans("AgfFormateur"),"", "","","","",'',0);
-
-				/*
-				 * Confirmation de la suppression
-				 */
-				if ($_POST["form_remove_x"])
+				// Affichage en mode "édition"
+				if ($action == 'edit')
 				{
-					// Param url = id de la ligne formateur dans session - id session 
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form");
-					if ($ret == 'html') print '<br>';
-				}
-
-
-				print '<div class="tabBar">';
-				print '<table class="border" width="100%">';
-
-				// Bloc d'affichage et de modification des formateurs
-				$formateurs = new Agefodd_session_formateur($db);
-				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-				if ($nbform > 0)
-				{
-					for ($i=0; $i < $nbform; $i++)
+					print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+					print '<input type="hidden" name="action" value="update">';
+					print '<input type="hidden" name="id" value="'.$id.'">';
+					print '<input type="hidden" name="action" value="update">';
+					
+	
+					print '<table class="border" width="100%">';
+					print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
+					print '<td>'.$agf->id.'</td></tr>';
+					//print '<td>'.$form->showrefnav('session', $agf->id).'</td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
+					print '<td>'.ebi_select_formation($agf->formid, 'formation');
+					//$s=$agf->getToolTip('training');
+					//print $form->textwithpicto('',$s,1);
+					print '</td></tr>';
+					//print '<td>'.$agf->formintitule.'</a></td></tr>';
+	
+	
+					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
+					//print '<td>'.ebi_select_formation($agf->id, 'formation', 'code').'</a></td></tr>';
+					print '<td>'.$agf->formref.'</a></td></tr>';
+					
+					/*
+					print '<tr><td>'.$langs->trans("AgfFormateur").'</td><td>';
+					//$form->select_users($agf->rowid);
+					print ebi_select_formateur($agf->teacherid, 'formateur');
+					print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
+					//print $form->textwithpicto("","test");
+					print '</td>;
+					*/
+					print '</tr>';
+					
+					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
+					$form->select_date($agf->dated, 'dad','','','','update');
+					print '</td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfDateFin").'</td><td>';
+					$form->select_date($agf->datef, 'daf','','','','update');
+					print '</td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
+					print '<td>';
+					print ebi_select_site_forma($agf->placeid,'place');
+					print '</td></tr>';
+	
+					print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
+					if (!empty($agf->note)) $notes = nl2br($agf->note);
+					else $notes =  $langs->trans("AgfUndefinedNote");
+					print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->notes).'</textarea></td></tr>';
+	
+					print '</table>';
+					print '</div>';
+	
+					print '<table style=noborder align="right">';
+					print '<tr><td align="center" colspan=2>';
+					print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+					print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
+					print '</td></tr>';
+	
+					print '</table>';
+					print '</form>';
+	
+	
+	
+					/*
+					 * Gestion formateur
+					 */
+	
+					print_barre_liste($langs->trans("AgfFormateur"),"", "","","","",'',0);
+	
+					/*
+					 * Confirmation de la suppression
+					 */
+					if ($_POST["form_remove_x"])
 					{
-						if ($formateurs->line[$i]->opsid == $_POST["opsid"] && $_POST["form_remove_x"]) print '<tr bgcolor="#d5baa8">';
-						else print '<tr>';
-						print '<form name="form_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-						print '<input type="hidden" name="action" value="edit">'."\n";
-						print '<input type="hidden" name="sessid" value="'.$formateurs->line[$i]->sessid.'">'."\n";
-						//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
-						print '<input type="hidden" name="opsid" value="'.$formateurs->line[$i]->opsid.'">'."\n";
-					
-						print '<td width="20px" align="center">'.($i+1).'</td>';
-					
-						if ($formateurs->line[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
+						// Param url = id de la ligne formateur dans session - id session 
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form",'','',1);
+						if ($ret == 'html') print '<br>';
+					}
+	
+	
+					print '<div class="tabBar">';
+					print '<table class="border" width="100%">';
+	
+					// Bloc d'affichage et de modification des formateurs
+					$formateurs = new Agefodd_session_formateur($db);
+					$nbform = $formateurs->fetch_formateur_per_session($agf->id);
+					if ($nbform > 0)
+					{
+						for ($i=0; $i < $nbform; $i++)
 						{
-							print '<td width="300px" style="border-right: 0px">';
-							print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
-							if ($user->rights->agefodd->modifier)
+							if ($formateurs->line[$i]->opsid == $_POST["opsid"] && $_POST["form_remove_x"]) print '<tr bgcolor="#d5baa8">';
+							else print '<tr>';
+							print '<form name="form_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+							print '<input type="hidden" name="action" value="edit">'."\n";
+							print '<input type="hidden" name="sessid" value="'.$formateurs->line[$i]->sessid.'">'."\n";
+							//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
+							print '<input type="hidden" name="opsid" value="'.$formateurs->line[$i]->opsid.'">'."\n";
+						
+							print '<td width="20px" align="center">'.($i+1).'</td>';
+						
+							if ($formateurs->line[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
 							{
-								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
-							}
-							print '</td>';
-						}
-						else
-						{
-							print '<td width="300px"style="border-right: 0px;">';
-							// info formateur
-							if (strtolower($formateurs->line[$i]->name) == "undefined")
-							{
-								print $langs->trans("AgfUndefinedStagiaire");
+								print '<td width="300px" style="border-right: 0px">';
+								print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
+								if ($user->rights->agefodd->modifier)
+								{
+									print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								}
+								print '</td>';
 							}
 							else
 							{
-								print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
-								print img_object($langs->trans("ShowContact"),"contact").' ';
-								print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-		                         		}
-                                        		print '</td>';
-							print '<td>';
+								print '<td width="300px"style="border-right: 0px;">';
+								// info formateur
+								if (strtolower($formateurs->line[$i]->name) == "undefined")
+								{
+									print $langs->trans("AgfUndefinedStagiaire");
+								}
+								else
+								{
+									print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
+									print img_object($langs->trans("ShowContact"),"contact").' ';
+									print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
+			                         		}
+	                                        		print '</td>';
+								print '<td>';
+								
+								
+								if ($user->rights->agefodd->modifier)
+								{
+									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="form_edit" alt="'.$langs->trans("AgfModSave").'">';
+								}
+								print '&nbsp;';
+								if ($user->rights->agefodd->creer)
+								{
+									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="form_remove" alt="'.$langs->trans("AgfModSave").'">';
+								}
+								print '</td>'."\n";
+							}
+							print '</form>'."\n";
+							print '</tr>'."\n";
+						}
+					}
+					
+					// Champs nouveau formateur
+					if (isset($_POST["newform"]))
+					{
+						print '<tr>';
+						print '<form name="form_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+						print '<input type="hidden" name="action" value="edit">'."\n";
+						//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
+						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
+						//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
+						print '<td width="20px" align="center">'.($i+1).'</td>';
+						print '<td>';
+						print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
+						if ($user->rights->agefodd->modifier)
+						{
+							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
+						}
+						print '</td>';
+						print '</form>';
+						print '</tr>'."\n";
+					} 
+	
+					print '</table>';
+					if (!isset($_POST["newform"]))
+					{
+						print '</div>';
+						//print '&nbsp';
+						print '<table style="border:0;" width="100%">';
+						print '<tr><td align="right">';
+						print '<form name="newform" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+						print '<input type="hidden" name="action" value="edit">'."\n";
+						print '<input type="hidden" name="newform" value="1">'."\n";
+						print '<input type="submit" class="butAction" value="'.$langs->trans("AgfFormateurAdd").'">';
+						print '</td></tr>';
+						print '</form>';
+						print '</table>';
+					}
+					print '</div>';
+					
+			
+	
+					/*
+					 * Gestion Calendrier
+					 */
+					
+					print_barre_liste($langs->trans("AgfCalendrier"),"", "","","","",'',0);
+					
+					/*
+					 * Confirmation de la suppression
+					 */
+					if ($_POST["period_remove_x"])
+					{
+						// Param url = id de la periode à supprimer - id session 
+						$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
+						if ($ret == 'html') print '<br>';
+					}
+					print '<div class="tabBar">';
+					print '<table class="border" width="100%">';
+									
+					$calendrier = new Agefodd_sesscalendar($db);
+					$calendrier->fetch_all($agf->id);
+					$blocNumber = count($calendrier->line);
+					if ($blocNumber < 1 && !isset($_POST["newperiod"]))
+					{
+						print '<tr>';
+						print '<td  colpsan=1 style="color:red; text-decoration: blink;">'.$langs->trans("AgfNoCalendar").'</td></tr>';
+					}
+					else
+					{
+						$old_date = 0;
+						$duree = 0;
+						for ($i = 0; $i < $blocNumber; $i++)
+						{
+							print '<tr>'."\n";;
+							print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+							print '<input type="hidden" name="action" value="edit">'."\n";
+							print '<input type="hidden" name="sessid" value="'.$calendrier->line[$i]->sessid.'">'."\n";
+							print '<input type="hidden" name="modperiod" value="'.$calendrier->line[$i]->id.'">'."\n";
 							
+							if ($calendrier->line[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
+							{
+								print '<td  width="20%">'.$langs->trans("AgfPeriodDate").' ';
+								$form->select_date($calendrier->line[$i]->date, 'date','','','','date');
+								print '</td>';
+								print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
+								print ebi_select_time("heured", $calendrier->line[$i]->heured);
+								print ' - '.$langs->trans("AgfPeriodTimeE").' ';
+								print ebi_select_time("heuref",$calendrier->line[$i]->heuref);
+								print '</td>';
+						
+								if ($user->rights->agefodd->modifier)
+								{
+									print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								}
+							}
+							else
+							{
+								$arrayJour = explode('-', $calendrier->line[$i]->date);
+								$mktime = dol_mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
+								setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
+								$jour = strftime("%A", $mktime);
+								print '<td width="20%">'.$jour.' '.dol_print_date($calendrier->line[$i]->date).'</td>';
+								print '<td  width="150px">';
+								$heured = ebi_time_array($calendrier->line[$i]->heured);
+								print $heured['h'].':'.$heured['m'] ;
+								$heuref = ebi_time_array($calendrier->line[$i]->heuref);
+								print ' - '.$heuref['h'].':'.$heuref['m'] ;
+								print '</td><td colspan=2 width="auto">' ;
 							
+								if ($user->rights->agefodd->modifier)
+								{
+									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="period_edit" alt="'.$langs->trans("AgfModSave").'">';
+								}
+								print '&nbsp;';
+								if ($user->rights->agefodd->creer)
+								{
+									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="period_remove" alt="'.$langs->trans("AgfModSave").'">';
+								}
+							}
+							print '</td>' ;
+							
+							// On calcule la duree totale du calendrier
+							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
+							$heured = ebi_time_array($calendrier->line[$i]->heured);
+							$heuref = ebi_time_array($calendrier->line[$i]->heuref);
+							$arrayJour = explode('-', $calendrier->line[$i]->date);
+							$tms_heured = dol_mktime($heured['h'],$heured['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
+							$tms_heuref = dol_mktime($heuref['h'],$heuref['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
+							$duree += ($tms_heuref - $tms_heured);
+	
+							print '</form>'."\n";
+							print '</tr>'."\n";
+						}
+						if (($agf->duree * 3600) != $duree)
+						{
+							print '<tr><td colspan=5 style="text-decoration: blink;" align="center">';
+							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
+							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
+							$rsec = sprintf("%02d",$duree % 60); 
+							$min = floor($duree/60) ;
+							$rmin = sprintf("%02d", $min %60) ;
+							$hour = floor($min/60);
+							print ' ('.$langs->trans("AgfCalendarDureeProgrammee").': '.$hour.':'.$rmin.', ';
+							print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree).':00).</td></tr>';
+						}
+					}
+					
+					// Champs nouvelle periode
+	
+					if (!isset($_POST["newperiod"]))
+					{
+						print "</table></div>";
+						//print '&nbsp';
+						print '<table style="border:0;" width="100%">';
+						print '<tr><td align="right">';
+						print '<form name="newperiod" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+						print '<input type="hidden" name="action" value="edit">'."\n";
+						print '<input type="hidden" name="newperiod" value="1">'."\n";
+						print '<input type="submit" class="butAction" value="'.$langs->trans("AgfPeriodAdd").'">';
+						print '</td></tr>';
+						print '</form>';
+					}
+					else
+					{
+						print '<tr>';
+						print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+						print '<input type="hidden" name="action" value="edit">'."\n";
+						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
+						print '<input type="hidden" name="periodid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
+						//print '<td width="20px" align="center">'.($i+1).'</td>';
+						print '<td>'.$langs->trans("AgfPeriodDate").' ';
+						$form->select_date($agf->dated, 'date','','','','date');
+						print '</td>';
+						print '<td width="150px">'.$langs->trans("AgfPeriodTimeB").' ';
+						print ebi_select_time("heured");
+						print '</td>';
+						print '<td width="150px">'.$langs->trans("AgfPeriodTimeE").' ';
+						print ebi_select_time("heuref");
+						print '</td>';
+						if ($user->rights->agefodd->modifier)
+						{
+							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" ">';
+						}
+						print '</td>';
+						print '</form>';
+						print '</tr>'."\n";
+					} 
+	
+					print '</table>';
+					print '</div>';
+	
+	
+					/*
+					 * Gestion stagiaire
+					 */
+	
+					print_barre_liste($langs->trans("AgfParticipants"),"", "","","","",'',0);
+	
+					/*
+					 * Confirmation de la suppression
+					 */
+					if ($_POST["stag_remove_x"])
+					{
+						// Param url = id de la ligne stagiaire dans session - id session 
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
+						if ($ret == 'html') print '<br>';
+					}
+	
+	
+					print '<div class="tabBar">';
+					print '<table class="border" width="100%">';
+	
+					// Bloc d'affichage et de modification des stagiaires
+					$stagiaires = new Agefodd_session($db);
+					$stagiaires->fetch_stagiaire_per_session($agf->id);
+					$nbstag = count($stagiaires->line);
+					if ($nbstag > 0)
+					{
+						for ($i=0; $i < $nbstag; $i++)
+						{
+							if ($stagiaires->line[$i]->id == $_POST["modstagid"] && $_POST["stag_remove_x"]) print '<tr bgcolor="#d5baa8">';
+							else print '<tr>';
+							print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+							print '<input type="hidden" name="action" value="edit">'."\n";
+							print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
+							print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
+							print '<input type="hidden" name="modstagid" value="'.$stagiaires->line[$i]->id.'">'."\n";
+						
+							print '<td width="20px" align="center">'.($i+1).'</td>';
+						
+							if ($stagiaires->line[$i]->id == $_POST["modstagid"] && ! $_POST["stag_remove_x"])
+							{
+								print '<td colspan=2>';
+								print ebi_select_stagiaire($stagiaires->line[$i]->id);
+								
+								if (USE_STAGIAIRE_TYPE == 'OK')
+								{
+									print '<br /> '.$langs->trans("AgfStagiaireModeFinancement").': ';
+									print ebi_select_type_stagiaire($stagiaires->line[$i]->typeid);
+								}
+								if ($user->rights->agefodd->modifier)
+								{
+									print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
+								}
+								print '</td>';
+							}
+							else
+							{
+								print '<td width="300px"style="border-right: 0px;">';
+								// info stagiaire
+								if (strtolower($stagiaires->line[$i]->nom) == "undefined")
+								{
+									print $langs->trans("AgfUndefinedStagiaire");
+								}
+								else
+								{
+									print '<a href="'.DOL_URL_ROOT.'/agefodd/u_fiche.php?id='.$stagiaires->line[$i]->id.'">';
+									print img_object($langs->trans("ShowContact"),"contact").' ';
+									print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
+									print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
+	                                        		}
+	                                        		print '</td>';
+								print '<td width="200px" style="border-left: 0px;">';
+								// Affichage de l'organisme auquel est rattaché le stagiaire
+								if ($stagiaires->line[$i]->socid)
+								{
+									print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
+									print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
+								}
+								else
+								{
+									print '&nbsp;';
+								}
+								print '</td><td>';
+								
+								
+								if ($user->rights->agefodd->modifier)
+								{
+									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="stag_edit" alt="'.$langs->trans("AgfModSave").'">';
+								}
+								print '&nbsp;';
+								if ($user->rights->agefodd->creer)
+								{
+									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="stag_remove" alt="'.$langs->trans("AgfModSave").'">';
+								}
+								print '</td>'."\n";
+							}
+							print '</form>'."\n";
+							print '</tr>'."\n";
+						}
+					}
+					
+					// Champs nouveau stagiaire
+					if (isset($_POST["newstag"]))
+					{
+						print '<tr>';
+						print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+						print '<input type="hidden" name="action" value="edit">'."\n";
+						//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
+						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
+						print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
+						print '<td width="20px" align="center">'.($i+1).'</td>';
+						print '<td colspan=2>';
+							print ebi_select_stagiaire();
+							if (USE_STAGIAIRE_TYPE == 'OK')
+							{
+								print ebi_select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
+							}
 							if ($user->rights->agefodd->modifier)
 							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="form_edit" alt="'.$langs->trans("AgfModSave").'">';
+								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
 							}
-							print '&nbsp;';
-							if ($user->rights->agefodd->creer)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="form_remove" alt="'.$langs->trans("AgfModSave").'">';
-							}
-							print '</td>'."\n";
-						}
-						print '</form>'."\n";
+						print '</td>';
+						print '</form>';
 						print '</tr>'."\n";
-					}
-				}
-				
-				// Champs nouveau formateur
-				if (isset($_POST["newform"]))
-				{
-					print '<tr>';
-					print '<form name="form_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
-					print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-					//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
-					print '<td width="20px" align="center">'.($i+1).'</td>';
-					print '<td>';
-					print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
-					if ($user->rights->agefodd->modifier)
-					{
-						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
-					}
-					print '</td>';
-					print '</form>';
-					print '</tr>'."\n";
-				} 
-
-				print '</table>';
-				if (!isset($_POST["newform"]))
-				{
-					print '</div>';
-					//print '&nbsp';
-					print '<table style="border:0;" width="100%">';
-					print '<tr><td align="right">';
-					print '<form name="newform" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					print '<input type="hidden" name="newform" value="1">'."\n";
-					print '<input type="submit" class="butAction" value="'.$langs->trans("AgfFormateurAdd").'">';
-					print '</td></tr>';
-					print '</form>';
+					} 
+	
 					print '</table>';
-				}
-				print '</div>';
-				
-		
-
-				/*
-				 * Gestion Calendrier
-				 */
-				
-				print_barre_liste($langs->trans("AgfCalendrier"),"", "","","","",'',0);
-				
-				/*
-				 * Confirmation de la suppression
-				 */
-				if ($_POST["period_remove_x"])
-				{
-					// Param url = id de la periode à supprimer - id session 
-					$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
-					if ($ret == 'html') print '<br>';
-				}
-				print '<div class="tabBar">';
-				print '<table class="border" width="100%">';
-								
-				$calendrier = new Agefodd_sesscalendar($db);
-				$calendrier->fetch_all($agf->id);
-				$blocNumber = count($calendrier->line);
-				if ($blocNumber < 1 && !isset($_POST["newperiod"]))
-				{
-					print '<tr>';
-					print '<td  colpsan=1 style="color:red; text-decoration: blink;">'.$langs->trans("AgfNoCalendar").'</td></tr>';
+					if (!isset($_POST["newstag"]))
+					{
+						print '</div>';
+						//print '&nbsp';
+						print '<table style="border:0;" width="100%">';
+						print '<tr><td align="right">';
+						print '<form name="newstag" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+						print '<input type="hidden" name="action" value="edit">'."\n";
+						print '<input type="hidden" name="newstag" value="1">'."\n";
+						print '<input type="submit" class="butAction" value="'.$langs->trans("AgfStagiaireAdd").'">';
+						print '</td></tr>';
+						print '</form>';
+					}
+	
+					print '</table>';
+					print '</div>';
+	
+	
 				}
 				else
 				{
-					$old_date = 0;
-					$duree = 0;
-					for ($i = 0; $i < $blocNumber; $i++)
+					// Affichage en mode "consultation"
+					/*
+					 * Confirmation de la suppression
+					 */
+					if ($action == 'delete')
 					{
-						print '<tr>'."\n";;
-						print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-						print '<input type="hidden" name="action" value="edit">'."\n";
-						print '<input type="hidden" name="sessid" value="'.$calendrier->line[$i]->sessid.'">'."\n";
-						print '<input type="hidden" name="modperiod" value="'.$calendrier->line[$i]->id.'">'."\n";
-						
-						if ($calendrier->line[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
-						{
-							print '<td  width="20%">'.$langs->trans("AgfPeriodDate").' ';
-							$form->select_date($calendrier->line[$i]->date, 'date','','','','date');
-							print '</td>';
-							print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
-							print ebi_select_time("heured", $calendrier->line[$i]->heured);
-							print ' - '.$langs->trans("AgfPeriodTimeE").' ';
-							print ebi_select_time("heuref",$calendrier->line[$i]->heuref);
-							print '</td>';
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
+						if ($ret == 'html') print '<br>';
+					}
+	
+					/*
+					* Confirmation de l'archivage/activation suppression
+					*/
+					if (isset($_GET["arch"]))
+					{
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
+						if ($ret == 'html') print '<br>';
+					}
+	
+					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
+					print ebi_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+					print '</div>';
+	
+	
+	
+					print '<table class="border" width="100%">';
+	
+					print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
+					print '<td>'.$form->showrefnav($agf,$id).'</td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
+					print '<td><a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->formid.'">'.$agf->formintitule.'</a></td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
+					print '<td>'.$agf->formref.'</td></tr>';
+	
+					//print '<tr><td>'.$langs->trans("AgfFormateur").'</td>';
+					//print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->teacherid.'">'.$agf->teachername.'</a>';
 					
-							if ($user->rights->agefodd->modifier)
-							{
-								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
-							}
-						}
-						else
+					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td>';
+					print '<td>'.dol_print_date($agf->dated).'</td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfDateFin").'</td>';
+					print '<td>'.dol_print_date($agf->datef).'</td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
+					print '<td><a href="'.dol_buildpath('/agefodd/site/card.php',1).'?id='.$agf->placeid.'">'.$agf->placecode.'</a></td></tr>';
+	
+					print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
+					if (!empty($agf->notes)) $notes = nl2br($agf->notes);
+					else $notes =  $langs->trans("AgfUndefinedNote");
+					print '<td>'.stripslashes($notes).'</td></tr>';
+	
+					print '</table>';
+					
+					print '&nbsp';
+	
+	
+					/*
+					 * Gestion des formateurs
+					 */
+					print '&nbsp';
+					print '<table class="border" width="100%">';
+					
+					$formateurs = new Agefodd_session_formateur($db);
+					$nbform = $formateurs->fetch_formateur_per_session($agf->id);
+					print '<tr><td width="20%" valign="top">';
+					print $langs->trans("AgfFormateur");
+					if ($nbform > 0) print ' ('.$nbform.')';
+					print '</td>';
+					if ($nbform < 1)
+					{
+					    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
+					}
+					else
+					{
+					    print '<td>';
+					    for ($i=0; $i < $nbform; $i++)
+					    {
+						// Infos formateurs
+						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
+						//print img_object($langs->trans("ShowContact"),"contact").' ';
+						print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
+						if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
+	                                        
+					    }
+	                                    print '</td>';
+					    print "</tr>\n";
+					}
+					print "</table>";
+	
+					/*
+					 * Gestion du calendrier
+					 */
+					
+					print '&nbsp';
+					print '<table class="border" width="100%">';
+					print '<tr>';
+					
+					$calendrier = new Agefodd_sesscalendar($db);
+					$calendrier->fetch_all($agf->id);
+					$blocNumber = count($calendrier->line);
+					if ($blocNumber < 1)
+					{
+						print '<td  width="20%" valign="top" >'.$langs->trans("AgfCalendrier").'</td>';
+						print '<td style="color:red; text-decoration: blink;">'.$langs->trans("AgfNoCalendar").'</td></tr>';
+					}
+					else
+					{
+						print '<td  width="20%" valign="top" style="border-bottom:0px;">'.$langs->trans("AgfCalendrier").'</td>';
+						$old_date = 0;
+						$duree = 0;
+						for ($i = 0; $i < $blocNumber; $i++)
 						{
-							$arrayJour = explode('-', $calendrier->line[$i]->date);
-							$mktime = mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-							setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
-							$jour = strftime("%A", $mktime);
-							print '<td width="20%">'.$jour.' '.dol_print_date($calendrier->line[$i]->date).'</td>';
-							print '<td  width="150px">';
+							if ($calendrier->line[$i]->date != $old_date)
+							{
+								if ($i > 0 )print '</tr><tr><td width="150px" style="border:0px;">&nbsp;</td>';
+								print '<td width="150px">';
+								$arrayJour = explode('-', $calendrier->line[$i]->date);
+								$mktime = dol_mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
+								setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
+								$jour = strftime("%A", $mktime);
+								print $jour.' '.dol_print_date($calendrier->line[$i]->date).'</td><td>';
+							}
+							else print ', ';
 							$heured = ebi_time_array($calendrier->line[$i]->heured);
 							print $heured['h'].':'.$heured['m'] ;
 							$heuref = ebi_time_array($calendrier->line[$i]->heuref);
 							print ' - '.$heuref['h'].':'.$heuref['m'] ;
-							print '</td><td colspan=2 width="auto">' ;
-						
-							if ($user->rights->agefodd->modifier)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="period_edit" alt="'.$langs->trans("AgfModSave").'">';
-							}
-							print '&nbsp;';
-							if ($user->rights->agefodd->creer)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="period_remove" alt="'.$langs->trans("AgfModSave").'">';
-							}
-						}
-						print '</td>' ;
-						
-						// On calcule la duree totale du calendrier
-						// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
-						$heured = ebi_time_array($calendrier->line[$i]->heured);
-						$heuref = ebi_time_array($calendrier->line[$i]->heuref);
-						$arrayJour = explode('-', $calendrier->line[$i]->date);
-						$tms_heured = mktime($heured['h'],$heured['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-						$tms_heuref = mktime($heuref['h'],$heuref['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-						$duree += ($tms_heuref - $tms_heured);
-
-						print '</form>'."\n";
-						print '</tr>'."\n";
-					}
-					if (($agf->duree * 3600) != $duree)
-					{
-						print '<tr><td colspan=5 style="text-decoration: blink;" align="center">';
-						if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
-						if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
-						$rsec = sprintf("%02d",$duree % 60); 
-						$min = floor($duree/60) ;
-						$rmin = sprintf("%02d", $min %60) ;
-						$hour = floor($min/60);
-						print ' ('.$langs->trans("AgfCalendarDureeProgrammee").': '.$hour.':'.$rmin.', ';
-						print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree).':00).</td></tr>';
-					}
-				}
-				
-				// Champs nouvelle periode
-
-				if (!isset($_POST["newperiod"]))
-				{
-					print "</table></div>";
-					//print '&nbsp';
-					print '<table style="border:0;" width="100%">';
-					print '<tr><td align="right">';
-					print '<form name="newperiod" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					print '<input type="hidden" name="newperiod" value="1">'."\n";
-					print '<input type="submit" class="butAction" value="'.$langs->trans("AgfPeriodAdd").'">';
-					print '</td></tr>';
-					print '</form>';
-				}
-				else
-				{
-					print '<tr>';
-					print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-					print '<input type="hidden" name="periodid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-					//print '<td width="20px" align="center">'.($i+1).'</td>';
-					print '<td>'.$langs->trans("AgfPeriodDate").' ';
-					$form->select_date($agf->dated, 'date','','','','date');
-					print '</td>';
-					print '<td width="150px">'.$langs->trans("AgfPeriodTimeB").' ';
-					print ebi_select_time("heured");
-					print '</td>';
-					print '<td width="150px">'.$langs->trans("AgfPeriodTimeE").' ';
-					print ebi_select_time("heuref");
-					print '</td>';
-					if ($user->rights->agefodd->modifier)
-					{
-						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" ">';
-					}
-					print '</td>';
-					print '</form>';
-					print '</tr>'."\n";
-				} 
-
-				print '</table>';
-				print '</div>';
-
-
-				/*
-				 * Gestion stagiaire
-				 */
-
-				print_barre_liste($langs->trans("AgfParticipants"),"", "","","","",'',0);
-
-				/*
-				 * Confirmation de la suppression
-				 */
-				if ($_POST["stag_remove_x"])
-				{
-					// Param url = id de la ligne stagiaire dans session - id session 
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
-					if ($ret == 'html') print '<br>';
-				}
-
-
-				print '<div class="tabBar">';
-				print '<table class="border" width="100%">';
-
-				// Bloc d'affichage et de modification des stagiaires
-				$stagiaires = new Agefodd_session($db);
-				$stagiaires->fetch_stagiaire_per_session($agf->id);
-				$nbstag = count($stagiaires->line);
-				if ($nbstag > 0)
-				{
-					for ($i=0; $i < $nbstag; $i++)
-					{
-						if ($stagiaires->line[$i]->id == $_POST["modstagid"] && $_POST["stag_remove_x"]) print '<tr bgcolor="#d5baa8">';
-						else print '<tr>';
-						print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-						print '<input type="hidden" name="action" value="edit">'."\n";
-						print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
-						print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-						print '<input type="hidden" name="modstagid" value="'.$stagiaires->line[$i]->id.'">'."\n";
-					
-						print '<td width="20px" align="center">'.($i+1).'</td>';
-					
-						if ($stagiaires->line[$i]->id == $_POST["modstagid"] && ! $_POST["stag_remove_x"])
-						{
-							print '<td colspan=2>';
-							print ebi_select_stagiaire($stagiaires->line[$i]->id);
+							if ($i == $blocNumber -1 ) print '</td></tr>';
 							
-							if (USE_STAGIAIRE_TYPE == 'OK')
-							{
-								print '<br /> '.$langs->trans("AgfStagiaireModeFinancement").': ';
-								print ebi_select_type_stagiaire($stagiaires->line[$i]->typeid);
-							}
-							if ($user->rights->agefodd->modifier)
-							{
-								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
-							}
-							print '</td>';
+							$old_date = $calendrier->line[$i]->date;
+							
+							// On calcule la duree totale du calendrier
+							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
+							$tms_heured = dol_mktime($heured['h'],$heured['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
+							$tms_heuref = dol_mktime($heuref['h'],$heuref['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
+							$duree += ($tms_heuref - $tms_heured);
+						}
+						if (($agf->duree * 3600) != $duree)
+						{
+							print '<tr><td>&nbsp;</td><td colspan=2 style="text-decoration: blink;">';
+							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
+							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
+							$rsec = sprintf("%02d",$duree % 60); 
+							$min = floor($duree/60) ;
+							$rmin = sprintf("%02d", $min %60) ;
+							$hour = floor($min/60);
+							print ' ('.$langs->trans("AgfCalendarDureeProgrammee").': '.$hour.':'.$rmin.', ';
+							print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree).':00).</td></tr>';
+						}
+					}
+					print '</tr>';
+					print "</table>";
+	
+	
+					/*
+					 * Gestion des stagiaires
+					 */
+					print '&nbsp';
+					print '<table class="border" width="100%">';
+					
+					$stagiaires = new Agefodd_session($db);
+					$stagiaires->fetch_stagiaire_per_session($agf->id);
+					$nbstag = count($stagiaires->line);
+					print '<tr><td  width="20%" valign="top" ';
+					if ($nbstag < 1)
+					{
+					    print '>'.$langs->trans("AgfParticipants").'</td>';
+					    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
+					}
+					else
+					{
+					    print ' rowspan='.($nbstag).'>'.$langs->trans("AgfParticipants");
+					    if ($nbstag > 1) print ' ('.$nbstag.')';
+					    print '</td>';
+					    
+					    for ($i=0; $i < $nbstag; $i++)
+					    {
+						print '<td witdth="20px" align="center">'.($i+1).'</td>';
+						print '<td width="300px"style="border-right: 0px;">';
+						// Infos stagiaires
+						if (strtolower($stagiaires->line[$i]->nom) == "undefined")
+						{
+							print $langs->trans("AgfUndefinedStagiaire");
 						}
 						else
 						{
-							print '<td width="300px"style="border-right: 0px;">';
-							// info stagiaire
-							if (strtolower($stagiaires->line[$i]->nom) == "undefined")
-							{
-								print $langs->trans("AgfUndefinedStagiaire");
-							}
-							else
-							{
-								print '<a href="'.DOL_URL_ROOT.'/agefodd/u_fiche.php?id='.$stagiaires->line[$i]->id.'">';
-								print img_object($langs->trans("ShowContact"),"contact").' ';
-								print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-								print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
-                                        		}
-                                        		print '</td>';
-							print '<td width="200px" style="border-left: 0px;">';
-							// Affichage de l'organisme auquel est rattaché le stagiaire
-							if ($stagiaires->line[$i]->socid)
-							{
-								print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
-								print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
-							}
-							else
-							{
-								print '&nbsp;';
-							}
-							print '</td><td>';
-							
-							
-							if ($user->rights->agefodd->modifier)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="stag_edit" alt="'.$langs->trans("AgfModSave").'">';
-							}
+							print '<a href="'.DOL_URL_ROOT.'/agefodd/u_fiche.php?id='.$stagiaires->line[$i]->id.'">';
+							print img_object($langs->trans("ShowContact"),"contact").' ';
+							print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
+							print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
+	                                        }
+	                                        print '</td>';
+						print '<td style="border-left: 0px; border-right: 0px;">';
+						// Infos organisme de rattachement
+						if ($stagiaires->line[$i]->socid)
+						{
+							print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
+							print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
+						}
+						else
+						{
 							print '&nbsp;';
-							if ($user->rights->agefodd->creer)
-							{
-								print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="stag_remove" alt="'.$langs->trans("AgfModSave").'">';
-							}
-							print '</td>'."\n";
 						}
-						print '</form>'."\n";
-						print '</tr>'."\n";
+						print '</td>';
+						print '<td style="border-left: 0px;">';
+						// Infos mode de financement
+						if ($stagiaires->line[$i]->type)
+						{
+							print '<div class=adminaction><a href="# ">';
+							print $langs->trans("AgfStagiaireModeFinancement");
+							print '<span>'.stripslashes($stagiaires->line[$i]->type).'</span></a></div>';
+						}
+						else
+						{
+							print '&nbsp;';
+						}
+						print '</td>';
+						print "</tr>\n";
+					    }
 					}
-				}
-				
-				// Champs nouveau stagiaire
-				if (isset($_POST["newstag"]))
-				{
-					print '<tr>';
-					print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
-					print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-					print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-					print '<td width="20px" align="center">'.($i+1).'</td>';
-					print '<td colspan=2>';
-						print ebi_select_stagiaire();
-						if (USE_STAGIAIRE_TYPE == 'OK')
-						{
-							print ebi_select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
-						}
-						if ($user->rights->agefodd->modifier)
-						{
-							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
-						}
-					print '</td>';
-					print '</form>';
-					print '</tr>'."\n";
-				} 
-
-				print '</table>';
-				if (!isset($_POST["newstag"]))
-				{
+					print "</table>";
 					print '</div>';
-					//print '&nbsp';
-					print '<table style="border:0;" width="100%">';
-					print '<tr><td align="right">';
-					print '<form name="newstag" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
-					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-					print '<input type="hidden" name="action" value="edit">'."\n";
-					print '<input type="hidden" name="newstag" value="1">'."\n";
-					print '<input type="submit" class="butAction" value="'.$langs->trans("AgfStagiaireAdd").'">';
-					print '</td></tr>';
-					print '</form>';
 				}
-
-				print '</table>';
-				print '</div>';
-
-
 			}
 			else
 			{
-				// Affichage en mode "consultation"
-				
-				$head = session_prepare_head($agf);
-
-				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'user');
-
-				/*
-				 * Confirmation de la suppression
-				 */
-				if ($action == 'delete')
-				{
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
-					if ($ret == 'html') print '<br>';
-				}
-
-				/*
-				* Confirmation de l'archivage/activation suppression
-				*/
-				if (isset($_GET["arch"]))
-				{
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
-					if ($ret == 'html') print '<br>';
-				}
-
-				print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-				print ebi_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
-				print '</div>';
-
-
-
-				print '<table class="border" width="100%">';
-
-				/*print '<tr class="liste_titre"><td colspan=5  align="center">';
-				print ebi_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
-				print '</td></tr>';*/
-
-				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-				print '<td>'.$agf->id.'</td></tr>';
-
-				//print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-				//print '<td>'.$form->showrefnav($agf,$id).'</td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
-				print '<td><a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->formid.'">'.$agf->formintitule.'</a></td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
-				print '<td>'.$agf->formref.'</td></tr>';
-
-				//print '<tr><td>'.$langs->trans("AgfFormateur").'</td>';
-				//print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->teacherid.'">'.$agf->teachername.'</a>';
-				
-				print '<tr><td>'.$langs->trans("AgfDateDebut").'</td>';
-				print '<td>'.dol_print_date($agf->dated).'</td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfDateFin").'</td>';
-				print '<td>'.dol_print_date($agf->datef).'</td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
-				print '<td><a href="s_place_fiche.php?id='.$agf->placeid.'">'.$agf->placecode.'</a></td></tr>';
-
-				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
-				if (!empty($agf->notes)) $notes = nl2br($agf->notes);
-				else $notes =  $langs->trans("AgfUndefinedNote");
-				print '<td>'.stripslashes($notes).'</td></tr>';
-
-				print '</table>';
-				
-				print '&nbsp';
-
-
-				/*
-				 * Gestion des formateurs
-				 */
-				print '&nbsp';
-				print '<table class="border" width="100%">';
-				
-				$formateurs = new Agefodd_session_formateur($db);
-				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-				print '<tr><td width="20%" valign="top">';
-				print $langs->trans("AgfFormateur");
-				if ($nbform > 0) print ' ('.$nbform.')';
-				print '</td>';
-				if ($nbform < 1)
-				{
-				    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
-				}
-				else
-				{
-				    print '<td>';
-				    for ($i=0; $i < $nbform; $i++)
-				    {
-					// Infos formateurs
-					print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
-					//print img_object($langs->trans("ShowContact"),"contact").' ';
-					print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-					if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
-                                        
-				    }
-                                    print '</td>';
-				    print "</tr>\n";
-				}
-				print "</table>";
-				//print '</div>';
-
-
-				/*
-				 * Gestion du calendrier
-				 */
-				
-				print '&nbsp';
-				print '<table class="border" width="100%">';
-				print '<tr>';
-				
-				$calendrier = new Agefodd_sesscalendar($db);
-				$calendrier->fetch_all($agf->id);
-				$blocNumber = count($calendrier->line);
-				if ($blocNumber < 1)
-				{
-					print '<td  width="20%" valign="top" >'.$langs->trans("AgfCalendrier").'</td>';
-					print '<td style="color:red; text-decoration: blink;">'.$langs->trans("AgfNoCalendar").'</td></tr>';
-				}
-				else
-				{
-					print '<td  width="20%" valign="top" style="border-bottom:0px;">'.$langs->trans("AgfCalendrier").'</td>';
-					$old_date = 0;
-					$duree = 0;
-					for ($i = 0; $i < $blocNumber; $i++)
-					{
-						if ($calendrier->line[$i]->date != $old_date)
-						{
-							if ($i > 0 )print '</tr><tr><td width="150px" style="border:0px;">&nbsp;</td>';
-							print '<td width="150px">';
-							$arrayJour = explode('-', $calendrier->line[$i]->date);
-							$mktime = mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-							setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
-							$jour = strftime("%A", $mktime);
-							print $jour.' '.dol_print_date($calendrier->line[$i]->date).'</td><td>';
-						}
-						else print ', ';
-						$heured = ebi_time_array($calendrier->line[$i]->heured);
-						print $heured['h'].':'.$heured['m'] ;
-						$heuref = ebi_time_array($calendrier->line[$i]->heuref);
-						print ' - '.$heuref['h'].':'.$heuref['m'] ;
-						if ($i == $blocNumber -1 ) print '</td></tr>';
-						
-						$old_date = $calendrier->line[$i]->date;
-						
-						// On calcule la duree totale du calendrier
-						// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
-						$tms_heured = mktime($heured['h'],$heured['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-						$tms_heuref = mktime($heuref['h'],$heuref['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-						$duree += ($tms_heuref - $tms_heured);
-					}
-					if (($agf->duree * 3600) != $duree)
-					{
-						print '<tr><td>&nbsp;</td><td colspan=2 style="text-decoration: blink;">';
-						if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
-						if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
-						$rsec = sprintf("%02d",$duree % 60); 
-						$min = floor($duree/60) ;
-						$rmin = sprintf("%02d", $min %60) ;
-						$hour = floor($min/60);
-						print ' ('.$langs->trans("AgfCalendarDureeProgrammee").': '.$hour.':'.$rmin.', ';
-						print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree).':00).</td></tr>';
-					}
-				}
-				print '</tr>';
-				print "</table>";
-
-
-				/*
-				 * Gestion des stagiaires
-				 */
-				print '&nbsp';
-				print '<table class="border" width="100%">';
-				
-				$stagiaires = new Agefodd_session($db);
-				$stagiaires->fetch_stagiaire_per_session($agf->id);
-				$nbstag = count($stagiaires->line);
-				print '<tr><td  width="20%" valign="top" ';
-				if ($nbstag < 1)
-				{
-				    print '>'.$langs->trans("AgfParticipants").'</td>';
-				    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
-				}
-				else
-				{
-				    print ' rowspan='.($nbstag).'>'.$langs->trans("AgfParticipants");
-				    if ($nbstag > 1) print ' ('.$nbstag.')';
-				    print '</td>';
-				    
-				    for ($i=0; $i < $nbstag; $i++)
-				    {
-					print '<td witdth="20px" align="center">'.($i+1).'</td>';
-					print '<td width="300px"style="border-right: 0px;">';
-					// Infos stagiaires
-					if (strtolower($stagiaires->line[$i]->nom) == "undefined")
-					{
-						print $langs->trans("AgfUndefinedStagiaire");
-					}
-					else
-					{
-						print '<a href="'.DOL_URL_ROOT.'/agefodd/u_fiche.php?id='.$stagiaires->line[$i]->id.'">';
-						print img_object($langs->trans("ShowContact"),"contact").' ';
-						print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-						print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
-                                        }
-                                        print '</td>';
-					print '<td style="border-left: 0px; border-right: 0px;">';
-					// Infos organisme de rattachement
-					if ($stagiaires->line[$i]->socid)
-					{
-						print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
-						print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
-					}
-					else
-					{
-						print '&nbsp;';
-					}
-					print '</td>';
-					print '<td style="border-left: 0px;">';
-					// Infos mode de financement
-					if ($stagiaires->line[$i]->type)
-					{
-						print '<div class=adminaction><a href="# ">';
-						print $langs->trans("AgfStagiaireModeFinancement");
-						print '<span>'.stripslashes($stagiaires->line[$i]->type).'</span></a></div>';
-					}
-					else
-					{
-						print '&nbsp;';
-					}
-					print '</td>';
-					print "</tr>\n";
-				    }
-				}
-				print "</table>";
-				print '</div>';
+				print $langs->trans('AgfNoSession');
 			}
-
 		}
 		else
 		{
+			
 			dol_print_error($db);
 		}
 	}
@@ -1299,7 +1290,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($action != 'create' && $action != 'edit')
+if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 {
 	if ($user->rights->agefodd->creer)
 	{

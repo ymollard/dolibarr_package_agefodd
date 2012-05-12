@@ -109,11 +109,11 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd
 		global $db,$conf;
 
 		// D'abord on recupere la valeur max
-		$posindice=8;
+		$posindice=10;
 		$sql = "SELECT MAX(SUBSTRING(ref FROM ".$posindice.")) as max";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql.= " WHERE ref like '".$this->prefix."____-%'";
-
+		
 		$resql=$db->query($sql);
 		if ($resql)
 		{

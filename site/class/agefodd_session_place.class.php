@@ -70,13 +70,13 @@ class Agefodd_session_place extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_place(";
-		$sql.= "ref, adresse, cp, ville, pays, tel, fk_societe, notes, datec, fk_user_author";
+		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, datec, fk_user_author";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->ref.'", ';
+		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->adresse.'", ';
 		$sql.= '"'.$this->cp.'", ';
 		$sql.= '"'.$this->ville.'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->pays).'",';
+		$sql.= '"'.$this->pays.'",';
 		$sql.= '"'.ebi_mysql_escape_string($this->tel).'",';
 		$sql.= '"'.$this->fk_societe.'",';
 		$sql.= '"'.ebi_mysql_escape_string($this->notes).'",';
@@ -135,12 +135,12 @@ class Agefodd_session_place extends CommonObject
     	global $langs;
     	
         $sql = "SELECT";
-		$sql.= " p.rowid, p.ref, p.adresse, p.cp, p.ville, p.pays, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql.= " s.rowid as socid, s.nom as socname";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
+        $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
         $sql.= " WHERE p.rowid = ".$id;
-	//$sql.= " AND p.archive LIKE 0";
 	
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
@@ -150,11 +150,14 @@ class Agefodd_session_place extends CommonObject
 		{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->ref = $obj->ref;
+			$this->ref = $obj->rowid; // Use for next prev control
+			$this->ref_interne = $obj->ref_interne;
 			$this->adresse = stripslashes($obj->adresse);
 			$this->cp = $obj->cp;
 			$this->ville = stripslashes($obj->ville);
-			$this->pays = stripslashes($obj->pays);
+			$this->pays_id = $obj->fk_pays;
+			$this->pays = $obj->country;
+			$this->pays_code = $obj->country_code;
 			$this->tel = stripslashes($obj->tel);
 			$this->fk_societe = $obj->fk_societe;
 			$this->notes = stripslashes($obj->notes);
@@ -186,10 +189,11 @@ class Agefodd_session_place extends CommonObject
     	global $langs;
     	
         $sql = "SELECT";
-		$sql.= " p.rowid, p.ref, p.adresse, p.cp, p.ville, p.pays, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql.= " s.rowid as socid, s.nom as socname";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
+        $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
 		if ($arch == 0 || $arch == 1) $sql.= " WHERE p.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 	
@@ -207,11 +211,13 @@ class Agefodd_session_place extends CommonObject
 	            $obj = $this->db->fetch_object($resql);
 	
 				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->ref =  stripslashes($obj->ref);
+				$this->line[$i]->ref_interne =  stripslashes($obj->ref_interne);
 				$this->line[$i]->adresse = stripslashes($obj->adresse);
 				$this->line[$i]->cp = $obj->cp;
 				$this->line[$i]->ville = stripslashes($obj->ville);
-				$this->line[$i]->pays = stripslashes($obj->pays);
+				$this->line[$i]->pays_id = $obj->fk_pays;
+				$this->line[$i]->pays = $obj->country;
+				$this->line[$i]->pays_code = $obj->country_code;
 				$this->line[$i]->tel = stripslashes($obj->tel);
 				$this->line[$i]->fk_societe = $obj->fk_societe;
 				$this->line[$i]->notes = stripslashes($obj->notes);
@@ -255,7 +261,7 @@ class Agefodd_session_place extends CommonObject
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
-                $this->date_creation = $obj->datec;
+                $this->date_creation = $this->db->jdate($obj->datec);
                 $this->tms = $obj->tms;
                 $this->user_modification = $obj->fk_user_mod;
                 $this->user_creation = $obj->fk_user_author;
@@ -295,11 +301,11 @@ class Agefodd_session_place extends CommonObject
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
         $sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_place as p SET';
-		$sql.= ' p.ref="'.$this->ref.'", ';
+		$sql.= ' p.ref_interne="'.$this->ref_interne.'", ';
 		$sql.= ' p.adresse="'.$this->adresse.'", ';
 		$sql.= ' p.cp="'.$this->cp.'", ';
 		$sql.= ' p.ville="'.$this->ville.'", ';
-		$sql.= ' p.pays="'.ebi_mysql_escape_string($this->pays).'",';
+		$sql.= ' p.fk_pays="'.$this->pays_id.'",';
 		$sql.= ' p.tel="'.ebi_mysql_escape_string($this->tel).'",';
 		$sql.= ' p.fk_societe="'.$this->fk_societe.'",';
 		$sql.= ' p.notes="'.ebi_mysql_escape_string($this->notes).'",';

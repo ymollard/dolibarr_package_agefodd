@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,36 +27,36 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_stagiaire.class.php");
-require_once("../lib/agefodd.lib.php");
-
+dol_include_once('/agefodd/trainee/class/agefodd_stagiaire.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
 $mesg = '';
 
-$db->begin();
+$action=GETPOST('action','alpha');
+$confirm=GETPOST('confirm','alpha');
+$id=GETPOST('id','int');
+$arch=GETPOST('arch','int');
 
 /*
  * Actions delete
  */
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_stagiaire($db);
-	$result = $agf->remove($_GET["id"]);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: list.php");
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
@@ -64,41 +65,40 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 /*
  * Action update (fiche rens stagiaire)
  */
-if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_stagiaire($db);
 
-		$result = $agf->fetch($_POST["id"]);
+		$result = $agf->fetch($id);
 
-		$agf->nom = $_POST["nom"];
-		$agf->prenom = $_POST["prenom"];
-		$agf->civilite = $_POST["civilite"];
-		$agf->socid = $_POST["societe"];
-		$agf->fonction = $_POST["fonction"];
-		$agf->tel1 = $_POST["tel1"];
-		$agf->tel2 = $_POST["tel2"];
-		$agf->mail = $_POST["mail"];
-		$agf->note = $_POST["note"];
+		$agf->nom = GETPOST('nom','alpha');
+		$agf->prenom = GETPOST('prenom','alpha');
+		$agf->civilite = GETPOST('civilite','alpha');
+		$agf->socid = GETPOST('societe','int');
+		$agf->fonction =GETPOST('fonction','alpha');
+		$agf->tel1 = GETPOST('tel1','alpha');
+		$agf->tel2 = GETPOST('tel2','alpha');
+		$agf->mail = GETPOST('mail','alpha');
+		$agf->note = GETPOST('note','alpha');
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -108,49 +108,47 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
  * Action create (fiche formation)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_stagiaire($db);
 
-		$agf->nom = $_POST["nom"];
-		$agf->prenom = $_POST["prenom"];
-		$agf->civilite = $_POST["civilite"];
-		$agf->socid = $_POST["societe"];
-		$agf->fonction = $_POST["fonction"];
-		$agf->datec = $db->idate(mktime());
-		$agf->tel1 = $_POST["tel1"];
-		$agf->tel2 = $_POST["tel2"];
-		$agf->mail = $_POST["mail"];
-		$agf->note = $_POST["note"];
+		$agf->nom = GETPOST('nom','alpha');
+		$agf->prenom = GETPOST('prenom','alpha');
+		$agf->civilite = GETPOST('civilite','alpha');
+		$agf->socid = GETPOST('societe','int');
+		$agf->fonction =GETPOST('fonction','alpha');
+		$agf->tel1 = GETPOST('tel1','alpha');
+		$agf->tel2 = GETPOST('tel2','alpha');
+		$agf->mail = GETPOST('mail','alpha');
+		$agf->note = GETPOST('note','alpha');
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
 
-if ($_GET["action"] == 'nfcontact' && $_GET["ph"] == 2 && $user->rights->agefodd->creer)
+if ($action == 'nfcontact' && $user->rights->agefodd->creer)
 {
 	// traitement de l'import d'un contact
 
-	include_once(DOL_DOCUMENT_ROOT."/contact/class/contact.class.php");
+	dol_include_once('/contact/class/contact.class.php');
 
 	$contact = new Contact($db);
 	$result = $contact->fetch($_POST["contact"]);
@@ -164,7 +162,6 @@ if ($_GET["action"] == 'nfcontact' && $_GET["ph"] == 2 && $user->rights->agefodd
 		$agf->civilite = $contact->civilite;
 		$agf->socid = $contact->socid;
 		$agf->fonction = $contact->poste;
-		$agf->datec = $db->idate(mktime());
 		$agf->tel1 = $contact->phone_pro;
 		$agf->tel2 = $contact->phone_mobile;
 		$agf->mail = $contact->email;
@@ -174,10 +171,15 @@ if ($_GET["action"] == 'nfcontact' && $_GET["ph"] == 2 && $user->rights->agefodd
 		
 		if ($result2 > 0)
 		{
-			$db->commit();
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id."&action=edit");
 			exit;
 		}
+		else
+		{	
+			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
+		}
+		
 	}
 }
 
@@ -190,30 +192,27 @@ llxHeader();
 
 $form = new Form($db);
 
-$id = $_GET['id'];
+dol_htmloutput_mesg($mesg);
 
-
-if ($_GET["action"] == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->creer)
+if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->creer)
 {
-	// Affichage du formulaire d'import de contact
-	$h=0;
-	
-	$head[$h][0] = $_SERVER['PHP_SELF'];
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
+	print_fiche_titre($langs->trans("AgfMenuActStagiaireNew"));
 
-	dol_fiche_head($head, $hselected, $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
-	//print '<div class="error">&nbsp;Cette fonction n\'est pas encore implémentée.</div>';
-
-	print '<form name="update" action="'.$_SERVER['PHP_SELF'].'"?action=nfcontact&ph=2&id=" method="post">'."\n";
+	print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="post">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="update">'."\n";
+	print '<input type="hidden" name="action" value="nfcontact">'."\n";
 	print '<input type="hidden" name="id" value="'.$id.'">'."\n";
-	print $langs->trans("AgfContactImportAsStagiaire").'&nbsp;';
-	print ebi_select_contacts("contact").'<br />';
-	print '<input type="submit" class="butAction" value="'.$langs->trans("AgfImport").'"> &nbsp; ';
+	print '<table class="border" width="100%">';
+	
+	print '<tr><td width="20%">'. $langs->trans("AgfContactImportAsStagiaire").'</td>';
+	print '<td>'.ebi_select_contacts("contact").'</td></tr>';
+	print '</table>';
+	
+	print '<table style=noborder align="right">';
+	print '<tr><td align="center" colspan=2>';
+	print '<input type="submit" class="butAction" value="'.$langs->trans("AgfImport").'">';
+	print '</td></tr>';
+	print '</table>';
 	print '</div>';
 }
 
@@ -221,30 +220,23 @@ if ($_GET["action"] == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefo
 /*
  * Action create
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
-	
-	$head[$h][0] = $_SERVER['PHP_SELF']."?id=".$agf->id;
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfStagiaireDetail"), 0, 'user');
+	print_fiche_titre($langs->trans("AgfMenuActStagiaireNew"));
 
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="create">';
+	print '<input type="hidden" name="action" value="create_confirm">';
 
 	print '<table class="border" width="100%">';
 
-	print '<tr><td>'.$langs->trans("Lastname").'</td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("Lastname").'</span></td>';
 	print '<td><input name="nom" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td>'.$langs->trans("Firstname").'</td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("Firstname").'</span></td>';
 	print '<td><input name="prenom" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
 
 	// Chargement de la liste des civilités dans $options
 	$sql = "SELECT c.rowid, c.code, c.civilite";
@@ -337,17 +329,13 @@ else
 
 		if ($result)
 		{
-
-			if ($mesg) print $mesg."<br>";
+			$head = trainee_prepare_head($agf);
 			
+			dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 			
 			// Affichage en mode "édition"
-			if ($_GET["action"] == 'edit')
+			if ($action == 'edit')
 			{
-				$head = trainee_prepare_head($agf);
-
-				dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
 				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
@@ -429,24 +417,19 @@ else
 			else
 			{
 				// Affichage en mode "consultation"
-				
-				$head = trainee_prepare_head($agf);
-
-				dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
 				/*
 				 * Confirmation de la suppression
 				 */
-				if ($_GET["action"] == 'delete')
+				if ($action == 'delete')
 				{
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 
 				print '<table class="border" width="100%">';
 
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-				print '<td>'.$agf->id.'</td></tr>';
+				print '<td>'.$form->showrefnav($agf,'id	','',1,'rowid','id').'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Lastname").'</td>';
 				print '<td>'.strtoupper($agf->nom).'</td></tr>';
@@ -507,7 +490,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] != 'nfcontact')
+if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
 	if ($user->rights->agefodd->creer)
 	{

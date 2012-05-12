@@ -33,13 +33,11 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
 $mesg = '';
 
-$action= GETPOST('action','alpha');
+$action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
-$archive=GETPOST('archive','int');
 $arch=GETPOST('arch','int');
 
 /*
@@ -69,7 +67,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 
 	$result = $agf->fetch($id);
 
-	$agf->archive = $archive;
+	$agf->archive = $arch;
 	$result = $agf->update($user->id);
 
 	if ($result > 0)
@@ -96,7 +94,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($id);
 
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->ref = GETPOST('ref','alpha');
+		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
 		$agf->methode = GETPOST('methode','alpha');
@@ -135,7 +133,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf = new Agefodd($db);
 
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->ref = GETPOST('ref','alpha');
+		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
 		$agf->methode = GETPOST('methode','alpha');
@@ -245,14 +243,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	{
 		require_once(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/".$conf->global->AGF_ADDON.".php");
 		$modAgefodd = new $obj;
-		$defaultref = $modAgefodd->getNextValue($soc,$project);
+		$defaultref = $modAgefodd->getNextValue($soc,$agf);
 	}
 	
 	if (is_numeric($defaultref) && $defaultref <= 0) $defaultref='';
 	
 	
 	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfRefInterne").'</span></td><td>';
-	print '<input name="ref" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
+	print '<input name="ref_interne" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
 
 	print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
 	print '<input name="duree" class="flat" size="50" value=""></td></tr>';
@@ -329,7 +327,7 @@ else
 				print '<input name="intitule" class="flat" size="50" value="'.stripslashes($agf->intitule).'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
-				print '<input name="ref" class="flat" size="50" value="'.$agf->ref.'"></td></tr>';
+				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
 				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
@@ -450,7 +448,7 @@ else
 				 */
 				if ($action == 'delete')
 				{
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -459,7 +457,7 @@ else
 					if ($action == 'archive') $value=1;
 					if ($action == 'active') $value=0;
 					
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?archive=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 
@@ -474,7 +472,7 @@ else
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';
-				print $agf->ref.'</td></tr>';
+				print $agf->ref_interne.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfDuree").'</td><td colspan=2>';
 				print $agf->duree.'</td></tr>';

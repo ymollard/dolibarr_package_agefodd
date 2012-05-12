@@ -198,3 +198,5 @@ AgfDeleteErr = Impossible de supprimer l'élement
 AgfTeacherDetail = Déail du formateur
 AgfTeacherSite = Détail des sites de formation
 AgfSessPlaceCode = Ref du site
+AgfCreateContact = Creation d'un intervenant
+AgfNoSession = Cette session n'existe pas

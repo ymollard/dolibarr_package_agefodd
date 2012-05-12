@@ -32,7 +32,7 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 $action=GETPOST('action','alpha');
-$confirm=GETPOST('action','alpha');
+$confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
 
@@ -72,7 +72,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
 
 	$result = $agf->fetch($id);
 
-	$agf->archive = $_GET["arch"];
+	$agf->archive = $arch;
 	$result = $agf->update($user->id);
 
 	if ($result > 0)
@@ -184,23 +184,26 @@ else
 				*/
 			if ($action == 'delete')
 			{
-				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteTeacher"),$langs->trans("AgfConfirmDeleteTeacher"),"confirm_delete");
+				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteTeacher"),$langs->trans("AgfConfirmDeleteTeacher"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 			
 			/*
 			* Confirmation de l'archivage/activation suppression
 			*/
-			if (!empty($arch))
+			if ($action == 'archive' || $action == 'active')
 			{
-				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+				if ($action == 'archive') $value=1;
+				if ($action == 'active') $value=0;
+				
+				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 
 			print '<table class="border" width="100%">';
 
 			print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id');'</td></tr>';
+			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id').'</td></tr>';
 
 			print '<tr><td>'.$langs->trans("Name").'</td>';
 			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->name).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
@@ -244,23 +247,20 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
 	}
 	
-	if ($agf->archive == 0)
-	{
-		$button = $langs->trans('AgfArchiver');
-		$arch = 1;
-	}
-	else
-	{
-		$button = $langs->trans('AgfActiver');
-		$arch = 0;
-	}
 	if ($user->rights->agefodd->modifier)
 	{
-		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&arch='.$arch.'&id='.$id.'">'.$button.'</a>';
+		if ($agf->archive == 0)
+		{
+			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=archive&id='.$id.'">'.$langs->trans('AgfArchiver').'</a>';
+		}
+		else
+		{
+			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=active&id='.$id.'">'.$langs->trans('AgfActiver').'</a>';
+		}
 	}
 	else
 	{
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button.'</a>';
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfArchiver').'/'.$langs->trans('AgfActiver').'</a>';
 	}
 
 }

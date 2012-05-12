@@ -56,7 +56,7 @@ $db->begin();
 
 $sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.datef,";
 $sql.= " c.intitule, c.ref,";
-$sql.= " p.code,";
+$sql.= " p.ref_interne,";
 $sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session=s.rowid) as num";
 $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";

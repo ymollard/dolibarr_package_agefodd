@@ -51,7 +51,7 @@ $agf->info($id);
 
 $head = site_prepare_head($agf);
 
-dol_fiche_head($head, 'info', $langs->trans("AgfTeacherSite"), 0, 'bill');
+dol_fiche_head($head, 'info', $langs->trans("AgfTeacherSite"), 0, 'address');
 
 print '<table width="100%"><tr><td>';
 dol_print_object_info($agf);

@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,69 +27,71 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_contact.class.php");
-require_once("../lib/agefodd.lib.php");
+dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
 $mesg = '';
 
-$db->begin();
+$action=GETPOST('action','alpha');
+$confirm=GETPOST('confirm','alpha');
+$id=GETPOST('id','int');
+$spid=GETPOST('spid','int');
+$arch=GETPOST('arch','int');
 
 /*
  * Actions delete
  */
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_contact($db);
-	$result = $agf->remove($_GET["id"]);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
 		Header ( "Location: list.php");
 		exit;
 	}
 	else
 	{
 		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
+		$mesg='<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
 	}
 }
 
 /*
  * Actions archive/active
  */
-if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
-	if ($_POST["confirm"] == "yes")
+	if ($confirm == "yes")
 	{
 		$agf = new Agefodd_contact($db);
-	
-		$result = $agf->fetch($_GET["id"]);
-	
-		$agf->archive = $_GET["arch"];
+
+		$result = $agf->fetch($id,'peopleid');
+		$agf->archive = $arch;
+		
 		$result = $agf->update($user->id);
 	
 		if ($result > 0)
 		{
-		$db->commit();
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
-		exit;
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+			exit;
 		}
 		else
 		{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
 	
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_GET["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -98,32 +101,30 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
  * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_contact($db);
 
-		$agf->datec = $db->idate(mktime());
-		$agf->spid = $_POST["spid"];
+		$agf->spid = $spid;
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$_POST["id"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -138,26 +139,18 @@ llxHeader();
 
 $form = new Form($db);
 
-$id = $_GET['id'];
-
+dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	$h=0;
-	
-	$head[$h][0] = $_SERVER['PHP_SELF']."?id=$agf->id";
-	$head[$h][1] = $langs->trans("Card");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfContactFiche"), 0, 'user');
+	print_fiche_titre($langs->trans("AgfCreateContact"));
 
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="create">'."\n";
+	print '<input type="hidden" name="action" value="create_confirm">'."\n";
 
 	print '<div class="warning">'.$langs->trans("AgfContactNewWarning1");
 	print ' <a href="'.DOL_URL_ROOT.'/contact/fiche.php?action=create">'.$langs->trans("AgfContactNewWarning2").'</a>.';
@@ -183,7 +176,7 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 }
 else
 {
-	// Affichage de la fiche "formateur"
+	// Affichage de la fiche "intervenant"
 	if ($id)
 	{
 		$agf = new Agefodd_contact($db);
@@ -191,36 +184,37 @@ else
 
 		if ($result)
 		{
-			if ($mesg) print $mesg."<br>";
+			$head = contact_prepare_head($agf);
+				
+			dol_fiche_head($head, 'card', $langs->trans("AgfContactFiche"), 0, 'user');
 			
 			// Affichage en mode "consultation"
-			
-			$head = contact_prepare_head($agf);
-			
-			dol_fiche_head($head, 'card', $langs->trans("AgfContactFiche"), 0, 'user');
 			
 			/*
 			 * Confirmation de la suppression
 			 */
-			if ($_GET["action"] == 'delete')
+			if ($action == 'delete')
 			{
-				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteContact"),$langs->trans("AgfConfirmDeleteContact"),"confirm_delete");
+				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteContact"),$langs->trans("AgfConfirmDeleteContact"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 			
 			/*
 			 * Confirmation de l'archivage/activation suppression
 			 */
-			if (isset($_GET["arch"]))
+			if ($action=='archive' || $action=='active')
 			{
-				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+				if ($action == 'archive') $value=1;
+				if ($action == 'active') $value=0;
+
+				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 
 			print '<table class="border" width="100%">';
 
 			print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-			print '<td>'.$agf->id.'</td></tr>';
+			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id').'</td></tr>';
 
 			print '<tr><td>'.$langs->trans("Name").'</td>';
 			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->name).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
@@ -245,7 +239,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] != 'nfcontact')
+if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
 	if ($user->rights->agefodd->creer)
 	{
@@ -264,30 +258,25 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] 
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
 	}
 	
-	if ($agf->archive == 0)
-	{
-		$button = $langs->trans('AgfArchiver');
-		$arch = 1;
-	}
-	else
-	{
-		$button = $langs->trans('AgfActiver');
-		$arch = 0;
-	}
 	if ($user->rights->agefodd->modifier)
 	{
-		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&arch='.$arch.'&id='.$id.'">'.$button.'</a>';
+		if ($agf->archive == 0)
+		{
+			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=archive&id='.$id.'">'.$langs->trans('AgfArchiver').'</a>';
+		}
+		else
+		{
+			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=active&id='.$id.'">'.$langs->trans('AgfActiver').'</a>';
+		}
 	}
 	else
 	{
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button.'</a>';
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfArchiver').'/'.$langs->trans('AgfActiver').'</a>';
 	}
 
 }
 
 print '</div>';
-
-$db->close();
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

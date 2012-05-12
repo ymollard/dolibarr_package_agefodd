@@ -78,7 +78,7 @@ class Agefodd extends CommonObject
 		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
-		$sql.= '"'.$this->ref.'", ';
+		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
 		$sql.= '"'.$this->public.'",';
@@ -153,7 +153,8 @@ class Agefodd extends CommonObject
 		{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->ref = $obj->ref;
+			$this->ref = $obj->rowid; //use for next prev ref
+			$this->ref_interne = $obj->ref;
 			$this->intitule = stripslashes($obj->intitule);
 			$this->duree = $obj->duree;
 			$this->public = stripslashes($obj->public);
@@ -237,7 +238,7 @@ class Agefodd extends CommonObject
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
-		$sql.= " c.ref='".$this->ref."',";
+		$sql.= " c.ref='".$this->ref_interne."',";
 		$sql.= " c.intitule='".$this->intitule."',";
 		$sql.= " c.duree='".$this->duree."',";
 		$sql.= " c.public='".$this->public."',";
@@ -573,6 +574,32 @@ class Agefodd extends CommonObject
     	$this->archive = '';
     }
     
+    
+    /**
+     *      Return description of training
+     *
+     *		@return	string					HTML translated description
+     */
+    function getToolTip()
+    {
+    	global $conf;
+    
+    	$langs->load("admin");
+    	$langs->load("agefodd@agefodd");
+    
+    	$s='';
+    	if (type=='trainning')
+    	{
+    		$s.='<b>'.$langs->trans("AgfTraining").'</b>:<u>'.$this->intitule.':</u><br>';
+    		$s.='<br>';
+    		$s.=$langs->trans("AgfDuree").' : '.$this->duree.' H <br>';
+    		$s.=$langs->trans("AgfPublic").' : '.$this->public.'<br>';
+    		$s.=$langs->trans("AgfMethode").' : '.$this->methode.'<br>';
+    		
+    		$s.='<br>';
+    	}
+    	return $s;
+    }
     //TODO : createFromClone
 
 }
