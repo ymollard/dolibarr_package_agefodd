@@ -37,7 +37,7 @@ class Agefodd_session_formateur
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-        var $id;
+    var $id;
 
     /**
      *	\brief		Constructor
@@ -75,7 +75,7 @@ class Agefodd_session_formateur
 		$sql.= '"'.$this->sessid.'", ';
 		$sql.= '"'.$this->formid.'", ';
 		$sql.= '"'.$user.'", ';
-		$sql.= '"'.$this->datec.'" ';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 		
 		$this->db->begin();

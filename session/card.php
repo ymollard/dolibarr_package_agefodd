@@ -24,11 +24,16 @@
  *  \version		$Id$
  */
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
 dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
@@ -37,15 +42,12 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
 $mesg = '';
 
-$action= GETPOST('action','alpha');
+$action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
-$id=GETPOST('id','alpha');
-$archive=GETPOST('archive','int');
+$id=GETPOST('id','int'); //TODO Check $id GETPOST is really int
 $arch=GETPOST('arch','int');
-
 
 /*
  * Actions delete session
@@ -82,7 +84,7 @@ if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agef
 
 	if ($result > 0)
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		Header ("Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 	else
@@ -192,24 +194,25 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 		$result = $agf->fetch($id);
 
-		$agf->formateur = $_POST["formateur"];
-		$agf->dated = $_POST["dadyear"].'-'.$_POST["dadmonth"].'-'.$_POST["dadday"];
-		$agf->datef = $_POST["dafyear"].'-'.$_POST["dafmonth"].'-'.$_POST["dafday"];
-		$agf->fk_session_place = $_POST["place"];
-		$agf->notes = $_POST["notes"];
+		$agf->formateur = GETPOST('formateur','int');
+		$agf->dated = GETPOST('dadyear','int').'-'.GETPOST('dadmonth','int').'-'.GETPOST('dadday','int');
+		$agf->datef = GETPOST('dafyear','int').'-'.GETPOST('dafmonth','int').'-'.GETPOST('dafday','int');
+		$agf->fk_session_place = GETPOST('place','int');
+		$agf->notes = GETPOST('notes','alpha');
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
 		{
 			// Si OK et maj des formateurs
 			$error = 0;
-			if ($_POST["nbf"])
+			$nbf=GETPOST('nbf','int');
+			if (!(empty($nbf)))
 			{
 				$agf = new Agefodd_session_formateur($db);
 
-				for ($i = 0; $i < $_POST["nbf"]; $i++)
+				for ($i = 0; $i < $nbf; $i++)
 				{
-					$agf->formateur = $_POST["formateur"];
+					$agf->formateur = GETPOST('formateur','int');
 					$result = $agf->update($user->id);
 				}
 				if ($result > 0) $db->commit();
@@ -250,10 +253,10 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_session($db);
 		
-		$agf->id = $_POST["stagerowid"];
-		$agf->sessid = $_POST["sessid"];
-		$agf->stagiaire = $_POST["stagiaire"];
-		$agf->type = $_POST["stagiaire_type"];
+		$agf->id = GETPOST('stagerowid','int');
+		$agf->sessid = GETPOST('sessid','int');
+		$agf->stagiaire = GETPOST('stagiaire','int');
+		$agf->type = GETPOST('stagiaire_type','int');
 		$result = $agf->update_stag_in_session($user->id);
 	
 		if ($result > 0)
@@ -272,9 +275,8 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_session($db);
 		
-		$agf->sessid = $_POST["sessid"];
-		$agf->stagiaire = $_POST["stagiaire"];
-		$agf->datec = $db->idate(mktime());
+		$agf->sessid = GETPOST('sessid','int');
+		$agf->stagiaire = GETPOST('stagiaire','int');
 		$result = $agf->create_stag_in_session($user->id);
 	
 		if ($result > 0)
@@ -291,13 +293,19 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 	if($_POST["period_update_x"])
 	{
+		
+		$modperiod=GETPOST('modperiod','int');
+		$dateyear=GETPOST('dateyear','int').'-'.GETPOST('datemonth','int').'-'.GETPOST('dateday','int');
+		$heured=GETPOST('heured','int');
+		$heuref=GETPOST('heuref','int');
+		
 		$agf = new Agefodd_sesscalendar($db);
-		$result = $agf->fetch($_POST["modperiod"]);
-
-		if(!empty($_POST["modperiod"])) $agf->id = $_POST["modperiod"];
-		if(!empty($_POST["dateyear"])) $agf->date = $_POST["dateyear"].':'.$_POST["datemonth"].':'.$_POST["dateday"];
-		if(!empty($_POST["heured"])) $agf->heured = $_POST["heured"].':00';
-		if(!empty($_POST["heuref"])) $agf->heuref = $_POST["heuref"].':00';
+		$result = $agf->fetch($modperiod);
+		
+		if(!empty($modperiod)) $agf->id = $modperiod;
+		if(!empty($dateyear)) $agf->date = $dateyear;
+		if(!empty($heured)) $agf->heured = $heured.':00';
+		if(!empty($heuref)) $agf->heuref = $heuref.':00';
 		$result = $agf->update($user->id);
 	
 		if ($result > 0)
@@ -316,11 +324,10 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_sesscalendar($db);
 				
-		$agf->sessid = $_POST["sessid"];
-		$agf->date = $_POST["dateyear"].':'.$_POST["datemonth"].':'.$_POST["dateday"];
-		$agf->heured = $_POST["heured"].':00';
-		$agf->heuref = $_POST["heuref"].':00';
-		$agf->datec = $db->idate(mktime());
+		$agf->sessid = GETPOST('sessid','int');
+		$agf->date = GETPOST('dateyear','int').':'.GETPOST('datemonth','int').':'.GETPOST('dateday','int');
+		$agf->heured = GETPOST('heured','int').':00';
+		$agf->heuref = GETPOST('heuref','int').':00';
 		$result = $agf->create($user->id);
 	
 		if ($result > 0)
@@ -339,8 +346,8 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_session_formateur($db);
 		
-		$agf->opsid = $_POST["opsid"];
-		$agf->formid = $_POST["formid"];
+		$agf->opsid = GETPOST('opsid','int');
+		$agf->formid = GETPOST('formid','int');
 		$result = $agf->update($user->id);
 	
 		if ($result > 0)
@@ -359,9 +366,8 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_session_formateur($db);
 		
-		$agf->sessid = $_POST["sessid"];
-		$agf->formid = $_POST["formid"];
-		$agf->datec = $db->idate(mktime());
+		$agf->sessid = GETPOST('sessid','int');
+		$agf->formid = GETPOST('formid','int');
 		$result = $agf->create($user->id);
 	
 		if ($result > 0)
@@ -384,36 +390,37 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 {
+	$error=0;
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_session($db);
 
-		$agf->formid = $_POST["formation"];
-		$agf->place = $_POST["place"];
-		$agf->dated = $_POST["dadyear"].'-'.$_POST["dadmonth"].'-'.$_POST["dadday"];
-		$agf->datef = $_POST["dafyear"].'-'.$_POST["dafmonth"].'-'.$_POST["dafday"];
-		$agf->notes = $_POST["notes"];
+		$agf->formid = GETPOST('formation','int');
+		$agf->place = GETPOST('place','int');
+		$agf->dated = GETPOST('dadyear','int').'-'.GETPOST('dadmonth','int').'-'.GETPOST('dadday','int');
+		$agf->datef = GETPOST('dafyear','int').'-'.GETPOST('dafmonth','int').'-'.GETPOST('dafday','int');
+		$agf->notes = GETPOST('notes','alpha');
 		$result = $agf->create($user->id);
-
+		
 		if ($result > 0)
 		{
 			// Si la création de la session s'est bien passée, 
 			// on crée automatiquement toutes les tâches administratives associées...
-			$admlevel = new Agefodd_sessadm($db);
-			$result2 = $admlevel->get_admlevel_table();
+			$admlevel = new Agefodd_session_admlevel($db);
+			$result2 = $admlevel->fetch_all();
 				
-			if ($result2)
+			if ($result2 > 0)
 			{
-				for ($i=0; $i < $result2; $i++)
+				foreach ($admlevel->line as $line)
 				{
 					$actions = new Agefodd_sessadm($db);
 
 					// Calcul de la date d'alerte
-					$sec_before_alert = ($admlevel->line[$i]->alerte * 86400);
+					$sec_before_alert = ($line->alerte * 86400);
 					//print '$sec_before_alert = '.$sec_before_alert;
 					$today_mktime = dol_mktime(0, 0, 0, date("m"), date("d"), date("y"));
 						
-					($admlevel->line[$i]->alerte > 0) ? $date_ref = $agf->datef : $date_ref = $agf->dated;
+					($line->alerte > 0) ? $date_ref = $agf->datef : $date_ref = $agf->dated;
 					
 					if ($date_ref > '0000-00-00 00:00:00') $alertday_mktime = (mysql2timestamp($date_ref.' 00:00:00') + $sec_before_alert);
 					else $alertday_mktime = $today_mktime;
@@ -422,40 +429,50 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 					//print '$alertday = '.$alertday;
 					//exit;
 					
-					$actions->fk_agefodd_session_admlevel = $admlevel->line[$i]->rowid;
+					$actions->fk_agefodd_session_admlevel = $line->rowid;
 					$actions->fk_agefodd_session = $agf->id;
-					$actions->delais_alerte = $admlevel->line[$i]->alerte;
-					$actions->intitule = $admlevel->line[$i]->intitule;
-					$actions->indice = $admlevel->line[$i]->indice;
-					$actions->top_level = $admlevel->line[$i]->top_level;
+					$actions->delais_alerte = $line->alerte;
+					$actions->intitule = $line->intitule;
+					$actions->indice = $line->indice;
+					$actions->level_rank = $line->level_rank;
+					$actions->fk_parent_level = $line->fk_parent_level;  //TODO : this is not the good parent, must be parent of admin situ and not aprent of admin level
 					$actions->datea = $alertday;
 					$result3 = $actions->create($user->id);
 
-					if ($result3 > 0) {
-						// TODO :I don't know let see it !!!
+					if ($result3 < 0) {
+						dol_syslog("agefodd:session:card error=".$result3->error, LOG_ERR);
+						$mesg .= $result3->error;
+						$error++;
 					}
-					else
-					{
-						dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
-						$mesg = '<div class="error">'.$actions->error.'</div>';
-					}
-				
 				}
 			}
-			
+			else
+			{
+				dol_syslog("agefodd:session:card error=".$result2->error, LOG_ERR);
+				$mesg .= $result2->error;
+				$error++;
+			}
+		}
+		else
+		{
+			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
+			$mesg .= $agf->error;
+			$error++;
+		}
+		
+		if ($error==0)
+		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$agf->id.'&nbf='.$_POST["nb_formateur"]);
 			exit;
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			$mesg='<div class="error">'.$mesg.'</div>';
 		}
-
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		Header ( "Location: list.php");
 		exit;
 	}
 }
@@ -471,13 +488,6 @@ llxHeader();
 $form = new Form($db);
 
 dol_htmloutput_mesg($mesg);
-
-if (preg_match('/\-/', $id))
-{
-	$GET_array = explode('-', $id);
-	$id = $GET_array[1];
-}
-
 
 /*
  * Action create
@@ -495,6 +505,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 	print '<td>'.ebi_select_formation("", 'formation').'</a></td></tr>';
 
+	//TODO : check nb formateur
 	//print '<tr><td>'.$langs->trans("AgfFormateurNb").'</td><td>';
 	//print ebi_select_number('nb_formateur',1);
 	//print ebi_select_formateur("", 'formateur');

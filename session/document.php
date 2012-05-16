@@ -23,10 +23,6 @@
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
  */
 
-/*error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);*/
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 

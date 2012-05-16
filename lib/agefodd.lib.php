@@ -62,11 +62,6 @@ function session_prepare_head($object)
 	$head[$h][2] = 'card';
 	$h++;
 	
-	$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$object->id;
-	$head[$h][1] = $langs->trans("AgfSuiviActions");
-	$head[$h][2] = 'info';
-	$h++;
-	
 	/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfFichePresence");
 	$head[$h][2] = 'presence';
@@ -80,6 +75,11 @@ function session_prepare_head($object)
 	$head[$h][0] = dol_buildpath('/agefodd/session/document.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfLinkedDocuments");
 	$head[$h][2] = 'document';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Info");
+	$head[$h][2] = 'info';
 	$h++;
 
     // Show more tabs from modules
@@ -344,6 +344,60 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
 	    }
 		$db->free($result);
 		return '<select class="flat" name="'.$name.'">'."\n".$options."\n".'</select>'."\n";
+	}
+	else
+	{
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
+/**
+ *    \brief	affiche un champs select contenant la liste des action d'admin des session disponibles.
+ *    \param	str	valeur à preselectionner
+ *		str	nom du champs select
+ *		str	trie effectué sur le code (code) ou sur le libelle (intitule).
+ *    \return	str	la chaine formatée
+ */
+function ebi_select_action_session_adm($selectid='', $name='action_level', $excludeid='')
+{
+	global $db;
+
+ 	$sql = "SELECT";
+	$sql.= " t.rowid,";
+	$sql.= " t.level_rank,";
+	$sql.= " t.fk_parent_level,";
+	$sql.= " t.indice,";
+	$sql.= " t.intitule,";
+	$sql.= " t.delais_alerte,";
+	$sql.= " t.fk_user_author,";
+	$sql.= " t.datec,";
+	$sql.= " t.fk_user_mod,";
+	$sql.= " t.tms";
+    $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as t";
+    if ($excludeid!='') { $sql.= ' WHERE t.rowid<>"'.$excludeid.'"'; }
+    $sql.= " ORDER BY t.indice";
+
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$var=True;
+		$num = $db->num_rows($result);
+		$i = 0;
+		$options = '<option value=""></option>'."\n";
+
+		while ($i < $num)
+		{
+			$obj = $db->fetch_object($result);
+			if ($obj->rowid == $selectid) $selected = ' selected="true"';
+			else $selected = '';
+			$strRank=str_repeat('-',$obj->level_rank);
+			$options .= '<option value="'.$obj->rowid.'"'.$selected.'>';
+			$options .= $strRank.' '.stripslashes($obj->intitule).'</option>'."\n";
+			$i++;
+		}
+		$db->free($result);
+		return '<select class="flat" style="width:300px" name="'.$name.'">'."\n".$options."\n".'</select>'."\n";
 	}
 	else
 	{
@@ -711,31 +765,27 @@ function ebi_level_graph($actual_level, $total_level, $title)
 
 
 /**
- *    \brief	Calcule le nombre de regroupement par premier niveau des  tâches adminsitratives
+ *    \brief	Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
  *    \return	str	nbre de niveaux
  */
 function ebi_get_adm_level_number()
 {
 	global $db;
 	
-
-	$sql = "SELECT l.rowid, l.top_level";
+	$sql = "SELECT l.rowid, l.level_rank";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as l";
-	$sql.= " WHERE l.top_level = 'Y'";
-
-	
+	$sql.= " WHERE l.level_rank = 0";
 
 	$result = $db->query($sql);
 	if ($result)
 	{
 		$num = $db->num_rows($result);
-	    	$db->free($result);
+	    $db->free($result);
 		return $num;
 	}
 	else
 	{
 		$error="Error ".$db->lasterror();
-		//print $error;
 		return -1;
 	}
 
@@ -762,7 +812,7 @@ function ebi_get_adm_lastFinishLevel($sessid)
 	*/
 	$sql = "SELECT COUNT(*) as level";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
-	$sql.= " WHERE s.top_level = 'Y' AND s.datef != '0000-00-00 00:00:00'";
+	$sql.= " WHERE s.level_rank = 0 AND s.datef != '0000-00-00 00:00:00'";
 	$sql.= " AND fk_agefodd_session = ".$sessid;
 
 	$result = $db->query($sql);
@@ -782,6 +832,79 @@ function ebi_get_adm_lastFinishLevel($sessid)
 	}
 }
 
+/**
+ *    \brief	Calcule le nombre de d'action filles
+ *    \param	int	rowid du niveaux
+ *    \return	str	nbre d d'action
+ */
+function ebi_get_adm_indice_action_child($id)
+{
+	global $db;
+
+	$sql = "SELECT MAX(s.indice) as nb_action";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as s";
+	$sql.= " WHERE fk_parent_level=".$id;
+
+	dol_syslog("agefodd:lib:ebi_get_adm_indice_action_child sql=".$sql, LOG_DEBUG);
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$obj = $db->fetch_object($result);
+
+		$db->free($result);
+		return $obj->nb_action;
+	}
+	else
+	{
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
+/**
+ *    \brief	Calcule l'indice min ou max d'un niveau
+ *    \param	int	lvl_rank Rang des actions a tester
+ *    \param	int	parent_level niveau parent
+ *    \param	str	type MIN ou MAX
+ *    \return	str	l'indice min ou max
+ */
+function ebi_get_adm_indice_per_rank($lvl_rank,$parent_level='',$type='MIN')
+{
+	global $db;
+
+	$sql = "SELECT ";
+	if ($type=='MIN')
+	{
+		$sql.= ' MIN(s.indice) ';
+	}
+	else
+	{
+		$sql.= ' MAX(s.indice) ';
+	}
+	$sql.= " as indice";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as s";
+	$sql.= " WHERE s.level_rank=".$lvl_rank;
+	if ($parent_level!='')
+	{
+		$sql.= " AND s.fk_parent_level=".$parent_level;
+	}
+
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$obj = $db->fetch_object($result);
+
+		$db->free($result);
+		return $obj->indice;
+	}
+	else
+	{
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
 
 /**
  *    \brief	Formatage d'un menu aide en html (icone + curseur)
@@ -812,21 +935,6 @@ function ebi_time_array($time)
 	$newtime['m'] = $arraytime[1];
 
 	return $newtime;
-}
-
-
-/**
- *    \brief	Transforme une date du format Datetime mysql au format timestamp
- *    \param	str	la chaine
-  *   \return	str	la chaine formatée
- */
-function mysql2timestamp($datetime)
-{
-	$val = explode(" ",$datetime);
-	$date = explode("-",$val[0]);
-	$time = explode(":",$val[1]);
-	
-	return mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
 }
 
 
@@ -890,6 +998,64 @@ function ebi_liste_a_puce($text, $form=false)
 		}
 	}
 	return $str;
+}
+
+
+
+/**
+ *    \brief	Calcule le next number d'indice pour une action
+ *    \param	int	rowid du niveaux
+ *    \return	str	nbre d d'action
+ */
+function ebi_get_adm_get_next_indice_action($id)
+{
+	global $db;
+
+	$sql = "SELECT MAX(s.indice) as nb_action";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as s";
+	$sql.= " WHERE fk_parent_level=".$id;
+
+	dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=".$sql, LOG_DEBUG);
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$obj = $db->fetch_object($result);
+		$db->free($result);
+		if (!empty($obj->nb_action)) 
+		{
+			return intval(intval($obj->nb_action) + 1);
+		}
+		else
+		{
+			$sql = "SELECT MAX(s.indice) as nb_action";
+			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as s";
+			$sql.= " WHERE fk_parent_level=(SELECT fk_parent_level FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel WHERE rowid=".$id.")";
+			
+			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=".$sql, LOG_DEBUG);
+			$result = $db->query($sql);
+			if ($result)
+			{
+				$num = $db->num_rows($result);
+				$obj = $db->fetch_object($result);
+			
+				$db->free($result);
+				return intval(intval($obj->nb_action) + 1);
+			}
+			else
+			{
+			
+				$error="Error ".$db->lasterror();
+				return -1;
+			}
+		}
+	}
+	else
+	{
+		
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
 }
 
 #llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');

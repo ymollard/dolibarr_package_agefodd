@@ -27,18 +27,30 @@
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	\class		Agefodd_sessadm
+ *	\brief		Module Agefodd Session administration class
  */
-class Agefodd_sessadm
+class Agefodd_sessadm extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd';
-        var $id;
+	var $table_element='agefodd_session_adminsitu';
+    var $id;
 
+    var $level_rank;
+    var $fk_parent_level;
+    var $indice;
+    var $intitule;
+    var $delais_alerte;
+    var $fk_user_author;
+    var $datec='';
+    var $fk_user_mod;
+    var $tms='';
+    var $line;
+    
+    
     /**
      *	\brief		Constructor
      *	\param		DB	Database handler
@@ -58,7 +70,7 @@ class Agefodd_sessadm
 	*/
 	function create($user, $notrigger=0)
 	{
-    		global $conf, $langs;
+    	global $conf, $langs;
 		$error=0;
     	
 		// Clean parameters
@@ -75,14 +87,15 @@ class Agefodd_sessadm
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_adminsitu (";
 		$sql.= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte, ";
-		$sql.= "indice,top_level, dated, datea, notes,fk_user_mod";
+		$sql.= "indice, level_rank, fk_parent_level, dated, datea, notes,fk_user_mod";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->fk_agefodd_session_admlevel.'", ';
 		$sql.= '"'.$this->fk_agefodd_session.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->delais_alerte.'", ';
 		$sql.= '"'.$this->indice.'", ';
-		$sql.= '"'.$this->top_level.'", ';
+		$sql.= '"'.$this->level_rank.'", ';
+		$sql.= '"'.$this->fk_parent_level.'", ';
 		$sql.= '"'.$this->dated.'", ';
 		$sql.= '"'.$this->datea.'", ';
 		$sql.= '"'.$this->notes.'",';
@@ -158,13 +171,15 @@ class Agefodd_sessadm
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s SET";
-		//$sql.= " s.delais_alerte='".$this->delais	."',";
+		$sql.= " s.delais_alerte='".$this->delais."',";
 		$sql.= " s.dated='".$this->dated."',";
 		$sql.= " s.datef='".$this->datef."',";
 		$sql.= " s.datea='".$this->datea."',";
 		$sql.= " s.fk_user_mod='".$user."',";
 		$sql.= " s.notes='".$this->notes."',";
 		$sql.= " s.archive='".$this->archive."'";
+		$sql.= " s.level_rank='".$this->level_rank."'";
+		$sql.= " s.fk_parent_level='".$this->fk_parent_level."'";
 		$sql.= " WHERE s.rowid = ".$this->id;
 	
 		//print $sql;
@@ -219,11 +234,11 @@ class Agefodd_sessadm
 	{
 		global $langs;
 
-		$sql = "SELECT";
-		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
-		$sql.= " s.top_level, s.indice, s.dated, s.datef, s.notes";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
-        	$sql.= " WHERE s.rowid = '".$id."'";
+        $sql = "SELECT";
+        $sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
+        $sql.= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte";
+        $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
+        $sql.= " WHERE s.rowid = '".$id."'";
 	
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -237,9 +252,12 @@ class Agefodd_sessadm
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->intitule = $obj->intitule;
 				$this->indice = $obj->indice;
-				$this->top_level = $obj->top_level;
-				$this->dated = $obj->dated;
-				$this->datef = $obj->datef;
+				$this->level_rank = $obj->level_rank;
+				$this->fk_parent_level = $obj->fk_parent_level;
+				$this->delais_alerte = $obj->delais_alerte;
+				$this->dated = $this->db->jdate($obj->dated);
+				$this->datef = $this->db->jdate($obj->datef);
+				$this->datea = $this->db->jdate($obj->datea);
 				$this->notes = $obj->notes;
 			}
 			$this->db->free($resql);
@@ -277,10 +295,10 @@ class Agefodd_sessadm
 			{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->datec = $obj->datec;
+			$this->date_creation = $this->db->jdate($obj->datec);
 			$this->tms = $obj->tms;
-			$this->fk_userc = $obj->fk_user_author;
-			$this->fk_userm = $obj->fk_user_mod;
+			$this->user_creation = $obj->fk_user_author;
+			$this->user_modification = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
 		
@@ -316,54 +334,7 @@ class Agefodd_sessadm
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
-
-
-	/**
-	*      \brief      Charge dans le tableau $line les différents niveaux administratifs
-	*      \return     int         <0 si ko, count of elements if ok
-	*/
-	function get_admlevel_table()
-	{
-		global $langs;
-
-		$sql = "SELECT";
-		$sql.= " s.rowid, s.top_level, s.indice, s.intitule, s.delais_alerte";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as s";
-		$sql.= " ORDER BY s.indice";
-		
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-
-		if ($resql)
-		{
-			$this->line = array();
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-
-			while( $i < $num)
-			{
-				$obj = $this->db->fetch_object($resql);
-				
-				$this->line[$i]->rowid = $obj->rowid;
-				$this->line[$i]->intitule = $obj->intitule;
-				$this->line[$i]->alerte = $obj->delais_alerte;
-				$this->line[$i]->indice = $obj->indice;
-				$this->line[$i]->top_level = $obj->top_level;
-				
-				$i++;
-			}
-			$this->db->free($resql);
-			return $num;
-			//return 1;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-			return -1;
-        	}
-	}
+    }
 
 	/**
 	*    \brief      Load info object in memory from database (onglet suivi)
@@ -386,56 +357,11 @@ class Agefodd_sessadm
 			if ($this->db->num_rows($resql))
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->dated = $obj->dated;
-				$this->datef = $obj->datef;
+				$this->dated = $this->db->jdate($obj->dated);
+				$this->datef = $this->db->jdate($obj->datef);
 			}
 			$this->db->free($resql);
 		
-			return 1;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-			return -1;
-		}
-	}
-
-	/**
-     	*    \brief	Load object in memory from database
-     	*    \param	id	id admin action (in table agefodd_session_adminsitu)
-	*    \return    int     <0 if KO, >0 if OK
-	*/
-	function fetch_admin_action_rens_from_id($id)
-	{
-		global $langs;
-
-		$sql = "SELECT";
-		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
-		$sql.= " s.top_level, s.indice, s.datea, s.dated, s.datef, s.notes, s.delais_alerte";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
-        	$sql.= " WHERE s.rowid = '".$id."'";
-	
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
-			if ($this->db->num_rows($resql))
-			{
-				$obj = $this->db->fetch_object($resql);
-				$this->id = $obj->rowid;
-				$this->level = $obj->fk_agefodd_session_admlevel;
-				$this->sessid = $obj->fk_agefodd_session;
-				$this->intitule = $obj->intitule;
-				$this->indice = $obj->indice;
-				$this->top_level = $obj->top_level;
-				$this->dated = $obj->dated;
-				$this->datef = $obj->datef;
-				$this->datea = $obj->datea;
-				$this->notes = $obj->notes;
-				$this->delais_alerte = $obj->delais_alerte;
-			}
-			$this->db->free($resql);
 			return 1;
 		}
 		else
@@ -458,7 +384,7 @@ class Agefodd_sessadm
 
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
-		$sql.= " s.delais_alerte, s.top_level, s.indice, s.dated, s.datef, s.datea, s.notes,";
+		$sql.= " s.delais_alerte, s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datef, s.datea, s.notes,";
 		$sql.= " sess.dated as sessdated, sess.datef as sessdatef";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as sess";
@@ -479,13 +405,14 @@ class Agefodd_sessadm
 				$this->intitule = $obj->intitule;
 				$this->alerte = $obj->delais_alerte;
 				$this->indice = $obj->indice;
-				$this->top_level = $obj->top_level;
-				$this->dated = $obj->dated;
-				$this->datef = $obj->datef;
-				$this->datea = $obj->datea;
+				$this->level_rank = $obj->level_rank;
+				$this->fk_parent_level = $obj->fk_parent_level;
+				$this->dated = $this->db->jdate($obj->dated);
+				$this->datef = $this->db->jdate($obj->datef);
+				$this->datea = $this->db->jdate($obj->datea);
 				$this->notes = $obj->notes;
-				$this->sessdated = $obj->sessdated;
-				$this->sessdatef = $obj->sessdatef;
+				$this->sessdated = $this->db->jdate($obj->sessdated);
+				$this->sessdatef = $this->db->jdate($obj->sessdatef);
 				
 			}
 			$this->db->free($resql);
@@ -498,51 +425,7 @@ class Agefodd_sessadm
 			return -1;
 		}
 	}
-	
-
-
-
-	/**
-	*    \brief	Load object in memory from database
-	*    \param	id	id admin action (in table agefodd_session_adminsitu)
-	*    \return    int     <0 if KO, >0 if OK
-	*/
-	function fetch_adminlevel_infos($admlevel)
-	{
-		global $langs;
-
-		$sql = "SELECT";
-		$sql.= " a.rowid, a.indice, a.top_level, a.intitule, a.delais_alerte";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as a";
-		//$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as s";
-		//$sql.= " ON s.fk_agefodd_session = a.rowid";
-		$sql.= " WHERE a.rowid = '".$admlevel."'";
-	
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
-			if ($this->db->num_rows($resql))
-			{
-				$obj = $this->db->fetch_object($resql);
-				$this->id = $obj->rowid;
-				$this->intitule = $obj->intitule;
-				$this->alerte = $obj->delais_alerte;
-				$this->indice = $obj->indice;
-				$this->top_level = $obj->top_level;	
-			}
-			$this->db->free($resql);
-			return 1;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-			return -1;
-		}
-	}
-	
-	
+		
 	/**
 	*    \brief	Load object in memory from database
 	*    \param	id	id admin action (in table agefodd_session_adminsitu)
@@ -587,10 +470,10 @@ class Agefodd_sessadm
 				$this->line[$i]->rowid = $obj->rowid;
 				$this->line[$i]->sessid = $obj->fk_agefodd_session;
 				$this->line[$i]->intitule = stripslashes($obj->intitule);
-				$this->line[$i]->datea = $obj->datea;
+				$this->line[$i]->datea = $this->db->jdate($obj->datea);
 				$this->line[$i]->titre = stripslashes($obj->titre);
-				$this->line[$i]->sessdated = $obj->sessdated;
-				$this->line[$i]->sessdatef = $obj->sessdatef;
+				$this->line[$i]->sessdated = $this->db->jdate($obj->sessdated);
+				$this->line[$i]->sessdatef = $this->db->jdate($obj->sessdatef);
 			
 				$i++;
 			}
@@ -663,7 +546,7 @@ class Agefodd_sessadm
 				$this->line[$i]->rowid = $obj->rowid;
 				$this->line[$i]->sessid = $obj->fk_agefodd_session;
 				$this->line[$i]->intitule = stripslashes($obj->intitule);
-				$this->line[$i]->datea = $obj->datef;
+				$this->line[$i]->datea = $this->db->jdate($obj->datef);
 				$this->line[$i]->titre = stripslashes($obj->titre);
 			
 				$i++;

@@ -55,7 +55,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 
@@ -77,7 +77,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 	}
 	else
 	{
-	    dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+	    dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
 	    $mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
@@ -109,7 +109,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
@@ -148,7 +148,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd::agefodd error=".$error, LOG_ERR);
+			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
@@ -183,26 +183,37 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 	}
 	
 	// Suppression d'un objectif pedagogique
-	if ($_POST["obj_remove_x"]) $result = $agf->remove_objpeda($_POST["id"]);
+	if (GETPOST("obj_remove_x"))
+	{
+		$result = $agf->remove_objpeda($id);
+		
+		if ($result < 0)
+		{
+			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
+		}
+	} 
 	
 	// Creation d'un nouvel objectif pedagogique
-	if ($_POST["obj_add_x"]) 
+	if (GETPOST("obj_add_x")) 
 	{
+		$idforma = GETPOST('idforma','int');
+		
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->priorite = GETPOST('priorite','alpha');
-		$agf->fk_formation_catalogue = GETPOST('idforma','int');
+		$agf->fk_formation_catalogue = $idforma;
 	    
 	    $result = $agf->create_objpeda($user->id);
 	}
 
 	if ($result > 0)
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$_POST["idforma"]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$idforma);
 		exit;
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
@@ -394,28 +405,25 @@ else
 				    
 				    if ( $objp->rowid )
 				    {
-					print '<input type="hidden" name="id" value="'.$objp->rowid.'">'."\n";
-					print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
-					print '<input type="hidden" name="priorite" value="'.$objp->priorite.'">'."\n";
-					print '<tr><td align="center">'."\n";
-					print $objp->priorite;
-					
+						print '<input type="hidden" name="id" value="'.$objp->rowid.'">'."\n";
+						print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
+						print '<input type="hidden" name="priorite" value="'.$objp->priorite.'">'."\n";
+						print '<tr><td align="center">'."\n";
+						print $objp->priorite;
 				    }
 				    else
 				    {
-					print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
-					$priorite = ($i + 1);
-					print '<input type="hidden" name="priorite" value="'.$priorite.'">'."\n";
-					print '<tr><td align="center">'."\n";
-					print $priorite;
-				    
+						print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
+						$priorite = ($i + 1);
+						print '<input type="hidden" name="priorite" value="'.$priorite.'">'."\n";
+						print '<tr><td align="center">'."\n";
+						print $priorite;
 				    }
 				    print '<td width="400"><input name="intitule" class="flat" size="50" value="'.stripslashes($objp->intitule).'"></td>'."\n";
 				    print "<td>";
 				    
 				    if ( $objp->rowid )
 				    {
-				    
 				    	if ($user->rights->agefodd->modifier)
 						{
 						    print '<input type="image" src="'.DOL_URL_ROOT_ALT.'/agefodd/img/save.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';

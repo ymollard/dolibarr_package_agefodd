@@ -29,6 +29,8 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
 
 $langs->load("admin");
@@ -58,24 +60,180 @@ if ($action == 'updateMask')
 		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
 	}
 }
-/*
-if ($_POST["action"] == 'setvalue' && $user->admin)
+
+if ($action == 'sessionlevel_create')
 {
-	$result = dolibarr_set_const($db, "AGF_PRELEV_TRIGGER",$_POST["AGF_PRELEV_TRIGGER"],'chaine',0,'',$conf->entity);
-  	if ($result >= 0)
-  	{
-  		$mesg='<div class="ok">'.$langs->trans("SetupSaved").'</div>';
-  	}
-  	else
-  	{
-		dol_print_error($db);
-    }
+	$agf = new Agefodd_session_admlevel($db);
+	
+	$parent_level = GETPOST('parent_level','int');
+	
+	if (!empty($parent_level))
+	{
+		$agf->fk_parent_level = $parent_level;
+		
+		$agf_static = new Agefodd_session_admlevel($db);
+		$result_stat = $agf_static->fetch($agf->fk_parent_level);
+		
+		if ($result_stat > 0)
+		{
+			if (!empty($agf_static->id))
+			{
+				$agf->level_rank = $agf_static->level_rank + 1;
+				$agf->indice = ebi_get_adm_get_next_indice_action($agf_static->id);
+			}
+			else
+			{	//no parent : This case may not occur but we never know
+				$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
+				$agf->level_rank = 0;
+			}
+		}
+		else
+		{
+			dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
+			$mesg = '<div class="error">'.$result_stat->error.'</div>';
+		}
+	}
+	else
+	{
+		//no parent
+		$agf->fk_parent_level = 0;
+		$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
+		$agf->level_rank = 0;
+	}
+	
+	$agf->intitule = GETPOST('intitule','alpha');
+	$agf->delais_alerte = GETPOST('delai','int');
+	
+	if ($agf->level_rank>3)
+	{
+		$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
+	}
+	else
+	{
+		$result = $agf->create($user->id);
+		
+		if ($result1!=1)
+		{
+			dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
+		}
+	}
+		
+	
 }
-*/
 
+if ($action == 'sessionlevel_update')
+{
+	$agf = new Agefodd_session_admlevel($db);
+	
+	$id = GETPOST('id','int');
+	$parent_level = GETPOST('parent_level','int');
+	
+	$result = $agf->fetch($id);
+	
+	if ($result > 0)
+	{
+	
+		//Up level of action
+		if (GETPOST('sesslevel_up_x'))
+		{
+			$result2 = $agf->shift_indice($user->id,'less');
+			if ($result1!=1)
+			{
+				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
+				$mesg = '<div class="error">'.$agf->error.'</div>';
+			}
+		}
+		
+		//Down level of action
+		if (GETPOST('sesslevel_down_x'))
+		{
+			$result1 = $agf->shift_indice($user->id,'more');
+			if ($result1!=1)
+			{
+				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
+				$mesg = '<div class="error">'.$agf->error.'</div>';
+			}
+		}
+		
+		//Update action
+		if (GETPOST('sesslevel_update_x'))
+		{
+			$agf->intitule = GETPOST('intitule','alpha');
+			$agf->delais_alerte = GETPOST('delai','int');
+			
+			if (!empty($parent_level))
+			{
+				if ($parent_level!=$agf->fk_parent_level)
+				{
+					$agf->fk_parent_level = $parent_level;
+				
+					$agf_static = new Agefodd_session_admlevel($db);
+					$result_stat = $agf_static->fetch($agf->fk_parent_level);
+				
+					if ($result_stat > 0)
+					{
+						if (!empty($agf_static->id))
+						{
+							$agf->level_rank = $agf_static->level_rank + 1;
+							$agf->indice = ebi_get_adm_get_next_indice_action($agf_static->id);
+						}
+						else
+						{	//no parent : This case may not occur but we never know
+							$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
+							$agf->level_rank = 0;
+						}
+					}
+					else
+					{
+						dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
+						$mesg = '<div class="error">'.$result_stat->error.'</div>';
+					}
+				}
+			}
+			else
+			{
+				//no parent
+				$agf->fk_parent_level = 0;
+				$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
+				$agf->level_rank = 0;
+			}
+			
+			if ($agf->level_rank>3)
+			{
+				$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
+			}
+			else
+			{
+				$result1 = $agf->update($user->id);
+				if ($result1!=1)
+				{
+					dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
+					$mesg = '<div class="error">'.$agf->error.'</div>';
+				}
+			}
+		}
+		
+		//Delete action
+		if (GETPOST('sesslevel_remove_x'))
+		{
+			
+			$result = $agf->delete($user->id);
+			if ($result!=1)
+			{
+				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
+				$mesg = '<div class="error">'.$agf->error.'</div>';
+			}
+		}
+	}
+	else
+	{
+		$mesg = '<div class="error">This action do not exists</div>';
+	}
+}
 
 /*
- *
+ *  Admin Form
  *
  */
 
@@ -83,29 +241,21 @@ llxHeader();
 
 $form=new Form($db);
 
+dol_htmloutput_mesg($mesg);
+
 $linkback='<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
 print_fiche_titre($langs->trans("AgefoddSetupDesc"),$linkback,'setup');
 
-print $langs->trans("AgefoddSetupParamChoice")."<br>\n";
-
-//$mesg = "La page de paramètrage du module Agefodd n'a pas encore été développée.";
-//$mesg.= "<br />Pour le configurer, il faut modifier à la main les variables globales du programme en éditant le fichier 'agefodd/pre.inc.php'";
-
-if ($mesg) print '<br>'.$mesg;
-
-
-// Project numbering module
+// Agefodd numbering module
 print_titre($langs->trans("AgfAdminTrainingNumber"));
-
-
-
+print '<br>';
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print '<td width="100">'.$langs->trans("Name").'</td>';
+print '<td width="100px">'.$langs->trans("Name").'</td>';
 print '<td>'.$langs->trans("Description").'</td>';
 print '<td>'.$langs->trans("Example").'</td>';
-print '<td align="center" width="60">'.$langs->trans("Activated").'</td>';
-print '<td align="center" width="80">'.$langs->trans("Infos").'</td>';
+print '<td align="center" width="60px">'.$langs->trans("Activated").'</td>';
+print '<td align="center" width="80px">'.$langs->trans("Infos").'</td>';
 print "</tr>\n";
 
 clearstatcache();
@@ -201,40 +351,75 @@ foreach ($dirmodels as $reldir)
 
 print '</table><br>';
 
-/*
-print '<br>';
-print '<form method="post" action="'.$_SERVER["PHP_SELF"].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="setvalue">';
+//Admin Session level administation
 
-$var=true;
+$admlevel = new Agefodd_session_admlevel($db);
+$result0 = $admlevel->fetch_all();
 
-// Entête
-print '<table summary="bookmarklist" class="notopnoleftnoright" width="100%">';
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("Name").'</td>';
-print '<td>'.$langs->trans("Value").'</td>';
-print "</tr>\n";
 
-$var=!$var;
-print '<tr '.$bc[$var].'><td>';
+print_titre($langs->trans("AgfAdminSessionLevel"));
 
-print $langs->trans("Traitement automatique sur prélévement").'</td>';
-$selected = '';
-print '<td><select class="flat" name="AGF_PRELEV_TRIGGER">\n';
-print '<option value="">&nbsp;</option>\n';
-if  ($conf->global->AGF_PRELEV_TRIGGER == "no") $selected = 'selected="true"';
-print '<option value="no" '.$selected.'>'.$langs->trans("CcaSetupNo").'</option>\n';
-if  ($conf->global->AGF_PRELEV_TRIGGER == "bank_only") $selected='selected="true"';
-print '<option value="bank_only" '.$selected.'>'.$langs->trans("CcaSetupBankOnly").'</option>\n';
-if  ($conf->global->AGF_PRELEV_TRIGGER == "ff_only") $selected='selected="true"';
-print '<option value="ff_only" '.$selected.'>'.$langs->trans("CcaSetupFactureFournisseurOnly").'</option>\n';
-print '</select>
-print '</td></tr>';
+// Agefodd numbering module
+if ($result0>0)
+{
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<td width="10px"></td>';
+	print '<td>'.$langs->trans("AgfIntitule").'</td>';
+	print '<td>'.$langs->trans("AgfParentLevel").'</td>';
+	print '<td>'.$langs->trans("AgfDelaiSessionLevel").'</td>';
+	print '<td></td>';
+	print "</tr>\n";
+	
+	$var=true;
+	foreach ($admlevel->line as $line)
+	{   
+		$var=!$var;
+		$toplevel='';
+		print '<form name="SessionLevel_update_'.$line->rowid.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+		print '<input type="hidden" name="id" value="'.$line->rowid.'">'."\n";
+		print '<input type="hidden" name="action" value="sessionlevel_update">'."\n";
+		print '<tr '.$bc[$var].'>';
+		
+		print '<td>';
+		if ($line->indice!=ebi_get_adm_indice_per_rank($line->level_rank,$line->fk_parent_level,'MIN'))
+		{
+			print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/1uparrow.png" border="0" name="sesslevel_up" alt="'.$langs->trans("Save").'">';
+		}
+		if ($line->indice!=ebi_get_adm_indice_per_rank($line->level_rank,$line->fk_parent_level,'MAX'))
+		{
+			print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/1downarrow.png" border="0" name="sesslevel_down" alt="'.$langs->trans("Save").'">';
+		}
+		print '</td>';
+		
+		print '<td>'.str_repeat('&nbsp;&nbsp;&nbsp;',$line->level_rank).'<input type="text" name="intitule" value="'.$line->intitule.'" size="30"/></td>';
+		print '<td>'.ebi_select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
+		print '<td><input type="text" name="delai" value="'.$line->alerte.'"/></td>';
+		print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'">';
+ 		print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sesslevel_remove" alt="'.$langs->trans("Delete").'"></td>';
+		print '</tr>';
+		print '</form>';
+	}
+	print '<form name="SessionLevel_create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+	print '<input type="hidden" name="action" value="sessionlevel_create">'."\n";
+	print '<tr>';
+	print '<td></td>';
+	print '<td><input type="text" name="intitule" value="" size="30"/></td>';
+	print '<td>'.ebi_select_action_session_adm('','parent_level').'</td>';
+	print '<td><input type="text" name="delai" value=""/></td>';
+	print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'"></td>';
+	print '</tr>';
+	print '</form>';
 
-print '<tr><td colspan="2" align="center"><input type="submit" class="button" value="'.$langs->trans("Modify").'"></td></tr>';
-print '</table></form>';
-*/
+}
+else
+{
+	print '<div class="error">'.$admlevel->error.'</div>';
+}
+print '</table><br>';
+
 
 $db->close();
 

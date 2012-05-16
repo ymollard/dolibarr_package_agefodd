@@ -73,7 +73,7 @@ if ($arch == 2)
 	$sql.= " WHERE s.archive LIKE 0";
 	$sql.= " AND sa.indice=";
 	$sql.= "(";
-	$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE top_level LIKE 'Y'";
+	$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE level_rank=0";
 	$sql.= ")";
 	$sql.= " AND sa.archive LIKE 1 AND sa.datef > '0000-00-00 00:00:00'";
 }

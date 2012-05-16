@@ -141,7 +141,6 @@ class Agefodd_session extends CommonObject
     	
 		// Clean parameters
 		$this->sessid = addslashes(trim($this->sessid));
-    		$this->datec = addslashes(trim($this->datec));
 		
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -154,7 +153,7 @@ class Agefodd_session extends CommonObject
 		$sql.= '"'.$this->stagiaire.'", ';
 		$sql.= '"'.$this->stagiaire_type.'", ';
 		$sql.= '"'.$user.'", ';
-		$sql.= '"'.$this->datec.'" ';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
 		$this->db->begin();

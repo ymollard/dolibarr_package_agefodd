@@ -82,7 +82,7 @@ class Agefodd_sesscalendar
 		$sql.= '"'.$this->heured.'", ';
 		$sql.= '"'.$this->heuref.'", ';
 		$sql.= '"'.$user.'", ';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
 		$this->db->begin();
