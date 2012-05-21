@@ -76,10 +76,10 @@ class Agefodd_sessadm extends CommonObject
 		// Clean parameters
 		$this->fk_agefodd_session_admlevel = trim($this->fk_agefodd_session_admlevel);
 		$this->fk_agefodd_session = trim($this->fk_agefodd_session);
-		$this->intitule = ebi_mysql_escape_string(trim($this->intitule));
+		$this->intitule = $this->db->escape(trim($this->intitule));
 		$this->indice = trim($this->indice);
-		$this->notes = ebi_mysql_escape_string(trim($this->notes));
-		$this->fk_user_mod = ebi_mysql_escape_string($this->fk_user_mod);
+		$this->notes = $this->db->escape(trim($this->notes));
+		$this->fk_user_mod = trim($this->fk_user_mod);
 				
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -160,7 +160,7 @@ class Agefodd_sessadm extends CommonObject
 		$this->datef = trim($this->datef);
 		$this->datea = trim($this->datea);
 		$this->fk_user_mod = trim($this->fk_user_mod);
-		$this->note = ebi_mysql_escape_string(trim($this->note));
+		$this->notes = $this->db->escape(trim($this->notes));
 	
 		
 	
@@ -177,8 +177,8 @@ class Agefodd_sessadm extends CommonObject
 		$sql.= " s.datea='".$this->datea."',";
 		$sql.= " s.fk_user_mod='".$user."',";
 		$sql.= " s.notes='".$this->notes."',";
-		$sql.= " s.archive='".$this->archive."'";
-		$sql.= " s.level_rank='".$this->level_rank."'";
+		$sql.= " s.archive='".$this->archive."',";
+		$sql.= " s.level_rank='".$this->level_rank."',";
 		$sql.= " s.fk_parent_level='".$this->fk_parent_level."'";
 		$sql.= " WHERE s.rowid = ".$this->id;
 	
@@ -226,8 +226,8 @@ class Agefodd_sessadm extends CommonObject
 
 
 	/**
-     	*    \brief	Load object in memory from database
-     	*    \param	id	id admin action (in table agefodd_session_adminsitu)
+   	*    \brief	Load object in memory from database
+   	*    \param	id	id admin action (in table agefodd_session_adminsitu)
 	*    \return    int     <0 if KO, >0 if OK
 	*/
 	function fetch($id)
@@ -270,6 +270,60 @@ class Agefodd_sessadm extends CommonObject
 			return -1;
 		}
 	}
+	
+    /**
+     *  Load action into memory per session
+     *
+     *  @param	int		$sess_id        Session Id
+     *  @return int     		   	 <0 if KO, >0 if OK
+     */
+	function fetch_all($sess_id)
+	{
+		global $langs;
+
+        $sql = "SELECT";
+        $sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
+        $sql.= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte";
+        $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
+        $sql.= " WHERE s.fk_agefodd_session = ".$sess_id;
+	
+		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+				$this->line[$i]->id = $obj->rowid;
+				$this->line[$i]->level = $obj->fk_agefodd_session_admlevel;
+				$this->line[$i]->sessid = $obj->fk_agefodd_session;
+				$this->line[$i]->intitule = $obj->intitule;
+				$this->line[$i]->indice = $obj->indice;
+				$this->line[$i]->level_rank = $obj->level_rank;
+				$this->line[$i]->fk_parent_level = $obj->fk_parent_level;
+				$this->line[$i]->delais_alerte = $obj->delais_alerte;
+				$this->line[$i]->dated = $this->db->jdate($obj->dated);
+				$this->line[$i]->datef = $this->db->jdate($obj->datef);
+				$this->line[$i]->datea = $this->db->jdate($obj->datea);
+				$this->line[$i]->notes = $obj->notes;
+				
+				$i++;
+			}
+			$this->db->free($resql);
+			return $num;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+	
 
 
 
@@ -414,9 +468,14 @@ class Agefodd_sessadm extends CommonObject
 				$this->sessdated = $this->db->jdate($obj->sessdated);
 				$this->sessdatef = $this->db->jdate($obj->sessdatef);
 				
+				$this->db->free($resql);
+				return 1;
+			}else
+			{
+				$this->db->free($resql);
+				return 0;
 			}
-			$this->db->free($resql);
-			return 1;
+			
 		}
 		else
 		{

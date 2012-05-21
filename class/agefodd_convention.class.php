@@ -62,6 +62,20 @@ class Agefodd_convention
 		$error=0;
     	
 		// Clean parameters
+		$this->intro1 = $this->db->escape($this->intro1);
+		$this->intro2 = $this->db->escape($this->intro2);
+		$this->art1 = $this->db->escape($this->art1);
+		$this->art2 = $this->db->escape($this->art2);
+		$this->art3 = $this->db->escape($this->art3);
+		$this->art4 = $this->db->escape($this->art4);
+		$this->art5 = $this->db->escape($this->art5);
+		$this->art6 = $this->db->escape($this->art6);
+		$this->art7 = $this->db->escape($this->art7);
+		$this->art8 = $this->db->escape($this->art8);
+		$this->sig = $this->db->escape($this->sig);
+		$this->notes = $this->db->escape($this->notes);
+
+		
 		
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -73,18 +87,18 @@ class Agefodd_convention
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->sessid.'", ';
 		$sql.= '"'.$this->socid.'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->intro1).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->intro2).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art1).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art2).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art3).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art4).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art5).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art6).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art7).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->art8).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->sig).'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->notes).'", ';
+		$sql.= '"'.$this->intro1.'", ';
+		$sql.= '"'.$this->intro2.'", ';
+		$sql.= '"'.$this->art1.'", ';
+		$sql.= '"'.$this->art2.'", ';
+		$sql.= '"'.$this->art3.'", ';
+		$sql.= '"'.$this->art4.'", ';
+		$sql.= '"'.$this->art5.'", ';
+		$sql.= '"'.$this->art6.'", ';
+		$sql.= '"'.$this->art7.'", ';
+		$sql.= '"'.$this->art8.'", ';
+		$sql.= '"'.$this->sig.'", ';
+		$sql.= '"'.$this->notes.'", ';
 		$sql.= '"'.$user.'", ';
 		$sql.= '"'.$this->datec.'"';
 		$sql.= ")";
@@ -328,18 +342,18 @@ class Agefodd_convention
 		$error=0;
 		
 		// Clean parameters
-		$this->intro1 = ebi_mysql_escape_string($this->intro1);
-		$this->intro2 = ebi_mysql_escape_string($this->intro2);
-		$this->art1 = ebi_mysql_escape_string($this->art1);
-		$this->art2 = ebi_mysql_escape_string($this->art2);
-		$this->art3 = ebi_mysql_escape_string($this->art3);
-		$this->art4 = ebi_mysql_escape_string($this->art4);
-		$this->art5 = ebi_mysql_escape_string($this->art5);
-		$this->art6 = ebi_mysql_escape_string($this->art6);
-		$this->art7 = ebi_mysql_escape_string($this->art7);
-		$this->art8 = ebi_mysql_escape_string($this->art8);
-		$this->sig = ebi_mysql_escape_string($this->sig);
-		$this->notes = ebi_mysql_escape_string($this->notes);
+		$this->intro1 = $this->db->escape($this->intro1);
+		$this->intro2 = $this->db->escape($this->intro2);
+		$this->art1 = $this->db->escape($this->art1);
+		$this->art2 = $this->db->escape($this->art2);
+		$this->art3 = $this->db->escape($this->art3);
+		$this->art4 = $this->db->escape($this->art4);
+		$this->art5 = $this->db->escape($this->art5);
+		$this->art6 = $this->db->escape($this->art6);
+		$this->art7 = $this->db->escape($this->art7);
+		$this->art8 = $this->db->escape($this->art8);
+		$this->sig = $this->db->escape($this->sig);
+		$this->notes = $this->db->escape($this->notes);
 		
 		
 		// Check parameters

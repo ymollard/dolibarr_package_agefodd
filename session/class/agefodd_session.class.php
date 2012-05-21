@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +83,7 @@ class Agefodd_session extends CommonObject
 		$sql.= '"'.$this->formateur.'", ';
 		$sql.= '"'.($this->dated != '' ? $this->db->idate($this->dated) : 'null').'", ';
 		$sql.= '"'.($this->datef != '' ? $this->db->idate($this->datef) : 'null').'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->notes).'",';
+		$sql.= '"'.$this->db->escape($this->notes).'",';
 		$sql.= '"'.$user.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
@@ -433,8 +434,8 @@ class Agefodd_session extends CommonObject
 		$error=0;
 		
 		// Clean parameters
-		$this->fk_session_place = ebi_mysql_escape_string(trim($this->fk_session_place));
-        $this->notes = ebi_mysql_escape_string(trim($this->notes));
+		$this->fk_session_place = $this->db->escape(trim($this->fk_session_place));
+        $this->notes = $this->db->escape(trim($this->notes));
 
 		// Check parameters
 		// Put here code to add control on parameters values

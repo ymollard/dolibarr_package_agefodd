@@ -453,7 +453,7 @@ if ($id)
 		*/
 		if ($action == 'delete')
 		{
-			$ret=$form->form_confirm("s_fiche.php?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
 			if ($ret == 'html') print '<br>';
 		}
 

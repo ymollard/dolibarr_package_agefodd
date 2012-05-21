@@ -718,29 +718,6 @@ function ebi_select_type_stagiaire($selectid, $name='stagiaire_type')
 
 
 /**
- *    \brief	formate une chaine de type string avant sont utilisation dans une requête SQL.
- *    \param	str	la chaine
- *		str	En fonction du système installé, on devra utiliser
- *			- la nouvelle syntaxe "mysql_real_escape_string" ($real="new")
- *			- l'ancienne syntaxe "mysql_escape_string" ($real="old")
- *    \return	str	la chaine formatée
- */
-function ebi_mysql_escape_string($string, $real='old')
-{
-	$string = addslashes($string);
-	if ($real == 'new')
-	{
-		
-		return mysql_real_escape_string($string);
-	}
-	else
-	{
-		return mysql_escape_string($string);
-	}
-}
-
-
-/**
  *    \brief	formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
  *    \param	int	valeur de l'état actuel
  *    \param	int	valeur de l'état quand toutes les tâches sont remplies
@@ -788,9 +765,6 @@ function ebi_get_adm_level_number()
 		$error="Error ".$db->lasterror();
 		return -1;
 	}
-
-
-
 }
 
 

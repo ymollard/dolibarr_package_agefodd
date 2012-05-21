@@ -65,11 +65,11 @@ class Agefodd_stagiaire extends CommonObject
 		// Clean parameters
 		$this->nom = trim($this->nom);
     	$this->prenom = trim($this->prenom);
-    	$this->fonction = addslashes(trim($this->fonction));
-    	$this->tel1 = addslashes(trim($this->tel1));
-    	$this->tel2 = addslashes(trim($this->tel2));
-		$this->mail = addslashes(trim($this->mail));
-    	$this->note = addslashes(trim($this->note));
+    	$this->fonction = $this->db->escape(trim($this->fonction));
+    	$this->tel1 = $this->db->escape(trim($this->tel1));
+    	$this->tel2 = $this->db->escape(trim($this->tel2));
+		$this->mail = $this->db->escape(trim($this->mail));
+    	$this->note = $this->db->escape(trim($this->note));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -88,11 +88,11 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= '"'.$user.'", ';
 		$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->socid.'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->fonction).'", ';
+		$sql.= '"'.$this->fonction.'", ';
 		$sql.= '"'.$this->tel1.'", ';
 		$sql.= '"'.$this->tel2.'", ';
 		$sql.= '"'.$this->mail.'", ';
-		$sql.= '"'.ebi_mysql_escape_string($this->note).'"';
+		$sql.= '"'.$this->note.'"';
 		$sql.= ")";
 		
 		$this->db->begin();
@@ -303,11 +303,11 @@ class Agefodd_stagiaire extends CommonObject
 		// Clean parameters
 		$this->nom = trim($this->nom);
         $this->prenom = trim($this->prenom);
-        $this->fonction = addslashes(trim($this->fonction));
-        $this->tel1 = addslashes(trim($this->tel1));
-        $this->tel2 = addslashes(trim($this->tel2));
-		$this->mail = addslashes(trim($this->mail));
-        $this->note = addslashes(trim($this->note));
+        $this->fonction = $this->db->escape(trim($this->fonction));
+        $this->tel1 = $this->db->escape(trim($this->tel1));
+        $this->tel2 = $this->db->escape(trim($this->tel2));
+		$this->mail = $this->db->escape(trim($this->mail));
+        $this->note = $this->db->escape(trim($this->note));
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -324,7 +324,7 @@ class Agefodd_stagiaire extends CommonObject
         $sql.= " s.tel1='".$this->tel1."',";
         $sql.= " s.tel2='".$this->tel2."',";
         $sql.= " s.mail='".$this->mail."',";
-        $sql.= " s.note='".ebi_mysql_escape_string($this->note)."'";
+        $sql.= " s.note='".$this->note."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 
 		$this->db->begin();

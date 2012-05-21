@@ -269,8 +269,8 @@ class Agefodd_sesscalendar
 		$error=0;
 		
 		// Clean parameters
-		$this->fk_session_place = ebi_mysql_escape_string(trim($this->fk_session_place));
-		$this->notes = ebi_mysql_escape_string(trim($this->notes));
+		$this->fk_session_place = $this->db->escape(trim($this->fk_session_place));
+		$this->notes = $this->db->escape(trim($this->notes));
 		
 		// Check parameters
 		// Put here code to add control on parameters values

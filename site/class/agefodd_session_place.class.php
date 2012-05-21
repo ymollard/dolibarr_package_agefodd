@@ -63,6 +63,8 @@ class Agefodd_session_place extends CommonObject
 		$error=0;
 	
 		// Clean parameters
+		$this->tel = $this->db->escape($this->tel);
+		$this->notes = $this->db->escape($this->notes);
 	
 	
 		// Check parameters
@@ -77,9 +79,9 @@ class Agefodd_session_place extends CommonObject
 		$sql.= '"'.$this->cp.'", ';
 		$sql.= '"'.$this->ville.'", ';
 		$sql.= '"'.$this->pays.'",';
-		$sql.= '"'.ebi_mysql_escape_string($this->tel).'",';
+		$sql.= '"'.$this->tel.'",';
 		$sql.= '"'.$this->fk_societe.'",';
-		$sql.= '"'.ebi_mysql_escape_string($this->notes).'",';
+		$sql.= '"'.$this->notes.'",';
 		$sql.= '"'.$user.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
@@ -291,9 +293,11 @@ class Agefodd_session_place extends CommonObject
 	
 		// Clean parameters
 		$this->intitule = trim($this->intitule);
-		$this->public = addslashes(trim($this->public));
-        $this->methode = addslashes(trim($this->methode));
-        $this->programme = addslashes(trim($this->programme));
+		$this->public = $this->db->escape(trim($this->public));
+        $this->methode = $this->db->escape(trim($this->methode));
+        $this->programme = $this->db->escape(trim($this->programme));
+        $this->tel = $this->db->escape(trim($this->tel));
+        $this->notes = $this->db->escape(trim($this->notes));
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -306,9 +310,9 @@ class Agefodd_session_place extends CommonObject
 		$sql.= ' p.cp="'.$this->cp.'", ';
 		$sql.= ' p.ville="'.$this->ville.'", ';
 		$sql.= ' p.fk_pays="'.$this->pays_id.'",';
-		$sql.= ' p.tel="'.ebi_mysql_escape_string($this->tel).'",';
+		$sql.= ' p.tel="'.$this->tel.'",';
 		$sql.= ' p.fk_societe="'.$this->fk_societe.'",';
-		$sql.= ' p.notes="'.ebi_mysql_escape_string($this->notes).'",';
+		$sql.= ' p.notes="'.$this->notes.'",';
 		$sql.= ' p.fk_user_mod="'.$user.'",';
 		$sql.= ' p.archive="'.$this->archive.'"';
         $sql.= " WHERE p.rowid LIKE ".$this->id;

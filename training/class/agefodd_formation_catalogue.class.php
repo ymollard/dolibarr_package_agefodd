@@ -63,11 +63,11 @@ class Agefodd extends CommonObject
 		$error=0;
 	
 		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
-		$this->public = ebi_mysql_escape_string($this->public);
-		$this->methode = ebi_mysql_escape_string($this->methode);
-		$this->prerequis = ebi_mysql_escape_string($this->prerequis);
-		$this->programme = ebi_mysql_escape_string($this->programme);
+		$this->intitule = $this->db->escape($this->intitule);
+		$this->public = $this->db->escape($this->public);
+		$this->methode = $this->db->escape($this->methode);
+		$this->prerequis = $this->db->escape($this->prerequis);
+		$this->programme = $this->db->escape($this->programme);
 	
 	
 		// Check parameters
@@ -227,11 +227,11 @@ class Agefodd extends CommonObject
 		$error=0;
 		
 		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
-		$this->public = ebi_mysql_escape_string($this->public);
-		$this->methode = ebi_mysql_escape_string($this->methode);
-		$this->prerequis = ebi_mysql_escape_string($this->prerequis);
-		$this->programme = ebi_mysql_escape_string($this->programme);
+		$this->intitule = $this->db->escape($this->intitule);
+		$this->public = $this->db->escape($this->public);
+		$this->methode = $this->db->escape($this->methode);
+		$this->prerequis = $this->db->escape($this->prerequis);
+		$this->programme = $this->db->escape($this->programme);
 		
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -326,7 +326,7 @@ class Agefodd extends CommonObject
 		$error=0;
     	
 		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
+		$this->intitule = $this->db->escape($this->intitule);
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -479,7 +479,7 @@ class Agefodd extends CommonObject
 		$error=0;
 		
 		// Clean parameters
-		$this->intitule = ebi_mysql_escape_string($this->intitule);
+		$this->intitule = $this->db->escape($this->intitule);
 		
 		// Check parameters
 		// Put here code to add control on parameters values
