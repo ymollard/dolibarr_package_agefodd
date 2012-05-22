@@ -19,6 +19,7 @@
 --
 -- ============================================================================
 --
--- Contraintes pour la table llx_agefodd_convention
+-- Contraintes pour la table llx_agefodd_session_calendrier
 --
-ALTER TABLE llx_agefodd_convention ADD CONSTRAINT llx_agefodd_convention_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_formateur ADD CONSTRAINT llx_agefodd_session_formateur_ibfk_1 FOREIGN KEY (fk_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_formateur ADD CONSTRAINT llx_agefodd_session_formateur_ibfk_2 FOREIGN KEY (fk_agefodd_formateur) REFERENCES llx_agefodd_formateur (rowid) ON DELETE CASCADE;

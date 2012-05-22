@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/site/class/agefodd_session_place.class.php');
+dol_include_once('/agefodd/site/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 // Security check
@@ -51,7 +51,7 @@ $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$agf = new Agefodd_session_place($db);
+$agf = new Agefodd_place($db);
 
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
@@ -73,7 +73,7 @@ print '<a href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'">'.$txt.'</a>'."\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","&arch=".$arch,"",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"p.ref","&arch=".$arch, "",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"p.ref_interne","&arch=".$arch, "",'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"s.nom","&arch=".$arch,"",'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel","","",'',$sortfield,$sortorder);
 print "</tr>\n";
@@ -89,7 +89,7 @@ if ($resql)
 		( $agf->line[$i]->archive == 1 ) ? $style = ' style="color:gray;"' : $style = '';
 		print "<tr $bc[$var]>";
 		print '<td><span style="background-color:'.$bgcolor.';"><a href="card.php?id='.$agf->line[$i]->id.'"'.$style.'>'.img_object($langs->trans("AgfEditerFichePlace"),"company").' '.$agf->line[$i]->id.'</a></span></td>'."\n";
-		print '<td'.$style.'>'.$agf->line[$i]->ref.'</td>'."\n";
+		print '<td'.$style.'>'.$agf->line[$i]->ref_interne.'</td>'."\n";
 		print '<td><a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'"  alt="'.$langs->trans("AgfEditerFicheCompany").'" title="'.$langs->trans("AgfEditerFicheCompany").'"'.$style.'>'.$agf->line[$i]->socname.'</td>'."\n";
 		print '<td'.$style.'>'.dol_print_phone($agf->line[$i]->tel).'</td>'."\n";
 		print '</tr>'."\n";

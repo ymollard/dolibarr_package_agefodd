@@ -22,3 +22,4 @@
 -- Contraintes pour la table llx_agefodd_session_adminsitu
 --
 ALTER TABLE llx_agefodd_session_adminsitu ADD CONSTRAINT llx_agefodd_session_adminsitu_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_adminsitu ADD CONSTRAINT llx_agefodd_session_admlevel_ibfk_1 FOREIGN KEY (fk_agefodd_session_admlevel) REFERENCES llx_agefodd_session_admlevel (rowid) ON DELETE CASCADE;

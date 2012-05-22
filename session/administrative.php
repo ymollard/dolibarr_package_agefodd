@@ -61,7 +61,6 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 		dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
-
 }
 
 
@@ -364,13 +363,11 @@ if ($user->rights->agefodd->creer)
 					// Affichage des différentes dates
 					print '<td width="150px" align="center" valign="top">';
 					if ($bgcolor == 'red') print '<font style="color:'.$bgcolor.'">';
-					print dol_print_date($alertday);
+					print dol_print_date($line->datea);
 					if ($bgcolor == 'red') print '</font>';
 					print '</td>';
-					($line->dated > '0000-00-00 00:00:00') ? $dated = dol_print_date($line->dated) : $dated = $langs->trans("AgfNotDefined");
-					($line->datef > '0000-00-00 00:00:00') ? $datef = dol_print_date($line->datef) : $datef = $langs->trans("AgfNotDefined");
-					print '<td width="150px" align="center" valign="top">'.$dated.'</td>';
-					print '<td width="150px" align="center" valign="top">'.$datef.'</td>';
+					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->dated).'</td>';
+					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->datef).'</td>';
 
 					print '</tr>';
 					

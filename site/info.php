@@ -26,7 +26,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/site/class/agefodd_session_place.class.php');
+dol_include_once('/agefodd/site/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/functions2.lib.php');
 
@@ -46,7 +46,7 @@ $db->begin();
 
 llxHeader();
 
-$agf = new Agefodd_session_place($db);
+$agf = new Agefodd_place($db);
 $agf->info($id);
 
 $head = site_prepare_head($agf);

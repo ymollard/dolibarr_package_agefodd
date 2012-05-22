@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/site/class/agefodd_session_place.class.php');
+dol_include_once('/agefodd/site/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 
@@ -46,7 +46,7 @@ $arch=GETPOST('arch','int');
  */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_session_place($db);
+	$agf = new Agefodd_place($db);
 	$result = $agf->remove($id);
 	
 	if ($result > 0)
@@ -69,7 +69,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($confirm == "yes")
 	{
-		$agf = new Agefodd_session_place($db);
+		$agf = new Agefodd_place($db);
 	
 		$result = $agf->fetch($id);
 	
@@ -102,7 +102,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
-		$agf = new Agefodd_session_place($db);
+		$agf = new Agefodd_place($db);
 
 		$result = $agf->fetch($id);
 
@@ -144,9 +144,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
-		$agf = new Agefodd_session_place($db);
+		$agf = new Agefodd_place($db);
 
-		$agf->ref = GETPOST('ref_interne','alpha');
+		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->adresse = GETPOST('adresse','alpha');
 		$agf->cp = GETPOST('zipcode','alpha');
 		$agf->ville = GETPOST('town','alpha');
@@ -242,7 +242,7 @@ else
 	// Affichage de la fiche "site de formation"
 	if ($id)
 	{
-		$agf = new Agefodd_session_place($db);
+		$agf = new Agefodd_place($db);
 		$result = $agf->fetch($id);
 
 		if ($result)

@@ -19,6 +19,26 @@
 --
 -- ============================================================================
 --
--- Contraintes pour la table llx_agefodd_convention
+-- Structure de la table llx_agefodd_place
 --
-ALTER TABLE llx_agefodd_convention ADD CONSTRAINT llx_agefodd_convention_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+
+CREATE TABLE IF NOT EXISTS llx_agefodd_place (
+  rowid int(11) NOT NULL auto_increment,
+  ref_interne varchar(80) NOT NULL,
+  adresse varchar(255) NOT NULL,
+  cp varchar(10) NOT NULL,
+  ville varchar(50) NOT NULL,
+  fk_pays int(11) NOT NULL,
+  tel varchar(20) default NULL,
+  fk_societe int(11) NOT NULL,
+  fk_agefodd_reg_interieur int(11) NOT NULL,
+  notes text NOT NULL,
+  archive enum('0','1') NOT NULL default '0',
+  fk_user_author int(11) NOT NULL,
+  datec datetime NOT NULL,
+  fk_user_mod int(11) NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (rowid),
+  KEY archive (archive)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+

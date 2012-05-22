@@ -22,3 +22,5 @@
 -- Contraintes pour la table llx_agefodd_session_stagiaire
 --
 ALTER TABLE llx_agefodd_session_stagiaire ADD CONSTRAINT llx_agefodd_session_stagiaire_ibfk_1 FOREIGN KEY (fk_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_stagiaire ADD CONSTRAINT llx_agefodd_session_stagiaire_ibfk_2 FOREIGN KEY (fk_stagiaire) REFERENCES llx_agefodd_stagiaire (rowid);
+ALTER TABLE llx_agefodd_session_stagiaire ADD CONSTRAINT llx_agefodd_session_stagiaire_ibfk_3 FOREIGN KEY (fk_agefodd_stagiaire_type) REFERENCES llx_agefodd_stagiaire_type (rowid);

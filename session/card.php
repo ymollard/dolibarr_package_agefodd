@@ -417,18 +417,24 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 					// Calcul de la date d'alerte
 					$sec_before_alert = ($line->alerte * 86400);
-					//print '$sec_before_alert = '.$sec_before_alert;
-					$today_mktime = dol_mktime(0, 0, 0, date("m"), date("d"), date("y"));
+					
+					//$today_mktime = dol_mktime(0,0,0,idate('m',dol_now()),idate('d',dol_now()),idate('Y',dol_now()));
 						
-					($line->alerte > 0) ? $date_ref = $agf->datef : $date_ref = $agf->dated;
-					
-					if ($date_ref > '0000-00-00 00:00:00') $alertday_mktime = (mysql2timestamp($date_ref.' 00:00:00') + $sec_before_alert);
-					else $alertday_mktime = $today_mktime;
-					//print '$alertday_mktime = '.$alertday_mktime;	
-					$alertday = date("Y-m-d H:i:s", $alertday_mktime);
-					//print '$alertday = '.$alertday;
-					//exit;
-					
+					if ($line->alerte > 0) 
+					{
+						$alertday = $agf->dated + $sec_before_alert;
+						$actions->datea = $alertday;
+						$actions->dated = $alertday - (7*86400);
+						$actions->datef = $alertday;
+					}
+					else
+					{
+						$alertday = $agf->dated;
+						$actions->datea = $alertday;
+						$actions->dated = $alertday - (7*86400);
+						$actions->datef = $agf->datef;
+					}
+
 					$actions->fk_agefodd_session_admlevel = $line->rowid;
 					$actions->fk_agefodd_session = $agf->id;
 					$actions->delais_alerte = $line->alerte;
@@ -436,7 +442,6 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 					$actions->indice = $line->indice;
 					$actions->level_rank = $line->level_rank;
 					$actions->fk_parent_level = $line->fk_parent_level;  //TODO : this is not the good parent, must be parent of admin situ and not aprent of admin level
-					$actions->datea = $alertday;
 					$result3 = $actions->create($user->id);
 
 					if ($result3 < 0) {

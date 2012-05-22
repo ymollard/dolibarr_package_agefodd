@@ -418,7 +418,7 @@ function ebi_select_site_forma($selectid, $name='place')
 	global $db;
 	
 	$sql = "SELECT p.rowid, p.ref_interne";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
 	$sql.= " ORDER BY p.ref_interne";
 
 	$result = $db->query($sql);

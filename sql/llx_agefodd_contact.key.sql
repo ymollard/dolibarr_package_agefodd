@@ -1,6 +1,7 @@
 -- ============================================================================
 -- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
 -- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,4 +21,4 @@
 
 
 ALTER TABLE llx_agefodd_contact ADD INDEX idx_agefodd_contact_fk_socpeople (fk_socpeople);
-
+ALTER TABLE llx_agefodd_contact ADD CONSTRAINT llx_agefodd_contact_ibfk_1 FOREIGN KEY (fk_socpeople) REFERENCES llx_societe (rowid);

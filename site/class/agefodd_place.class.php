@@ -31,20 +31,20 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_session_place extends CommonObject
+class Agefodd_place extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd_session_place';
+	var $table_element='agefodd_place';
     var $id;
 
 	/**
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_session_place($DB) 
+	function Agefodd_place($DB) 
 	{
 		$this->db = $DB;
 		return 1;
@@ -71,7 +71,7 @@ class Agefodd_session_place extends CommonObject
 		// Put here code to add control on parameters value
 		
 		// Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_place(";
+		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
 		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, datec, fk_user_author";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->ref_interne.'", ';
@@ -93,7 +93,7 @@ class Agefodd_session_place extends CommonObject
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_session_place");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_place");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
@@ -139,7 +139,7 @@ class Agefodd_session_place extends CommonObject
         $sql = "SELECT";
 		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql.= " s.rowid as socid, s.nom as socname";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
         $sql.= " WHERE p.rowid = ".$id;
@@ -193,7 +193,7 @@ class Agefodd_session_place extends CommonObject
         $sql = "SELECT";
 		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql.= " s.rowid as socid, s.nom as socname";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
 		if ($arch == 0 || $arch == 1) $sql.= " WHERE p.archive LIKE ".$arch;
@@ -252,7 +252,7 @@ class Agefodd_session_place extends CommonObject
     	
         $sql = "SELECT";
 		$sql.= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
         $sql.= " WHERE p.rowid = ".$id;
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -264,7 +264,7 @@ class Agefodd_session_place extends CommonObject
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
                 $this->date_creation = $this->db->jdate($obj->datec);
-                $this->tms = $obj->tms;
+                $this->tms = $this->db->jdate($obj->tms);
                 $this->user_modification = $obj->fk_user_mod;
                 $this->user_creation = $obj->fk_user_author;
 	    }
@@ -304,7 +304,7 @@ class Agefodd_session_place extends CommonObject
 		
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
-        $sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_place as p SET';
+        $sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_place as p SET';
 		$sql.= ' p.ref_interne="'.$this->ref_interne.'", ';
 		$sql.= ' p.adresse="'.$this->adresse.'", ';
 		$sql.= ' p.cp="'.$this->cp.'", ';
@@ -364,7 +364,7 @@ class Agefodd_session_place extends CommonObject
 	*/
 	function remove($id)
 	{
-		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_session_place";
+		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_place";
 		$sql .= " WHERE rowid = ".$id;
 		
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);

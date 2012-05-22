@@ -23,12 +23,12 @@
 	\version	$Id$
 */
 require_once(DOL_DOCUMENT_ROOT."/agefodd/core/models/pdf/pdf_document.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/session/class/agefodd_session.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/training/class/agefodd_formation_catalogue.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_contact.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/contact/class/agefodd_contact.class.php");
 require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_convention.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session_place.class.php");
+require_once(DOL_DOCUMENT_ROOT."/agefodd/site/class/agefodd_place.class.php");
 
 
 class agf_pdf_document extends FPDF

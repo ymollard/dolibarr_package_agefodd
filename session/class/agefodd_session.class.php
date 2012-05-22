@@ -65,10 +65,11 @@ class Agefodd_session extends CommonObject
 		// Clean parameters
 		$this->fk_formation_catalogue = trim($this->nom);
     	$this->fk_session_place = trim($this->prenom);
-    	$this->fk_agefodd_formateur = addslashes(trim($this->fonction));
-    	$this->dated = addslashes(trim($this->dated));
-    	$this->datef = addslashes(trim($this->datef));
-		$this->notes = addslashes(trim($this->notes));
+    	$this->fk_agefodd_formateur = $this->db->escape(trim($this->fonction));
+    	$this->dated = trim($this->dated);
+    	$this->datef = trim($this->datef);
+		$this->notes = trim($this->notes);
+		$this->notes = $this->db->escape($this->notes);
     		
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -83,7 +84,7 @@ class Agefodd_session extends CommonObject
 		$sql.= '"'.$this->formateur.'", ';
 		$sql.= '"'.($this->dated != '' ? $this->db->idate($this->dated) : 'null').'", ';
 		$sql.= '"'.($this->datef != '' ? $this->db->idate($this->datef) : 'null').'", ';
-		$sql.= '"'.$this->db->escape($this->notes).'",';
+		$sql.= '"'.$this->notes.'",';
 		$sql.= '"'.$user.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
@@ -214,7 +215,7 @@ class Agefodd_session extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_place as p";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p";
 		$sql.= " ON p.rowid = s.fk_session_place";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON ss.fk_session = c.rowid";
@@ -242,8 +243,8 @@ class Agefodd_session extends CommonObject
                 $this->placeid = stripslashes($obj->placeid);
 				$this->teachername = stripslashes($obj->teachername);
 				$this->placecode = stripslashes($obj->ref_interne);
-                $this->dated = $obj->dated;
-                $this->datef = $obj->datef;
+                $this->dated = $this->db->jdate($obj->dated);
+                $this->datef =$this->db->jdate($obj->datef);
                 $this->notes = stripslashes($obj->notes);
                 $this->archive = $obj->archive;
 	    }
@@ -362,10 +363,10 @@ class Agefodd_session extends CommonObject
 				$i = 0;
 				while( $i < $num)
 				{
-	                		$obj = $this->db->fetch_object($resql);
-	                		$this->line[$i]->sessid = $obj->sessid;
+	                $obj = $this->db->fetch_object($resql);
+	                $this->line[$i]->sessid = $obj->sessid;
 					$this->line[$i]->socname = $obj->socname;
-	                		$this->line[$i]->socid = $obj->socid;
+	                $this->line[$i]->socid = $obj->socid;
 					$i++;
 				}
 			}
@@ -404,7 +405,7 @@ class Agefodd_session extends CommonObject
             {
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
-                $this->date_creation = $obj->datec;
+                $this->date_creation = $this->db->jdate($obj->datec);
                 $this->tms = $obj->tms;
                 $this->user_creation = $obj->fk_user_author;
                 $this->user_modification = $obj->fk_user_mod;
@@ -445,8 +446,8 @@ class Agefodd_session extends CommonObject
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session as s SET";
 		$sql.= " s.fk_session_place='".$this->fk_session_place."',";
 		$sql.= " s.fk_agefodd_formateur='".$this->formateur."',";
-        $sql.= " s.dated='".$this->dated."',";
-        $sql.= " s.datef='".$this->datef."',";
+        $sql.= " s.dated=".$this->db->idate($this->dated).",";
+        $sql.= " s.datef=".$this->db->idate($this->datef).",";
         $sql.= " s.notes='".$this->notes."',";
         $sql.= " s.fk_user_mod='".$user."',";
         $sql.= " s.archive='".$this->archive."'";
