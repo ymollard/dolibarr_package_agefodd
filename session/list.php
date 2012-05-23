@@ -99,7 +99,7 @@ if ($resql)
 	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"s.ref","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"s.lieu","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"s.ref_interne","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"num",'' ,'','',$sortfield,$sortorder);
 	print "</tr>\n";
 	
@@ -115,9 +115,9 @@ if ($resql)
 		print '<td><a href="card.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
 		print '<td>'.stripslashes(dol_trunc($objp->intitule, 60)).'</td>';
 		print '<td>'.$objp->ref_interne.'</td>';
-		print '<td>'.dol_print_date($objp->dated,'day').'</td>';
-		print '<td>'.dol_print_date($objp->datef,'day').'</td>';
-		print '<td>'.stripslashes($objp->code).'</td>';
+		print '<td>'.dol_print_date($objp->dated,'daytext').'</td>';
+		print '<td>'.dol_print_date($objp->datef,'daytext').'</td>';
+		print '<td>'.stripslashes($objp->ref_interne).'</td>';
 		print '<td>'.$objp->num.'</td>';
 		print "</tr>\n";
 		

@@ -206,3 +206,5 @@ AgfRankSessionLevel = Niveau
 AgfAdminSessionLevel = Administration des actions de bases des formations
 AgfParentLevel = Niveaux parents
 AgfAdminNoMoreThan3Level = Il n'est pas possible d'avoir plus de trois niveaux
+AgfConfirmDeletePeriod=Souhaitez vous vraiment supprimer période?
+AgfDeletePeriod=Suppression de la période

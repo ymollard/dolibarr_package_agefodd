@@ -116,10 +116,10 @@ if ($resql)
 		print "<tr $bc[$var]>";
 		print '<td><a href="card.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
 		print '<td>'.stripslashes($objp->intitule).'</td>';
-		print '<td>'.$objp->ref_interne.'</td>';
-		print '<td>'.dol_print_date($objp->datec,'day').'</td>';
+		print '<td>'.$objp->ref.'</td>';
+		print '<td>'.dol_print_date($objp->datec,'daytext').'</td>';
 		print '<td>'.$objp->duree.'</td>';
-		print '<td>'.dol_print_date($objp->lastsession,'day').'</td>';
+		print '<td>'.dol_print_date($objp->lastsession,'daytext').'</td>';
 		print '<td>'.$count.'</td>';
 		print "</tr>\n";
 	

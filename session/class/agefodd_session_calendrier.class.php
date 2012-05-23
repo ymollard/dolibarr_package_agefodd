@@ -37,7 +37,7 @@ class Agefodd_sesscalendar
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-        var $id;
+    var $id;
 
 	/**
 	*	\brief		Constructor
@@ -58,17 +58,10 @@ class Agefodd_sesscalendar
 	*/
 	function create($user, $notrigger=0)
 	{
-	global $conf, $langs;
+		global $conf, $langs;
 		$error=0;
 	
 		// Clean parameters
-		$this->fk_formation_catalogue = trim($this->nom);
-		$this->fk_session_place = trim($this->prenom);
-		$this->fk_agefodd_formateur = addslashes(trim($this->fonction));
-		$this->dated = addslashes(trim($this->dated));
-		$this->datef = addslashes(trim($this->datef));
-		$this->notes = addslashes(trim($this->notes));
-		$this->fk_user_author = addslashes(trim($this->mail));
 		
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -78,9 +71,9 @@ class Agefodd_sesscalendar
 		$sql.= "fk_agefodd_session, date, heured, heuref, fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->sessid.'", ';
-		$sql.= '"'.$this->date.'", ';
-		$sql.= '"'.$this->heured.'", ';
-		$sql.= '"'.$this->heuref.'", ';
+		$sql.= $this->db->idate($this->date).', ';
+		$sql.= $this->db->idate($this->heured).', ';
+		$sql.= $this->db->idate($this->heuref).', ';
 		$sql.= '"'.$user.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
@@ -140,7 +133,6 @@ class Agefodd_sesscalendar
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.date, s.heured, s.heuref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
-		$sql.= " WHERE s.fk_agefodd_session = ".$id;
 		$sql.= " ORDER BY s.date ASC, s.heured ASC";
 		$sql.= " WHERE s.rowid = ".$id;
 		
@@ -152,9 +144,9 @@ class Agefodd_sesscalendar
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date = $obj->date;
-				$this->heured = $obj->heured;
-				$this->heuref = $obj->heuref;
+				$this->date = $this->db->jdate($obj->date);
+				$this->heured = $this->db->jdate($obj->heured);
+				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->sessid;
 			}
 			$this->db->free($resql);
@@ -168,8 +160,7 @@ class Agefodd_sesscalendar
 			return -1;
 		}
 	}
-
-
+	
 
 	/**
 	*    \brief	Récupére le calendrier d'une session (les blocs horaires)
@@ -199,9 +190,9 @@ class Agefodd_sesscalendar
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->date = $obj->date;
-				$this->line[$i]->heured = $obj->heured;
-				$this->line[$i]->heuref = $obj->heuref;
+				$this->line[$i]->date = $this->db->jdate($obj->date);
+				$this->line[$i]->heured = $this->db->jdate($obj->heured);
+				$this->line[$i]->heuref = $this->db->jdate($obj->heuref);
 				$this->line[$i]->sessid = $obj->sessid;
 			}
 			$this->db->free($resql);
@@ -239,10 +230,10 @@ class Agefodd_sesscalendar
 			{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->datec = $obj->datec;
+			$this->date_creation = $this->db->jdate($obj->datec);
 			$this->tms = $obj->tms;
-			$this->fk_userc = $obj->fk_user_author;
-			$this->fk_userm = $obj->fk_user_mod;
+			$this->user_creation = $obj->fk_user_author;
+			$this->user_modification = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
 		
@@ -269,8 +260,6 @@ class Agefodd_sesscalendar
 		$error=0;
 		
 		// Clean parameters
-		$this->fk_session_place = $this->db->escape(trim($this->fk_session_place));
-		$this->notes = $this->db->escape(trim($this->notes));
 		
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -279,9 +268,9 @@ class Agefodd_sesscalendar
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_calendrier as s SET";
-		$sql.= " s.date='".$this->date."',";
-		$sql.= " s.heured='".$this->heured."',";
-		$sql.= " s.heuref='".$this->heuref."',";
+		$sql.= " s.date=".$this->db->idate($this->date).",";
+		$sql.= " s.heured=".$this->db->idate($this->heured).",";
+		$sql.= " s.heuref=".$this->db->idate($this->heuref).",";
 		$sql.= " s.fk_user_mod='".$user."'";
 		$sql.= " WHERE s.rowid = ".$this->id;
 		

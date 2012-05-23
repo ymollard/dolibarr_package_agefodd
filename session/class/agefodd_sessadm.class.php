@@ -96,9 +96,9 @@ class Agefodd_sessadm extends CommonObject
 		$sql.= '"'.$this->indice.'", ';
 		$sql.= '"'.$this->level_rank.'", ';
 		$sql.= '"'.$this->fk_parent_level.'", ';
-		$sql.= '"'.$this->db->idate($this->dated).'", ';
-		$sql.= '"'.$this->db->idate($this->datef).'", ';
-		$sql.= '"'.$this->db->idate($this->datea).'", ';
+		$sql.= $this->db->idate($this->dated).', ';
+		$sql.= $this->db->idate($this->datef).', ';
+		$sql.= $this->db->idate($this->datea).', ';
 		$sql.= '"'.$this->notes.'",';
 		$sql.= '"'.$user.'"';
 		$sql.= ")";
@@ -174,8 +174,8 @@ class Agefodd_sessadm extends CommonObject
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s SET";
 		$sql.= " s.delais_alerte='".$this->delais."',";
 		$sql.= " s.dated=".$this->db->idate($this->dated).",";
-		$sql.= " s.datef='".$this->db->idate($this->datef)."',";
-		$sql.= " s.datea='".$this->db->idate($this->datea)."',";
+		$sql.= " s.datef=".$this->db->idate($this->datef).",";
+		$sql.= " s.datea=".$this->db->idate($this->datea).",";
 		$sql.= " s.fk_user_mod='".$user."',";
 		$sql.= " s.notes='".$this->notes."',";
 		$sql.= " s.archive='".$this->archive."',";

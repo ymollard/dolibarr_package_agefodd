@@ -896,23 +896,6 @@ function ebi_help($desc, $legend="")
 }
 
 /**
- *    \brief	Prend une duree au format hh:mm:ss et retourne un tableau
- *    \param	str	la chaine
-  *   \return	str	la chaine formatée
- */
-function ebi_time_array($time)
-{
-	global $conf;
-
-	$arraytime = explode(':' ,$time);
-	$newtime['h'] = $arraytime[0];
-	$newtime['m'] = $arraytime[1];
-
-	return $newtime;
-}
-
-
-/**
  *    \brief	Formatage d'une liste à puce
  *    \param	str	txt la chaine
  *   \param	bool	html sortie au format html (true) ou texte (false)

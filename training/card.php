@@ -155,7 +155,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		Header ("Location: list.php");
 		exit;
 	}
 }
@@ -169,6 +169,8 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd($db);
 	
+	$idforma = GETPOST('idforma','int');
+	
 	// MAJ d'un objectif pedagogique
 	if (GETPOST('obj_update_x'))
 	{
@@ -176,7 +178,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->priorite = GETPOST('priorite','alpha');
-		$agf->fk_formation_catalogue = GETPOST('idforma','int');
+		$agf->fk_formation_catalogue = $idforma;
 		$agf->id = $id;
 		
 		$result = $agf->update_objpeda($user->id);
@@ -197,8 +199,6 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 	// Creation d'un nouvel objectif pedagogique
 	if (GETPOST("obj_add_x")) 
 	{
-		$idforma = GETPOST('idforma','int');
-		
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->priorite = GETPOST('priorite','alpha');
 		$agf->fk_formation_catalogue = $idforma;

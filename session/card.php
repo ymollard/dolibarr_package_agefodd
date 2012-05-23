@@ -37,6 +37,7 @@ dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/date.lib.php');
 
 
 // Security check
@@ -295,17 +296,17 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		
 		$modperiod=GETPOST('modperiod','int');
-		$dateyear=GETPOST('dateyear','int').'-'.GETPOST('datemonth','int').'-'.GETPOST('dateday','int');
-		$heured=GETPOST('heured','int');
-		$heuref=GETPOST('heuref','int');
-		
+		$dateyear = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		$heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
+		$heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
+
 		$agf = new Agefodd_sesscalendar($db);
 		$result = $agf->fetch($modperiod);
 		
 		if(!empty($modperiod)) $agf->id = $modperiod;
 		if(!empty($dateyear)) $agf->date = $dateyear;
-		if(!empty($heured)) $agf->heured = $heured.':00';
-		if(!empty($heuref)) $agf->heuref = $heuref.':00';
+		if(!empty($heured)) $agf->heured = $heured;
+		if(!empty($heuref)) $agf->heuref =  $heuref;
 		$result = $agf->update($user->id);
 	
 		if ($result > 0)
@@ -323,11 +324,11 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	if($_POST["period_add_x"])
 	{
 		$agf = new Agefodd_sesscalendar($db);
-				
+		
 		$agf->sessid = GETPOST('sessid','int');
-		$agf->date = GETPOST('dateyear','int').':'.GETPOST('datemonth','int').':'.GETPOST('dateday','int');
-		$agf->heured = GETPOST('heured','int').':00';
-		$agf->heuref = GETPOST('heuref','int').':00';
+		$agf->date = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		$agf->heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
+		$agf->heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
 		$result = $agf->create($user->id);
 	
 		if ($result > 0)
@@ -397,8 +398,8 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		$agf->formid = GETPOST('formation','int');
 		$agf->place = GETPOST('place','int');
-		$agf->dated = GETPOST('dadyear','int').'-'.GETPOST('dadmonth','int').'-'.GETPOST('dadday','int');
-		$agf->datef = GETPOST('dafyear','int').'-'.GETPOST('dafmonth','int').'-'.GETPOST('dafday','int');
+		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
+		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
 		$result = $agf->create($user->id);
 		
@@ -415,25 +416,10 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 				{
 					$actions = new Agefodd_sessadm($db);
 
-					// Calcul de la date d'alerte
-					$sec_before_alert = ($line->alerte * 86400);
-					
-					//$today_mktime = dol_mktime(0,0,0,idate('m',dol_now()),idate('d',dol_now()),idate('Y',dol_now()));
-						
-					if ($line->alerte > 0) 
-					{
-						$alertday = $agf->dated + $sec_before_alert;
-						$actions->datea = $alertday;
-						$actions->dated = $alertday - (7*86400);
-						$actions->datef = $alertday;
-					}
-					else
-					{
-						$alertday = $agf->dated;
-						$actions->datea = $alertday;
-						$actions->dated = $alertday - (7*86400);
-						$actions->datef = $agf->datef;
-					}
+					$actions->datea = dol_time_plus_duree($agf->dated,$line->alerte,'d');
+					$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
+					$actions->datef = $agf->datef;
+				
 
 					$actions->fk_agefodd_session_admlevel = $line->rowid;
 					$actions->fk_agefodd_session = $agf->id;
@@ -507,7 +493,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<table class="border" width="100%">';
 
-	print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
 	print '<td>'.ebi_select_formation("", 'formation').'</a></td></tr>';
 
 	//TODO : check nb formateur
@@ -517,15 +503,15 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	//print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
 	//print '</td></tr>';
 	
-	print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfDateDebut").'</span></td><td>';
 	$form->select_date("", 'dad','','','','add');
 	print '</td></tr>';
 
-	print '<tr><td>'.$langs->trans("AgfDateFin").'</td><td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfDateFin").'</span></td><td>';
 	$form->select_date("", 'daf','','','','add');
 	print '</td></tr>';
 
-	print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
 	print '<td>';
 	print ebi_select_site_forma("",'place');
 	print '</td></tr>';
@@ -647,7 +633,6 @@ else
 						if ($ret == 'html') print '<br>';
 					}
 	
-	
 					print '<div class="tabBar">';
 					print '<table class="border" width="100%">';
 	
@@ -664,7 +649,6 @@ else
 							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 							print '<input type="hidden" name="action" value="edit">'."\n";
 							print '<input type="hidden" name="sessid" value="'.$formateurs->line[$i]->sessid.'">'."\n";
-							//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
 							print '<input type="hidden" name="opsid" value="'.$formateurs->line[$i]->opsid.'">'."\n";
 						
 							print '<td width="20px" align="center">'.($i+1).'</td>';
@@ -720,9 +704,7 @@ else
 						print '<form name="form_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 						print '<input type="hidden" name="action" value="edit">'."\n";
-						//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-						//print '<input type="hidden" name="formid" value="'.$formateurs->line[$i]->formid.'">'."\n";
 						print '<td width="20px" align="center">'.($i+1).'</td>';
 						print '<td>';
 						print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
@@ -767,7 +749,7 @@ else
 					if ($_POST["period_remove_x"])
 					{
 						// Param url = id de la periode à supprimer - id session 
-						$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period");
+						$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period",'','',1);
 						if ($ret == 'html') print '<br>';
 					}
 					print '<div class="tabBar">';
@@ -800,9 +782,9 @@ else
 								$form->select_date($calendrier->line[$i]->date, 'date','','','','date');
 								print '</td>';
 								print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
-								print ebi_select_time("heured", $calendrier->line[$i]->heured);
+								$form->select_date($calendrier->line[$i]->heured, 'dated',1,1,0,'dated',1);
 								print ' - '.$langs->trans("AgfPeriodTimeE").' ';
-								print ebi_select_time("heuref",$calendrier->line[$i]->heuref);
+								$form->select_date($calendrier->line[$i]->heuref, 'datef',1,1,0,'datef',1);
 								print '</td>';
 						
 								if ($user->rights->agefodd->modifier)
@@ -812,18 +794,8 @@ else
 							}
 							else
 							{
-								$arrayJour = explode('-', $calendrier->line[$i]->date);
-								$mktime = dol_mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-								setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
-								$jour = strftime("%A", $mktime);
-								print '<td width="20%">'.$jour.' '.dol_print_date($calendrier->line[$i]->date).'</td>';
-								print '<td  width="150px">';
-								$heured = ebi_time_array($calendrier->line[$i]->heured);
-								print $heured['h'].':'.$heured['m'] ;
-								$heuref = ebi_time_array($calendrier->line[$i]->heuref);
-								print ' - '.$heuref['h'].':'.$heuref['m'] ;
-								print '</td><td colspan=2 width="auto">' ;
-							
+								print '<td width="20%">'.dol_print_date($calendrier->line[$i]->date,'daytext').'</td>';
+								print '<td  width="150px">'.dol_print_date($calendrier->line[$i]->heured,'hour').' - '.dol_print_date($calendrier->line[$i]->heuref,'hour');
 								if ($user->rights->agefodd->modifier)
 								{
 									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="period_edit" alt="'.$langs->trans("AgfModSave").'">';
@@ -837,20 +809,14 @@ else
 							print '</td>' ;
 							
 							// On calcule la duree totale du calendrier
-							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
-							$heured = ebi_time_array($calendrier->line[$i]->heured);
-							$heuref = ebi_time_array($calendrier->line[$i]->heuref);
-							$arrayJour = explode('-', $calendrier->line[$i]->date);
-							$tms_heured = dol_mktime($heured['h'],$heured['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-							$tms_heuref = dol_mktime($heuref['h'],$heuref['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-							$duree += ($tms_heuref - $tms_heured);
+							$duree += ($calendrier->line[$i]->heuref - $calendrier->line[$i]->heured);
 	
 							print '</form>'."\n";
 							print '</tr>'."\n";
 						}
 						if (($agf->duree * 3600) != $duree)
 						{
-							print '<tr><td colspan=5 style="text-decoration: blink;" align="center">';
+							print '<tr><td colspan=5 align="center"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
 							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
 							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
 							$rsec = sprintf("%02d",$duree % 60); 
@@ -886,15 +852,14 @@ else
 						print '<input type="hidden" name="action" value="edit">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 						print '<input type="hidden" name="periodid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-						//print '<td width="20px" align="center">'.($i+1).'</td>';
-						print '<td>'.$langs->trans("AgfPeriodDate").' ';
+						print '<td  width="300px">'.$langs->trans("AgfPeriodDate").' ';
 						$form->select_date($agf->dated, 'date','','','','date');
 						print '</td>';
-						print '<td width="150px">'.$langs->trans("AgfPeriodTimeB").' ';
-						print ebi_select_time("heured");
+						print '<td width="400px">'.$langs->trans("AgfPeriodTimeB").' ';
+						$form->select_date($agf->dated, 'dated',1,1,0,'dated',1);
 						print '</td>';
-						print '<td width="150px">'.$langs->trans("AgfPeriodTimeE").' ';
-						print ebi_select_time("heuref");
+						print '<td width="400px">'.$langs->trans("AgfPeriodTimeE").' ';
+						$form->select_date($agf->dated, 'datef',1,1,0,'datef',1);
 						print '</td>';
 						if ($user->rights->agefodd->modifier)
 						{
@@ -921,7 +886,7 @@ else
 					if ($_POST["stag_remove_x"])
 					{
 						// Param url = id de la ligne stagiaire dans session - id session 
-						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag");
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag",'','',1);
 						if ($ret == 'html') print '<br>';
 					}
 	
@@ -974,7 +939,7 @@ else
 								}
 								else
 								{
-									print '<a href="'.DOL_URL_ROOT.'/agefodd/u_fiche.php?id='.$stagiaires->line[$i]->id.'">';
+									print '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
 									print img_object($langs->trans("ShowContact"),"contact").' ';
 									print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
 									print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
@@ -1099,10 +1064,10 @@ else
 					//print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->teacherid.'">'.$agf->teachername.'</a>';
 					
 					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td>';
-					print '<td>'.dol_print_date($agf->dated).'</td></tr>';
+					print '<td>'.dol_print_date($agf->dated,'daytext').'</td></tr>';
 	
 					print '<tr><td>'.$langs->trans("AgfDateFin").'</td>';
-					print '<td>'.dol_print_date($agf->datef).'</td></tr>';
+					print '<td>'.dol_print_date($agf->datef,'daytext').'</td></tr>';
 	
 					print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
 					print '<td><a href="'.dol_buildpath('/agefodd/site/card.php',1).'?id='.$agf->placeid.'">'.$agf->placecode.'</a></td></tr>';
@@ -1177,30 +1142,21 @@ else
 							{
 								if ($i > 0 )print '</tr><tr><td width="150px" style="border:0px;">&nbsp;</td>';
 								print '<td width="150px">';
-								$arrayJour = explode('-', $calendrier->line[$i]->date);
-								$mktime = dol_mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-								setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
-								$jour = strftime("%A", $mktime);
-								print $jour.' '.dol_print_date($calendrier->line[$i]->date).'</td><td>';
+								print dol_print_date($calendrier->line[$i]->date,'daytext').'</td><td>';
 							}
 							else print ', ';
-							$heured = ebi_time_array($calendrier->line[$i]->heured);
-							print $heured['h'].':'.$heured['m'] ;
-							$heuref = ebi_time_array($calendrier->line[$i]->heuref);
-							print ' - '.$heuref['h'].':'.$heuref['m'] ;
+							print dol_print_date($calendrier->line[$i]->heured,'hour').' - '.dol_print_date($calendrier->line[$i]->heuref,'hour');
 							if ($i == $blocNumber -1 ) print '</td></tr>';
 							
 							$old_date = $calendrier->line[$i]->date;
 							
 							// On calcule la duree totale du calendrier
 							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
-							$tms_heured = dol_mktime($heured['h'],$heured['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-							$tms_heuref = dol_mktime($heuref['h'],$heuref['m'], 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-							$duree += ($tms_heuref - $tms_heured);
+							$duree += ($calendrier->line[$i]->heuref - $calendrier->line[$i]->heured);
 						}
 						if (($agf->duree * 3600) != $duree)
 						{
-							print '<tr><td>&nbsp;</td><td colspan=2 style="text-decoration: blink;">';
+							print '<tr><td>&nbsp;</td><td colspan=2><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
 							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
 							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
 							$rsec = sprintf("%02d",$duree % 60); 
@@ -1348,3 +1304,4 @@ print '</div>';
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>
+

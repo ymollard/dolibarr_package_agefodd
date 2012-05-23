@@ -82,8 +82,8 @@ class Agefodd_session extends CommonObject
 		$sql.= '"'.$this->formid.'", ';
 		$sql.= '"'.$this->place.'", ';
 		$sql.= '"'.$this->formateur.'", ';
-		$sql.= '"'.($this->dated != '' ? $this->db->idate($this->dated) : 'null').'", ';
-		$sql.= '"'.($this->datef != '' ? $this->db->idate($this->datef) : 'null').'", ';
+		$sql.= ($this->dated != '' ? $this->db->idate($this->dated) : 'null').', ';
+		$sql.= ($this->datef != '' ? $this->db->idate($this->datef) : 'null').', ';
 		$sql.= '"'.$this->notes.'",';
 		$sql.= '"'.$user.'", ';
 		$sql.= $this->db->idate(dol_now());
@@ -283,7 +283,7 @@ class Agefodd_session extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
 		$sql.= " ON sa.rowid = ss.fk_stagiaire";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-		$sql.= " ON civ.rowid = sa.fk_c_civilite";
+		$sql.= " ON civ.rowid = sa.civilite";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON so.rowid = sa.fk_soc";
 	 	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_type as st";
