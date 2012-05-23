@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-require_once("./class/agefodd_stagiaire.class.php");
+dol_include_once('/agefodd/trainee/class/agefodd_stagiaire.class.php');
 
 
 // Security check
@@ -60,13 +60,13 @@ $db->begin();
 $sql = "SELECT";
 $sql.= " so.rowid as socid, so.nom as socname,";
 $sql.= " civ.code as civilite,";
-$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
+$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 $sql.= " s.tel1, s.tel2, s.mail, s.note";
 $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 $sql.= " ON s.fk_soc = so.rowid";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-$sql.= " ON s.fk_c_civilite = civ.rowid";
+$sql.= " ON s.civilite = civ.code";
 $sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$db->plimit( $limit + 1 ,$offset);
 
 $resql = $db->query($sql);
@@ -120,6 +120,10 @@ if ($resql)
     }
     
     print "</table>";
+}
+else
+{
+	dol_print_error($db);
 }
 
 $db->close();

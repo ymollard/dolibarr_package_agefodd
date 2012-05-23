@@ -18,7 +18,7 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
---
--- Contraintes pour la table llx_agefodd_place
---
-ALTER TABLE llx_agefodd_place ADD CONSTRAINT llx_agefodd_session_ibfk_1 FOREIGN KEY (fk_pays) REFERENCES llx_c_pays (rowid);
+
+
+ALTER TABLE llx_agefodd_formateur ADD INDEX idx_agefodd_formateur_fk_socpeople (fk_socpeople);
+ALTER TABLE llx_agefodd_formateur ADD CONSTRAINT llx_agefodd_formateur_ibfk_1 FOREIGN KEY (fk_socpeople) REFERENCES llx_socpeople (rowid);

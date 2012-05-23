@@ -26,6 +26,8 @@
  */
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
+require_once(DOL_DOCUMENT_ROOT."/contact/class/contact.class.php");
+
 
 /**
  *	\class		Agefodd
@@ -79,8 +81,8 @@ class Agefodd_stagiaire extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_stagiaire(";
-		$sql.= "nom, prenom, fk_c_civilite, fk_user_author, datec, ";
-		$sql.= "fk_soc, fonction, tel1, tel2, mail, note";
+		$sql.= "nom, prenom, civilite, fk_user_author, datec, ";
+		$sql.= "fk_soc, fonction, tel1, tel2, mail, note,fk_socpeople";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->nom.'", ';
 		$sql.= '"'.$this->prenom.'", ';
@@ -92,7 +94,8 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= '"'.$this->tel1.'", ';
 		$sql.= '"'.$this->tel2.'", ';
 		$sql.= '"'.$this->mail.'", ';
-		$sql.= '"'.$this->note.'"';
+		$sql.= '"'.$this->note.'",';
+		$sql.= '"'.$this->fk_socpeople.'"';
 		$sql.= ")";
 		
 		$this->db->begin();
@@ -149,13 +152,13 @@ class Agefodd_stagiaire extends CommonObject
 		$sql = "SELECT";
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilite,";
-		$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
-		$sql.= " s.tel1, s.tel2, s.mail, s.note";
+		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON s.fk_soc = so.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-		$sql.= " ON s.fk_c_civilite = civ.rowid";
+		$sql.= " ON s.civilite = civ.code";
         $sql.= " WHERE s.rowid = ".$id;
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -165,19 +168,47 @@ class Agefodd_stagiaire extends CommonObject
             if ($this->db->num_rows($resql))
             {
                 $obj = $this->db->fetch_object($resql);
-                $this->id = $obj->rowid;
-                $this->ref = $obj->rowid; // use for next prev refs
-                $this->nom = $obj->nom;
-                $this->prenom = $obj->prenom;
-                $this->civilite_code = $obj->civilite;
-                $this->civilite_id = $obj->fk_c_civilite;
-                $this->socid = $obj->socid;
-                $this->socname = $obj->socname;
-                $this->fonction = $obj->fonction;
-                $this->tel1 = $obj->tel1;
-                $this->tel2 = $obj->tel2;
-                $this->mail = $obj->mail;
-                $this->note = $obj->note;
+
+                if (!(empty($obj->fk_socpeople)))
+                {
+                	$contact = new Contact($this->db);
+                	$result = $contact->fetch($obj->fk_socpeople);
+                	
+                	if ($result > 0)
+                	{
+                		
+                		$this->id = $obj->rowid;
+                		$this->ref = $obj->rowid; // use for next prev refs
+                		
+                		$this->nom = $contact->name;
+                		$this->prenom = $contact->firstname;
+                		$this->civilite = $contact->civilite_id;
+                		$this->socid = $contact->socid;
+                		$this->socname = $contact->socname;
+                		$this->fonction = $contact->poste;
+                		$this->tel1 = $contact->phone_pro;
+                		$this->tel2 = $contact->phone_mobile;
+                		$this->mail = $contact->email;
+                		$this->note = $obj->note;
+                		$this->fk_socpeople = $obj->fk_socpeople;
+                	}
+                }
+                else
+              {  
+	                $this->id = $obj->rowid;
+	                $this->ref = $obj->rowid; // use for next prev refs
+	                $this->nom = $obj->nom;
+	                $this->prenom = $obj->prenom;
+	                $this->civilite = $obj->civilite;
+	                $this->socid = $obj->socid;
+	                $this->socname = $obj->socname;
+	                $this->fonction = $obj->fonction;
+	                $this->tel1 = $obj->tel1;
+	                $this->tel2 = $obj->tel2;
+	                $this->mail = $obj->mail;
+	                $this->note = $obj->note;
+	                $this->fk_socpeople = 0;
+              	}
                 
 	    }
             $this->db->free($resql);
@@ -208,13 +239,13 @@ class Agefodd_stagiaire extends CommonObject
 		$sql = "SELECT";
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilite,";
-		$sql.= " s.rowid, s.nom, s.prenom, s.fk_c_civilite, s.fk_soc, s.fonction,";
-		$sql.= " s.tel1, s.tel2, s.mail, s.note";
+		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON s.fk_soc = so.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-		$sql.= " ON s.fk_c_civilite = civ.rowid";
+		$sql.= " ON s.civilite = civ.code";
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 	
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -233,6 +264,7 @@ class Agefodd_stagiaire extends CommonObject
                 $this->socname = $obj->socname;
                 $this->tel1 = $obj->tel1;
                 $this->mail = $obj->mail;
+                $this->fk_socpeople = $obj->fk_socpeople;
 	    }
             $this->db->free($resql);
 
@@ -317,14 +349,15 @@ class Agefodd_stagiaire extends CommonObject
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire as s SET";
 		$sql.= " s.nom='".$this->nom."',";
 		$sql.= " s.prenom='".$this->prenom."',";
-		$sql.= " s.fk_c_civilite='".$this->civilite."',";
+		$sql.= " s.civilite='".$this->civilite."',";
         $sql.= " s.fk_user_mod='".$user."',";
         $sql.= " s.fk_soc='".$this->socid."',";
         $sql.= " s.fonction='".$this->fonction."',";
         $sql.= " s.tel1='".$this->tel1."',";
         $sql.= " s.tel2='".$this->tel2."',";
         $sql.= " s.mail='".$this->mail."',";
-        $sql.= " s.note='".$this->note."'";
+        $sql.= " s.note='".$this->note."',";
+        $sql.= " s.fk_socpeople='".$this->fk_socpeople."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 
 		$this->db->begin();

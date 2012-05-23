@@ -28,7 +28,9 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/trainee/class/agefodd_stagiaire.class.php');
+dol_include_once('/core/class/html.formcompany.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/contact/class/contact.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -75,13 +77,14 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 		$agf->nom = GETPOST('nom','alpha');
 		$agf->prenom = GETPOST('prenom','alpha');
-		$agf->civilite = GETPOST('civilite','alpha');
+		$agf->civilite = GETPOST('civilite_id','alpha');
 		$agf->socid = GETPOST('societe','int');
 		$agf->fonction =GETPOST('fonction','alpha');
 		$agf->tel1 = GETPOST('tel1','alpha');
 		$agf->tel2 = GETPOST('tel2','alpha');
 		$agf->mail = GETPOST('mail','alpha');
 		$agf->note = GETPOST('note','alpha');
+		$agf->fk_socpeople = GETPOST('fk_socpeople','int');
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
@@ -116,7 +119,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		$agf->nom = GETPOST('nom','alpha');
 		$agf->prenom = GETPOST('prenom','alpha');
-		$agf->civilite = GETPOST('civilite','alpha');
+		$agf->civilite = GETPOST('civilite_id','alpha');
 		$agf->socid = GETPOST('societe','int');
 		$agf->fonction =GETPOST('fonction','alpha');
 		$agf->tel1 = GETPOST('tel1','alpha');
@@ -127,7 +130,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		if ($result > 0)
 		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
 			exit;
 		}
 		else
@@ -144,11 +147,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	}
 }
 
-if ($action == 'nfcontact' && $user->rights->agefodd->creer)
+if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 {
 	// traitement de l'import d'un contact
 
-	dol_include_once('/contact/class/contact.class.php');
+
 
 	$contact = new Contact($db);
 	$result = $contact->fetch($_POST["contact"]);
@@ -159,19 +162,20 @@ if ($action == 'nfcontact' && $user->rights->agefodd->creer)
 
 		$agf->nom = $contact->name;
 		$agf->prenom = $contact->firstname;
-		$agf->civilite = $contact->civilite;
+		$agf->civilite = $contact->civilite_id;
 		$agf->socid = $contact->socid;
 		$agf->fonction = $contact->poste;
 		$agf->tel1 = $contact->phone_pro;
 		$agf->tel2 = $contact->phone_mobile;
 		$agf->mail = $contact->email;
 		$agf->note = $contact->note;
+		$agf->fk_socpeople = $contact->id;
 
 		$result2 = $agf->create($user->id);
 		
 		if ($result2 > 0)
 		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id."&action=edit");
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id);
 			exit;
 		}
 		else
@@ -191,6 +195,7 @@ if ($action == 'nfcontact' && $user->rights->agefodd->creer)
 llxHeader();
 
 $form = new Form($db);
+$formcompagny = new FormCompany($db);
 
 dol_htmloutput_mesg($mesg);
 
@@ -200,7 +205,7 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 
 	print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="post">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="nfcontact">'."\n";
+	print '<input type="hidden" name="action" value="nfcontact_confirm">'."\n";
 	print '<input type="hidden" name="id" value="'.$id.'">'."\n";
 	print '<table class="border" width="100%">';
 	
@@ -237,31 +242,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td><input name="prenom" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
-
-	// Chargement de la liste des civilités dans $options
-	$sql = "SELECT c.rowid, c.code, c.civilite";
-	$sql.= " FROM ".MAIN_DB_PREFIX."c_civilite as c";
-	$sql.= " WHERE active = 1";
-	$sql.= " ORDER BY c.civilite";
 	
-	$result2 = $db->query($sql);
-	if ($result2)
-	{
-	    $var=True;
-	    $num = $db->num_rows($result2);
-	    
-	    $i = 0;
-	    $options = '';
-	    
-	    while ($i < $num)
-	    {
-		$obj = $db->fetch_object($result2);
-		$options .= '<option value="'.$obj->rowid.'">'.$obj->civilite.'</option>'."\n";
-		$i++;
-	    }
-	    $db->free($result2);
-	}
-	print '<td><select class="flat" name="civilite">'."\n".$options."\n".'</select></td>';
+	print '<td>'.$formcompagny->select_civility().'</td>';
 	print '</tr>';
 	
 	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
@@ -339,63 +321,118 @@ else
 				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
+				
 				print '<input type="hidden" name="id" value="'.$id.'">';
 
 				print '<table class="border" width="100%">';
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 				print '<td>'.$agf->id.'</td></tr>';
-
-				print '<tr><td>'.$langs->trans("Lastname").'</td>';
-				print '<td><input name="nom" class="flat" size="50" value="'.strtoupper($agf->nom).'"></td></tr>';
-
-				print '<tr><td>'.$langs->trans("Firstname").'</td>';
-				print '<td><input name="prenom" class="flat" size="50" value="'.ucfirst($agf->prenom).'"></td></tr>';
-
-				print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
 				
-				print '<td>'.ebi_select_civilite($agf->civilite_id).'</td>';
-				print '</tr>';
-				
-				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
-				
-				// Chargement de la liste des sociétés dans $options
-				$sql = "SELECT so.rowid, so.nom";
-				$sql.= " FROM ".MAIN_DB_PREFIX."societe as so";
-				$sql.= " WHERE so.fournisseur = 0";
-				$sql.= " ORDER BY so.nom";
-				
-				$result3 = $db->query($sql);
-				if ($result3)
+				//if contact trainee from contact then display contact inforamtion 
+				if (empty($agf->fk_socpeople))
 				{
-				    $var=True;
-				    $num = $db->num_rows($result3);
-				    $i = 0;
-				    $options = '<option value=""></option>'."\n";
-				    while ($i < $num)
-				    {
-					$obj = $db->fetch_object($result3);
-					if ($obj->rowid == $agf->socid) $selected = ' selected="true"';
-					else $selected = '';
-					$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->nom.'</option>'."\n";
-					$i++;
-				    }
-				    $db->free($result);
-				    print '<select class="flat" name="societe">'."\n".$options."\n".'</select>';
+					print '<tr><td>'.$langs->trans("Lastname").'</td>';
+					print '<td><input name="nom" class="flat" size="50" value="'.strtoupper($agf->nom).'"></td></tr>';
+	
+					print '<tr><td>'.$langs->trans("Firstname").'</td>';
+					print '<td><input name="prenom" class="flat" size="50" value="'.ucfirst($agf->prenom).'"></td></tr>';
+	
+					print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
+					
+					print '<td>'.$formcompagny->select_civility($agf->civilite).'</td>';
+					print '</tr>';
+					
+					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
+					
+					// Chargement de la liste des sociétés dans $options
+					$sql = "SELECT so.rowid, so.nom";
+					$sql.= " FROM ".MAIN_DB_PREFIX."societe as so";
+					$sql.= " WHERE so.fournisseur = 0";
+					$sql.= " ORDER BY so.nom";
+					
+					$result3 = $db->query($sql);
+					if ($result3)
+					{
+					    $var=True;
+					    $num = $db->num_rows($result3);
+					    $i = 0;
+					    $options = '<option value=""></option>'."\n";
+					    while ($i < $num)
+					    {
+						$obj = $db->fetch_object($result3);
+						if ($obj->rowid == $agf->socid) $selected = ' selected="true"';
+						else $selected = '';
+						$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->nom.'</option>'."\n";
+						$i++;
+					    }
+					    $db->free($result);
+					    print '<select class="flat" name="societe">'."\n".$options."\n".'</select>';
+					}
+					print '</td></tr>';
+					
+					print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
+					print '<td><input name="fonction" class="flat" size="50" value="'.$agf->fonction.'"></td></tr>';
+					
+					print '<tr><td>'.$langs->trans("Phone").'</td>';
+					print '<td><input name="tel1" class="flat" size="50" value="'.$agf->tel1.'"></td></tr>';
+					
+					print '<tr><td>'.$langs->trans("Mobile").'</td>';
+					print '<td><input name="tel2" class="flat" size="50" value="'.$agf->tel2.'"></td></tr>';
+					
+					print '<tr><td>'.$langs->trans("Mail").'</td>';
+					print '<td><input name="mail" class="flat" size="50" value="'.$agf->mail.'"></td></tr>';
 				}
-				print '</td></tr>';
+				else
+				{
+					print '<input type="hidden" name="fk_socpeople" value="'.$agf->fk_socpeople.'">';
+					print '<tr><td>'.$langs->trans("Lastname").'</td>';
+					print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
+					print '<input type="hidden" name="nom" value="'.$agf->nom.'">';
+					
+					print '<tr><td>'.$langs->trans("Firstname").'</td>';
+					print '<td>'.ucfirst($agf->prenom).'</td></tr>';
+					print '<input type="hidden" name="prenom" value="'.$agf->prenom.'">';
+					
+					print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
+					
+					$contact_static= new Contact($db);
+					$contact_static->civilite_id = $agf->civilite;
+					
+					print '<td>'.$contact_static->getCivilityLabel().'</td></tr>';
+					print '<input type="hidden" name="civilite_id" value="'.$agf->civilite.'">';
+					
+					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
+					if ($agf->socid)
+					{
+						print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
+						print '<input type="hidden" name="societe" value="'.$agf->socid.'">';
+						print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
+					}
+					else
+					{
+						print '&nbsp;';
+						print '<input type="hidden" name="societe" value="">';
+					}
+					print '</td></tr>';
+					
+					print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
+					print '<td>'.$agf->fonction.'</td></tr>';
+					print '<input type="hidden" name="fonction" value="'.$agf->fonction.'">';
+					
+					print '<tr><td>'.$langs->trans("Phone").'</td>';
+					print '<td>'.dol_print_phone($agf->tel1).'</td></tr>';
+					print '<input type="hidden" name="tel1" value="'.$agf->tel1.'">';
+					
+					print '<tr><td>'.$langs->trans("Mobile").'</td>';
+					print '<td>'.dol_print_phone($agf->tel2).'</td></tr>';
+					print '<input type="hidden" name="tel2" value="'.$agf->tel1.'">';
+					
+					print '<tr><td>'.$langs->trans("Mail").'</td>';
+					print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
+					print '<input type="hidden" name="mail" value="'.$agf->mail.'">';
+					
+				}
 				
-				print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
-				print '<td><input name="fonction" class="flat" size="50" value="'.$agf->fonction.'"></td></tr>';
-				
-				print '<tr><td>'.$langs->trans("Phone").'</td>';
-				print '<td><input name="tel1" class="flat" size="50" value="'.$agf->tel1.'"></td></tr>';
-				
-				print '<tr><td>'.$langs->trans("Mobile").'</td>';
-				print '<td><input name="tel2" class="flat" size="50" value="'.$agf->tel2.'"></td></tr>';
-				
-				print '<tr><td>'.$langs->trans("Mail").'</td>';
-				print '<td><input name="mail" class="flat" size="50" value="'.$agf->mail.'"></td></tr>';
-
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
@@ -408,6 +445,10 @@ else
 				print '<tr><td align="center" colspan=2>';
 				print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
+				if (!empty($agf->fk_socpeople))
+				{
+					print '<a class="butAction" href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->fk_socpeople.'">'.$langs->trans('AgfModifierFicheContact').'</a>';
+				}
 				print '</td></tr>';
 				print '</table>';
 				print '</form>';
@@ -430,15 +471,27 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 				print '<td>'.$form->showrefnav($agf,'id	','',1,'rowid','id').'</td></tr>';
-
-				print '<tr><td>'.$langs->trans("Lastname").'</td>';
-				print '<td>'.strtoupper($agf->nom).'</td></tr>';
-
+				
+				if (!empty($agf->fk_socpeople))
+				{
+					print '<tr><td>'.$langs->trans("Lastname").'</td>';
+					print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
+				}
+				else
+				{
+					print '<tr><td>'.$langs->trans("Lastname").'</td>';
+					print '<td>'.strtoupper($agf->nom).'</td></tr>';
+				}
+					
 				print '<tr><td>'.$langs->trans("Firstname").'</td>';
 				print '<td>'.ucfirst($agf->prenom).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
-				print '<td>'.$agf->civilite_code.'</td></tr>';
+				
+				$contact_static= new Contact($db);
+				$contact_static->civilite_id = $agf->civilite;
+				
+				print '<td>'.$contact_static->getCivilityLabel().'</td></tr>';
 				
 				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 				if ($agf->socid)
@@ -452,11 +505,11 @@ else
 				}
 				print '</td></tr>';
 				
-				print '<tr><td>'.$langs->trans("Phone").'</td>';
-				print '<td>'.dol_print_phone($agf->tel1).'</td></tr>';
-				
 				print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
 				print '<td>'.$agf->fonction.'</td></tr>';
+				
+				print '<tr><td>'.$langs->trans("Phone").'</td>';
+				print '<td>'.dol_print_phone($agf->tel1).'</td></tr>';
 				
 				print '<tr><td>'.$langs->trans("Mobile").'</td>';
 				print '<td>'.dol_print_phone($agf->tel2).'</td></tr>';
