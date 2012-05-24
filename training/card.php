@@ -564,14 +564,15 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
 	
-	if ($user->rights->agefodd->creer)
+	
+	/*if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=clone&id='.$id.'">'.$langs->trans('ToClone').'</a>';
 	}
 	else
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('ToClone').'</a>';
-	}
+	}*/
 	
 	if ($user->rights->agefodd->creer)
 	{

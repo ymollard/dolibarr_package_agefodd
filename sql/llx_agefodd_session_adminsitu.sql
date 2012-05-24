@@ -23,7 +23,7 @@
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
   rowid int(11) NOT NULL auto_increment,
-  fk_agefodd_session_admlevel int(11) NOT NULL,
+  fk_agefodd_session_admlevel int(11) NOT NULL default '0',
   fk_agefodd_session int(11) NOT NULL,
   intitule varchar(100) default NULL,
   delais_alerte int(11) NOT NULL,

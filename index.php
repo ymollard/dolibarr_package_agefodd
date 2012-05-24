@@ -113,8 +113,6 @@ for ($i=0; $i < $num; $i++)
 	print '<tr class="liste"><td>';
 	print '<a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->line[$i]->idforma.'">';
 	print img_object($langs->trans("AgfShowDetails"),"service").' '.$agf->line[$i]->idforma.'</a></td>';
-	//print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num *100)/$nb_total_session)).'</td></tr>';
-	// On calcul le % en focntion du nombre d'heure de cette session sur le nombre d'heure total
 	print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">'.$agf->line[$i]->num.' '.sprintf("(%02.1f%%)", (($agf->line[$i]->num * $agf->line[$i]->duree * 100)/$total_heures) ).'</td></tr>';
 }
 print "</table>";
@@ -133,68 +131,46 @@ print '<td width="50px" align="right">Nombre</td></tr>';
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(0);
 print '<td colspan="2" >sessions en cours</td><td align="right">';	
-print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
-
-$agf1 = new Agefodd_sessadm($db);
+print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 // tâches en retard
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="red">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $resql = $agf->fetch_tache_en_retard(0);
+$nbre = count($agf->line);
 print '<td>'.$langs->trans("AgfAlertLevel0").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'"?filtre=0">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;</td></tr>' ;	
 
 // Taches urgentes (3 jours avant limite)
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="orange">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
-
-$agf1->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 3, 1);
-$nbre = count($agf1->line);
-print '<td >'.$langs->trans("AgfAlertLevel1").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=1">'.$nbre.'</a>&nbsp;</td></tr>' ;	
-// $resql = $agf->fetch_tache_en_retard(3);
-// if ($resql)
-// {	
-// 	print '<td >'.$langs->trans("AgfAlertLevel1").'</td><td align="right">';
-// 	print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=3">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
-// 	$db->free($resql);
-// }
-// else dol_print_error($db);
+$agf->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 3, 1);
+$nbre = count($agf->line);
+print '<td>'.$langs->trans("AgfAlertLevel1").'</td><td align="right">';
+if ($nbre!=0) print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;';
+else print '0&nbsp;';
+print '</td></tr>';
 
 // Taches à planifier (8 jours avant limite)
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="#ffe27d">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
-$agf1->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 8, 3);
-$nbre = count($agf1->line);
+$agf->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 8, 3);
+$nbre = count($agf->line);
 print '<td >'.$langs->trans("AgfAlertLevel2").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=2">'.$nbre.'</a>&nbsp;</td></tr>' ;	
-// $resql = $agf->fetch_tache_en_retard(5);
-// if ($resql)
-// {	
-// 	print '<td >'.$langs->trans("AgfAlertLevel2").'</td><td align="right">';
-// 	print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=5">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
-// 	$db->free($resql);
-// }
-// else dol_print_error($db);
-
+if ($nbre!=0) print print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;';
+else print '0&nbsp;';
+print '</td></tr>';
 
 // tâches en cours
 print '<tr class="liste"><td width="10px">&nbsp;</td><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $resql = $agf->fetch_tache_en_cours();
 print '<td>'.$langs->trans("AgfAlertLevel3").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/s_adm_liste.php',1).'?filtre=3">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 
 // sessions à archiver
 print '<tr class="liste"><td width="10px" valign="top">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $num = $agf->fetch_session_to_archive();
-if ($num > 0)
-{	
-	print '<td colspan="2" >sessions prêtes à être archivées</td><td align="right">';	
-	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=2"">'.$num.'</a>&nbsp;</td></tr>' ;	
-}
-else
-{
-	print '<td colspan="2" >sessions prêtes à être archivées</td><td align="right">';	
-	print '0&nbsp;</td></tr>';
-	
-}
+print '<td colspan="2" >sessions prêtes à être archivées</td><td align="right">';
+if ($num != 0)print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->sessid.'">'.$num.'</a>&nbsp;';	
+else print '0&nbsp;';
+print '</td></tr>';
 
 
 // sessions archivées
@@ -203,7 +179,7 @@ $resql = $agf->fetch_session(1);
 if ($resql)
 {	
 	print '<td colspan="2" >sessions archivées</td><td align="right">';	
-	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=1&mainmenu=agefodd">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=1">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
 	//$db->free($resql);
 }
 else

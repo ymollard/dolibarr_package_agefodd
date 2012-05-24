@@ -196,8 +196,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$result = $agf->fetch($id);
 
 		$agf->formateur = GETPOST('formateur','int');
-		$agf->dated = GETPOST('dadyear','int').'-'.GETPOST('dadmonth','int').'-'.GETPOST('dadday','int');
-		$agf->datef = GETPOST('dafyear','int').'-'.GETPOST('dafmonth','int').'-'.GETPOST('dafday','int');
+		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
+		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->fk_session_place = GETPOST('place','int');
 		$agf->notes = GETPOST('notes','alpha');
 		$result = $agf->update($user->id);
@@ -418,29 +418,46 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 					$actions->datea = dol_time_plus_duree($agf->dated,$line->alerte,'d');
 					$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
-					$actions->datef = $agf->datef;
-				
+					
+					if ($actions->datea > $agf->datef)
+					{
+						$actions->datef = dol_time_plus_duree($actions->datea,7,'d');
+					}
+					else
+					{
+						$actions->datef = $agf->datef;
+					}
 
 					$actions->fk_agefodd_session_admlevel = $line->rowid;
 					$actions->fk_agefodd_session = $agf->id;
 					$actions->delais_alerte = $line->alerte;
 					$actions->intitule = $line->intitule;
 					$actions->indice = $line->indice;
+					$actions->archive = 0;
 					$actions->level_rank = $line->level_rank;
-					$actions->fk_parent_level = $line->fk_parent_level;  //TODO : this is not the good parent, must be parent of admin situ and not aprent of admin level
+					$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
 					$result3 = $actions->create($user->id);
 
 					if ($result3 < 0) {
-						dol_syslog("agefodd:session:card error=".$result3->error, LOG_ERR);
-						$mesg .= $result3->error;
+						dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
+						$mesg .= $actions->error;
 						$error++;
 					}
+				}
+				
+				//Caculate the new parent level
+				$action_static = new Agefodd_sessadm($db);
+				$result4 = $action_static->setParentActionId($agf->id);
+				if ($result4 < 0) {
+					dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
+					$mesg .= $action_static->error;
+					$error++;
 				}
 			}
 			else
 			{
-				dol_syslog("agefodd:session:card error=".$result2->error, LOG_ERR);
-				$mesg .= $result2->error;
+				dol_syslog("agefodd:session:card error=".$admlevel->error, LOG_ERR);
+				$mesg .= $admlevel->error;
 				$error++;
 			}
 		}
@@ -779,12 +796,12 @@ else
 							if ($calendrier->line[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
 							{
 								print '<td  width="20%">'.$langs->trans("AgfPeriodDate").' ';
-								$form->select_date($calendrier->line[$i]->date, 'date','','','','date');
+								$form->select_date($calendrier->line[$i]->date, 'date','','','','obj_update_'.$i);
 								print '</td>';
 								print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
-								$form->select_date($calendrier->line[$i]->heured, 'dated',1,1,0,'dated',1);
+								$form->select_date($calendrier->line[$i]->heured, 'dated',1,1,0,'obj_update_'.$i,1);
 								print ' - '.$langs->trans("AgfPeriodTimeE").' ';
-								$form->select_date($calendrier->line[$i]->heuref, 'datef',1,1,0,'datef',1);
+								$form->select_date($calendrier->line[$i]->heuref, 'datef',1,1,0,'obj_update_'.$i,1);
 								print '</td>';
 						
 								if ($user->rights->agefodd->modifier)
@@ -853,13 +870,13 @@ else
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 						print '<input type="hidden" name="periodid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 						print '<td  width="300px">'.$langs->trans("AgfPeriodDate").' ';
-						$form->select_date($agf->dated, 'date','','','','date');
+						$form->select_date($agf->dated, 'date','','','','newperiod');
 						print '</td>';
 						print '<td width="400px">'.$langs->trans("AgfPeriodTimeB").' ';
-						$form->select_date($agf->dated, 'dated',1,1,0,'dated',1);
+						$form->select_date($agf->dated, 'dated',1,1,0,'newperiod',1);
 						print '</td>';
 						print '<td width="400px">'.$langs->trans("AgfPeriodTimeE").' ';
-						$form->select_date($agf->dated, 'datef',1,1,0,'datef',1);
+						$form->select_date($agf->dated, 'datef',1,1,0,'newperiod',1);
 						print '</td>';
 						if ($user->rights->agefodd->modifier)
 						{

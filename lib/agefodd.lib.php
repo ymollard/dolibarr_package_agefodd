@@ -359,21 +359,14 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
  *		str	trie effectué sur le code (code) ou sur le libelle (intitule).
  *    \return	str	la chaine formatée
  */
-function ebi_select_action_session_adm($selectid='', $name='action_level', $excludeid='')
+function ebi_select_action_session_adm($selectid='', $html_name='action_level', $excludeid='')
 {
 	global $db;
 
  	$sql = "SELECT";
 	$sql.= " t.rowid,";
 	$sql.= " t.level_rank,";
-	$sql.= " t.fk_parent_level,";
-	$sql.= " t.indice,";
-	$sql.= " t.intitule,";
-	$sql.= " t.delais_alerte,";
-	$sql.= " t.fk_user_author,";
-	$sql.= " t.datec,";
-	$sql.= " t.fk_user_mod,";
-	$sql.= " t.tms";
+	$sql.= " t.intitule";
     $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as t";
     if ($excludeid!='') { $sql.= ' WHERE t.rowid<>"'.$excludeid.'"'; }
     $sql.= " ORDER BY t.indice";
@@ -397,7 +390,56 @@ function ebi_select_action_session_adm($selectid='', $name='action_level', $excl
 			$i++;
 		}
 		$db->free($result);
-		return '<select class="flat" style="width:300px" name="'.$name.'">'."\n".$options."\n".'</select>'."\n";
+		return '<select class="flat" style="width:300px" name="'.$html_name.'">'."\n".$options."\n".'</select>'."\n";
+	}
+	else
+	{
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
+
+/**
+*  affiche un champs select contenant la liste des action des session disponibles par session.
+*
+*  @param	$session_id  int	    L'id de la session
+*  @param	$selectid  int	    	Id de la session selectionner
+*  @param	$html_name  string	    Name of HTML control
+*  @return string          			The HTML control
+*/
+function ebi_select_action_session($session_id=0, $selectid='', $html_name='action_level')
+{
+	global $db;
+
+	$sql = "SELECT";
+	$sql.= " t.rowid,";
+	$sql.= " t.level_rank,";
+	$sql.= " t.intitule";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as t";
+	$sql.= ' WHERE t.fk_agefodd_session="'.$session_id.'"';
+	$sql.= " ORDER BY t.indice";
+
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$var=True;
+		$num = $db->num_rows($result);
+		$i = 0;
+		$options = '<option value=""></option>'."\n";
+
+		while ($i < $num)
+		{
+			$obj = $db->fetch_object($result);
+			if ($obj->rowid == $selectid) $selected = ' selected="true"';
+			else $selected = '';
+			$strRank=str_repeat('-',$obj->level_rank);
+			$options .= '<option value="'.$obj->rowid.'"'.$selected.'>';
+			$options .= $strRank.' '.stripslashes($obj->intitule).'</option>'."\n";
+			$i++;
+		}
+		$db->free($result);
+		return '<select class="flat" style="width:300px" name="'.$html_name.'">'."\n".$options."\n".'</select>'."\n";
 	}
 	else
 	{
@@ -767,6 +809,33 @@ function ebi_get_adm_level_number()
 	}
 }
 
+/**
+ *    \brief	Calcule le nombre de regroupement par premier niveau des tâches par session
+ *    \param	$sessionid int	id de la session
+ *    \return	str	nbre de niveaux
+ */
+function ebi_get_level_number($session)
+{
+	global $db;
+
+	$sql = "SELECT l.rowid, l.level_rank";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as l";
+	$sql.= " WHERE l.level_rank = 0 AND l.fk_agefodd_session=".$session;
+
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$db->free($result);
+		return $num;
+	}
+	else
+	{
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
 
 /**
  *    \brief	Calcule le nombre de regroupement par premier niveau terminés pour une session donnée
@@ -777,16 +846,9 @@ function ebi_get_adm_lastFinishLevel($sessid)
 {
 	global $db;
 	
-	/*
-	$sql = "SELECT COUNT(s.indice) as level";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
-	$sql.= " WHERE s.top_level = 'Y' AND s.datef != '0000-00-00 00:00:00'";
-	$sql.= " AND fk_agefodd_session = ".$sessid;
-	$sql.= " GROUP BY s.indice ORDER BY s.indice DESC LIMIT 1";
-	*/
 	$sql = "SELECT COUNT(*) as level";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
-	$sql.= " WHERE s.level_rank = 0 AND s.datef != '0000-00-00 00:00:00'";
+	$sql.= ' WHERE s.level_rank = 0 AND s.datef < '.$db->idate(dol_now()).' ';
 	$sql.= " AND fk_agefodd_session = ".$sessid;
 
 	$result = $db->query($sql);
@@ -1010,6 +1072,65 @@ function ebi_get_adm_get_next_indice_action($id)
 	else
 	{
 		
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
+/**
+ *    \brief	Calcule le next number d'indice pour une action
+ *    \param	int	rowid du niveaux
+ *    \param	int	sessionid Id de la sessino
+ *    \return	str	nbre d d'action
+ */
+function ebi_get_next_indice_action($id,$sessionid)
+{
+	global $db;
+
+	$sql = "SELECT MAX(s.indice) as nb_action";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
+	$sql.= " WHERE fk_parent_level=".$id;
+	$sql.= " AND fk_agefodd_session=".$sessionid;
+
+	dol_syslog("ebi_get_get_next_indice_action sql=".$sql, LOG_DEBUG);
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$obj = $db->fetch_object($result);
+		$db->free($result);
+		if (!empty($obj->nb_action))
+		{
+			return intval(intval($obj->nb_action) + 1);
+		}
+		else
+		{
+			$sql = "SELECT MAX(s.indice) as nb_action";
+			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
+			$sql.= " WHERE fk_parent_level=(SELECT fk_parent_level FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu WHERE rowid=".$id." AND fk_agefodd_session=".$sessionid.")";
+			$sql.= " AND fk_agefodd_session=".$sessionid;
+				
+			dol_syslog("ebi_get_get_next_indice_action sql=".$sql, LOG_DEBUG);
+			$result = $db->query($sql);
+			if ($result)
+			{
+				$num = $db->num_rows($result);
+				$obj = $db->fetch_object($result);
+					
+				$db->free($result);
+				return intval(intval($obj->nb_action) + 1);
+			}
+			else
+			{
+					
+				$error="Error ".$db->lasterror();
+				return -1;
+			}
+		}
+	}
+	else
+	{
+
 		$error="Error ".$db->lasterror();
 		return -1;
 	}

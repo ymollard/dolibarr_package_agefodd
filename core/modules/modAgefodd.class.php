@@ -91,61 +91,6 @@ class modAgefodd extends DolibarrModules
 		$this->const = array();			// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 0 or 'allentities')
 		$r=0;
 		
-		$this->const[$r][0] = "AGF_ORGANISME_NAME";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "XXXXXXX";
-		$this->const[$r][3] = 'Organisme Name';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_NUM";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "XXXXXXX";
-		$this->const[$r][3] = 'Organisme Number';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_PREF";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "Hérault";
-		$this->const[$r][3] = 'Organisme Preference';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_SIEGE";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "Montpellier";
-		$this->const[$r][3] = 'Organisme Localisation';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_BASELINE";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = $conf->global->MAIN_INFO_SOCIETE_WEB;
-		$this->const[$r][3] = 'Organisme baseline';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_RESPONSABLE";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = 'Marc DACIER';
-		$this->const[$r][3] = 'Organisme Leader';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_REPRESENTANT";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = 'Paul Pitron';
-		$this->const[$r][3] = 'Organisme Sales Man';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
 		$r++;
 		$this->const[$r][0] = "AGF_USE_STAGIAIRE_TYPE";
 		$this->const[$r][1] = "chaine";
@@ -162,13 +107,6 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
-		$r++;
-		$this->const[$r][0] = "AGF_ORGANISME_LOGO";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = DOL_DOCUMENT_ROOT_ALT.'/agefodd/img/logo.jpg';
-		$this->const[$r][3] = 'logo';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
 		
 		$r++;
 		$this->const[$r][0] = "AGF_UNIVERSAL_MASK";
@@ -343,7 +281,7 @@ class modAgefodd extends DolibarrModules
 								'type'=>'left',
 								'titre'=>'AgfMenuSessArchList',
 								'mainmenu'=>'agefodd',
-								'url'=>'/agefodd/session/list.php?arch=2',
+								'url'=>'/agefodd/session/list.php?arch=1',
 								'langs'=>'agefodd@agefodd',
 								'position'=>203,
 								'enabled'=>1,

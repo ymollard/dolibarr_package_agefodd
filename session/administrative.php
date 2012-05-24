@@ -31,6 +31,7 @@ dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/date.lib.php');
 
 
 // Security check
@@ -75,11 +76,10 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 		$result = $agf->fetch($actid);
 
-		$agf->datea = GETPOST('dateayear','int').'-'.GETPOST('dateamonth','int').'-'.GETPOST('dateaday','int');
-		$agf->dated = GETPOST('dadyear','int').'-'.GETPOST('dadmonth','int').'-'.GETPOST('dadday','int');
-		$agf->datef = GETPOST('dafyear','int').'-'.GETPOST('dafmonth','int').'-'.GETPOST('dafday','int');
+		$agf->datea = dol_mktime(0,0,0,GETPOST('dateamonth','int'),GETPOST('dateaday','int'),GETPOST('dateayear','int'));
+		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
+		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
-		($agf->datef > '0000-00-00 00:00:00') ? $agf->archive = 1 : $agf->archive = 0;
 		$result = $agf->update($user->id);
 		
 		if ($result > 0)
@@ -105,38 +105,96 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 	}
 }
 
+if ($action == 'update_archive' && $user->rights->agefodd->creer)
+{
+	$agf = new Agefodd_sessadm($db);
+	
+	$result = $agf->fetch($actid);
+	$agf->archive = !($agf->archive);
+	$agf->datef = dol_mktime(0,0,0,idate('m',dol_now()),idate('d',dol_now()),idate('y',dol_now()));
+	$result = $agf->update($user->id);
+	
+	if ($result > 0)
+	{
+		Header ("Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		exit;
+	}
+	else
+	{
+		dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
+	}
+
+}
+	
+
 /*
  * Action create
  */
-
-if ($action == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"] )
 	{
 		$agf = new Agefodd_sessadm($db);
-
-		$agf->fk_agefodd_session_admlevel = GETPOST('admlevel','int');
+		
+		$parent_level = GETPOST('action_level','int');
+		
+		$agf->fk_agefodd_session_admlevel = 0;
 		$agf->fk_agefodd_session = $id;
-		$agf->delais_alerte = GETPOST('alerte','alpha');
+		$agf->delais_alerte=0;
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->indice = GETPOST('indice','int');
-		$agf->top_level = GETPOST('toplevel','int');
-		$agf->datea = GETPOST('dateayear','int').'-'.GETPOST('dateamonth','int').'-'.GETPOST('dateaday','int');
-		$agf->dated = GETPOST('dadyear','int').'-'.GETPOST('dadmonth','int').'-'.GETPOST('dadday','int');
+		$agf->datea = dol_mktime(0,0,0,GETPOST('dateamonth','int'),GETPOST('dateaday','int'),GETPOST('dateayear','int'));
+		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
+		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
-		$result = $agf->create($user->id);
-
-		if ($result > 0)
+		
+		//Set good indice and level rank
+		if (!empty($parent_level))
 		{
-			Header ( 'Location: administrative.php?id='.$id.'&action=edit&actid='.$agf->id);
-			exit;
+			$agf->fk_parent_level = $parent_level;
+		
+			$agf_static = new Agefodd_sessadm($db);
+			$result_stat = $agf_static->fetch($parent_level);
+		
+			if ($result_stat > 0)
+			{
+				if (!empty($agf_static->id))
+				{
+					$agf->level_rank = $agf_static->level_rank + 1;
+					$agf->indice = ebi_get_next_indice_action($agf_static->id,$id);
+				}
+				else
+				{	//no parent : This case may not occur but we never know
+					$agf->indice = (ebi_get_level_number($id) + 1) . '00';
+					$agf->level_rank = 0;
+				}
+			}
+			else
+			{
+				dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
+				$mesg .= '<div class="error">'.$result_stat->error.'</div>';
+			}
 		}
 		else
+		{
+			//no parent
+			$agf->fk_parent_level = 0;
+			$agf->indice = (ebi_get_level_number($id) + 1) . '00';
+			$agf->level_rank = 0;
+		}
+		
+		$result = $agf->create($user->id);
+
+		if ($result < 0)
 		{
 			dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
-
+		else
+		{
+			Header ( "Location: administrative.php?id=".$id);
+			exit;
+		}
 	}
 	else
 	{
@@ -171,8 +229,52 @@ if ($user->rights->agefodd->creer)
 		
 		$agf = new Agefodd_sessadm($db);
 		
+		
+		// Affichage en mode "creation"
+		if ($action == 'create')
+		{
+			print '<form name="create_confirm" action="administrative.php" method="post">'."\n";
+			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+			print '<input type="hidden" name="action" value="create_confirm">'."\n";
+			print '<input type="hidden" name="id" value="'.$id.'">'."\n";
+			
+			print '<table class="border" width="100%">';
+				
+			print '<tr><td>'.$langs->trans("AgfSessAdmIntitule").'</td>';
+			print '<td><input name="intitule" class="flat" size="50" value=""/></td></tr>';
+			
+			print '<tr><td valign="top">'.$langs->trans("AgfParentLevel").'</td>';
+			print '<td>'.ebi_select_action_session($id).'</td></tr>';
+			
+			print '<tr><td valign="top">'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
+			$form->select_date('','datea','','','','create_confirm');
+			print '</td></tr>';
+				
+			print '<tr><td valign="top">'.$langs->trans("AgfSessDateDebut").'</td><td>';
+			$form->select_date('', 'dad','','','','create_confirm');
+			print '</td></tr>';
+			
+			print '<tr><td valign="top">'.$langs->trans("AgfSessDateFin").'</td><td>';
+			$form->select_date('', 'daf','','','','create_confirm');
+			print '</td></tr>';
+				
+			print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
+			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+			
+			print '</table>';
+			print '</div>';
+				
+			print '<table style=noborder align="right">';
+			print '<tr><td align="center" colspan=2>';
+			print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+			print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'"> &nbsp; ';
+			print '</td></tr>';
+				
+			print '</table>';
+			print '</form>';
+		}
 		// Affichage en mode "édition"
-		if ($action == 'edit')
+		elseif ($action == 'edit')
 		{
 			$result = $agf->fetch($actid);
 			
@@ -196,55 +298,17 @@ if ($user->rights->agefodd->creer)
 			print '<td td width="300px">'.$langs->trans("Ref").'</td><td>'.$agf->id.'</td></tr>';
 			
 			print '<tr><td>'.$langs->trans("AgfSessAdmIntitule").'</td>';
-			print '<td>'.$agf->intitule.'</a></td></tr>';
-
-			/*//Date d'alerte
-			$sec_before_alert = ($agf->delais_alerte * 86400);
-			$today_mktime = mktime(0, 0, 0, date("m"), date("d"), date("y"));
-			if ($sessinfo->dated > '0000-00-00 00:00:00') $alertday_mktime = (mysql2timestamp($sessinfo->dated) - $sec_before_alert);
-			else $alertday_mktime = $today_mktime;
-*/
-			//print '<tr><td>'.$langs->trans("AgfDebutSession").'</td>';
-			//print '<td>'.dol_print_date($agf->dated).'</td></tr>';
-			
-			print '<script type="text/javascript">'."\n";
-			print 'function DivStatus( div_){'."\n";
-			print '	var Obj = document.getElementById( div_);'."\n";
-			print '	if( Obj.style.display=="none"){'."\n";
-			print '		Obj.style.display ="block";'."\n";
-			print '	}'."\n";
-			print '	else{'."\n";
-			print '		Obj.style.display="none";'."\n";
-			print '	}'."\n";
-			print '}'."\n";
-			print '</script>'."\n";
+			print '<td>'.$agf->intitule.'</td></tr>';
 
 			print '<tr><td valign="top">'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
-			print dol_print_date($agf->datea);
-			print '<a href="javascript:DivStatus(\'datea\');" title="afficher detail""> ('.$langs->trans("AgfDefinir").')</a>';
-			print '<span id="datea" style="display:none;">';
 			$form->select_date($agf->datea,'datea','','','','update');
-			print '</span>';
 			print '</td></tr>';
 			
-			print '<tr><td valign="top">'.$langs->trans("AgfSessDateDebut").' ('.$langs->trans("AgfPar").' '.$user->login.')</td><td>';
+			print '<tr><td valign="top">'.$langs->trans("AgfSessDateDebut").'</td><td>';
 			$form->select_date($agf->dated, 'dad','','','','update');
 			print '</td></tr>';
-			print '<tr><td valign="top">'.$langs->trans("AgfSessDateFin").' ('.$langs->trans("AgfPar").' '.$user->login.')</td><td>';
-			
-			if ($agf->datef == '0000-00-00 00:00:00')
-			{
-			    print $langs->trans("AgfNoDefined");
-			    print '<a href="javascript:DivStatus(\'datef\');" title="afficher detail""> ('.$langs->trans("AgfDefinir").')</a>';
-			    print '<span id="datef" style="display:none;">';
-			    $form->select_date($agf->datef, 'daf','','','','update');
-			    print '</span>';
-			
-			}
-			else
-			{
-			    $form->select_date($datef->datef, 'daf','','','','update');
-			}
+			print '<tr><td valign="top">'.$langs->trans("AgfSessDateFin").'</td><td>';
+			$form->select_date($agf->datef, 'daf','','','','update');
 			print '</td></tr>';
 			
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -274,87 +338,59 @@ if ($user->rights->agefodd->creer)
 			print ebi_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
 			print '</div>';
 
-			print '<table width="100%" style="border:0px">';
+			print '<table width="100%" class="border">';
 
 			if ($result)
 			{
+				
 				$i=0;
 				foreach ($sess_adm->line as $line)
-				{
-					/*$infos = new Agefodd_sessadm($db);
-					$result3 = $infos->fetch_admin_action_rens($admlevel->line[$i]->rowid, $id);*/
-				
-					$bgcolor = '#d5baa8';
-					
-					// Calcul de la date d'alerte
-					/*$today_mktime = dol_mktime(0, 0, 0, date("m"), date("d"), date("y"));
-					if ($infos->datea) 
-					{
-						$alertday = $line->datea;
-						$alertday_mktime = ($infos->datea);
-					}
-					else
-					{
-						$sec_before_alert = ($admlevel->line[$i]->alerte * 86400);
+				{				
 						
-						if ($sessinfo->dated > '0000-00-00 00:00:00') $alertday_mktime = (mysql2timestamp($sessinfo->dated) + $sec_before_alert);
-						else $alertday_mktime = $today_mktime;
-						
-						$alertday = date("Y-m-d H:i:s", $alertday_mktime);
-
-						// Si delais alerte = 0 (debut de la formation par exemple)
-						if ($admlevel->line[$i]->alerte == 0) $alertday = $sessinfo->dated;
-					}
-					
-					if (!empty($alertday_mktime))
-					{
-						if (($alertday_mktime - (8 * 86400)) < $today_mktime) $bgcolor = '#ffe27d';
-						if (($alertday_mktime - (3 * 86400)) < $today_mktime) $bgcolor = 'orange';
-						if ($alertday_mktime < $today_mktime) $bgcolor = 'red';
-						
-					}
-					//if (empty($sessinfo->dated)) $bgcolor = 'yellow';
-					if ($infos->dated > '0000-00-00 00:00:00' && $infos->datef > '0000-00-00 00:00:00')
-					{
-						$bgcolor = 'green';
-						$verif = 'OK';
-					}*/
-					
 					if ($line->level_rank == '0' && $i!=0)
 					{
-						print '</table></td></tr>';
-						print '<tr><td>&nbsp;</td></tr>';
+						print '<tr  style="border-style:none"><td colspan="6" style="border-style:none">&nbsp;</td></tr>';
 					}
 
 					if ($line->level_rank == '0')
 					{
-						print '<tr><td colspan=6><table width="100%">';
-						print '<tr align="center">';
-						print '<td colspan=4 >&nbsp;</td><td width="150px">'.$langs->trans("AgfLimitDate").'</td>';
-						print '<td width="150px">'.$langs->trans("AgfDateDebut").'</td>';
-						print '<td width="150px">'.$langs->trans("AgfDateFin").'</td></tr>';
-						print '<table><table class="border" width="100%">';
+						
+						print '<tr align="center" style="border-style:none">';
+						print '<td colspan="3" style="border-style:none">&nbsp;</td>';
+						print '<td width="150px" style="border-style:none">'.$langs->trans("AgfLimitDate").'</td>';
+						print '<td width="150px" style="border-style:none">'.$langs->trans("AgfDateDebut").'</td>';
+						print '<td width="150px" style="border-style:none">'.$langs->trans("AgfDateFin").'</td>';
+						print '<td style="border-style:none"></td>';
+						print '</tr>';				
 					
 					}
-					print '<tr class="border">';
+					print '<tr style="color:#000000;border:1px;border-style:solid">';
 					
-					// debug
-					//print '<td>alertday_mkt :'.$alertday_mktime.'<br>today_mkt : '.$today_mktime.'<br>sessdated :'.$infosdate->sessdated.'<br>alertday :'.$alertday.'</td>';
-
+					$bgcolor = '#d5baa8'; //Default color
+					
+					
+					//8 day before alert date
+					if (dol_now() > dol_time_plus_duree($line->datea,-8,'d')) $bgcolor = '#ffe27d';
+					
+					//3 day before alert day
+					if (dol_now() > dol_time_plus_duree($line->datea,-3,'d')) $bgcolor = 'orange';
+					
+					// if alert date is past then RED
+					if (dol_now() > $line->datea) $bgcolor = 'red';
+					
+					//if end date is in the past, the task is done
+					if (dol_now() > $line->datef) $bgcolor='green';
+					
+					
 					print '<td width="10px" bgcolor="'.$bgcolor.'">&nbsp;</td>';
-					if ($line->level_rank == '0') print '<td colspan=2" style="border-right: 0px">&nbsp;';
-					else print '<td  style="border-right: 0px" width="20px">&nbsp;</td><td style="border-left: 0px; border-right: 0px">';
-					print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?action=edit&id='.$id.'&actid='.$line->id.'">'.$line->intitule.'</a></td>';
 					
-					/*else
-					{ //TODO : create new action
-						print 'create&id='.$id.'&admlevel='.$admlevel->line[$i]->rowid;
-					}*/
+					print '<td style="border-right-style: none;"><a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?action=edit&id='.$id.'&actid='.$line->id.'">';
+					print str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;',$line->level_rank).$line->intitule.'</a></td>';
 					
 					// Affichage éventuelle des notes
 					if (!empty($line->notes)) 
 					{
-						print '<td class="adminaction" style="border-left: 0px; width: auto; text-align: right" valign="top">';
+						print '<td class="adminaction" style="border-left-style: none; width: auto; text-align: right" valign="top">';
 						print '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
 						print '<span>'.wordwrap(stripslashes($line->notes),50,"<br />",1).'</span></td>';
 					}
@@ -363,12 +399,26 @@ if ($user->rights->agefodd->creer)
 					// Affichage des différentes dates
 					print '<td width="150px" align="center" valign="top">';
 					if ($bgcolor == 'red') print '<font style="color:'.$bgcolor.'">';
-					print dol_print_date($line->datea);
+					print dol_print_date($line->datea,'daytext');
 					if ($bgcolor == 'red') print '</font>';
 					print '</td>';
-					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->dated).'</td>';
-					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->datef).'</td>';
-
+					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->dated,'daytext').'</td>';
+					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->datef,'daytext').'</td>';
+					
+					//Status Line
+					if ($line->archive)
+					{
+						$txtalt=$langs->trans("AgfTerminatedNoPoint");
+						$src_state=dol_buildpath('/agefodd/img/undo.png',1);
+					}
+					else
+					{
+						$txtalt=$langs->trans("AgfTerminatedPoint");
+						$src_state=dol_buildpath('/agefodd/img/done.png',1);
+					}
+					
+					print '<td align="center" valign="top"><a href="'.$_SERVER['PHP_SELF'].'?action=update_archive&id='.$id.'&actid='.$line->id.'"><img alt="'.$txtalt.'" src="'.$src_state.'"/></a></td>';
+					
 					print '</tr>';
 					
 					$i++;
@@ -397,32 +447,24 @@ if ($user->rights->agefodd->creer)
  *
  */
 
-/*
+
 print '<div class="tabsAction">';
 
-if ($action != 'create' && $action != 'edit')
+
+if ($action != 'create' && $action != 'edit' && $action != 'update')
 {
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butAction" href="s_fiche.php?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=create&id='.$id.'">'.$langs->trans('Create').'</a>';
 	}
 	else
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
-	if ($user->rights->agefodd->creer)
-	{
-		print '<a class="butActionDelete" href="s_fiche.php?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
-	}
-	else
-	{
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
-	}
 }
 
 print '</div>';
-*/
-$db->close();
+
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

@@ -374,9 +374,9 @@ class Agefodd_index
 	{
 		global $langs;
 	
-		$sql = "SELECT count(*) as total";
+		$sql = "SELECT rowid,fk_agefodd_session";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_adminsitu";
-		$sql.= " WHERE (datea - INTERVAL ".$jour." DAY) <= NOW() AND archive LIKE 0";
+		$sql.= " WHERE (datea - INTERVAL ".$jour." DAY) <= NOW() AND archive LIKE 0 AND (NOW() < datef)";
 
 		dol_syslog(get_class($this)."::fetch_tache_en_retard sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -384,8 +384,19 @@ class Agefodd_index
 		{
 			if ($this->db->num_rows($resql))
 			{
-				$obj = $this->db->fetch_object($resql);
-				$this->total = $obj->total;
+				$this->line = array();
+				$num = $this->db->num_rows($resql);
+				$i = 0;
+				
+				while( $i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+				
+					$this->line[$i]->rowid = $obj->rowid;
+					$this->line[$i]->sessid = $obj->fk_agefodd_session;
+						
+					$i++;
+				}
 			}			
 			$this->db->free($resql);
 			return 1;
@@ -432,6 +443,68 @@ class Agefodd_index
 			return -1;
 		}
 	}
+	
+	/**
+	 *    \brief	Load object in memory from database
+	 *    \param	id	id admin action (in table agefodd_session_adminsitu)
+	 *    \return    int     <0 if KO, >0 if OK
+	 */
+	function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf=0)
+	{
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
+		$sql.= " s.delais_alerte, s.indice, s.dated, s.datef, s.datea, s.notes,";
+		$sql.= " sess.dated as sessdated, sess.datef as sessdatef,";
+		$sql.= " f.intitule as titre";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as sess";
+		$sql.= " ON s.fk_agefodd_session = sess.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as f";
+		$sql.= " ON sess.fk_formation_catalogue = f.rowid";
+		$sql.= " WHERE s.archive LIKE 0 AND (NOW() < s.datef)";
+		if ( !empty($delais_sup) && !empty($delais_inf) )
+		{
+			if ($delais_sup!=1) $delais_sup_sql= 's.datea - INTERVAL '.$delais_sup.' DAY';
+			else $delais_sup_sql='s.datea';
+			
+			if ($delais_inf!=1) $delais_inf_sql= 's.datea - INTERVAL '.$delais_inf.' DAY';
+			else $delais_inf_sql='s.datea';
+			
+			$sql.= " AND  ( ";
+			$sql.= ' NOW() BETWEEN ('.$delais_sup_sql.') AND ('.$delais_inf_sql.')';
+			$sql.= " )";
+		}
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+	
+		dol_syslog(get_class($this)."::fetch_session_per_dateLimit sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+	
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+	
+				$this->line[$i]->rowid = $obj->rowid;
+				$this->line[$i]->sessid = $obj->fk_agefodd_session;
+					
+				$i++;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 
 	/**
@@ -442,20 +515,13 @@ class Agefodd_index
 	{
 		global $langs;
 	
-		/*
-		$sql = "SELECT count(*) as total";
-		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_adminsitu";
-		$sql.= " WHERE archive LIKE 0 AND top_level LIKE 'Y' AND datef IS NOT NULL";
-		*/
-		
 		// Il faut que toutes les tâches administratives soit crées (top_level);
 		$sql = "SELECT MAX(sa.datea), sa.rowid, sa.fk_agefodd_session";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " ON s.rowid = sa.fk_agefodd_session";
 		$sql.= " WHERE sa.archive LIKE 1";
-		$sql.= " AND sa.top_level LIKE 'Y'";
-		$sql.= " AND sa.datef > '0000-00-00 00:00:00'";
+		$sql.= " AND sa.level_rank=0";
 		$sql.= " AND s.archive LIKE 0";
 		$sql.= " GROUP BY sa.fk_agefodd_session";
 		
@@ -467,14 +533,12 @@ class Agefodd_index
 			if ($num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->rowid = $obj->rowid;
+				$this->sessid = $obj->fk_agefodd_session;
 			}
 			
 			$this->db->free($resql);
 			
 			return $num;
-			//return 1;
-
 		}
 		else
 		{
