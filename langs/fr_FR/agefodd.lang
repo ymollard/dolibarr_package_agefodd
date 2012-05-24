@@ -2,10 +2,10 @@
 CHARSET=UTF-8
 Module103000Name=Gestion Formation
 Module103000Desc=Assistant de Gestion de la Formation dans Dolibarr
-Permission103001=Voir les assortiments
-Permission103002=Modifiée les assortiements 
-Permission103003=Crée les assortiments
-Permission103004=Supprimer les assortiments
+Permission103001=Voir la gestion des formations
+Permission103002=Modifiée les formations
+Permission103003=Crée des formations
+Permission103004=Supprimer les formations
 Agefodd = Assistant de Gestion de la Formation Dans Dolibarr
 AgefoddShort = Gestion de la formation
 AgefoddSetupDesc = Configuration d'Agefodd

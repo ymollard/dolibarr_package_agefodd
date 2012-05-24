@@ -447,7 +447,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 				
 				//Caculate the new parent level
 				$action_static = new Agefodd_sessadm($db);
-				$result4 = $action_static->setParentActionId($agf->id);
+				$result4 = $action_static->setParentActionId($user->id,$agf->id);
 				if ($result4 < 0) {
 					dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
 					$mesg .= $action_static->error;
