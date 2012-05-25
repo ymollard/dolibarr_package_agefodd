@@ -22,16 +22,18 @@
 	\brief		Page permettant la création de la convention de formation au format pdf pour uen structure donnée.
 	\version	$Id$
 */
-require_once(DOL_DOCUMENT_ROOT."/agefodd/core/models/pdf/pdf_document.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/session/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/training/class/agefodd_formation_catalogue.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/contact/class/agefodd_contact.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_convention.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/site/class/agefodd_place.class.php");
+
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_facture.class.php');
+dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+dol_include_once('/core/lib/pdf.lib.php');
 
 
-class agf_pdf_document extends FPDF
+class pdf_convention extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 	
@@ -43,24 +45,27 @@ class agf_pdf_document extends FPDF
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function agf_pdf_document($db)
+	function pdf_convention($db)
 	{
 		global $conf,$langs;
 		
-
+		$langs->load("agefodd@agefodd");
+		
 		$this->db = $db;
-		$this->name = "ebic";
-		$this->description = $langs->trans('Modèle de convention de formation');
+		$this->name = "convention";
+		$this->description = $langs->trans('AgfModPDFConvention');
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
-		$this->page_largeur = 210;
-		$this->page_hauteur = 297;
+		$this->page_largeur = 297;
+		$this->page_hauteur = 210;
 		$this->format = array($this->page_largeur,$this->page_hauteur);
 		$this->marge_gauche=15;
 		$this->marge_droite=15;
 		$this->marge_haute=10;
 		$this->marge_basse=10;
+		$this->unit='mm';
+		$this->oriantation='l';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 
@@ -80,10 +85,12 @@ class agf_pdf_document extends FPDF
 	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
 		global $user,$langs,$conf;
+		
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
 	
 		if (! is_object($outputlangs)) $outputlangs=$langs;
 		// Force output charset to ISO, because, FPDF expect text encoded in ISO
-		$outputlangs->charset_output='ISO-8859-1';
+		//$outputlangs->charset_output='ISO-8859-1';
 
 		$outputlangs->load("main");
 		
@@ -110,7 +117,7 @@ class agf_pdf_document extends FPDF
 		if (file_exists($dir))
 		{
 			// Protection et encryption du pdf
-			if ($conf->global->PDF_SECURITY_ENCRYPTION)
+			/*if ($conf->global->PDF_SECURITY_ENCRYPTION)
 			{
 				$pdf=new FPDI_Protection('P','mm',$this->format);
 				$pdfrights = array('print'); // Ne permet que l'impression du document
@@ -121,7 +128,7 @@ class agf_pdf_document extends FPDF
 			else
 			{
 				$pdf=new FPDI('P','mm',$this->format);
-			}
+			}*/
 
 			//On ajoute les polices "maisons"
 			//define('FPDF_FONTPATH','../../../../agefodd/font/');
@@ -130,7 +137,16 @@ class agf_pdf_document extends FPDF
 			//$pdf->AddFont('Nasalization','','nasalization.php');
 			//$pdf->AddFont('Borg9','','BORG9.php');
 			//$pdf->AddFont('Borg9','I','BORG9i.php');
-
+			
+			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
+			
+			if (class_exists('TCPDF'))
+			{
+				$pdf->setPrintHeader(false);
+				$pdf->setPrintFooter(false);
+			}
+			$pdf->SetFont(pdf_getPDFFont($outputlangs));
+			
 			$pdf->Open();
 			$pagenb=0;
 			

@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,24 +27,20 @@
 $res=@include("../main.inc.php");					// For root directory
 if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
 
-require_once("./lib/agefodd.lib.php");
-require_once("./core/models/pdf/pdf_document.php");
-require_once("./class/agefodd_session.class.php");
-require_once("./class/agefodd_formation_catalogue.class.php");
-require_once("./class/agefodd_facture.class.php");
-require_once("./class/agefodd_contact.class.php");
-require_once("./class/agefodd_convention.class.php");
-require_once("./class/agefodd_session_place.class.php");
-require_once("./class/agefodd_session_calendrier.class.php");
-
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_facture.class.php');
+dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/site/class/agefodd_place.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
 $mesg = '';
 
-$db->begin();
 
 /*
  * Actions delete
@@ -216,6 +213,7 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 llxHeader();
 
 $form = new Form($db);
+dol_htmloutput_mesg($mesg);
 
 $id = $_GET['id'];
 
@@ -225,6 +223,7 @@ $result = $agf_last->fetch_last_conv_per_socity($_GET["socid"]);
 $convid = $_GET['convid'];
 
 
+
 /*
  * Affichage de la fiche convention en mode création
  */
@@ -232,26 +231,7 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 {
 	$sessid = $_GET['id'];
 
-	$h=0;
 	
-	$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$id;
-	$head[$h][1] = $langs->trans("Card");
-	$h++;
-
-	$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_adm.php?id='.$id;
-	$head[$h][1] = $langs->trans("AgfAdmSuivi");
-	$h++;
-
-	$head[$h][0] = DOL_URL_ROOT."/agefodd/s_doc_fiche.php?id=".$id;
-	$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-	$h++;
-
-	$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id;
-	$head[$h][1] = $langs->trans("AgfConvention");
-	$hselected = $h;
-	$h++;
-
-	dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'user');
 
 	$agf = new Agefodd_session($db);
 	$resql = $agf->fetch($id);
@@ -509,32 +489,14 @@ else
 	if ($result)
 	{
 
-		if ($mesg) print $mesg."<br>";
+		$head = session_prepare_head($agf);
+		
+		dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'bill');
 		
 		
 		// Affichage en mode "édition"
 		if ($_GET["action"] == 'edit')
 		{
-			$h=0;
-			
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$id;
-			$head[$h][1] = $langs->trans("Card");
-			$h++;
-	
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_adm.php?id='.$id;
-			$head[$h][1] = $langs->trans("AgfAdmSuivi");
-			$h++;
-	
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id;
-			$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-			$h++;
-
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id;
-			$head[$h][1] = $langs->trans("AgfConvention");
-			$hselected = $h;
-			$h++;
-		
-			dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'user');
 
 			print '<form name="update" action="convention_fiche.php?convid='.$_GET["convid"].'" method="post">'."\n";
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
@@ -591,27 +553,6 @@ else
 		}
 		else
 		{
-			// Affichage en mode "consultation"
-			$h=0;
-			
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fiche.php?id='.$agf->sessid;
-			$head[$h][1] = $langs->trans("Card");
-			$h++;
-	
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_adm.php?id='.$agf->sessid;
-			$head[$h][1] = $langs->trans("AgfAdmSuivi");
-			$h++;
-	
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$agf->sessid;
-			$head[$h][1] = $langs->trans("AgfLinkedDocuments");
-			$h++;
-
-			$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_doc_fiche.php?id='.$id;
-			$head[$h][1] = $langs->trans("AgfConvention");
-			$hselected = $h;
-			$h++;
-
-			dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'user');
 
 			/*
 			* Confirmation de la suppression

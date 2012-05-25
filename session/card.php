@@ -24,10 +24,6 @@
  *  \version		$Id$
  */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
@@ -78,10 +74,10 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$GET_array = explode('-',$id);
-
+	$obsid=GETPOST('opsid','int');
+	
 	$agf = new Agefodd_session_formateur($db);
-	$result = $agf->remove($id);
+	$result = $agf->remove($obsid);
 
 	if ($result > 0)
 	{
@@ -102,14 +98,14 @@ if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agef
 
 if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$GET_array = explode('-',$id);
-
+	$stagerowid=GETPOST('stagerowid','int');
+	
 	$agf = new Agefodd_session($db);
-	$result = $agf->remove_stagiaire($GET_array[0]);
+	$result = $agf->remove_stagiaire($stagerowid);
 
 	if ($result > 0)
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 	else
@@ -125,14 +121,14 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 
 if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$GET_array = explode('-',$id);
-
+	$modperiod=GETPOST('modperiod','int');
+	
 	$agf = new Agefodd_sesscalendar($db);
-	$result = $agf->remove($GET_array[0]);
+	$result = $agf->remove($modperiod);
 	
 	if ($result > 0)
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$GET_array[1]);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 	else
@@ -646,7 +642,7 @@ else
 					if ($_POST["form_remove_x"])
 					{
 						// Param url = id de la ligne formateur dans session - id session 
-						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["opsid"].'-'.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form",'','',1);
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?opsid=".$_POST["opsid"].'&id='.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form",'','',1);
 						if ($ret == 'html') print '<br>';
 					}
 	
@@ -766,7 +762,7 @@ else
 					if ($_POST["period_remove_x"])
 					{
 						// Param url = id de la periode à supprimer - id session 
-						$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?id='.$_POST["modperiod"].'-'.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period",'','',1);
+						$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?modperiod='.$_POST["modperiod"].'&id='.$id,$langs->trans("AgfDeletePeriod"),$langs->trans("AgfConfirmDeletePeriod"),"confirm_delete_period",'','',1);
 						if ($ret == 'html') print '<br>';
 					}
 					print '<div class="tabBar">';
@@ -903,7 +899,7 @@ else
 					if ($_POST["stag_remove_x"])
 					{
 						// Param url = id de la ligne stagiaire dans session - id session 
-						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$_POST["stagerowid"].'-'.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag",'','',1);
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?stagerowid=".$_POST["stagerowid"].'&id='.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag",'','',1);
 						if ($ret == 'html') print '<br>';
 					}
 	

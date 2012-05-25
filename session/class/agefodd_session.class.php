@@ -351,7 +351,7 @@ class Agefodd_session extends CommonObject
         $sql.= " WHERE s.rowid = ".$id;
 		$sql.= " ORDER BY so.nom";
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_societe_per_session sql=".$sql, LOG_DEBUG);
         $resql = $this->db->query($sql);
         if ($resql)
         {

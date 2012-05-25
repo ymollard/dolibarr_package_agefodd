@@ -65,7 +65,7 @@ function session_prepare_head($object)
 	/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfFichePresence");
 	$head[$h][2] = 'presence';
-	$h++;*/
+	$h++;*/ //TODO fiche de presence
 
 	$head[$h][0] = dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfAdmSuivi");
@@ -75,6 +75,11 @@ function session_prepare_head($object)
 	$head[$h][0] = dol_buildpath('/agefodd/session/document.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfLinkedDocuments");
 	$head[$h][2] = 'document';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/session/convention.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfConvention");
+	$head[$h][2] = 'convention';
 	$h++;
 	
 	$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$object->id;

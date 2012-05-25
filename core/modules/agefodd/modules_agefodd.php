@@ -18,13 +18,41 @@
  */
 
 /**
- *		\file       htdocs/core/modules/project/modules_project.php
+ *		\file       agefodd/modules/agefodd/modules_agefodd.php
  *      \ingroup    project
  *      \brief      File that contain parent class for projects models
  *                  and parent class for projects numbering models
  */
 require_once(DOL_DOCUMENT_ROOT."/core/class/commondocgenerator.class.php");
 
+
+/**
+ *  \class      ModelePDFCommandes
+ *  \brief      Classe mere des modeles de commandes
+ */
+abstract class ModelePDFAgefodd extends CommonDocGenerator
+{
+	var $error='';
+
+	/**
+	 *  Return list of active generation modules
+	 *
+	 *  @param	DoliDB	$db     			Database handler
+	 *  @param  string	$maxfilenamelength  Max length of value to show
+	 *  @return	array						List of templates
+	 */
+	static function liste_modeles($db,$maxfilenamelength=0)
+	{
+		global $conf;
+
+		$type='agefodd';
+		$liste=array();
+
+		$liste[]='agefodd';
+
+		return $liste;
+	}
+}
 
 /**
  *  Classe mere des modeles de numerotation des references de Agefodd
@@ -105,6 +133,53 @@ abstract class ModeleNumRefAgefodd
 		if ($this->version == 'experimental') return $langs->trans("VersionExperimental");
 		if ($this->version == 'dolibarr') return DOL_VERSION;
 		return $langs->trans("NotAvailable");
+	}
+}
+
+/**
+ *	\brief   	Crée un document PDF
+ *	\param   	db  			objet base de donnee
+ *	\param   	modele  		modele à utiliser
+ *	\param		outputlangs		objet lang a utiliser pour traduction
+ *	\return  	int        		<0 if KO, >0 if OK
+ */
+function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier='')
+{		
+	global $conf,$langs;
+	$langs->load('agefodd@agefodd');
+
+	// Charge le modele
+	$nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_'.$typeModele.'.modules.php');
+
+	if (file_exists($nomModele))
+	{
+		require_once($nomModele);
+		
+		$classname = "pdf_".$typeModele;
+
+		$obj = new $classname($db);
+		$obj->message = $message;
+
+		// We save charset_output to restore it because write_file can change it if needed for
+		// output format that does not support UTF8.
+		$sav_charset_output=$outputlangs->charset_output;
+		if ($obj->write_file($id, $outputlangs, $file, $socid, $courrier) > 0)
+		{
+			$outputlangs->charset_output=$sav_charset_output;
+			return 1;
+		}
+		else
+		{
+			$outputlangs->charset_output=$sav_charset_output;
+			dol_print_error($db,"pdf_create Error: ".$obj->error);
+			return -1;
+		}
+
+	}
+	else
+	{
+		dol_print_error('',$langs->trans("Error")." ".$langs->trans("ErrorFileDoesNotExists",$file));
+		return -1;
 	}
 }
 
