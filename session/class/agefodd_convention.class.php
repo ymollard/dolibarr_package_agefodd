@@ -73,9 +73,7 @@ class Agefodd_convention
 		$this->art7 = $this->db->escape($this->art7);
 		$this->art8 = $this->db->escape($this->art8);
 		$this->sig = $this->db->escape($this->sig);
-		$this->notes = $this->db->escape($this->notes);
-
-		
+		$this->notes = $this->db->escape($this->notes);		
 		
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -156,8 +154,9 @@ class Agefodd_convention
 
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
-		$sql.= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.sig, notes";
+		$sql.= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.sig, notes, s.nom as socname";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_convention as c";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as s ON s.rowid=c.fk_societe";
 		if ( $id > 0) $sql.= " WHERE c.rowid = ".$id;
 		else 
 		{
@@ -176,18 +175,19 @@ class Agefodd_convention
 				$this->id = $obj->rowid;
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->socid = $obj->fk_societe;
-				$this->intro1 = stripslashes($obj->intro1);
-				$this->intro2 = stripslashes($obj->intro2);
-				$this->art1 = stripslashes($obj->art1);
-				$this->art2 = stripslashes($obj->art2);
-				$this->art3 = stripslashes($obj->art3);
-				$this->art4 = stripslashes($obj->art4);
-				$this->art5 = stripslashes($obj->art5);
-				$this->art6 = stripslashes($obj->art6);
-				$this->art7 = stripslashes($obj->art7);
-				$this->art8 = stripslashes($obj->art8);
-				$this->sig = stripslashes($obj->sig);
-				$this->notes = stripslashes($obj->notes);
+				$this->socname = $obj->socname;
+				$this->intro1 = $obj->intro1;
+				$this->intro2 = $obj->intro2;
+				$this->art1 = $obj->art1;
+				$this->art2 = $obj->art2;
+				$this->art3 = $obj->art3;
+				$this->art4 = $obj->art4;
+				$this->art5 = $obj->art5;
+				$this->art6 = $obj->art6;
+				$this->art7 = $obj->art7;
+				$this->art8 = $obj->art8;
+				$this->sig = $obj->sig;
+				$this->notes = $obj->notes;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -268,7 +268,7 @@ class Agefodd_convention
 				$obj = $this->db->fetch_object($resql);
 				$this->line[$i]->rowid = $obj->rowid;
 				$this->line[$i]->fk_product = $obj->fk_product;
-				$this->line[$i]->description = stripslashes($obj->description);
+				$this->line[$i]->description = $obj->description;
 				$this->line[$i]->tva_tx = $obj->tva_tx;
 				$this->line[$i]->remise_percent = $obj->remise_percent;
 				$this->line[$i]->fk_remise_except = $obj->fk_remise_except;

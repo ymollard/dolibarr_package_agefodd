@@ -19,10 +19,15 @@
  */
 
 /**
- *  \file       	/agefodd/convention_fiche.php
+ *  \file       	/agefodd/session/convention.php
  *  \brief      	Page fiche convention de formation
  *  \version		$Id$
  */
+
+
+error_reporting(E_ALL);
+ ini_set('display_errors', true);
+ini_set('html_errors', false);
 
 $res=@include("../main.inc.php");					// For root directory
 if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
@@ -41,28 +46,33 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $mesg = '';
 
+$action=GETPOST('action','alpha');
+$confirm=GETPOST('confirm','alpha');
+$id=GETPOST('id','int');
+$socid=GETPOST('socid','int');
+$sessid=GETPOST('sessid','int');
+$arch=GETPOST('arch','int');
+
 
 /*
  * Actions delete
  */
-if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
 {
-	//$_GET["id"] = $convid-sessid
-	$GET_array = explode('-',$_GET["id"]);
+	//TODO : remove 
 
 	$agf = new Agefodd_convention($db);
-	$result = $agf->remove($GET_array[0]);
+	$result = $agf->remove($id);
 	
 	if ($result > 0)
 	{
-		$db->commit();
-		Header ( "Location: s_doc_fiche.php?id=".$GET_array[1]);
+		Header ( 'Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid);
 		exit;
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+		dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
@@ -70,33 +80,32 @@ if ($_POST["action"] == 'confirm_delete' && $_POST["confirm"] == "yes" && $user-
 /*
  * Actions archive/active (convention de formation)
  */
-if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($_POST["confirm"] == "yes")
 	{
 		$agf = new Agefodd_convention($db);
 	
-		$result = $agf->fetch($_GET["convid"]);
+		$result = $agf->fetch(0,0,$id);
 	
-		$agf->archive = $_GET["arch"];
+		$agf->archive = $arch;
 		$result = $agf->update($user->id);
 	
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: convention_fiche.php?id=".$_GET["convid"]);
+			Header ( 'Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid.'&socid='.$agf->socid);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	
 	}
 	else
 	{
-		Header ( "Location: s_doc_fiche.php?id=".$_GET["sessid"]);
+		Header ('Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid);
 		exit;
 	}
 }
@@ -107,50 +116,60 @@ if ($_POST["action"] == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 /*
  * Action update (convention de formation)
  */
-if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_convention($db);
 
-		$result = $agf->fetch(0, 0 , $_POST["convid"]);
+		$result = $agf->fetch(0,0,$id);
 
-		//$agf = new Agefodd_convention($db);
+		$intro1 = GETPOST('intro1','alpha');
+		$intro2 = GETPOST('intro2','alpha');
+		$art1 = GETPOST('art1','alpha');
+		$art2 = GETPOST('art2','alpha');
+		$art3 = GETPOST('art3','alpha');
+		$art4 = GETPOST('art4','alpha');
+		$art5 = GETPOST('art5','alpha');
+		$art6 = GETPOST('art6','alpha');
+		$art7 = GETPOST('art7','alpha');
+		$art8 = GETPOST('art8','alpha');
+		$sig = GETPOST('sig','alpha');
+		$notes = GETPOST('notes','alpha');
+		
 
-		if (!empty($_POST["intro1"])) $agf->intro1 = $_POST["intro1"];
-		if (!empty($_POST["intro2"])) $agf->intro2 = $_POST["intro2"];
-		if (!empty($_POST["art1"])) $agf->art1 = $_POST["art1"];
-		if (!empty($_POST["art2"])) $agf->art2 = $_POST["art2"];
-		if (!empty($_POST["art3"])) $agf->art3 = $_POST["art3"];
-		if (!empty($_POST["art4"])) $agf->art4 = $_POST["art4"];
-		if (!empty($_POST["art5"])) $agf->art4 = $_POST["art5"];
-		if (!empty($_POST["art6"])) $agf->art6 = $_POST["art6"];
-		if (!empty($_POST["art7"])) $agf->art7 = $_POST["art7"];
-		if (!empty($_POST["art8"])) $agf->art8 = $_POST["art8"];
-		if (!empty($_POST["sig"])) $agf->sig = $_POST["sig"];
-		$agf->notes = $_POST["notes"];
-		if (!empty($_POST["socid"])) $agf->socid = $_POST["socid"];
-		if (!empty($_POST["sessid"])) $agf->sessid = $_POST["sessid"];
-		$agf->rowid = $_POST["convid"];
+		if (!empty($intro1)) $agf->intro1 = $intro1;
+		if (!empty($intro2)) $agf->intro2 = $intro2;
+		if (!empty($art1)) $agf->art1 = $art1;
+		if (!empty($art2)) $agf->art2 = $art2;
+		if (!empty($art3)) $agf->art3 = $art3;
+		if (!empty($art4)) $agf->art4 = $art4;
+		if (!empty($art5)) $agf->art4 = $art5;
+		if (!empty($art6)) $agf->art6 = $art6;
+		if (!empty($art7)) $agf->art7 = $art7;
+		if (!empty($art8)) $agf->art8 = $art8;
+		if (!empty($sig)) $agf->sig = $sig;
+		$agf->notes = $notes;
+		$agf->socid = $socid;
+		$agf->sessid = $sessid;
 
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: convention_fiche.php?convid=".$_POST["convid"]);
+			Header ( 'Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: convention_fiche.php?convid=".$_POST["convid"]);
+		Header ( 'Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
 		exit;
 	}
 }
@@ -160,50 +179,67 @@ if ($_POST["action"] == 'update' && $user->rights->agefodd->creer)
  * Action create (convention de formation)
  */
 
-if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_convention($db);
 
-		$agf->intro1 = $_POST["intro1"];
-		$agf->intro2 = $_POST["intro2"];
-		$agf->art1 = $_POST["art1"];
-		$agf->art2 = $_POST["art2"];
-		$agf->art3 = $_POST["art3"];
-		$agf->art4 = $_POST["art4"];
-		$agf->art5 = $_POST["art5"];
-		$agf->art6 = $_POST["art6"];
-		$agf->art7 = $_POST["art7"];
-		$agf->art8 = $_POST["art8"];
-		$agf->sig = $_POST["sig"];
-		$agf->notes = $_POST["notes"];
-		$agf->socid = $_POST["socid"];
-		$agf->sessid = $_POST["sessid"];
-		$agf->datec = $db->idate(mktime());
+		$intro1 = GETPOST('intro1','alpha');
+		$intro2 = GETPOST('intro2','alpha');
+		$art1 = GETPOST('art1','alpha');
+		$art2 = GETPOST('art2','alpha');
+		$art3 = GETPOST('art3','alpha');
+		$art4 = GETPOST('art4','alpha');
+		$art5 = GETPOST('art5','alpha');
+		$art6 = GETPOST('art6','alpha');
+		$art7 = GETPOST('art7','alpha');
+		$art8 = GETPOST('art8','alpha');
+		$sig = GETPOST('sig','alpha');
+		$notes = GETPOST('notes','alpha');
 		
+
+		if (!empty($intro1)) $agf->intro1 = $intro1;
+		if (!empty($intro2)) $agf->intro2 = $intro2;
+		if (!empty($art1)) $agf->art1 = $art1;
+		if (!empty($art2)) $agf->art2 = $art2;
+		if (!empty($art3)) $agf->art3 = $art3;
+		if (!empty($art4)) $agf->art4 = $art4;
+		if (!empty($art5)) $agf->art4 = $art5;
+		if (!empty($art6)) $agf->art6 = $art6;
+		if (!empty($art7)) $agf->art7 = $art7;
+		if (!empty($art8)) $agf->art8 = $art8;
+		if (!empty($sig)) $agf->sig = $sig;
+		if (!empty($notes)) $agf->notes = $notes;
+		$agf->socid = $socid;
+		$agf->sessid = $sessid;
+				
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
 		{
-			$db->commit();
-			Header ( "Location: convention_fiche.php?action=edit&convid=".$result);
+			Header ( 'Location: '.$_SERVER['PHP_SELF'].'?id='.$result);
 			exit;
 		}
 		else
 		{
-			$db->rollback();
-			dol_syslog("CommonObject::agefodd error=".$error, LOG_ERR);
+			dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
 	}
 	else
 	{
-		Header ( "Location: s_doc_fiche.php?id=".$_POST["sessid"]);
+		Header ( 'Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid);
 		exit;
 	}
 }
 
+if ((empty($id)) && (empty($socid)) && (empty($action)))
+{
+	Header ( 'Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid.'&action=create');
+	exit;
+}
 
 
 /*
@@ -213,62 +249,42 @@ if ($_POST["action"] == 'create' && $user->rights->agefodd->creer)
 llxHeader();
 
 $form = new Form($db);
+
 dol_htmloutput_mesg($mesg);
-
-$id = $_GET['id'];
-
-// on récupére l'id  de la session dans la table convention
-$agf_last = new Agefodd_convention($db);
-$result = $agf_last->fetch_last_conv_per_socity($_GET["socid"]);
-$convid = $_GET['convid'];
-
-
 
 /*
  * Affichage de la fiche convention en mode création
  */
-if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
-{
-	$sessid = $_GET['id'];
-
-	
+if ($action == 'create' && $user->rights->agefodd->creer)
+{	
 
 	$agf = new Agefodd_session($db);
-	$resql = $agf->fetch($id);
+	$resql = $agf->fetch($sessid);
 
 	// On cherche si une convention de formation a déjà été faite pour ce client.
 	// Si c'est le cas, on récupére les valeurs de cette convention pour en faire les valeurs par defaut.
 	// Sinon on prends les valeurs par défault du script...
 	$agf_last = new Agefodd_convention($db);
-	$result = $agf_last->fetch_last_conv_per_socity($_GET["socid"]);
+	$result = $agf_last->fetch_last_conv_per_socity($socid);
 	if ($result > 0) 
 	{
 		$agf_conv = new Agefodd_convention($db);
-		$result = $agf_conv->fetch($agf_last->sessid, $_GET["socid"]);
-		if( $agf_last->sessid) $last_conv = 'ok';
+		$result = $agf_conv->fetch($agf_last->sessid, $socid);
+		if($agf_last->sessid) $last_conv = 'ok';
 	}
-
-	// if agefodd contact exist
-	$agf_contact = new Agefodd_contact($db);
-	$resql2 = $agf_contact->fetch($_GET["socid"]);
-
 	
 	//intro1
 	if ($agf_conv->intro1) $intro1 = $agf_conv->intro1;
 	else
 	{
-		// On recupere les infos societe
-		$agf_soc = new Societe($db);
-		$result = $agf_soc->fetch($socid);
-
-		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
+		$statut = $conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
 		$intro1 = "La société ".$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut." au capital de ";
 		$intro1.= $conf->global->MAIN_INFO_CAPITAL." euros, dont le siège social est à ".$conf->global->MAIN_INFO_SOCIETE_VILLE;
 		$intro1.= " (".$conf->global->MAIN_INFO_SOCIETE_CP."), immatriculée au Registre du Commerce et des Sociétés sous la référence ";
 		$intro1.= $conf->global->MAIN_INFO_RCS;
 		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture de l'";
-		$intro1.= AGF_ORGANISME_PREF." sous le numéro ".AGF_ORGANISME_NUM;
-		$intro1.= ", représentée par Monsieur ".AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
+		$intro1.= $conf->global->AGF_ORGANISME_PREF." sous le numéro ".$conf->global->AGF_ORGANISME_NUM;
+		$intro1.= ", représentée par Monsieur ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
 	}
 	
 	//intro2
@@ -277,7 +293,11 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 	{
 		// On recupere les infos societe
 		$agf_soc = new Societe($db);
-		$result = $agf_soc->fetch($_GET["socid"]);
+		$result = $agf_soc->fetch($socid);
+		
+		// if agefodd contact exist
+		$agf_contact = new Agefodd_contact($db);
+		$resql2 = $agf_contact->fetch($socid,'socid');
 
 		// intro2
 		$intro2 = "La société ".$agf_soc->nom.", situé au ".$agf_soc->adresse." ".$agf_soc->cp." ".$agf_soc->ville.",";
@@ -288,8 +308,7 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 	}
 
 	//article 1
-	//if ($agf_conv->art1) $art1 = $agf_conv->art1;
-	if (false) $art1 = $agf_conv->art1;
+	if ($agf_conv->art1) $art1 = $agf_conv->art1;
 	else
 	{
 		// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)
@@ -327,17 +346,11 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 			if ($calendrier->line[$i]->date != $old_date)
 			{
 				if ($i > 0 ) $art1.= "), ";
-				$arrayJour = explode('-', $calendrier->line[$i]->date);
-				$mktime = mktime(0, 0, 0, $arrayJour[1], $arrayJour[2], $arrayJour[0]);
-				setlocale(LC_TIME, 'fr_FR', 'fr_FR.utf8', 'fr');
-				$jour = strftime("%A", $mktime);
-				$art1.= $jour.' '.dol_print_date($calendrier->line[$i]->date).' (';
+				$art1.= dol_print_date($calendrier->line[$i]->date,'dayhourtext').' (';
 			}
 			else $art1.= '/';
-			$heured = ebi_time_array($calendrier->line[$i]->heured);
-			$art1.= $heured['h'].':'.$heured['m'] ;
-			$heuref = ebi_time_array($calendrier->line[$i]->heuref);
-			$art1.= ' - '.$heuref['h'].':'.$heuref['m'];
+			$art1.= dol_print_date($calendrier->line[$i]->heured,'hour');
+			$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
 			if ($i == $blocNumber - 1) $art1.=').'."\n";
 			
 			$old_date = $calendrier->line[$i]->date;
@@ -350,7 +363,7 @@ if ($_GET["action"] == 'create' && $user->rights->agefodd->creer)
 		if ($nbstag > 1) $art1.= 's';
 		$art1.= ".\n";
 		// Adresse lieu de formation
-		$agf_place = new Agefodd_splace($db);
+		$agf_place = new Agefodd_place($db);
 		$resql3 = $agf_place->fetch($agf->placeid);
 		$adresse = $agf_place->adresse.", ".$agf_place->cp." ".$agf_place->ville;
 		$art1.= "# Lieu : salle de formation (".$agf_place->code.') située '.$adresse.'.';
@@ -423,16 +436,21 @@ En cas d'échec d'une solution négociée, les parties conviennent expressément
 		$sig.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name." (*)";
 	}
 
+	print_fiche_titre($langs->trans("AgfNewConv"));
+	
 	print '<div class="warning">';
 	($last_conv == 'ok') ? print $langs->trans("AgfConvLastWarning") : print $langs->trans("AgfConvDefaultWarning");
 	print '</div>'."\n";
-	print '<form name="create" action="convention_fiche.php" method="post">'."\n";
+	print '<form name="create" action="convention.php" method="post">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="create">'."\n";
-	print '<input type="hidden" name="sessid" value="'.$id.'">'."\n";
-	print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";
+	print '<input type="hidden" name="action" value="create_confirm">'."\n";
+	print '<input type="hidden" name="sessid" value="'.$sessid.'">'."\n";
+	print '<input type="hidden" name="socid" value="'.$socid.'">'."\n";
 
 	print '<table class="border" width="100%">'."\n";
+	
+	print '<tr><td valign="top" width="200px">'.$langs->trans("Societe").'</td>';
+	print '<td>'.$agf_soc->nom.'</td></tr>';
 
 	print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 	print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">'.$intro1.'</textarea></td></tr>';
@@ -483,29 +501,35 @@ else
 {
 	// Affichage de la fiche convention
 	$agf = new Agefodd_convention($db);
-	$result = $agf->fetch(0, 0, $_GET["convid"]);
-
+	if (!empty($id))	$result = $agf->fetch(0, 0, $id);
 
 	if ($result)
 	{
-
-		$head = session_prepare_head($agf);
+		$agf_session = new Agefodd_session($db);
+		$agf_session->fetch($agf->sessid);
+		
+		$head = session_prepare_head($agf_session);
+		
+		$hselected='document';
 		
 		dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'bill');
 		
-		
 		// Affichage en mode "édition"
-		if ($_GET["action"] == 'edit')
+		if ($action == 'edit')
 		{
-
-			print '<form name="update" action="convention_fiche.php?convid='.$_GET["convid"].'" method="post">'."\n";
+			print '<form name="update" action="convention_fiche.php" method="post">'."\n";
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 			print '<input type="hidden" name="action" value="update">'."\n";
-			print '<input type="hidden" name="convid" value="'.$_GET["convid"].'">'."\n";
+			print '<input type="hidden" name="id" value="'.$id.'">'."\n";
+			print '<input type="hidden" name="socid" value="'.$socid.'">'."\n";
 			print '<input type="hidden" name="sessid" value="'.$agf->sessid.'">'."\n";
 
 			print '<table class="border" width="100%">'."\n";
 
+			print '<tr><td valign="top" width="200px">'.$langs->trans("Societe").'</td>';
+			print '<td>'.$agf->socname.'</td></tr>';
+			
+			
 			print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 			print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->intro1.'</textarea></td></tr>';
 		
@@ -557,9 +581,9 @@ else
 			/*
 			* Confirmation de la suppression
 			*/
-			if ($_GET["action"] == 'delete')
+			if ($action == 'delete')
 			{
-				$ret=$form->form_confirm("convention_fiche.php?id=".$convid.'-'.$agf->sessid,$langs->trans("AgfDeleteConvention"),$langs->trans("AgfConfirmDeleteConvention"),"confirm_delete");
+				$ret=$form->form_confirm("convention.php?id=".$convid.'&sessid='.$agf->sessid,$langs->trans("AgfDeleteConvention"),$langs->trans("AgfConfirmDeleteConvention"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 			/*
@@ -567,11 +591,38 @@ else
 			*/
 			if (isset($_GET["arch"]))
 			{
-				$ret=$form->form_confirm("convention_fiche.php?arch=".$_GET["arch"]."&convid=".$convid,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete");
+				$ret=$form->form_confirm("convention.php?arch=".$_GET["arch"]."&id=".$convid,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
+			
+			//Create a list of customer for each convention
+			//$agf_sess= new Agefodd_session($db);
+			//$result_sess_soc = $agf_sess->fetch_societe_per_session($sessid);
+			//	$result = $agf->fetch($sessid, $agf_sess->line[0]->socid, 0);			
 
 			print '<table class="border" width="100%">'."\n";
+			
+			print '<tr><td valign="top" width="200px">'.$langs->trans("societe").'</td>';
+			print '<td>';
+			print $agf->socname;
+			
+			/*if ($result_sess_soc >= 1)
+			{ 
+				print '<form name="update" action="convention_fiche.php?id='.$id.'" method="GET">'."\n";
+				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+				print '<input type="hidden" name="id" value="'.$id.'">'."\n";
+				print '<input type="hidden" name="sessid" value="'.$sessid.'">'."\n";
+				print '<select name="socid">';
+				foreach ($agf_sess->line as $line)
+				{
+					print '<option value="'.$line->socid.'">'.$line->socname.'</option>';
+				}
+				print '</select>';
+				print '<input type="button" value="voir"/>';
+				print '</form>';			
+			}*/
+			print '</td></tr>';
+			
 
 			print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 			print '<td>'.nl2br($agf->intro1).'</td></tr>';
@@ -622,7 +673,7 @@ else
 
 print '<div class="tabsAction">';
 
-if ($_GET["action"] != 'create' && $_GET["action"] != 'edit' && $_GET["action"] != 'nfcontact')
+if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
 	if ($user->rights->agefodd->creer)
 	{

@@ -142,7 +142,7 @@ class Agefodd_session extends CommonObject
 		$error=0;
     	
 		// Clean parameters
-		$this->sessid = addslashes(trim($this->sessid));
+		$this->sessid = $this->db->escape(trim($this->sessid));
 		
 		// Check parameters
 		// Put here code to add control on parameters value

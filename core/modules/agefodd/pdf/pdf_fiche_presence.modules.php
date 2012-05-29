@@ -22,16 +22,19 @@
 	\brief		Page permettant la création de la fiche de présence d'une format donnée au format pdf
 	\version	$Id$
 */
-require_once(DOL_DOCUMENT_ROOT."/agefodd/lib/agefodd.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/session/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/training/class/agefodd_formation_catalogue.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_facture.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/contact/class/agefodd_contact.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_convention.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/site/class/agefodd_place.class.php");
+
+dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_facture.class.php');
+dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/site/class/agefodd_place.class.php');
 
 
-class agf_pdf_document extends FPDF
+class pdf_fiche_presence extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 	
@@ -51,8 +54,8 @@ class agf_pdf_document extends FPDF
 		
 
 		$this->db = $db;
-		$this->name = "ebic";
-		$this->description = $langs->trans('Modèle de document pour les fiches de présence');
+		$this->name = "fiche_presence";
+		$this->description = $langs->trans('AgfModPDFFichePres');
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
@@ -66,6 +69,10 @@ class agf_pdf_document extends FPDF
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		
+		// Get source company
+		$this->emetteur=$mysoc;
+		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
 		
 	}
 	
@@ -81,6 +88,9 @@ class agf_pdf_document extends FPDF
 	{
 		global $user,$langs,$conf;
 	
+		
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
+		
 		if (! is_object($outputlangs)) $outputlangs=$langs;
 		// Force output charset to ISO, because, FPDF expect text encoded in ISO
 		$outputlangs->charset_output='ISO-8859-1';

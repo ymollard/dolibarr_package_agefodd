@@ -43,7 +43,7 @@ $mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
-$id=GETPOST('id','int'); //TODO Check $id GETPOST is really int
+$id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
 
 /*

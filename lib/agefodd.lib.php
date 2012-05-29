@@ -77,10 +77,10 @@ function session_prepare_head($object)
 	$head[$h][2] = 'document';
 	$h++;
 	
-	$head[$h][0] = dol_buildpath('/agefodd/session/convention.php',1).'?id='.$object->id;
-	$head[$h][1] = $langs->trans("AgfConvention");
-	$head[$h][2] = 'convention';
-	$h++;
+	//$head[$h][0] = dol_buildpath('/agefodd/session/convention.php',1).'?sessid='.$object->id;
+	//$head[$h][1] = $langs->trans("AgfConvention");
+	//$head[$h][2] = 'convention';
+	//$h++;
 	
 	$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");

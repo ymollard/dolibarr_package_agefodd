@@ -23,9 +23,9 @@
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
  */
 
-error_reporting(E_ALL);
+/*error_reporting(E_ALL);
 ini_set('display_errors', true);
-ini_set('html_errors', false);
+ini_set('html_errors', false);*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -279,7 +279,7 @@ if ($id)
 				
 				// editer la convention pour modification
 				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=edit&convid='.$agf->id.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=edit&sessid='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 
@@ -288,7 +288,7 @@ if ($id)
 			{ 
 				// Si la convention n'a pas encore été renseignée, il faut le faire maintenant
 				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=create&sessid='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			}
@@ -491,8 +491,8 @@ if ($id)
 
 		// Pendant la formation
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
-		document_line("Fiche de présence", 2, "fiche-presence", $agf->line[$i]->socid);
-		document_line("Fiche d'évaluation", 2, "fiche-evaluation", $agf->line[$i]->socid);
+		document_line("Fiche de présence", 2, "fiche_presence", $agf->line[$i]->socid);
+		document_line("Fiche d'évaluation", 2, "fiche_evaluation", $agf->line[$i]->socid);
 
 		print '</table>'."\n";
 		print '&nbsp;'."\n";
@@ -521,8 +521,8 @@ if ($id)
 
 // 			// Pendant la formation
  			print '<tr><td colspan=3 style="background-color:#d5baa8;">Pendant la formation</td></tr>'."\n";
- 			document_line("Fiche de présence", 2, "fiche-presence", $agf->line[$i]->socid);
- 			document_line("Fiche d'évaluation", 2, "fiche-evaluation", $agf->line[$i]->socid);
+ 			document_line("Fiche de présence", 2, "fiche_presence", $agf->line[$i]->socid);
+ 			document_line("Fiche d'évaluation", 2, "fiche_evaluation", $agf->line[$i]->socid);
 
 			// Après la formation
 			print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";

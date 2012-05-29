@@ -123,7 +123,32 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use simple mask for training ref';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_PREF";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Prefecture d\'enregistrement';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_NUM";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Numerot d\'enregistrement a la prefecture';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ORGANISME_REPRESENTANT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Representant de la societer de formation';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		
 		// Array to add new pages in new tabs
 		//$this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');
 		// where entity can be
