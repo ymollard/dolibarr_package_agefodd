@@ -1065,7 +1065,7 @@ else
 					print '<table class="border" width="100%">';
 	
 					print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
-					print '<td>'.$form->showrefnav($agf,$id).'</td></tr>';
+					print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id').'</td></tr>';
 	
 					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 					print '<td><a href="'.dol_buildpath('/agefodd/training/card.php',1).'?id='.$agf->formid.'">'.$agf->formintitule.'</a></td></tr>';
