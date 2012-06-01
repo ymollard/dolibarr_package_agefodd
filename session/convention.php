@@ -24,9 +24,8 @@
  *  \version		$Id$
  */
 
-
 error_reporting(E_ALL);
- ini_set('display_errors', true);
+ini_set('display_errors', true);
 ini_set('html_errors', false);
 
 $res=@include("../main.inc.php");					// For root directory
@@ -53,11 +52,12 @@ $socid=GETPOST('socid','int');
 $sessid=GETPOST('sessid','int');
 $arch=GETPOST('arch','int');
 
+$langs->load("companies");
 
 /*
  * Actions delete
  */
-if ($action == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	//TODO : remove 
 
@@ -66,12 +66,12 @@ if ($action == 'confirm_delete' && $_POST["confirm"] == "yes" && $user->rights->
 	
 	if ($result > 0)
 	{
-		Header ( 'Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid);
+		Header ( 'Location: document.php?id='.$sessid);
 		exit;
 	}
 	else
 	{
-		dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+		dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
@@ -98,7 +98,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	
@@ -162,7 +162,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
@@ -223,7 +223,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog('Agefodd:convetion:card error='.$agf->error, LOG_ERR);
+			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 
@@ -508,25 +508,25 @@ else
 		$agf_session = new Agefodd_session($db);
 		$agf_session->fetch($agf->sessid);
 		
-		$head = session_prepare_head($agf_session);
+		$head = session_prepare_head($agf_session,1);
 		
-		$hselected='document';
+		$hselected='convention';
 		
 		dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'bill');
 		
 		// Affichage en mode "édition"
 		if ($action == 'edit')
 		{
-			print '<form name="update" action="convention_fiche.php" method="post">'."\n";
+			print '<form name="update" action="convention.php" method="post">'."\n";
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 			print '<input type="hidden" name="action" value="update">'."\n";
 			print '<input type="hidden" name="id" value="'.$id.'">'."\n";
-			print '<input type="hidden" name="socid" value="'.$socid.'">'."\n";
+			print '<input type="hidden" name="socid" value="'.$agf->socid.'">'."\n";
 			print '<input type="hidden" name="sessid" value="'.$agf->sessid.'">'."\n";
 
 			print '<table class="border" width="100%">'."\n";
 
-			print '<tr><td valign="top" width="200px">'.$langs->trans("Societe").'</td>';
+			print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 			print '<td>'.$agf->socname.'</td></tr>';
 			
 			
@@ -583,7 +583,7 @@ else
 			*/
 			if ($action == 'delete')
 			{
-				$ret=$form->form_confirm("convention.php?id=".$convid.'&sessid='.$agf->sessid,$langs->trans("AgfDeleteConvention"),$langs->trans("AgfConfirmDeleteConvention"),"confirm_delete",'','',1);
+				$ret=$form->form_confirm("convention.php?id=".$id.'&sessid='.$agf->sessid,$langs->trans("AgfDeleteConvention"),$langs->trans("AgfConfirmDeleteConvention"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 			/*
@@ -591,7 +591,7 @@ else
 			*/
 			if (isset($_GET["arch"]))
 			{
-				$ret=$form->form_confirm("convention.php?arch=".$_GET["arch"]."&id=".$convid,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
+				$ret=$form->form_confirm("convention.php?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
 			
@@ -602,7 +602,7 @@ else
 
 			print '<table class="border" width="100%">'."\n";
 			
-			print '<tr><td valign="top" width="200px">'.$langs->trans("societe").'</td>';
+			print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 			print '<td>';
 			print $agf->socname;
 			
@@ -677,7 +677,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butAction" href="convention_fiche.php?action=edit&convid='.$convid.'">'.$langs->trans('Modify').'</a>';
+		print '<a class="butAction" href="convention.php?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
 	else
 	{
@@ -685,7 +685,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 	}
 	if ($user->rights->agefodd->creer)
 	{
-		print '<a class="butActionDelete" href="convention_fiche.php?action=delete&convid='.$convid.'">'.$langs->trans('Delete').'</a>';
+		print '<a class="butActionDelete" href="convention.php?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
 	else
 	{

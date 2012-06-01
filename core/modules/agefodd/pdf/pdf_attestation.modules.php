@@ -1,5 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +24,14 @@
 			l'ensemble des stagiaires d'une structure pour une session donnée.
 	\version	$Id$
 */
-require_once(DOL_DOCUMENT_ROOT."/agefodd/core/models/pdf/pdf_document.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_session.class.php");
-require_once(DOL_DOCUMENT_ROOT."/agefodd/class/agefodd_formation_catalogue.class.php");
+dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/core/lib/company.lib.php');
+dol_include_once('/core/lib/pdf.lib.php');
 
 
-class agf_pdf_document extends FPDF
+class pdf_attestation extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 	
@@ -43,9 +46,9 @@ class agf_pdf_document extends FPDF
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function agf_pdf_document($db)
+	function pdf_attestation($db)
 	{
-		global $conf,$langs;
+		global $conf,$langs,$mysoc;
 		
 
 		$this->db = $db;
@@ -54,15 +57,23 @@ class agf_pdf_document extends FPDF
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
-		$this->page_largeur = 297;
-		$this->page_hauteur = 210;
+		$formatarray=pdf_getFormat();
+		$this->page_largeur = $formatarray['height'];
+		$this->page_hauteur = $formatarray['width'];
 		$this->format = array($this->page_largeur,$this->page_hauteur);
 		$this->marge_gauche=15;
 		$this->marge_droite=15;
 		$this->marge_haute=10;
 		$this->marge_basse=10;
+		$this->unit='mm';
+		$this->oriantation='l';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2; 
+		
+		// Get source company
+		$this->emetteur=$mysoc;
+		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
+		
 
 	}
 	
@@ -79,15 +90,11 @@ class agf_pdf_document extends FPDF
 		global $user,$langs,$conf;
 
 		if (! is_object($outputlangs)) $outputlangs=$langs;
-		// Force output charset to ISO, because, FPDF expect text encoded in ISO
-		$outputlangs->charset_output='ISO-8859-1';
-
-		$outputlangs->load("main");
 		
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db,"",$id);
+			$agf = new Agefodd_session($this->db);
 			$ret = $agf->fetch($id);
 		}
 
@@ -106,26 +113,8 @@ class agf_pdf_document extends FPDF
 
 		if (file_exists($dir))
 		{
-			// Protection et encryption du pdf
-			if ($conf->global->PDF_SECURITY_ENCRYPTION)
-			{
-				$pdf=new FPDI_Protection('P','mm',$this->format);
-				$pdfrights = array('print'); // Ne permet que l'impression du document
-				$pdfuserpass = ''; // Mot de passe pour l'utilisateur final
-				$pdfownerpass = NULL; // Mot de passe du proprietaire, cree aleatoirement si pas defini
-				$pdf->SetProtection($pdfrights,$pdfuserpass,$pdfownerpass);
-			}
-			else
-			{
-				$pdf=new FPDI('P','mm',$this->format);
-			}
-
-			//On ajoute les polices "maisons"
-			//define('FPDF_FONTPATH','../../../../agefodd/font/');
-			//$pdf->AddFont('URWPalladioL-Ital','','p052023l.php');
-			//$pdf->AddFont('URWPalladioL-BoldItal','','p052024l.php');
-			//$pdf->AddFont('Nasalization','','nasalization.php');
-
+			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
+			
 			$pdf->Open();
 			$pagenb=0;
 			
@@ -160,7 +149,7 @@ class agf_pdf_document extends FPDF
 					$pdf->AddPage();
 					$pagenb++;
 					$this->_pagehead($pdf, $agf, 1, $outputlangs);
-					$pdf->SetFont('Arial','', 9);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 9);
 					$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
 					$pdf->SetTextColor(0,0,0);
 					
@@ -188,42 +177,49 @@ class agf_pdf_document extends FPDF
 					// Gauche
 					$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
 					
+					
 					// Logo en haut à gauche
-					if (is_file(AGF_ORGANISME_LOGO)) $pdf->Image(AGF_ORGANISME_LOGO, $this->marge_gauche + 3, $this->marge_haute + 3, 40);
+					$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+					// Logo en haut à gauche
+					if ($this->emetteur->logo)
+					{
+						if (is_readable($logo))
+							 $pdf->Image($logo, $this->marge_gauche + 3, $this->marge_haute + 3, 40);
+					}
 					
 					$newY = $this->marge_haute + 30;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetTextColor(76,76,76);
-					$pdf->SetFont('Arial','B', 20);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 20);
 					$pdf->Cell(0, 0, "Attestation de formation", 0, 0,'C', 0);
 					$pdf->SetTextColor('','','');
 					
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$pdf->SetFont('Arial','', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$this->str1 = "Ce document atteste que  " .ucfirst(strtolower($agf2->line[$i]->civilitel)).' ';
 					$this->width1 = $pdf->GetStringWidth($this->str1);
 					
-					$pdf->SetFont('Arial','', 16);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 16);
 					$this->str2 = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
 					$this->width2 = $pdf->GetStringWidth($this->str2);
 					
-					$pdf->SetFont('Arial','', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$this->debut_cell = ($this->marge_gauche + 1) + ($this->milieu - (($this->width1 + $this->width2)/2));
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->debut_cell , $newY);
 					$pdf->Cell($this->width1, 0, $this->str1, 0, 0, 'C', 0);
 					
-					$pdf->SetFont('Arial','', 16);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 16);
 					$pdf->Cell($this->width2, -1, $this->str2, 0, 0, 'C', 0);
 					
-					$pdf->SetFont('Arial','', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$newY = $newY + 6;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$this->str = 'a effectivement suivi avec assiduité le module de formation intitulé';
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 					
-					$pdf->SetFont('Arial','', 18);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 18);
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
@@ -232,7 +228,7 @@ class agf_pdf_document extends FPDF
 					if ($agf->dated == $agf->datef) $this->str.= "le ".dol_print_date($agf->datef);
 					else $this->str.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
 					$this->str.= " (pour un total de ".$agf_duree->duree."h effectives).";
-					$pdf->SetFont('Arial','', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
@@ -244,7 +240,7 @@ class agf_pdf_document extends FPDF
 					
 					// Bloc objectifs pedagogiques
 					$newY = $newY + 5;
-					$pdf->SetFont('Arial','I', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 12);
 					$hauteur = 0;
 					for ( $y = 0; $y < count($agf_op->line); $y++)
 					{
@@ -261,7 +257,7 @@ class agf_pdf_document extends FPDF
 					
 					}
 					
-					$pdf->SetFont('Arial','', 11);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 					$newY = $newY + 20;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$this->str = "Avec les félicitations du pôle formation de ".AGF_ORGANISME_NAME.",";
@@ -273,23 +269,23 @@ class agf_pdf_document extends FPDF
 					$this->str = "fait à ".AGF_ORGANISME_SIEGE.", le ";
 					$pdf->Cell(80, 0, $outputlangs->transnoentities($this->str), 0, 0, 'R', 0);
 					
-					$pdf->SetFont('Arial','', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$this->str = date("d/m/Y");
 					$this->str = dol_print_date($agf->datef);
 					$this->width = $pdf->GetStringWidth($this->str);
 					$pdf->Cell($this->width, 0, $this->str, 0, 0, 'L', 0);
 					
-					$pdf->SetFont('Arial','', 12);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$this->str = AGF_ORGANISME_REPRESENTANT;
 					$pdf->Cell(100, 0, $this->str, 0, 0, 'R', 0);
 					
 					
-					// Pied de page		$pdf->SetFont('Arial','', 10);
+					// Pied de page		$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
 					$this->_pagefoot($pdf,$agf,$outputlangs);
 					$pdf->AliasNbPages();
 
 					// Mise en place du copyright
-					$pdf->SetFont('Arial','',8);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
 					$this->str = $outputlangs->transnoentities('copyright '.date("Y").' - '.AGF_ORGANISME_NAME);
 					$this->width = $pdf->GetStringWidth($this->str);
 					// alignement du bord droit du container avec le haut de la page
@@ -299,21 +295,18 @@ class agf_pdf_document extends FPDF
 					$baseline_y = $baseline_ecart + 30;
 					$baseline_width = $this->width;
 					$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
-					//rotate
-					$pdf->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',cos($baseline_angle),sin($baseline_angle),-sin($baseline_angle),cos($baseline_angle),$baseline_x*$pdf->k,($pdf->h-$baseline_y)*$pdf->k,-$baseline_x*$pdf->k,-($pdf->h-$baseline_y)*$pdf->k));
-					$pdf->SetXY($baseline_x, $baseline_y);
+					
 					//print
 					$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
-					//antirotate
-					$pdf->_out('Q');
+				
 
 				}
 			}
 			$pdf->Close();
-			$pdf->Output($file);
+			$pdf->Output($file,'F');
 			if (! empty($conf->global->MAIN_UMASK))
-			@chmod($file, octdec($conf->global->MAIN_UMASK));
-
+				@chmod($file, octdec($conf->global->MAIN_UMASK));
+			
 			return 1;   // Pas d'erreur
 		}
 		else
@@ -324,61 +317,6 @@ class agf_pdf_document extends FPDF
 		$this->error=$langs->trans("ErrorUnknown");
 		return 0;   // Erreur par defaut
 	}
-
-
-	/**
-	 *	\brief		Calcule le nombre de lignes qu'occupe un MultiCell
-	 *	\param		pdf		pdf object
-	 *	\param		w		multicell width
-	 *	\param		txt		text in the multicell
-	 *	\param		hight		line hight ine the multicell (param 2 in multicell call)
-	 */
-	function NbLines(&$pdf, $w, $txt, $hight)
-	{
-
-		$cw = &$pdf->CurrentFont['cw'];
-		if($w == 0) $w=$pdf->w-$pdf->rMargin-$pdf->x;
-		$wmax = ($w-2*$pdf->cMargin)*1000/$pdf->FontSize;
-		$s = str_replace("\r",'',$txt);
-		$nb = strlen($s);
-		if($nb>0 && $s[$nb-1] == "\n") $nb--;
-		$sep = -1;
-		$i = 0;
-		$j = 0;
-		$l = 0;
-		$nl = 1;
-		while($i < $nb)
-		{
-			$c = $s[$i];
-			if($c=="\n")
-			{
-				$i++;
-				$sep = -1;
-				$j = $i;
-				$l = 0;
-				$nl++;
-				continue;
-			}
-			if($c == ' ') $sep = $i;
-			$l += $cw[$c];
-			if($l > $wmax)
-			{
-				if($sep == -1)
-				{
-					if($i == $j) $i++;
-				}
-				else $i = $sep + 1;
-				$sep = -1;
-				$j = $i;
-				$l = 0;
-				$nl++;
-			}
-			else $i++;
-		}
-		return ($nl * $hight);
-	}
-
-
 
 	/**
 	 *   	\brief      Show header of page
@@ -410,7 +348,7 @@ class agf_pdf_document extends FPDF
 
 		$this->str = AGF_ORGANISME_NAME." - Organisme de formation enregistré à la préfecture de ".AGF_ORGANISME_PREF." sous le n° ".AGF_ORGANISME_NUM;
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
-		$pdf->SetFont('Arial','I', 8);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Cell(0, 6, $outputlangs->transnoentities($this->str),0, 0, 'C', 0);
 	}

@@ -91,10 +91,10 @@ class modAgefodd extends DolibarrModules
 		$this->const = array();			// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 0 or 'allentities')
 		$r=0;
 		
-		$r++;
+		/*$r++;
 		$this->const[$r][0] = "AGF_USE_STAGIAIRE_TYPE";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = 'OK';
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Use traine type';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -105,8 +105,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][2] = '3';
 		$this->const[$r][3] = 'Type of  traine funding';
 		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-		
+		$this->const[$r][5] = 0;*/
 		
 		$r++;
 		$this->const[$r][0] = "AGF_UNIVERSAL_MASK";
@@ -144,7 +143,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][0] = "AGF_ORGANISME_REPRESENTANT";
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '';
-		$this->const[$r][3] = 'Representant de la societer de formation';
+		$this->const[$r][3] = 'Representant de la societé de formation';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		

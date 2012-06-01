@@ -1,5 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,11 +38,11 @@ if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
 else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
 
 $pdf->SetXY($posX - 77, $posY);
-$pdf->SetFont('Arial','B', 11);
+$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
 $pdf->Cell(30, 6, "Objet :",0,0,"R",0);
 
 $pdf->SetXY($posX - 47, $posY);
-$pdf->SetFont('Arial','', 11);
+$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 $this->str = "Formation professionnelle réalisée ".$this->date;
 $pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str) ,0,0,"L",0);
 $posY += 6;
@@ -51,7 +52,7 @@ $posY += 6;
  */
 
 $pdf->SetXY($posX - 77, $posY);
-$pdf->SetFont('Arial','B', 11);
+$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
 $pdf->Cell(30, 5, $outputlangs->convToOutputCharset("Pièces jointes :"),0,0,"R",0);
 
 
@@ -72,7 +73,7 @@ $num = count($agf_stag->line);
 ($num > 1) ? $this->str.= "Attestations de formation (x".$num.")" : $this->str.= "Attestation de formation";
 $this->str.= "\n";
 $this->str.= "Copie de la feuille d'émargement\n";
-$pdf->SetFont('Arial','', 11);
+$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 $pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str));
 $posY += 36;
 
@@ -108,7 +109,7 @@ $this->str.= "Vous en souhaitant bonne réception.\n\nCordialement,";
 
 $pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str));
 
-$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 4);
+$hauteur = dol_nboflines_bis($this->str,50)*4;
 
 $posY += $hauteur + 6;
 # llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');

@@ -23,9 +23,9 @@
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
  */
 
-/*error_reporting(E_ALL);
+error_reporting(E_ALL);
 ini_set('display_errors', true);
-ini_set('html_errors', false);*/
+ini_set('html_errors', false);
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -130,6 +130,9 @@ dol_htmloutput_mesg($mesg);
  */
 if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->creer)
 {
+	$cour=GETPOST('cour','alpha');
+	$model=GETPOST('model','alpha');
+
 	// Define output language
 	$outputlangs = $langs;
 	$newlang=GETPOST('lang_id','alpha');
@@ -140,20 +143,27 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 		$outputlangs->setDefaultLang($newlang);
 	}
 	
-	if (!empty($_GET["cour"])) $file = $_GET["model"].'-'.$_GET["cour"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
-	else $file = $_GET["model"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
-	$result = agf_pdf_create($db, $id, '', $_GET["model"], $outputlangs, $file, $_GET["socid"], $_GET["cour"]);
-}
+	if (!empty($cour)) $file = $model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
+	elseif(!empty($socid)) $file = $model.'_'.$id.'_'.$socid.'.pdf';
+	else $file = $model.'_'.$id.'.pdf';
+	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $socid, $cour);
+}							
 
 /*
  * Action delete pdf document
  */
 if ($action == 'del' && $user->rights->agefodd->creer)
 {
-	if (!empty($_GET["cour"])) 
-	    $file = $conf->agefodd->dir_output.'/'.$_GET["model"].'-'.$_GET["cour"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
-	else 
-	    $file = $conf->agefodd->dir_output.'/'.$_GET["model"].'_'.$_GET["id"].'_'.$_GET["socid"].'.pdf';
+	$cour=GETPOST('cour','alpha');
+	$model=GETPOST('model','alpha');
+	
+	if (!empty($cour)) 
+	    $file = $conf->agefodd->dir_output.'/'.$model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
+	elseif (!empty($socid))
+	    $file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'_'.$socid.'.pdf';
+	else
+		$file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'.pdf';
+	
 	if (is_file($file)) unlink($file);
 	else
 	{
@@ -279,7 +289,7 @@ if ($id)
 				
 				// editer la convention pour modification
 				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=edit&sessid='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=edit&id='.$agf->id.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 
@@ -304,7 +314,8 @@ if ($id)
 			
 			$model = $file;
 			if(!empty($nom_courrier)) $file = $file.'-'.$nom_courrier.'_'.$id.'_'.$socid.'.pdf';
-			else $file = $file.'_'.$id.'_'.$socid.'.pdf';
+			elseif (!empty($socid)) $file = $file.'_'.$id.'_'.$socid.'.pdf';
+			else $file = $file.'_'.$id.'.pdf';
 			
 			if (is_file($conf->agefodd->dir_output.'/'.$file))
 			{
@@ -501,37 +512,40 @@ if ($id)
 
 		for ($i=0; $i < $linecount ; $i++)
 		{
-			$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
-			
-			${'flag_bc_'.$agf->line[$i]->socid} = 0;
-
-			print '<table class="border" width="100%">'."\n";
-			
-			print '<tr class="liste_titre">'."\n";
-			print '<td colspan=3>';
-			print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
-			print '</tr>'."\n";
-
-			// Avant la formation
-			print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-			document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
-			document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
-			document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-			document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
-
-// 			// Pendant la formation
- 			print '<tr><td colspan=3 style="background-color:#d5baa8;">Pendant la formation</td></tr>'."\n";
- 			document_line("Fiche de présence", 2, "fiche_presence", $agf->line[$i]->socid);
- 			document_line("Fiche d'évaluation", 2, "fiche_evaluation", $agf->line[$i]->socid);
-
-			// Après la formation
-			print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-			document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
-			document_line("Facture", 2, "fac", $agf->line[$i]->socid);
-			document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
-			//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
-			print '</table>';
-			if ($i < $linecount) print '&nbsp;'."\n";
+			if (!empty($agf->line[$i]->socid))
+			{
+				$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
+				
+				${'flag_bc_'.$agf->line[$i]->socid} = 0;
+	
+				print '<table class="border" width="100%">'."\n";
+				
+				print '<tr class="liste_titre">'."\n";
+				print '<td colspan=3>';
+				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+				print '</tr>'."\n";
+	
+				// Avant la formation
+				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+				document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
+				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
+				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
+				document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
+	
+	// 			// Pendant la formation
+	 			print '<tr><td colspan=3 style="background-color:#d5baa8;">Pendant la formation</td></tr>'."\n";
+	 			document_line("Fiche de présence", 2, "fiche_presence", $agf->line[$i]->socid);
+	 			document_line("Fiche d'évaluation", 2, "fiche_evaluation", $agf->line[$i]->socid);
+	
+				// Après la formation
+				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
+				document_line("Facture", 2, "fac", $agf->line[$i]->socid);
+				document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
+				//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
+				print '</table>';
+				if ($i < $linecount) print '&nbsp;'."\n";
+			}
 		}	
 		print '</div>'."\n";
 	}

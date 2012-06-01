@@ -1,5 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +26,8 @@
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
 dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_facture.class.php');
 dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
 
 
@@ -46,7 +47,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	 */
 	function pdf_fiche_pedago($db)
 	{
-		global $conf,$langs;
+		global $conf,$langs,$mysoc;
 		
 		$langs->load("agefodd@agefodd");
 		
@@ -91,15 +92,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 	
 		if (! is_object($outputlangs)) $outputlangs=$langs;
-		// Force output charset to ISO, because, FPDF expect text encoded in ISO
-		/*$outputlangs->charset_output='ISO-8859-1';
-
-		$outputlangs->load("main");*/
 		
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db,"",$id);
+			$agf = new Agefodd_session($this->db);
 			$ret = $agf->fetch($id);
 		}
 
@@ -118,29 +115,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 		if (file_exists($dir))
 		{
-			// Protection et encryption du pdf
-			/*if ($conf->global->PDF_SECURITY_ENCRYPTION)
-			{
-				$pdf=new FPDI_Protection('P','mm',$this->format);
-				$pdfrights = array('print'); // Ne permet que l'impression du document
-				$pdfuserpass = ''; // Mot de passe pour l'utilisateur final
-				$pdfownerpass = NULL; // Mot de passe du proprietaire, cree aleatoirement si pas defini
-				$pdf->SetProtection($pdfrights,$pdfuserpass,$pdfownerpass);
-			}
-			else
-			{
-				$pdf=new FPDI('P','mm',$this->format);
-			}*/
-			
-
-			//On ajoute les polices "maisons"
-			//define('FPDF_FONTPATH','../../../../agefodd/font/');
-			//$pdf->AddFont('URWPalladioL-Ital','','p052023l.php');
-			//$pdf->AddFont('URWPalladioL-BoldItal','','p052024l.php');
-			//$pdf->AddFont('Nasalization','','nasalization.php');
-			//$pdf->AddFont('Borg9','','BORG9.php');
-			//$pdf->AddFont('Borg9','I','BORG9i.php');
-
+		
 			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
 			
 			if (class_exists('TCPDF'))
@@ -148,7 +123,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
-			
 			
 			$pdf->Open();
 			$pagenb=0;
@@ -174,39 +148,16 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->AddPage();
 				$pagenb++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','', 9);
-				$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0,0,0);
 				
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
 				
-				
 				/*
 				 * Header société
 				 */
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);////$pdf->SetFont('Arial','',9);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY( $this->marge_gauche + 25, $this->marge_haute -1);
-				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);////$pdf->SetFont('Arial','',7);
-				$pdf->SetXY( $this->marge_gauche + 25, $this->marge_haute +3);
-				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
-				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-				$this->str.= ' - FRANCE'."\n";
-				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."\n";
-				$this->str.= 'fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
-				$pdf->SetXY( $this->page_largeur - $this->marge_droite - 100, $this->marge_haute +9);
-				$this->str = 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
-				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'R');
-				
-				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->Line ($this->marge_gauche + 0.5, $this->marge_haute + 15.7, $this->page_largeur - $this->marge_droite, $this->marge_haute + 15.7);
 				
 				// Logo en haut à gauche
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
@@ -214,8 +165,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				{
 					if (is_readable($logo))
 					{
-						$height=pdf_getHeightForLogo($logo);
-						$pdf->Image($logo, $this->marge_gauche, $this->marge_haute, 0, $height);	// width=0 (auto)
+						$heightLogo=pdf_getHeightForLogo($logo);
+						$pdf->Image($logo, $this->marge_gauche, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
 					{
@@ -231,10 +182,35 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 				
+				$posX += $this->page_largeur - $this->marge_droite - 50;
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->SetXY($posX, $posY -1);
+				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
+				$pdf->SetXY($posX, $posY +3);
+				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
+				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
+				$this->str.= ' - FRANCE'."\n";
+				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."\n";
+				$this->str.= 'fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
+				$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
+				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
+				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				
+				$hauteur = dol_nboflines_bis($this->str,50)*4;
+				$posY += $hauteur + 2; 
+				
+				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				
 				// Mise en page de la baseline
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);//$pdf->SetFont('Arial','',18);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
 				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
 				$this->width = $pdf->GetStringWidth($this->str);
+				
 				// alignement du bord droit du container avec le haut de la page
 				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width; 
 				$baseline_angle = (M_PI/2); //angle droit
@@ -252,25 +228,24 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				 */
 
 				$posX = $this->marge_gauche;
-				$posY = 30;
+				$posY = $posY + 5;
 				
 				/***** Titre *****/
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);//$pdf->SetFont('Arial','',15);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Fiche pédagogique";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-				$posY+= 15;
+				$posY+= 10;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);//$pdf->SetFont('','',12);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor(0,0,0);
 				$this->str = $agf->formintitule;
-				//$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$hauteur = 10;
+				$hauteur = dol_nboflines_bis($this->str,50)*4;
+				
 				// cadre
 				$pdf->SetFillColor(255);
-				//$this->RoundedRect($pdf, $posX, $posY, $this->espaceH_dispo, $hauteur, 1.5, 'DF');
-				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur);
+				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur+3);
 				// texte
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
@@ -296,13 +271,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				{
 					if ($y > 0) $posY+= $hauteur;
 					$pdf->SetXY ($posX, $posY);
-					//$hauteur = $this->NbLines($pdf, $width, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 4);
-					//$hauteur = 10;
-					
-					$StringWidth = $pdf->GetStringWidth($agf_op->line[$y]->intitule);
-					if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
-					else $nblines = 1;
-					$hauteur = $nblines * 5;
+					$hauteur = dol_nboflines_bis($this->str,50)*4;
 					
 					$pdf->Cell(10, 4, $agf_op->line[$y]->priorite.'. ', 0, 0, 'L', 0);
 					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
@@ -315,20 +284,16 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// Récuperation
 				$agf_op->fetch($agf->formid);
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');//$pdf->SetFont('','B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Publics";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');//$pdf->SetFont('','','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_op->public);
 				
-				//$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$StringWidth = $pdf->GetStringWidth($this->str);
-				if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
-				else $nblines = 1;
-				$hauteur = $nblines * 5;
+				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -337,21 +302,17 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				
 				/***** Pré requis *****/
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');//$pdf->SetFont('','B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Pré-requis";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');//$pdf->SetFont('','','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = $agf_op->prerequis;
 				if (empty($this->str)) $this->str = "Aucun";
 				
-				//$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$StringWidth = $pdf->GetStringWidth($this->str);
-				if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
-				else $nblines = 1;
-				$hauteur = $nblines * 5;
+				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -363,24 +324,17 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// Récuperation
 				//$agf_op->fetch($agf->formid);
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');//$pdf->SetFont('','B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Programme";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');//$pdf->SetFont('','','');
-				//$this->str = $this->liste_a_puce($agf_op->programme);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str =$agf_op->programme;
-				$hauteur_ligne_dans_col = 5;
-				//$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str),$hauteur_ligne_dans_col);
-				//$hauteur = 10;
+				$hauteur_ligne_dans_col = 5;				
+				$hauteur=dol_nboflines_bis($this->str,50)*4;
 				
-				//$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$StringWidth = $pdf->GetStringWidth($this->str);
-				if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
-				else $nblines = 1;
-				$hauteur = $nblines * 5;
 				
 				$hauteur_col = $hauteur / 2;
 				$hauteur_nb_lines = ($hauteur / $hauteur_ligne_dans_col)  /2;
@@ -388,15 +342,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$largeur_col = ($this->espaceH_dispo - $espace_entre_col) / 2;
 				
 				$pdf->SetXY( $posX, $posY);
-				//$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J',0, $hauteur_nb_lines);
-				//$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J',0, $hauteur_nb_lines);
 				$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J');
-				
-				//$pdf->Line ($this->milieu + $this->marge_gauche, $posY, $this->milieu  + $this->marge_gauche, $posY + $hauteur_col);
-				
-				//$pdf->SetXY( $posX + $largeur_col + $espace_entre_col, $posY);
-				//$txt = $this->MultiCell_C($pdf, $largeur_col, $hauteur_ligne_dans_col, $txt,0,'J',0, $hauteur_nb_lines);
-				//$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J',0, $hauteur_nb_lines);
 				
 				// Nbre de ligne * hauteur ligne + decallage titre niv 2
 				$posY += $hauteur + 8;
@@ -407,16 +353,15 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// Récuperation
 				$agf_op->fetch($agf->formid);
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');//$pdf->SetFont('','B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Méthode pédagogique";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');//$pdf->SetFont('','','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = $agf_op->methode;
-				//$hauteur = $this->NbLines($pdf, $this->espaceH_dispo, $outputlangs->transnoentities($this->str), 5);
-				$hauteur = 10; 
+				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY+= $hauteur + 8;
@@ -425,15 +370,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				/***** Duree *****/
 				
 				// Durée
-				//$agf_op->fetch($agf->formid);
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');//$pdf->SetFont('','B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Durée";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');//$pdf->SetFont('','','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				// calcul de la duree en nbre de jours
 				$jour = $agf_op->duree / 7;
 				if ($jour < 1) $this->str = $agf_op->duree.' heures.';
@@ -511,8 +454,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 		
-		//$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-		$statut = $conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
+		
+		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
 		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
 		$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;

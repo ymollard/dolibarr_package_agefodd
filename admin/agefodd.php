@@ -38,9 +38,7 @@ $langs->load('agefodd@agefodd');
 
 if (!$user->admin) accessforbidden();
 
-$value = GETPOST('value','alpha');
 $action = GETPOST('action','alpha');
-$label = GETPOST('label','alpha');
 
 if ($action == 'updateMask')
 {
@@ -51,6 +49,42 @@ if ($action == 'updateMask')
 
 	if (! $res > 0) $error++;
 
+	if (! $error)
+	{
+		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+	}
+	else
+	{
+		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+	}
+}
+
+if ($action == 'setvar')
+{
+	/*$use_typestag=GETPOST('use_stag_type','int');
+	
+	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$def_typestag=GETPOST('def_type_stag','int');
+	if (!empty($def_typestag))
+	{
+		$res = dolibarr_set_const($db, 'AGF_DEFAULT_STAGIAIRE_TYPE', $def_typestag,'chaine',0,'',$conf->entity);
+		if (! $res > 0) $error++;
+	}*/
+	
+	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
+	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$num_org=GETPOST('AGF_ORGANISME_NUM','alpha');
+	$res = dolibarr_set_const($db, 'AGF_ORGANISME_NUM', $num_org,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$org_rep=GETPOST('AGF_ORGANISME_REPRESENTANT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_ORGANISME_REPRESENTANT', $org_rep,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
 	if (! $error)
 	{
 		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
@@ -350,6 +384,56 @@ foreach ($dirmodels as $reldir)
 }
 
 print '</table><br>';
+
+
+// Admin var of module
+print_titre($langs->trans("AgfAdmVar"));
+
+print '<table class="noborder" width="100%">';
+
+print '<form method="post" action="'.$_SERVER['PHP_SELF'].'">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="setvar">';
+
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Name").'</td>';
+print '<td>'.$langs->trans("Valeur").'</td>';
+print '<td></td>';
+print "</tr>\n";
+
+//Prefecture d\'enregistrement
+print '<tr class="pair"><td>'.$langs->trans("AgfPrefNom").'</td>';
+print '<td align="left">';
+print '<input type="text"   name="AGF_ORGANISME_PREF" value="'.$conf->global->AGF_ORGANISME_PREF.'" size="20" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfPrefNomHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+//Numerot d\'enregistrement a la prefecture
+print '<tr class="impair"><td>'.$langs->trans("AgfPrefNum").'</td>';
+print '<td align="left">';
+print '<input type="text"   name="AGF_ORGANISME_NUM" value="'.$conf->global->AGF_ORGANISME_NUM.'" size="20" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfPrefNumHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+//Representant de la societé de formation
+print '<tr class="pair"><td>'.$langs->trans("AgfRepresant").'</td>';
+print '<td align="left">';
+print '<input type="text"   name="AGF_ORGANISME_REPRESENTANT" value="'.$conf->global->AGF_ORGANISME_REPRESENTANT.'" size="20" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfRepresantHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+//Representant de la societé de formation
+print '<tr class="pair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
+print '</tr>';
+
+print '</table><br>';
+print '</form>';
 
 //Admin Session level administation
 
