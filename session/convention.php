@@ -24,12 +24,8 @@
  *  \version		$Id$
  */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
-$res=@include("../main.inc.php");					// For root directory
-if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
+$res=@include("../../main.inc.php");				// For root directory
+if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
