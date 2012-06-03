@@ -531,12 +531,7 @@ if ($id)
 				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
 				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
 				document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
-	
-	// 			// Pendant la formation
-	 			print '<tr><td colspan=3 style="background-color:#d5baa8;">Pendant la formation</td></tr>'."\n";
-	 			document_line("Fiche de présence", 2, "fiche_presence", $agf->line[$i]->socid);
-	 			document_line("Fiche d'évaluation", 2, "fiche_evaluation", $agf->line[$i]->socid);
-	
+		
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
 				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);

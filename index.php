@@ -24,13 +24,17 @@
  * 	\Version	$Id$
  */
 
+/*error_reporting(E_ALL);
+ ini_set('display_errors', true);
+ini_set('html_errors', false);*/
+
 $res=@include("../main.inc.php");					// For root directory
 if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
 
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/class/agefodd_index.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/session/class/agefodd_sessadm.class.php');
-require_once(DOL_DOCUMENT_ROOT_ALT.'/agefodd/lib/agefodd.lib.php');
-require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
+dol_include_once('/agefodd/class/agefodd_index.class.php');
+dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/date.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -51,7 +55,7 @@ $agf = new Agefodd_index($db);
 
 // Nbre de formation au catalogue actuellement
 $resql = $agf->fetch_formation_nb();
-print '<tr class="liste"><td>formation au catalogue actuellement: </td><td align="right">';
+print '<tr class="liste"><td>Formation au catalogue actuellement: </td><td align="right">';
 print '<a href="'.dol_buildpath('/agefodd/training/list.php',1).'?mainmenu=agefodd">';
 print $agf->num.'</a>&nbsp;</td></tr>';
 
@@ -64,19 +68,19 @@ print '<tr class="liste"><td>stagiaires formés: </td><td align="right">'.$resql
 // nbre de sessions realisées
 $resql = $agf->fetch_session_nb();
 $nb_total_session = $agf->num;
-print '<tr class="liste"><td>sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';	
 
 
 // Nbre d'heure/session délivrées
 $resql = $agf->fetch_heures_sessions_nb();
-print '<tr class="liste"><td>heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
 $total_heures = $agf->total;
 
 
 
 // Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
-print '<tr class="liste"><td>heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
 
 print '<table>';
 print '&nbsp;';
@@ -92,10 +96,7 @@ for ($i=0; $i < $num; $i++)
 	print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->line[$i]->id.'">';
 	print img_object($langs->trans("AgfShowDetails"),"generic").' '.$agf->line[$i]->id.'</a></td>';
 	print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">';
-	
-	$today_mktime = mktime(0, 0, 0, date("m"), date("d"), date("y"));
-	$endsession_mktime = (mysql2timestamp($agf->line[$i]->datef));
-	$ilya = (num_between_day($endsession_mktime, $today_mktime) + 1);
+	$ilya = (num_between_day($db->jdate($agf->line[$i]->datef), dol_now(),0));
 	print "il y a ".$ilya." j.";
 	print '</td></tr>';
 }
@@ -105,7 +106,7 @@ print '&nbsp;';
 print '<table class="noborder" width="400px">';
 
 // top 5 des formations
-print '<tr class="liste_titre"><td colspan=4>top 5 des formations délivrées (nb d\'occurence, % pondéré à la durée)</td></tr>';
+print '<tr class="liste_titre"><td colspan=4>Top 5 des formations délivrées (nb d\'occurence, % pondéré à la durée)</td></tr>';
 $resql = $agf->fetch_top_formations(5);
 $num = count($agf->line);
 for ($i=0; $i < $num; $i++)

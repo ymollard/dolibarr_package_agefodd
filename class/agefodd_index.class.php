@@ -264,8 +264,8 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->line[$i]->intitule = $obj->intitule;
-				$this->line[$i]->dated = $obj->dated;
-				$this->line[$i]->datef = $obj->datef;
+				$this->line[$i]->dated = $this->db->idate($obj->dated);
+				$this->line[$i]->datef = $this->db->idate($obj->datef);
 				$this->line[$i]->idforma = $obj->fk_formation_catalogue;
 				$this->line[$i]->id = $obj->id;
 				$i++;
