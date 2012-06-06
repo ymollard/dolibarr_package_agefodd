@@ -19,7 +19,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_modules.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_catalogue.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -37,7 +37,7 @@ class Agefodd extends CommonObject
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd_formation_modules';
+	var $table_element='agefodd_formation_catalogue';
     var $id;
 
 	/**
@@ -74,7 +74,7 @@ class Agefodd extends CommonObject
 		// Put here code to add control on parameters value
 		
 		// Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_modules(";
+		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
 		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
@@ -95,7 +95,7 @@ class Agefodd extends CommonObject
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_modules");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
@@ -142,7 +142,7 @@ class Agefodd extends CommonObject
 	$sql = "SELECT";
 	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
 	$sql.= " c.public, c.methode, c.prerequis, c.programme, archive";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	$sql.= " WHERE c.rowid = ".$id;
 	
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -187,7 +187,7 @@ class Agefodd extends CommonObject
 		
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.datec, c.tms, c.fk_user";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " WHERE c.rowid = ".$id;
 		
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -237,7 +237,7 @@ class Agefodd extends CommonObject
 		// Put here code to add control on parameters values
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_modules as c SET";
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
 		$sql.= " c.ref='".$this->ref_interne."',";
 		$sql.= " c.intitule='".$this->intitule."',";
 		$sql.= " c.duree='".$this->duree."',";
@@ -296,7 +296,7 @@ class Agefodd extends CommonObject
 	*/
 	function remove($id)
 	{
-		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_modules";
+		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql .= " WHERE rowid = ".$id;
 		
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
@@ -602,6 +602,82 @@ class Agefodd extends CommonObject
     }
     //TODO : createFromClone
 
+    /**
+     *    \brief	Load object in memory from database
+     *    \param	$sortorder	Load object in memory from database
+     *		$sortfield
+     *		$limit
+     *		$offset
+     *		$arch 	int (0 for only active record, 1 for only archive record)
+     *    \return    int     <0 if KO, $num of teacher if OK
+     */
+    function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
+    {
+    	global $langs;
+    
+    	$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree,";
+		$sql.= " (SELECT MAX(sess1.datef) FROM ".MAIN_DB_PREFIX."agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
+		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession,";
+		$sql.= " a.dated";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as a";
+		$sql.= " ON c.rowid = a.fk_formation_catalogue";
+		$sql.= " WHERE c.archive LIKE ".$arch;
+		$sql.= " GROUP BY c.ref";
+		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
+    
+    	dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
+    	$resql=$this->db->query($sql);
+    	if ($resql)
+    	{
+    		$this->line = array();
+    		$num = $this->db->num_rows($resql);
+    		$i = 0;
+    
+    		if ($num)
+    		{
+    			while( $i < $num)
+    			{
+    				$obj = $this->db->fetch_object($resql);
+    				$this->line[$i]->rowid = $obj->rowid;
+    				$this->line[$i]->intitule = $obj->intitule;
+    				$this->line[$i]->ref = $obj->ref;
+    				$this->line[$i]->datec = $this->db->jdate($obj->datec);
+    				$this->line[$i]->duree = $obj->duree;
+    				$this->line[$i]->lastsession = $obj->lastsession;
+    				$this->line[$i]->nbsession = $obj->nbsession;
+    				
+    				/*//Totalisation des sessions réalisées par type de formation
+    				$sql2 = "SELECT a.rowid";
+    				$sql2.= " FROM ".MAIN_DB_PREFIX."agefodd_session as a";
+    				$sql2.= " WHERE fk_formation_catalogue = ".$lines->rowid;
+    				$sql2.= " AND archive LIKE '1'";
+    				
+    				$resql2 = $db->query($sql2);
+    				if ($resql2) {
+    					$count = $db->num_rows($resql2);
+    					dol_syslog("agefodd::training::list::num_rows sql=".$sql2, LOG_DEBUG);
+    				}
+    				else
+    				{
+    					$db->rollback();
+    					dol_print_error($db);
+    					dol_syslog("agefodd::training::list::num_rows ".$errmsg, LOG_ERR);
+    				}*/
+    				
+    				$i++;
+    			}
+    		}
+    		$this->db->free($resql);
+    		return $num;
+    	}
+    	else
+    	{
+    		$this->error="Error ".$this->db->lasterror();
+    		dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
+    		return -1;
+    	}
+    }
 }
 
 

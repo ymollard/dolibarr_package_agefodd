@@ -328,7 +328,7 @@ function ebi_select_formation($selectid, $name='formation', $return='intitule')
 	else $order = 'c.intitule';
 		
 	$sql = "SELECT c.rowid, c.intitule, c.ref";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	$sql.= " WHERE archive LIKE 0";
 	$sql.= " ORDER BY ".$order;
 

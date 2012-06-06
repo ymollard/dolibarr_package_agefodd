@@ -96,7 +96,7 @@ class Agefodd_session extends CommonObject
 	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_modules");
+		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
 		    if (! $notrigger)
 		    {
 	            // Uncomment this and change MYOBJECT to your own tag if you
@@ -165,7 +165,7 @@ class Agefodd_session extends CommonObject
 	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_modules");
+		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
 		    if (! $notrigger)
 		    {
 	            // Uncomment this and change MYOBJECT to your own tag if you
@@ -213,7 +213,7 @@ class Agefodd_session extends CommonObject
 		$sql.= " p.rowid as placeid, p.ref_interne,";
 		$sql.= " CONCAT(sp.name,' ',sp.firstname) as teachername";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p";
 		$sql.= " ON p.rowid = s.fk_session_place";
@@ -690,7 +690,7 @@ class Agefodd_session extends CommonObject
 		$s='';
 		if (type=='training')
 		{
-			dol_include_once('/agefodd/training/class/agefodd_formation_modules.class.php');
+			dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
 			
 			$agf_training = new Agefodd($db);
 			$agf_training->fetch($this->formid);

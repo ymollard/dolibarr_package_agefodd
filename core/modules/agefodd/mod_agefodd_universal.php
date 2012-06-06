@@ -119,7 +119,7 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 		}
 
 		$date=empty($agf->date_c)?dol_now():$agf->date_c;
-		$numFinal=get_next_value($db,$mask,'agefodd_formation_modules','ref','',$objsoc->code_client,$date);
+		$numFinal=get_next_value($db,$mask,'agefodd_formation_catalogue','ref','',$objsoc->code_client,$date);
 
 		return  $numFinal;
 	}

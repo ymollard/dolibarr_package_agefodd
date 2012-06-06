@@ -110,7 +110,7 @@ if ($resql)
 }
 else
 {
-    dol_syslog("agefodd::s_teacher_liste::query::fetch ".$errmsg, LOG_ERR);
+    dol_syslog("agefodd::trainer::list ".$agf->error, LOG_ERR);
 }
 
 print "</table>";
@@ -130,8 +130,6 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 }
 
 print '</div>';
-
-$db->close();
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

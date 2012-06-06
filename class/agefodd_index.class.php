@@ -134,7 +134,7 @@ class Agefodd_index
 		global $langs;
 	
 		$sql = "SELECT count(*) as num";
-		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_formation_modules";
+		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql.= " WHERE archive LIKE 0";
 	
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -170,7 +170,7 @@ class Agefodd_index
 	
 		$sql = "SELECT  sum(f.duree) AS total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_modules AS f";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
 		$sql.= " WHERE s.archive LIKE 1";
 		//$sql.= " GROUP BY f.duree";
@@ -210,7 +210,7 @@ class Agefodd_index
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire AS ss";
 		$sql.= " ON ss.fk_session = s.rowid";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_modules AS f";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
 		$sql.= " WHERE s.archive LIKE 1";
 		//$sql.= " GROUP BY f.duree";
@@ -248,7 +248,7 @@ class Agefodd_index
 	
 		$sql = "SELECT c.intitule, s.dated, s.datef, s.fk_formation_catalogue, s.rowid as id";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " WHERE s.archive LIKE 1";
 		$sql.= " ORDER BY s.dated DESC LIMIT ".$number;
@@ -295,7 +295,7 @@ class Agefodd_index
 		$sql = "SELECT c.intitule, count(*) as num, c.duree, ";
 		$sql.= " s.fk_formation_catalogue";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " WHERE s.archive LIKE 1";
 		$sql.= " GROUP BY c.intitule";
@@ -461,7 +461,7 @@ class Agefodd_index
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as sess";
 		$sql.= " ON s.fk_agefodd_session = sess.rowid";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_modules as f";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as f";
 		$sql.= " ON sess.fk_formation_catalogue = f.rowid";
 		$sql.= " WHERE s.archive LIKE 0 AND (NOW() < s.datef)";
 		if ( !empty($delais_sup) && !empty($delais_inf) )
