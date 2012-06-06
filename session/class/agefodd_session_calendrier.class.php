@@ -85,7 +85,7 @@ class Agefodd_sesscalendar
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_modules");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you

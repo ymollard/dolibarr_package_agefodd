@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_modules.class.php');
 
 
 // Security check
@@ -53,17 +53,20 @@ $pagenext = $page + 1;
 
 if (empty($arch)) $arch = 0;
 
+$agf = new Agefodd($db);
+
+$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
+
 // TODO move sql query to Model Class
 $db->begin();
 
 $sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree,";
-$sql.= " IF(a.archive LIKE '1',c.datec, '') as lastsession,";
+$sql.= " IF(a.archive LIKE '1',a.datec, '') as lastsession,";
 $sql.= " a.dated";
-$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as a";
 $sql.= " ON c.rowid = a.fk_formation_catalogue";
 $sql.= " WHERE c.archive LIKE ".$arch;
-
 $sql.= " GROUP BY c.ref";
 $sql.= " ORDER BY $sortfield $sortorder " . $db->plimit( $limit + 1 ,$offset);
 $resql = $db->query($sql);
@@ -73,7 +76,7 @@ if ($resql)
     dol_syslog("agefodd::training::list::query sql=".$sql, LOG_DEBUG);
     $num = $db->num_rows($resql);
 
-    print_barre_liste($langs->trans("AgfFormationList"), $page, $_SERVER['PHP_SELF'],'', $sortfield, $sortorder,'', $num);
+    print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER['PHP_SELF'],'', $sortfield, $sortorder,'', $num);
 
     $i = 0;
     print '<table class="noborder" width="100%">';

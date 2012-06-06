@@ -1,6 +1,7 @@
 -- ============================================================================
 -- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
 -- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -24,11 +25,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   ref varchar(40) NOT NULL,
   intitule varchar(80) NOT NULL,
-  duree int(6) NOT NULL,
-  public tinytext,
-  methode tinytext,
-  prerequis tinytext,
-  programme text,
   fk_user int(11) default NULL,
   archive enum('0','1') NOT NULL default '0',
   PRIMARY KEY  (rowid),

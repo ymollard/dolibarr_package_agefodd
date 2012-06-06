@@ -19,7 +19,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_catalogue.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_modules.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -37,7 +37,7 @@ class Agefodd extends CommonObject
 	var $error;
 	var $errors=array();
 	var $element='agefodd';
-	var $table_element='agefodd_formation_catalogue';
+	var $table_element='agefodd_formation_modules';
     var $id;
 
 	/**
@@ -74,7 +74,7 @@ class Agefodd extends CommonObject
 		// Put here code to add control on parameters value
 		
 		// Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
+		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_modules(";
 		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
@@ -95,7 +95,7 @@ class Agefodd extends CommonObject
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_modules");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
@@ -142,7 +142,7 @@ class Agefodd extends CommonObject
 	$sql = "SELECT";
 	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
 	$sql.= " c.public, c.methode, c.prerequis, c.programme, archive";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
 	$sql.= " WHERE c.rowid = ".$id;
 	
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -187,7 +187,7 @@ class Agefodd extends CommonObject
 		
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.datec, c.tms, c.fk_user";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_modules as c";
 		$sql.= " WHERE c.rowid = ".$id;
 		
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -237,7 +237,7 @@ class Agefodd extends CommonObject
 		// Put here code to add control on parameters values
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_modules as c SET";
 		$sql.= " c.ref='".$this->ref_interne."',";
 		$sql.= " c.intitule='".$this->intitule."',";
 		$sql.= " c.duree='".$this->duree."',";
@@ -296,7 +296,7 @@ class Agefodd extends CommonObject
 	*/
 	function remove($id)
 	{
-		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
+		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_modules";
 		$sql .= " WHERE rowid = ".$id;
 		
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);

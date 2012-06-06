@@ -19,7 +19,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_catalogue.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_modules.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$

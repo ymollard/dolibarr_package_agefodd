@@ -26,7 +26,7 @@
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/training/class/agefodd_formation_modules.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
 dol_include_once('/core/lib/company.lib.php');
