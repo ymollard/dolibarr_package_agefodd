@@ -608,63 +608,7 @@ class Agefodd_session extends CommonObject
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
-
-
-	/**
-	 *	\brief		Load an object from its id and create a new one in database
-	 *	\param		fromid		Id of object to clone
-	 * 	\return		int		New id of clone
-	 */
-	/*function createFromContact($fromid)
-	{
-	 //TODO : What is this code for ?
-		global $user,$langs;
-		
-		$error=0;
-		
-		$object=new Agefodd($this->db);
-
-		$this->db->begin();
-
-		// Load source object
-		$object->fetch($fromid);
-		$object->id=0;
-		$object->statut=0;
-
-		// Clear fields
-		// ...
-				
-		// Create clone
-		$result=$object->create($user);
-
-		// Other options
-		if ($result < 0) 
-		{
-			$this->error=$object->error;
-			$error++;
-		}
-		
-		if (! $error)
-		{
-			
-			
-			
-		}
-		
-		// End
-		if (! $error)
-		{
-			$this->db->commit();
-			return $object->id;
-		}
-		else
-		{
-			$this->db->rollback();
-			return -1;
-		}
-	}*/
-
+    }
 	
 	/**
 	 *		\brief		Initialise object with example values
@@ -697,6 +641,76 @@ class Agefodd_session extends CommonObject
 			$s=$agf_training->getToolTip();
 		}
 		return $s;
+	}
+	
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch)
+	{
+		global $langs;
+	
+		$sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.datef,";
+		$sql.= " c.intitule, c.ref,";
+		$sql.= " p.ref_interne,";
+		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session=s.rowid) as num";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+		$sql.= " ON c.rowid = s.fk_formation_catalogue";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p";
+		$sql.= " ON p.rowid = s.fk_session_place";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
+		$sql.= " ON s.rowid = ss.fk_session";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
+		$sql.= " ON s.rowid = sa.fk_agefodd_session";
+		
+		if ($arch == 2)
+		{
+			$sql.= " WHERE s.archive LIKE 0";
+			$sql.= " AND sa.indice=";
+			$sql.= "(";
+			$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE level_rank=0";
+			$sql.= ")";
+			$sql.= " AND sa.archive LIKE 1 AND sa.datef > '0000-00-00 00:00:00'";
+		}
+		else $sql.= " WHERE s.archive LIKE ".$arch;
+		$sql.= " GROUP BY (s.rowid)";
+		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
+		
+		$resql = $this->db->query($sql);
+		
+		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+		
+			if ($num)
+			{
+				while( $i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+					$this->line[$i]->rowid = $obj->rowid;
+					$this->line[$i]->fk_session_place = $obj->fk_session_place;
+					$this->line[$i]->dated = $this->db->jdate($obj->dated);
+					$this->line[$i]->datef =$this->db->jdate($obj->datef);
+					$this->line[$i]->intitule = $obj->intitule;
+					$this->line[$i]->ref = $obj->ref;
+					$this->line[$i]->ref_interne = $obj->ref_interne;
+					$this->line[$i]->num = $obj->num;
+		
+					$i++;
+				}
+			}
+			$this->db->free($resql);
+			return $num;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
+			return -1;
+		}
 	}
 	
 }

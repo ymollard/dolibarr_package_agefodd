@@ -55,7 +55,6 @@ $langs->load("companies");
  */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	//TODO : remove 
 
 	$agf = new Agefodd_convention($db);
 	$result = $agf->remove($id);

@@ -28,7 +28,7 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/trainee/class/agefodd_stagiaire.class.php');
-
+dol_include_once('/contact/class/contact.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -50,36 +50,14 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
+$agf = new Agefodd_stagiaire($db);
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset);
 
-$db->begin();
-
-//TODO :move sql into object class
-//$agf = new Agefodd_stagiaire($db);
-//$result = $agf->fetch_liste_globale($sortorder, $sortfield, $limit, $offset);
-
-$sql = "SELECT";
-$sql.= " so.rowid as socid, so.nom as socname,";
-$sql.= " civ.code as civilite,";
-$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-$sql.= " s.tel1, s.tel2, s.mail, s.note";
-$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
-$sql.= " ON s.fk_soc = so.rowid";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-$sql.= " ON s.civilite = civ.code";
-$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$db->plimit( $limit + 1 ,$offset);
-
-$resql = $db->query($sql);
-
-if ($resql)
+if ($result != -1)
 {
-
-    dol_syslog("agefodd::u_liste::query sql=".$sql, LOG_DEBUG);
-    $num = $db->num_rows($resql);
     
-    print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
+    print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $result);
 
-    $i = 0;
     print '<table class="noborder" width="100%">';
     print '<tr class="liste_titre">';
     print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","","&socid=$socid",'',$sortfield,$sortorder);
@@ -91,32 +69,34 @@ if ($resql)
     print "</tr>\n";
 
     $var=true;
-    while ($i < $num)
+    foreach ($agf->line as $line)
     {
-	$agf = $db->fetch_object($resql);
-
-	// Affichage liste des stagiaires
-	$var=!$var;
-	print "<tr $bc[$var]>";
-	print '<td><a href="card.php?id='.$agf->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"user").' '.$agf->rowid.'</a></td>';
-	print '<td>'.strtoupper($agf->nom).' '.ucfirst($agf->prenom).'</td>';
-	print '<td>'.$agf->civilite.'</td>';
-	print '<td>';
-	if ($agf->socid)
-	{
-		print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
-		print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
-	}
-	else
-	{
-		print '&nbsp;';
-	}
-	print '</td>';
-	print '<td>'.dol_print_phone($agf->tel1).'</td>';
-	print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td>';
-	print "</tr>\n";
-
-	$i++;
+	
+		// Affichage liste des stagiaires
+		$var=!$var;
+		print "<tr $bc[$var]>";
+		print '<td><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"user").' '.$line->rowid.'</a></td>';
+		print '<td>'.strtoupper($line->nom).' '.ucfirst($line->prenom).'</td>';
+		
+		$contact_static= new Contact($db);
+		$contact_static->civilite_id = $line->civilite;
+		
+		print '<td>'.$contact_static->getCivilityLabel().'</td>';
+		print '<td>';
+		if ($line->socid)
+		{
+			print '<a href="'.dol_buildpath('/comm/fiche.php',1).'?socid='.$line->socid.'">';
+			print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($line->socname,20).'</a>';
+		}
+		else
+		{
+			print '&nbsp;';
+		}
+		print '</td>';
+		print '<td>'.dol_print_phone($line->tel1).'</td>';
+		print '<td>'.dol_print_email($line->mail, $line->rowid, $line->socid,'AC_EMAIL',25).'</td>';
+		print "</tr>\n";
+	
     }
     
     print "</table>";
@@ -125,8 +105,6 @@ else
 {
 	dol_print_error($db);
 }
-
-$db->close();
 
 llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
 ?>

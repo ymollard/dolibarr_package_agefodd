@@ -600,7 +600,6 @@ class Agefodd extends CommonObject
     	}
     	return $s;
     }
-    //TODO : createFromClone
 
     /**
      *    \brief	Load object in memory from database
@@ -646,24 +645,6 @@ class Agefodd extends CommonObject
     				$this->line[$i]->duree = $obj->duree;
     				$this->line[$i]->lastsession = $obj->lastsession;
     				$this->line[$i]->nbsession = $obj->nbsession;
-    				
-    				/*//Totalisation des sessions réalisées par type de formation
-    				$sql2 = "SELECT a.rowid";
-    				$sql2.= " FROM ".MAIN_DB_PREFIX."agefodd_session as a";
-    				$sql2.= " WHERE fk_formation_catalogue = ".$lines->rowid;
-    				$sql2.= " AND archive LIKE '1'";
-    				
-    				$resql2 = $db->query($sql2);
-    				if ($resql2) {
-    					$count = $db->num_rows($resql2);
-    					dol_syslog("agefodd::training::list::num_rows sql=".$sql2, LOG_DEBUG);
-    				}
-    				else
-    				{
-    					$db->rollback();
-    					dol_print_error($db);
-    					dol_syslog("agefodd::training::list::num_rows ".$errmsg, LOG_ERR);
-    				}*/
     				
     				$i++;
     			}

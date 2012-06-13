@@ -232,15 +232,15 @@ class Agefodd_stagiaire extends CommonObject
      *			offseth		from wich row start the display
      *    \return	int		<0 if KO, number of row if OK
      */
-    function fetch_liste_globale($sortorder, $sortfield, $limit, $offset)
+    function fetch_all($sortorder, $sortfield, $limit, $offset)
     {
     	global $langs;
                             
 		$sql = "SELECT";
 		$sql.= " so.rowid as socid, so.nom as socname,";
-		$sql.= " civ.code as civilite,";
+		$sql.= " civ.code as civilitecode,";
 		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON s.fk_soc = so.rowid";
@@ -248,34 +248,45 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " ON s.civilite = civ.code";
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 	
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
-        if ($resql)
-        {
-            $numrows = $this->db->num_rows($resql);
-            if ($numrows)
-            {
-                $obj = $this->db->fetch_object($resql);
-                $this->id = $obj->rowid;
-                $this->nom = $obj->nom;
-                $this->prenom = $obj->prenom;
-                $this->civilite = $obj->civilite;
-                $this->socid = $obj->socid;
-                $this->socname = $obj->socname;
-                $this->tel1 = $obj->tel1;
-                $this->mail = $obj->mail;
-                $this->fk_socpeople = $obj->fk_socpeople;
-	    }
-            $this->db->free($resql);
-
-            return $numrows;
-        }
-        else
-        {
-      	    $this->error="Error ".$this->db->lasterror();
-            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-            return -1;
-        }
+   		if ($resql)
+    	{
+    		$this->line = array();
+    		$num = $this->db->num_rows($resql);
+    		$i = 0;
+    
+    		if ($num)
+    		{
+    			while( $i < $num)
+    			{
+    				$obj = $this->db->fetch_object($resql);
+    				$this->line[$i]->socid = $obj->socid;
+    				$this->line[$i]->socname = $obj->socname;
+    				$this->line[$i]->civilitecode = $obj->civilitecode;
+    				$this->line[$i]->rowid = $obj->rowid;
+    				$this->line[$i]->nom = $obj->nom;
+    				$this->line[$i]->prenom = $obj->prenom;
+    				$this->line[$i]->civilite = $obj->civilite;
+    				$this->line[$i]->fk_soc = $obj->fk_soc;
+    				$this->line[$i]->fonction = $obj->fonction;
+    				$this->line[$i]->tel1 = $obj->tel1;
+    				$this->line[$i]->tel2 = $obj->tel2;
+    				$this->line[$i]->mail = $obj->mail;
+    				$this->line[$i]->note = $obj->note;
+    				
+    				$i++;
+    			}
+    		}
+    		$this->db->free($resql);
+    		return $num;
+    	}
+    	else
+    	{
+    		$this->error="Error ".$this->db->lasterror();
+    		dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
+    		return -1;
+    	}
 
 
     }
@@ -422,62 +433,7 @@ class Agefodd_stagiaire extends CommonObject
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
-        }
-
-
-	/**
-	 *	\brief		Load an object from its id and create a new one in database
-	 *	\param		fromid		Id of object to clone
-	 * 	\return		int		New id of clone
-	 */
-    //TODO : Is this method is use somewhere ?
-	/*function createFromContact($fromid)
-	{
-		global $user,$langs;
-		
-		$error=0;
-		
-		$object=new Agefodd($this->db);
-
-		$this->db->begin();
-
-		// Load source object
-		$object->fetch($fromid);
-		$object->id=0;
-		$object->statut=0;
-
-		// Clear fields
-		// ...
-				
-		// Create clone
-		$result=$object->create($user);
-
-		// Other options
-		if ($result < 0) 
-		{
-			$this->error=$object->error;
-			$error++;
-		}
-		
-		if (! $error)
-		{
-			
-			
-			
-		}
-		
-		// End
-		if (! $error)
-		{
-			$this->db->commit();
-			return $object->id;
-		}
-		else
-		{
-			$this->db->rollback();
-			return -1;
-		}
-	}*/
+    }
 
 }
 

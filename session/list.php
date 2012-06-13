@@ -52,39 +52,13 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$db->begin();
+$agf = new Agefodd_session($db);
 
-$sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.datef,";
-$sql.= " c.intitule, c.ref,";
-$sql.= " p.ref_interne,";
-$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session=s.rowid) as num";
-$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-$sql.= " ON c.rowid = s.fk_formation_catalogue";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p";
-$sql.= " ON p.rowid = s.fk_session_place";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
-$sql.= " ON s.rowid = ss.fk_session";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
-$sql.= " ON s.rowid = sa.fk_agefodd_session";
+$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
-if ($arch == 2)
+if ($resql != -1)
 {
-	$sql.= " WHERE s.archive LIKE 0";
-	$sql.= " AND sa.indice=";
-	$sql.= "(";
-	$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE level_rank=0";
-	$sql.= ")";
-	$sql.= " AND sa.archive LIKE 1 AND sa.datef > '0000-00-00 00:00:00'";
-}
-else $sql.= " WHERE s.archive LIKE ".$arch;
-$sql.= " GROUP BY (s.rowid)";
-$sql.= " ORDER BY $sortfield $sortorder " . $db->plimit( $limit + 1 ,$offset);
-$resql = $db->query($sql);
-
-if ($resql)
-{
-	$num = $db->num_rows($resql);
+	$num = $resql;
 	
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
@@ -95,30 +69,29 @@ if ($resql)
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"s.intitule","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"s.ref","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"s.ref_interne","","",'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"p.ref_interne","","",'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"num",'' ,'','',$sortfield,$sortorder);
 	print "</tr>\n";
 	
 	$var=true;
-	while ($i < $num)
+	foreach ($agf->line as $line)
 	{
 		$objp = $db->fetch_object($resql);
-		
 		
 		// Affichage tableau des sessions
 		$var=!$var;
 		print "<tr $bc[$var]>";
-		print '<td><a href="card.php?id='.$objp->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$objp->rowid.'</a></td>';
-		print '<td>'.stripslashes(dol_trunc($objp->intitule, 60)).'</td>';
-		print '<td>'.$objp->ref_interne.'</td>';
-		print '<td>'.dol_print_date($objp->dated,'daytext').'</td>';
-		print '<td>'.dol_print_date($objp->datef,'daytext').'</td>';
-		print '<td>'.stripslashes($objp->ref_interne).'</td>';
-		print '<td>'.$objp->num.'</td>';
+		print '<td><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
+		print '<td>'.stripslashes(dol_trunc($line->intitule, 60)).'</td>';
+		print '<td>'.$line->ref.'</td>';
+		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
+		print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
+		print '<td>'.stripslashes($line->ref_interne).'</td>';
+		print '<td>'.$line->num.'</td>';
 		print "</tr>\n";
 		
 		$i++;
@@ -132,7 +105,6 @@ else
     dol_syslog("agefodd::session:list::query: ".$errmsg, LOG_ERR);
 }
 
-$db->close();
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

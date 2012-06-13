@@ -248,29 +248,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 	
-	// Chargement de la liste des sociétés dans $options
-	$sql = "SELECT so.rowid, so.nom";
-	$sql.= " FROM ".MAIN_DB_PREFIX."societe as so";
-	$sql.= " WHERE so.fournisseur = 0";
-	$sql.= " ORDER BY so.nom";
-	
-	$result3 = $db->query($sql);
-	if ($result3)
-	{
-	    $var=True;
-	    $num = $db->num_rows($result3);
-	    $i = 0;
-	    $options = '<option value=""></option>'."\n";
-	    while ($i < $num)
-	    {
-		$obj = $db->fetch_object($result3);
-		$options .= '<option value="'.$obj->rowid.'">'.$obj->nom.'</option>'."\n";
-		$i++;
-	    }
-	    $db->free($result3);
-	}
-	
-	print '<select class="flat" name="societe">'."\n".$options."\n".'</select>';
+	print $form->select_company('','societe','(s.client IN (1,2))');
 	
 	print '</td></tr>';
 	
@@ -343,31 +321,9 @@ else
 					print '</tr>';
 					
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
+
+					print $form->select_company($agf->socid,'societe','(s.client IN (1,2))');
 					
-					// Chargement de la liste des sociétés dans $options
-					$sql = "SELECT so.rowid, so.nom";
-					$sql.= " FROM ".MAIN_DB_PREFIX."societe as so";
-					$sql.= " WHERE so.fournisseur = 0";
-					$sql.= " ORDER BY so.nom";
-					
-					$result3 = $db->query($sql);
-					if ($result3)
-					{
-					    $var=True;
-					    $num = $db->num_rows($result3);
-					    $i = 0;
-					    $options = '<option value=""></option>'."\n";
-					    while ($i < $num)
-					    {
-						$obj = $db->fetch_object($result3);
-						if ($obj->rowid == $agf->socid) $selected = ' selected="true"';
-						else $selected = '';
-						$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->nom.'</option>'."\n";
-						$i++;
-					    }
-					    $db->free($result);
-					    print '<select class="flat" name="societe">'."\n".$options."\n".'</select>';
-					}
 					print '</td></tr>';
 					
 					print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
@@ -386,7 +342,7 @@ else
 				{
 					print '<input type="hidden" name="fk_socpeople" value="'.$agf->fk_socpeople.'">';
 					print '<tr><td>'.$langs->trans("Lastname").'</td>';
-					print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
+					print '<td><a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
 					print '<input type="hidden" name="nom" value="'.$agf->nom.'">';
 					
 					print '<tr><td>'.$langs->trans("Firstname").'</td>';
@@ -404,7 +360,7 @@ else
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 					if ($agf->socid)
 					{
-						print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
+						print '<a href="'.dol_buildpath('/comm/fiche.php',1).'?socid='.$agf->socid.'">';
 						print '<input type="hidden" name="societe" value="'.$agf->socid.'">';
 						print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
 					}
@@ -447,7 +403,7 @@ else
 				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 				if (!empty($agf->fk_socpeople))
 				{
-					print '<a class="butAction" href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->fk_socpeople.'">'.$langs->trans('AgfModifierFicheContact').'</a>';
+					print '<a class="butAction" href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople.'">'.$langs->trans('AgfModifierFicheContact').'</a>';
 				}
 				print '</td></tr>';
 				print '</table>';
@@ -475,7 +431,7 @@ else
 				if (!empty($agf->fk_socpeople))
 				{
 					print '<tr><td>'.$langs->trans("Lastname").'</td>';
-					print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
+					print '<td><a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
 				}
 				else
 				{
@@ -496,7 +452,7 @@ else
 				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 				if ($agf->socid)
 				{
-				    print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
+				    print '<a href="'.dol_buildpath('/comm/fiche.php',1).'?socid='.$agf->socid.'">';
 				    print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
 				}
 				else
