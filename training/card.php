@@ -310,14 +310,9 @@ else
 
 		if ($result)
 		{			
-			// recuperation des objectifs pedagogique de la formation
-			$sql = "SELECT";
-			$sql.= " o.rowid, o.intitule, o.priorite, o.fk_formation_catalogue, o.tms, o.fk_user";
-			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda AS o";
-			$sql.= " WHERE o.fk_formation_catalogue = ".$agf->id;
-			
-			$resql = $db->query($sql);
-			if ($resql) $num = $db->num_rows($resql);
+
+			$agf_peda=new Agefodd($db);
+			$result_peda = $agf_peda->fetch_objpeda_per_formation($id);
 			
 			// Affichage en mode "édition"
 			if ($action == 'edit')
@@ -370,63 +365,50 @@ else
 				
 				print '</table>';
 				print '</form>';
-				
+
+				// Affichage des objectifs pedagogiques
 				print_barre_liste($langs->trans("AgfObjPeda"), "", "","","","",'',0);
 
-				
-				// Affichage des objectifs pedagogiques
 				print '<div class="tabBar">';
 				print '<table class="border" width="100%">';
-				if ($_GET["objc"]) $num = $num + $_GET["objc"]; 
 				print '<tr>';
-				if ($num > 0) 
+				if ($result_peda > 0) 
 				{
 				    print '<td width="40">'.$langs->trans("AgfObjPoids").'</td>';
 				    print '<td>'.$langs->trans("AgfObjDesc").'</td>';
-				    print '<td><a href="'.$_SERVER['PHP_SELF'].'?action=edit&amp;id='.$agf->id.'&amp;objc='.($_GET["objc"] - 1).'">';
-				    print img_edit_remove($langs->trans("AgfNewObjRemove")) . "</a>";
+				    print '<td>';
 				}
-				else
+				elseif (empty($_GET["objc"]))
 				{
 				    print '<td width="400">'.$langs->trans("AgfNoObj").'</td>';
 				    print '<td>';
 				}
-				print '&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?action=edit&amp;id='.$agf->id.'&amp;objc='.($_GET["objc"] + 1).'">';
+				print '&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?action=edit&amp;id='.$agf->id.'&amp;objc=1">';
 				if ($user->rights->agefodd->creer)	print img_edit_add($langs->trans("AgfNewObjAdd")) ."</a></td>";
 				print '</tr>';
 				
 				$i = 0;
-				while ($i < $num)
+				foreach ($agf_peda->line as $line)
 				{
-				    $objp = $db->fetch_object($resql);
-				    print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+				    print '<form name="obj_update_'.$line->id.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 				    print '<input type="hidden" name="action" value="obj_update">'."\n";
+
+					print '<input type="hidden" name="id" value="'.$line->id.'">'."\n";
+					print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
+					print '<input type="hidden" name="priorite" value="'.$line->priorite.'">'."\n";
+					print '<tr><td align="center">'."\n";
+					print $line->priorite;
 				    
-				    if ( $objp->rowid )
-				    {
-						print '<input type="hidden" name="id" value="'.$objp->rowid.'">'."\n";
-						print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
-						print '<input type="hidden" name="priorite" value="'.$objp->priorite.'">'."\n";
-						print '<tr><td align="center">'."\n";
-						print $objp->priorite;
-				    }
-				    else
-				    {
-						print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
-						$priorite = ($i + 1);
-						print '<input type="hidden" name="priorite" value="'.$priorite.'">'."\n";
-						print '<tr><td align="center">'."\n";
-						print $priorite;
-				    }
-				    print '<td width="400"><input name="intitule" class="flat" size="50" value="'.stripslashes($objp->intitule).'"></td>'."\n";
+				 
+				    print '<td width="400"><input name="intitule" class="flat" size="50" value="'.stripslashes($line->intitule).'"></td>'."\n";
 				    print "<td>";
 				    
-				    if ( $objp->rowid )
+				    if ( $line->id )
 				    {
 				    	if ($user->rights->agefodd->modifier)
 						{
-						    print '<input type="image" src="'.DOL_URL_ROOT_ALT.'/agefodd/img/save.png" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
+						    print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
 						}
 						print '&nbsp;';
 						if ($user->rights->agefodd->creer)
@@ -434,32 +416,50 @@ else
 						    print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="obj_remove" alt="'.$langs->trans("AgfModSave").'">';
 						}
 				    }
-				    else
-				    {
-						if ($user->rights->agefodd->creer)
-						{
-						    print '<input type="image" src="'.DOL_URL_ROOT_ALT.'/agefodd/img/save.png" border="0" name="obj_add" alt="'.$langs->trans("AgfNewObjAdd").'">';
-						}
-				    }
 
 				    print '</td></tr>'."\n";
 				    print '</form>'."\n";
 				    $i++;
 				}
+				
+				//New Objectif peda line
+				if ($_GET["objc"])
+				{
+					print '<form name="obj_add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+					print '<input type="hidden" name="action" value="obj_update">'."\n";
+					print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
+					$priorite = ($i + 1);
+					print '<input type="hidden" name="priorite" value="'.$priorite.'">'."\n";
+					print '<tr><td align="center">'."\n";
+					print $priorite;
+					print '<td width="400"><input name="intitule" class="flat" size="50" value=""></td>'."\n";
+					print "<td>";
+					if ($user->rights->agefodd->creer)
+					{
+						print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" name="obj_add" alt="'.$langs->trans("AgfNewObjAdd").'">';
+					}
+					print '</td></tr>'."\n";
+					print '</form>'."\n";
+				}
+				
 				print '</table>'."\n";
 				print '</div>'."\n";
 			}
 			else
 			{
 				/*
-				 * Confirmation de la suppression
-				 */
+				 * Affichage
+				*/
+				
+				//Confirmation de la suppression
 				if ($action == 'delete')
 				{
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 
+				//Confirmation Archivage!
 				if ($action == 'archive' || $action == 'active')
 				{   
 					if ($action == 'archive') $value=1;
@@ -521,13 +521,12 @@ else
 				print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfObjPeda").'</td></tr>';
 				
 				$i = 0;
-				while ($i < $num)
+				foreach ($agf_peda->line as $line)
 				{
-				    $objp = $db->fetch_object($resql);
 				
 				    print '<tr>';
-				    print '<td width="40" align="center">'.$objp->priorite.'</td>';
-				    print '<td>'.stripslashes($objp->intitule).'</td>';
+				    print '<td width="40" align="center">'.$line->priorite.'</td>';
+				    print '<td>'.stripslashes($line->intitule).'</td>';
 				    print "</tr>\n";
 				    $i++;
 				}
@@ -605,8 +604,6 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 }
 
 print '</div>';
-
-$db->close();
 
 llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

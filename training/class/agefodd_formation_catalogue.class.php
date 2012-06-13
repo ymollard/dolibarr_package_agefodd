@@ -437,7 +437,7 @@ class Agefodd extends CommonObject
 		$sql.= " WHERE o.fk_formation_catalogue = ".$id_formation;
 		$sql.= " ORDER BY o.priorite ASC";
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_objpeda_per_formation sql=".$sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql)
 		{
@@ -456,12 +456,12 @@ class Agefodd extends CommonObject
 				$i++;
 			}
 			$this->db->free($resql);
-			return 1;
+			return $num;
 		}
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_objpeda_per_formation ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
