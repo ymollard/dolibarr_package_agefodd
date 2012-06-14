@@ -210,7 +210,18 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 	print '<table class="border" width="100%">';
 	
 	print '<tr><td width="20%">'. $langs->trans("AgfContactImportAsStagiaire").'</td>';
-	print '<td>'.ebi_select_contacts("contact").'</td></tr>';
+	print '<td>';
+	
+	$agf_static = new Agefodd_stagiaire($db);
+	$agf_static->fetch_all('rowid');
+	$exclude_array = array();
+	foreach($agf_static->line as $line)
+	{
+		$exclude_array[]=$line->fk_socpeople;
+	}
+	$form->select_contacts(0,'','contact',1,$exclude_array);
+	print '</td></tr>';
+	
 	print '</table>';
 	
 	print '<table style=noborder align="right">';
@@ -248,7 +259,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 	
-	print $form->select_company('','societe','(s.client IN (1,2))');
+	print $form->select_company('','societe','(s.client IN (1,2))',1);
 	
 	print '</td></tr>';
 	
@@ -419,7 +430,7 @@ else
 				 */
 				if ($action == 'delete')
 				{
-					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
+					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteTrainee"),"confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 

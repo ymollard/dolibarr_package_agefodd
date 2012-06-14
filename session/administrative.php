@@ -30,6 +30,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
 
@@ -142,6 +143,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->fk_agefodd_session_admlevel = 0;
 		$agf->fk_agefodd_session = $id;
 		$agf->delais_alerte=0;
+		$agf->archive=0;
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->datea = dol_mktime(0,0,0,GETPOST('dateamonth','int'),GETPOST('dateaday','int'),GETPOST('dateayear','int'));
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
@@ -211,6 +213,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 llxHeader();
 
 $form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
 dol_htmloutput_mesg($mesg);
 
@@ -244,7 +247,7 @@ if ($user->rights->agefodd->creer)
 			print '<td><input name="intitule" class="flat" size="50" value=""/></td></tr>';
 			
 			print '<tr><td valign="top">'.$langs->trans("AgfParentLevel").'</td>';
-			print '<td>'.ebi_select_action_session($id).'</td></tr>';
+			print '<td>'.$formAgefodd->form_select_action_session($id).'</td></tr>';
 			
 			print '<tr><td valign="top">'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
 			$form->select_date('','datea','','','','create_confirm');

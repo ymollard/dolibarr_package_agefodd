@@ -30,6 +30,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
 
@@ -274,6 +275,7 @@ if ($action == 'sessionlevel_update')
 llxHeader();
 
 $form=new Form($db);
+$formAgefodd=new FormAgefodd($db);
 
 dol_htmloutput_mesg($mesg);
 
@@ -478,7 +480,7 @@ if ($result0>0)
 		print '</td>';
 		
 		print '<td>'.str_repeat('&nbsp;&nbsp;&nbsp;',$line->level_rank).'<input type="text" name="intitule" value="'.$line->intitule.'" size="30"/></td>';
-		print '<td>'.ebi_select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
+		print '<td>'.$formAgefodd->form_select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
 		print '<td><input type="text" name="delai" value="'.$line->alerte.'"/></td>';
 		print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'">';
  		print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sesslevel_remove" alt="'.$langs->trans("Delete").'"></td>';
@@ -491,7 +493,7 @@ if ($result0>0)
 	print '<tr>';
 	print '<td></td>';
 	print '<td><input type="text" name="intitule" value="" size="30"/></td>';
-	print '<td>'.ebi_select_action_session_adm('','parent_level').'</td>';
+	print '<td>'.$formAgefodd->form_select_action_session_adm('','parent_level').'</td>';
 	print '<td><input type="text" name="delai" value=""/></td>';
 	print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'"></td>';
 	print '</tr>';

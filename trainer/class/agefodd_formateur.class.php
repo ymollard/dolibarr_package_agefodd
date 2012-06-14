@@ -178,14 +178,15 @@ class Agefodd_teacher extends CommonObject
 		global $langs;
 
 		$sql = "SELECT";
-		$sql.= " f.rowid, f.fk_socpeople, f.archive,";
+		$sql.= " f.rowid, f.fk_socpeople, f.archive, f.fk_socpeople, ";
 		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.phone, s.email, s.phone_mobile";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";
 		if ($arch == 0 || $arch == 1) $sql.= " WHERE f.archive LIKE ".$arch;
-		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
+		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 		
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -207,6 +208,7 @@ class Agefodd_teacher extends CommonObject
 					$this->line[$i]->email = $obj->email;
 					$this->line[$i]->phone_mobile = $obj->phone_mobile;
 					$this->line[$i]->archive = $obj->archive;
+					$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
 					$i++;
 				}
 			}
@@ -216,7 +218,7 @@ class Agefodd_teacher extends CommonObject
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}

@@ -232,7 +232,7 @@ class Agefodd_stagiaire extends CommonObject
      *			offseth		from wich row start the display
      *    \return	int		<0 if KO, number of row if OK
      */
-    function fetch_all($sortorder, $sortfield, $limit, $offset)
+    function fetch_all($sortorder, $sortfield, $limit='', $offset)
     {
     	global $langs;
                             
@@ -240,13 +240,14 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilitecode,";
 		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql.= " s.tel1, s.tel2, s.mail, s.note";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON s.fk_soc = so.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
 		$sql.= " ON s.civilite = civ.code";
-		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
+		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 	
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
@@ -274,6 +275,7 @@ class Agefodd_stagiaire extends CommonObject
     				$this->line[$i]->tel2 = $obj->tel2;
     				$this->line[$i]->mail = $obj->mail;
     				$this->line[$i]->note = $obj->note;
+    				$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
     				
     				$i++;
     			}

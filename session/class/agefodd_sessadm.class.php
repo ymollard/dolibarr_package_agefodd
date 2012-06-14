@@ -144,13 +144,13 @@ class Agefodd_sessadm extends CommonObject
 		}
 	}
 	
-	
 	/**
-	*      \brief      Update database
-	*      \param      user        	User that modify
-	*      \param      notrigger	0=launch triggers after, 1=disable triggers
-	*      \return     int         	<0 if KO, >0 if OK
-	*/
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$user        User id that modify
+	 *  @param	int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
+	 */
 	function update($user=0, $notrigger=0)
 	{
 		global $conf, $langs;
@@ -225,12 +225,12 @@ class Agefodd_sessadm extends CommonObject
 	}
 
 
-
 	/**
-   	*    \brief	Load object in memory from database
-   	*    \param	id	id admin action (in table agefodd_session_adminsitu)
-	*    \return    int     <0 if KO, >0 if OK
-	*/
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id        Admin action (in table agefodd_session_adminsitu)
+	 *  @return int     		   	 <0 if KO, >0 if OK
+	 */
 	function fetch($id)
 	{
 		global $langs;
@@ -288,7 +288,8 @@ class Agefodd_sessadm extends CommonObject
         $sql.= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
         $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
         $sql.= " WHERE s.fk_agefodd_session = ".$sess_id;
-	
+        $sql.= " ORDER BY s.indice";
+        
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -449,7 +450,7 @@ class Agefodd_sessadm extends CommonObject
 				
 		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ori,'.MAIN_DB_PREFIX.'agefodd_session_adminsitu as upd ';
 		$sql.= ' SET upd.fk_parent_level=ori.rowid ';
-		$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 ';
+		$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session';
 		$sql.= ' AND upd.fk_agefodd_session='.$session_id;
 	
 		//print $sql;

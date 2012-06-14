@@ -172,7 +172,7 @@ class Agefodd_contact extends CommonObject
 	*		$arch 	int (0 for only active record, 1 for only archive record)
 	*    \return    int     <0 if KO, $num of teacher if OK
 	*/
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
+	function fetch_all($sortorder, $sortfield, $limit='', $offset, $arch=0)
 	{
 		global $langs;
 
@@ -184,7 +184,8 @@ class Agefodd_contact extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = s.fk_soc";
 		//if ($arch == 0 || $arch == 1) $sql.= " WHERE f.archive LIKE ".$arch;
-		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
+		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 		
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -210,6 +211,7 @@ class Agefodd_contact extends CommonObject
 					$this->line[$i]->phone = $obj->phone;
 					$this->line[$i]->email = $obj->email;
 					$this->line[$i]->phone_mobile = $obj->phone_mobile;
+					$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
 					$i++;
 				}
 			}

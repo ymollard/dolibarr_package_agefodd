@@ -205,7 +205,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Societe").'</span></td>';
-	print '<td>'.ebi_select_societe("").'</td></tr>';
+	print '<td>'.$form->select_company('','societe','(s.client IN (1,2))',1).'</td></tr>';
 
 	print '<tr><td>'.$langs->trans("Address").'</td>';
 	print '<td><input name="adresse" class="flat" size="50" value=""></td></tr>';
@@ -269,7 +269,7 @@ else
 				print '<td><input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
 				print '<tr><td>'.$langs->trans("Societe").'</td>';
-				print '<td>'.ebi_select_societe($agf->socid,"societe").'</td></tr>';
+				print '<td>'.$form->select_company($agf->socid,'societe','(s.client IN (1,2))').'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Address").'</td>';
 				print '<td><input name="adresse" class="flat" size="50" value="'.$agf->adresse.'"></td></tr>';

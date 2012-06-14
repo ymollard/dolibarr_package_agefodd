@@ -30,11 +30,13 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
 dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
 
+//TODO : Use stagiaire type
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -490,6 +492,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 llxHeader();
 
 $form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
 dol_htmloutput_mesg($mesg);
 
@@ -507,7 +510,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<table class="border" width="100%">';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
-	print '<td>'.ebi_select_formation("", 'formation').'</a></td></tr>';
+	print '<td>'.$formAgefodd->form_select_formation("", 'formation').'</a></td></tr>';
 
 	//TODO : check nb formateur
 	//print '<tr><td>'.$langs->trans("AgfFormateurNb").'</td><td>';
@@ -526,7 +529,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
 	print '<td>';
-	print ebi_select_site_forma("",'place');
+	print $formAgefodd->form_select_site_forma("",'place');
 	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -574,28 +577,15 @@ else
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 					print '<td>'.$agf->id.'</td></tr>';
-					//print '<td>'.$form->showrefnav('session', $agf->id).'</td></tr>';
 	
 					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
-					print '<td>'.ebi_select_formation($agf->formid, 'formation');
-					//$s=$agf->getToolTip('training');
-					//print $form->textwithpicto('',$s,1);
+					print '<td>'.$formAgefodd->form_select_formation($agf->formid, 'formation');
 					print '</td></tr>';
-					//print '<td>'.$agf->formintitule.'</a></td></tr>';
 	
 	
 					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
-					//print '<td>'.ebi_select_formation($agf->id, 'formation', 'code').'</a></td></tr>';
 					print '<td>'.$agf->formref.'</a></td></tr>';
 					
-					/*
-					print '<tr><td>'.$langs->trans("AgfFormateur").'</td><td>';
-					//$form->select_users($agf->rowid);
-					print ebi_select_formateur($agf->teacherid, 'formateur');
-					print ' '.img_picto($langs->trans("AgfFormateurSelectHelp"),"help", 'align="absmiddle"');
-					//print $form->textwithpicto("","test");
-					print '</td>;
-					*/
 					print '</tr>';
 					
 					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
@@ -608,7 +598,7 @@ else
 	
 					print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
 					print '<td>';
-					print ebi_select_site_forma($agf->placeid,'place');
+					print $formAgefodd->form_select_site_forma($agf->placeid,'place');
 					print '</td></tr>';
 	
 					print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -669,7 +659,7 @@ else
 							if ($formateurs->line[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
 							{
 								print '<td width="300px" style="border-right: 0px">';
-								print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
+								print $formAgefodd->form_select_formateur($formateurs->line[$i]->formid, "formid");
 								if ($user->rights->agefodd->modifier)
 								{
 									print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -720,7 +710,7 @@ else
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 						print '<td width="20px" align="center">'.($i+1).'</td>';
 						print '<td>';
-						print ebi_select_formateur($formateurs->line[$i]->formid, "formid");
+						print $formAgefodd->form_select_formateur($formateurs->line[$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_session='.$id.')');
 						if ($user->rights->agefodd->modifier)
 						{
 							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
@@ -929,12 +919,12 @@ else
 							if ($stagiaires->line[$i]->id == $_POST["modstagid"] && ! $_POST["stag_remove_x"])
 							{
 								print '<td colspan=2>';
-								print ebi_select_stagiaire($stagiaires->line[$i]->id);
+								print $formAgefodd->form_select_stagiaire($stagiaires->line[$i]->id, 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')');
 								
 								if (USE_STAGIAIRE_TYPE == 'OK')
-								{
+								{   // TODO : type stagiaire
 									print '<br /> '.$langs->trans("AgfStagiaireModeFinancement").': ';
-									print ebi_select_type_stagiaire($stagiaires->line[$i]->typeid);
+									//print ebi_select_type_stagiaire($stagiaires->line[$i]->typeid);
 								}
 								if ($user->rights->agefodd->modifier)
 								{
@@ -1000,15 +990,15 @@ else
 						print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 						print '<td width="20px" align="center">'.($i+1).'</td>';
 						print '<td colspan=2>';
-							print ebi_select_stagiaire();
-							if (USE_STAGIAIRE_TYPE == 'OK')
-							{
-								print ebi_select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
-							}
-							if ($user->rights->agefodd->modifier)
-							{
-								print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
-							}
+						print $formAgefodd->form_select_stagiaire('','stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')');
+						if (USE_STAGIAIRE_TYPE == 'OK')
+						{
+							print $formAgefodd->form_select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
+						}
+						if ($user->rights->agefodd->modifier)
+						{
+							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
+						}
 						print '</td>';
 						print '</form>';
 						print '</tr>'."\n";

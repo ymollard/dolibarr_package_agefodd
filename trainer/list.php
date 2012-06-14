@@ -28,6 +28,7 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/trainer/class/agefodd_formateur.class.php');
+dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
@@ -96,7 +97,9 @@ if ($resql)
 		print '<td><span style="background-color:'.$bgcolor.';"><a href="card.php?id='.$agf->line[$i]->id.'"'.$style.'>'.img_object($langs->trans("AgfEditerFicheFormateur"),"user").' '.$agf->line[$i]->id.'</a></span></td>';
 		print '<td'.$style.'>'.$agf->line[$i]->name.'</td>';
 		print '<td'.$style.'>'.$agf->line[$i]->firstname.'</td>';
-		print '<td'.$style.'>'.$agf->line[$i]->civilite.'</td>';
+		$contact_static= new Contact($db);
+		$contact_static->civilite_id = $agf->line[$i]->civilite;
+		print '<td'.$style.'>'.$contact_static->getCivilityLabel().'</td>';
 		print '<td'.$style.'>'.dol_print_phone($agf->line[$i]->phone).'</td>';
 		print '<td'.$style.'>'.dol_print_phone($agf->line[$i]->phone_mobile).'</td>';
 		print '<td'.$style.'>';

@@ -146,7 +146,17 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<table class="border" width="100%">'."\n";
 
 	print '<tr><td>'.$langs->trans("AgfContact").'</td>';
-	print '<td>'.ebi_select_contacts("spid").'</td></tr>';
+	print '<td>';
+	
+	$agf_static = new Agefodd_teacher($db);
+	$agf_static->fetch_all('rowid');
+	$exclude_array = array();
+	foreach($agf_static->line as $line)
+	{
+		$exclude_array[]=$line->fk_socpeople;
+	}
+	$form->select_contacts(0,'','spid',1,$exclude_array);
+	print '</td></tr>';
 	
 	print '</table>';
 	print '</div>';

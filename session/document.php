@@ -265,7 +265,6 @@ if ($id)
 				{
 					// afficher
 					$legende = $langs->trans("AgfDocOpen");
-					#$mess = '<a href="'.$conf->agefodd->dir_output.'/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	
@@ -303,7 +302,7 @@ if ($id)
 
 			}
 			
-			if (empty(${'flag_bc_'.$socid})) $mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');//ebi_help($langs->trans("AgfFactureFacNoBonHelp"));
+			if (empty(${'flag_bc_'.$socid})) $mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
 			
 			return $mess;
 		}
@@ -321,7 +320,6 @@ if ($id)
 			{
 				// afficher
 				$legende = $langs->trans("AgfDocOpen");
-				//$mess = '<a href="'.$conf->agefodd->dir_output.'/'.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
@@ -347,8 +345,7 @@ if ($id)
 				}
 				else
 				{
-					//$mess = "<font size='-2'>no template</font>";
-					$mess = $form->textwithpicto('',$langs->trans("AgfDocNoTemplate"),1,'warning');//img_warning($langs->trans(""));.
+					$mess = $form->textwithpicto('',$langs->trans("AgfDocNoTemplate"),1,'warning');
 				}
 			}
 			return $mess;
@@ -370,13 +367,11 @@ if ($id)
 					$legende = $langs->trans("AgfFactureSeeBon").' '.$agf->comref;
 					$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
-					//$mess = '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">'.$agf->comref.'</a>';
 					${'flag_bc_'.$socid} = $agf->comid;
 
 					// Délier le bon de commande
 					$legende = $langs->trans("AgfFactureUnselectBon");
 					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-					//$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/undo.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
 				}
 				else
@@ -390,10 +385,9 @@ if ($id)
 
 					// Lier un bon de commande existant
 					$legende = $langs->trans("AgfFactureSelectBon");
-					//$mess.= '<a href="#" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/redo.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					$mess.= '<a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
 						
-					$mess.= "&nbsp;".$form->textwithpicto('',$langs->trans("AgfFactureBonBeforeSelectHelp"),1,'help');//ebi_help($langs->trans("AgfFactureBonBeforeSelectHelp"));
+					$mess.= "&nbsp;".$form->textwithpicto('',$langs->trans("AgfFactureBonBeforeSelectHelp"),1,'help');
 				}
 			} 
  			// gestion des factures
@@ -402,7 +396,6 @@ if ($id)
 				if ($agf->facid)
 				{
 					$legende = $langs->trans("AgfFactureSeeFac").' '.$agf->facnumber;
-					//$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">'.$agf->facnumber.'</a>';
 					$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
@@ -429,7 +422,7 @@ if ($id)
 					}
 					else
 					{
-						$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');//ebi_help($langs->trans("AgfFactureFacNoBonHelp"));
+						$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
 					}
 				}
 			}
