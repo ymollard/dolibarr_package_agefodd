@@ -335,4 +335,29 @@ class FormAgefodd
 			return -1;
 		}
 	}
+	
+	
+	/**
+	 *  formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
+	 *
+	 *  @param	int $actual_level  		valeur de l'état actuel
+	 *  @param	int $total_level    valeur de l'état quand toutes les tâches sont remplies
+	 *  @param	string $title      légende précédent la jauge
+	 *  @return string         		The HTML control
+	 */
+	function form_level_graph($actual_level, $total_level, $title)
+	{
+		$str = '<table style="border:0px; margin:0px; padding:0px">'."\n";
+		$str.= '<tr style="border:0px;"><td style="border:0px; margin:0px; padding:0px">'.$title.' : </td>'."\n";
+		for ( $i=0; $i< $total_level; $i++ )
+		{
+			if ($i < $actual_level) $color = 'green';
+			else $color = '#d5baa8';
+			$str .= '<td style="border:0px; margin:0px; padding:0px" width="10px" bgcolor="'.$color.'">&nbsp;</td>'."\n";
+		}
+		$str.= '</tr>'."\n";
+		$str.= '</table>'."\n";
+	
+		return $str;
+	}
 }

@@ -1047,7 +1047,7 @@ else
 					}
 	
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-					print ebi_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+					print $formAgefodd->form_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
 					print '</div>';
 	
 	

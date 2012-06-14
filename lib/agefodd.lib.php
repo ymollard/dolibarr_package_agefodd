@@ -226,31 +226,6 @@ function ebi_select_type_stagiaire($selectid, $name='stagiaire_type')
         }
 }
 
-
-/**
- *    \brief	formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
- *    \param	int	valeur de l'état actuel
- *    \param	int	valeur de l'état quand toutes les tâches sont remplies
- *    \param	str	légende précédent la jauge
- *    \return	str	la jauge formatée au format html
- */
-function ebi_level_graph($actual_level, $total_level, $title)
-{
-	$str = '<table style="border:0px; margin:0px; padding:0px">'."\n";
-	$str.= '<tr style="border:0px;"><td style="border:0px; margin:0px; padding:0px">'.$title.' : </td>'."\n";
-	for ( $i=0; $i< $total_level; $i++ )
-	{
-		if ($i < $actual_level) $color = 'green'; 
-		else $color = '#d5baa8';
-		$str .= '<td style="border:0px; margin:0px; padding:0px" width="10px" bgcolor="'.$color.'">&nbsp;</td>'."\n";
-	}
-	$str.= '</tr>'."\n";
-	$str.= '</table>'."\n";
-
-	return $str;
-}
-
-
 /**
  *    \brief	Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
  *    \return	str	nbre de niveaux
@@ -408,21 +383,6 @@ function ebi_get_adm_indice_per_rank($lvl_rank,$parent_level='',$type='MIN')
 		$error="Error ".$db->lasterror();
 		return -1;
 	}
-}
-
-/**
- *    \brief	Formatage d'un menu aide en html (icone + curseur)
- *    \param	str	l'aide à afficher quand la souris survole l'icône
- *    \param	str	légende à afficher pour l'image
- *    \return	str	chaine formatée en html
- */
-function ebi_help($desc, $legend="")
-{
-	global $conf;
-
-	$mess = '<span onmouseover="showtip(\''.$desc.'\')" onmouseout="hidetip()" width="14"><img style="cursor: help;" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/info.png" alt="'.$legend.'" title="'.$legend.'"border="0" align="absmiddle"></span>';
-
-	return $mess;
 }
 
 /**
