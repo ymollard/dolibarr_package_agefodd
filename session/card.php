@@ -37,6 +37,7 @@ dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
 dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
+dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
 
@@ -576,7 +577,6 @@ else
 					print '<input type="hidden" name="action" value="update">';
 					print '<input type="hidden" name="id" value="'.$id.'">';
 					print '<input type="hidden" name="action" value="update">';
-					
 	
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
@@ -586,11 +586,11 @@ else
 					print '<td>'.$formAgefodd->select_formation($agf->formid, 'formation');
 					print '</td></tr>';
 	
-	
 					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
-					print '<td>'.$agf->formref.'</a></td></tr>';
+					print '<td>'.$agf->formref.'</td></tr>';
 					
-					print '</tr>';
+					print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
+					print '<td>'.$agf->duree.' heure(s)</td></tr>';
 					
 					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
 					$form->select_date($agf->dated, 'dad','','','','update');
@@ -949,9 +949,12 @@ else
 									print '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
 									print img_object($langs->trans("ShowContact"),"contact").' ';
 									print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-									print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
-	                                        		}
-	                                        		print '</td>';
+									
+									$contact_static= new Contact($db);
+									$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
+									print ' ('.$contact_static->getCivilityLabel().')';
+	                      		}
+	              				print '</td>';
 								print '<td width="200px" style="border-left: 0px;">';
 								// Affichage de l'organisme auquel est rattaché le stagiaire
 								if ($stagiaires->line[$i]->socid)
@@ -1066,6 +1069,9 @@ else
 	
 					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 					print '<td>'.$agf->formref.'</td></tr>';
+					
+					print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
+					print '<td>'.$agf->duree.' heure(s)</td></tr>';
 	
 					//print '<tr><td>'.$langs->trans("AgfFormateur").'</td>';
 					//print '<td><a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->teacherid.'">'.$agf->teachername.'</a>';
@@ -1210,12 +1216,15 @@ else
 						}
 						else
 						{
-							print '<a href="'.DOL_URL_ROOT.'/agefodd/u_fiche.php?id='.$stagiaires->line[$i]->id.'">';
+							print '<a href="'.DOL_URL_ROOT.'/agefodd/trainee/card.php?id='.$stagiaires->line[$i]->id.'">';
 							print img_object($langs->trans("ShowContact"),"contact").' ';
 							print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-							print ' ('.ucfirst(strtolower($stagiaires->line[$i]->civilite)).')';
-	                                        }
-	                                        print '</td>';
+							
+							$contact_static= new Contact($db);
+							$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
+							print ' ('.$contact_static->getCivilityLabel().')';
+	                    }
+	                    print '</td>';
 						print '<td style="border-left: 0px; border-right: 0px;">';
 						// Infos organisme de rattachement
 						if ($stagiaires->line[$i]->socid)
