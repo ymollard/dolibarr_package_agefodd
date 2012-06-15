@@ -24,6 +24,10 @@
  *  \version		$Id$
  */
 
+error_reporting(E_ALL);
+ ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
@@ -510,7 +514,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<table class="border" width="100%">';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
-	print '<td>'.$formAgefodd->form_select_formation("", 'formation').'</a></td></tr>';
+	print '<td>'.$formAgefodd->select_formation("", 'formation','intitule',1).'</a></td></tr>';
 
 	//TODO : check nb formateur
 	//print '<tr><td>'.$langs->trans("AgfFormateurNb").'</td><td>';
@@ -529,7 +533,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
 	print '<td>';
-	print $formAgefodd->form_select_site_forma("",'place');
+	print $formAgefodd->select_site_forma("",'place',1);
 	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -579,7 +583,7 @@ else
 					print '<td>'.$agf->id.'</td></tr>';
 	
 					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
-					print '<td>'.$formAgefodd->form_select_formation($agf->formid, 'formation');
+					print '<td>'.$formAgefodd->select_formation($agf->formid, 'formation');
 					print '</td></tr>';
 	
 	
@@ -598,7 +602,7 @@ else
 	
 					print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
 					print '<td>';
-					print $formAgefodd->form_select_site_forma($agf->placeid,'place');
+					print $formAgefodd->select_site_forma($agf->placeid,'place');
 					print '</td></tr>';
 	
 					print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -659,7 +663,7 @@ else
 							if ($formateurs->line[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
 							{
 								print '<td width="300px" style="border-right: 0px">';
-								print $formAgefodd->form_select_formateur($formateurs->line[$i]->formid, "formid");
+								print $formAgefodd->select_formateur($formateurs->line[$i]->formid, "formid");
 								if ($user->rights->agefodd->modifier)
 								{
 									print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -710,7 +714,7 @@ else
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 						print '<td width="20px" align="center">'.($i+1).'</td>';
 						print '<td>';
-						print $formAgefodd->form_select_formateur($formateurs->line[$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_session='.$id.')');
+						print $formAgefodd->select_formateur($formateurs->line[$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_session='.$id.')',1);
 						if ($user->rights->agefodd->modifier)
 						{
 							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
@@ -919,7 +923,7 @@ else
 							if ($stagiaires->line[$i]->id == $_POST["modstagid"] && ! $_POST["stag_remove_x"])
 							{
 								print '<td colspan=2>';
-								print $formAgefodd->form_select_stagiaire($stagiaires->line[$i]->id, 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')');
+								print $formAgefodd->select_stagiaire($stagiaires->line[$i]->id, 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')');
 								
 								if (USE_STAGIAIRE_TYPE == 'OK')
 								{   // TODO : type stagiaire
@@ -985,16 +989,16 @@ else
 						print '<form name="obj_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 						print '<input type="hidden" name="action" value="edit">'."\n";
-						//print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 						print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 						print '<td width="20px" align="center">'.($i+1).'</td>';
 						print '<td colspan=2>';
-						print $formAgefodd->form_select_stagiaire('','stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')');
-						if (USE_STAGIAIRE_TYPE == 'OK')
+						print $formAgefodd->select_stagiaire('','stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')',1);
+						//TODO : Stagiaire type
+						/*if (USE_STAGIAIRE_TYPE == 'OK')
 						{
-							print $formAgefodd->form_select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
-						}
+							print $formAgefodd->select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
+						}*/
 						if ($user->rights->agefodd->modifier)
 						{
 							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -1047,7 +1051,7 @@ else
 					}
 	
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-					print $formAgefodd->form_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
 					print '</div>';
 	
 	

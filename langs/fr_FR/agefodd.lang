@@ -226,3 +226,7 @@ AgfPrefNum = Numérot d'enregistrement à la prefecture
 AgfPrefNumHelp = Utilisé dans les conventions de formation : 'sous le numéro <b>Numerot d'enregistrement à la prefecture</b>...'
 AgfRepresant = Représentant de la société de formation
 AgfRepresantHelp = Utilisé dans les conventions de formation : 'représentée par Monsieur <b>Représentant de la société de formation</b>, dûment habilité à ce faire en sa qualité de gérant...'
+AgfUseSearchToSelectTraining=Utiliser une liste améliorée de recherche pour le choix d'une formation (plutôt qu'une liste déroulante).
+AgfUseSearchToSelectTrainer=Utiliser une liste améliorée de recherche pour le choix d'un formateur (plutôt qu'une liste déroulante).
+AgfUseSearchToSelectTrainee=Utiliser une liste améliorée de recherche pour le choix d'un stagiaire (plutôt qu'une liste déroulante).
+AgfUseSearchToSelectSite=Utiliser une liste améliorée de recherche pour le choix d'un lieu(site) (plutôt qu'une liste déroulante).

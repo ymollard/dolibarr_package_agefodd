@@ -247,7 +247,7 @@ if ($user->rights->agefodd->creer)
 			print '<td><input name="intitule" class="flat" size="50" value=""/></td></tr>';
 			
 			print '<tr><td valign="top">'.$langs->trans("AgfParentLevel").'</td>';
-			print '<td>'.$formAgefodd->form_select_action_session($id).'</td></tr>';
+			print '<td>'.$formAgefodd->select_action_session($id).'</td></tr>';
 			
 			print '<tr><td valign="top">'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
 			$form->select_date('','datea','','','','create_confirm');
@@ -338,7 +338,7 @@ if ($user->rights->agefodd->creer)
 			$result = $sess_adm->fetch_all($id);
 			
 			print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-			print $formAgefodd->form_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+			print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
 			print '</div>';
 
 			print '<table width="100%" class="border">';

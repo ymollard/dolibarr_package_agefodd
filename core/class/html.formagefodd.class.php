@@ -46,48 +46,65 @@ class FormAgefodd
 	 *
 	 * @param   int 	$selectid		Valeur à preselectionner
 	 * @param   string	$htmlname		Name of select field
-	 * @param   string	$sort		Name of Value to show/edit (not used in this function)
+	 * @param   string	$sort			Name of Value to show/edit (not used in this function)
+	 * @param	 int	$showempty		Add an empty field
+	 * @param	 int	$forcecombo		Force to use combo box
+     * @param	 array	$event			Event options
 	 * @return	string					HTML select field
 	 */
-	function form_select_formation($selectid, $htmlname='formation', $sort='intitule')
-	{ //TODO : chmaps saisie libre et select comme pour prod ou compagny
-		global $conf,$langs;
+	function select_formation($selectid, $htmlname='formation', $sort='intitule', $showempty=0, $forcecombo=0, $event=array())
+	{
+		global $conf,$user,$langs;
+	
+		$out='';
 	
 		if ($sort == 'code') $order = 'c.ref';
 		else $order = 'c.intitule';
-	
+		
 		$sql = "SELECT c.rowid, c.intitule, c.ref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " WHERE archive LIKE 0";
 		$sql.= " ORDER BY ".$order;
-	
-		dol_syslog(get_class($this)."::form_select_formation sql=".$sql, LOG_DEBUG);
-		$result = $this->db->query($sql);
-		if ($result)
+		
+		dol_syslog(get_class($this)."::select_formation sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
 		{
-			$var=True;
-			$num = $this->db->num_rows($result);
-			$i = 0;
-			$options = '<option value=""></option>'."\n";
-	
-			while ($i < $num)
-			{
-				$obj = $this->db->fetch_object($result);
-				if ($obj->rowid == $selectid) $selected = ' selected="true"';
-				else $selected = '';
-				$options .= '<option value="'.$obj->rowid.'"'.$selected.'>';
-				if ($return == 'code') $options .= $obj->ref.'</option>'."\n";
-				else $options .= stripslashes($obj->intitule).'</option>'."\n";
-				$i++;
+			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT && ! $forcecombo)
+			{	
+				$out.= ajax_combobox($htmlname, $event);
 			}
-			$this->db->free($result);
-			return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
+	
+			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+			if ($showempty) $out.= '<option value="-1"></option>';
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num)
+			{
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+					$label=$obj->intitule;
+					
+					if ($selectid > 0 && $selectid == $obj->rowid)
+					{
+						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+					}
+					$i++;
+				}
+			}
+			$out.= '</select>';
 		}
 		else
 		{
-			$this->error="Error ".$db->lasterror();
-			return -1;
+			dol_print_error($this->db);
 		}
+		$this->db->free($resql);
+		return $out;
 	}
 	
 	/**
@@ -98,7 +115,7 @@ class FormAgefodd
 	 * @param   string	$excludeid		Si il est necessaire d'exclure une valeur de sortie
 	 * @return	 string					HTML select field
 	 */
-	function form_select_action_session_adm($selectid='', $htmlname='action_level', $excludeid='')
+	function select_action_session_adm($selectid='', $htmlname='action_level', $excludeid='')
 	{
 		global $conf,$langs;
 	
@@ -112,7 +129,7 @@ class FormAgefodd
 		}
 		$sql.= " ORDER BY t.indice";
 	
-		dol_syslog(get_class($this)."::form_select_action_session_adm sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::select_action_session_adm sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
 		{
@@ -137,7 +154,7 @@ class FormAgefodd
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::form_select_action_session_adm ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::select_action_session_adm ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -150,7 +167,7 @@ class FormAgefodd
 	 *  @param	string $htmlname    Name of HTML control
 	 *  @return string         		The HTML control
 	 */
-	function form_select_action_session($session_id=0, $selectid='', $htmlname='action_level')
+	function select_action_session($session_id=0, $selectid='', $htmlname='action_level')
 	{
 		global $conf,$langs;
 	
@@ -162,7 +179,7 @@ class FormAgefodd
 		$sql.= ' WHERE t.fk_agefodd_session="'.$session_id.'"';
 		$sql.= " ORDER BY t.indice";
 	
-		dol_syslog(get_class($this)."::form_select_action_session sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::select_action_session sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
 		{
@@ -187,7 +204,7 @@ class FormAgefodd
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::form_select_action_session ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::select_action_session ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -195,41 +212,60 @@ class FormAgefodd
 	/**
 	 *  affiche un champs select contenant la liste des sites de formation déjà référéencés.
 	 *
-	 *  @param	int $selectid  		Id de la session selectionner
-	 *  @param	string $htmlname    Name of HTML control
-	 *  @return string         		The HTML control
+	 *  @param	int 	$selectid  		Id de la session selectionner
+	 *  @param	string 	$htmlname 	    Name of HTML control
+	 *  @param	int		$showempty		Add an empty field
+	 *  @param	int		$forcecombo		Force to use combo box
+     *  @param	array	$event			Event options
+	 *  @return string         			The HTML control
 	 */
-	function form_select_site_forma($selectid, $htmlname='place')
-	{   //TODO : chmaps saisie libre et select comme pour prod ou compagny
+	function select_site_forma($selectid, $htmlname='place', $showempty=0, $forcecombo=0, $event=array())
+	{
 		global $conf,$langs;
 	
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
 		$sql.= " ORDER BY p.ref_interne";
 	
-		dol_syslog(get_class($this)."::form_select_site_forma sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::select_site_forma sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
 		{
-			$var=True;
+			if ($conf->use_javascript_ajax && $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT && ! $forcecombo)
+			{
+				$out.= ajax_combobox($htmlname, $event);
+			}
+			
+			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
 			$i = 0;
-			$options = '<option value=""></option>'."\n";;
-			while ($i < $num)
+			if ($num)
 			{
-				$obj = $this->db->fetch_object($result);
-				if ($obj->rowid == $selectid) $selected = ' selected="true"';
-				else $selected = '';
-				$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->ref_interne.'</option>'."\n";
-				$i++;
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($result);
+					$label=$obj->ref_interne;
+						
+					if ($selectid > 0 && $selectid == $obj->rowid)
+					{
+						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+					}
+					$i++;
+				}
 			}
+			$out.= '</select>';
 			$this->db->free($result);
-			return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
+			return $out;
 		}
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::form_select_site_forma ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::select_site_forma ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -237,13 +273,16 @@ class FormAgefodd
 	/**
 	 *  affiche un champs select contenant la liste des stagiaires déjà référéencés.
 	 *
-	 *  @param	int $selectid  		Id de la session selectionner
-	 *  @param	string $htmlname    Name of HTML control
-	 *  @param	string $filter      SQL part for filter	
+	 *  @param	int 	$selectid  		Id de la session selectionner
+	 *  @param	string  $htmlname    	Name of HTML control
+	 *  @param	string  $filter     	SQL part for filter	
+	 *  @param	int		$showempty		Add an empty field
+	 *  @param	int		$forcecombo		Force to use combo box
+     *  @param	array	$event			Event options
 	 *  @return string         		The HTML control
 	 */
-	function form_select_stagiaire($selectid='', $htmlname='stagiaire', $filter='')
-	{ //TODO : chmaps saisie libre et select comme pour prod ou compagny
+	function select_stagiaire($selectid='', $htmlname='stagiaire', $filter='', $showempty=0, $forcecombo=0, $event=array())
+	{
 		global $conf,$langs;
 		
 		$sql = "SELECT";
@@ -257,31 +296,46 @@ class FormAgefodd
 		}
 		$sql.= " ORDER BY fullname";
 		
-		dol_syslog(get_class($this)."::form_select_stagiaire sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::select_stagiaire sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
 		{
-			$var=True;
+			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo)
+			{
+				$out.= ajax_combobox($htmlname, $event);
+			}
+				
+			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
 			$i = 0;
-			$options = '<option value=""></option>'."\n";
-			while ($i < $num)
+			if ($num)
 			{
-				$obj = $this->db->fetch_object($result);
-				if ($obj->rowid == $selectid) $selected = ' selected="true"';
-				else $selected = '';
-				$output_format = $obj->fullname;
-				if ($obj->socname) $output_format .= ' ('.$obj->socname.')';
-				$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$output_format.'</option>'."\n";
-				$i++;
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($result);
+					$label = $obj->fullname;
+					if ($obj->socname) $label .= ' ('.$obj->socname.')';
+			
+					if ($selectid > 0 && $selectid == $obj->rowid)
+					{
+						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+					}
+					$i++;
+				}
 			}
+			$out.= '</select>';
 			$this->db->free($result);
-			return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
+			return $out;
 		}
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::form_select_stagiaire ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::select_stagiaire ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -290,13 +344,16 @@ class FormAgefodd
 	/**
 	 *  affiche un champs select contenant la liste des formateurs déjà référéencés.
 	 *
-	 *  @param	int $selectid  		Id de la session selectionner
-	 *  @param	string $htmlname    Name of HTML control
-	 *  @param	string $filter      SQL part for filter
+	 *  @param	int     $selectid  		Id de la session selectionner
+	 *  @param	string  $htmlname    Name of HTML control
+	 *  @param	string  $filter      SQL part for filter
+	 *  @param	int		$showempty		Add an empty field
+	 *  @param	int		$forcecombo		Force to use combo box
+     *  @param	array	$event			Event options
 	 *  @return string         		The HTML control
 	 */
-	function form_select_formateur($selectid='', $htmlname='formateur', $filter='')
-	{	//TODO : chmaps saisie libre et select comme pour prod ou compagny
+	function select_formateur($selectid='', $htmlname='formateur', $filter='', $showempty=0, $forcecombo=0, $event=array())
+	{
 		global $conf,$langs;
 	
 		$sql = "SELECT";
@@ -310,28 +367,46 @@ class FormAgefodd
 		}
 		$sql.= " ORDER BY fullname";
 	
-		dol_syslog(get_class($this)."::form_select_formateur sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::select_formateur sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			$var=True;
+			
+			
+			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT && ! $forcecombo)
+			{
+				$out.= ajax_combobox($htmlname, $event);
+			}
+			
+			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
 			$i = 0;
-			$options = '<option value=""></option>'."\n";
-			while ($i < $num)
+			if ($num)
 			{
-				$obj = $this->db->fetch_object($result);
-				if ($obj->rowid == $selectid) $selected = ' selected="true"';
-				else $selected = '';
-				$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.$obj->fullname.'</option>'."\n";
-				$i++;
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($result);
+					$label = $obj->fullname;
+						
+					if ($selectid > 0 && $selectid == $obj->rowid)
+					{
+						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+					}
+					$i++;
+				}
 			}
+			$out.= '</select>';
 			$this->db->free($result);
-			return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
+			return $out;
 		}
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::form_select_formateur ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::select_formateur ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -345,7 +420,7 @@ class FormAgefodd
 	 *  @param	string $title      légende précédent la jauge
 	 *  @return string         		The HTML control
 	 */
-	function form_level_graph($actual_level, $total_level, $title)
+	function level_graph($actual_level, $total_level, $title)
 	{
 		$str = '<table style="border:0px; margin:0px; padding:0px">'."\n";
 		$str.= '<tr style="border:0px;"><td style="border:0px; margin:0px; padding:0px">'.$title.' : </td>'."\n";

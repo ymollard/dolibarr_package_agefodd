@@ -86,6 +86,24 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_REPRESENTANT', $org_rep,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
+	$usesearch_training=GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_trainer=GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_trainee=GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_site=GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	
+	
 	if (! $error)
 	{
 		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
@@ -424,13 +442,89 @@ print '</tr>';
 //Representant de la societé de formation
 print '<tr class="pair"><td>'.$langs->trans("AgfRepresant").'</td>';
 print '<td align="left">';
-print '<input type="text"   name="AGF_ORGANISME_REPRESENTANT" value="'.$conf->global->AGF_ORGANISME_REPRESENTANT.'" size="20" ></td>';
+print '<input type="text" name="AGF_ORGANISME_REPRESENTANT" value="'.$conf->global->AGF_ORGANISME_REPRESENTANT.'" size="20" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfRepresantHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
-//Representant de la societé de formation
+// utilisation formulaire Ajax sur choix training
+print '<tr class="impair">';
+print '<td>'.$langs->trans("AgfUseSearchToSelectTraining").'</td>';
+if (! $conf->use_javascript_ajax)
+{
+	print '<td nowrap="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_TRAINING_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT);
+	print '</td><td align="right">';
+	print '</td>';
+}
+print '</tr>';
+
+// utilisation formulaire Ajax sur choix trainer
+print '<tr class="pair">';
+print '<td>'.$langs->trans("AgfUseSearchToSelectTrainer").'</td>';
+if (! $conf->use_javascript_ajax)
+{
+	print '<td nowrap="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
+	print '</td><td align="right">';
+	print '</td>';
+}
+print '</tr>';
+
+// utilisation formulaire Ajax sur choix trainee
+print '<tr class="impair">';
+print '<td>'.$langs->trans("AgfUseSearchToSelectTrainee").'</td>';
+if (! $conf->use_javascript_ajax)
+{
+	print '<td nowrap="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_TRAINEE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT);
+	print '</td><td align="right">';
+	print '</td>';
+}
+print '</tr>';
+
+// utilisation formulaire Ajax sur choix site
+print '<tr class="pair">';
+print '<td>'.$langs->trans("AgfUseSearchToSelectSite").'</td>';
+if (! $conf->use_javascript_ajax)
+{
+	print '<td nowrap="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_SITE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_SITE_USE_SEARCH_TO_SELECT);
+	print '</td><td align="right">';
+	print '</td>';
+}
+print '</tr>';
+
+
 print '<tr class="pair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
 print '</tr>';
 
@@ -480,7 +574,7 @@ if ($result0>0)
 		print '</td>';
 		
 		print '<td>'.str_repeat('&nbsp;&nbsp;&nbsp;',$line->level_rank).'<input type="text" name="intitule" value="'.$line->intitule.'" size="30"/></td>';
-		print '<td>'.$formAgefodd->form_select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
+		print '<td>'.$formAgefodd->select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
 		print '<td><input type="text" name="delai" value="'.$line->alerte.'"/></td>';
 		print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'">';
  		print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sesslevel_remove" alt="'.$langs->trans("Delete").'"></td>';
@@ -493,7 +587,7 @@ if ($result0>0)
 	print '<tr>';
 	print '<td></td>';
 	print '<td><input type="text" name="intitule" value="" size="30"/></td>';
-	print '<td>'.$formAgefodd->form_select_action_session_adm('','parent_level').'</td>';
+	print '<td>'.$formAgefodd->select_action_session_adm('','parent_level').'</td>';
 	print '<td><input type="text" name="delai" value=""/></td>';
 	print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'"></td>';
 	print '</tr>';

@@ -186,7 +186,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
 	
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
-	print $formAgefodd->form_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
 	print '</div>'."\n";
 
 	print '<table class="border" width="100%">'."\n";
@@ -477,7 +477,7 @@ if ($id)
 		}
 
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
-		print $formAgefodd->form_level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
 		print '</div>'."\n";
 
 		print '<table class="border" width="100%">'."\n";
