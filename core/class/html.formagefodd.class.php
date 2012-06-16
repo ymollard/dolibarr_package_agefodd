@@ -370,8 +370,7 @@ class FormAgefodd
 		dol_syslog(get_class($this)."::select_formateur sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			
-			
+
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT && ! $forcecombo)
 			{
 				$out.= ajax_combobox($htmlname, $event);
@@ -411,9 +410,75 @@ class FormAgefodd
 		}
 	}
 	
+	/**
+	 *  affiche un champs select contenant la liste des financements possible pour un stagiaire
+	 *
+	 *  @param	int     $selectid  		Id de la session selectionner
+	 *  @param	string  $htmlname    Name of HTML control
+	 *  @param	string  $filter      SQL part for filter
+	 *  @param	int		$showempty		Add an empty field
+	 *  @param	int		$forcecombo		Force to use combo box
+	 *  @param	array	$event			Event options
+	 *  @return string         		The HTML control
+	 */
+	function select_type_stagiaire($selectid, $htmlname='stagiaire_type', $filter='', $showempty=0, $forcecombo=0, $event=array())
+	{
+		global $conf,$langs;
+	
+		$sql = "SELECT t.rowid, t.intitule";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_type as t";
+		if (!empty($filter)) {
+			$sql .= ' WHERE '.$filter;
+		}
+		$sql.= " ORDER BY t.sort";
+	
+		dol_syslog(get_class($this)."::select_type_stagiaire sql=".$sql, LOG_DEBUG);
+		$result = $this->db->query($sql);
+		if ($result)
+		{
+
+			if ($conf->use_javascript_ajax && $conf->global->AGF_STAGTYPE_USE_SEARCH_TO_SELECT && ! $forcecombo)
+			{
+				$out.= ajax_combobox($htmlname, $event);
+			}
+	
+			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+			if ($showempty) $out.= '<option value="-1"></option>';
+			$num = $this->db->num_rows($result);
+			$i = 0;
+			if ($num)
+			{
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($result);
+					$label = stripslashes($obj->intitule);
+						
+					if ($selectid > 0 && $selectid == $obj->rowid)
+					{
+						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+					}
+					$i++;
+				}
+			}
+			$out.= '</select>';
+			$this->db->free($result);
+			return $out;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::select_type_stagiaire ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+	
 	
 	/**
-	 *  formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
+	 *  Formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
 	 *
 	 *  @param	int $actual_level  		valeur de l'état actuel
 	 *  @param	int $total_level    valeur de l'état quand toutes les tâches sont remplies

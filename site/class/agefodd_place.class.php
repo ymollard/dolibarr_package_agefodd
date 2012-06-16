@@ -264,7 +264,7 @@ class Agefodd_place extends CommonObject
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
                 $this->date_creation = $this->db->jdate($obj->datec);
-                $this->tms = $this->db->jdate($obj->tms);
+                $this->date_modification = $this->db->jdate($obj->tms);
                 $this->user_modification = $obj->fk_user_mod;
                 $this->user_creation = $obj->fk_user_author;
 	    }

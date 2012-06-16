@@ -75,14 +75,14 @@ class Agefodd extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user";
+		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user_author";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
 		$sql.= '"'.$this->public.'",';
-		$sql.= '"'.$this->methode.'",';
+		$sql.= '"'.$this->methode.'",';	
 		$sql.= '"'.$this->prerequis.'",';
 		$sql.= '"'.$this->programme.'",';
 		$sql.= '"'.$user.'"';
@@ -186,7 +186,7 @@ class Agefodd extends CommonObject
 		global $langs;
 		
 		$sql = "SELECT";
-		$sql.= " c.rowid, c.datec, c.tms, c.fk_user";
+		$sql.= " c.rowid, c.datec, c.tms, c.fk_user_author, c.fk_user_mod ";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " WHERE c.rowid = ".$id;
 		
@@ -196,11 +196,12 @@ class Agefodd extends CommonObject
 		{
 			if ($this->db->num_rows($resql))
 			{
-			$obj = $this->db->fetch_object($resql);
-			$this->id = $obj->rowid;
-			$this->date_creation = $this->db->jdate($obj->datec);
-			$this->tms = $obj->tms;
-			$this->user_creation = $obj->fk_user;
+				$obj = $this->db->fetch_object($resql);
+				$this->id = $obj->rowid;
+				$this->date_creation = $this->db->jdate($obj->datec);
+				$this->date_modification = $this->db->jdate($obj->tms);
+				$this->user_creation = $obj->fk_user_author;
+				$this->user_modification = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
 		
@@ -245,7 +246,7 @@ class Agefodd extends CommonObject
 		$sql.= " c.methode='".$this->methode."',";
 		$sql.= " c.prerequis='".$this->prerequis."',";
 		$sql.= " c.programme='".$this->programme."',";
-		$sql.= " c.fk_user='".$user."',";
+		$sql.= " c.fk_user_mod='".$user."',";
 		$sql.= " c.archive='".$this->archive."'";
 		$sql.= " WHERE c.rowid = ".$this->id;
 		
@@ -333,7 +334,7 @@ class Agefodd extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda(";
-		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user";
+		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user_author";
 		$sql.= ") VALUES (";
         $sql.= '"'.$this->fk_formation_catalogue.'", ';
         $sql.= '"'.$this->intitule.'", ';
@@ -432,7 +433,7 @@ class Agefodd extends CommonObject
 		global $langs;
 		
 		$sql = "SELECT";
-		$sql.= " o.rowid, o.intitule, o.priorite, o.fk_formation_catalogue, o.tms, o.fk_user";
+		$sql.= " o.rowid, o.intitule, o.priorite, o.fk_formation_catalogue, o.tms, o.fk_user_author";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda AS o";
 		$sql.= " WHERE o.fk_formation_catalogue = ".$id_formation;
 		$sql.= " ORDER BY o.priorite ASC";
@@ -488,7 +489,7 @@ class Agefodd extends CommonObject
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
 		$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
 		$sql.= " o.intitule='".$this->intitule."',";
-		$sql.= " o.fk_user='".$user."',";
+		$sql.= " o.fk_user_mod='".$user."',";
 		$sql.= " o.priorite='".$this->priorite."'";
 		$sql.= " WHERE o.rowid = ".$this->id;
 		

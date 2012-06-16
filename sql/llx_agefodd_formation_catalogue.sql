@@ -21,12 +21,18 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   rowid int(6) NOT NULL auto_increment,
-  datec date default NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   ref varchar(40) NOT NULL,
   intitule varchar(80) NOT NULL,
-  fk_user int(11) default NULL,
+  duree int(6) NOT NULL,
+  public tinytext,
+  methode tinytext,
+  prerequis tinytext,
+  programme text,
   archive enum('0','1') NOT NULL default '0',
+  fk_user_author int(11) NOT NULL,
+  datec datetime NOT NULL,
+  fk_user_mod int(11) NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
   UNIQUE KEY ref (ref)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

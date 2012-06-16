@@ -62,17 +62,16 @@ if ($action == 'updateMask')
 
 if ($action == 'setvar')
 {
-	/*$use_typestag=GETPOST('use_stag_type','int');
-	
+	$use_typestag=GETPOST('AGF_USE_STAGIAIRE_TYPE','int');
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
-	$def_typestag=GETPOST('def_type_stag','int');
+	$def_typestag=GETPOST('AGF_DEFAULT_STAGIAIRE_TYPE','int');
 	if (!empty($def_typestag))
 	{
 		$res = dolibarr_set_const($db, 'AGF_DEFAULT_STAGIAIRE_TYPE', $def_typestag,'chaine',0,'',$conf->entity);
 		if (! $res > 0) $error++;
-	}*/
+	}
 	
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
@@ -100,6 +99,10 @@ if ($action == 'setvar')
 	
 	$usesearch_site=GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_stagstype=GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
 	
@@ -417,7 +420,7 @@ print '<input type="hidden" name="action" value="setvar">';
 
 print '<tr class="liste_titre">';
 print '<td>'.$langs->trans("Name").'</td>';
-print '<td>'.$langs->trans("Valeur").'</td>';
+print '<td width="400px">'.$langs->trans("Valeur").'</td>';
 print '<td></td>';
 print "</tr>\n";
 
@@ -448,6 +451,29 @@ print $form->textwithpicto('',$langs->trans("AgfRepresantHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
+//Utilisation d'un type de stagaire
+print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_USE_STAGIAIRE_TYPE",$arrval,$conf->global->AGF_USE_STAGIAIRE_TYPE);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseStagTypeHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
+{
+	//Type de stagaire par defaut
+	print '<tr class="pair"><td>'.$langs->trans("AgfUseStagTypeDefault").'</td>';
+	print '<td align="left">';
+	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE');
+	print '</td>';
+	print '<td align="center">';
+	print '</td>';
+	print '</tr>';
+}
+
 // utilisation formulaire Ajax sur choix training
 print '<tr class="impair">';
 print '<td>'.$langs->trans("AgfUseSearchToSelectTraining").'</td>';
@@ -459,12 +485,12 @@ if (! $conf->use_javascript_ajax)
 }
 else
 {
-	print '<td width="60" align="right">';
+	print '<td align="left">';
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_TRAINING_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT);
-	print '</td><td align="right">';
 	print '</td>';
 }
+print '<td>&nbsp;</td>';
 print '</tr>';
 
 // utilisation formulaire Ajax sur choix trainer
@@ -478,12 +504,12 @@ if (! $conf->use_javascript_ajax)
 }
 else
 {
-	print '<td width="60" align="right">';
+	print '<td align="left">';
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
-	print '</td><td align="right">';
 	print '</td>';
 }
+print '<td>&nbsp;</td>';
 print '</tr>';
 
 // utilisation formulaire Ajax sur choix trainee
@@ -497,12 +523,12 @@ if (! $conf->use_javascript_ajax)
 }
 else
 {
-	print '<td width="60" align="right">';
+	print '<td  align="left">';
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_TRAINEE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT);
-	print '</td><td align="right">';
 	print '</td>';
 }
+print '<td>&nbsp;</td>';
 print '</tr>';
 
 // utilisation formulaire Ajax sur choix site
@@ -516,14 +542,35 @@ if (! $conf->use_javascript_ajax)
 }
 else
 {
-	print '<td width="60" align="right">';
+	print '<td align="left">';
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_SITE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_SITE_USE_SEARCH_TO_SELECT);
-	print '</td><td align="right">';
 	print '</td>';
 }
+print '<td>&nbsp;</td>';
 print '</tr>';
 
+if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
+{
+	// utilisation formulaire Ajax sur choix type de stagiaire
+	print '<tr class="impair">';
+	print '<td>'.$langs->trans("AgfUseSearchToSelectStagType").'</td>';
+	if (! $conf->use_javascript_ajax)
+	{
+		print '<td nowrap="nowrap" align="right" colspan="2">';
+		print $langs->trans("NotAvailableWhenAjaxDisabled");
+		print '</td>';
+	}
+	else
+	{
+		print '<td align="left">';
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_STAGTYPE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_STAGTYPE_USE_SEARCH_TO_SELECT);
+		print '</td>';
+	}
+	print '<td>&nbsp;</td>';
+	print '</tr>';
+}
 
 print '<tr class="pair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
 print '</tr>';

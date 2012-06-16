@@ -17,27 +17,17 @@
 --
 -- ============================================================================
 --
--- Structure de la table llx_agefodd_session_ext
+-- Structure de la table llx_agefodd_session_commercial
 --
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_ext (
+CREATE TABLE IF NOT EXISTS llx_agefodd_session_commercial (
   rowid int(11) NOT NULL auto_increment,
-  fk_agefodd_session int(11) NOT NULL,
-  fk_commercial int(11) DEFAULT NULL,
-  fk_contact_client int(11) DEFAULT NULL,
-  cost_trainer double(24,8) DEFAULT 0,         
-  cost_site double(24,8) DEFAULT 0,         
-  sell_price double(24,8) DEFAULT 0, 
-  date_res_site datetime DEFAULT NULL,
-  date_res_trainer datetime DEFAULT NULL,
-  date_ask_OPCA datetime DEFAULT NULL,
-  is_OPCA enum('0','1') NOT NULL default '0',
-  fk_soc_OPCA int(11) DEFAULT NULL,
-  fk_socpeople_OPCA int(11) DEFAULT NULL,
-  num_OPCA_soc varchar(100) DEFAULT NULL,
-  num_OPCA_file varchar(100) DEFAULT NULL,
+  fk_session int(11) NOT NULL,
+  fk_user_com int(11) NOT NULL,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (rowid)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  PRIMARY KEY  (rowid),
+  KEY fk_session (fk_session)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+

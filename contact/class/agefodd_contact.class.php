@@ -37,7 +37,7 @@ class Agefodd_contact extends CommonObject
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd_contact';
-       var $id;
+    var $id;
 
 	/**
 	*	\brief		Constructor
@@ -251,7 +251,7 @@ class Agefodd_contact extends CommonObject
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
 			$this->date_creation = $this->db->jdate($obj->datec);
-			$this->tms = $obj->tms;
+			$this->date_modification = $this->db->jdate($obj->tms);
 			$this->user_modification = $obj->fk_user_mod;
 			$this->user_creation = $obj->fk_user_author;
 			}

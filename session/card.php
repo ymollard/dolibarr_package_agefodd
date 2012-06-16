@@ -281,6 +281,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->stagiaire = GETPOST('stagiaire','int');
+		$agf->stagiaire_type = GETPOST('stagiaire_type','int');
 		$result = $agf->create_stag_in_session($user->id);
 	
 		if ($result > 0)
@@ -925,10 +926,10 @@ else
 								print '<td colspan=2>';
 								print $formAgefodd->select_stagiaire($stagiaires->line[$i]->id, 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')');
 								
-								if (USE_STAGIAIRE_TYPE == 'OK')
-								{   // TODO : type stagiaire
+								if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
+								{
 									print '<br /> '.$langs->trans("AgfStagiaireModeFinancement").': ';
-									//print ebi_select_type_stagiaire($stagiaires->line[$i]->typeid);
+									print $formAgefodd->select_type_stagiaire($stagiaires->line[$i]->typeid,'stagiaire_type','',1);
 								}
 								if ($user->rights->agefodd->modifier)
 								{
@@ -964,7 +965,11 @@ else
 								}
 								else
 								{
-									print '&nbsp;';
+									print '&nbsp;';	
+								}
+								if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
+								{
+									$agf->type;
 								}
 								print '</td><td>';
 								
@@ -997,11 +1002,11 @@ else
 						print '<td width="20px" align="center">'.($i+1).'</td>';
 						print '<td colspan=2>';
 						print $formAgefodd->select_stagiaire('','stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session='.$id.')',1);
-						//TODO : Stagiaire type
-						/*if (USE_STAGIAIRE_TYPE == 'OK')
+						
+						if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 						{
-							print $formAgefodd->select_type_stagiaire(DEFAULT_STAGIAIRE_TYPE);
-						}*/
+							print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,'stagiaire_type');
+						}
 						if ($user->rights->agefodd->modifier)
 						{
 							print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -1241,9 +1246,9 @@ else
 						// Infos mode de financement
 						if ($stagiaires->line[$i]->type)
 						{
-							print '<div class=adminaction><a href="# ">';
+							print '<div class=adminaction>';
 							print $langs->trans("AgfStagiaireModeFinancement");
-							print '<span>'.stripslashes($stagiaires->line[$i]->type).'</span></a></div>';
+							print '-<span>'.stripslashes($stagiaires->line[$i]->type).'</span></div>';
 						}
 						else
 						{

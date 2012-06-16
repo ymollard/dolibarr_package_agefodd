@@ -26,6 +26,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_contact
 	fk_user_author	integer	NOT NULL,
 	datec	datetime  NOT NULL,
 	fk_user_mod integer NOT NULL,
-	tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
 	PRIMARY KEY  (rowid)	
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

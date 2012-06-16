@@ -146,6 +146,10 @@ class Agefodd_session extends CommonObject
 		
 		// Check parameters
 		// Put here code to add control on parameters value
+		if (!$conf->global->AGF_USE_STAGIAIRE_TYPE)
+		{
+			$this->stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
+		} 
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_stagiaire (";
@@ -406,7 +410,7 @@ class Agefodd_session extends CommonObject
                 $obj = $this->db->fetch_object($resql);
                 $this->id = $obj->rowid;
                 $this->date_creation = $this->db->jdate($obj->datec);
-                $this->tms = $obj->tms;
+                $this->date_modification = $this->db->jdate($obj->tms);
                 $this->user_creation = $obj->fk_user_author;
                 $this->user_modification = $obj->fk_user_mod;
 	    }
@@ -512,6 +516,12 @@ class Agefodd_session extends CommonObject
 	        
 		// Check parameters
 		// Put here code to add control on parameters values
+		// Check parameters
+		// Put here code to add control on parameters value
+		if (!$conf->global->AGF_USE_STAGIAIRE_TYPE)
+		{
+			$this->stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
+		}
 
         // Update request
         if (!isset($this->archive)) $this->archive = 0; 
@@ -519,6 +529,7 @@ class Agefodd_session extends CommonObject
 		$sql.= " s.fk_session='".$this->sessid."',";
 		$sql.= " s.fk_stagiaire='".$this->stagiaire."',";
         $sql.= " s.fk_user_mod='".$user."',";
+        $sql.= " s.fk_agefodd_stagiaire_type='".$this->stagiaire_type."',";
         $sql.= " s.fk_agefodd_stagiaire_type='".$this->type."'";
         $sql.= " WHERE s.rowid = ".$this->id;
 

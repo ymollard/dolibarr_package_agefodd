@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_type (
   intitule varchar(80) NOT NULL,
   sort tinyint(4) NOT NULL,
   datec datetime NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   fk_user_author int(11) NOT NULL,
   fk_user_mod int(11) NOT NULL,
   PRIMARY KEY  (rowid)
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_type (
 --
 
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
-(2, 'financement par l''employeur (contrat pro.)', 1, '0000-00-00 00:00:00', '2010-06-30 18:47:43', 0, 0),
-(3, 'financement par l''employeur (autre)', 2, '0000-00-00 00:00:00', '2010-06-30 18:47:56', 0, 0),
-(4, 'demandeur d''emploi avec financement public', 3, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
-(5, 'autre', 4, '0000-00-00 00:00:00', '2010-06-30 18:48:11', 0, 0);
+(1, 'financement par l''employeur (contrat pro.)', 1, '0000-00-00 00:00:00', '2010-06-30 18:47:43', 0, 0),
+(2, 'financement par l''employeur (autre)', 2, '0000-00-00 00:00:00', '2010-06-30 18:47:56', 0, 0),
+(3, 'demandeur d''emploi avec financement public', 3, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
+(4, 'autre', 4, '0000-00-00 00:00:00', '2010-06-30 18:48:11', 0, 0);
 

@@ -1,6 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,20 +16,18 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
-
-CREATE TABLE IF NOT EXISTS llx_agefodd_facture (
+--
+-- Structure de la table llx_agefodd_session_contact
+--
+CREATE TABLE IF NOT EXISTS llx_agefodd_session_contact (
   rowid int(11) NOT NULL auto_increment,
-  fk_commande int(11) NOT NULL,
-  fk_facture int(11) NOT NULL,
   fk_session int(11) NOT NULL,
-  fk_societe int(11) NOT NULL,
+  fk_agefodd_contact int(11) NOT NULL,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY idx_fk_facture (fk_facture),
-  KEY idx_fk_societe (fk_societe),
-  KEY idx_fk_session (fk_session),
-  KEY idx_fk_commande (fk_commande)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  KEY fk_session (fk_session)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+

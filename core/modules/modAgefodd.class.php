@@ -91,21 +91,21 @@ class modAgefodd extends DolibarrModules
 		$this->const = array();			// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 0 or 'allentities')
 		$r=0;
 		
-		/*$r++;
+		$r++;
 		$this->const[$r][0] = "AGF_USE_STAGIAIRE_TYPE";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '1';
-		$this->const[$r][3] = 'Use traine type';
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Use trainee type';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
 		$r++;
 		$this->const[$r][0] = "AGF_DEFAULT_STAGIAIRE_TYPE";
 		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = '3';
-		$this->const[$r][3] = 'Type of  traine funding';
+		$this->const[$r][2] = '2';
+		$this->const[$r][3] = 'Type of  trainee funding';
 		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;*/
+		$this->const[$r][5] = 0;
 		
 		$r++;
 		$this->const[$r][0] = "AGF_UNIVERSAL_MASK";
@@ -149,7 +149,7 @@ class modAgefodd extends DolibarrModules
 		
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINING_USE_SEARCH_TO_SELECT";
-		$this->const[$r][1] = "chaine";
+		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Search Training with combobox';
 		$this->const[$r][4] = 0;
@@ -157,7 +157,7 @@ class modAgefodd extends DolibarrModules
 		
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINER_USE_SEARCH_TO_SELECT";
-		$this->const[$r][1] = "chaine";
+		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Search Trainer with combobox';
 		$this->const[$r][4] = 0;
@@ -165,17 +165,25 @@ class modAgefodd extends DolibarrModules
 		
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINEE_USE_SEARCH_TO_SELECT";
-		$this->const[$r][1] = "chaine";
+		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Search Trainee with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
 		$r++;
-		$this->const[$r][0] = "AGF_sITE_USE_SEARCH_TO_SELECT";
-		$this->const[$r][1] = "chaine";
+		$this->const[$r][0] = "AGF_SITE_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Search site with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_STAGTYPE_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Search stagiaire type with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		

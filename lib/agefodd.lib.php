@@ -184,49 +184,6 @@ function site_prepare_head($object)
 }
 
 /**
- *    \brief	affiche un champs select contenant la liste des financements possible pour un stagiaire
- *		(nécessaire pour la Declaration annuelle de Formation Professionnelle). 
- *    \param	int	id du champs préselectionné
- *    \param	str	nom du champs select
- *    \return	str	la liste html formatée
- */
-function ebi_select_type_stagiaire($selectid, $name='stagiaire_type')
-{ //TODO : Stagiaire type
-	global $db;
-	
-	$sql = "SELECT t.rowid, t.intitule";
-	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_type as t";
-	//$sql.= " ORDER BY t.intitule";
-	$sql.= " ORDER BY t.order";
-
-        $result = $db->query($sql);
-	if ($result)
-	{
-	    $var = True;
-	    $num = $db->num_rows($result);
-	    $i = 0;
-	    $options = '<option value=""></option>'."\n";
-
-	    while ($i < $num)
-	    {
-		$obj = $db->fetch_object($result);
-		if ($obj->rowid == $selectid) $selected = ' selected="true"';
-		else $selected = '';
-		$options .= '<option value="'.$obj->rowid.'"'.$selected.'>'.stripslashes($obj->intitule).'</option>'."\n";
-		$i++;
-	    }
-	    $db->free($result);
-		
-		return '<select class="flat" name="'.$name.'">'."\n".$options."\n".'</select>'."\n";
-	}
-	else
-        {
-		$error="Error ".$db->lasterror();
-		return -1;
-        }
-}
-
-/**
  *    \brief	Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
  *    \return	str	nbre de niveaux
  */

@@ -312,8 +312,8 @@ class Agefodd_convention
 			{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->datec = $obj->datec;
-			$this->tms = $obj->tms;
+			$this->datec = $this->db->jdate($obj->datec);
+			$this->date_modification = $this->db->jdate($obj->tms);
 			$this->fk_userc = $obj->fk_user_author;
 			$this->fk_userm = $obj->fk_user_mod;
 			}
