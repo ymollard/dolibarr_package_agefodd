@@ -129,7 +129,7 @@ class Agefodd_contact extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_socpeople,";
-		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.address, s.cp, s.ville";
+		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.address, s.cp, s.ville, c.archive";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		($type == 'socid') ? $sql.= " WHERE s.fk_soc = ".$id : $sql.= " WHERE c.rowid = ".$id;
@@ -150,6 +150,7 @@ class Agefodd_contact extends CommonObject
 				$this->address = $obj->address;
 				$this->cp = $obj->cp;
 				$this->ville = $obj->ville;
+				$this->archive = $obj->archive;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -179,11 +180,11 @@ class Agefodd_contact extends CommonObject
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_socpeople,";
 		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.phone, s.email, s.phone_mobile,";
-		$sql.= " soc.nom as socname, soc.rowid as socid";
+		$sql.= " soc.nom as socname, soc.rowid as socid, c.archive";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = s.fk_soc";
-		//if ($arch == 0 || $arch == 1) $sql.= " WHERE f.archive LIKE ".$arch;
+		if ($arch == 0 || $arch == 1) $sql.= " WHERE c.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 		
@@ -212,6 +213,7 @@ class Agefodd_contact extends CommonObject
 					$this->line[$i]->email = $obj->email;
 					$this->line[$i]->phone_mobile = $obj->phone_mobile;
 					$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+					$this->line[$i]->archive = $obj->archive;
 					$i++;
 				}
 			}
@@ -290,7 +292,7 @@ class Agefodd_contact extends CommonObject
 	$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_contact as c SET";
 	$sql.= " c.fk_user_mod='".$user."',";
 	$sql.= " c.archive='".$this->archive."'";
-	$sql.= " WHERE s.rowid = ".$this->id;
+	$sql.= " WHERE c.rowid = ".$this->id;
 	
 	$this->db->begin();
 	

@@ -58,8 +58,7 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
 $linenum = count($agf->line);
 
-
-print_barre_liste($langs->trans("AgfContact"), $page, $_SERVER['PHP_SELF'],"prout", $sortfield, $sortorder, "", $linenum);
+print_barre_liste($langs->trans("AgfContact"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder, "", $linenum);
 
 print '<div width=100%" align="right">';
 if ($arch == 2)
@@ -71,7 +70,6 @@ else
 	print '<a href="'.$_SERVER['PHP_SELF'].'?arch=2">'.$langs->trans("AgfAfficherFormateursArchives").'</a>'."\n";
 
 }
-print '<a href="'.DOL_URL_ROOT.'/agefodd/c_liste.php?arch='.$arch.'">'.$txt.'</a>'."\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","&arch=".$arch,"",'',$sortfield,$sortorder);

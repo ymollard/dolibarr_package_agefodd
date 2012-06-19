@@ -24,7 +24,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_stagiaire (
   rowid int(11) NOT NULL auto_increment,
-  fk_session int(11) NOT NULL,
+  fk_session_agefodd int(11) NOT NULL,
   fk_stagiaire int(11) NOT NULL,
   fk_agefodd_stagiaire_type int(11) NOT NULL,
   fk_user_author int(11) NOT NULL,
@@ -32,6 +32,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_stagiaire (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY fk_session (fk_session),
+  KEY fk_session (fk_session_agefodd),
   KEY fk_agefodd_stagiaire_type (fk_agefodd_stagiaire_type)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;

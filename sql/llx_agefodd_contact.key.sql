@@ -21,4 +21,4 @@
 
 
 ALTER TABLE llx_agefodd_contact ADD INDEX idx_agefodd_contact_fk_socpeople (fk_socpeople);
-ALTER TABLE llx_agefodd_contact ADD CONSTRAINT llx_agefodd_contact_ibfk_1 FOREIGN KEY (fk_socpeople) REFERENCES llx_societe (rowid);
+ALTER TABLE llx_agefodd_contact ADD CONSTRAINT llx_agefodd_contact_ibfk_1 FOREIGN KEY (fk_socpeople) REFERENCES llx_socpeople (rowid);

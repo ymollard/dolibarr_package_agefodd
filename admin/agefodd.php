@@ -105,7 +105,9 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
-	
+	$usesearch_contact=GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
 	
 	if (! $error)
 	{
@@ -571,6 +573,25 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
 	print '<td>&nbsp;</td>';
 	print '</tr>';
 }
+
+// utilisation formulaire Ajax sur choix site
+print '<tr class="impair">';
+print '<td>'.$langs->trans("AgfUseSearchToSelectContact").'</td>';
+if (! $conf->use_javascript_ajax)
+{
+	print '<td nowrap="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td align="left">';
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
+	print '</td>';
+}
+print '<td>&nbsp;</td>';
+print '</tr>';
 
 print '<tr class="pair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
 print '</tr>';

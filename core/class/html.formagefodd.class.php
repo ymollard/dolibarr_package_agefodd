@@ -225,6 +225,7 @@ class FormAgefodd
 	
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
+		$sql.= " WHERE archive LIKE 0";
 		$sql.= " ORDER BY p.ref_interne";
 	
 		dol_syslog(get_class($this)."::select_site_forma sql=".$sql, LOG_DEBUG);
@@ -340,6 +341,78 @@ class FormAgefodd
 		}
 	}
 	
+	/**
+	 *  affiche un champs select contenant la liste des contact déjà référéencés.
+	 *
+	 *  @param	int 	$selectid  		Id de la session selectionner
+	 *  @param	string  $htmlname    	Name of HTML control
+	 *  @param	string  $filter     	SQL part for filter
+	 *  @param	int		$showempty		Add an empty field
+	 *  @param	int		$forcecombo		Force to use combo box
+	 *  @param	array	$event			Event options
+	 *  @return string         		The HTML control
+	 */
+	function select_agefodd_contact($selectid='', $htmlname='contact', $filter='', $showempty=0, $forcecombo=0, $event=array())
+	{
+		global $conf,$langs;
+	
+			$sql = "SELECT";
+		$sql.= " c.rowid, ";
+		$sql.= " s.name, s.firstname, s.civilite, ";
+		$sql.= " soc.nom as socname";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = s.fk_soc";
+		$sql.= " WHERE c.archive LIKE 0";
+		if (!empty($filter)) {
+			$sql .= ' AND '.$filter;
+		}
+		$sql.= " ORDER BY socname";
+	
+		dol_syslog(get_class($this)."::select_agefodd_contact sql=".$sql, LOG_DEBUG);
+		$result = $this->db->query($sql);
+		if ($result)
+		{
+			if ($conf->use_javascript_ajax && $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo)
+			{
+				$out.= ajax_combobox($htmlname, $event);
+			}
+	
+			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+			if ($showempty) $out.= '<option value="-1"></option>';
+			$num = $this->db->num_rows($result);
+			$i = 0;
+			if ($num)
+			{
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($result);
+					$label = $obj->firstname.' '.$obj->name;
+					if ($obj->socname) $label .= ' ('.$obj->socname.')';
+						
+					if ($selectid > 0 && $selectid == $obj->rowid)
+					{
+						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+					}
+					$i++;
+				}
+			}
+			$out.= '</select>';
+			$this->db->free($result);
+			return $out;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::select_agefodd_contact ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+	
 	
 	/**
 	 *  affiche un champs select contenant la liste des formateurs déjà référéencés.
@@ -362,8 +435,9 @@ class FormAgefodd
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
 		$sql.= " ON sp.rowid = s.fk_socpeople";
+		$sql.= " WHERE s.archive LIKE 0";
 		if (!empty($filter)) {
-			$sql .= ' WHERE '.$filter;
+			$sql .= ' AND '.$filter;
 		}
 		$sql.= " ORDER BY fullname";
 	

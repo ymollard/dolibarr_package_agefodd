@@ -23,8 +23,8 @@
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_admlevel (
   rowid int(11) NOT NULL auto_increment,
-  level_rank int(11) NOT NULL default '0',
-  fk_parent_level int(11) default '0',
+  level_rank int(11) NOT NULL default 0,
+  fk_parent_level int(11) default 0,
   indice int(11) NOT NULL,
   intitule varchar(150) NOT NULL,
   delais_alerte int(11) NOT NULL,

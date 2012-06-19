@@ -187,6 +187,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
+		$r++;
+		$this->const[$r][0] = "AGF_CONTACT_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Search contact with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		
 		// Array to add new pages in new tabs
 		//$this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');

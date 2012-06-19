@@ -247,7 +247,7 @@ class Agefodd extends CommonObject
 		$sql.= " c.prerequis='".$this->prerequis."',";
 		$sql.= " c.programme='".$this->programme."',";
 		$sql.= " c.fk_user_mod='".$user."',";
-		$sql.= " c.archive='".$this->archive."'";
+		$sql.= " c.archive=".$this->archive;
 		$sql.= " WHERE c.rowid = ".$this->id;
 		
 		$this->db->begin();

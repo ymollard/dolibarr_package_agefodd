@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_contact
 (
 	rowid int(11) NOT NULL auto_increment,
 	fk_socpeople	integer	NOT NULL,
+	archive tinyint NOT NULL DEFAULT 0,
 	fk_user_author	integer	NOT NULL,
 	datec	datetime  NOT NULL,
 	fk_user_mod integer NOT NULL,

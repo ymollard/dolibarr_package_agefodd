@@ -19,5 +19,5 @@
 --
 -- Contraintes pour la table llx_agefodd_session_contact
 --
-ALTER TABLE llx_agefodd_session_contact ADD CONSTRAINT llx_agefodd_session_contact_ibfk_1 FOREIGN KEY (fk_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_contact ADD CONSTRAINT llx_agefodd_session_contact_ibfk_1 FOREIGN KEY (fk_session_agefodd) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_session_contact ADD CONSTRAINT llx_agefodd_session_contact_ibfk_2 FOREIGN KEY (fk_agefodd_contact) REFERENCES llx_agefodd_contact (rowid);

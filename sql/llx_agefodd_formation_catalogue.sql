@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   methode tinytext,
   prerequis tinytext,
   programme text,
-  archive enum('0','1') NOT NULL default '0',
+  archive tinyint NOT NULL DEFAULT 0,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,

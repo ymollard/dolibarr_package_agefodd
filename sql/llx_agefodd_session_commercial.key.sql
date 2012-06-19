@@ -19,5 +19,5 @@
 --
 -- Contraintes pour la table llx_agefodd_session_commercial
 --
-ALTER TABLE llx_agefodd_session_commercial ADD CONSTRAINT llx_agefodd_session_commercial_ibfk_1 FOREIGN KEY (fk_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
-ALTER TABLE llx_agefodd_session_commercial ADD CONSTRAINT llx_agefodd_session_commercial_ibfk_2 FOREIGN KEY (fk_user_com) REFERENCES llx_agefodd_formateur (rowid);
+ALTER TABLE llx_agefodd_session_commercial ADD CONSTRAINT llx_agefodd_session_commercial_ibfk_1 FOREIGN KEY (fk_session_agefodd) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_commercial ADD CONSTRAINT llx_agefodd_session_commercial_ibfk_2 FOREIGN KEY (fk_user_com) REFERENCES llx_user (rowid);
