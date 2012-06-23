@@ -55,7 +55,9 @@ class Agefodd_session extends CommonObject
     var $is_date_ask_OPCA;
     var $is_OPCA;
     var $fk_soc_OPCA;
+    var $soc_OPCA_name;
     var $fk_socpeople_OPCA;
+    var $contact_name_OPCA;
     var $num_OPCA_soc;
     var $num_OPCA_file;
     var $fk_user_author;
@@ -289,6 +291,7 @@ class Agefodd_session extends CommonObject
     	$sql.= " t.is_OPCA,";
     	$sql.= " t.fk_soc_OPCA,";
     	$sql.= " t.fk_socpeople_OPCA,";
+    	$sql.= " CONCAT(concactOPCA.name ,' ', concactOPCA.firstname) as contact_name_OPCA,";
     	$sql.= " t.num_OPCA_soc,";
     	$sql.= " t.num_OPCA_file,";
     	$sql.= " t.fk_user_author,";
@@ -301,7 +304,9 @@ class Agefodd_session extends CommonObject
     	$sql.= " com.fk_user_com as commercialid, ";
     	$sql.= " CONCAT(socp.name,' ',socp.firstname) as contactname, ";
     	$sql.= " agecont.fk_socpeople as sourcecontactid, ";
-    	$sql.= " agecont.rowid as contactid";
+    	$sql.= " agecont.rowid as contactid, ";
+    	$sql.= " CONCAT (socOPCA.address , '\n' , socOPCA.cp , ' - ' , socOPCA.ville) as OPCA_adress, ";
+    	$sql.= " socOPCA.nom as soc_OPCA_name ";
     	
     	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as t";
     	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
@@ -320,6 +325,10 @@ class Agefodd_session extends CommonObject
     	$sql.= " ON agecont.rowid = scont.fk_agefodd_contact";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp "; 
 		$sql.= " ON agecont.fk_socpeople = socp.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as socOPCA ";
+		$sql.= " ON t.fk_soc_OPCA = socOPCA.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as concactOPCA ";
+		$sql.= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
     	$sql.= " WHERE t.rowid = ".$id;
     	
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -356,7 +365,10 @@ class Agefodd_session extends CommonObject
     			$this->is_date_ask_OPCA = $obj->is_date_ask_OPCA;
     			$this->is_OPCA = $obj->is_OPCA;
     			$this->fk_soc_OPCA = $obj->fk_soc_OPCA;
+    			$this->soc_OPCA_name = $obj->soc_OPCA_name;
+    			$this->OPCA_adress = $obj->OPCA_adress;
     			$this->fk_socpeople_OPCA = $obj->fk_socpeople_OPCA;
+    			$this->contact_name_OPCA = $obj->contact_name_OPCA;
     			$this->num_OPCA_soc = $obj->num_OPCA_soc;
     			$this->num_OPCA_file = $obj->num_OPCA_file;
     			$this->fk_user_author = $obj->fk_user_author;
@@ -624,8 +636,8 @@ class Agefodd_session extends CommonObject
 			$sql.= " is_date_res_site=".(isset($this->is_date_res_site)?$this->is_date_res_site:"0").",";
 			$sql.= " is_date_res_trainer=".(isset($this->is_date_res_trainer)?$this->is_date_res_trainer:"0").",";
 			$sql.= " is_date_ask_OPCA=".(isset($this->is_date_ask_OPCA)?$this->is_date_ask_OPCA:"0").",";
-			$sql.= " fk_soc_OPCA=".(isset($this->fk_soc_OPCA)?$this->fk_soc_OPCA:"null").",";
-			$sql.= " fk_socpeople_OPCA=".(isset($this->fk_socpeople_OPCA)?$this->fk_socpeople_OPCA:"null").",";
+			$sql.= " fk_soc_OPCA=".(isset($this->fk_soc_OPCA) && $this->fk_soc_OPCA!=-1?$this->fk_soc_OPCA:"null").",";
+			$sql.= " fk_socpeople_OPCA=".(isset($this->fk_socpeople_OPCA) && $this->fk_socpeople_OPCA!=0?$this->fk_socpeople_OPCA:"null").",";
 			$sql.= " num_OPCA_soc=".(isset($this->num_OPCA_soc)?"'".$this->db->escape($this->num_OPCA_soc)."'":"null").",";
 			$sql.= " num_OPCA_file=".(isset($this->num_OPCA_file)?"'".$this->db->escape($this->num_OPCA_file)."'":"null").",";
 			$sql.= " fk_user_mod=".$this->db->escape($user).",";
