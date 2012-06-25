@@ -254,8 +254,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				/***** Objectifs pedagogique de la formation *****/
 				
 				// Récuperation
-				$agf_op = new Agefodd($this->db,"",$id);
-				$result2 = $agf_op->fetch_objpeda_per_formation($agf->formid);
+				$agf_op = new Agefodd($this->db);
+				$result2 = $agf_op->fetch_objpeda_per_formation($agf->id);
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
@@ -282,7 +282,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				/***** Public *****/
 				
 				// Récuperation
-				$agf_op->fetch($agf->formid);
+				$agf_op->fetch($agf->id);
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
@@ -351,7 +351,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				/***** Methode pedago *****/
 				
 				// Récuperation
-				$agf_op->fetch($agf->formid);
+				$agf_op->fetch($agf->id);
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);

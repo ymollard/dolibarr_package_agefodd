@@ -481,7 +481,7 @@ class Agefodd_session extends CommonObject
 		$sql.= " s.rowid, so.nom as socname ";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
-		$sql.= " ON s.rowid = ss.fk_session";
+		$sql.= " ON s.rowid = ss.fk_session_agefodd";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
 		$sql.= " ON sa.rowid = ss.fk_stagiaire";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";

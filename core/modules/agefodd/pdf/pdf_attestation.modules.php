@@ -130,15 +130,15 @@ class pdf_attestation extends ModelePDFAgefodd
 			$pdf->SetAutoPageBreak(1,0);
 			
 			// Récuperation des objectifs pedagogique de la formation
-			$agf_op = new Agefodd($this->db,"",$id);
-			$result2 = $agf_op->fetch_objpeda_per_formation($agf->formid);
+			$agf_op = new Agefodd($this->db);
+			$result2 = $agf_op->fetch_objpeda_per_formation($agf->id);
 
 			// Récupération de la duree de la formation
 			$agf_duree = new Agefodd($this->db);
-			$result = $agf_duree->fetch($agf->formid);
+			$result = $agf_duree->fetch($agf->id);
 			
 			// Recuperation des stagiaires participant à la formation
-			$agf2 = new Agefodd_session($this->db,"",$id);
+			$agf2 = new Agefodd_session($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 
 			if ($result)
@@ -260,13 +260,13 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 					$newY = $newY + 20;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$this->str = "Avec les félicitations du pôle formation de ".AGF_ORGANISME_NAME.",";
+					$this->str = "Avec les félicitations du pôle formation de ".$conf->global->MAIN_INFO_SOCIETE_NOM.",";
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 					
 					
 					$newY = $newY + 20;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$this->str = "fait à ".AGF_ORGANISME_SIEGE.", le ";
+					$this->str = "fait à ".$conf->global->MAIN_INFO_SOCIETE_VILLE.", le ";
 					$pdf->Cell(80, 0, $outputlangs->transnoentities($this->str), 0, 0, 'R', 0);
 					
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
@@ -276,7 +276,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->Cell($this->width, 0, $this->str, 0, 0, 'L', 0);
 					
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
-					$this->str = AGF_ORGANISME_REPRESENTANT;
+					$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
 					$pdf->Cell(100, 0, $this->str, 0, 0, 'R', 0);
 					
 					
@@ -286,7 +286,7 @@ class pdf_attestation extends ModelePDFAgefodd
 
 					// Mise en place du copyright
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
-					$this->str = $outputlangs->transnoentities('copyright '.date("Y").' - '.AGF_ORGANISME_NAME);
+					$this->str = $outputlangs->transnoentities('copyright '.date("Y").' - '.$conf->global->MAIN_INFO_SOCIETE_NOM);
 					$this->width = $pdf->GetStringWidth($this->str);
 					// alignement du bord droit du container avec le haut de la page
 					$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
@@ -346,7 +346,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	{
 		global $conf,$langs;
 
-		$this->str = AGF_ORGANISME_NAME." - Organisme de formation enregistré à la préfecture de ".AGF_ORGANISME_PREF." sous le n° ".AGF_ORGANISME_NUM;
+		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM." - Organisme de formation enregistré à la préfecture de ".$conf->global->AGF_ORGANISME_PREF." sous le n° ".$conf->global->AGF_ORGANISME_NUM;
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
