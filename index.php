@@ -62,7 +62,7 @@ print $agf->num.'</a>&nbsp;</td></tr>';
 
 // nbre de stagiaires formés
 $resql = $agf->fetch_student_nb();
-print '<tr class="liste"><td>stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';	
 
 
 // nbre de sessions realisées

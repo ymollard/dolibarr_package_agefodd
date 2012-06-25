@@ -64,7 +64,7 @@ class Agefodd_index
 		$sql.= " se.archive";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_stagiaire as s";
 		$sql.= " LEFT JOIN  ".MAIN_DB_PREFIX."agefodd_session as se";
-		$sql.= " ON se.rowid = s.fk_session";
+		$sql.= " ON se.rowid = s.fk_session_agefodd";
 		$sql.= " WHERE se.archive LIKE 1";
 		
 		dol_syslog(get_class($this)."::fetch_student_nb sql=".$sql, LOG_DEBUG);
@@ -209,7 +209,7 @@ class Agefodd_index
 		$sql = "SELECT  sum(f.duree) AS total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire AS ss";
-		$sql.= " ON ss.fk_session = s.rowid";
+		$sql.= " ON ss.fk_session_agefodd = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
 		$sql.= " WHERE s.archive LIKE 1";
