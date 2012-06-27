@@ -34,9 +34,11 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
   datef datetime NOT NULL,
   datea datetime NOT NULL,
   notes text NOT NULL,
+  fk_user_author int(11) NOT NULL,
+  datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  archive enum('0','1') NOT NULL default '0',
+  archive tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY  (rowid),
   KEY fk_agefodd_session (fk_agefodd_session)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

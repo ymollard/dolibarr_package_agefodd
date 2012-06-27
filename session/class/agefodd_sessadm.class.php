@@ -79,7 +79,7 @@ class Agefodd_sessadm extends CommonObject
 		$this->intitule = $this->db->escape(trim($this->intitule));
 		$this->indice = trim($this->indice);
 		$this->notes = $this->db->escape(trim($this->notes));
-		$this->fk_user_mod = trim($this->fk_user_mod);
+		$this->fk_user_author = trim($this->fk_user_author);
 				
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -87,7 +87,7 @@ class Agefodd_sessadm extends CommonObject
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_adminsitu (";
 		$sql.= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte, ";
-		$sql.= "indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_mod";
+		$sql.= "indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->fk_agefodd_session_admlevel.'", ';
 		$sql.= '"'.$this->fk_agefodd_session.'", ';
@@ -101,7 +101,8 @@ class Agefodd_sessadm extends CommonObject
 		$sql.= $this->db->idate($this->datea).', ';
 		$sql.= '"'.$this->notes.'",';
 		$sql.= $this->archive.',';
-		$sql.= '"'.$user.'"';
+		$sql.= '"'.$user.'", ';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
 		$this->db->begin();
@@ -161,7 +162,6 @@ class Agefodd_sessadm extends CommonObject
 		$this->dated = trim($this->dated);
 		$this->datef = trim($this->datef);
 		$this->datea = trim($this->datea);
-		$this->fk_user_mod = trim($this->fk_user_mod);
 		$this->notes = $this->db->escape(trim($this->notes));
 	
 		// Check parameters
