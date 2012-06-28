@@ -1,0 +1,10 @@
+English Dolibarr ChangeLog
+
+***** ChangeLog for 1.1 compared to 1.0 version *****
+For developers:
+- Fix: full Dolibarr 3.x compatibility
+- Fix: complete restructuring of files
+
+***** ChangeLog for 1.0-beta1 compared to non-existent version *****
+For users:
+- New: Agefodd Module Packaging.
