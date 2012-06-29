@@ -98,6 +98,7 @@ ALTER TABLE llx_agefodd_stagiaire DROP COLUMN fk_c_civilite;
 ALTER TABLE llx_agefodd_stagiaire ADD CONSTRAINT llx_agefodd_stagiaire_ibfk_1 FOREIGN KEY (civilite) REFERENCES llx_c_civilite (code);
 
 ALTER TABLE llx_agefodd_stagiaire_type CHANGE COLUMN ordere sort tinyint(4) NOT NULL;
+UPDATE llx_agefodd_stagiaire_type SET sort=sort+2;
 INSERT INTO llx_agefodd_stagiaire_type (intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
 ('DIF', 1, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
 ('Période PRO', 2, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
