@@ -188,7 +188,7 @@ class Agefodd_contact extends CommonObject
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 		
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -223,7 +223,7 @@ class Agefodd_contact extends CommonObject
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}

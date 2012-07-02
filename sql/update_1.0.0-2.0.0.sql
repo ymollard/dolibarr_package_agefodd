@@ -7,24 +7,29 @@ ALTER TABLE llx_agefodd_facture MODIFY tms timestamp NOT NULL default CURRENT_TI
 
 ALTER TABLE llx_agefodd_formateur MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_formateur MODIFY archive tinyint NOT NULL DEFAULT 0;
+UPDATE llx_agefodd_formateur SET archive=0 WHERE archive=1;
 
 ALTER TABLE llx_agefodd_formation_catalogue CHANGE COLUMN ref_interne ref varchar(40) NOT NULL;
+UPDATE llx_agefodd_formation_catalogue SET archive=0 WHERE archive=1;
+UPDATE llx_agefodd_formation_catalogue SET archive=1 WHERE archive=2;
 ALTER TABLE llx_agefodd_formation_catalogue MODIFY archive tinyint NOT NULL DEFAULT 0;
 ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN fk_user_author int(11) NOT NULL AFTER tms;
 ALTER TABLE llx_agefodd_formation_catalogue CHANGE COLUMN fk_user fk_user_mod int(11) NOT NULL;
+
 
 ALTER TABLE llx_agefodd_formation_objectifs_peda ADD COLUMN fk_user_author int(11) NOT NULL AFTER tms;
 ALTER TABLE llx_agefodd_formation_objectifs_peda ADD COLUMN datec datetime NOT NULL  AFTER tms;
 ALTER TABLE llx_agefodd_formation_objectifs_peda CHANGE COLUMN fk_user fk_user_mod int(11) NOT NULL;
 
-ALTER TABLE llx_agefodd_session_place RENAME TO llx_agefodd_place;
-ALTER TABLE llx_agefodd_place CHANGE COLUMN code ref_interne varchar(80) NOT NULL;
-ALTER TABLE llx_agefodd_place CHANGE COLUMN pays fk_pays varchar(30) NOT NULL;
-UPDATE llx_agefodd_place SET fk_pays=0 WHERE pays NOT IN (SELECT libelle FROM llx_c_pays);
-UPDATE llx_agefodd_place SET fk_pays=p.rowid FROM llx_c_pays as p WHERE pays=p.libelle;
-ALTER TABLE llx_agefodd_place ADD CONSTRAINT llx_agefodd_session_ibfk_1 FOREIGN KEY (fk_pays) REFERENCES llx_c_pays (rowid);
-ALTER TABLE llx_agefodd_place MODIFY archive tinyint NOT NULL DEFAULT 0;
-ALTER TABLE llx_agefodd_place MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
+INSERT INTO llx_agefodd_place(
+  ref_interne,  adresse,  cp,  ville,  fk_pays,  tel,  fk_societe,  fk_agefodd_reg_interieur,  notes,  archive,  fk_user_author,
+  datec,  fk_user_mod, tms)
+ SELECT 
+  llx_agefodd_session_place.code,  adresse,  cp,  ville,  p.rowid,  tel,  fk_societe,  0,  notes,  archive,
+  fk_user_author,  datec,  fk_user_mod,  tms
+ FROM llx_agefodd_session_place LEFT OUTER JOIN llx_c_pays as p ON pays=p.libelle;
+UPDATE  llx_agefodd_place SET archive=0 WHERE archive=1;
+DROP TABLE llx_agefodd_session_place;
 
 ALTER TABLE llx_agefodd_session DROP COLUMN fk_agefodd_formateur;
 ALTER TABLE llx_agefodd_session MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
@@ -42,6 +47,7 @@ ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_OPCA int(11) DEFAULT NULL AFTE
 ALTER TABLE llx_agefodd_session ADD COLUMN fk_socpeople_OPCA int(11) DEFAULT NULL AFTER fk_soc_OPCA;
 ALTER TABLE llx_agefodd_session ADD COLUMN num_OPCA_soc varchar(100) DEFAULT NULL AFTER fk_socpeople_OPCA;
 ALTER TABLE llx_agefodd_session ADD COLUMN num_OPCA_file varchar(100) DEFAULT NULL AFTER num_OPCA_soc;
+ALTER TABLE llx_agefodd_session MODIFY archive tinyint NOT NULL DEFAULT 0;
 
 ALTER TABLE llx_agefodd_session_admlevel MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_session_admlevel ADD COLUMN level_rank int(11) NOT NULL default '0' AFTER top_level;
@@ -74,7 +80,7 @@ ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN datec datetime NOT NULL AFT
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN level_rank int(11) NOT NULL default '0' AFTER top_level;
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN fk_parent_level int(11) default '0' AFTER level_rank;
 ALTER TABLE llx_agefodd_session_adminsitu DROP COLUMN top_level;
-UPDATE llx_agefodd_session_adminsitu SET level_rank=adm.level_rank FROM llx_agefodd_session_admlevel as adm WHERE adm.rowid=fk_agefodd_session_admlevel;
+UPDATE llx_agefodd_session_adminsitu as admsitu,llx_agefodd_session_admlevel as adm SET admsitu.level_rank=adm.level_rank WHERE adm.rowid=admsitu.fk_agefodd_session_admlevel;
 UPDATE llx_agefodd_session_adminsitu as ori,llx_agefodd_session_adminsitu as upd SET upd.fk_parent_level=ori.rowid WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session;
 
 ALTER TABLE llx_agefodd_session_calendrier MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
@@ -90,11 +96,14 @@ ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN heuref_dt heuref dateti
 ALTER TABLE llx_agefodd_session_formateur MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 
 ALTER TABLE llx_agefodd_session_stagiaire MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
-ALTER TABLE llx_agefodd_session_stagiaire CHANGE COLUMN fk_session heured fk_session_agefodd int(11) NOT NULL;
+ALTER TABLE llx_agefodd_session_stagiaire CHANGE COLUMN fk_session fk_session_agefodd int(11) NOT NULL;
+
 
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN civilite varchar(6) NOT NULL AFTER prenom;
-UPDATE llx_agefodd_stagiaire SET civilite=civ.code FROM llx_c_civilite as civ WHERE civ.rowid=fk_c_civilite;
+ALTER TABLE llx_agefodd_stagiaire ADD COLUMN fk_socpeople int(11) default NULL AFTER fk_soc;
+UPDATE llx_agefodd_stagiaire as sta,llx_c_civilite as civ SET sta.civilite=civ.code WHERE civ.rowid=sta.fk_c_civilite;
 ALTER TABLE llx_agefodd_stagiaire DROP COLUMN fk_c_civilite;
+UPDATE llx_agefodd_stagiaire as sta,llx_socpeople as socp SET fk_socpeople=socp.rowid WHERE socp.fk_soc=sta.fk_soc AND sta.nom=socp.name AND sta.prenom=socp.firstname;
 ALTER TABLE llx_agefodd_stagiaire ADD CONSTRAINT llx_agefodd_stagiaire_ibfk_1 FOREIGN KEY (civilite) REFERENCES llx_c_civilite (code);
 
 ALTER TABLE llx_agefodd_stagiaire_type CHANGE COLUMN ordere sort tinyint(4) NOT NULL;

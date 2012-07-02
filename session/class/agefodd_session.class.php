@@ -273,6 +273,7 @@ class Agefodd_session extends CommonObject
     	$sql.= " t.rowid,";
     	$sql.= " t.fk_formation_catalogue,";
     	$sql.= " c.intitule as formintitule,";
+    	$sql.= " c.rowid as formid,";
     	$sql.= " c.ref as formref,";
     	$sql.= " c.duree,";
     	$sql.= " t.fk_session_place,";
@@ -291,7 +292,7 @@ class Agefodd_session extends CommonObject
     	$sql.= " t.is_OPCA,";
     	$sql.= " t.fk_soc_OPCA,";
     	$sql.= " t.fk_socpeople_OPCA,";
-    	$sql.= " CONCAT(concactOPCA.name ,' ', concactOPCA.firstname) as contact_name_OPCA,";
+    	$sql.= " concactOPCA.name as concactOPCAname, concactOPCA.firstname as concactOPCAfirstname,";
     	$sql.= " t.num_OPCA_soc,";
     	$sql.= " t.num_OPCA_file,";
     	$sql.= " t.fk_user_author,";
@@ -300,12 +301,12 @@ class Agefodd_session extends CommonObject
     	$sql.= " t.tms,";
     	$sql.= " t.archive,";
     	$sql.= " p.rowid as placeid, p.ref_interne as placecode,";
-    	$sql.= " CONCAT(us.name,' ',us.firstname) as commercialname, ";
+    	$sql.= " us.name as commercialname, us.firstname as commercialfirstname, ";
     	$sql.= " com.fk_user_com as commercialid, ";
-    	$sql.= " CONCAT(socp.name,' ',socp.firstname) as contactname, ";
+    	$sql.= " socp.name as contactname, socp.firstname as contactfirstname, ";
     	$sql.= " agecont.fk_socpeople as sourcecontactid, ";
     	$sql.= " agecont.rowid as contactid, ";
-    	$sql.= " CONCAT (socOPCA.address , '\n' , socOPCA.cp , ' - ' , socOPCA.ville) as OPCA_adress, ";
+    	$sql.= " socOPCA.address as OPCA_adress, socOPCA.cp as OPCA_cp, socOPCA.ville as OPCA_ville, ";
     	$sql.= " socOPCA.nom as soc_OPCA_name ";
     	
     	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as t";
@@ -344,6 +345,7 @@ class Agefodd_session extends CommonObject
     	
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;
+    			$this->formid = $obj->formid;
     			$this->formref = $obj->formref;
     			$this->duree = $obj->duree;
     			$this->fk_session_place = $obj->fk_session_place;
@@ -366,9 +368,9 @@ class Agefodd_session extends CommonObject
     			$this->is_OPCA = $obj->is_OPCA;
     			$this->fk_soc_OPCA = $obj->fk_soc_OPCA;
     			$this->soc_OPCA_name = $obj->soc_OPCA_name;
-    			$this->OPCA_adress = $obj->OPCA_adress;
+    			$this->OPCA_adress = $obj->OPCA_adress.'\n'. $obj->OPCA_cp.' - '. $obj->OPCA_ville;
     			$this->fk_socpeople_OPCA = $obj->fk_socpeople_OPCA;
-    			$this->contact_name_OPCA = $obj->contact_name_OPCA;
+    			$this->contact_name_OPCA = $obj->concactOPCAname.' '.$obj->concactOPCAfirstname;
     			$this->num_OPCA_soc = $obj->num_OPCA_soc;
     			$this->num_OPCA_file = $obj->num_OPCA_file;
     			$this->fk_user_author = $obj->fk_user_author;
@@ -376,9 +378,9 @@ class Agefodd_session extends CommonObject
     			$this->fk_user_mod = $obj->fk_user_mod;
     			$this->tms = $this->db->jdate($obj->tms);
     			$this->archive = $obj->archive;
-    			$this->commercialname = $obj->commercialname;
+    			$this->commercialname = $obj->commercialname.' '.$obj->commercialfirstname;
     			$this->commercialid=$obj->commercialid;
-    			$this->contactname = $obj->contactname;
+    			$this->contactname = $obj->contactname.' '.$obj->contactfirstname;
     			$this->sourcecontactid=$obj->sourcecontactid;
     			$this->contactid=$obj->contactid;
     			$this->archive = $obj->archive;

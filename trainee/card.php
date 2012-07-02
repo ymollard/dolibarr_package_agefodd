@@ -213,7 +213,7 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 	print '<td>';
 	
 	$agf_static = new Agefodd_stagiaire($db);
-	$agf_static->fetch_all('rowid');
+	$agf_static->fetch_all('DESC','s.rowid','',0);
 	$exclude_array = array();
 	foreach($agf_static->line as $line)
 	{
