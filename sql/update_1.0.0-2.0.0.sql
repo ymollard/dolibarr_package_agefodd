@@ -6,8 +6,9 @@ ALTER TABLE llx_agefodd_convention MODIFY tms timestamp NOT NULL default CURRENT
 ALTER TABLE llx_agefodd_facture MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 
 ALTER TABLE llx_agefodd_formateur MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
-ALTER TABLE llx_agefodd_formateur MODIFY archive tinyint NOT NULL DEFAULT 0;
 UPDATE llx_agefodd_formateur SET archive=0 WHERE archive=1;
+UPDATE llx_agefodd_formateur SET archive=1 WHERE archive=2;
+ALTER TABLE llx_agefodd_formateur MODIFY archive tinyint NOT NULL DEFAULT 0;
 
 ALTER TABLE llx_agefodd_formation_catalogue CHANGE COLUMN ref_interne ref varchar(40) NOT NULL;
 UPDATE llx_agefodd_formation_catalogue SET archive=0 WHERE archive=1;
@@ -67,7 +68,6 @@ INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, ind
 (15, 1, 12, 603, 'Création du courrier d''accompagnement', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (16, 1, 12, 604, 'Impression de la liasse administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (17, 1, 12, 605, 'Envoi de la liasse administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00');
-
 
 ALTER TABLE llx_agefodd_session_adminsitu MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN fk_user_author int(11) NOT NULL AFTER tms;
