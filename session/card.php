@@ -195,7 +195,6 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 	{
 		$agf = new Agefodd_session($db);
 
-
 		$result = $agf->fetch($id);
 
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
@@ -221,16 +220,18 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		if ($isdaterestrainer==1 && $agf->date_res_trainer!='') {	$agf->is_date_res_trainer = 1;}
 		else {	$agf->is_date_res_trainer = 0; $agf->date_res_trainer='';}
 		
-		$agf->is_OPCA=GETPOST('isOPCA','int');
+		$isOPCA=GETPOST('isOPCA','int');
+		if (!empty($isOPCA)) {$agf->is_OPCA=$isOPCA;}
+		else {$agf->is_OPCA=0;}
 		
 		$fksocpeopleOPCA=GETPOST('fksocpeopleOPCA','int');
 		$agf->fk_socpeople_OPCA=$fksocpeopleOPCA;
 		$fksocOPCA=GETPOST('fksocOPCA','int');
 		if (!empty($fksocOPCA)) {$agf->fk_soc_OPCA=$fksocOPCA;}
 		
-		$agf->num_OPCA_soc=GETPOST('numOPCAsoc','int');
+		$agf->num_OPCA_soc=GETPOST('numOPCAsoc','alpha');
+		$agf->num_OPCA_file=GETPOST('numOPCAFile','alpha');
 		
-		$agf->num_OPCA_file=GETPOST('numOPCAFile','int');
 		$agf->date_ask_OPCA = dol_mktime(0,0,0,GETPOST('ask_OPCAmonth','int'),GETPOST('ask_OPCAday','int'),GETPOST('ask_OPCAyear','int'));
 		if ($agf->date_ask_OPCA=='') {	$isdateaskOPCA=0;} else {$isdateressite=GETPOST('isdateaskOPCA','int');	}
 		$agf->is_date_ask_OPCA=$isdateressite;
@@ -673,13 +674,6 @@ else
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="sellprice" value="'.price($agf->sell_price).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 					print '</table></div>';
-					
-	
-					print '<table style=noborder align="right">';
-					print '<tr><td align="center" colspan=2>';
-					print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
-					print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
-					print '</td></tr>';
 	
 					print '</table>';
 					
@@ -703,11 +697,6 @@ else
 					print $form->select_company($agf->fk_soc_OPCA,'fksocOPCA','(s.client IN (1,2))',1,1,0,$events);
 					print '</td></tr>';
 					
-					/*print '<tr><td width="20%">'.$langs->trans("AgfOPCAAdress").'</td>';
-					print '	<td>';
-					print '<span id="OPCAAdress">'.dol_print_address($agf->OPCA_adress,'gmap','thirdparty',0).'</span>';
-					print '</td></tr>';*/
-					
 					print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
 					print '	<td>';
 					if (!empty($agf->fk_soc_OPCA)) {
@@ -715,7 +704,9 @@ else
 					}
 					else
 					{
-						print $langs->trans("AgfDefSocNeed");
+						print '<select class="flat" id="fksocpeopleOPCA" name="fksocpeopleOPCA">';
+						print '<option value="0">'.$langs->trans("AgfDefSocNeed").'</option>';
+						print '</select>';
 					}
 					print '</td></tr>';
 						
@@ -733,7 +724,6 @@ else
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
 					print '<td><input size="30" type="text" class="flat" name="numOPCAFile" value="'.$agf->num_OPCA_file.'" /></td></tr>';
-					
 					print '</table></div>';
 						
 					

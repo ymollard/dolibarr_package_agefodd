@@ -162,11 +162,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td>';
 	
 	$agf_static = new Agefodd_contact($db);
-	$agf_static->fetch_all('rowid');
+	$nbcontact = $agf_static->fetch_all('ACS','rowid','',0);
 	$exclude_array = array();
-	foreach($agf_static->line as $line)
+	if ($nbcontact>0)
 	{
-		$exclude_array[]=$line->fk_socpeople;
+		foreach($agf_static->line as $line)
+		{
+			$exclude_array[]=$line->fk_socpeople;
+		}
 	}
 	
 	$form->select_contacts(0,'','spid',1,$exclude_array);

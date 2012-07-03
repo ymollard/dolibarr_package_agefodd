@@ -96,8 +96,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db);
-			$ret = $agf->fetch($id);
+			$agf_session = new Agefodd_session($this->db);
+			$ret = $agf_session->fetch($id);
+			if ($ret)
+			{
+				$agf= new Agefodd($this->db);
+				$agf->fetch($agf_session->formid);
+			}
 		}
 
 		// Definition of $dir and $file
@@ -128,11 +133,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 			$pagenb=0;
 			
 			$pdf->SetDrawColor(128,128,128);
-			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
+			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
 			$pdf->SetCreator("Dolibarr ".DOL_VERSION.' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
-			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref)." ".$outputlangs->transnoentities("Document"));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref_interne)." ".$outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) $pdf->SetCompression(false);
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right
@@ -179,7 +184,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				else
 				{
 					$text=$this->emetteur->name;
-					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
+					$pdf->SetTextColor(200,0,0);
+					$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
+					$pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 				
 				$posX += $this->page_largeur - $this->marge_droite - 50;
@@ -218,10 +225,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
 				$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
-				$pdf->SetXY($baseline_x, $baseline_y);
-				//print
-				$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
-				
+				$pdf->SetXY($baseline_x, $baseline_y);				
 
 				/*
 				 * Corps de page
@@ -240,7 +244,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor(0,0,0);
-				$this->str = $agf->formintitule;
+				$this->str = $agf->intitule;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				
 				// cadre

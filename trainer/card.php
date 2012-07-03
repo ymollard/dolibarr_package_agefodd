@@ -149,7 +149,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td>';
 	
 	$agf_static = new Agefodd_teacher($db);
-	$agf_static->fetch_all('rowid');
+	$agf_static->fetch_all('ASC','s.name, s.firstname','',0);
 	$exclude_array = array();
 	foreach($agf_static->line as $line)
 	{

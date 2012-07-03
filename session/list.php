@@ -80,7 +80,6 @@ if ($resql != -1)
 	$var=true;
 	foreach ($agf->line as $line)
 	{
-		$objp = $db->fetch_object($resql);
 		
 		// Affichage tableau des sessions
 		$var=!$var;
