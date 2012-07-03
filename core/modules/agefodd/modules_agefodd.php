@@ -148,7 +148,6 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	global $conf,$langs;
 	$langs->load('agefodd@agefodd');
 
-	$typeModele='demo';
 	// Charge le modele
 	$nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_'.$typeModele.'.modules.php');
 

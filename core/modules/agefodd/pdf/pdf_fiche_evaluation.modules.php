@@ -207,9 +207,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$baseline_width = $this->width;
 				$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 				$pdf->SetXY($baseline_x, $baseline_y);
-				//print
-				$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
-
+				
 				/*
 				 * Corps de page
 				 */

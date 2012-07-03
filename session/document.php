@@ -438,7 +438,6 @@ if ($id)
 		
 		function document_line($intitule, $level=2, $mdle, $socid, $nom_courrier='')
 		{
-			$mdle='demo';
 			print '<tr style="height:14px">'."\n";
 			if ($level == 2) 
 			{
