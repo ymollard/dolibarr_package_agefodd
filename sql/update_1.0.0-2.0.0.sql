@@ -7,7 +7,6 @@ ALTER TABLE llx_agefodd_facture MODIFY tms timestamp NOT NULL default CURRENT_TI
 
 ALTER TABLE llx_agefodd_formateur MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_formateur MODIFY archive tinyint NOT NULL DEFAULT 0;
-<<<<<<< HEAD
 UPDATE llx_agefodd_formateur SET archive=0 WHERE archive=1;
 
 ALTER TABLE llx_agefodd_formation_catalogue CHANGE COLUMN ref_interne ref varchar(40) NOT NULL;
@@ -112,7 +111,6 @@ UPDATE llx_agefodd_stagiaire_type SET sort=sort+2;
 INSERT INTO llx_agefodd_stagiaire_type (intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
 ('DIF', 1, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
 ('Période PRO', 2, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0);
-=======
 
 ALTER TABLE llx_agefodd_formation_catalogue CHANGE COLUMN ref_interne ref varchar(40) NOT NULL;
 ALTER TABLE llx_agefodd_formation_catalogue MODIFY archive tinyint NOT NULL DEFAULT 0;
@@ -173,7 +171,6 @@ INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, ind
 (16, 1, 12, 604, 'Impression de la liasse administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (17, 1, 12, 605, 'Envoi de la liasse administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00');
 
-
 ALTER TABLE llx_agefodd_session_adminsitu MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN fk_user_author int(11) NOT NULL AFTER tms;
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN datec datetime NOT NULL AFTER fk_user_author;
@@ -208,5 +205,3 @@ UPDATE llx_agefodd_stagiaire_type SET sort=sort+2;
 INSERT INTO llx_agefodd_stagiaire_type (intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
 ('DIF', 1, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
 ('Période PRO', 2, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0);
-
->>>>>>> refs/heads/free
