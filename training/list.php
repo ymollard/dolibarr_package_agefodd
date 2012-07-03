@@ -61,13 +61,13 @@ print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER['PHP_SELF'],'', $
 $i = 0;
 print '<table class="noborder" width="100%">';
 print "<tr class=\"liste_titre\">";
-print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","","&socid=$socid",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfNbreAction"),$_SERVER['PHP_SELF'],'' ,'','',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfNbreAction"),$_SERVER['PHP_SELF'],'' ,'&arch='.$arch,'',$sortfield,$sortorder);
 print "</tr>\n";
 
 $var=true;

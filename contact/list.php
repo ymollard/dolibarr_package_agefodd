@@ -72,13 +72,14 @@ else
 }
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","&arch=".$arch,"",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Name"),$_SERVER['PHP_SELF'],"s.name","", "",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Firstname"),$_SERVER['PHP_SELF'],"s.firstname","","",'',$sortfield,$sortorder);	print_liste_field_titre($langs->trans("AgfCivilite"),"c_liste.php","s.civilite","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"soc.nom","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.phone","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("PhoneMobile"),$_SERVER['PHP_SELF'],"s.phone","","",'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.email","","",'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid",'',"&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Name"),$_SERVER['PHP_SELF'],"s.name","", "&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Firstname"),$_SERVER['PHP_SELF'],"s.firstname","","&arch=".$arch,'',$sortfield,$sortorder);	
+print_liste_field_titre($langs->trans("AgfCivilite"),"c_liste.php","s.civilite","","&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"soc.nom","","&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.phone","","&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("PhoneMobile"),$_SERVER['PHP_SELF'],"s.phone","","&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.email","","&arch=".$arch,'',$sortfield,$sortorder);
 print "</tr>\n";
 	
 if ($resql)

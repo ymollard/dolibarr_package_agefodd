@@ -68,13 +68,13 @@ if ($resql != -1)
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"p.ref_interne","","",'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"num",'' ,'','',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","",'&arch='.$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","",'&arch='.$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","",'&arch='.$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","",'&arch='.$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","",'&arch='.$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"p.ref_interne","",'&arch='.$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"num",'' ,'&arch='.$arch,'',$sortfield,$sortorder);
 	print "</tr>\n";
 	
 	$var=true;
