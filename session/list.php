@@ -63,7 +63,7 @@ if ($resql != -1)
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],"", $sortfield, $sortorder,'', $num);
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
