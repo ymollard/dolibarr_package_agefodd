@@ -82,8 +82,8 @@ ALTER TABLE llx_agefodd_session_calendrier MODIFY tms timestamp NOT NULL default
 ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN heured_dt datetime NOT NULL AFTER heured;
 ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN heuref_dt datetime NOT NULL AFTER heuref;
 ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN date date_session datetime NOT NULL;
-UPDATE llx_agefodd_session_calendrier SET heured_dt=date_session + ' ' + heured;
-UPDATE llx_agefodd_session_calendrier SET heuref_dt=date_session + ' ' + heuref;
+UPDATE llx_agefodd_session_calendrier SET heured_dt=CONCAT(date_session,' ',heured);
+UPDATE llx_agefodd_session_calendrier SET heuref_dt=CONCAT(date_session,' ',heuref);
 ALTER TABLE llx_agefodd_session_calendrier DROP COLUMN heured;
 ALTER TABLE llx_agefodd_session_calendrier DROP COLUMN heuref;
 ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN heured_dt heured datetime NOT NULL;
