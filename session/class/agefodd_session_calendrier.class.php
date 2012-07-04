@@ -68,10 +68,10 @@ class Agefodd_sesscalendar
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_calendrier(";
-		$sql.= "fk_agefodd_session, date, heured, heuref, fk_user_author, datec";
+		$sql.= "fk_agefodd_session, date_session, heured, heuref, fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->sessid.'", ';
-		$sql.= $this->db->idate($this->date).', ';
+		$sql.= $this->db->idate($this->date_session).', ';
 		$sql.= $this->db->idate($this->heured).', ';
 		$sql.= $this->db->idate($this->heuref).', ';
 		$sql.= '"'.$user.'", ';
@@ -85,7 +85,7 @@ class Agefodd_sesscalendar
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_catalogue");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_session_calendrier");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
@@ -123,7 +123,6 @@ class Agefodd_sesscalendar
 	/**
 	*    \brief	Load object in memory from database
 	*    \param	id	id object
-	*			arch	archive (0=no, 1=yes, 2=all)
 	*    \return     int         <0 if KO, >0 if OK
 	*/
 	function fetch($id)
@@ -131,9 +130,8 @@ class Agefodd_sesscalendar
 		global $langs;
 					
 		$sql = "SELECT";
-		$sql.= " s.rowid, s.date, s.heured, s.heuref";
+		$sql.= " s.rowid, s.date_session, s.heured, s.heuref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
-		$sql.= " ORDER BY s.date ASC, s.heured ASC";
 		$sql.= " WHERE s.rowid = ".$id;
 		
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -144,7 +142,7 @@ class Agefodd_sesscalendar
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date = $this->db->jdate($obj->date);
+				$this->date_session = $this->db->jdate($obj->date_session);
 				$this->heured = $this->db->jdate($obj->heured);
 				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->sessid;
@@ -165,7 +163,6 @@ class Agefodd_sesscalendar
 	/**
 	*    \brief	Récupére le calendrier d'une session (les blocs horaires)
 	*    \param	id	id session
-	*			arch	archive (0=no, 1=yes, 2=all)
 	*    \return     int     <0 if KO, >0 if OK
 	*/
 	function fetch_all($id)
@@ -173,10 +170,10 @@ class Agefodd_sesscalendar
 		global $langs;
 					
 		$sql = "SELECT";
-		$sql.= " s.rowid, s.date, s.heured, s.heuref";
+		$sql.= " s.rowid, s.date_session, s.heured, s.heuref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
 		$sql.= " WHERE s.fk_agefodd_session = ".$id;
-		$sql.= " ORDER BY s.date ASC, s.heured ASC";
+		$sql.= " ORDER BY s.date_session ASC, s.heured ASC";
 
 		
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
@@ -190,7 +187,7 @@ class Agefodd_sesscalendar
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->date = $this->db->jdate($obj->date);
+				$this->line[$i]->date_session = $this->db->jdate($obj->date_session);
 				$this->line[$i]->heured = $this->db->jdate($obj->heured);
 				$this->line[$i]->heuref = $this->db->jdate($obj->heuref);
 				$this->line[$i]->sessid = $obj->sessid;
@@ -268,7 +265,7 @@ class Agefodd_sesscalendar
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0; 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_calendrier as s SET";
-		$sql.= " s.date=".$this->db->idate($this->date).",";
+		$sql.= " s.date_session=".$this->db->idate($this->date_session).",";
 		$sql.= " s.heured=".$this->db->idate($this->heured).",";
 		$sql.= " s.heuref=".$this->db->idate($this->heuref).",";
 		$sql.= " s.fk_user_mod='".$user."'";
@@ -312,9 +309,6 @@ class Agefodd_sesscalendar
 			return 1;
 		}		
 	}
-
-
-
 	
 	/**
 	*      \brief      Supprime l'operation

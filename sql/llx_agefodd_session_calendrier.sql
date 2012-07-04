@@ -24,7 +24,7 @@
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
   rowid int(11) NOT NULL auto_increment,
   fk_agefodd_session int(11) NOT NULL,
-  date date NOT NULL,
+  date_session date NOT NULL,
   heured datetime NOT NULL,
   heuref datetime NOT NULL,
   fk_user_author int(11) NOT NULL,

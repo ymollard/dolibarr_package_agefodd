@@ -312,7 +312,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 	{
 		
 		$modperiod=GETPOST('modperiod','int');
-		$dateyear = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		$date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		$heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
 		$heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
 
@@ -320,7 +320,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($modperiod);
 		
 		if(!empty($modperiod)) $agf->id = $modperiod;
-		if(!empty($dateyear)) $agf->date = $dateyear;
+		if(!empty($dateyear)) $agf->date_session = $date_session;
 		if(!empty($heured)) $agf->heured = $heured;
 		if(!empty($heuref)) $agf->heuref =  $heuref;
 		$result = $agf->update($user->id);
@@ -342,7 +342,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_sesscalendar($db);
 		
 		$agf->sessid = GETPOST('sessid','int');
-		$agf->date = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		$agf->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		$agf->heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
 		$agf->heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
 		$result = $agf->create($user->id);
@@ -898,7 +898,7 @@ else
 							if ($calendrier->line[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
 							{
 								print '<td  width="20%">'.$langs->trans("AgfPeriodDate").' ';
-								$form->select_date($calendrier->line[$i]->date, 'date','','','','obj_update_'.$i);
+								$form->select_date($calendrier->line[$i]->date_session, 'date','','','','obj_update_'.$i);
 								print '</td>';
 								print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
 								$form->select_date($calendrier->line[$i]->heured, 'dated',1,1,0,'obj_update_'.$i,1);
@@ -913,7 +913,7 @@ else
 							}
 							else
 							{
-								print '<td width="20%">'.dol_print_date($calendrier->line[$i]->date,'daytext').'</td>';
+								print '<td width="20%">'.dol_print_date($calendrier->line[$i]->date_session,'daytext').'</td>';
 								print '<td  width="150px">'.dol_print_date($calendrier->line[$i]->heured,'hour').' - '.dol_print_date($calendrier->line[$i]->heuref,'hour');
 								if ($user->rights->agefodd->modifier)
 								{
@@ -1344,17 +1344,17 @@ else
 						$duree = 0;
 						for ($i = 0; $i < $blocNumber; $i++)
 						{
-							if ($calendrier->line[$i]->date != $old_date)
+							if ($calendrier->line[$i]->date_session != $old_date)
 							{
 								if ($i > 0 )print '</tr><tr><td width="150px" style="border:0px;">&nbsp;</td>';
 								print '<td width="150px">';
-								print dol_print_date($calendrier->line[$i]->date,'daytext').'</td><td>';
+								print dol_print_date($calendrier->line[$i]->date_session,'daytext').'</td><td>';
 							}
 							else print ', ';
 							print dol_print_date($calendrier->line[$i]->heured,'hour').' - '.dol_print_date($calendrier->line[$i]->heuref,'hour');
 							if ($i == $blocNumber -1 ) print '</td></tr>';
 							
-							$old_date = $calendrier->line[$i]->date;
+							$old_date = $calendrier->line[$i]->date_session;
 							
 							// On calcule la duree totale du calendrier
 							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
