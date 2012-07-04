@@ -56,7 +56,7 @@ $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset);
 if ($result != -1)
 {
     
-    print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"&socid=$socid", $sortfield, $sortorder,'', $result);
+    print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder,'', $result);
 
     print '<table class="noborder" width="100%">';
     print '<tr class="liste_titre">';

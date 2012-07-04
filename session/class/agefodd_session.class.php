@@ -368,7 +368,7 @@ class Agefodd_session extends CommonObject
     			$this->is_OPCA = $obj->is_OPCA;
     			$this->fk_soc_OPCA = $obj->fk_soc_OPCA;
     			$this->soc_OPCA_name = $obj->soc_OPCA_name;
-    			$this->OPCA_adress = $obj->OPCA_adress.'\n'. $obj->OPCA_cp.' - '. $obj->OPCA_ville;
+    			$this->OPCA_adress = $obj->OPCA_adress."\n". $obj->OPCA_cp.' - '. $obj->OPCA_ville;
     			$this->fk_socpeople_OPCA = $obj->fk_socpeople_OPCA;
     			$this->contact_name_OPCA = $obj->concactOPCAname.' '.$obj->concactOPCAfirstname;
     			$this->num_OPCA_soc = $obj->num_OPCA_soc;

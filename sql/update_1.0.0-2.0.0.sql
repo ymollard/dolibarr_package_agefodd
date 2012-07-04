@@ -6,8 +6,9 @@ ALTER TABLE llx_agefodd_convention MODIFY tms timestamp NOT NULL default CURRENT
 ALTER TABLE llx_agefodd_facture MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 
 ALTER TABLE llx_agefodd_formateur MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
-ALTER TABLE llx_agefodd_formateur MODIFY archive tinyint NOT NULL DEFAULT 0;
 UPDATE llx_agefodd_formateur SET archive=0 WHERE archive=1;
+UPDATE llx_agefodd_formateur SET archive=1 WHERE archive=2;
+ALTER TABLE llx_agefodd_formateur MODIFY archive tinyint NOT NULL DEFAULT 0;
 
 ALTER TABLE llx_agefodd_formation_catalogue CHANGE COLUMN ref_interne ref varchar(40) NOT NULL;
 UPDATE llx_agefodd_formation_catalogue SET archive=0 WHERE archive=1;
@@ -68,7 +69,6 @@ INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, ind
 (16, 1, 12, 604, 'Impression de la liasse administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (17, 1, 12, 605, 'Envoi de la liasse administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00');
 
-
 ALTER TABLE llx_agefodd_session_adminsitu MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN fk_user_author int(11) NOT NULL AFTER tms;
 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN datec datetime NOT NULL AFTER fk_user_author;
@@ -81,8 +81,9 @@ UPDATE llx_agefodd_session_adminsitu as ori,llx_agefodd_session_adminsitu as upd
 ALTER TABLE llx_agefodd_session_calendrier MODIFY tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN heured_dt datetime NOT NULL AFTER heured;
 ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN heuref_dt datetime NOT NULL AFTER heuref;
-UPDATE llx_agefodd_session_calendrier SET heured_dt=date + ' ' + heured;
-UPDATE llx_agefodd_session_calendrier SET heuref_dt=date + ' ' + heuref;
+ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN date date_session datetime NOT NULL;
+UPDATE llx_agefodd_session_calendrier SET heured_dt=date_session + ' ' + heured;
+UPDATE llx_agefodd_session_calendrier SET heuref_dt=date_session + ' ' + heuref;
 ALTER TABLE llx_agefodd_session_calendrier DROP COLUMN heured;
 ALTER TABLE llx_agefodd_session_calendrier DROP COLUMN heuref;
 ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN heured_dt heured datetime NOT NULL;
