@@ -1129,9 +1129,10 @@ class Agefodd_session extends CommonObject
      *  @param	int			$limit		  limit page
      *  @param	int			$offset    	  page 
      *  @param	int			$arch    	  display archive or not
+     *  @param	array		$filter    	  filter output
      *  @return int          	<0 if KO, >0 if OK
      */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch)
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter='')
 	{
 		global $langs;
 	
@@ -1156,9 +1157,25 @@ class Agefodd_session extends CommonObject
 			$sql.= "(";
 			$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE level_rank=0";
 			$sql.= ")";
-			$sql.= " AND sa.archive LIKE 1 AND sa.datef > '0000-00-00 00:00:00'";
+			$sql.= " AND sa.archive LIKE 1";
 		}
 		else $sql.= " WHERE s.archive LIKE ".$arch;
+		
+		//Manage filter
+		if (!empty($filter)){
+			foreach($filter as $key => $value) {
+				if (strpos($key,'date')) {
+					$sql.= ' AND '.$key.' = \''.$this->db->idate($value).'\'';
+				}
+				elseif ($key=='s.fk_session_place')
+				{
+					$sql.= ' AND '.$key.' = '.$value;
+				}
+				else {
+					$sql.= ' AND '.$key.' LIKE \'%'.$value.'%\'';
+				}
+			}
+		}
 		$sql.= " GROUP BY (s.rowid)";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 		

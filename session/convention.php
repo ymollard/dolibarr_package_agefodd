@@ -338,17 +338,17 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$duree = 0;
 		for ($i = 0; $i < $blocNumber; $i++)
 		{
-			if ($calendrier->line[$i]->date != $old_date)
+			if ($calendrier->line[$i]->date_session != $old_date)
 			{
 				if ($i > 0 ) $art1.= "), ";
-				$art1.= dol_print_date($calendrier->line[$i]->date,'dayhourtext').' (';
+				$art1.= dol_print_date($calendrier->line[$i]->date_session,'dayhourtext').' (';
 			}
 			else $art1.= '/';
 			$art1.= dol_print_date($calendrier->line[$i]->heured,'hour');
 			$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
 			if ($i == $blocNumber - 1) $art1.=').'."\n";
 			
-			$old_date = $calendrier->line[$i]->date;
+			$old_date = $calendrier->line[$i]->date_session;
 		}
 	
 		$stagiaires = new Agefodd_session($db);
