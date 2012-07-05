@@ -29,6 +29,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/trainee/class/agefodd_stagiaire.class.php');
 dol_include_once('/contact/class/contact.class.php');
+dol_include_once('/core/class/html.formcompany.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -38,6 +39,46 @@ llxHeader();
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');
 $page=GETPOST('page','alpha');
+
+//Search criteria
+$search_name=GETPOST("search_name");
+$search_firstname=GETPOST("search_firstname");
+$search_civ=GETPOST("search_civ");
+$search_soc=GETPOST("search_soc");
+$search_tel=GETPOST("search_tel");
+$search_mail=GETPOST("search_mail");
+
+// Do we click on purge search criteria ?
+if (GETPOST("button_removefilter_x"))
+{
+	$search_name='';
+	$search_firstname='';
+	$search_civ='';
+	$search_soc='';
+	$search_tel='';
+	$search_mail='';
+}
+
+$filter=array();
+if (!empty($search_name)) {
+	$filter['s.nom']=$search_name;
+}
+if (!empty($search_firstname)) {
+	$filter['s.prenom']=$search_firstname;
+}
+if (!empty($search_civ)) {
+	$filter['civ.code']=$search_civ;
+}
+if (!empty($search_soc)) {
+	$filter['so.nom']=$search_soc;
+}
+if (!empty($search_tel)) {
+	$filter['s.tel1']=$search_tel;
+}
+if (!empty($search_mail)) {
+	$filter['s.mail']=$search_mail;
+}
+
 
 if (! $sortorder) $sortorder="DESC";
 if (! $sortfield) $sortfield="s.rowid";
@@ -50,8 +91,10 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
+$formcompagny = new FormCompany($db);
+
 $agf = new Agefodd_stagiaire($db);
-$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset);
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result != -1)
 {
@@ -60,13 +103,72 @@ if ($result != -1)
 
     print '<table class="noborder" width="100%">';
     print '<tr class="liste_titre">';
-    print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","","&socid=$socid",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfNomPrenom"),$_SERVER['PHP_SELF'],"s.nom","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"civ.code","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"so.nom","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel1","","",'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.mail","","",'',$sortfield,$sortorder);
+    $arg_url='&page='.$page.'&search_name='.$search_name.'&search_firstname='.$search_firstname.'&search_civ='.$search_civ.'&search_soc='.$search_soc.'&search_tel='.$search_tel.'&search_mail='.$search_mail;
+    print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfNomPrenom"),$_SERVER['PHP_SELF'],"s.nom","",$arg_url,'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"civ.code","",$arg_url,'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"so.nom","",$arg_url,'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel1","",$arg_url,'',$sortfield,$sortorder);
+    print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.mail","",$arg_url,'',$sortfield,$sortorder);
+    print '<td>&nbsp;</td>';
     print "</tr>\n";
+    
+    //Search bar
+    $url_form=$_SERVER["PHP_SELF"];
+    $addcriteria=false;
+    if (!empty($sortorder)){
+    	$url_form.='?sortorder='.$sortorder;
+    	$addcriteria=true;
+    }
+    if (!empty($sortfield)){
+    	if ($addcriteria){
+    		$url_form.='&sortfield='.$sortfield;
+    	}
+    	else {$url_form.='?sortfield='.$sortfield;
+    	}
+    	$addcriteria=true;
+    }
+    if (!empty($page)){
+    	if ($addcriteria){
+    		$url_form.='&page='.$page;
+    	}
+    	else {$url_form.='?page='.$page;
+    	}
+    }
+    
+    print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
+    print '<tr class="liste_titre">';
+    
+    print '<td>&nbsp;</td>';
+    
+    print '<td class="liste_titre">';
+    print '<input type="text" class="flat" name="search_name" value="'.$search_name.'" size="10">';
+    print '<input type="text" class="flat" name="search_firstname" value="'.$search_firstname.'" size="10">';
+    print '</td>';
+    
+    print '<td class="liste_titre">';
+    print $formcompagny->select_civility($search_civ,'search_civ');
+    print '</td>';
+    
+    print '<td class="liste_titre">';
+    print '<input type="text" class="flat" name="search_soc" value="'.$search_soc.'" size="20">';
+    print '</td>';
+    
+    print '<td class="liste_titre">';
+    print '<input type="text" class="flat" name="search_tel" value="'.$search_tel.'" size="10">';
+    print '</td>';
+    
+    print '<td class="liste_titre">';
+    print '<input type="text" class="flat" name="search_mail" value="'.$search_mail.'" size="20">';
+    print '</td>';
+    
+    print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/search.png" value="'.dol_escape_htmltag($langs->trans("Search")).'" title="'.dol_escape_htmltag($langs->trans("Search")).'">';
+    print '&nbsp; ';
+    print '<input type="image" class="liste_titre" name="button_removefilter" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/searchclear.png" value="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'" title="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'">';
+    print '</td>';
+    
+    print "</tr>\n";
+    print '</form>';
 
     $var=true;
     foreach ($agf->line as $line)
@@ -95,6 +197,7 @@ if ($result != -1)
 		print '</td>';
 		print '<td>'.dol_print_phone($line->tel1).'</td>';
 		print '<td>'.dol_print_email($line->mail, $line->rowid, $line->socid,'AC_EMAIL',25).'</td>';
+		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 	
     }

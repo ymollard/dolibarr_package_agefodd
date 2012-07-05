@@ -225,14 +225,17 @@ class Agefodd_stagiaire extends CommonObject
 
 
     /**
-     *    \brief	Load object in memory from database
-     *    \param	sortorder	how is orderer the result
-     *			sortfield	on wich field is based the filter
-     *			limit		max number row display per page
-     *			offseth		from wich row start the display
-     *    \return	int		<0 if KO, number of row if OK
+     *  Load all objects in memory from database
+     *
+     *  @param	string		$sortorder    sort order
+     *  @param	string		$sortfield    sort field
+     *  @param	int			$limit		  limit page
+     *  @param	int			$offset    	  page 
+     *  @param	int			$arch    	  display archive or not
+     *  @param	array		$filter    	  filter output
+     *  @return int          	<0 if KO, >0 if OK
      */
-    function fetch_all($sortorder, $sortfield, $limit='', $offset)
+    function fetch_all($sortorder, $sortfield, $limit='', $offset, $filter='')
     {
     	global $langs;
                             
@@ -246,6 +249,24 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " ON s.fk_soc = so.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
 		$sql.= " ON s.civilite = civ.code";
+		
+		//Manage filter
+		if (!empty($filter)){
+			$addcriteria=false;
+			foreach($filter as $key => $value) {
+				if ($key=='civ.code') {
+					if ($addcriteria) {$sql.= ' AND ';}
+					$sqlwhere.= $key.' = \''.$value.'\'';
+					$addcriteria=true;
+				}
+				elseif ($key!='s.tel1') {
+					if ($addcriteria) {$sql.= ' AND ';}
+					$sqlwhere.= $key.' LIKE \'%'.$value.'%\'';
+					$addcriteria=true;
+				}
+			}
+			if (!empty($sqlwhere))	{$sql .= ' WHERE '. $sqlwhere;}
+		}
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 	
@@ -262,21 +283,66 @@ class Agefodd_stagiaire extends CommonObject
     			while( $i < $num)
     			{
     				$obj = $this->db->fetch_object($resql);
-    				$this->line[$i]->socid = $obj->socid;
-    				$this->line[$i]->socname = $obj->socname;
-    				$this->line[$i]->civilitecode = $obj->civilitecode;
-    				$this->line[$i]->rowid = $obj->rowid;
-    				$this->line[$i]->nom = $obj->nom;
-    				$this->line[$i]->prenom = $obj->prenom;
-    				$this->line[$i]->civilite = $obj->civilite;
-    				$this->line[$i]->fk_soc = $obj->fk_soc;
-    				$this->line[$i]->fonction = $obj->fonction;
-    				$this->line[$i]->tel1 = $obj->tel1;
-    				$this->line[$i]->tel2 = $obj->tel2;
-    				$this->line[$i]->mail = $obj->mail;
-    				$this->line[$i]->note = $obj->note;
-    				$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
     				
+    				//Manage filter for telephone to remove all space from result to filter correctly
+    				if (!empty($filter)){
+    					if (array_key_exists('s.tel1',$filter)) {
+    						$value = $filter['s.tel1'];
+    						if (!empty($value)) {
+    							if ($pos!==false) 
+    							{
+    								$this->line[$i]->socid = $obj->socid;
+    								$this->line[$i]->socname = $obj->socname;
+    								$this->line[$i]->civilitecode = $obj->civilitecode;
+    								$this->line[$i]->rowid = $obj->rowid;
+    								$this->line[$i]->nom = $obj->nom;
+    								$this->line[$i]->prenom = $obj->prenom;
+    								$this->line[$i]->civilite = $obj->civilite;
+    								$this->line[$i]->fk_soc = $obj->fk_soc;
+    								$this->line[$i]->fonction = $obj->fonction;
+    								$this->line[$i]->tel1 = $obj->tel1;
+    								$this->line[$i]->tel2 = $obj->tel2;
+    								$this->line[$i]->mail = $obj->mail;
+    								$this->line[$i]->note = $obj->note;
+    								$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+    							}				
+    						}
+    					}
+    					else
+    					{
+    						$this->line[$i]->socid = $obj->socid;
+    						$this->line[$i]->socname = $obj->socname;
+    						$this->line[$i]->civilitecode = $obj->civilitecode;
+    						$this->line[$i]->rowid = $obj->rowid;
+    						$this->line[$i]->nom = $obj->nom;
+    						$this->line[$i]->prenom = $obj->prenom;
+    						$this->line[$i]->civilite = $obj->civilite;
+    						$this->line[$i]->fk_soc = $obj->fk_soc;
+    						$this->line[$i]->fonction = $obj->fonction;
+    						$this->line[$i]->tel1 = $obj->tel1;
+    						$this->line[$i]->tel2 = $obj->tel2;
+    						$this->line[$i]->mail = $obj->mail;
+    						$this->line[$i]->note = $obj->note;
+    						$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+    					}
+    				}
+    				else
+    				{
+    					$this->line[$i]->socid = $obj->socid;
+    					$this->line[$i]->socname = $obj->socname;
+    					$this->line[$i]->civilitecode = $obj->civilitecode;
+    					$this->line[$i]->rowid = $obj->rowid;
+    					$this->line[$i]->nom = $obj->nom;
+    					$this->line[$i]->prenom = $obj->prenom;
+    					$this->line[$i]->civilite = $obj->civilite;
+    					$this->line[$i]->fk_soc = $obj->fk_soc;
+    					$this->line[$i]->fonction = $obj->fonction;
+    					$this->line[$i]->tel1 = $obj->tel1;
+    					$this->line[$i]->tel2 = $obj->tel2;
+    					$this->line[$i]->mail = $obj->mail;
+    					$this->line[$i]->note = $obj->note;
+    					$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+    				}
     				$i++;
     			}
     		}
