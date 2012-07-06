@@ -8,3 +8,13 @@ For developers:
 ***** ChangeLog for 1.0-beta1 compared to non-existent version *****
 For users:
 - New: Agefodd Module Packaging.
+
+***** ChangeLog for 2.0.0 compared to 1.0-beta1 *****
+For all :
+- Fix: full Dolibarr 3.2 compatibility
+- Fix: complete restructuring of files
+
+***** ChangeLog for 2.0.1 compared to 1.0-beta1 *****
+For all :
+- Fix: Bug on list Trainee and Contact 
+- Fix: Add filter on Session and Trainee view
