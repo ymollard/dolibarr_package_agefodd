@@ -438,9 +438,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 					// Jour
 					$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( 20 * $y), $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
-					if ($agf_date->line[$y]->date)
+					if ($agf_date->line[$y]->date_session)
 					{
-						$date = dol_print_date($agf_date->line[$y]->date,'daytext');
+						$date = dol_print_date($agf_date->line[$y]->date_session,'daytext');
 					}
 					else
 					{
@@ -448,7 +448,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 					}
 					//$this->str = dol_print_date($agf_date->line[$y]->date);
 					$this->str = $date;
-					if ($last_day == $agf_date->line[$y]->date)
+					if ($last_day == $agf_date->line[$y]->date_session)
 					{
 						$same_day += 1;
 						$pdf->SetFillColor(255,255,255);
@@ -471,7 +471,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 					$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
 					
-					$last_day = $agf_date->line[$y]->date;
+					$last_day = $agf_date->line[$y]->date_session;
 					
 				}
 				$posY += 8;	
