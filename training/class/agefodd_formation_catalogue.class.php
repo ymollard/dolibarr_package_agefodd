@@ -67,7 +67,8 @@ class Agefodd extends CommonObject
 		$this->public = $this->db->escape($this->public);
 		$this->methode = $this->db->escape($this->methode);
 		$this->prerequis = $this->db->escape($this->prerequis);
-		$this->programme = $this->db->escape($this->programme);
+		$this->note1 = $this->db->escape($this->note1);
+		$this->note2 = $this->db->escape($this->note2);
 	
 	
 		// Check parameters
@@ -75,7 +76,7 @@ class Agefodd extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, fk_user_author";
+		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, note1, note2, fk_user_author";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->ref_interne.'", ';
@@ -85,6 +86,8 @@ class Agefodd extends CommonObject
 		$sql.= '"'.$this->methode.'",';	
 		$sql.= '"'.$this->prerequis.'",';
 		$sql.= '"'.$this->programme.'",';
+		$sql.= '"'.$this->note1.'",';
+		$sql.= '"'.$this->note2.'",';
 		$sql.= '"'.$user.'"';
 		$sql.= ")";
 	
@@ -141,7 +144,7 @@ class Agefodd extends CommonObject
 	
 	$sql = "SELECT";
 	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
-	$sql.= " c.public, c.methode, c.prerequis, c.programme, archive";
+	$sql.= " c.public, c.methode, c.prerequis, c.programme, c.archive, c.note1, c.note2 ";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	$sql.= " WHERE c.rowid = ".$id;
 	
@@ -161,6 +164,8 @@ class Agefodd extends CommonObject
 			$this->methode = stripslashes($obj->methode);
 			$this->prerequis = stripslashes($obj->prerequis);
 			$this->programme = stripslashes($obj->programme);
+			$this->note1 = stripslashes($obj->note1);
+			$this->note2 = stripslashes($obj->note2);
 			$this->archive = $obj->archive;
 		}
 		$this->db->free($resql);
@@ -233,6 +238,8 @@ class Agefodd extends CommonObject
 		$this->methode = $this->db->escape($this->methode);
 		$this->prerequis = $this->db->escape($this->prerequis);
 		$this->programme = $this->db->escape($this->programme);
+		$this->note1 = $this->db->escape($this->note1);
+		$this->note2 = $this->db->escape($this->note2);
 		
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -246,6 +253,8 @@ class Agefodd extends CommonObject
 		$sql.= " c.methode='".$this->methode."',";
 		$sql.= " c.prerequis='".$this->prerequis."',";
 		$sql.= " c.programme='".$this->programme."',";
+		$sql.= " c.note1='".$this->note1."',";
+		$sql.= " c.note2='".$this->note2."',";
 		$sql.= " c.fk_user_mod='".$user."',";
 		$sql.= " c.archive=".$this->archive;
 		$sql.= " WHERE c.rowid = ".$this->id;

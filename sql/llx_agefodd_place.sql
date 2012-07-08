@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   fk_societe int(11) NOT NULL,
   fk_agefodd_reg_interieur int(11) NOT NULL,
   notes text NOT NULL,
+  acces_site text,
+  note1 text,
   archive tinyint NOT NULL DEFAULT 0,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,

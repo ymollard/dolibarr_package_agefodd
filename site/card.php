@@ -114,6 +114,8 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->tel = GETPOST('phone','alpha');
 		$agf->fk_societe = GETPOST('societe','int');
 		$agf->notes = GETPOST('notes','alpha');
+		$agf->acces_site = GETPOST('acces_site','alpha');
+		$agf->note1 = GETPOST('note1','alpha');
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
@@ -154,6 +156,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->tel = GETPOST('phone','alpha');
 		$agf->fk_societe = GETPOST('societe','int');
 		$agf->notes = GETPOST('notes','alpha');
+		$agf->acces_site = GETPOST('acces_site','alpha');
+		$agf->note1 = GETPOST('note1','alpha');
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
@@ -224,6 +228,12 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	
+	print '<tr><td valign="top">'.$langs->trans("AgfAccesSite").'</td>';
+	print '<td><textarea name="acces_site" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	
+	print '<tr><td valign="top">'.$langs->trans("AgfPlaceNote1").'</td>';
+	print '<td><textarea name="note1" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	print '</table>';
 	print '</div>';
 
@@ -287,10 +297,13 @@ else
 				print '<td><input name="phone" class="flat" size="50" value="'.$agf->tel.'"></td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
-				if (!empty($agf->notes)) $notes = nl2br($agf->notes);
-				else $notes =  $langs->trans("AgfUndefinedNote");
 				print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->notes.'</textarea></td></tr>';
 
+				print '<tr><td valign="top">'.$langs->trans("AgfAccesSite").'</td>';
+				print '<td><textarea name="acces_site" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->acces_site.'</textarea></td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfPlaceNote1").'</td>';
+				print '<td><textarea name="note1" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->note1.'</textarea></td></tr>';
 
 				print '</table>';
 				print '</div>';
@@ -363,6 +376,12 @@ else
 
 				print '<tr><td valign="top">'.$langs->trans("AgfNotes").'</td>';
 				print '<td>'.nl2br($agf->notes).'</td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfAccesSite").'</td>';
+				print '<td>'.nl2br($agf->acces_site).'</td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfPlaceNote1").'</td>';
+				print '<td>'.nl2br($agf->note1).'</td></tr>';
 
 				print "</table>";
 
