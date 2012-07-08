@@ -238,8 +238,16 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		
 		$result = $agf->update($user->id);
 		if ($result > 0)
-		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		{	
+			var_dump($_POST);
+			
+			if ($_POST['saveandclose']!='') {
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id); 
+			}
+			else
+			{
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+			}
 			exit;
 		}
 		else
@@ -729,7 +737,8 @@ else
 					
 					print '<table style=noborder align="right">';
 					print '<tr><td align="center" colspan=2>';
-					print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+					print '<input type="submit" class="butAction" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
+					print '<input type="submit" class="butAction" name="saveandclose" value="'.$langs->trans("SaveAndClose").'"> &nbsp; ';
 					print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 					print '</td></tr>';
 					
@@ -1457,7 +1466,6 @@ else
 		}
 		else
 		{
-			
 			dol_print_error($db);
 		}
 	}

@@ -98,6 +98,8 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
 		$agf->methode = GETPOST('methode','alpha');
+		$agf->note1 = GETPOST('note1','alpha');
+		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
 		$agf->programme = GETPOST('programme','alpha');
 		$result = $agf->update($user->id);
@@ -137,6 +139,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
 		$agf->methode = GETPOST('methode','alpha');
+		$agf->note1 = GETPOST('note1','alpha');
+		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
 		$agf->programme = GETPOST('programme','alpha');
 		$result = $agf->create($user->id);
@@ -274,6 +278,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
 	print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	print '</td></tr>';
+	
+	print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
+	print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '</td></tr>';
+	
+	print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
+	print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
 	print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -345,6 +357,14 @@ else
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
 				print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->methode).'</textarea></td></tr>';
+				print '</td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
+				print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->note1).'</textarea></td></tr>';
+				print '</td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
+				print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->note2).'</textarea></td></tr>';
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
@@ -490,6 +510,12 @@ else
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td colspan=2>';
 				print stripslashes(nl2br($agf->methode)).'</td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td colspan=2>';
+				print stripslashes(nl2br($agf->note1)).'</td></tr>';
+				
+				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td colspan=2>';
+				print stripslashes(nl2br($agf->note2)).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td colspan=2>';
 				if (!empty($agf->prerequis)) $prerequis = nl2br($agf->prerequis);
