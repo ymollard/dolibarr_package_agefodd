@@ -86,7 +86,6 @@ UPDATE llx_agefodd_session_calendrier SET heured_dt=CONCAT(date_session,' ',heur
 UPDATE llx_agefodd_session_calendrier SET heuref_dt=CONCAT(date_session,' ',heuref);
 ALTER TABLE llx_agefodd_session_calendrier DROP COLUMN heured;
 ALTER TABLE llx_agefodd_session_calendrier DROP COLUMN heuref;
-ALTER TABLE llx_agefodd_session_calendrier MODIFY date_session datetime NOT NULL;
 ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN heured_dt heured datetime NOT NULL;
 ALTER TABLE llx_agefodd_session_calendrier CHANGE COLUMN heuref_dt heuref datetime NOT NULL;
 
