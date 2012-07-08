@@ -155,7 +155,7 @@ print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="#ffe27d">'.img
 $agf->fetch_session_per_dateLimit('asc', 's.datea', '10', '0', 8, 3);
 $nbre = count($agf->line);
 print '<td >'.$langs->trans("AgfAlertLevel2").'</td><td align="right">';
-if ($nbre!=0) print print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;';
+if ($nbre!=0) print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;';
 else print '0&nbsp;';
 print '</td></tr>';
 
