@@ -196,6 +196,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf = new Agefodd_session($db);
 
 		$result = $agf->fetch($id);
+		
+		$agf->fk_formation_catalogue = GETPOST('formation','int');
 
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));

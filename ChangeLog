@@ -33,3 +33,6 @@ For all :
 - Fix : Suivi of place object (creator and creation date logged correctly)
 - Fix : When cancel contact creation return on list is better than resturn on blank screen
 - Fix : List of Dolibarr contact in contact Agefodd creation (display in gray (not selectable) contact already exists in agefodd)
+- Fix : Suivie of trainneee code
+- Fix : Add pseudo English translation
+- Fix : Correct training update on session works
