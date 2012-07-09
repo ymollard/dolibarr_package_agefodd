@@ -52,7 +52,7 @@ $agf->info($id);
 
 $head = contact_prepare_head($agf);
 
-dol_fiche_head($head, 'info', $langs->trans("AgfTeacherDetail"), 0, 'user');
+dol_fiche_head($head, 'info', $langs->trans("AgfContactFiche"), 0, 'user');
 
 print '<table width="100%"><tr><td>';
 dol_print_object_info($agf);

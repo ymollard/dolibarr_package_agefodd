@@ -124,7 +124,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		Header ( "Location: list.php");
 		exit;
 	}
 }
@@ -162,7 +162,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td>';
 	
 	$agf_static = new Agefodd_contact($db);
-	$nbcontact = $agf_static->fetch_all('ACS','rowid','',0);
+	$nbcontact = $agf_static->fetch_all('ASC','rowid','',0);
 	$exclude_array = array();
 	if ($nbcontact>0)
 	{

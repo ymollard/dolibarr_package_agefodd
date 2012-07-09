@@ -114,7 +114,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		Header ( "Location: list.php");
 		exit;
 	}
 }
