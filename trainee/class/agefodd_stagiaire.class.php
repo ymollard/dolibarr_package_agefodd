@@ -384,8 +384,8 @@ class Agefodd_stagiaire extends CommonObject
                 $this->id = $obj->rowid;
                 $this->date_creation = $this->db->jdate($obj->datec);
                 $this->date_modification = $this->db->jdate($obj->tms);
-                $this->user_modification = $obj->fk_user_author;
-                $this->user_creation = $obj->fk_user_mod;
+                $this->user_modification = $obj->fk_user_mod;
+                $this->user_creation = $obj->fk_user_author;
 	    }
             $this->db->free($resql);
 

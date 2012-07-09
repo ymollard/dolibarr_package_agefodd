@@ -19,9 +19,20 @@ For all :
 - Fix: Bug on list Trainee and Contact 
 - Fix: Add filter on Session and Trainee view
 
-***** ChangeLog for 2.0.2 compared to 1.0-beta1 *****
+***** ChangeLog for 2.0.2 compared to 2.0.1 *****
 For all :
 - On Session edit page add button to save and close "edit mode" and another to save and stay in "edit" mode
 - Add fields Site acess and various notes on place
 - Add fields Required document and equipements on Trainning Catalogue
 - Add PDF documents "conseils pratique"
+
+
+***** ChangeLog for 2.0.3 compared to 2.0.2 *****
+For all :
+- Fix : When cancel trainner creation return on list is better than resturn on blank screen
+- Fix : Suivi of place object (creator and creation date logged correctly)
+- Fix : When cancel contact creation return on list is better than resturn on blank screen
+- Fix : List of Dolibarr contact in contact Agefodd creation (display in gray (not selectable) contact already exists in agefodd)
+- Fix : Suivie of trainneee code
+- Fix : Add pseudo English translation
+- Fix : Correct training update on session works

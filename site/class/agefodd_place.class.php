@@ -74,7 +74,7 @@ class Agefodd_place extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
-		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, acces_site, note1, datec, fk_user_author";
+		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, acces_site, note1, fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->adresse.'", ';

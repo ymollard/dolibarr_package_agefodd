@@ -198,7 +198,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	$formcompany = new FormCompany($db);
 	print_fiche_titre($langs->trans("AgfCreatePlace"));
-
+	print 'userid : '.$user->id;
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm">'."\n";
