@@ -260,4 +260,7 @@ AgfPlaceNote1 = Repas, hébergement possible, divers
 AgfDocNeeded = Documents necessaires
 AgfEquiNeeded = Equipements necessaires
 AgfConseilsPratique = Conseils Pratiques 
+AgfPDFDemoTitle=Demonstration
+AgfPDFDemoDemo=Ceci est une version de démonstration :
+AgfPDFDemoText=Les éditions sont disponibles dans la version complétes, allez sur Dolistore http://www.dolistore.com et rechercher le module Agefodd
 AgfPlaceMandatory = L'emplacement de la session est obligatoire.
