@@ -169,7 +169,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 				
-				$posX += $this->page_largeur - $this->marge_droite - 50;
+				$posX += $this->page_largeur - $this->marge_droite - 65;
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
