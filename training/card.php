@@ -254,15 +254,15 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	$defaultref='';
 	$obj = empty($conf->global->AGF_ADDON)?'mod_agefodd_simple':$conf->global->AGF_ADDON;
-	if (! empty($conf->global->AGF_ADDON) && is_readable(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/".$conf->global->AGF_ADDON.".php"))
+	$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/'.$conf->global->AGF_ADDON.'.php');
+	if (! empty($conf->global->AGF_ADDON) && is_readable($path_rel))
 	{
-		require_once(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/".$conf->global->AGF_ADDON.".php");
+		dol_include_once('/agefodd/core/modules/agefodd/'.$conf->global->AGF_ADDON.'.php');
 		$modAgefodd = new $obj;
 		$defaultref = $modAgefodd->getNextValue($soc,$agf);
 	}
 	
 	if (is_numeric($defaultref) && $defaultref <= 0) $defaultref='';
-	
 	
 	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfRefInterne").'</span></td><td>';
 	print '<input name="ref_interne" class="flat" size="50" value="'.$defaultref.'"></td></tr>';

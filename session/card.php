@@ -193,7 +193,16 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 {
 	if (! $_POST["cancel"])
 	{
+		$error=0;
+		
 		$agf = new Agefodd_session($db);
+		
+		$fk_session_place = GETPOST('place','int');
+		if (($fk_session_place==-1) || (empty($fk_session_place)))
+		{
+			$error++;
+			$mesg = '<div class="error">'.$langs->trans('AgfPlaceMandatory').'</div>';
+		}
 
 		$result = $agf->fetch($id);
 		
@@ -201,7 +210,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
-		$agf->fk_session_place = GETPOST('place','int');
+		$agf->fk_session_place = $fk_session_place;
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
 		$agf->notes = GETPOST('notes','alpha');
@@ -238,26 +247,36 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		if ($agf->date_ask_OPCA=='') {	$isdateaskOPCA=0;} else {$isdateressite=GETPOST('isdateaskOPCA','int');	}
 		$agf->is_date_ask_OPCA=$isdateressite;
 		
-		$result = $agf->update($user->id);
-		if ($result > 0)
-		{	
-			var_dump($_POST);
-			
-			if ($_POST['saveandclose']!='') {
-				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id); 
+		if ($error==0)
+		{
+			$result = $agf->update($user->id);
+			if ($result > 0)
+			{					
+				if ($_POST['saveandclose']!='') {
+					Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id); 
+				}
+				else
+				{
+					Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+				}
+				exit;
 			}
 			else
 			{
-				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+				dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
+				$mesg = '<div class="error">'.$agf->error.'</div>';
 			}
-			exit;
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			if ($_POST['saveandclose']!='') {
+				$action='';
+			}
+			else
+			{
+				$action='edit';
+			}
 		}
-
 	}
 	else
 	{
@@ -421,89 +440,101 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_session($db);
+		
+		$fk_session_place = GETPOST('place','int');
+		if (($fk_session_place==-1) || (empty($fk_session_place)))
+		{
+			$error++;
+			$mesg = '<div class="error">'.$langs->trans('AgfPlaceMandatory').'</div>';
+		}
 
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
-		$agf->fk_session_place = GETPOST('place','int');
+		$agf->fk_session_place = $fk_session_place;
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
-		$result = $agf->create($user->id);
 		
-		if ($result > 0)
+		if ($error==0)
 		{
-			// Si la création de la session s'est bien passée, 
-			// on crée automatiquement toutes les tâches administratives associées...
-			$admlevel = new Agefodd_session_admlevel($db);
-			$result2 = $admlevel->fetch_all();
-				
-			if ($result2 > 0)
+			$result = $agf->create($user->id);
+			
+			if ($result > 0)
 			{
-				foreach ($admlevel->line as $line)
-				{
-					$actions = new Agefodd_sessadm($db);
-
-					$actions->datea = dol_time_plus_duree($agf->dated,$line->alerte,'d');
-					$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
+				// Si la création de la session s'est bien passée, 
+				// on crée automatiquement toutes les tâches administratives associées...
+				$admlevel = new Agefodd_session_admlevel($db);
+				$result2 = $admlevel->fetch_all();
 					
-					if ($actions->datea > $agf->datef)
+				if ($result2 > 0)
+				{
+					foreach ($admlevel->line as $line)
 					{
-						$actions->datef = dol_time_plus_duree($actions->datea,7,'d');
+						$actions = new Agefodd_sessadm($db);
+	
+						$actions->datea = dol_time_plus_duree($agf->dated,$line->alerte,'d');
+						$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
+						
+						if ($actions->datea > $agf->datef)
+						{
+							$actions->datef = dol_time_plus_duree($actions->datea,7,'d');
+						}
+						else
+						{
+							$actions->datef = $agf->datef;
+						}
+	
+						$actions->fk_agefodd_session_admlevel = $line->rowid;
+						$actions->fk_agefodd_session = $agf->id;
+						$actions->delais_alerte = $line->alerte;
+						$actions->intitule = $line->intitule;
+						$actions->indice = $line->indice;
+						$actions->archive = 0;
+						$actions->level_rank = $line->level_rank;
+						$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
+						$result3 = $actions->create($user->id);
+	
+						if ($result3 < 0) {
+							dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
+							$mesg .= $actions->error;
+							$error++;
+						}
 					}
-					else
-					{
-						$actions->datef = $agf->datef;
-					}
-
-					$actions->fk_agefodd_session_admlevel = $line->rowid;
-					$actions->fk_agefodd_session = $agf->id;
-					$actions->delais_alerte = $line->alerte;
-					$actions->intitule = $line->intitule;
-					$actions->indice = $line->indice;
-					$actions->archive = 0;
-					$actions->level_rank = $line->level_rank;
-					$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
-					$result3 = $actions->create($user->id);
-
-					if ($result3 < 0) {
-						dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
-						$mesg .= $actions->error;
+					
+					//Caculate the new parent level
+					$action_static = new Agefodd_sessadm($db);
+					$result4 = $action_static->setParentActionId($user->id,$agf->id);
+					if ($result4 < 0) {
+						dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
+						$mesg .= $action_static->error;
 						$error++;
 					}
 				}
-				
-				//Caculate the new parent level
-				$action_static = new Agefodd_sessadm($db);
-				$result4 = $action_static->setParentActionId($user->id,$agf->id);
-				if ($result4 < 0) {
-					dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
-					$mesg .= $action_static->error;
+				else
+				{
+					dol_syslog("agefodd:session:card error=".$admlevel->error, LOG_ERR);
+					$mesg .= $admlevel->error;
 					$error++;
 				}
 			}
 			else
 			{
-				dol_syslog("agefodd:session:card error=".$admlevel->error, LOG_ERR);
-				$mesg .= $admlevel->error;
+				dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
+				$mesg .= $agf->error;
 				$error++;
 			}
 		}
-		else
-		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg .= $agf->error;
-			$error++;
-		}
-		
 		if ($error==0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$agf->id);
 			exit;
 		}
+		
 		else
 		{
 			$mesg='<div class="error">'.$mesg.'</div>';
+			$action='create';
 		}
 	}
 	else

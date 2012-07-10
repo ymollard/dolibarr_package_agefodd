@@ -260,3 +260,4 @@ AgfPlaceNote1 = Food, Equipement, micaleanous
 AgfDocNeeded = Required documents
 AgfEquiNeeded = Required furniture
 AgfConseilsPratique = Advise 
+AgfPlaceMandatory = Session location is mandatory
