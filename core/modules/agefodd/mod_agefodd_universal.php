@@ -22,8 +22,7 @@
  *	\brief      Fichier contenant la classe du modele de numerotation de reference de projet Universal
  */
 
-require_once(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/modules_agefodd.php");
-
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 /**
  * 	Classe du modele de numerotation de reference de projet Universal

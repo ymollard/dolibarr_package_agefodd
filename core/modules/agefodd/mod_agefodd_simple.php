@@ -25,7 +25,7 @@
  *	\version    $Id$    
  */
 
-require_once(DOL_DOCUMENT_ROOT_ALT."/agefodd/core/modules/agefodd/modules_agefodd.php");
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 
 /**

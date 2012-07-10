@@ -36,3 +36,7 @@ For all :
 - Fix : Suivie of trainneee code
 - Fix : Add pseudo English translation
 - Fix : Correct training update on session works
+
+***** ChangeLog for 2.0.4 compared to 2.0.4 *****
+For all :
+- Fix : Can normally be use without "custom" directory
