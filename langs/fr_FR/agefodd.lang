@@ -260,3 +260,4 @@ AgfPlaceNote1 = Repas, hébergement possible, divers
 AgfDocNeeded = Documents necessaires
 AgfEquiNeeded = Equipements necessaires
 AgfConseilsPratique = Conseils Pratiques 
+AgfPlaceMandatory = L'emplacement de la session est obligatoire.

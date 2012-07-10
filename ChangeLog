@@ -37,6 +37,12 @@ For all :
 - Fix : Add pseudo English translation
 - Fix : Correct training update on session works
 
-***** ChangeLog for 2.0.4 compared to 2.0.4 *****
+***** ChangeLog for 2.0.4 compared to 2.0.3 *****
 For all :
 - Fix : Can normally be use without "custom" directory
+
+***** ChangeLog for 2.0.5 compared to 2.0.4 *****
+For all :
+- Fix : Add error massage to session update or new without location
+- Fix : convention generation for number of trainne (Chapter 1)
+- Fix : Set better PDF generation for convention document.

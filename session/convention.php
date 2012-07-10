@@ -332,7 +332,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$art1.= '# Durée : '.$agf->duree.' heures, réparties de la façon suivante :'."\n";
 
 		$calendrier = new Agefodd_sesscalendar($db);
-		$resql = $calendrier->fetch_all($agf->id);
+		$resql = $calendrier->fetch_all($sessid);
 		$blocNumber = count($calendrier->line);
 		$old_date = 0;
 		$duree = 0;
@@ -352,8 +352,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		}
 	
 		$stagiaires = new Agefodd_session($db);
-		$stagiaires->fetch_stagiaire_per_session($id,$socid );
-		$nbstag = count($stagiaires->line);
+		$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
 		$art1.= '# Effectif du stage : '.$nbstag.' personne';
 		if ($nbstag > 1) $art1.= 's';
 		$art1.= ".\n";
@@ -361,7 +360,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$agf_place = new Agefodd_place($db);
 		$resql3 = $agf_place->fetch($agf->placeid);
 		$adresse = $agf_place->adresse.", ".$agf_place->cp." ".$agf_place->ville;
-		$art1.= "# Lieu : salle de formation (".$agf_place->code.') située '.$adresse.'.';
+		$art1.= "# Lieu : salle de formation (".$agf_place->ref_interne.') située '.$adresse.'.';
 
 	}
 
