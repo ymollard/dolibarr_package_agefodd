@@ -540,7 +540,7 @@ class pdf_convention extends ModelePDFAgefodd
 				
 				$date = 'le '.dol_print_date(dol_now(),'daytext');
 				
-				$this->str = "Fait à  	Gigean, ".$date." , en deux (2) exemplaires originaux, dont un remis ce jour au client. ";
+				$this->str = 'Fait à '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.' , en deux (2) exemplaires originaux, dont un remis ce jour au client. ';
 				$nombre = $pdf->PageNo(); 	// page suivante = annexe1
 				$this->str.= "Ce document comporte {nb} (".$literal[$nombre].") pages.";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
