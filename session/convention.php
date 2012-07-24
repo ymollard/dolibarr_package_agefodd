@@ -418,7 +418,7 @@ En cas de dédit par le client à moins de 5 jours francs, avant le début de l'
 	else
 	{
 		$art7 = "En cas de litige entre les deux parties, celles-ci s'engagent à rechercher préalablement une solution amiable.
-En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de Montpellier.";
+En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de la prefecture dont depend ".$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
 	}
 
 	// Signature du client

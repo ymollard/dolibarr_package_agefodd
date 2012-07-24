@@ -50,3 +50,5 @@ For all :
 ***** ChangeLog for 2.0.6 compared to 2.0.5 *****
 For all :
 - Fix : convention PDF document city
+- Fix : convention PDF page number
+- Fix : convention generation predefined text
