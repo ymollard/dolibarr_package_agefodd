@@ -46,3 +46,10 @@ For all :
 - Fix : Add error massage to session update or new without location
 - Fix : convention generation for number of trainne (Chapter 1)
 - Fix : Set better PDF generation for documents.
+
+***** ChangeLog for 2.0.6 compared to 2.0.5 *****
+For all :
+- Fix : convention PDF document city
+- Fix : convention PDF page number
+- Fix : convention generation predefined text
+- Fix : fiche presence with more than 10 trainee

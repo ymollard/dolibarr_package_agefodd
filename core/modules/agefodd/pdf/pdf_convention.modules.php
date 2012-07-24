@@ -32,6 +32,7 @@ dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/site/class/agefodd_place.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/core/lib/company.lib.php');
 
 
 class pdf_convention extends ModelePDFAgefodd
@@ -540,7 +541,7 @@ class pdf_convention extends ModelePDFAgefodd
 				
 				$date = 'le '.dol_print_date(dol_now(),'daytext');
 				
-				$this->str = "Fait à  	Gigean, ".$date." , en deux (2) exemplaires originaux, dont un remis ce jour au client. ";
+				$this->str = 'Fait à '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.' , en deux (2) exemplaires originaux, dont un remis ce jour au client. ';
 				$nombre = $pdf->PageNo(); 	// page suivante = annexe1
 				$this->str.= "Ce document comporte {nb} (".$literal[$nombre].") pages.";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
@@ -625,7 +626,7 @@ class pdf_convention extends ModelePDFAgefodd
 				//$this->_pagefoot($pdf,$agf,$outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
 				$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
-				$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/{nb}',0, 0,'C');
+				$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/5',0, 0,'C');
 				$pdf->AliasNbPages();
 				
 				// Repere de pliage
@@ -686,8 +687,7 @@ class pdf_convention extends ModelePDFAgefodd
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 		
-		//$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-		$statut = 'EURL';
+		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
 		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
 		$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;
@@ -700,7 +700,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
 		$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
-		$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/{nb}',0, 0,'C');
+		$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/5',0, 0,'C');
 
 	}
 
