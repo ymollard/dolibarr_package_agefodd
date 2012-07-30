@@ -23,7 +23,7 @@ ALTER TABLE llx_agefodd_formation_objectifs_peda ADD COLUMN fk_user_author int(1
 ALTER TABLE llx_agefodd_formation_objectifs_peda ADD COLUMN datec datetime NOT NULL  AFTER tms;
 ALTER TABLE llx_agefodd_formation_objectifs_peda CHANGE COLUMN fk_user fk_user_mod int(11) NOT NULL;
 
-INSERT INTO llx_agefodd_place(ref_interne,  adresse,  cp,  ville,  fk_pays,  tel,  fk_societe,  fk_agefodd_reg_interieur,  notes,  archive, fk_user_author, datec,  fk_user_mod, tms) SELECT llx_agefodd_session_place.code,  adresse,  cp,  ville,  p.rowid,  tel,  fk_societe,  0,  notes,  archive, fk_user_author,  datec,  fk_user_mod, tms FROM llx_agefodd_session_place LEFT OUTER JOIN llx_c_pays as p ON pays=p.libelle;
+INSERT INTO llx_agefodd_place(rowid,ref_interne,  adresse,  cp,  ville,  fk_pays,  tel,  fk_societe,  fk_agefodd_reg_interieur,  notes,  archive, fk_user_author, datec,  fk_user_mod, tms) SELECT llx_agefodd_session_place.rowid, llx_agefodd_session_place.code,  adresse,  cp,  ville,  p.rowid,  tel,  fk_societe,  0,  notes,  archive, fk_user_author,  datec,  fk_user_mod, tms FROM llx_agefodd_session_place LEFT OUTER JOIN llx_c_pays as p ON pays=p.libelle;
 UPDATE  llx_agefodd_place SET archive=0 WHERE archive=1;
 ALTER TABLE llx_agefodd_place ADD COLUMN acces_site text AFTER notes;
 ALTER TABLE llx_agefodd_place ADD COLUMN note1 text AFTER acces_site;

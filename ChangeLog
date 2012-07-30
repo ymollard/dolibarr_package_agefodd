@@ -65,3 +65,7 @@ For all :
 - Fix : Pagging on training list (archive and active)
 - Fix : Session edit detail display type of founding for trainee (if option enabled)
 - Fix : Session time management (time by quarter rather than select date std control)
+
+***** ChangeLog for 2.0.8 compared to 2.0.7 *****
+For all :
+- Fix : migration : location are correct after migration
