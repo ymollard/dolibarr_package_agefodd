@@ -574,4 +574,35 @@ class FormAgefodd
 	
 		return $str;
 	}
+	
+	/**
+	 *  Affiche un champs select contenant la liste des 1/4 d"heures de 7:00 à 21h00.
+	 *
+	 *  @param	string $selectval  	valeur a selectionner par defaut	
+	 *  @param	string $htmlname    nom du control HTML
+	 *  @return string         		The HTML control
+	 */
+	function select_time($selectval='', $htmlname='period')
+	{
+	
+		$time = 7;
+		$heuref = 21;
+		$min = 0;
+		$options = '<option value=""></option>'."\n";;
+		while ($time < $heuref)
+		{
+			if ( $min == 60)
+			{
+				$min = 0;
+				$time ++;
+			}
+			$ftime = sprintf("%02d", $time).':'.sprintf("%02d", $min); 
+			if ($selectval == $ftime) $selected = ' selected="true"';
+			else $selected = '';
+			$options .= '<option value="'.$ftime.'"'.$selected.'>'.$ftime.'</option>'."\n";
+			$min += 15;
+		}
+		return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
+	}
+	
 }

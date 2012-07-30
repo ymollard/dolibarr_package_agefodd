@@ -53,3 +53,15 @@ For all :
 - Fix : convention PDF page number
 - Fix : convention generation predefined text
 - Fix : fiche presence with more than 10 trainee
+
+***** ChangeLog for 2.0.7 compared to 2.0.6 *****
+For all :
+- Fix : Document liée : generating invoice according and link to order
+- Fix : Document liée : Better display (in one line) for "bon de commande"
+- Fix : Pagging on session list (archive and active)
+- Fix : Pagging on training list (archive and active)
+- Fix : Pagging on site list (archive and active)
+- Fix : Pagging on trainer list (archive and active)
+- Fix : Pagging on training list (archive and active)
+- Fix : Session edit detail display type of founding for trainee (if option enabled)
+- Fix : Session time management (time by quarter rather than select date std control)
