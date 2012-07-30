@@ -37,6 +37,7 @@ dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/commande/class/commande.class.php');
 
 
 // Security check
@@ -378,18 +379,20 @@ if ($id)
 				}
 				else
 				{
-					$mess = '';
+					$mess = '<table class="nobordernopadding"><tr>';
 
 					// Generer le bon de commande
 					$legende = $langs->trans("AgfFactureGenererBon");
-					$mess = '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 
 					// Lier un bon de commande existant
 					$legende = $langs->trans("AgfFactureSelectBon");
-					$mess.= '<a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+					$mess.= '<td><a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a></td>';
 						
-					$mess.= "&nbsp;".$form->textwithpicto('',$langs->trans("AgfFactureBonBeforeSelectHelp"),1,'help');
+					$mess.= '<td>'.$form->textwithpicto('',$langs->trans("AgfFactureBonBeforeSelectHelp"),1,'help').'</td>';
+					
+					$mess .= '</tr></table>';
 				}
 			} 
  			// gestion des factures
@@ -415,9 +418,10 @@ if ($id)
 	
 						// Créer la facture
 						$legende = $langs->trans("AgfFactureAddFac");
-						$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&commandeid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+						$commande_static= new Commande($db);
+						$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 						$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
-
+						
 						// lier une facture existante
 						$legende = $langs->trans("AgfFactureSelectFac");
 						$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';

@@ -90,7 +90,7 @@ if ($resql != -1)
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],"", $sortfield, $sortorder,'', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_trainning_ref='.$search_trainning_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site, $sortfield, $sortorder,'', $num);
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';

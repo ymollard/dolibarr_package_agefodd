@@ -339,11 +339,24 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 	if($_POST["period_update_x"])
 	{
-		
+
 		$modperiod=GETPOST('modperiod','int');
 		$date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-		$heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
-		$heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
+		
+		$heure_tmp_arr = array();
+		
+		$heured_tmp = GETPOST('dated','alpha');
+		if (!empty($heured_tmp)){
+			$heure_tmp_arr = explode(':',$heured_tmp);
+			//var_dump($heure_tmp_arr);
+			$heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		}
+		
+		$heuref_tmp = GETPOST('datef','alpha');
+		if (!empty($heuref_tmp)){
+			$heure_tmp_arr = explode(':',$heuref_tmp);
+			$heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		}
 
 		$agf = new Agefodd_sesscalendar($db);
 		$result = $agf->fetch($modperiod);
@@ -372,8 +385,25 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-		$agf->heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
-		$agf->heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
+		
+		
+		$heure_tmp_arr = array();
+		
+		$heured_tmp = GETPOST('dated','alpha');
+		if (!empty($heured_tmp)){
+			$heure_tmp_arr = explode(':',$heured_tmp);
+			$agf->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		}
+		
+		$heuref_tmp = GETPOST('datef','alpha');
+		if (!empty($heuref_tmp)){
+			$heure_tmp_arr = explode(':',$heuref_tmp);
+			$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		}
+		
+		
+		//$agf->heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
+		//$agf->heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
 		$result = $agf->create($user->id);
 	
 		if ($result > 0)
@@ -943,9 +973,9 @@ else
 								$form->select_date($calendrier->line[$i]->date_session, 'date','','','','obj_update_'.$i);
 								print '</td>';
 								print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
-								$form->select_date($calendrier->line[$i]->heured, 'dated',1,1,0,'obj_update_'.$i,1);
+								print $formAgefodd->select_time(dol_print_date($calendrier->line[$i]->heured,'hour'),'dated');
 								print ' - '.$langs->trans("AgfPeriodTimeE").' ';
-								$form->select_date($calendrier->line[$i]->heuref, 'datef',1,1,0,'obj_update_'.$i,1);
+								print $formAgefodd->select_time(dol_print_date($calendrier->line[$i]->heuref,'hour'),'datef');
 								print '</td>';
 						
 								if ($user->rights->agefodd->modifier)
@@ -1017,10 +1047,10 @@ else
 						$form->select_date($agf->dated, 'date','','','','newperiod');
 						print '</td>';
 						print '<td width="400px">'.$langs->trans("AgfPeriodTimeB").' ';
-						$form->select_date($agf->dated, 'dated',1,1,0,'newperiod',1);
+						print $formAgefodd->select_time('08:00','dated');
 						print '</td>';
 						print '<td width="400px">'.$langs->trans("AgfPeriodTimeE").' ';
-						$form->select_date($agf->dated, 'datef',1,1,0,'newperiod',1);
+						print $formAgefodd->select_time('18:00','datef');
 						print '</td>';
 						if ($user->rights->agefodd->modifier)
 						{
@@ -1092,7 +1122,7 @@ else
 							}
 							else
 							{
-								print '<td width="300px"style="border-right: 0px;">';
+								print '<td width="300px" style="border-right: 0px;">';
 								// info stagiaire
 								if (strtolower($stagiaires->line[$i]->nom) == "undefined")
 								{
@@ -1109,7 +1139,7 @@ else
 									print ' ('.$contact_static->getCivilityLabel().')';
 	                      		}
 	              				print '</td>';
-								print '<td width="200px" style="border-left: 0px;">';
+								print '<td width="150px" style="border-left: 0px;">';
 								// Affichage de l'organisme auquel est rattaché le stagiaire
 								if ($stagiaires->line[$i]->socid)
 								{
@@ -1122,7 +1152,7 @@ else
 								}
 								if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 								{
-									$agf->type;
+									print '</td><td width="150px" style="border-left: 0px;">'.stripslashes($stagiaires->line[$i]->type);
 								}
 								print '</td><td>';
 								

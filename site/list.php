@@ -57,7 +57,7 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
 $linenum = count($agf->line);
 
-print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder, "", $linenum);
+print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER['PHP_SELF'],"&arch=".$arch, $sortfield, $sortorder, "", $linenum);
 
 print '<div width="100%" align="right">';
 if ($arch == 2)
