@@ -300,7 +300,7 @@ class Agefodd_place extends CommonObject
 		$error=0;
 	
 		// Clean parameters
-		$this->intitule = trim($this->intitule);
+		$this->ref_interne = trim($this->ref_interne);
 		$this->public = $this->db->escape(trim($this->public));
         $this->methode = $this->db->escape(trim($this->methode));
         $this->programme = $this->db->escape(trim($this->programme));
@@ -391,6 +391,55 @@ class Agefodd_place extends CommonObject
 		    $this->error=$this->db->lasterror();
 		    return -1;
 		}
+	}
+	
+	/**
+	 *  Import customer adress
+	 *
+	 *  @param	User	$user        User that ask request
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
+	 */
+	function import_customer_adress($user=0)
+	{
+		global $conf, $langs;
+		$error=0;
+	
+		$sql = "SELECT";
+		$sql.= " s.address, s.cp, s.tel, s.ville, s.fk_departement, s.fk_pays";
+		$sql.= " FROM ".MAIN_DB_PREFIX."societe as s";
+        $sql.= " WHERE s.rowid = ".$this->fk_societe;
+        
+        dol_syslog(get_class($this)."::import_customer_adress sql=".$sql, LOG_DEBUG);
+        $resql=$this->db->query($sql);
+        if ($resql)
+        {
+        	if ($this->db->num_rows($resql))
+        	{
+        		$obj = $this->db->fetch_object($resql);
+        		$this->adresse = $obj->address;
+        		$this->cp = $obj->cp;
+        		$this->pays_id = $obj->fk_pays;
+        		$this->ville = $obj->ville;
+        		$this->tel = $obj->tel;
+        		$result=$this->update($user);
+        		if ($result > 0) {
+        			$this->db->free($resql);
+        			return 1;
+        		}
+        		else {
+        			$this->error="Error ".$this->db->lasterror();
+        			dol_syslog(get_class($this)."::import_customer_adress::update error=".$agf->error, LOG_ERR);
+        			return -1;
+        		}
+        	}
+        	
+        }
+        else
+       {
+        	$this->error="Error ".$this->db->lasterror();
+        	dol_syslog(get_class($this)."::import_customer_adress ".$this->error, LOG_ERR);
+        	return -1;
+        }
 	}
 }
 

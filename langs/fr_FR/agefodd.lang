@@ -264,3 +264,5 @@ AgfPDFDemoTitle=Demonstration
 AgfPDFDemoDemo=Ceci est une version de démonstration :
 AgfPDFDemoText=Les éditions sont disponibles dans la version complétes, allez sur Dolistore http://www.dolistore.com et rechercher le module Agefodd
 AgfPlaceMandatory = L'emplacement de la session est obligatoire.
+AgfAgefoddContactHelp = Les contacts disponibles ici sont ceux crée via le menu Logistique->Gestion des correspondants 
+AgfImportCustomerAdress = Importer l'adresse du Client

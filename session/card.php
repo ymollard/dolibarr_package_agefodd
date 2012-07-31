@@ -24,11 +24,6 @@
  *  \version		$Id$
  */
 
-error_reporting(E_ALL);
- ini_set('display_errors', true);
-ini_set('html_errors', false);
-
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
@@ -400,10 +395,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 			$heure_tmp_arr = explode(':',$heuref_tmp);
 			$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		}
-		
-		
-		//$agf->heured = dol_mktime(GETPOST('datedhour','int'),GETPOST('datedmin','int'),0,GETPOST('datedmonth','int'),GETPOST('datedday','int'),GETPOST('datedyear','int'));
-		//$agf->heuref = dol_mktime(GETPOST('datefhour','int'),GETPOST('datefmin','int'),0,GETPOST('datefmonth','int'),GETPOST('datefday','int'),GETPOST('datefyear','int'));
+
 		$result = $agf->create($user->id);
 	
 		if ($result > 0)
@@ -617,8 +609,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 	
 	print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
-	print '<td>';
+	print '<td><table class="nobordernopadding"><tr><td>';
 	print $formAgefodd->select_agefodd_contact('', 'contact','',1);
+	print '</td>';
+	print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddContactHelp"),1,'help').'</td></tr></table>';
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';

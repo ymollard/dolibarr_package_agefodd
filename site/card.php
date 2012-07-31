@@ -100,13 +100,13 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
  */
 if ($action == 'update' && $user->rights->agefodd->creer)
 {
-	if (! $_POST["cancel"])
+	if (! $_POST["cancel"] && ! $_POST["importadress"])
 	{
 		$agf = new Agefodd_place($db);
 
 		$result = $agf->fetch($id);
 
-		$agf->ref = GETPOST('ref_interne','alpha');
+		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->adresse = GETPOST('adresse','alpha');
 		$agf->cp = GETPOST('zipcode','alpha');
 		$agf->ville = GETPOST('town','alpha');
@@ -130,8 +130,25 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 
 	}
-	else
-	{
+	elseif (! $_POST["cancel"] && $_POST["importadress"])	{
+		
+		$agf = new Agefodd_place($db);
+		
+		$result = $agf->fetch($id);
+		$result = $agf->import_customer_adress($user->id);
+		
+		if ($result > 0)
+		{
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+			exit;
+		}
+		else
+		{
+			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf->error.'</div>';
+		}
+		
+	}else {
 		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
@@ -149,11 +166,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_place($db);
 
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
-		$agf->adresse = GETPOST('adresse','alpha');
-		$agf->cp = GETPOST('zipcode','alpha');
-		$agf->ville = GETPOST('town','alpha');
-		$agf->pays = GETPOST('country_id','int');
-		$agf->tel = GETPOST('phone','alpha');
+		//$agf->adresse = GETPOST('adresse','alpha');
+		//$agf->cp = GETPOST('zipcode','alpha');
+		//$agf->ville = GETPOST('town','alpha');
+		//$agf->pays = GETPOST('country_id','int');
+		//$agf->tel = GETPOST('phone','alpha');
 		$agf->fk_societe = GETPOST('societe','int');
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->acces_site = GETPOST('acces_site','alpha');
@@ -198,7 +215,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	$formcompany = new FormCompany($db);
 	print_fiche_titre($langs->trans("AgfCreatePlace"));
-	print 'userid : '.$user->id;
+	
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm">'."\n";
@@ -209,8 +226,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Societe").'</span></td>';
-	print '<td>'.$form->select_company('','societe','(s.client IN (1,2))',1).'</td></tr>';
-
+	print '<td>'.$form->select_company('','societe','((s.client IN (1,2)) OR (s.fournisseur=1))',1,1,0).'</td></tr>';
+	/*
 	print '<tr><td>'.$langs->trans("Address").'</td>';
 	print '<td><input name="adresse" class="flat" size="50" value=""></td></tr>';
 	
@@ -224,7 +241,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	
 	print '<tr><td>'.$langs->trans("Phone").'</td>';
-	print '<td><input name="phone" class="flat" size="50" value=""></td></tr>';
+	print '<td><input name="phone" class="flat" size="50" value=""></td></tr>';*/
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -240,7 +257,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
-	print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+	print '<input type="submit" name="importadress" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 	print '</td></tr>';
 	print '</table>';
@@ -279,7 +296,7 @@ else
 				print '<td><input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
 				print '<tr><td>'.$langs->trans("Societe").'</td>';
-				print '<td>'.$form->select_company($agf->socid,'societe','(s.client IN (1,2))').'</td></tr>';
+				print '<td>'.$form->select_company($agf->socid,'societe','((s.client IN (1,2)) OR (s.fournisseur=1))',0,1).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Address").'</td>';
 				print '<td><input name="adresse" class="flat" size="50" value="'.$agf->adresse.'"></td></tr>';
@@ -310,6 +327,7 @@ else
 				print '<table style=noborder align="right">';
 				print '<tr><td align="center" colspan=2>';
 				print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+				print '<input type="submit" name="importadress" class="butAction" value="'.$langs->trans("AgfImportCustomerAdress").'"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 				print '</td></tr>';
 				print '</table>';

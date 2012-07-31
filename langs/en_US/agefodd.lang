@@ -264,3 +264,5 @@ AgfPDFDemoTitle=Demonstration
 AgfPDFDemoDemo=This is a demo version
 AgfPDFDemoText=Editions are available in full version, go and search Dolistore http://www.dolistore.com module Agefodd
 AgfPlaceMandatory = Session location is mandatory
+AgfAgefoddContactHelp = Contacts available here come from administration of Logistics->Contact Management
+AgfImportCustomerAdress = Import customer adress

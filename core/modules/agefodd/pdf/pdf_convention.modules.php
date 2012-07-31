@@ -599,39 +599,37 @@ class pdf_convention extends ModelePDFAgefodd
 				/*
 				 * Page 4 (Annexe 1)
 				 */
-				
-				// New page
-				$pdf->AddPage();
-				$pagenb++;
-				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				$this->defaultFontSize = 9;
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-				$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
-				$pdf->SetTextColor(0,0,0);
-				$posX = $this->marge_gauche;
-				$posY = $this->marge_haute;
-		
 				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$id.'.pdf';
-				if (is_file($infile))
-				{
+				if (is_file($infile)) {
+					// New page
+					$pdf->AddPage();
+					$pagenb++;
+					$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					$this->defaultFontSize = 9;
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
+					$pdf->SetTextColor(0,0,0);
+					$posX = $this->marge_gauche;
+					$posY = $this->marge_haute;
+		
 					$pdf->setSourceFile($infile);
 					// import page 1
 					$tplIdx = $pdf->importPage(1);
 					// use the imported page and place it at point 10,10 with a width of 100 mm
 					//$pdf->useTemplate($tplIdx, $this->marge_gauche, $this->marge_haute, $this->espaceH_dispo);
 					$pdf->useTemplate($tplIdx, 0, 0, $this->page_largeur);
-				}
-
-				// Pied de page	
-				//$this->_pagefoot($pdf,$agf,$outputlangs);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
-				$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
-				$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/5',0, 0,'C');
-				$pdf->AliasNbPages();
 				
-				// Repere de pliage
-				$pdf->SetDrawColor(220,220,220);
-				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
+					// Pied de page	
+					//$this->_pagefoot($pdf,$agf,$outputlangs);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
+					$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
+					$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/5',0, 0,'C');
+					$pdf->AliasNbPages();
+					
+					// Repere de pliage
+					$pdf->SetDrawColor(220,220,220);
+					$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
+				}
 
 			}
 			$pdf->Close();

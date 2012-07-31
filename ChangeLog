@@ -69,3 +69,13 @@ For all :
 ***** ChangeLog for 2.0.8 compared to 2.0.7 *****
 For all :
 - Fix : migration : location are correct after migration
+
+***** ChangeLog for 2.0.9 compared to 2.0.10 *****
+For all :
+- Fix : Site, remove debug display userid
+- Add : Session  :creation tool tips to explain from where come contact.
+- Fix : Site, Edit and change location name
+- Fix : Cenvetion PDF, Avoid create last page if "fiche pedagogique" not exist
+- Fix : Site, Customer and supplier choice are possible
+- Change : When creating site, it's no more possible to input adress. It's done just after on edit screen
+- Change : Site : On edit screen, there is a button to import customer adress
