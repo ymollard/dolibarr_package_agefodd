@@ -62,6 +62,11 @@ function session_prepare_head($object,$showconv=0)
 	$head[$h][2] = 'card';
 	$h++;
 	
+	$head[$h][0] = dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfParticipant");
+	$head[$h][2] = 'subscribers';
+	$h++;
+	
 	/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfFichePresence");
 	$head[$h][2] = 'presence';

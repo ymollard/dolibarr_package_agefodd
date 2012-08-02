@@ -59,7 +59,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.0.9';
+		$this->version = '2.0.10';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -192,6 +192,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Search contact with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_CONTACT_DOL_SESSION";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		

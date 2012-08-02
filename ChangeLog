@@ -70,7 +70,7 @@ For all :
 For all :
 - Fix : migration : location are correct after migration
 
-***** ChangeLog for 2.0.9 compared to 2.0.10 *****
+***** ChangeLog for 2.0.9 compared to 2.0.8 *****
 For all :
 - Fix : Site, remove debug display userid
 - Add : Session  :creation tool tips to explain from where come contact.
@@ -79,3 +79,12 @@ For all :
 - Fix : Site, Customer and supplier choice are possible
 - Change : When creating site, it's no more possible to input adress. It's done just after on edit screen
 - Change : Site : On edit screen, there is a button to import customer adress
+
+***** ChangeLog for 2.0.10 compared to 2.0.9 *****
+For all :
+- Fix: Trainee - create : customer choice is now combobox
+- Add: You can set in module conf if session contact come from agefodd contact or doibarr contact (if dolibarr contact, agefodd contact will be created auto)
+- Change: Manage subcribe trainee on different tab in session screen 
+For dev :
+- Fix: Create agefodd contact return now new agefodd contact id.
+- Fix: Session create : better error management 

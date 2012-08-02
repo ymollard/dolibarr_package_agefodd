@@ -23,10 +23,6 @@
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
  */
 
-/*error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);*/
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
@@ -241,7 +237,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 }
 
 
-if ($id)
+if (!empty($id))
 {
 	$agf = new Agefodd_session($db);
 	$agf->fetch($id);
@@ -468,7 +464,7 @@ if ($id)
 		// Affichage en mode "consultation"
 		$head = session_prepare_head($agf);
 		
-		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
+		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
 		
 		/*
@@ -546,7 +542,5 @@ if ($id)
 
 }
 
-$db->close();
-
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
+llxFooter('');
 ?>

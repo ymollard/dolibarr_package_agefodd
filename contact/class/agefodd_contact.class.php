@@ -84,7 +84,7 @@ class Agefodd_contact extends CommonObject
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formateur");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_contact");
 			if (! $notrigger)
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
