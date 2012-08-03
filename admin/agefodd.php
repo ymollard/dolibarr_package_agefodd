@@ -109,6 +109,10 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
+	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
+	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $usesearch_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
 	if (! $error)
 	{
 		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
@@ -461,6 +465,17 @@ print $form->selectarray("AGF_USE_STAGIAIRE_TYPE",$arrval,$conf->global->AGF_USE
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseStagTypeHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+//Utilisation du contact agefodd ou dolibarr a la creation de la session
+print '<tr class="pair"><td>'.$langs->trans("AgfUseSessionDolContact").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_CONTACT_DOL_SESSION",$arrval,$conf->global->AGF_CONTACT_DOL_SESSION);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseSessionDolContactHelp"),1,'help');
 print '</td>';
 print '</tr>';
 

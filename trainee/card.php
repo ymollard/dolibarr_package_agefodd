@@ -259,7 +259,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 	
-	print $form->select_company('','societe','(s.client IN (1,2))',1);
+	print $form->select_company('','societe','(s.client IN (1,2))',1,1);
 	
 	print '</td></tr>';
 	
@@ -333,7 +333,7 @@ else
 					
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 
-					print $form->select_company($agf->socid,'societe','(s.client IN (1,2))');
+					print $form->select_company($agf->socid,'societe','(s.client IN (1,2))',1,1);
 					
 					print '</td></tr>';
 					

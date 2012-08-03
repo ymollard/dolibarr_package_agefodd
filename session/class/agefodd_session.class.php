@@ -146,11 +146,17 @@ class Agefodd_session extends CommonObject
     		//Create or update line in session commercial table and get line number
     		if (!empty($this->commercialid))
     		{
-    			$this->setCommercialSession($this->commercialid,$user);
+    			$result = $this->setCommercialSession($this->commercialid,$user);
+    			if ($result <= 0){
+    				$error++; $this->errors[]="Error ".$this->db->lasterror();
+    			}
     		}
     		if (!empty($this->contactid))
     		{
-    			$this->setContactSession($this->contactid,$user);
+    			$result = $this->setContactSession($this->contactid,$user);
+    			if ($result <= 0){
+    				$error++; $this->errors[]="Error ".$this->db->lasterror();
+    			}
     		}
     		if (! $notrigger)
     		{
@@ -815,7 +821,7 @@ class Agefodd_session extends CommonObject
     /**
      *  Update object (contact in session) into database
      *
-     *  @param	int	    $contactid      User commercial to link to session
+     *  @param	int	    $contactid      User contact to link to session
      *  @param	User	$user       	User that modify
      *  @return int     		   	 <0 if KO, >0 if OK
      */
@@ -826,13 +832,50 @@ class Agefodd_session extends CommonObject
     	$to_create=false;
     	$to_update=false;
     	$to_delete=false;
-    
     	 
     	if (empty($contactid) || $contactid==-1)
     	{
     		$to_delete=true;
     	}
     	else {
+    		
+    		//Contact id can be dolibarr contactid (from llx_socpoeple) or contact of Agefodd (llx_agefodd_contact) according settings
+    		if ($conf->global->AGF_CONTACT_DOL_SESSION)
+    		{
+    			//Test if this dolibarr contact is already a Agefodd contact 
+    			$sql = "SELECT agecont.rowid FROM ".MAIN_DB_PREFIX."agefodd_contact as agecont ";
+    			$sql .= " WHERE agecont.fk_socpeople=".$contactid;
+    			
+    			dol_syslog(get_class($this)."::setContactSession sql=".$sql, LOG_DEBUG);
+    			$resql=$this->db->query($sql);
+    			if ($resql) {
+    				if ($this->db->num_rows($resql) > 0) {
+    					// if exists the contact id to set is the rowid of agefood contact
+    					$obj = $this->db->fetch_object($resql);
+    					$contactid = $obj->rowid; 
+    				}
+    				else {
+    					// We need to create the agefodd contact
+    					dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+    					$contactAgefodd = new Agefodd_contact($this->db);
+    					$contactAgefodd->spid = $contactid;
+						$result = $contactAgefodd->create($user);
+						if ($result > 0)
+						{
+							$contactid = $result;
+						}
+						else
+						{
+							dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
+    						return -1;
+						}
+    				}
+    			}
+    			else {
+    				dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
+    				return -1;
+    			}
+    		}
     
     		$sql = "SELECT agecont.rowid,agecont.fk_agefodd_contact as contactid FROM ".MAIN_DB_PREFIX."agefodd_session_contact as agecont ";
     		$sql .= " WHERE agecont.fk_session_agefodd=".$this->db->escape($this->id);
