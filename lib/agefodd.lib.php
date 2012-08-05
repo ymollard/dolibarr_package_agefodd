@@ -25,6 +25,12 @@
 
 $langs->load('agefodd@agefodd');
 
+/**
+ *  Return head table for training tabs screen
+ *
+ *  @param	object	$object        Current training
+ *  @return array      		   	 head table of tabs
+ */
 function training_prepare_head($object)
 {
 	global $langs, $conf, $user;
@@ -49,7 +55,13 @@ function training_prepare_head($object)
 	return $head;
 }
 
-
+/**
+ *  Return head table for session tabs screen
+ *
+ *  @param	object	$object        Current session
+ *  @param int    $showconv     if convention tabs have to be shown
+ *  @return array      		   	 head table of tabs
+ */
 function session_prepare_head($object,$showconv=0)
 {
 	global $langs, $conf, $user;
@@ -100,6 +112,12 @@ function session_prepare_head($object,$showconv=0)
 	return $head;
 }
 
+/**
+ *  Return head table for trainee tabs screen
+ *
+ *  @param	object	$object        Current trainee
+ *  @return array      		   	 head table of tabs
+ */
 function trainee_prepare_head($object)
 {
 	global $langs, $conf, $user;
@@ -122,6 +140,12 @@ function trainee_prepare_head($object)
 	return $head;
 }
 
+/**
+ *  Return head table for trainer tabs screen
+ *
+ *  @param	object	$object        Current trainer
+ *  @return array      		   	 head table of tabs
+ */
 function trainer_prepare_head($object)
 {
 	global $langs, $conf, $user;
@@ -144,6 +168,12 @@ function trainer_prepare_head($object)
 	return $head;
 }
 
+/**
+ *  Return head table for contact tabs screen
+ *
+ *  @param	object	$object        Current contact
+ *  @return array      		   	 head table of tabs
+ */
 function contact_prepare_head($object)
 {
 	global $langs, $conf, $user;
@@ -166,6 +196,12 @@ function contact_prepare_head($object)
 	return $head;
 }
 
+/**
+ *  Return head table for site tabs screen
+ *
+ *  @param	object	$object        Current site
+ *  @return array      		   	 head table of tabs
+ */
 function site_prepare_head($object)
 {
 	global $langs, $conf, $user;
@@ -189,8 +225,9 @@ function site_prepare_head($object)
 }
 
 /**
- *    \brief	Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
- *    \return	str	nbre de niveaux
+ *  Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
+ *
+ *  @return int      		   	 nbre de niveaux
  */
 function ebi_get_adm_level_number()
 {
@@ -215,9 +252,10 @@ function ebi_get_adm_level_number()
 }
 
 /**
- *    \brief	Calcule le nombre de regroupement par premier niveau des tâches par session
- *    \param	$sessionid int	id de la session
- *    \return	str	nbre de niveaux
+ *  Calcule le nombre de regroupement par premier niveau des tâches par session
+ *
+ *  @param	int	$session        id de la session
+ *  @return int      		   	 nbre de niveaux
  */
 function ebi_get_level_number($session)
 {
@@ -241,11 +279,11 @@ function ebi_get_level_number($session)
 	}
 }
 
-
 /**
- *    \brief	Calcule le nombre de regroupement par premier niveau terminés pour une session donnée
- *    \param	int	rowid de la session
- *    \return	str	nbre de niveaux
+ *  Calcule le nombre de regroupement par premier niveau terminés pour une session donnée
+ *
+ *  @param	int	$sessid        id de la session
+ *  @return int      		   	 nbre de niveaux
  */
 function ebi_get_adm_lastFinishLevel($sessid)
 {
@@ -274,9 +312,10 @@ function ebi_get_adm_lastFinishLevel($sessid)
 }
 
 /**
- *    \brief	Calcule le nombre de d'action filles
- *    \param	int	rowid du niveaux
- *    \return	str	nbre d d'action
+ *  Calcule le nombre de d'action filles
+ *
+ *  @param	int	$id        rowid du niveaux
+ *  @return int      		   	 nbre d'action filles
  */
 function ebi_get_adm_indice_action_child($id)
 {
@@ -304,11 +343,12 @@ function ebi_get_adm_indice_action_child($id)
 }
 
 /**
- *    \brief	Calcule l'indice min ou max d'un niveau
- *    \param	int	lvl_rank Rang des actions a tester
- *    \param	int	parent_level niveau parent
- *    \param	str	type MIN ou MAX
- *    \return	str	l'indice min ou max
+ *  Calcule l'indice min ou max d'un niveau
+ *
+ *  @param	int	$lvl_rank  Rang des actions a tester
+ *  @param	int	$parent_level        niveau parent
+ *  @param	int	$type        type MIN ou MAX
+ *  @return int      		   	 indice
  */
 function ebi_get_adm_indice_per_rank($lvl_rank,$parent_level='',$type='MIN')
 {
@@ -348,10 +388,11 @@ function ebi_get_adm_indice_per_rank($lvl_rank,$parent_level='',$type='MIN')
 }
 
 /**
- *    \brief	Formatage d'une liste à puce
- *    \param	str	txt la chaine
- *   \param	bool	html sortie au format html (true) ou texte (false)
- *   \return	str	liste formatée
+ *  Formatage d'une liste à puce
+ *
+ *  @param	string	$text  la chaine
+ *  @param	boolean	$form        html sortie au format html (true) ou texte (false)
+ *  @return string      		 la chaine formater
  */
 function ebi_liste_a_puce($text, $form=false)
 {
@@ -409,12 +450,11 @@ function ebi_liste_a_puce($text, $form=false)
 	return $str;
 }
 
-
-
 /**
- *    \brief	Calcule le next number d'indice pour une action
- *    \param	int	rowid du niveaux
- *    \return	str	nbre d d'action
+ *  Calcule le next number d'indice pour une action (ecran conf module)
+ *
+ *  @param	int	$id  rowid du niveaux
+ *  @return int      		 action next number
  */
 function ebi_get_adm_get_next_indice_action($id)
 {
@@ -467,11 +507,13 @@ function ebi_get_adm_get_next_indice_action($id)
 	}
 }
 
+
 /**
- *    \brief	Calcule le next number d'indice pour une action
- *    \param	int	rowid du niveaux
- *    \param	int	sessionid Id de la sessino
- *    \return	str	nbre d d'action
+ *  Calcule le next number d'indice pour une action (pour une session)
+ *
+ *  @param	int	$id  rowid du niveaux
+ *  @param	int	$sessionid  id de la session
+ *  @return int      		 action next number
  */
 function ebi_get_next_indice_action($id,$sessionid)
 {
@@ -525,6 +567,4 @@ function ebi_get_next_indice_action($id,$sessionid)
 		return -1;
 	}
 }
-
-#llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
 ?>

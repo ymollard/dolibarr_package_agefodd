@@ -147,7 +147,7 @@ if (!empty($id))
 		}
 		
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 		print '</div>';
 		
 		print '<table class="border" width="100%">';
@@ -344,7 +344,7 @@ if (!empty($id))
 		// Affichage en mode "consultation"
 		
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 		print '</div>';
 		
 		print '<table class="border" width="100%">';
