@@ -35,6 +35,7 @@ dol_include_once('/agefodd/class/agefodd_facture.class.php');
 dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
 dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/core/lib/company.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -200,7 +201,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		if (!empty($art2)) $agf->art2 = $art2;
 		if (!empty($art3)) $agf->art3 = $art3;
 		if (!empty($art4)) $agf->art4 = $art4;
-		if (!empty($art5)) $agf->art4 = $art5;
+		if (!empty($art5)) $agf->art5 = $art5;
 		if (!empty($art6)) $agf->art6 = $art6;
 		if (!empty($art7)) $agf->art7 = $art7;
 		if (!empty($art8)) $agf->art8 = $art8;
@@ -272,14 +273,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	if ($agf_conv->intro1) $intro1 = $agf_conv->intro1;
 	else
 	{
-		$statut = $conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
+		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 		$intro1 = "La société ".$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut." au capital de ";
 		$intro1.= $conf->global->MAIN_INFO_CAPITAL." euros, dont le siège social est à ".$conf->global->MAIN_INFO_SOCIETE_VILLE;
 		$intro1.= " (".$conf->global->MAIN_INFO_SOCIETE_CP."), immatriculée au Registre du Commerce et des Sociétés sous la référence ";
 		$intro1.= $conf->global->MAIN_INFO_RCS;
 		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture de l'";
 		$intro1.= $conf->global->AGF_ORGANISME_PREF." sous le numéro ".$conf->global->AGF_ORGANISME_NUM;
-		$intro1.= ", représentée par Monsieur ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
+		$intro1.= ", représentée par ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
 	}
 	
 	//intro2
@@ -341,10 +342,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 			if ($calendrier->line[$i]->date_session != $old_date)
 			{
 				if ($i > 0 ) $art1.= "), ";
-				$art1.= dol_print_date($calendrier->line[$i]->date_session,'dayhourtext').' (';
+				$art1.= dol_print_date($calendrier->line[$i]->date_session,'daytext').' (';
 			}
 			else $art1.= '/';
 			$art1.= dol_print_date($calendrier->line[$i]->heured,'hour');
+			$art1.= ' - ';
 			$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
 			if ($i == $blocNumber - 1) $art1.=').'."\n";
 			
@@ -418,7 +420,7 @@ En cas de dédit par le client à moins de 5 jours francs, avant le début de l'
 	else
 	{
 		$art7 = "En cas de litige entre les deux parties, celles-ci s'engagent à rechercher préalablement une solution amiable.
-En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de la prefecture dont depend ".$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
+En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de la préfecture dont dépend ".$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
 	}
 
 	// Signature du client

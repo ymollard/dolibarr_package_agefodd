@@ -657,22 +657,26 @@ else
 					else $notes =  $langs->trans("AgfUndefinedNote");
 					print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->notes).'</textarea></td></tr>';
 					
-					print '<tr><td>'.$langs->trans("AgfDateResTrainer").'</td><td>';
+					print '<tr><td>'.$langs->trans("AgfDateResTrainer").'</td><td><table class="nobordernopadding"><tr><td>';
 					if ($agf->is_date_res_site==1) {
 						$chkrestrainer='checked="checked"';
 					}
-					print '<input type="checkbox" name="isdaterestrainer" value="1" '.$chkrestrainer.'/>';
+					print '<input type="checkbox" name="isdaterestrainer" value="1" '.$chkrestrainer.'/></td><td>';
 					$form->select_date($agf->date_res_trainer, 'res_train','','',1,'update',1,1);
+					print '</td><td>';
 					print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
+					print '</td></tr></table>';
 					print '</td></tr>';
 					
-					print '<tr><td>'.$langs->trans("AgfDateResSite").'</td><td>';
+					print '<tr><td>'.$langs->trans("AgfDateResSite").'</td><td><table class="nobordernopadding"><tr><td>';
 					if ($agf->is_date_res_site==1) {
 						$chkressite='checked="checked"';
 					}
-					print '<input type="checkbox" name="isdateressite" value="1" '.$chkressite.' />';
+					print '<input type="checkbox" name="isdateressite" value="1" '.$chkressite.' /></td><td>';
 					$form->select_date($agf->date_res_site, 'res_site','','',1,'update',1,1);
+					print '</td><td>';
 					print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
+					print '</td></tr></table>';
 					print '</td></tr>';
 					
 					print '</table>';
@@ -736,9 +740,13 @@ else
 					if ($agf->is_date_ask_OPCA==1) {
 						$chckisDtOPCA='checked="checked"';
 					}
-					print '<td><input type="checkbox" class="flat" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
+					print '<td><table class="nobordernopadding"><tr><td>';
+					print '<input type="checkbox" class="flat" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' /></td>';
+					print '<td>';
 					print $form->select_date($agf->date_ask_OPCA, 'ask_OPCA','','',1,'update',1,1);
+					print '</td><td>';
 					print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
+					print '</td></tr></table>';
 					print '</td></tr>';	
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
@@ -1036,7 +1044,7 @@ else
 					}
 	
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_adm_level_number(), $langs->trans("AgfAdmLevel"));
+					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					print '</div>';
 
 					print '<table class="border" width="100%">';

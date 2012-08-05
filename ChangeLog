@@ -84,7 +84,17 @@ For all :
 For all :
 - Fix: Trainee - create : customer choice is now combobox
 - Add: You can set in module conf if session contact come from agefodd contact or doibarr contact (if dolibarr contact, agefodd contact will be created auto)
-- Change: Manage subcribe trainee on different tab in session screen 
+- Change: Manage subscribe trainee on different tab in session screen 
 For dev :
 - Fix: Create agefodd contact return now new agefodd contact id.
 - Fix: Session create : better error management 
+
+***** ChangeLog for 2.0.11 compared to 2.0.10 *****
+For dev :
+- Fix: comment agefodd.lib.php according PSR 
+For all :
+- Fix : Session level graph now calulated on session information
+- Fix : spelling correction
+- Fix : Session : creation : better display of question mark (help picto)
+- Fix : Session : document : convention on texte Texte "l'organisme" get good enterprise legal form 
+- Fix : Session : document : convention text 5 correctly saved
