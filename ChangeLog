@@ -98,3 +98,11 @@ For all :
 - Fix : Session : creation : better display of question mark (help picto)
 - Fix : Session : document : convention on texte Texte "l'organisme" get good enterprise legal form 
 - Fix : Session : document : convention text 5 correctly saved
+
+***** ChangeLog for 2.0.12 compared to 2.0.11 *****
+For all :
+- Fix : Correct fiche pédagogique document (avoid bug of long programme and strange display)
+- Fix : Remove programme document (useless because programme is include into fiche pédagogique)
+- Fix : PDF Conseil pratique, add foot page
+- Fix : PDF Convention : better Layout.
+- Fix : PDF Convention : import all page of fiche pedago

@@ -491,7 +491,6 @@ if (!empty($id))
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
 		document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
 		document_line("Réglement intérieur", 2, 'reglement', $agf->line[$i]->socid);
-		document_line("Programme", 2, 'programme', $agf->line[$i]->socid);
 		document_line("Fiche pédagogique", 2, 'fiche_pedago', $agf->line[$i]->socid);
 		document_line("Conseils pratiques", 2, 'conseils', $agf->line[$i]->socid);
 

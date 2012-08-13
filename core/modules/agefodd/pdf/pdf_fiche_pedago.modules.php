@@ -297,11 +297,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_op->public);
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 
 				
 				/***** Pré requis *****/
@@ -316,11 +314,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = $agf_op->prerequis;
 				if (empty($this->str)) $this->str = "Aucun";
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 
 				
 				/***** Programme *****/
@@ -349,7 +345,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J');
 				
 				// Nbre de ligne * hauteur ligne + decallage titre niv 2
-				$posY += $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 
 				
 				/***** Methode pedago *****/
@@ -368,7 +364,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 				
 
 				/***** Duree *****/
