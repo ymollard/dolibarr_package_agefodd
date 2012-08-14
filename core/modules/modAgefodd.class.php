@@ -487,7 +487,8 @@ class modAgefodd extends DolibarrModules
 								'user'=>0);
 		$r++;
 		// 5
-		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		//TODO : Create BPF
+		/*$this->menu[$r]=array(	'fk_menu'=>'r=0',
 								'type'=>'left',
 								'titre'=>'AgfMenuSAdm',
 								'mainmenu'=>'agefodd',
@@ -510,7 +511,7 @@ class modAgefodd extends DolibarrModules
 								'enabled'=>1,
 								'perms'=>'$user->rights->agefodd->lire',
 								'target'=>'',
-								'user'=>0);
+								'user'=>0);*/
 
 	}
 

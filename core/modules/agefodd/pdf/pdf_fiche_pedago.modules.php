@@ -96,13 +96,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf_session = new Agefodd_session($this->db);
-			$ret = $agf_session->fetch($id);
-			if ($ret)
-			{
+			//$agf_session = new Agefodd_session($this->db);
+			//$ret = $agf_session->fetch($id);
+			//if ($ret)
+			//{
 				$agf= new Agefodd($this->db);
-				$agf->fetch($agf_session->formid);
-			}
+				//$agf->fetch($agf_session->formid);
+				$agf->fetch($id);
+			//}
 		}
 
 		// Definition of $dir and $file

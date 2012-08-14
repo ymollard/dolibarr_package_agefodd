@@ -28,6 +28,7 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 // Security check
@@ -101,10 +102,10 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->note1 = GETPOST('note1','alpha');
 		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
-		$agf->programme = GETPOST('programme','alpha');
+		$agf->programme = GETPOST('programme');
 		$result = $agf->update($user->id);
 
-		if ($result)
+		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
@@ -127,7 +128,6 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 /*
  * Action create (fiche formation)
  */
-
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
@@ -142,7 +142,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->note1 = GETPOST('note1','alpha');
 		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
-		$agf->programme = GETPOST('programme','alpha');
+		$agf->programme = GETPOST('programme');
 		$result = $agf->create($user->id);
 
 		if ($result > 0)
@@ -221,6 +221,38 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
+
+/*
+ * Action generate fiche pédagogique
+*/
+if ($action == 'fichepeda' && $user->rights->agefodd->creer)
+{
+	// Define output language
+	$outputlangs = $langs;
+	$newlang=GETPOST('lang_id','alpha');
+	if ($conf->global->MAIN_MULTILANGS && empty($newlang)) $newlang=$object->client->default_lang;
+	if (! empty($newlang))
+	{
+		$outputlangs = new Translate("",$conf);
+		$outputlangs->setDefaultLang($newlang);
+	}
+	$model='fiche_pedago';
+	$file=$model.'_'.$id.'.pdf';
+	
+	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
+	
+	if ($result > 0)
+	{
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		exit;
+	}
+	else
+	{
+		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
+	}
+}
+
 
 
 
@@ -558,6 +590,20 @@ else
 				}
 				
 				print "</table>";
+				
+				
+				if (is_file($conf->agefodd->dir_output.'/fiche_pedago_'.$id.'.pdf'))
+				{
+					print '&nbsp';
+					print '<table class="border" width="100%">';
+					print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfLinkedDocuments").'</td></tr>';
+					// afficher
+					$legende = $langs->trans("AgfDocOpen");
+					print '<tr><td width="200" align="center">Fiche pedagogique : </td><td> ';
+					print '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file=fiche_pedago_'.$id.'.pdf" alt="'.$legende.'" title="'.$legende.'">';
+					print '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					print '</td></tr></table>';
+				}
 
 				print '</div>';
 			}
@@ -624,6 +670,15 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	    {
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
 	    }
+	}
+	
+	if ($user->rights->agefodd->creer)
+	{
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=fichepeda&id='.$id.'">'.$langs->trans('AgfPrintFichePedago').'</a>';
+	}
+	else
+	{
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfPrintFichePedago').'</a>';
 	}
 	
 	

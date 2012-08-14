@@ -271,3 +271,4 @@ AgfUseSessionDolContactHelp = Lors de la creation de sessions si le contact est 
 AgfAgefoddDolContactHelp = C'est la liste de tout les contacts Dolibarr. Si le contact selectionné, n'est pas un correspondant Agefodd (menu Logistique->Gestion des correspondants), il sera crée automotiquement
 AgfParticipant = Participant(s)
 AgfModifySubscribers = Modifier les participants
+AgfPrintFichePedago = Générer la fiche pédagogique
