@@ -31,7 +31,7 @@
 include_once(DOL_DOCUMENT_ROOT ."/core/modules/DolibarrModules.class.php");
 
 
-/**     
+/**
  * 		\class      modAgefodd
  *      \brief      Description and activation class for module agefodd
  */
@@ -41,7 +41,7 @@ class modAgefodd extends DolibarrModules
 	 *   \brief      Constructor. Define names, constants, directories, boxes, permissions
 	 *   \param      DB      Database handler
 	 */
-	function modAgefodd($DB)
+	function __contruct($DB)
 	{
 		$this->db = $DB;
 
@@ -90,7 +90,7 @@ class modAgefodd extends DolibarrModules
 		// Constants
 		$this->const = array();			// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 0 or 'allentities')
 		$r=0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_USE_STAGIAIRE_TYPE";
 		$this->const[$r][1] = "yesno";
@@ -98,7 +98,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use trainee type';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_DEFAULT_STAGIAIRE_TYPE";
 		$this->const[$r][1] = "chaine";
@@ -106,7 +106,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Type of  trainee funding';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_UNIVERSAL_MASK";
 		$this->const[$r][1] = "chaine";
@@ -114,7 +114,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Mask of training number ref';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_ADDON";
 		$this->const[$r][1] = "chaine";
@@ -122,7 +122,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use simple mask for training ref';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_ORGANISME_PREF";
 		$this->const[$r][1] = "chaine";
@@ -138,7 +138,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Numerot d\'enregistrement a la prefecture';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_ORGANISME_REPRESENTANT";
 		$this->const[$r][1] = "chaine";
@@ -146,7 +146,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Representant de la societé de formation';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINING_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
@@ -154,7 +154,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Search Training with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINER_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
@@ -162,7 +162,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Search Trainer with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINEE_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
@@ -170,7 +170,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Search Trainee with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_SITE_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
@@ -178,7 +178,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Search site with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_STAGTYPE_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
@@ -186,7 +186,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Search stagiaire type with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_CONTACT_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
@@ -194,7 +194,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Search contact with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_CONTACT_DOL_SESSION";
 		$this->const[$r][1] = "yesno";
@@ -202,8 +202,8 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
-		
+
+
 		// Array to add new pages in new tabs
 		//$this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');
 		// where entity can be
@@ -291,7 +291,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=1',
 								'type'=>'left',
 								'titre'=>'AgfMenuCatListActivees',
@@ -304,7 +304,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=1',
 								'type'=>'left',
 								'titre'=>'AgfMenuCatListArchivees',
@@ -317,7 +317,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=1',
 								'type'=>'left',
 								'titre'=>'AgfMenuCatNew',
@@ -343,7 +343,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=5',
 								'type'=>'left',
 								'titre'=>'AgfMenuSessActList',
@@ -356,7 +356,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=5',
 								'type'=>'left',
 								'titre'=>'AgfMenuSessArchList',
@@ -369,7 +369,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=5',
 								'type'=>'left',
 								'titre'=>'AgfMenuSessNew',
@@ -395,7 +395,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=9',
 								'type'=>'left',
 								'titre'=>'AgfMenuActStagiaireList',
@@ -408,7 +408,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=9',
 								'type'=>'left',
 								'titre'=>'AgfMenuActStagiaireNew',
@@ -421,7 +421,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=9',
 								'type'=>'left',
 								'titre'=>'AgfMenuActStagiaireNewFromContact',
@@ -447,7 +447,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=13',
 								'type'=>'left',
 								'titre'=>'AgfMenuSite',
@@ -460,7 +460,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=13',
 								'type'=>'left',
 								'titre'=>'AgfMenuFormateur',
@@ -473,7 +473,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=13',
 								'type'=>'left',
 								'titre'=>'AgfMenuContact',
@@ -500,7 +500,7 @@ class modAgefodd extends DolibarrModules
 								'target'=>'',
 								'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=17',
 								'type'=>'left',
 								'titre'=>'AgfMenuSAdmBilanDRTEFP',

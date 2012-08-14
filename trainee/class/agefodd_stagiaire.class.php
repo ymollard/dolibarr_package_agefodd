@@ -46,7 +46,7 @@ class Agefodd_stagiaire extends CommonObject
      *	\brief		Constructor
      *	\param		DB	Database handler
      */
-    function Agefodd_stagiaire($DB) 
+    function Agefodd_stagiaire($DB)
     {
         $this->db = $DB;
         return 1;
@@ -63,7 +63,7 @@ class Agefodd_stagiaire extends CommonObject
     {
     	global $conf, $langs;
 		$error=0;
-    	
+
 		// Clean parameters
 		$this->nom = trim($this->nom);
     	$this->prenom = trim($this->prenom);
@@ -78,7 +78,7 @@ class Agefodd_stagiaire extends CommonObject
 		$this->nom = strtoupper($this->nom);
     	$this->prenom = ucfirst(strtolower($this->prenom));
 
-		
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_stagiaire(";
 		$sql.= "nom, prenom, civilite, fk_user_author, datec, ";
@@ -97,9 +97,9 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= '"'.$this->note.'",';
 		$sql.= '"'.$this->fk_socpeople.'"';
 		$sql.= ")";
-		
+
 		$this->db->begin();
-		
+
 	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 	   	$resql=$this->db->query($sql);
 	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -110,7 +110,7 @@ class Agefodd_stagiaire extends CommonObject
 		    {
 	            // Uncomment this and change MYOBJECT to your own tag if you
 	            // want this action call a trigger.
-	            
+
 	            //// Call triggers
 	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 	            //$interface=new Interfaces($this->db);
@@ -148,7 +148,7 @@ class Agefodd_stagiaire extends CommonObject
     function fetch($id)
     {
     	global $langs;
-                            
+
 		$sql = "SELECT";
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilite,";
@@ -173,13 +173,13 @@ class Agefodd_stagiaire extends CommonObject
                 {
                 	$contact = new Contact($this->db);
                 	$result = $contact->fetch($obj->fk_socpeople);
-                	
+
                 	if ($result > 0)
                 	{
-                		
+
                 		$this->id = $obj->rowid;
                 		$this->ref = $obj->rowid; // use for next prev refs
-                		
+
                 		$this->nom = $contact->name;
                 		$this->prenom = $contact->firstname;
                 		$this->civilite = $contact->civilite_id;
@@ -194,7 +194,7 @@ class Agefodd_stagiaire extends CommonObject
                 	}
                 }
                 else
-              {  
+              {
 	                $this->id = $obj->rowid;
 	                $this->ref = $obj->rowid; // use for next prev refs
 	                $this->nom = $obj->nom;
@@ -209,7 +209,7 @@ class Agefodd_stagiaire extends CommonObject
 	                $this->note = $obj->note;
 	                $this->fk_socpeople = 0;
               	}
-                
+
 	    }
             $this->db->free($resql);
 
@@ -230,7 +230,7 @@ class Agefodd_stagiaire extends CommonObject
      *  @param	string		$sortorder    sort order
      *  @param	string		$sortfield    sort field
      *  @param	int			$limit		  limit page
-     *  @param	int			$offset    	  page 
+     *  @param	int			$offset    	  page
      *  @param	int			$arch    	  display archive or not
      *  @param	array		$filter    	  filter output
      *  @return int          	<0 if KO, >0 if OK
@@ -238,7 +238,7 @@ class Agefodd_stagiaire extends CommonObject
     function fetch_all($sortorder, $sortfield, $limit='', $offset, $filter='')
     {
     	global $langs;
-                            
+
 		$sql = "SELECT";
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilitecode,";
@@ -249,7 +249,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " ON s.fk_soc = so.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
 		$sql.= " ON s.civilite = civ.code";
-		
+
 		//Manage filter
 		if (!empty($filter)){
 			$addcriteria=false;
@@ -269,7 +269,7 @@ class Agefodd_stagiaire extends CommonObject
 		}
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
-	
+
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
    		if ($resql)
@@ -277,19 +277,19 @@ class Agefodd_stagiaire extends CommonObject
     		$this->line = array();
     		$num = $this->db->num_rows($resql);
     		$i = 0;
-    
+
     		if ($num)
     		{
     			while( $i < $num)
     			{
     				$obj = $this->db->fetch_object($resql);
-    				
+
     				//Manage filter for telephone to remove all space from result to filter correctly
     				if (!empty($filter)){
     					if (array_key_exists('s.tel1',$filter)) {
     						$value = $filter['s.tel1'];
     						if (!empty($value)) {
-    							if ($pos!==false) 
+    							if ($pos!==false)
     							{
     								$this->line[$i]->socid = $obj->socid;
     								$this->line[$i]->socname = $obj->socname;
@@ -305,7 +305,7 @@ class Agefodd_stagiaire extends CommonObject
     								$this->line[$i]->mail = $obj->mail;
     								$this->line[$i]->note = $obj->note;
     								$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
-    							}				
+    							}
     						}
     					}
     					else
@@ -368,7 +368,7 @@ class Agefodd_stagiaire extends CommonObject
     function info($id)
     {
     	global $langs;
-    	
+
         $sql = "SELECT";
 		$sql.= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
@@ -410,7 +410,7 @@ class Agefodd_stagiaire extends CommonObject
     {
 		global $conf, $langs;
 		$error=0;
-	
+
 		// Clean parameters
 		$this->nom = trim($this->nom);
         $this->prenom = trim($this->prenom);
@@ -424,7 +424,7 @@ class Agefodd_stagiaire extends CommonObject
 		// Put here code to add control on parameters values
 
         // Update request
-        if (!isset($this->archive)) $this->archive = 0; 
+        if (!isset($this->archive)) $this->archive = 0;
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire as s SET";
 		$sql.= " s.nom='".$this->nom."',";
 		$sql.= " s.prenom='".$this->prenom."',";
@@ -440,7 +440,7 @@ class Agefodd_stagiaire extends CommonObject
         $sql.= " WHERE s.rowid = ".$this->id;
 
 		$this->db->begin();
-	
+
 		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -450,7 +450,7 @@ class Agefodd_stagiaire extends CommonObject
 			{
 	            // Uncomment this and change MYOBJECT to your own tag if you
 	            // want this action call a trigger.
-				
+
 	            //// Call triggers
 	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 	            //$interface=new Interfaces($this->db);
@@ -459,7 +459,7 @@ class Agefodd_stagiaire extends CommonObject
 	            //// End call triggers
 	    	}
 		}
-		
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -467,7 +467,7 @@ class Agefodd_stagiaire extends CommonObject
 			{
 	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
-			}	
+			}
 			$this->db->rollback();
 			return -1*$error;
 		}
@@ -475,10 +475,10 @@ class Agefodd_stagiaire extends CommonObject
 		{
 			$this->db->commit();
 			return 1;
-		}		
+		}
     }
 
-	
+
 	/**
 	*      \brief      Supprime l'operation
 	*      \param      id          Id operation à supprimer
@@ -488,10 +488,10 @@ class Agefodd_stagiaire extends CommonObject
 	{
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_stagiaire";
 		$sql .= " WHERE rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-		
+
 		if ($resql)
 		{
 			return 1;

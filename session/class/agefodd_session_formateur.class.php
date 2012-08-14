@@ -43,7 +43,7 @@ class Agefodd_session_formateur
      *	\brief		Constructor
      *	\param		DB	Database handler
      */
-    function Agefodd_session_formateur($DB) 
+    function __construct($DB)
     {
         $this->db = $DB;
         return 1;
@@ -52,7 +52,7 @@ class Agefodd_session_formateur
 
     /**
      *      \brief      Create in database
-     *      \param      user        	User that create
+     *      \param      int 	user        	User that create
      *      \param      notrigger	0=launch triggers after, 1=disable triggers
      *      \return     int         	<0 if KO, Id of created object if OK
      */
@@ -60,14 +60,14 @@ class Agefodd_session_formateur
     {
     	global $conf, $langs;
 		$error=0;
-    	
+
 		// Clean parameters
 		$this->sessid = trim($this->sessid);
 		$this->formid = trim($this->formid);
 
 		// Check parameters
 
-		
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_formateur(";
 		$sql.= "fk_session,fk_agefodd_formateur, fk_user_author, datec";
@@ -77,9 +77,9 @@ class Agefodd_session_formateur
 		$sql.= '"'.$user.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
-		
+
 		$this->db->begin();
-		
+
 	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 	   	$resql=$this->db->query($sql);
 	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -90,7 +90,7 @@ class Agefodd_session_formateur
 		    {
 	            // Uncomment this and change MYOBJECT to your own tag if you
 	            // want this action call a trigger.
-	            
+
 	            //// Call triggers
 	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 	            //$interface=new Interfaces($this->db);
@@ -174,7 +174,7 @@ class Agefodd_session_formateur
     function fetch_formateur_per_session($id)
     {
     	global $langs;
-                            
+
 	$sql = "SELECT";
 	$sql.= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 	$sql.= " f.rowid as formid, f.fk_socpeople,";
@@ -232,11 +232,11 @@ class Agefodd_session_formateur
     {
 	global $conf, $langs;
 	$error=0;
-	
+
 	// Clean parameters
 	$this->opsid = trim($this->opsid);
 	$this->formid = trim($this->formid);
-	
+
 	// Check parameters
 	// Put here code to add control on parameters values
 
@@ -258,7 +258,7 @@ class Agefodd_session_formateur
 			{
 	            // Uncomment this and change MYOBJECT to your own tag if you
 	            // want this action call a trigger.
-				
+
 	            //// Call triggers
 	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 	            //$interface=new Interfaces($this->db);
@@ -267,7 +267,7 @@ class Agefodd_session_formateur
 	            //// End call triggers
 	    	}
 		}
-		
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -275,7 +275,7 @@ class Agefodd_session_formateur
 			{
 	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
-			}	
+			}
 			$this->db->rollback();
 			return -1*$error;
 		}
@@ -283,10 +283,10 @@ class Agefodd_session_formateur
 		{
 			$this->db->commit();
 			return 1;
-		}		
+		}
     }
 
-	
+
 	/**
 	*      \brief      Supprime l'operation
 	*      \param      id          Id operation à supprimer
@@ -296,10 +296,10 @@ class Agefodd_session_formateur
 	{
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_session_formateur";
 		$sql .= " WHERE rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-		
+
 		if ($resql)
 		{
 			return 1;

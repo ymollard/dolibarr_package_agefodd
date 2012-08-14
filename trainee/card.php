@@ -49,7 +49,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 {
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->remove($id);
-	
+
 	if ($result > 0)
 	{
 		Header ( "Location: list.php");
@@ -155,7 +155,7 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 
 	$contact = new Contact($db);
 	$result = $contact->fetch($_POST["contact"]);
-	
+
 	if ($result > 0)
 	{
 		$agf = new Agefodd_stagiaire($db);
@@ -172,18 +172,18 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 		$agf->fk_socpeople = $contact->id;
 
 		$result2 = $agf->create($user->id);
-		
+
 		if ($result2 > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id);
 			exit;
 		}
 		else
-		{	
+		{
 			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
-		
+
 	}
 }
 
@@ -208,22 +208,25 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 	print '<input type="hidden" name="action" value="nfcontact_confirm">'."\n";
 	print '<input type="hidden" name="id" value="'.$id.'">'."\n";
 	print '<table class="border" width="100%">';
-	
+
 	print '<tr><td width="20%">'. $langs->trans("AgfContactImportAsStagiaire").'</td>';
 	print '<td>';
-	
+
 	$agf_static = new Agefodd_stagiaire($db);
 	$agf_static->fetch_all('DESC','s.rowid','',0);
 	$exclude_array = array();
-	foreach($agf_static->line as $line)
+	if (is_array($agf_static->line) && count($agf_static) > 0)
 	{
-		$exclude_array[]=$line->fk_socpeople;
+		foreach($agf_static->line as $line)
+		{
+			$exclude_array[]=$line->fk_socpeople;
+		}
 	}
 	$form->select_contacts(0,'','contact',1,$exclude_array);
 	print '</td></tr>';
-	
+
 	print '</table>';
-	
+
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" class="butAction" value="'.$langs->trans("AgfImport").'">';
@@ -253,25 +256,25 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td><input name="prenom" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
-	
+
 	print '<td>'.$formcompagny->select_civility().'</td>';
 	print '</tr>';
-	
+
 	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
-	
+
 	print $form->select_company('','societe','(s.client IN (1,2))',1,1);
-	
+
 	print '</td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
 	print '<td><input name="fonction" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans("Phone").'</td>';
 	print '<td><input name="tel1" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans("Mobile").'</td>';
 	print '<td><input name="tel2" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans("Mail").'</td>';
 	print '<td><input name="mail" class="flat" size="50" value=""></td></tr>';
 
@@ -301,51 +304,51 @@ else
 		if ($result)
 		{
 			$head = trainee_prepare_head($agf);
-			
+
 			dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-			
+
 			// Affichage en mode "édition"
 			if ($action == 'edit')
 			{
 				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 				print '<input type="hidden" name="action" value="update">';
-				
+
 				print '<input type="hidden" name="id" value="'.$id.'">';
 
 				print '<table class="border" width="100%">';
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 				print '<td>'.$agf->id.'</td></tr>';
-				
-				//if contact trainee from contact then display contact inforamtion 
+
+				//if contact trainee from contact then display contact inforamtion
 				if (empty($agf->fk_socpeople))
 				{
 					print '<tr><td>'.$langs->trans("Lastname").'</td>';
 					print '<td><input name="nom" class="flat" size="50" value="'.strtoupper($agf->nom).'"></td></tr>';
-	
+
 					print '<tr><td>'.$langs->trans("Firstname").'</td>';
 					print '<td><input name="prenom" class="flat" size="50" value="'.ucfirst($agf->prenom).'"></td></tr>';
-	
+
 					print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
-					
+
 					print '<td>'.$formcompagny->select_civility($agf->civilite).'</td>';
 					print '</tr>';
-					
+
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 
 					print $form->select_company($agf->socid,'societe','(s.client IN (1,2))',1,1);
-					
+
 					print '</td></tr>';
-					
+
 					print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
 					print '<td><input name="fonction" class="flat" size="50" value="'.$agf->fonction.'"></td></tr>';
-					
+
 					print '<tr><td>'.$langs->trans("Phone").'</td>';
 					print '<td><input name="tel1" class="flat" size="50" value="'.$agf->tel1.'"></td></tr>';
-					
+
 					print '<tr><td>'.$langs->trans("Mobile").'</td>';
 					print '<td><input name="tel2" class="flat" size="50" value="'.$agf->tel2.'"></td></tr>';
-					
+
 					print '<tr><td>'.$langs->trans("Mail").'</td>';
 					print '<td><input name="mail" class="flat" size="50" value="'.$agf->mail.'"></td></tr>';
 				}
@@ -355,19 +358,19 @@ else
 					print '<tr><td>'.$langs->trans("Lastname").'</td>';
 					print '<td><a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople.'">'.strtoupper($agf->nom).'</a></td></tr>';
 					print '<input type="hidden" name="nom" value="'.$agf->nom.'">';
-					
+
 					print '<tr><td>'.$langs->trans("Firstname").'</td>';
 					print '<td>'.ucfirst($agf->prenom).'</td></tr>';
 					print '<input type="hidden" name="prenom" value="'.$agf->prenom.'">';
-					
+
 					print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
-					
+
 					$contact_static= new Contact($db);
 					$contact_static->civilite_id = $agf->civilite;
-					
+
 					print '<td>'.$contact_static->getCivilityLabel().'</td></tr>';
 					print '<input type="hidden" name="civilite_id" value="'.$agf->civilite.'">';
-					
+
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 					if ($agf->socid)
 					{
@@ -381,25 +384,25 @@ else
 						print '<input type="hidden" name="societe" value="">';
 					}
 					print '</td></tr>';
-					
+
 					print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
 					print '<td>'.$agf->fonction.'</td></tr>';
 					print '<input type="hidden" name="fonction" value="'.$agf->fonction.'">';
-					
+
 					print '<tr><td>'.$langs->trans("Phone").'</td>';
 					print '<td>'.dol_print_phone($agf->tel1).'</td></tr>';
 					print '<input type="hidden" name="tel1" value="'.$agf->tel1.'">';
-					
+
 					print '<tr><td>'.$langs->trans("Mobile").'</td>';
 					print '<td>'.dol_print_phone($agf->tel2).'</td></tr>';
 					print '<input type="hidden" name="tel2" value="'.$agf->tel1.'">';
-					
+
 					print '<tr><td>'.$langs->trans("Mail").'</td>';
 					print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
 					print '<input type="hidden" name="mail" value="'.$agf->mail.'">';
-					
+
 				}
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
@@ -419,7 +422,7 @@ else
 				print '</td></tr>';
 				print '</table>';
 				print '</form>';
-					
+
 				print '</div>'."\n";
 			}
 			else
@@ -438,7 +441,7 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 				print '<td>'.$form->showrefnav($agf,'id	','',1,'rowid','id').'</td></tr>';
-				
+
 				if (!empty($agf->fk_socpeople))
 				{
 					print '<tr><td>'.$langs->trans("Lastname").'</td>';
@@ -449,17 +452,17 @@ else
 					print '<tr><td>'.$langs->trans("Lastname").'</td>';
 					print '<td>'.strtoupper($agf->nom).'</td></tr>';
 				}
-					
+
 				print '<tr><td>'.$langs->trans("Firstname").'</td>';
 				print '<td>'.ucfirst($agf->prenom).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
-				
+
 				$contact_static= new Contact($db);
 				$contact_static->civilite_id = $agf->civilite;
-				
+
 				print '<td>'.$contact_static->getCivilityLabel().'</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 				if ($agf->socid)
 				{
@@ -471,16 +474,16 @@ else
 				    print '&nbsp;';
 				}
 				print '</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
 				print '<td>'.$agf->fonction.'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("Phone").'</td>';
 				print '<td>'.dol_print_phone($agf->tel1).'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("Mobile").'</td>';
 				print '<td>'.dol_print_phone($agf->tel2).'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("Mail").'</td>';
 				print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
 
