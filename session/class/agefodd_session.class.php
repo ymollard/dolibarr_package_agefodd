@@ -42,6 +42,7 @@ class Agefodd_session extends CommonObject
     var $id;
     var $fk_formation_catalogue;
     var $fk_session_place;
+    var $type_session;	// type formation entreprise : 0 intra  / 1 inter
     var $dated='';
     var $datef='';
     var $notes;
@@ -112,6 +113,7 @@ class Agefodd_session extends CommonObject
 
     	$sql.= "fk_formation_catalogue,";
     	$sql.= "fk_session_place,";
+    	$sql.= "type_session,";
     	$sql.= "dated,";
     	$sql.= "datef,";
     	$sql.= "notes,";
@@ -121,6 +123,7 @@ class Agefodd_session extends CommonObject
     	$sql.= ") VALUES (";
     	$sql.= " ".(! isset($this->fk_formation_catalogue)?'NULL':"'".$this->fk_formation_catalogue."'").",";
     	$sql.= " ".(! isset($this->fk_session_place)?'NULL':"'".$this->fk_session_place."'").",";
+    	$sql.= " ".(! isset($this->type_session)?'0':"'".$this->type_session."'").",";
     	$sql.= " ".(! isset($this->dated) || dol_strlen($this->dated)==0?'NULL':$this->db->idate($this->dated)).",";
     	$sql.= " ".(! isset($this->datef) || dol_strlen($this->datef)==0?'NULL':$this->db->idate($this->datef)).",";
     	$sql.= " ".(! isset($this->notes)?'NULL':"'".$this->db->escape($this->notes)."'").",";
@@ -281,6 +284,7 @@ class Agefodd_session extends CommonObject
     	$sql.= " c.ref as formref,";
     	$sql.= " c.duree,";
     	$sql.= " t.fk_session_place,";
+    	$sql.= " t.type_session,";
     	$sql.= " t.dated,";
     	$sql.= " t.datef,";
     	$sql.= " t.notes,";
@@ -353,6 +357,7 @@ class Agefodd_session extends CommonObject
     			$this->formref = $obj->formref;
     			$this->duree = $obj->duree;
     			$this->fk_session_place = $obj->fk_session_place;
+    			$this->type_session = $obj->type_session;
     			$this->placeid = $obj->placeid;
     			$this->placecode = $obj->placecode;
     			$this->dated = $this->db->jdate($obj->dated);
@@ -584,6 +589,7 @@ class Agefodd_session extends CommonObject
 
 		if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
 		if (isset($this->fk_session_place)) $this->fk_session_place=trim($this->fk_session_place);
+		if (isset($this->type_session)) $this->type_session=trim($this->type_session);
 		if (isset($this->notes)) $this->notes=trim($this->notes);
 		if (isset($this->cost_trainer)) $this->cost_trainer=price2num(trim($this->cost_trainer));
 		if (isset($this->cost_site)) $this->cost_site=price2num(trim($this->cost_site));
@@ -629,6 +635,7 @@ class Agefodd_session extends CommonObject
 
 			$sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
 			$sql.= " fk_session_place=".(isset($this->fk_session_place)?$this->fk_session_place:"null").",";
+			$sql.= " type_session=".(isset($this->type_session)?$this->type_session:"0").",";
 			$sql.= " dated=".(dol_strlen($this->dated)!=0 ? "'".$this->db->idate($this->dated)."'" : 'null').",";
 			$sql.= " datef=".(dol_strlen($this->datef)!=0 ? "'".$this->db->idate($this->datef)."'" : 'null').",";
 			$sql.= " notes=".(isset($this->notes)?"'".$this->db->escape($this->notes)."'":"null").",";
@@ -1177,7 +1184,7 @@ class Agefodd_session extends CommonObject
 	{
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.datef,";
+		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef,";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne,";
 		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
@@ -1276,6 +1283,10 @@ class Agefodd_session extends CommonObject
 
 		print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 		print '<td>'.$this->formref.'</td></tr>';
+
+		// TODO : type de la session
+		print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
+		print '<td>'.$this->type_session.'</td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 		print '<td><a href="'.dol_buildpath('/user/fiche.php',1).'?id='.$this->commercialid.'">'.$this->commercialname.'</a></td></tr>';

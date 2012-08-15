@@ -76,6 +76,7 @@ AgfLieu = Emplacement
 AgfNbreParticipants = Participants
 AgfFormIntitule = Intitule de la formation
 AgfFormCodeInterne = Code Interne
+AgfFormTypeSession = Type de la formation
 AgfParticipants = Participants
 AgfNobody = Aucun inscrit
 AgfSessionDetail = Session de formation
