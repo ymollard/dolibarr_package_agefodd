@@ -41,7 +41,7 @@ class modAgefodd extends DolibarrModules
 	 *   \brief      Constructor. Define names, constants, directories, boxes, permissions
 	 *   \param      DB      Database handler
 	 */
-	function __contruct($DB)
+	function __construct($DB)
 	{
 		$this->db = $DB;
 

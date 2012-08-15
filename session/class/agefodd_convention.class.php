@@ -43,7 +43,7 @@ class Agefodd_convention
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_convention($DB) 
+	function __construct($DB) 
 	{
 		$this->db = $DB;
 		return 1;

@@ -43,7 +43,7 @@ class Agefodd_sesscalendar
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_sesscalendar($DB) 
+	function __construct($DB) 
 	{
 		$this->db = $DB;
 		return 1;

@@ -46,7 +46,7 @@ class Agefodd_stagiaire extends CommonObject
      *	\brief		Constructor
      *	\param		DB	Database handler
      */
-    function Agefodd_stagiaire($DB)
+    function __construct($DB)
     {
         $this->db = $DB;
         return 1;

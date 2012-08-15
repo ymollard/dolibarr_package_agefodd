@@ -77,7 +77,7 @@ class Agefodd_session extends CommonObject
      *	\brief		Constructor
      *	\param		DB	Database handler
      */
-    function Agefodd_session($DB)
+    function __construct($DB)
     {
         $this->db = $DB;
         return 1;

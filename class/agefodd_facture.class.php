@@ -37,13 +37,13 @@ class Agefodd_facture
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-        var $id;
+    var $id;
 
 	/**
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_facture($DB) 
+	function __construct($DB) 
 	{
 		$this->db = $DB;
 		return 1;

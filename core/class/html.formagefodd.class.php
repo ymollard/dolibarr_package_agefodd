@@ -35,7 +35,7 @@ class FormAgefodd
 	 *
 	 *  @param		DoliDB		$db      Database handler
 	 */
-	function FormAgefodd($db)
+	function __construct($db)
 	{
 		$this->db = $db;
 		return 1;
