@@ -160,6 +160,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->fk_session_place = $fk_session_place;
+		$agf->type_session = GETPOST('type_session','int');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
 		$agf->notes = GETPOST('notes','alpha');
@@ -366,6 +367,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
 		$agf->fk_session_place = $fk_session_place;
+		$agf->type_session = GETPOST('type_session','int');
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
@@ -489,6 +491,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
 	print '<td>'.$formAgefodd->select_formation("", 'formation','intitule',1).'</a></td></tr>';
 
+	print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
+	print '<td>'.$formAgefodd->select_type_session('type_session',0).'</a></td></tr>';
+
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfSessionCommercial").'</span></td>';
 	print '<td>';
 	$form->select_users('','commercial',1, array(1));
@@ -573,6 +578,9 @@ else
 					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 					print '<td>'.$formAgefodd->select_formation($agf->formid, 'formation');
 					print '</td></tr>';
+
+					print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
+					print '<td>'.$formAgefodd->select_type_session('type_session',$agf->type_session).'</a></td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 					print '<td>'.$agf->formref.'</td></tr>';
@@ -1088,7 +1096,7 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a>';
 	}
-	
+
 	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butAction" href="trainer.php?action=edit&id='.$id.'">'.$langs->trans('AgfModifyTrainer').'</a>';

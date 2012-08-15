@@ -1,5 +1,7 @@
 <?php
 /* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012       JF FERRY        <jfefe@aternatik.fr>
+
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,20 +26,23 @@
 /**
  *      Class to manage building of HTML components
 */
-class FormAgefodd
+class FormAgefodd extends Form
 {
 	var $db;
 	var $error;
 
+	var $type_session_def;
 
 	/**
 	 *	Constructor
 	 *
 	 *  @param		DoliDB		$db      Database handler
 	 */
-	function FormAgefodd($db)
+	function __construct($db)
 	{
+		global $langs;
 		$this->db = $db;
+		$this->type_session_def = array(0=> $langs->trans('AgfFormTypeSessionIntra'), 1 => $langs->trans('AgfFormTypeSessionInter') );
 		return 1;
 	}
 
@@ -605,4 +610,15 @@ class FormAgefodd
 		return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
 	}
 
+	/**
+	 * Affiche une liste de sélection des types de formation
+	 *
+	 *  @param	string	$htmlname	nom du control HTML
+	 *  @param	int		$selectval	valeur a selectionner par defaut
+	 *  @return string				The HTML control
+	 */
+	function select_type_session($htmlname,$selectval)
+	{
+		return $this->selectarray($htmlname,$this->type_session_def,$selectval,0);
+	}
 }

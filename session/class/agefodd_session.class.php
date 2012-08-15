@@ -635,7 +635,7 @@ class Agefodd_session extends CommonObject
 
 			$sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
 			$sql.= " fk_session_place=".(isset($this->fk_session_place)?$this->fk_session_place:"null").",";
-			$sql.= " type_session=".(isset($this->type_session)?$this->type_session:"0").",";
+			$sql.= " type_session=".(isset($this->type_session)?$this->type_session:"null").",";
 			$sql.= " dated=".(dol_strlen($this->dated)!=0 ? "'".$this->db->idate($this->dated)."'" : 'null').",";
 			$sql.= " datef=".(dol_strlen($this->datef)!=0 ? "'".$this->db->idate($this->datef)."'" : 'null').",";
 			$sql.= " notes=".(isset($this->notes)?"'".$this->db->escape($this->notes)."'":"null").",";
@@ -658,7 +658,7 @@ class Agefodd_session extends CommonObject
 
 
 	        $sql.= " WHERE rowid=".$this->id;
-
+print $sql;
 			$this->db->begin();
 
 			dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
@@ -1286,7 +1286,7 @@ class Agefodd_session extends CommonObject
 
 		// TODO : type de la session
 		print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
-		print '<td>'.$this->type_session.'</td></tr>';
+		print '<td>'.( $this->type_session?$langs->trans('AgfFormTypeSessionInter'):$langs->trans('AgfFormTypeSessionIntra') ).'</td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 		print '<td><a href="'.dol_buildpath('/user/fiche.php',1).'?id='.$this->commercialid.'">'.$this->commercialname.'</a></td></tr>';
@@ -1329,6 +1329,11 @@ class Agefodd_session extends CommonObject
 		}
 
 		print '</table>';
+	}
+
+	function loadArrayTypeSession()
+	{
+		return $this->type_session_def;
 	}
 }
 
