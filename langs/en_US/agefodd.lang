@@ -243,6 +243,7 @@ AgfSessionCommercial = Salesman affectation
 AgfSessionContact = Customer contact
 AgfCoutFormateur = Trainer Cost (HT)
 AgfCoutSalle = Location Cost (HT)
+AgfCoutDeplacement=Trip Cost (HT)
 AgfCoutFormation = Selling Price (HT)
 AgfCost = Cost management
 AgfDateResTrainer = Order to trainer

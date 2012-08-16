@@ -181,6 +181,27 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		if ($isdaterestrainer==1 && $agf->date_res_trainer!='') {	$agf->is_date_res_trainer = 1;}
 		else {	$agf->is_date_res_trainer = 0; $agf->date_res_trainer='';}
 
+		$fk_soc				= GETPOST('fk_soc','int');
+		$color				= GETPOST('color','alpha');
+		$nb_place			= GETPOST('nb_place','int');
+		$nb_stagiaire		= GETPOST('nb_stagiaire','int');
+		$force_nb_stagiaire	= GETPOST('force_nb_stagiaire','int');
+
+		if ($force_nb_stagiaire==1 && $agf->force_nb_stagiaire!='') {
+			$agf->force_nb_stagiaire = 1;
+		}
+		else {	$agf->force_nb_stagiaire = 0;
+		}
+
+		$cost_trip = GETPOST('costtrip','alpha');
+
+		if(!empty($fk_soc)) 			$agf->fk_soc =  $fk_soc;
+		if(!empty($color))				$agf->color =  $color;
+		if(!empty($nb_place)) 			$agf->nb_place = $nb_place;
+		if(!empty($nb_stagiaire))		$agf->nb_stagiaire = $nb_stagiaire;
+		if(!empty($force_nb_stagiaire))	$agf->force_nb_stagiaire = $force_nb_stagiaire;
+		if(!empty($cost_trip)) 			$agf->cost_trip = $cost_trip;
+
 		if ($error==0)
 		{
 			$result = $agf->update($user->id);
@@ -251,10 +272,11 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_sesscalendar($db);
 		$result = $agf->fetch($modperiod);
 
-		if(!empty($modperiod)) $agf->id = $modperiod;
-		if(!empty($dateyear)) $agf->date_session = $date_session;
-		if(!empty($heured)) $agf->heured = $heured;
-		if(!empty($heuref)) $agf->heuref =  $heuref;
+		if(!empty($modperiod)) 			$agf->id = $modperiod;
+		if(!empty($dateyear)) 			$agf->date_session = $date_session;
+		if(!empty($heured)) 			$agf->heured = $heured;
+		if(!empty($heuref)) 			$agf->heuref =  $heuref;
+
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
@@ -311,6 +333,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 		$agf->opsid = GETPOST('opsid','int');
 		$agf->formid = GETPOST('formid','int');
+
 		$result = $agf->update($user->id);
 
 		if ($result > 0)
@@ -367,7 +390,9 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
 		$agf->fk_session_place = $fk_session_place;
+		$agf->nb_place = GETPOST('nb_place','int');
 		$agf->type_session = GETPOST('type_session','int');
+		$agf->fk_soc = GETPOST('fk_soc','int');
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
@@ -468,8 +493,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
  * View
  */
 
-llxHeader();
-
+llxHeader('','','','','','',array('/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
@@ -507,6 +531,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$form->select_date("", 'daf','','','','add');
 	print '</td></tr>';
 
+	print '<tr><td>'.$langs->trans("Customer").'</td>';
+	print '<td>';
+	print $form->select_company(GETPOST('fk_soc','int'),'fk_soc','',1, 'customer');
+	print '</td></tr>';
 
 	if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
@@ -528,6 +556,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
 	print '<td>';
 	print $formAgefodd->select_site_forma("",'place',1);
+	print '</td></tr>';
+
+	print '<tr><td>'.$langs->trans("AgfNumberPlaceAvailable").'</td>';
+	print '<td>';
+	print '<input type="text" class="flat" name="nb_place" size="4" value="'.GETPOST('nb_place','int').'"/>';
 	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -585,6 +618,34 @@ else
 					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 					print '<td>'.$agf->formref.'</td></tr>';
 
+					print '<tr><td>'.$langs->trans("Color").'</td>';
+					print '<td><input id="colorpicker" type="text" size="8" name="color" value="'.$agf->color.'" /></td></tr>';
+
+					print '<script type="text/javascript" language="javascript">
+					$(document).ready(function() {
+						$("#colorpicker").css("backgroundColor", \'#'.$agf->color.'\');
+						$("#colorpicker").ColorPicker({
+							 color: \'#'.$agf->color.'\',
+							onShow: function (colpkr) {
+								$(colpkr).fadeIn(500);
+								return false;
+							},
+							onHide: function (colpkr) {
+								$(colpkr).fadeOut(500);
+								return false;
+							},
+							onChange: function (hsb, hex, rgb) {
+								$("#colorpicker").css("backgroundColor", \'#\' + hex);
+							},
+							onSubmit: function (hsb, hex, rgb) {
+								$("#colorpicker").val(hex);
+							}
+						 });
+					})
+					.bind(\'keyup\', function(){
+						$(this).ColorPickerSetColor(this.value);
+					});
+					</script>';
 					print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 					print '<td>';
 					$form->select_users($agf->commercialid, 'commercial',1, array(1));
@@ -600,6 +661,9 @@ else
 					print '<tr><td>'.$langs->trans("AgfDateFin").'</td><td>';
 					$form->select_date($agf->datef, 'daf','','','','update');
 					print '</td></tr>';
+
+					print '<tr><td>'.$langs->trans("Customer").'</td>';
+					print '<td>'.$form->select_company($agf->fk_soc,'fk_soc','',1, 'customer').'</td></tr>';
 
 					if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 						print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
@@ -621,6 +685,26 @@ else
 					print '<td>';
 					print $formAgefodd->select_site_forma($agf->placeid,'place');
 					print '</td></tr>';
+
+					print '<tr><td width="20%">'.$langs->trans("AgfNumberPlaceAvailable").'</td>';
+					print '<td><input size="4" type="text" class="flat" name="nb_place" value="'.$agf->nb_place.'" />'.'</td></tr>';
+
+					$forced = false;
+					$checked = false;
+					if ($agf->force_nb_stagiaire) {
+						$forced = true;
+						$selected=true;
+					}
+					// Si forcé on doit pouvoir saisir une valeur
+					$disabled = ($forced ? '':'disabled="disabled"');
+					print '<tr><td width="20%">'.$langs->trans("AgfNbreParticipants").'</td>';
+					print '<td><input size="4" type="text" class="flat" name="nb_stagiaire" '.$disabled.' value="'.($agf->nb_stagiaire>0?$agf->nb_stagiaire:'0').'" />'.'</td></tr>';
+
+					print '<tr><td width="20%">'.$langs->trans("AgfForceNbreParticipants").'</td>';
+					// ($agf->force_nb_stagiaire>0?$agf->nb_stagiaire:'0')
+					print '<td>';
+					$checked = ($agf->force_nb_stagiaire == 1 ? 'checked="checked"':'');
+					print '<input size="4" type="checkbox" '.$checked.' name="force_nb_stagiaire" value="1" />'.'</td></tr>';
 
 					print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 					if (!empty($agf->note)) $notes = nl2br($agf->note);
@@ -663,6 +747,9 @@ else
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costsite" value="'.price($agf->cost_site).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+
+					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
+					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="sellprice" value="'.price($agf->sell_price).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
@@ -897,6 +984,9 @@ else
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
 					print '<td>'.price($agf->cost_site).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+
+					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
+					print '<td>'.price($agf->cost_trip).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
 					print '<td>'.price($agf->sell_price).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
