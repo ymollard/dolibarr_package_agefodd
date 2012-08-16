@@ -1184,7 +1184,7 @@ print $sql;
 	{
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef,";
+		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, ";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne,";
 		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
@@ -1231,7 +1231,6 @@ print $sql;
 
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
-
 		if ($resql)
 		{
 			$this->line = array();
@@ -1244,6 +1243,10 @@ print $sql;
 				{
 					$obj = $this->db->fetch_object($resql);
 					$this->line[$i]->rowid = $obj->rowid;
+					$this->line[$i]->type_session = $obj->type_session;
+					$this->line[$i]->is_date_res_site = $obj->is_date_res_site;
+					$this->line[$i]->is_date_res_trainer = $obj->is_date_res_trainer;
+					$this->line[$i]->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
 					$this->line[$i]->fk_session_place = $obj->fk_session_place;
 					$this->line[$i]->dated = $this->db->jdate($obj->dated);
 					$this->line[$i]->datef =$this->db->jdate($obj->datef);
