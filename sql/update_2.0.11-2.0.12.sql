@@ -7,3 +7,5 @@ ALTER TABLE llx_agefodd_reg_interieur DROP COLUMN file;
 
 ALTER TABLE llx_agefodd_place ADD COLUMN fk_reg_interieur int NULL AFTER archive;
 ALTER TABLE llx_agefodd_place ADD CONSTRAINT llx_agefodd_place_ibfk_2 FOREIGN KEY (fk_reg_interieur) REFERENCES llx_agefodd_reg_interieur (rowid);
+
+ALTER TABLE llx_agefodd_session ADD COLUMN type_session int NULL AFTER fk_session_place;

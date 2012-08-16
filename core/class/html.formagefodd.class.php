@@ -1,5 +1,7 @@
 <?php
 /* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012       JF FERRY        <jfefe@aternatik.fr>
+
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,11 +26,12 @@
 /**
  *      Class to manage building of HTML components
 */
-class FormAgefodd
+class FormAgefodd extends Form
 {
 	var $db;
 	var $error;
 
+	var $type_session_def;
 
 	/**
 	 *	Constructor
@@ -37,7 +40,9 @@ class FormAgefodd
 	 */
 	function __construct($db)
 	{
+		global $langs;
 		$this->db = $db;
+		$this->type_session_def = array(0=> $langs->trans('AgfFormTypeSessionIntra'), 1 => $langs->trans('AgfFormTypeSessionInter') );
 		return 1;
 	}
 

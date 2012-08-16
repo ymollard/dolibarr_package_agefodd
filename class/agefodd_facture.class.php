@@ -37,7 +37,7 @@ class Agefodd_facture
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-    var $id;
+        var $id;
 
 	/**
 	*	\brief		Constructor
