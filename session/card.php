@@ -493,7 +493,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
  * View
  */
 
-llxHeader('','','','','','',array('/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
+llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
