@@ -99,6 +99,11 @@ function session_prepare_head($object,$showconv=0)
 	$head[$h][2] = 'document';
 	$h++;
 
+	$head[$h][0] = dol_buildpath('/agefodd/session/send_docs.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfSendDocuments");
+	$head[$h][2] = 'send_docs';
+	$h++;
+
 	if ($showconv)
 	{
 		$head[$h][0] = dol_buildpath('/agefodd/session/convention.php',1).'?sessid='.$object->id;
