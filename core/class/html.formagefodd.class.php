@@ -622,5 +622,4 @@ class FormAgefodd extends Form
 		return $this->selectarray($htmlname,$this->type_session_def,$selectval,0);
 	}
 
-
 }

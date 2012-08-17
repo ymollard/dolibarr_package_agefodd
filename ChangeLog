@@ -117,3 +117,11 @@ For all :
 - Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
 For dev :
 - Fix: Use __construct() for all class
+
+***** ChangeLog for 2.0.13 compared to 2.0.12 *****
+- Add : type attribut on training sessions
+
+***** ChangeLog for 2.0.14 compared to 2.0.13 *****
+- Add : fields on training session 
+- Add : allow to choice a color for the session
+
