@@ -40,14 +40,20 @@ class Agefodd_session extends CommonObject
 	var $element='agefodd';
 	var $table_element='agefodd_session';
     var $id;
+    var $fk_soc;
     var $fk_formation_catalogue;
     var $fk_session_place;
+    var $nb_place;
+    var $nb_stagiaire;
+    var $force_nb_stagiaire;
     var $type_session;	// type formation entreprise : 0 intra  / 1 inter
     var $dated='';
     var $datef='';
     var $notes;
+    var $color;
     var $cost_trainer;
     var $cost_site;
+    var $cost_trip;
     var $sell_price;
     var $date_res_site='';
     var $is_date_res_site;
@@ -101,6 +107,8 @@ class Agefodd_session extends CommonObject
 
     	if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
     	if (isset($this->fk_session_place)) $this->fk_session_place=trim($this->fk_session_place);
+    	if (isset($this->fk_soc)) $this->fk_soc=trim($this->fk_soc);
+    	if (isset($this->nb_place)) $this->nb_place=trim($this->nb_place);
     	if (isset($this->notes)) $this->notes=trim($this->notes);
     	if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
     	if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
@@ -111,8 +119,10 @@ class Agefodd_session extends CommonObject
     	// Insert request
     	$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session(";
 
+    	$sql.= "fk_soc,";
     	$sql.= "fk_formation_catalogue,";
     	$sql.= "fk_session_place,";
+    	$sql.= "nb_place,";
     	$sql.= "type_session,";
     	$sql.= "dated,";
     	$sql.= "datef,";
@@ -121,8 +131,10 @@ class Agefodd_session extends CommonObject
     	$sql.= "datec,";
     	$sql.= "fk_user_mod";
     	$sql.= ") VALUES (";
+    	$sql.= " ".(! isset($this->fk_soc)?'NULL':"'".$this->fk_soc."'").",";
     	$sql.= " ".(! isset($this->fk_formation_catalogue)?'NULL':"'".$this->fk_formation_catalogue."'").",";
     	$sql.= " ".(! isset($this->fk_session_place)?'NULL':"'".$this->fk_session_place."'").",";
+    	$sql.= " ".(! isset($this->nb_place)?'NULL':"'".$this->nb_place."'").",";
     	$sql.= " ".(! isset($this->type_session)?'0':"'".$this->type_session."'").",";
     	$sql.= " ".(! isset($this->dated) || dol_strlen($this->dated)==0?'NULL':$this->db->idate($this->dated)).",";
     	$sql.= " ".(! isset($this->datef) || dol_strlen($this->datef)==0?'NULL':$this->db->idate($this->datef)).",";
@@ -278,18 +290,24 @@ class Agefodd_session extends CommonObject
 
     	$sql = "SELECT";
     	$sql.= " t.rowid,";
+    	$sql.= " t.fk_soc,";
     	$sql.= " t.fk_formation_catalogue,";
     	$sql.= " c.intitule as formintitule,";
     	$sql.= " c.rowid as formid,";
     	$sql.= " c.ref as formref,";
     	$sql.= " c.duree,";
     	$sql.= " t.fk_session_place,";
+    	$sql.= " t.nb_place,";
+    	$sql.= " t.nb_stagiaire,";
+    	$sql.= " t.force_nb_stagiaire,";
     	$sql.= " t.type_session,";
     	$sql.= " t.dated,";
     	$sql.= " t.datef,";
     	$sql.= " t.notes,";
+    	$sql.= " t.color,";
     	$sql.= " t.cost_trainer,";
     	$sql.= " t.cost_site,";
+    	$sql.= " t.cost_trip,";
     	$sql.= " t.sell_price,";
     	$sql.= " t.date_res_site,";
     	$sql.= " t.is_date_res_site,";
@@ -350,6 +368,7 @@ class Agefodd_session extends CommonObject
 
     			$this->id    = $obj->rowid;
     			$this->ref    = $obj->rowid; // Use for next prev ref
+    			$this->fk_soc    = $obj->fk_soc;
 
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;
@@ -357,16 +376,21 @@ class Agefodd_session extends CommonObject
     			$this->formref = $obj->formref;
     			$this->duree = $obj->duree;
     			$this->fk_session_place = $obj->fk_session_place;
+    			$this->nb_place = $obj->nb_place;
+    			$this->nb_stagiaire = $obj->nb_stagiaire;
+    			$this->force_nb_stagiaire = $obj->force_nb_stagiaire;
     			$this->type_session = $obj->type_session;
     			$this->placeid = $obj->placeid;
     			$this->placecode = $obj->placecode;
     			$this->dated = $this->db->jdate($obj->dated);
     			$this->datef = $this->db->jdate($obj->datef);
     			$this->notes = $obj->notes;
+    			$this->color = $obj->color;
     			$this->fk_commercial = $obj->fk_commercial;
     			$this->fk_contact_client = $obj->fk_contact_client;
     			$this->cost_trainer = $obj->cost_trainer;
     			$this->cost_site = $obj->cost_site;
+    			$this->cost_trip = $obj->cost_trip;
     			$this->sell_price = $obj->sell_price;
     			$this->date_res_site = $this->db->jdate($obj->date_res_site);
     			$this->is_date_res_site = $obj->is_date_res_site;
@@ -586,13 +610,18 @@ class Agefodd_session extends CommonObject
 		$error=0;
 
 		// Clean parameters
-
+		if (isset($this->fk_soc)) $this->fk_soc=trim($this->fk_soc);
 		if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
 		if (isset($this->fk_session_place)) $this->fk_session_place=trim($this->fk_session_place);
+		if (isset($this->nb_place)) $this->nb_place=trim($this->nb_place);
+		if (isset($this->nb_stagiaire)) $this->nb_stagiaire=trim($this->nb_stagiaire);
+		if (isset($this->force_nb_stagiaire)) $this->force_nb_stagiaire=trim($this->force_nb_stagiaire);
 		if (isset($this->type_session)) $this->type_session=trim($this->type_session);
 		if (isset($this->notes)) $this->notes=trim($this->notes);
+		if (isset($this->color)) $this->color=trim($this->color);
 		if (isset($this->cost_trainer)) $this->cost_trainer=price2num(trim($this->cost_trainer));
 		if (isset($this->cost_site)) $this->cost_site=price2num(trim($this->cost_site));
+		if (isset($this->cost_trip)) $this->cost_trip=price2num(trim($this->cost_trip));
 		if (isset($this->sell_price)) $this->sell_price=price2num(trim($this->sell_price));
 		if (isset($this->is_OPCA)) $this->is_OPCA=trim($this->is_OPCA);
 		if (isset($this->is_date_res_site)) $this->is_date_res_site=trim($this->is_date_res_site);
@@ -633,14 +662,20 @@ class Agefodd_session extends CommonObject
 	        // Update request
 	        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session SET";
 
-			$sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
+	        $sql.= " fk_soc=".(isset($this->fk_soc)?$this->fk_soc:"null").",";
+	        $sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
 			$sql.= " fk_session_place=".(isset($this->fk_session_place)?$this->fk_session_place:"null").",";
+			$sql.= " nb_place=".(isset($this->nb_place)?$this->nb_place:"null").",";
+			$sql.= " nb_stagiaire=".(isset($this->nb_stagiaire)?$this->nb_stagiaire:"null").",";
+			$sql.= " force_nb_stagiaire=".(isset($this->force_nb_stagiaire)?$this->force_nb_stagiaire:"0").",";
 			$sql.= " type_session=".(isset($this->type_session)?$this->type_session:"null").",";
 			$sql.= " dated=".(dol_strlen($this->dated)!=0 ? "'".$this->db->idate($this->dated)."'" : 'null').",";
 			$sql.= " datef=".(dol_strlen($this->datef)!=0 ? "'".$this->db->idate($this->datef)."'" : 'null').",";
 			$sql.= " notes=".(isset($this->notes)?"'".$this->db->escape($this->notes)."'":"null").",";
+			$sql.= " color=".(isset($this->color)?"'".$this->db->escape($this->color)."'":"null").",";
 			$sql.= " cost_trainer=".(isset($this->cost_trainer)?$this->cost_trainer:"null").",";
 			$sql.= " cost_site=".(isset($this->cost_site)?$this->cost_site:"null").",";
+			$sql.= " cost_trip=".(isset($this->cost_trip)?$this->cost_trip:"null").",";
 			$sql.= " sell_price=".(isset($this->sell_price)?$this->sell_price:"null").",";
 			$sql.= " date_res_site=".(dol_strlen($this->date_res_site)!=0 ? "'".$this->db->idate($this->date_res_site)."'" : 'null').",";
 			$sql.= " date_res_trainer=".(dol_strlen($this->date_res_trainer)!=0 ? "'".$this->db->idate($this->date_res_trainer)."'" : 'null').",";
@@ -658,7 +693,6 @@ class Agefodd_session extends CommonObject
 
 
 	        $sql.= " WHERE rowid=".$this->id;
-
 			$this->db->begin();
 
 			dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
@@ -1231,7 +1265,6 @@ class Agefodd_session extends CommonObject
 
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
-
 		if ($resql)
 		{
 			$this->line = array();
@@ -1292,6 +1325,10 @@ class Agefodd_session extends CommonObject
 		print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
 		print '<td>'.( $this->type_session?$langs->trans('AgfFormTypeSessionInter'):$langs->trans('AgfFormTypeSessionIntra') ).'</td></tr>';
 
+		// TODO : type de la session
+		print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
+		print '<td>'.( $this->type_session?$langs->trans('AgfFormTypeSessionInter'):$langs->trans('AgfFormTypeSessionIntra') ).'</td></tr>';
+
 		print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 		print '<td><a href="'.dol_buildpath('/user/fiche.php',1).'?id='.$this->commercialid.'">'.$this->commercialname.'</a></td></tr>';
 
@@ -1303,6 +1340,12 @@ class Agefodd_session extends CommonObject
 
 		print '<tr><td>'.$langs->trans("AgfDateFin").'</td>';
 		print '<td>'.dol_print_date($this->datef,'daytext').'</td></tr>';
+
+		print '<tr><td width="20%">'.$langs->trans("Customer").'</td>';
+		print '	<td>';
+		print $this->getElementUrl($this->fk_soc, 'societe',1);
+		print '</td></tr>';
+
 
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 		print '<td><a href="'.dol_buildpath('/agefodd/contact/card.php',1).'?id='.$this->contactid.'">'.$this->contactname.'</a></td></tr>';
