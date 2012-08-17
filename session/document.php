@@ -34,6 +34,7 @@ dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/commande/class/commande.class.php');
+dol_include_once('/agefodd/lib/agefodd_document.lib.php');
 
 
 // Security check
@@ -51,7 +52,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
-	
+
 	// si existe déjà, on met à jour
 	if ($agf->id)
 	{
@@ -90,7 +91,7 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
-	
+
 	// si existe déjà, on met à jour
 	if ($agf->id)
 	{
@@ -144,7 +145,7 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	}
 	else $file = $model.'_'.$id.'.pdf';
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
-}							
+}
 
 /*
  * Action delete pdf document
@@ -154,8 +155,8 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	$cour=GETPOST('cour','alpha');
 	$model=GETPOST('model','alpha');
 	$idform=GETPOST('idform','alpha');
-	
-	if (!empty($cour)) 
+
+	if (!empty($cour))
 	    $file = $conf->agefodd->dir_output.'/'.$model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
 	elseif (!empty($socid))
 	    $file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'_'.$socid.'.pdf';
@@ -164,7 +165,7 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	}
 	else
 		$file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'.pdf';
-	
+
 	if (is_file($file)) unlink($file);
 	else
 	{
@@ -179,24 +180,24 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_session($db);
 	$agf->fetch($id);
-	
+
 	$head = session_prepare_head($agf);
-	
+
 	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
-	
+
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 	print '</div>'."\n";
 
 	print '<table class="border" width="100%">'."\n";
-		
+
 	print '<tr class="liste_titre">'."\n";
 	print '<td colspan=3>';
 	print  '<a href="#">'.$langs->trans("AgfCommonDocs").'</a></td>'."\n";
 	print '</tr>'."\n";
-	
+
 	print '<tr class="liste">'."\n";
-	
+
 	// creation de la liste de choix
 	$agf_liste = new Agefodd_facture($db);
 	$result = $agf_liste->fetch_fac_per_soc($_GET["socid"], $_GET["type"]);
@@ -205,9 +206,9 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	{
 		print '<form name="fact_link" action="document.php?action=link_confirm&id='.$id.'"  method="post">'."\n";
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-		print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";		
-		print '<input type="hidden" name="type" value="'.$_GET["type"].'">'."\n";		
-		
+		print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";
+		print '<input type="hidden" name="type" value="'.$_GET["type"].'">'."\n";
+
 		$var=True;
 		$options = '<option value=""></option>'."\n";;
 		for ($i = 0; $i < $num; $i++)
@@ -215,7 +216,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 			$options .= '<option value="'.$agf_liste->line[$i]->id.'">'.$agf_liste->line[$i]->ref.'</option>'."\n";
 		}
 		$select = '<select class="flat" name="select">'."\n".$options."\n".'</select>'."\n";
-		
+
 		print '<td width="250px">';
 		($_GET["type"] == 'bc') ? print $langs->trans("AgfFactureBcSelectList") : print $langs->trans("AgfFactureFacSelectList");
 		print '</td>'."\n";
@@ -249,234 +250,19 @@ if (!empty($id))
 {
 	$agf = new Agefodd_session($db);
 	$agf->fetch($id);
-	
+
 	$result = $agf->fetch_societe_per_session($id);
 
 	if ($result)
-	{		
+	{
 		$idform = $agf->formid;
-		
-		function show_conv($file, $socid,$nom_courrier)
-		{
-			global $langs, $conf, $db, $id, $form, ${'flag_bc_'.$socid};
-
-			$model = $file;
-			$file = $file.'_'.$id.'_'.$socid.'.pdf';
-			
-			$agf = new Agefodd_convention($db);
-			$result = $agf->fetch($id, $socid);
-
-			// Si la convention a déjà été complété (création d'un entrée dans la table)
-			if ($agf->id)
-			{
-				if (is_file($conf->agefodd->dir_output.'/'.$file))
-				{
-					// afficher
-					$legende = $langs->trans("AgfDocOpen");
-					$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
-	
-					// Regenerer
-					$legende = $langs->trans("AgfDocRefresh");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
-					
-					// Supprimer
-					$legende = $langs->trans("AgfDocDel");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
-				}
-				else
-				{
-					// Création de la convention au format PDF
-					$legende = $langs->trans("AgfDocCreate");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
-				}
-				
-				// editer la convention pour modification
-				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=edit&id='.$agf->id.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
-
-
-			}
-			else
-			{ 
-				// Si la convention n'a pas encore été renseignée, il faut le faire maintenant
-				$legende = $langs->trans("AgfDocEdit");
-				$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=create&sessid='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
-
-			}
-			
-			if (empty(${'flag_bc_'.$socid})) $mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
-			
-			return $mess;
-		}
-
-		function show_doc($file, $socid, $nom_courrier)
-		{
-			global $langs, $conf, $id, ${'flag_bc_'.$socid}, $form, $idform;
-			
-			$model = $file;
-			if(!empty($nom_courrier)) $file = $file.'-'.$nom_courrier.'_'.$id.'_'.$socid.'.pdf';
-			elseif (!empty($socid)) $file = $file.'_'.$id.'_'.$socid.'.pdf';
-			elseif ($model=='fiche_pedago') $file=$file.'_'.$idform.'.pdf';
-			else $file = $file.'_'.$id.'.pdf';
-			
-			if (is_file($conf->agefodd->dir_output.'/'.$file))
-			{
-				// afficher
-				$legende = $langs->trans("AgfDocOpen");
-				$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
-
-				// Regenerer
-				$legende = $langs->trans("AgfDocRefresh");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'&idform='.$idform.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
-				
-				// Supprimer
-				$legende = $langs->trans("AgfDocDel");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'&idform='.$idform.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
-
-			}
-			else
-			{
-				// Génereration des documents
-				if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_'.$model.'.modules.php')))
-				{ 
-					$legende = $langs->trans("AgfDocCreate");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'&idform='.$idform.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
-				}
-				else
-				{
-					$mess = $form->textwithpicto('',$langs->trans("AgfDocNoTemplate"),1,'warning');
-				}
-			}
-			return $mess;
-		}
-		
-		function show_fac($file, $socid, $mdle)
-		{
-			global $langs, $conf, $db, $id, $form, ${'flag_bc_'.$socid};
-
-			$agf = new Agefodd_facture($db);
-			$result = $agf->fetch($id, $socid);
-			
-			// Gestion des bons de commande (ou brouillon de facture)
-			if ($mdle == 'bc')
-			{
-				if ($agf->comid)
-				{
-					// Consulter la fiche Dolibarr du BC
-					$legende = $langs->trans("AgfFactureSeeBon").' '.$agf->comref;
-					$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
-					${'flag_bc_'.$socid} = $agf->comid;
-
-					// Délier le bon de commande
-					$legende = $langs->trans("AgfFactureUnselectBon");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
-				}
-				else
-				{
-					$mess = '<table class="nobordernopadding"><tr>';
-
-					// Generer le bon de commande
-					$legende = $langs->trans("AgfFactureGenererBon");
-					$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
-
-					// Lier un bon de commande existant
-					$legende = $langs->trans("AgfFactureSelectBon");
-					$mess.= '<td><a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a></td>';
-						
-					$mess.= '<td>'.$form->textwithpicto('',$langs->trans("AgfFactureBonBeforeSelectHelp"),1,'help').'</td>';
-					
-					$mess .= '</tr></table>';
-				}
-			} 
- 			// gestion des factures
-			elseif ($mdle == 'fac')
-			{
-				if ($agf->facid)
-				{
-					$legende = $langs->trans("AgfFactureSeeFac").' '.$agf->facnumber;
-					$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
-
-					// Délier la facture
-					$legende = $langs->trans("AgfFactureUnselectFac");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-					$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
-
-				}
-				else
-				{
-					if (!empty(${'flag_bc_'.$socid}))
-					{
-						$mess = '';
-	
-						// Créer la facture
-						$legende = $langs->trans("AgfFactureAddFac");
-						$commande_static= new Commande($db);
-						$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
-						$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
-						
-						// lier une facture existante
-						$legende = $langs->trans("AgfFactureSelectFac");
-						$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
-					}
-					else
-					{
-						$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
-					}
-				}
-			}
-			else
-			{
-				$mess = 'error';
-			}
-
-			return $mess;
-		}
-		
-		function document_line($intitule, $level=2, $mdle, $socid, $nom_courrier='')
-		{
-			print '<tr style="height:14px">'."\n";
-			if ($level == 2) 
-			{
-				print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
-				print '<td style="border-right:0px;">';
-			}
-			else print '<td colspan="2" style="border-right:0px;">';
-			print $intitule.'</td>'."\n";
-			if ( $mdle == 'bc' || $mdle == 'fac')
-			{
-				print '<td style="border-left:0px;" align="right">'.show_fac($mdle, $socid, $mdle).'</td></tr>'."\n";
-			}
-			elseif ( $mdle == 'convention')
-			{
-				print '<td style="border-left:0px; width:200px" align="right">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
-			}
-			else
-			{
-				print '<td style="border-left:0px; width:200px"  align="right">'.show_doc($mdle, $socid, $nom_courrier).'</td></tr>'."\n";
-			}
-		}
-		
 
 		// Affichage en mode "consultation"
 		$head = session_prepare_head($agf);
-		
+
 		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
-		
+
 		/*
 		* Confirmation de la suppression
 		*/
@@ -491,13 +277,13 @@ if (!empty($id))
 		print '</div>'."\n";
 
 		print '<table class="border" width="100%">'."\n";
-			
+
 		print '<tr class="liste_titre">'."\n";
 		print '<td colspan=3>';
 		print $langs->trans("AgfCommonDocs").'</td>'."\n";
 		print '</tr>'."\n";
 
-		
+
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
 		document_line("Convocation", 2, 'convocation');
 		document_line("Réglement intérieur", 2, 'reglement');
@@ -519,23 +305,23 @@ if (!empty($id))
 			if (!empty($agf->line[$i]->socid))
 			{
 				$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
-				
+
 				${'flag_bc_'.$agf->line[$i]->socid} = 0;
-	
+
 				print '<table class="border" width="100%">'."\n";
-				
+
 				print '<tr class="liste_titre">'."\n";
 				print '<td colspan=3>';
 				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
 				print '</tr>'."\n";
-	
+
 				// Avant la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
 				document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
 				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
 				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
 				document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
-		
+
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
 				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
@@ -545,7 +331,7 @@ if (!empty($id))
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
 			}
-		}	
+		}
 		print '</div>'."\n";
 	}
 
