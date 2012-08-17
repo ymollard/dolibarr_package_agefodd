@@ -610,4 +610,17 @@ class FormAgefodd extends Form
 		return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
 	}
 
+	/**
+	 * Affiche une liste de sélection des types de formation
+	 *
+	 *  @param	string	$htmlname	nom du control HTML
+	 *  @param	int		$selectval	valeur a selectionner par defaut
+	 *  @return string				The HTML control
+	 */
+	function select_type_session($htmlname,$selectval)
+	{
+		return $this->selectarray($htmlname,$this->type_session_def,$selectval,0);
+	}
+
+
 }
