@@ -175,6 +175,15 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 }
 
 
+
+llxHeader();
+
+$form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
+
+dol_htmloutput_mesg($mesg);
+
+
 // Selection du bon de commande ou de la facture à lier
 if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
@@ -238,13 +247,6 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	print '</div>'."\n";
 	exit;
 }
-
-llxHeader();
-
-$form = new Form($db);
-$formAgefodd = new FormAgefodd($db);
-
-dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
