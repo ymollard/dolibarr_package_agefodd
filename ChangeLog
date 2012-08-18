@@ -117,3 +117,4 @@ For all :
 - Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
 For dev :
 - Fix: Use __construct() for all class
+- Add Agenda Dolibarr management

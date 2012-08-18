@@ -202,6 +202,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_LAST_VERION_INSTALL";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = $this->version;
+		$this->const[$r][3] = 'Last version installed to know change table to execute';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_DOL_AGENDA";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 
 		// Array to add new pages in new tabs
@@ -556,7 +572,107 @@ class modAgefodd extends DolibarrModules
 	 */
 	function load_tables()
 	{
-		return $this->_load_tables('/agefodd/sql/');
+		return $this->_load_tables_agefodd('/agefodd/sql/');
+	}
+	
+	/**
+	 *  Create tables and keys required by module.
+	 *  Do not use version of Dolibarr because execute script only if version requiered it
+	 *  Files module.sql and module.key.sql with create table and create keys
+	 *  commands must be stored in directory reldir='/module/sql/'
+	 *  This function is called by this->init
+	 *
+	 *  @param	string	$reldir		Relative directory where to scan files
+	 *  @return	int     			<=0 if KO, >0 if OK
+	 */
+	function _load_tables_agefodd($reldir)
+	{
+		global $db,$conf;
+	
+		$error=0;
+	
+		include_once(DOL_DOCUMENT_ROOT ."/core/lib/admin.lib.php");
+	
+		$ok = 1;
+		foreach($conf->file->dol_document_root as $dirroot)
+		{
+			if ($ok)
+			{
+				$dir = $dirroot.$reldir;
+				$ok = 0;
+	
+				// Run llx_mytable.sql files
+				$handle=@opendir($dir);         // Dir may not exists
+				if (is_resource($handle))
+				{
+					while (($file = readdir($handle))!==false)
+					{
+						if (preg_match('/\.sql$/i',$file) && ! preg_match('/\.key\.sql$/i',$file) && substr($file,0,4) == 'llx_' && substr($file,0,4) != 'data')
+						{
+							$result=run_sql($dir.$file,1,'',1);
+							if ($result <= 0) $error++;
+						}
+					}
+					closedir($handle);
+				}
+	
+				// Run llx_mytable.key.sql files (Must be done after llx_mytable.sql)
+				$handle=@opendir($dir);         // Dir may not exist
+				if (is_resource($handle))
+				{
+					while (($file = readdir($handle))!==false)
+					{
+						if (preg_match('/\.key\.sql$/i',$file) && substr($file,0,4) == 'llx_' && substr($file,0,4) != 'data')
+						{
+							$result=run_sql($dir.$file,1,'',1);
+							if ($result <= 0) $error++;
+						}
+					}
+					closedir($handle);
+				}
+
+				// Run update_xxx.sql files
+				$handle=@opendir($dir);         // Dir may not exist
+				if (is_resource($handle))
+				{
+					while (($file = readdir($handle))!==false)
+					{	
+						$dorun =true;
+						if (preg_match('/\.sql$/i',$file) && ! preg_match('/\.key\.sql$/i',$file) && substr($file,0,6) == 'update')
+						{
+							//Special test to know what kind of update script to run
+							if ($file=='update_1.0.0-2.0.sql')	{
+								$sql="SHOW COLUMNS FROM llx_agefodd_session_calendrier FROM dolibarrDev where Field = 'heured' and Type='datetime'";
+								$resql=$this->db->query($sql);
+								if ($resql) {
+									if ($this->db->num_rows($resql)==0) {
+										$dorun=false;
+									}
+								}
+								else
+								{
+									$this->error="Error ".$this->db->lasterror();
+									dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+									$error ++;
+								}
+							} 
+							if ($dorun) {
+							$result=run_sql($dir.$file,1,'',1);
+							if ($result <= 0) $error++;
+							}
+						}
+					}
+					closedir($handle);
+				}
+
+				if ($error == 0)
+				{
+					$ok = 1;
+				}
+			}
+		}
+
+		return $ok;
 	}
 }
 
