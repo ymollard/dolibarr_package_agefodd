@@ -54,7 +54,7 @@ class Agefodd_session_admlevel extends CommonObject
      *
      *  @param	DoliDb		$db      Database handler
      */
-    function Agefodd_session_admlevel($db)
+    function __construct($db)
     {
         $this->db = $db;
         return 1;

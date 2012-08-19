@@ -117,13 +117,6 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
  * View
  */
 
-llxHeader();
-
-$form = new Form($db);
-$formAgefodd = new FormAgefodd($db);
-
-dol_htmloutput_mesg($mesg);
-
 /*
  * Action create and refresh pdf document
  */
@@ -131,6 +124,7 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 {
 	$cour=GETPOST('cour','alpha');
 	$model=GETPOST('model','alpha');
+	$idform=GETPOST('idform','alpha');
 
 	// Define output language
 	$outputlangs = $langs;
@@ -141,11 +135,15 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 		$outputlangs = new Translate("",$conf);
 		$outputlangs->setDefaultLang($newlang);
 	}
-	
+	$id_tmp= $id;
 	if (!empty($cour)) $file = $model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
 	elseif(!empty($socid)) $file = $model.'_'.$id.'_'.$socid.'.pdf';
+	elseif ($model=='fiche_pedago') {
+		$file=$model.'_'.$idform.'.pdf';
+		$id_tmp=$idform;
+	}
 	else $file = $model.'_'.$id.'.pdf';
-	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $socid, $cour);
+	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
 }							
 
 /*
@@ -155,11 +153,15 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 {
 	$cour=GETPOST('cour','alpha');
 	$model=GETPOST('model','alpha');
+	$idform=GETPOST('idform','alpha');
 	
 	if (!empty($cour)) 
 	    $file = $conf->agefodd->dir_output.'/'.$model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
 	elseif (!empty($socid))
 	    $file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'_'.$socid.'.pdf';
+	elseif ($model=='fiche_pedago') {
+		$file = $conf->agefodd->dir_output.'/'.$model.'_'.$idform.'.pdf';
+	}
 	else
 		$file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'.pdf';
 	
@@ -236,6 +238,12 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	exit;
 }
 
+llxHeader();
+
+$form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
+
+dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
@@ -246,6 +254,7 @@ if (!empty($id))
 
 	if ($result)
 	{		
+		$idform = $agf->formid;
 		
 		function show_conv($file, $socid,$nom_courrier)
 		{
@@ -308,11 +317,12 @@ if (!empty($id))
 
 		function show_doc($file, $socid, $nom_courrier)
 		{
-			global $langs, $conf, $id, ${'flag_bc_'.$socid}, $form;
+			global $langs, $conf, $id, ${'flag_bc_'.$socid}, $form, $idform;
 			
 			$model = $file;
 			if(!empty($nom_courrier)) $file = $file.'-'.$nom_courrier.'_'.$id.'_'.$socid.'.pdf';
 			elseif (!empty($socid)) $file = $file.'_'.$id.'_'.$socid.'.pdf';
+			elseif ($model=='fiche_pedago') $file=$file.'_'.$idform.'.pdf';
 			else $file = $file.'_'.$id.'.pdf';
 			
 			if (is_file($conf->agefodd->dir_output.'/'.$file))
@@ -324,12 +334,12 @@ if (!empty($id))
 
 				// Regenerer
 				$legende = $langs->trans("AgfDocRefresh");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'&idform='.$idform.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Supprimer
 				$legende = $langs->trans("AgfDocDel");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'&idform='.$idform.'" alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			}
@@ -339,7 +349,7 @@ if (!empty($id))
 				if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_'.$model.'.modules.php')))
 				{ 
 					$legende = $langs->trans("AgfDocCreate");
-					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'&idform='.$idform.'" alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				}
 				else
@@ -489,16 +499,15 @@ if (!empty($id))
 
 		
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
-		document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
-		document_line("Réglement intérieur", 2, 'reglement', $agf->line[$i]->socid);
-		document_line("Programme", 2, 'programme', $agf->line[$i]->socid);
-		document_line("Fiche pédagogique", 2, 'fiche_pedago', $agf->line[$i]->socid);
-		document_line("Conseils pratiques", 2, 'conseils', $agf->line[$i]->socid);
+		//document_line("Convocation", 2, 'convocation');
+		document_line("Réglement intérieur", 2, 'regint');
+		document_line("Fiche pédagogique", 2, 'fiche_pedago');
+		document_line("Conseils pratiques", 2, 'conseils');
 
 		// Pendant la formation
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
-		document_line("Fiche de présence", 2, "fiche_presence", $agf->line[$i]->socid);
-		document_line("Fiche d'évaluation", 2, "fiche_evaluation", $agf->line[$i]->socid);
+		document_line("Fiche de présence", 2, "fiche_presence");
+		document_line("Fiche d'évaluation", 2, "fiche_evaluation");
 
 		print '</table>'."\n";
 		print '&nbsp;'."\n";

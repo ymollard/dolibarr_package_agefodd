@@ -53,8 +53,8 @@ class pdf_conseils extends ModelePDFAgefodd
 		$langs->load("agefodd@agefodd");
 		
 		$this->db = $db;
-		$this->name = 'fiche_pedago';
-		$this->description = $langs->trans('AgfModPDFFichePeda');
+		$this->name = 'conseil';
+		$this->description = $langs->trans('AgfModPDFConseil');
 
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -236,7 +236,7 @@ class pdf_conseils extends ModelePDFAgefodd
 				 */
 
 				$posX = $this->marge_gauche;
-				$posY = $posY + 5;
+				$posY += 5;
 				
 				/***** Titre *****/
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
@@ -244,12 +244,13 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->trans("AgfConseilsPratique");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-				$posY+= 10;
+				$posY = $pdf->GetY()+10;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor(0,0,0);
 				$this->str = $agf->intitule;
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
+				
+				$hauteur=dol_nboflines_bis($this->str,50)*4;
 				
 				// cadre
 				$pdf->SetFillColor(255);
@@ -257,7 +258,7 @@ class pdf_conseils extends ModelePDFAgefodd
 				// texte
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
-				$posY+= $hauteur + 10;
+				$posY = $pdf->GetY() + 10;
 
 				/***** Doucment required *****/
 				
@@ -270,11 +271,9 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf->note1);
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 				
 				/***** Equipement required *****/
 				
@@ -287,11 +286,9 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf->note2);
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 
 				
 				/***** Site *****/
@@ -306,21 +303,17 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_session->placecode);
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				
-				$posY+= $hauteur + 2;
+				$posY = $pdf->GetY() + 2;
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = $agf_place->adresse.' - '.$agf_place->cp.' '.$agf_place->ville; 
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 
 				/***** Acces au sites *****/
 				
@@ -333,11 +326,9 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_place->acces_site);
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
 				
 				/***** Divers *****/
 				
@@ -350,11 +341,17 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_place->note1);
 				
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY+= $hauteur + 8;
+				$posY = $pdf->GetY() + 8;
+				
+				// Pied de page
+				$this->_pagefoot($pdf,$agf,$outputlangs);
+				$pdf->AliasNbPages();
+				
+				// Repere de pliage
+				$pdf->SetDrawColor(220,220,220);
+				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
 		
 			}
 			

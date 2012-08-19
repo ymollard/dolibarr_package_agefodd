@@ -98,3 +98,23 @@ For all :
 - Fix : Session : creation : better display of question mark (help picto)
 - Fix : Session : document : convention on texte Texte "l'organisme" get good enterprise legal form 
 - Fix : Session : document : convention text 5 correctly saved
+
+***** ChangeLog for 2.0.12 compared to 2.0.11 *****
+For all :
+- Fix : Correct fiche pédagogique document (avoid bug of long programme and strange display)
+- Fix : Remove programme document (useless because programme is include into fiche pédagogique)
+- Fix : PDF Conseil pratique, add foot page
+- Fix : PDF Convention : better Layout.
+- Fix : PDF Convention : import all page of fiche pedago
+- Fix : Allow into trainning programme double quote.
+- Add : Generate fiche pedagogique from Trainning
+- Add : PDF Réglement intérieur
+- Add : Manage internal rule for location
+- Add : Add technical spec into module folder
+- Add Agenda Dolibarr management
+- Remove : BPF document because do not exists yet
+- Fix : On update convention art. 5 is no more replace with art. 4
+- Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
+- Merge Branch from jf-Ferry : Type of session (intra-inter entreprise), session nb place, session color
+For dev :
+- Fix: Use __construct() for all class

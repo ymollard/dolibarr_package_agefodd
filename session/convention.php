@@ -140,7 +140,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		if (!empty($art2)) $agf->art2 = $art2;
 		if (!empty($art3)) $agf->art3 = $art3;
 		if (!empty($art4)) $agf->art4 = $art4;
-		if (!empty($art5)) $agf->art4 = $art5;
+		if (!empty($art5)) $agf->art5 = $art5;
 		if (!empty($art6)) $agf->art6 = $art6;
 		if (!empty($art7)) $agf->art7 = $art7;
 		if (!empty($art8)) $agf->art8 = $art8;

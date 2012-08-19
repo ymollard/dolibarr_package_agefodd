@@ -43,7 +43,7 @@ class Agefodd_facture
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_facture($DB) 
+	function __construct($DB) 
 	{
 		$this->db = $DB;
 		return 1;

@@ -43,7 +43,7 @@ class Agefodd_contact extends CommonObject
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_contact($DB) 
+	function __construct($DB) 
 	{
 		$this->db = $DB;
 		return 1;

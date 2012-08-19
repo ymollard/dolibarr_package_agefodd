@@ -1,5 +1,7 @@
 <?php
 /* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012       JF FERRY        <jfefe@aternatik.fr>
+
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,23 +26,26 @@
 /**
  *      Class to manage building of HTML components
 */
-class FormAgefodd
+class FormAgefodd extends Form
 {
 	var $db;
 	var $error;
 
+	var $type_session_def;
 
 	/**
 	 *	Constructor
 	 *
 	 *  @param		DoliDB		$db      Database handler
 	 */
-	function FormAgefodd($db)
+	function __construct($db)
 	{
+		global $langs;
 		$this->db = $db;
+		$this->type_session_def = array(0=> $langs->trans('AgfFormTypeSessionIntra'), 1 => $langs->trans('AgfFormTypeSessionInter') );
 		return 1;
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des formations disponibles.
 	 *
@@ -55,26 +60,26 @@ class FormAgefodd
 	function select_formation($selectid, $htmlname='formation', $sort='intitule', $showempty=0, $forcecombo=0, $event=array())
 	{
 		global $conf,$user,$langs;
-	
+
 		$out='';
-	
+
 		if ($sort == 'code') $order = 'c.ref';
 		else $order = 'c.intitule';
-		
+
 		$sql = "SELECT c.rowid, c.intitule, c.ref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " WHERE archive LIKE 0";
 		$sql.= " ORDER BY ".$order;
-		
+
 		dol_syslog(get_class($this)."::select_formation sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT && ! $forcecombo)
-			{	
+			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-	
+
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($resql);
@@ -85,7 +90,7 @@ class FormAgefodd
 				{
 					$obj = $this->db->fetch_object($resql);
 					$label=$obj->intitule;
-					
+
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{
 						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
@@ -106,7 +111,7 @@ class FormAgefodd
 		$this->db->free($resql);
 		return $out;
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des action de session disponibles.
 	 *
@@ -118,7 +123,7 @@ class FormAgefodd
 	function select_action_session_adm($selectid='', $htmlname='action_level', $excludeid='')
 	{
 		global $conf,$langs;
-	
+
 		$sql = "SELECT";
 		$sql.= " t.rowid,";
 		$sql.= " t.level_rank,";
@@ -128,7 +133,7 @@ class FormAgefodd
 			$sql.= ' WHERE t.rowid<>"'.$excludeid.'"';
 		}
 		$sql.= " ORDER BY t.indice";
-	
+
 		dol_syslog(get_class($this)."::select_action_session_adm sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -137,7 +142,7 @@ class FormAgefodd
 			$num = $this->db->num_rows($result);
 			$i = 0;
 			$options = '<option value=""></option>'."\n";
-	
+
 			while ($i < $num)
 			{
 				$obj = $this->db->fetch_object($result);
@@ -158,7 +163,7 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  affiche un champs select contenant la liste des action des session disponibles par session.
 	 *
@@ -170,7 +175,7 @@ class FormAgefodd
 	function select_action_session($session_id=0, $selectid='', $htmlname='action_level')
 	{
 		global $conf,$langs;
-	
+
 		$sql = "SELECT";
 		$sql.= " t.rowid,";
 		$sql.= " t.level_rank,";
@@ -178,7 +183,7 @@ class FormAgefodd
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as t";
 		$sql.= ' WHERE t.fk_agefodd_session="'.$session_id.'"';
 		$sql.= " ORDER BY t.indice";
-	
+
 		dol_syslog(get_class($this)."::select_action_session sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -187,7 +192,7 @@ class FormAgefodd
 			$num = $this->db->num_rows($result);
 			$i = 0;
 			$options = '<option value=""></option>'."\n";
-	
+
 			while ($i < $num)
 			{
 				$obj = $this->db->fetch_object($result);
@@ -208,7 +213,7 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  affiche un champs select contenant la liste des sites de formation déjà référéencés.
 	 *
@@ -222,12 +227,12 @@ class FormAgefodd
 	function select_site_forma($selectid, $htmlname='place', $showempty=0, $forcecombo=0, $event=array())
 	{
 		global $conf,$langs;
-	
+
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
 		$sql.= " WHERE archive LIKE 0";
 		$sql.= " ORDER BY p.ref_interne";
-	
+
 		dol_syslog(get_class($this)."::select_site_forma sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -236,7 +241,7 @@ class FormAgefodd
 			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-			
+
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
@@ -247,7 +252,7 @@ class FormAgefodd
 				{
 					$obj = $this->db->fetch_object($result);
 					$label=$obj->ref_interne;
-						
+
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{
 						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
@@ -270,13 +275,13 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  affiche un champs select contenant la liste des stagiaires déjà référéencés.
 	 *
 	 *  @param	int 	$selectid  		Id de la session selectionner
 	 *  @param	string  $htmlname    	Name of HTML control
-	 *  @param	string  $filter     	SQL part for filter	
+	 *  @param	string  $filter     	SQL part for filter
 	 *  @param	int		$showempty		Add an empty field
 	 *  @param	int		$forcecombo		Force to use combo box
      *  @param	array	$event			Event options
@@ -285,7 +290,7 @@ class FormAgefodd
 	function select_stagiaire($selectid='', $htmlname='stagiaire', $filter='', $showempty=0, $forcecombo=0, $event=array())
 	{
 		global $conf,$langs;
-		
+
 		$sql = "SELECT";
 		$sql.= " s.rowid, CONCAT(s.nom,' ',s.prenom) as fullname,";
 		$sql.= " so.nom as socname, so.rowid as socid";
@@ -296,7 +301,7 @@ class FormAgefodd
 			$sql .= ' WHERE '.$filter;
 		}
 		$sql.= " ORDER BY fullname";
-		
+
 		dol_syslog(get_class($this)."::select_stagiaire sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -305,7 +310,7 @@ class FormAgefodd
 			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-				
+
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
@@ -317,7 +322,7 @@ class FormAgefodd
 					$obj = $this->db->fetch_object($result);
 					$label = $obj->fullname;
 					if ($obj->socname) $label .= ' ('.$obj->socname.')';
-			
+
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{
 						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
@@ -340,7 +345,7 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  affiche un champs select contenant la liste des contact déjà référéencés.
 	 *
@@ -355,7 +360,7 @@ class FormAgefodd
 	function select_agefodd_contact($selectid='', $htmlname='contact', $filter='', $showempty=0, $forcecombo=0, $event=array())
 	{
 		global $conf,$langs;
-	
+
 			$sql = "SELECT";
 		$sql.= " c.rowid, ";
 		$sql.= " s.name, s.firstname, s.civilite, ";
@@ -368,7 +373,7 @@ class FormAgefodd
 			$sql .= ' AND '.$filter;
 		}
 		$sql.= " ORDER BY socname";
-	
+
 		dol_syslog(get_class($this)."::select_agefodd_contact sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -377,7 +382,7 @@ class FormAgefodd
 			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-	
+
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
@@ -389,7 +394,7 @@ class FormAgefodd
 					$obj = $this->db->fetch_object($result);
 					$label = $obj->firstname.' '.$obj->name;
 					if ($obj->socname) $label .= ' ('.$obj->socname.')';
-						
+
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{
 						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
@@ -412,8 +417,8 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
-	
+
+
 	/**
 	 *  affiche un champs select contenant la liste des formateurs déjà référéencés.
 	 *
@@ -428,7 +433,7 @@ class FormAgefodd
 	function select_formateur($selectid='', $htmlname='formateur', $filter='', $showempty=0, $forcecombo=0, $event=array())
 	{
 		global $conf,$langs;
-	
+
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_socpeople,";
 		$sql.= " s.rowid, CONCAT(sp.name,' ',sp.firstname) as fullname";
@@ -440,7 +445,7 @@ class FormAgefodd
 			$sql .= ' AND '.$filter;
 		}
 		$sql.= " ORDER BY fullname";
-	
+
 		dol_syslog(get_class($this)."::select_formateur sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
@@ -449,7 +454,7 @@ class FormAgefodd
 			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-			
+
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
@@ -460,7 +465,7 @@ class FormAgefodd
 				{
 					$obj = $this->db->fetch_object($result);
 					$label = $obj->fullname;
-						
+
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{
 						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
@@ -483,7 +488,7 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  affiche un champs select contenant la liste des financements possible pour un stagiaire
 	 *
@@ -498,14 +503,14 @@ class FormAgefodd
 	function select_type_stagiaire($selectid, $htmlname='stagiaire_type', $filter='', $showempty=0, $forcecombo=0, $event=array())
 	{
 		global $conf,$langs;
-	
+
 		$sql = "SELECT t.rowid, t.intitule";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_type as t";
 		if (!empty($filter)) {
 			$sql .= ' WHERE '.$filter;
 		}
 		$sql.= " ORDER BY t.sort";
-	
+
 		dol_syslog(get_class($this)."::select_type_stagiaire sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -515,7 +520,7 @@ class FormAgefodd
 			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-	
+
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="-1"></option>';
 			$num = $this->db->num_rows($result);
@@ -526,7 +531,7 @@ class FormAgefodd
 				{
 					$obj = $this->db->fetch_object($result);
 					$label = stripslashes($obj->intitule);
-						
+
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{
 						$out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
@@ -549,8 +554,8 @@ class FormAgefodd
 			return -1;
 		}
 	}
-	
-	
+
+
 	/**
 	 *  Formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
 	 *
@@ -571,20 +576,20 @@ class FormAgefodd
 		}
 		$str.= '</tr>'."\n";
 		$str.= '</table>'."\n";
-	
+
 		return $str;
 	}
-	
+
 	/**
 	 *  Affiche un champs select contenant la liste des 1/4 d"heures de 7:00 à 21h00.
 	 *
-	 *  @param	string $selectval  	valeur a selectionner par defaut	
+	 *  @param	string $selectval  	valeur a selectionner par defaut
 	 *  @param	string $htmlname    nom du control HTML
 	 *  @return string         		The HTML control
 	 */
 	function select_time($selectval='', $htmlname='period')
 	{
-	
+
 		$time = 7;
 		$heuref = 21;
 		$min = 0;
@@ -596,7 +601,7 @@ class FormAgefodd
 				$min = 0;
 				$time ++;
 			}
-			$ftime = sprintf("%02d", $time).':'.sprintf("%02d", $min); 
+			$ftime = sprintf("%02d", $time).':'.sprintf("%02d", $min);
 			if ($selectval == $ftime) $selected = ' selected="true"';
 			else $selected = '';
 			$options .= '<option value="'.$ftime.'"'.$selected.'>'.$ftime.'</option>'."\n";
@@ -604,5 +609,16 @@ class FormAgefodd
 		}
 		return '<select class="flat" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
 	}
-	
+
+	/**
+	 * Affiche une liste de sélection des types de formation
+	 *
+	 *  @param	string	$htmlname	nom du control HTML
+	 *  @param	int		$selectval	valeur a selectionner par defaut
+	 *  @return string				The HTML control
+	 */
+	function select_type_session($htmlname,$selectval)
+	{
+		return $this->selectarray($htmlname,$this->type_session_def,$selectval,0);
+	}
 }
