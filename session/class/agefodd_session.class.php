@@ -41,6 +41,8 @@ class Agefodd_session extends CommonObject
 	var $table_element='agefodd_session';
     var $id;
     var $fk_soc;
+    var $client;
+    var $socid;
     var $fk_formation_catalogue;
     var $fk_session_place;
     var $nb_place;
@@ -368,7 +370,8 @@ class Agefodd_session extends CommonObject
 
     			$this->id    = $obj->rowid;
     			$this->ref    = $obj->rowid; // Use for next prev ref
-    			$this->fk_soc    = $obj->fk_soc;
+    			$this->fk_soc    = $obj->fk_soc; // don't work with fetch_thirdparty()
+    			$this->socid    = $obj->socid; // work with fetch_thirdparty()
 
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;

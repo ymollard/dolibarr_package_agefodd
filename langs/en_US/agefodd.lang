@@ -281,3 +281,4 @@ AgfPrintFichePedago = Create document Fiche pédagogique
 AgfModifyTrainer = Edit Trainer
 AgfModifySubrogation = Edit funding
 AgfModifyTrainee = Edit Trainee
+AdfSendFichePedagogique = Send document Fiche Pédagogique

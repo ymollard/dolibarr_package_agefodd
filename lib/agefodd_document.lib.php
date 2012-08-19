@@ -215,3 +215,31 @@ function document_line($intitule, $level=2, $mdle, $socid, $nom_courrier='')
 		print '<td style="border-left:0px; width:200px"  align="right">'.show_doc($mdle, $socid, $nom_courrier).'</td></tr>'."\n";
 	}
 }
+
+function document_send_line($intitule, $level=2, $mdle, $socid, $nom_courrier='')
+{
+	global $langs,$id;
+	print '<tr style="height:14px">'."\n";
+	if ($level == 2)
+	{
+		print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
+		print '<td style="border-right:0px;">';
+	}
+	else print '<td colspan="2" style="border-right:0px;">';
+	print $intitule.'</td>'."\n";
+	if ( $mdle == 'bc' || $mdle == 'fac')
+	{
+		print '<td style="border-left:0px;" align="right">'.show_fac($mdle, $socid, $mdle).'</td></tr>'."\n";
+	}
+	elseif ( $mdle == 'convention')
+	{
+		print '<td style="border-left:0px; width:200px" align="right">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
+	}
+	else
+	{
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init">'.$langs->trans('Send').'</a>';
+		//.show_doc($mdle, $socid, $nom_courrier).
+		print '</td></tr>'."\n";
+	}
+}
