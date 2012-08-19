@@ -218,6 +218,11 @@ function site_prepare_head($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/site/reg_int.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfRegInt");
+	$head[$h][2] = 'reg_int';
+	$h++;
 
 	$head[$h][0] = dol_buildpath('/agefodd/site/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");

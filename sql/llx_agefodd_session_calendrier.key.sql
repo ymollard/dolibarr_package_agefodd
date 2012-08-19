@@ -22,3 +22,4 @@
 -- Contraintes pour la table llx_agefodd_session_calendrier
 --
 ALTER TABLE llx_agefodd_session_calendrier ADD CONSTRAINT llx_agefodd_session_calendrier_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_calendrier ADD CONSTRAINT llx_agefodd_session_calendrier_ibfk_2 FOREIGN KEY (fk_actioncomm) REFERENCES llx_actioncomm (id)  ON DELETE CASCADE;

@@ -108,13 +108,13 @@ For all :
 - Fix : PDF Convention : import all page of fiche pedago
 - Fix : Allow into trainning programme double quote.
 - Add : Generate fiche pedagogique from Trainning
-- Add : PDF Convocation
 - Add : PDF Réglement intérieur
 - Add : Manage internal rule for location
 - Add : Add technical spec into module folder
+- Add Agenda Dolibarr management
 - Remove : BPF document because do not exists yet
 - Fix : On update convention art. 5 is no more replace with art. 4
 - Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
+- Merge Branch from jf-Ferry : Type of session (intra-inter entreprise), session nb place, session color
 For dev :
 - Fix: Use __construct() for all class
-- Add Agenda Dolibarr management

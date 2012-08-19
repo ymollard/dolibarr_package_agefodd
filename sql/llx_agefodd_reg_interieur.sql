@@ -1,6 +1,7 @@
 -- ============================================================================
 -- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
 -- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,7 +21,11 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_reg_interieur (
   rowid int(11) NOT NULL auto_increment,
-  file varchar(80) NOT NULL,
+  reg_int text NULL,
   notes tinytext NOT NULL,
+  fk_user_author int(11) NOT NULL,
+  datec datetime NOT NULL,
+  fk_user_mod int(11) NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
