@@ -36,16 +36,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
-	// gris clair
-	protected $color1 = array('190','190','190');
-	// marron/orangé
-	//protected $color2 = array('203', '70', '25');
-
-	// Gris très foncé
-	protected $color2 = array('19', '19', '19');
-
-	// Vert flashi
-	protected $color3 = array('118', '146', '60');
+	protected $color1 = array('190','190','190');	// gris clair
+	protected $color2 = array('19', '19', '19');	// Gris très foncé
+	protected $color3 = array('118', '146', '60');	// Vert flashi
 
 
 
@@ -142,7 +135,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 			$pagenb=0;
 
 			$pdf->SetDrawColor(128,128,128);
-			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
+			$pdf->SetTitle($outputlangs->convToOutputCharset("Fiche pédagogique ".$agf->ref_interne));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
 			$pdf->SetCreator("Dolibarr ".DOL_VERSION.' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
@@ -173,7 +166,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				 * Header société
 				 */
 
-				// Logo en haut à gauche
+				// Logo en haut à droite
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 				if ($this->emetteur->logo)
 				{
@@ -380,7 +373,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$largeur_col = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'J');
+				$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'L');
 
 				// Nbre de ligne * hauteur ligne + decallage titre niv 2
 				$posY = $pdf->GetY() + 8;
@@ -483,7 +476,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	{
 		global $conf,$langs;
 
-		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
+		$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
