@@ -121,3 +121,5 @@ For dev :
 
 ***** ChangeLog for 2.0.13 compared to 2.0.12 *****
 For all :
+- Change: PDF : merge Reglement interieur et conseil pratrique
+- Add : PDF : Add convocation model 
