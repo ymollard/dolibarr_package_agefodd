@@ -130,6 +130,7 @@ if ($resql != -1)
 	}
 
 	print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
+	print '<input type="hidden" name="arch" value="'.$arch.'" >';
 	print '<tr class="liste_titre">';
 
 	print '<td>&nbsp;</td>';
