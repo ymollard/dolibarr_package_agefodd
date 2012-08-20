@@ -118,3 +118,6 @@ For all :
 - Merge Branch from jf-Ferry : Type of session (intra-inter entreprise), session nb place, session color
 For dev :
 - Fix: Use __construct() for all class
+
+***** ChangeLog for 2.0.13 compared to 2.0.12 *****
+For all :

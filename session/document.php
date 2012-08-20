@@ -34,6 +34,7 @@ dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/commande/class/commande.class.php');
+dol_include_once('/agefodd/lib/agefodd_document.lib.php');
 
 
 // Security check
@@ -51,7 +52,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
-	
+
 	// si existe déjà, on met à jour
 	if ($agf->id)
 	{
@@ -90,7 +91,7 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
-	
+
 	// si existe déjà, on met à jour
 	if ($agf->id)
 	{
@@ -144,7 +145,7 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	}
 	else $file = $model.'_'.$id.'.pdf';
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
-}							
+}
 
 /*
  * Action delete pdf document
@@ -154,8 +155,8 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	$cour=GETPOST('cour','alpha');
 	$model=GETPOST('model','alpha');
 	$idform=GETPOST('idform','alpha');
-	
-	if (!empty($cour)) 
+
+	if (!empty($cour))
 	    $file = $conf->agefodd->dir_output.'/'.$model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
 	elseif (!empty($socid))
 	    $file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'_'.$socid.'.pdf';
@@ -164,7 +165,7 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	}
 	else
 		$file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'.pdf';
-	
+
 	if (is_file($file)) unlink($file);
 	else
 	{
@@ -173,30 +174,29 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	}
 }
 
-
 // Selection du bon de commande ou de la facture à lier
 if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_session($db);
 	$agf->fetch($id);
-	
+
 	$head = session_prepare_head($agf);
-	
+
 	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
-	
+
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 	print '</div>'."\n";
 
 	print '<table class="border" width="100%">'."\n";
-		
+
 	print '<tr class="liste_titre">'."\n";
 	print '<td colspan=3>';
 	print  '<a href="#">'.$langs->trans("AgfCommonDocs").'</a></td>'."\n";
 	print '</tr>'."\n";
-	
+
 	print '<tr class="liste">'."\n";
-	
+
 	// creation de la liste de choix
 	$agf_liste = new Agefodd_facture($db);
 	$result = $agf_liste->fetch_fac_per_soc($_GET["socid"], $_GET["type"]);
@@ -205,9 +205,9 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	{
 		print '<form name="fact_link" action="document.php?action=link_confirm&id='.$id.'"  method="post">'."\n";
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-		print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";		
-		print '<input type="hidden" name="type" value="'.$_GET["type"].'">'."\n";		
-		
+		print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";
+		print '<input type="hidden" name="type" value="'.$_GET["type"].'">'."\n";
+
 		$var=True;
 		$options = '<option value=""></option>'."\n";;
 		for ($i = 0; $i < $num; $i++)
@@ -215,7 +215,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 			$options .= '<option value="'.$agf_liste->line[$i]->id.'">'.$agf_liste->line[$i]->ref.'</option>'."\n";
 		}
 		$select = '<select class="flat" name="select">'."\n".$options."\n".'</select>'."\n";
-		
+
 		print '<td width="250px">';
 		($_GET["type"] == 'bc') ? print $langs->trans("AgfFactureBcSelectList") : print $langs->trans("AgfFactureFacSelectList");
 		print '</td>'."\n";
@@ -249,11 +249,11 @@ if (!empty($id))
 {
 	$agf = new Agefodd_session($db);
 	$agf->fetch($id);
-	
+
 	$result = $agf->fetch_societe_per_session($id);
 
 	if ($result)
-	{		
+	{
 		$idform = $agf->formid;
 		
 		function show_conv($file, $socid,$nom_courrier)
@@ -473,10 +473,10 @@ if (!empty($id))
 
 		// Affichage en mode "consultation"
 		$head = session_prepare_head($agf);
-		
+
 		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
-		
+
 		/*
 		* Confirmation de la suppression
 		*/
@@ -491,13 +491,13 @@ if (!empty($id))
 		print '</div>'."\n";
 
 		print '<table class="border" width="100%">'."\n";
-			
+
 		print '<tr class="liste_titre">'."\n";
 		print '<td colspan=3>';
 		print $langs->trans("AgfCommonDocs").'</td>'."\n";
 		print '</tr>'."\n";
 
-		
+
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
 		//document_line("Convocation", 2, 'convocation');
 		document_line("Réglement intérieur", 2, 'regint');
@@ -519,23 +519,23 @@ if (!empty($id))
 			if (!empty($agf->line[$i]->socid))
 			{
 				$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
-				
+
 				${'flag_bc_'.$agf->line[$i]->socid} = 0;
-	
+
 				print '<table class="border" width="100%">'."\n";
-				
+
 				print '<tr class="liste_titre">'."\n";
 				print '<td colspan=3>';
 				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
 				print '</tr>'."\n";
-	
+
 				// Avant la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
 				document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
 				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
 				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
 				document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
-		
+
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
 				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
@@ -545,7 +545,7 @@ if (!empty($id))
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
 			}
-		}	
+		}
 		print '</div>'."\n";
 	}
 
