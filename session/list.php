@@ -175,7 +175,9 @@ if ($resql != -1)
 		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
 		print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
 		print '<td>'.stripslashes($line->ref_interne).'</td>';
-		print '<td>'.$line->num.'</td>';
+		print '<td>';
+		print $line->force_nb_stagiaire?$line->nb_stagiaire:$line->num;
+		print '</td>';
 		print "</tr>\n";
 
 		$i++;
