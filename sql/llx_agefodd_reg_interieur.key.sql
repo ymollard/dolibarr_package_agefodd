@@ -1,6 +1,4 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 -- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
@@ -18,9 +16,5 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
---
--- Contraintes pour la table llx_agefodd_session
---
-ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_agefodd_formation_catalogue_ibfk_1 FOREIGN KEY (fk_formation_catalogue) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
-ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_agefodd_session_place_ibfk_1 FOREIGN KEY (fk_session_place) REFERENCES llx_agefodd_place (rowid);
-ALTER TABLE llx_agefodd_session ADD INDEX fk_soc (fk_soc);
+
+ALTER TABLE llx_agefodd_reg_interieur ADD CONSTRAINT llx_agefodd_reg_interieur_ibfk_1 FOREIGN KEY (rowid) REFERENCES llx_agefodd_place (fk_reg_interieur) ON DELETE CASCADE;

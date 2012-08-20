@@ -1,6 +1,5 @@
 <?php
-/* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+/* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +24,13 @@
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
 dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/site/class/agefodd_reginterieur.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
 
 
-class pdf_conseils extends ModelePDFAgefodd
+class pdf_regint extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 	
@@ -46,15 +44,15 @@ class pdf_conseils extends ModelePDFAgefodd
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function pdf_conseils($db)
+	function pdf_regint($db)
 	{
 		global $conf,$langs,$mysoc;
 		
 		$langs->load("agefodd@agefodd");
 		
 		$this->db = $db;
-		$this->name = 'conseil';
-		$this->description = $langs->trans('AgfModPDFConseil');
+		$this->name = 'regint';
+		$this->description = $langs->trans('AgfModPDFRegint');
 
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -100,12 +98,12 @@ class pdf_conseils extends ModelePDFAgefodd
 			$agf_session = new Agefodd_session($this->db);
 			$ret = $agf_session->fetch($id);
 			if ($ret)
-			{
-				$agf= new Agefodd($this->db);
-				$agf->fetch($agf_session->formid);
-				
+			{				
 				$agf_place = new Agefodd_place($this->db);
 				$agf_place->fetch($agf_session->placeid);
+				
+				$agf_regint = new Agefodd_reg_interieur($this->db);
+				$agf_regint->fetch($agf_place->fk_reg_interieur);
 			}
 		}
 
@@ -242,13 +240,13 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfConseilsPratique");
+				$this->str = $langs->transnoentities("AgfRegInt");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY = $pdf->GetY()+10;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor(0,0,0);
-				$this->str = $agf->intitule;
+				$this->str = $agf_session->formintitule;
 				
 				$hauteur=dol_nboflines_bis($this->str,50)*4;
 				
@@ -259,87 +257,18 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 				$posY = $pdf->GetY() + 10;
+				
 
-				/***** Doucment required *****/
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfDocNeeded");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = ucfirst($agf->note1);
-				
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
-				
-				/***** Equipement required *****/
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfEquiNeeded");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = ucfirst($agf->note2);
-				
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
-
-				
-				/***** Site *****/
-				
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfLieu");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = ucfirst($agf_session->placecode);
-				
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
-				$posY = $pdf->GetY() + 2;
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = $agf_place->adresse.' - '.$agf_place->cp.' '.$agf_place->ville; 
-				
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
-
-				/***** Acces au sites *****/
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfAccesSite");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = ucfirst($agf_place->acces_site);
-				
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
-				
-				/***** Divers *****/
+				/***** Réglement intérieur *****/
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfPlaceNote1");
+				$this->str = $langs->transnoentities("AgfRegInt");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = ucfirst($agf_place->note1);
+				$this->str = ucfirst($agf_regint->reg_int);
 				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');

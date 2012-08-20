@@ -110,7 +110,18 @@ if ($action == 'setvar')
 	if (! $res > 0) $error++;
 	
 	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $usesearch_contact,'chaine',0,'',$conf->entity);
+	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
+	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
+		$msg=$langs->trans("AgfAgendaModuleNedeed");
+		$error++;
+	}
+	else {
+		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda,'chaine',0,'',$conf->entity);
+	}
+	
 	if (! $res > 0) $error++;
 	
 	if (! $error)
@@ -119,7 +130,7 @@ if ($action == 'setvar')
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+		$mesg = "<font class=\"error\">".$langs->trans("Error")." ".$msg."</font>";
 	}
 }
 
@@ -588,6 +599,16 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
 	print '<td>&nbsp;</td>';
 	print '</tr>';
 }
+
+//Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
+print '<tr class="pair"><td>'.$langs->trans("AgfAgendaModuleUse").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_DOL_AGENDA",$arrval,$conf->global->AGF_DOL_AGENDA);
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
 
 // utilisation formulaire Ajax sur choix site
 print '<tr class="impair">';
