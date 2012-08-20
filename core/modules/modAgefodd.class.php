@@ -79,7 +79,7 @@ class modAgefodd extends DolibarrModules
 
 		// Config pages. Put here list of php page names stored in admin directory used to setup module.
 		$this->config_page_url = array("agefodd.php@agefodd");
-		
+
 		//define triggers
 		$this->module_parts = array('triggers' => 1);
 
@@ -205,7 +205,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_LAST_VERION_INSTALL";
 		$this->const[$r][1] = "chaine";
@@ -213,7 +213,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Last version installed to know change table to execute';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_DOL_AGENDA";
 		$this->const[$r][1] = "yesno";
@@ -221,6 +221,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+
+		// Dictionnaries
+		if (! isset($conf->agefodd->enabled)) $conf->agefodd->enabled=0; // This is to avoid warnings
+		$this->dictionnaries=array(
+				'langs'=>'agefodd@agefodd',
+				'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type"),		// List of tables we want to see into dictonnary editor
+				'tablib'=>array("Type stagiaire"),								// Label of tables
+				'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f'),	// Request to select fields
+				'tabsqlsort'=>array('sort ASC'),								// Sort order
+				'tabfield'=>array("intitule,sort"),								// List of fields (result of select to show dictionnary)
+				'tabfieldvalue'=>array("intitule,sort"),						// List of fields (list of fields to edit a record)
+				'tabfieldinsert'=>array("intitule,sort"),						// List of fields (list of fields for insert)
+				'tabrowid'=>array("rowid"),										// Name of columns with primary key (try to always name it 'rowid')
+				'tabcond'=>array('$conf->agefodd->enabled')						// Condition to show each dictionnary
+		);
+
 
 
 		// Array to add new pages in new tabs
@@ -577,7 +593,7 @@ class modAgefodd extends DolibarrModules
 	{
 		return $this->_load_tables_agefodd('/agefodd/sql/');
 	}
-	
+
 	/**
 	 *  Create tables and keys required by module.
 	 *  Do not use version of Dolibarr because execute script only if version requiered it
@@ -591,11 +607,11 @@ class modAgefodd extends DolibarrModules
 	function _load_tables_agefodd($reldir)
 	{
 		global $db,$conf;
-	
+
 		$error=0;
-	
+
 		include_once(DOL_DOCUMENT_ROOT ."/core/lib/admin.lib.php");
-	
+
 		$ok = 1;
 		foreach($conf->file->dol_document_root as $dirroot)
 		{
@@ -603,7 +619,7 @@ class modAgefodd extends DolibarrModules
 			{
 				$dir = $dirroot.$reldir;
 				$ok = 0;
-	
+
 				// Run llx_mytable.sql files
 				$handle=@opendir($dir);         // Dir may not exists
 				if (is_resource($handle))
@@ -618,7 +634,7 @@ class modAgefodd extends DolibarrModules
 					}
 					closedir($handle);
 				}
-	
+
 				// Run llx_mytable.key.sql files (Must be done after llx_mytable.sql)
 				$handle=@opendir($dir);         // Dir may not exist
 				if (is_resource($handle))
@@ -639,7 +655,7 @@ class modAgefodd extends DolibarrModules
 				if (is_resource($handle))
 				{
 					while (($file = readdir($handle))!==false)
-					{	
+					{
 						$dorun =true;
 						if (preg_match('/\.sql$/i',$file) && ! preg_match('/\.key\.sql$/i',$file) && substr($file,0,6) == 'update')
 						{
@@ -658,7 +674,7 @@ class modAgefodd extends DolibarrModules
 									dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
 									$error ++;
 								}
-							} 
+							}
 							if ($dorun) {
 							$result=run_sql($dir.$file,1,'',1);
 							if ($result <= 0) $error++;
