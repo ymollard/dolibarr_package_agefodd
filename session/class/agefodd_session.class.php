@@ -123,7 +123,6 @@ class Agefodd_session extends CommonObject
     	$sql.= "fk_soc,";
     	$sql.= "fk_formation_catalogue,";
     	$sql.= "fk_session_place,";
-
     	$sql.= "nb_place,";
     	$sql.= "type_session,";
     	$sql.= "dated,";
@@ -370,8 +369,7 @@ class Agefodd_session extends CommonObject
     			$obj = $this->db->fetch_object($resql);
 
     			$this->id    = $obj->rowid;
-    			$this->ref    = $obj->rowid; // Use for next prev ref
-    			$this->fk_soc    = $obj->fk_soc;
+    			$this->ref    = $obj->rowid; // Use for next prev ref    			$this->fk_soc    = $obj->fk_soc;
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;
     			$this->formid = $obj->formid;
@@ -385,7 +383,6 @@ class Agefodd_session extends CommonObject
     			$this->placeid = $obj->placeid;
     			$this->placecode = $obj->placecode;
     			$this->dated = $this->db->jdate($obj->dated);
-    			$this->datef = $this->db->jdate($obj->datef);
     			$this->notes = $obj->notes;
     			$this->color = $obj->color;
     			$this->fk_commercial = $obj->fk_commercial;
@@ -694,6 +691,7 @@ class Agefodd_session extends CommonObject
 
 
 	        $sql.= " WHERE rowid=".$this->id;
+
 			$this->db->begin();
 
 			dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
@@ -1219,7 +1217,7 @@ class Agefodd_session extends CommonObject
 	{
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, ";
+		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne,";
 		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
@@ -1266,6 +1264,7 @@ class Agefodd_session extends CommonObject
 
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
+
 		if ($resql)
 		{
 			$this->line = array();
@@ -1289,6 +1288,9 @@ class Agefodd_session extends CommonObject
 					$this->line[$i]->ref = $obj->ref;
 					$this->line[$i]->ref_interne = $obj->ref_interne;
 					$this->line[$i]->num = $obj->num;
+					$this->line[$i]->color = $obj->color;
+					$this->line[$i]->nb_stagiaire = $obj->nb_stagiaire;
+					$this->line[$i]->force_nb_stagiaire = $obj->force_nb_stagiaire;
 
 					$i++;
 				}
