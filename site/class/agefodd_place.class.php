@@ -142,7 +142,7 @@ class Agefodd_place extends CommonObject
     	
         $sql = "SELECT";
 		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
-		$sql.= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1 ";
+		$sql.= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1, p.fk_reg_interieur";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
@@ -172,6 +172,7 @@ class Agefodd_place extends CommonObject
 			$this->archive = $obj->archive;
 			$this->acces_site = $obj->acces_site;
 			$this->note1 = $obj->note1;
+			$this->fk_reg_interieur=$obj->fk_reg_interieur;
 		}
             $this->db->free($resql);
 
@@ -308,6 +309,7 @@ class Agefodd_place extends CommonObject
         $this->notes = $this->db->escape(trim($this->notes));
         $this->acces_site = $this->db->escape(trim($this->acces_site));
         $this->note1 = $this->db->escape(trim($this->note1));
+        $this->fk_reg_interieur = $this->db->escape(trim($this->fk_reg_interieur));
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -326,7 +328,8 @@ class Agefodd_place extends CommonObject
 		$sql.= ' p.fk_user_mod="'.$user.'",';
 		$sql.= ' p.archive="'.$this->archive.'",';
 		$sql.= ' p.acces_site="'.$this->acces_site.'",';
-		$sql.= ' p.note1="'.$this->note1.'"';
+		$sql.= ' p.note1="'.$this->note1.'", ';
+		$sql.= ' p.fk_reg_interieur="'.$this->fk_reg_interieur.'"';
         $sql.= " WHERE p.rowid LIKE ".$this->id;
 
 		$this->db->begin();

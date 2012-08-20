@@ -79,6 +79,7 @@ class Agefodd_session extends CommonObject
     var $contactid;
     var $contactname;
     var $sourcecontactid;
+    var $fk_actioncomm;
 
     /**
      *	\brief		Constructor
@@ -122,6 +123,7 @@ class Agefodd_session extends CommonObject
     	$sql.= "fk_soc,";
     	$sql.= "fk_formation_catalogue,";
     	$sql.= "fk_session_place,";
+
     	$sql.= "nb_place,";
     	$sql.= "type_session,";
     	$sql.= "dated,";
@@ -139,9 +141,9 @@ class Agefodd_session extends CommonObject
     	$sql.= " ".(! isset($this->dated) || dol_strlen($this->dated)==0?'NULL':$this->db->idate($this->dated)).",";
     	$sql.= " ".(! isset($this->datef) || dol_strlen($this->datef)==0?'NULL':$this->db->idate($this->datef)).",";
     	$sql.= " ".(! isset($this->notes)?'NULL':"'".$this->db->escape($this->notes)."'").",";
-    	$sql.= " ".$this->db->escape($user).",";
+    	$sql.= " ".$this->db->escape($user->id).",";
     	$sql.= " ".$this->db->idate(dol_now()).",";
-    	$sql.= " ".$this->db->escape($user);
+    	$sql.= " ".$this->db->escape($user->id);
 
     	$sql.= ")";
 
@@ -159,18 +161,19 @@ class Agefodd_session extends CommonObject
     		//Create or update line in session commercial table and get line number
     		if (!empty($this->commercialid))
     		{
-    			$result = $this->setCommercialSession($this->commercialid,$user);
+    			$result = $this->setCommercialSession($this->commercialid,$user->id);
     			if ($result <= 0){
     				$error++; $this->errors[]="Error ".$this->db->lasterror();
     			}
     		}
     		if (!empty($this->contactid))
     		{
-    			$result = $this->setContactSession($this->contactid,$user);
+    			$result = $this->setContactSession($this->contactid,$user->id);
     			if ($result <= 0){
     				$error++; $this->errors[]="Error ".$this->db->lasterror();
     			}
     		}
+
     		if (! $notrigger)
     		{
     			// Uncomment this and change MYOBJECT to your own tag if you
@@ -369,7 +372,6 @@ class Agefodd_session extends CommonObject
     			$this->id    = $obj->rowid;
     			$this->ref    = $obj->rowid; // Use for next prev ref
     			$this->fk_soc    = $obj->fk_soc;
-
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;
     			$this->formid = $obj->formid;
@@ -652,7 +654,6 @@ class Agefodd_session extends CommonObject
 				$error++; $this->errors[]="Error ".$this->db->lasterror();
 			}
 		}
-
 
 		if ($error==0)
 		{

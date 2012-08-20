@@ -27,11 +27,16 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
   date_session date NOT NULL,
   heured datetime NOT NULL,
   heuref datetime NOT NULL,
+  fk_actioncomm int NOT NULL DEFAULT 0,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY idx_fk_agefodd_session (fk_agefodd_session)
+  KEY idx_fk_agefodd_session (fk_agefodd_session),
+  KEY idx_fk_agefodd_session_act (fk_actioncomm)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES
+(100, 'AC_AGF', 'system', 'Link to Trainning', 'agefodd', 1, NULL, 10);
 

@@ -83,7 +83,7 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 
 	if ($result > 0)
 	{
-		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 		exit;
 	}
 	else
@@ -259,7 +259,6 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		$heured_tmp = GETPOST('dated','alpha');
 		if (!empty($heured_tmp)){
 			$heure_tmp_arr = explode(':',$heured_tmp);
-			//var_dump($heure_tmp_arr);
 			$heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		}
 
@@ -313,7 +312,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 			$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		}
 
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
@@ -390,9 +389,11 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
 		$agf->fk_session_place = $fk_session_place;
+		$agf->nb_place = GETPOST('nb_place','int');
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->nb_place = GETPOST('nb_place','int');
 		$agf->type_session = GETPOST('type_session','int');
+
 		$agf->fk_soc = GETPOST('fk_soc','int');
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
@@ -402,7 +403,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		if ($error==0)
 		{
-			$result = $agf->create($user->id);
+			$result = $agf->create($user);
 
 			if ($result > 0)
 			{
@@ -748,6 +749,9 @@ else
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costsite" value="'.price($agf->cost_site).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+
+					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
+					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
