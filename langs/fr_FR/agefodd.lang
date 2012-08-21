@@ -247,6 +247,7 @@ AgfSessionCommercial = Commercial en charge
 AgfSessionContact = Contact Client
 AgfCoutFormateur = Coût du formateur (HT)
 AgfCoutSalle = Coût de la salle (HT)
+AgfCoutDeplacement=Frais de déplacement (HT)
 AgfCoutFormation = Prix de vente total (HT)
 AgfCost = Gestion des coût
 AgfDateResTrainer = Commande passée au formateur

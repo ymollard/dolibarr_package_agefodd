@@ -277,7 +277,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		if(!empty($heuref)) 			$agf->heuref =  $heuref;
 
 		$result = $agf->update($user);
-
+		
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
@@ -746,7 +746,6 @@ else
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costsite" value="'.price($agf->cost_site).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
-
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 
@@ -1185,7 +1184,7 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a>';
 	}
-	
+
 	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butAction" href="trainer.php?action=edit&id='.$id.'">'.$langs->trans('AgfModifyTrainer').'</a>';

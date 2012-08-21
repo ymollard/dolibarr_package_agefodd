@@ -115,6 +115,7 @@ For all :
 - Remove : BPF document because do not exists yet
 - Fix : On update convention art. 5 is no more replace with art. 4
 - Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
+<<<<<<< HEAD
 - Merge Branch from jf-Ferry : Type of session (intra-inter entreprise), session nb place, session color
 For dev :
 - Fix: Use __construct() for all class
@@ -123,3 +124,7 @@ For dev :
 For all :
 - Change: PDF : merge Reglement interieur et conseil pratrique
 - Add : PDF : Add convocation model 
+- Add : type attribut on training sessions
+- Add : fields on training session 
+- Add : allow to choice a color for the session
+
