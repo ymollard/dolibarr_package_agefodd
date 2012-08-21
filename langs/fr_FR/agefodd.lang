@@ -293,3 +293,4 @@ AgfCoutDeplacement = Coût du deplacement
 AgfRegInt = Réglement intérieur
 AgfDeleteRegint = Suppression du réglement intérieur
 AgfConfirmRegInt = Êtes vous sûre de supprimer ce réglement
+ActionFICHEPEDAGO_SENTBYMAIL = Envoi fiche pédagogique par email

@@ -290,3 +290,4 @@ AgfCoutDeplacement = Transfert cost
 AgfRegInt = Internal Rules
 AgfDeleteRegint = Delete Internal Rules
 AgfConfirmRegInt = Are you sure to delete this rules
+ActionFICHEPEDAGO_SENTBYMAIL = Send fiche pédagogique by email

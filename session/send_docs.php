@@ -50,6 +50,7 @@ $socid=GETPOST('socid','int');
 
 $mesg = '';
 
+if (GETPOST('mesg','int',1) && isset($_SESSION['message'])) $mesg=$_SESSION['message'];
 
 $form = new Form($db);
 $formmail = new FormMail($db);
@@ -65,11 +66,11 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 	$object = new Agefodd_session($db);
 
 
-	$result=$object->fetch($_POST["id"]);
-	$result=$object->fetch_thirdparty();
-	print $object->error;
+	$result=$object->fetch($id);
+
 	if ($result > 0)
 	{
+		$result=$object->fetch_thirdparty();
 
 		if ($_POST['sendto'])
 		{
@@ -106,7 +107,7 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 			{
 				if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
 				else $subject = $langs->transnoentities('Propal').' '.$object->ref;
-				$actiontypecode='AC_PROP';
+				$actiontypecode='AC_AGF_PEDAG';
 				$actionmsg = $langs->transnoentities('MailSentBy').' '.$from.' '.$langs->transnoentities('To').' '.$sendto.".\n";
 				if ($message)
 				{
@@ -114,7 +115,7 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 					$actionmsg.=$langs->transnoentities('TextUsedInTheMessageBody').":\n";
 					$actionmsg.=$message;
 				}
-				$actionmsg2=$langs->transnoentities('Action'.$actiontypecode);
+				$actionmsg2=$langs->transnoentities('Action'.FICHEPEDAGO_SENTBYMAIL);
 			}
 
 			// Create form object
@@ -143,6 +144,7 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 					$error=0;
 
 					// Initialisation donnees
+					$object->socid 			= $object->fk_soc;
 					$object->sendtoid		= $sendtoid;
 					$object->actiontypecode	= $actiontypecode;
 					$object->actionmsg		= $actionmsg;
@@ -150,7 +152,8 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 					$object->fk_element		= $object->id;
 					$object->elementtype	= $object->element;
 
-					/* Appel des triggers
+
+					/* Appel des triggers */
 					include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 					$interface=new Interfaces($db);
 					$result=$interface->run_triggers('FICHEPEDAGO_SENTBYMAIL',$object,$user,$langs,$conf);
@@ -158,7 +161,7 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 						$error++; $this->errors=$interface->errors;
 					}
 					// Fin appel triggers
-*/
+
 					if ($error)
 					{
 						dol_print_error($db);
@@ -196,7 +199,6 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 			dol_syslog('Recipient email is empty');
 		}
 	}
-	print $mesg;
 	$action = 'presend_pedago';
 }
 

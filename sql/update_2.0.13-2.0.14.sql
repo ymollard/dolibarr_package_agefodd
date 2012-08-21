@@ -7,3 +7,8 @@ ALTER TABLE llx_agefodd_session ADD COLUMN force_nb_stagiaire int NULL AFTER nb_
 ALTER TABLE llx_agefodd_session ADD COLUMN cost_trip double(24,8) NULL AFTER cost_site;
 
 ALTER TABLE table ADD INDEX fk_soc (fk_soc)
+
+INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES ('', 'AC_AGF_CONVEN', 'system', 'Send Convention by mail', 'agefodd', 1, NULL, 10);
+INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES ('', 'AC_AGF_CONVOC', 'system', 'Send Convocation by mail', 'agefodd', 1, NULL, 10);
+INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES ('', 'AC_AGF_PEDAGO', 'system', 'Send Fiche pédagogique by mail', 'agefodd', 1, NULL, 10);
+INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES ('', 'AC_AGF_ATTES', 'system', 'Send attestation by mail', 'agefodd', 1, NULL, 10);
