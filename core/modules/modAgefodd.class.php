@@ -664,14 +664,14 @@ class modAgefodd extends DolibarrModules
 								$sql="SHOW COLUMNS FROM llx_agefodd_session_calendrier FROM dolibarrDev where Field = 'heured' and Type='datetime'";
 								$resql=$this->db->query($sql);
 								if ($resql) {
-									if ($this->db->num_rows($resql)==0) {
+									if ($this->db->num_rows($resql)==1) {
 										$dorun=false;
 									}
 								}
 								else
 								{
 									$this->error="Error ".$this->db->lasterror();
-									dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+									dol_syslog(get_class($this)."::updatefile ".$this->error, LOG_ERR);
 									$error ++;
 								}
 							}

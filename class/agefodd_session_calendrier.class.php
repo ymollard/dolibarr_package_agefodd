@@ -419,7 +419,7 @@ class Agefodd_sesscalendar
      	$error = 0;
 
      	dol_include_once('/comm/action/class/actioncomm.class.php');
-     	dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+     	dol_include_once('/agefodd/class/agefodd_session.class.php');
 
      	$action = new ActionComm($this->db);
      	$session = new Agefodd_session($this->db);
@@ -465,7 +465,7 @@ class Agefodd_sesscalendar
      	$error = 0;
 
      	dol_include_once('/comm/action/class/actioncomm.class.php');
-     	dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+     	dol_include_once('/agefodd/class/agefodd_session.class.php');
 
      	$action = new ActionComm($this->db);
      	$session = new Agefodd_session($this->db);

@@ -74,7 +74,7 @@ class Agefodd_session_formateur
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->sessid.'", ';
 		$sql.= '"'.$this->formid.'", ';
-		$sql.= '"'.$user.'", ';
+		$sql.= '"'.$user->id.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -228,7 +228,7 @@ class Agefodd_session_formateur
      *      \param      notrigger	0=launch triggers after, 1=disable triggers
      *      \return     int         	<0 if KO, >0 if OK
      */
-    function update($user=0, $notrigger=0)
+    function update($user, $notrigger=0)
     {
 	global $conf, $langs;
 	$error=0;
@@ -244,7 +244,7 @@ class Agefodd_session_formateur
         // Update request
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur as sf SET";
 	$sql.= " sf.fk_agefodd_formateur='".$this->formid."',";
-	$sql.= " sf.fk_user_mod='".$user."'";
+	$sql.= " sf.fk_user_mod='".$user->id."'";
         $sql.= " WHERE sf.rowid = ".$this->opsid;
 
 	$this->db->begin();

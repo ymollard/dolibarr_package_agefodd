@@ -30,8 +30,8 @@ ini_set('html_errors', false);
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
-dol_include_once('/agefodd/site/class/agefodd_reginterieur.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 // Security check
@@ -59,7 +59,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 			$agf_place=new Agefodd_place($db);
 			$result_place = $agf_place->fetch($id);
 			$agf_place->fk_reg_interieur='';
-			$result = $agf_place->update($user->id);
+			$result = $agf_place->update($user);
 			
 			if ($result > 0) {
 				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
@@ -139,7 +139,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf_place=new Agefodd_place($db);
 			$result_place = $agf_place->fetch($id);
 			$agf_place->fk_reg_interieur=$result;
-			$result = $agf_place->update($user->id);
+			$result = $agf_place->update($user);
 			
 			if ($result > 0) {
 				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);

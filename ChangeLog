@@ -111,11 +111,10 @@ For all :
 - Add : PDF Réglement intérieur
 - Add : Manage internal rule for location
 - Add : Add technical spec into module folder
-- Add Agenda Dolibarr management
+- Add : Agenda Dolibarr management
 - Remove : BPF document because do not exists yet
 - Fix : On update convention art. 5 is no more replace with art. 4
 - Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
-<<<<<<< HEAD
 - Merge Branch from jf-Ferry : Type of session (intra-inter entreprise), session nb place, session color
 For dev :
 - Fix: Use __construct() for all class
@@ -127,4 +126,9 @@ For all :
 - Add : type attribut on training sessions
 - Add : fields on training session 
 - Add : allow to choice a color for the session
-
+- Fix : On archive session with option "Affiche dans la liste des contacts (création de session) les contacts Dolibarr (plutot que les correspondant Agefodd)"
+to yes, the contact client do not change anymore
+- Fix : On desativation and reactivation of the module, only good upgrade script are launch.
+For dev : 
+ - always pass in paramters of method create, update, and so on, the $user object rather tahn $user->id
+  - move all calss to class directory

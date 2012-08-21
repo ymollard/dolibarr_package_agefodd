@@ -99,7 +99,7 @@ class InterfaceAgefodd
 	function run_trigger($action,$object,$user,$langs,$conf)
     {
     	dol_include_once('/comm/action/class/actioncomm.class.php');
-    	dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
+    	dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
         // Put here code you want to execute when a Dolibarr business events occurs.
         // Data and type of action are stored into $object and $action
     	
