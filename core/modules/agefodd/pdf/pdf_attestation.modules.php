@@ -25,8 +25,8 @@
 	\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
 
@@ -36,9 +36,10 @@ class pdf_attestation extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
-	protected $color1 = array('190','190','190');	// gris clair
-	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	// gris clair
+	protected $color1 = array('190','190','190');
+	// marron/orangé
+	protected $color2 = array('203', '70', '25');
 
 
 	/**
@@ -93,7 +94,7 @@ class pdf_attestation extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db);
+			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
 		}
 
@@ -137,7 +138,7 @@ class pdf_attestation extends ModelePDFAgefodd
 			$result = $agf_duree->fetch($agf->id);
 
 			// Recuperation des stagiaires participant à la formation
-			$agf2 = new Agefodd_session($this->db);
+			$agf2 = new Agsession($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 
 			if ($result)
@@ -153,7 +154,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetTextColor(0,0,0);
 
 					// On met en place le cadre
-					$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+					$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
 					$ep_line1 = 1;
 					$pdf->SetLineWidth($ep_line1);
 					// Haut
@@ -208,9 +209,9 @@ class pdf_attestation extends ModelePDFAgefodd
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->debut_cell , $newY);
 					$pdf->Cell($this->width1, 0, $this->str1, 0, 0, 'C', 0);
-					$pdf->SetXY ($pdf->GetX() , $newY-1.5);
+
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 16);
-					$pdf->Cell($this->width2, -3, $this->str2, 0, 0, 'C', 0);
+					$pdf->Cell($this->width2, -1, $this->str2, 0, 0, 'C', 0);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$newY = $newY + 6;
@@ -296,7 +297,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 
 					//print
-					//$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
+					$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
 
 
 				}

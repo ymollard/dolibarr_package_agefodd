@@ -24,12 +24,12 @@
 	\version	$Id$
 */
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/core/lib/company.lib.php');
@@ -41,9 +41,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $color1 = array('190','190','190');	// gris clair
-	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
-
+	protected $color2 = array('203', '70', '25');	// marron/orangé
 
 	/**
 	 *	\brief		Constructor
@@ -101,7 +99,7 @@ class pdf_convention extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db,"",$id);
+			$agf = new Agsession($this->db,"",$id);
 			$ret = $agf->fetch($id);
 		}
 
@@ -179,14 +177,7 @@ class pdf_convention extends ModelePDFAgefodd
 					if (is_readable($logo))
 					{
 						$heightLogo=pdf_getHeightForLogo($logo);
-						include_once(DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php');
-						$tmp=dol_getImageSize($logo);
-						if ($tmp['width'])
-						{
-							$widthLogo = $tmp['width'];
-						}
-						$marge_logo =  (($widthLogo*25.4)/72);
-						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+						$pdf->Image($logo, $this->marge_gauche, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
 					{
@@ -202,9 +193,9 @@ class pdf_convention extends ModelePDFAgefodd
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 
-				//$posX += $this->page_largeur - $this->marge_droite - 65;
+				$posX += $this->page_largeur - $this->marge_droite - 65;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
@@ -214,38 +205,16 @@ class pdf_convention extends ModelePDFAgefodd
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
 				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
 				$this->str.= ' - FRANCE'."\n";
-				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."";
-				if($conf->global->MAIN_INFO_SOCIETE_FAX)
-					$this->str.= '- fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
-				else
-					$this->str.= "\n";
-				//$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
+				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."\n";
+				$this->str.= 'fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
+				$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
 				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
-
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$posY += $hauteur + 2;
 
-				// Plateau technique
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, 'Centre et plateau technique',0,0,'L');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = "3 rue Jean Marie David\n";
-				$this->str.= '35740 PACE RENNES';
-				$this->str.= ' - FRANCE'."\n";
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 5;
-
-				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 
@@ -265,7 +234,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				//TItre page de garde
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',25);
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
+				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 120);
 				$pdf->Cell(0, 5, "Convention de formation",0,0,'C');
 
@@ -700,7 +669,7 @@ class pdf_convention extends ModelePDFAgefodd
 	{
 		global $conf,$langs;
 
-		$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;

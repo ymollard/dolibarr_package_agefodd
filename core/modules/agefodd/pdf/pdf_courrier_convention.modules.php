@@ -32,7 +32,7 @@ $posY = 110;
  */
 
 // Recuperation des dates de formation
-$agf = new Agefodd_session($this->db);
+$agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
 if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
 else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
@@ -59,7 +59,7 @@ $pdf->Cell(30, 5, $outputlangs->convToOutputCharset("Pièces jointes :"),0,0,"R"
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 $this->str = 'Convention de formation (x2)';
-$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,"L");
+$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str));
 $posY += 16;
 
 

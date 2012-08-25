@@ -25,13 +25,13 @@
 */
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/trainer/class/agefodd_place.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/company.lib.php');
@@ -43,9 +43,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
-	protected $color1 = array('190','190','190');	// gris clair
-	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	// gris clair
+	protected $color1 = array('190','190','190');
+	// marron/orangé
+	protected $color2 = array('203', '70', '25');
 
 	/**
 	 *	\brief		Constructor
@@ -63,15 +64,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
 		$formatarray=pdf_getFormat();
-		$this->page_largeur = $formatarray['width']; // use standard but reverse width and height to get Landscape format
-		$this->page_hauteur = $formatarray['height']; // use standard but reverse width and height to get Landscape format
+		$this->page_largeur = $formatarray['height']; // use standard but reverse width and height to get Landscape format
+		$this->page_hauteur = $formatarray['width']; // use standard but reverse width and height to get Landscape format
 		$this->format = array($this->page_largeur,$this->page_hauteur);
-		$this->marge_gauche=10;
-		$this->marge_droite=10;
+		$this->marge_gauche=15;
+		$this->marge_droite=15;
 		$this->marge_haute=10;
 		$this->marge_basse=10;
 		$this->unit='mm';
-		$this->oriantation='P';
+		$this->oriantation='l';// use Landscape format
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
@@ -101,7 +102,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db);
+			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
 		}
 
@@ -132,7 +133,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$pagenb=0;
 
 			$pdf->SetDrawColor(128,128,128);
-			$pdf->SetTitle($outputlangs->convToOutputCharset("Feuille de présence ".$agf->ref));
+			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
 			$pdf->SetCreator("Dolibarr ".DOL_VERSION.' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
@@ -207,14 +208,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			if (is_readable($logo))
 			{
 				$heightLogo=pdf_getHeightForLogo($logo);
-						include_once(DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php');
-						$tmp=dol_getImageSize($logo);
-						if ($tmp['width'])
-						{
-							$widthLogo = $tmp['width'];
-						}
-						$marge_logo =  (($widthLogo*25.4)/72);
-						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+				$pdf->Image($logo, $this->marge_gauche, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 			}
 			else
 			{
@@ -230,53 +224,36 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 
-		//$posX += $this->page_largeur - $this->marge_droite - 65;
+		$posX += $this->page_largeur - $this->marge_droite - 65;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+		$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+		$pdf->SetXY($posX, $posY -1);
+		$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
-				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-				$this->str.= ' - FRANCE'."\n";
-				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."";
-				if($conf->global->MAIN_INFO_SOCIETE_FAX)
-					$this->str.= '- fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
-				else
-					$this->str.= "\n";
-				//$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
-				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
+		$pdf->SetXY($posX, $posY +3);
+		$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
+		$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
+		$this->str.= ' - FRANCE'."\n";
+		$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."\n";
+		$this->str.= 'fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
+		$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
+		$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
+		$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+		$hauteur = dol_nboflines_bis($this->str,50)*4;
+		$posY += $hauteur + 2;
 
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2;
+		//$pdf->SetXY($posX , $posY + 9);
 
-				// Plateau technique
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, 'Centre et plateau technique',0,0,'L');
+		//$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'R');
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = "3 rue Jean Marie David\n";
-				$this->str.= '35740 PACE RENNES';
-				$this->str.= ' - FRANCE'."\n";
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+		$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
+		$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 5;
 
-				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-
-				// Mise en page de la baseline
+		// Mise en page de la baseline
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
 		$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
 		$this->width = $pdf->GetStringWidth($this->str);
@@ -331,8 +308,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$posY+= 2;
 
 		$larg_col1 = 20;
-		$larg_col2 = 90;
-		$larg_col3 = 30;
+		$larg_col2 = 130;
+		$larg_col3 = 35;
 		$larg_col4 = 82;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
@@ -376,8 +353,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->str = $agf_place->ref_interne."\n". $agf_place->adresse."\n".$agf_place->cp." ".$agf_place->ville;
 		$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
-		$posY += $hauteur+5;
-		$haut_col4 += $hauteur +7;
+		$posY += $hauteur;
+		$haut_col4 += $hauteur + 2;
 
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
@@ -396,9 +373,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$h_ligne = 6;
 
 		$larg_col1 = 10;
-		$larg_col2 = 30;
+		$larg_col2 = 70;
 		$larg_col3 = 120;
-		$larg_col4 = 60;
+		$larg_col4 = 62;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
 
@@ -408,12 +385,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		for ($i=0; $i < $nbform; $i++)
 		{
 		// Nom
-			//$pdf->SetXY($posX, $posY);
-			//$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			//$this->str = "Nom :";
-			//$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
 			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			$this->str = "Nom :";
+			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
+
+			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			//$this->str = $agf->teachername;
 			$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);;
@@ -454,8 +431,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$cadre_tableau=array($posX -2 , $posY );
 
 
-		$larg_col1 = 40;
-		$larg_col2 = 40;
+		$larg_col1 = 50;
+		$larg_col2 = 45;
 		$larg_col3 = 50;
 		$larg_col4 = 112;
 		$haut_col2 = 0;
@@ -492,7 +469,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($agf->id);
 		//count($agf_date->line)
-		$largeur_date = 16;
+		$largeur_date = 17;
 		for ($y = 0; $y < 10; $y++)	{
 			// Jour
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( 20 * $y), $posY);
@@ -542,7 +519,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$limitsta=$nbsta;
 		}
 
-		for ($y = intval($blocsta*10); $y <= $limitsta+15; $y++)
+		for ($y = intval($blocsta*10); $y <= $limitsta; $y++)
 		{
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
@@ -559,7 +536,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->str = dol_trunc($agf->line[$y]->socname, 27);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
 
-			for ($i = 0; $i < 5; $i++)
+			for ($i = 0; $i < 10; $i++)
 			{
 				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 			}
@@ -568,7 +545,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Cachet et signature
 		$posY += 2;
-		$posX -=2;
 		$pdf->SetXY($posX, $posY);
 		$this->str = "Fait pour valoir ce que de droit";
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
@@ -577,7 +553,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->str = "date :";
 		$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
-		$pdf->SetXY($posX + 92, $posY);
+		$pdf->SetXY($posX + 110, $posY);
 		$this->str = "cachet de l'organisme de formation et signature de son représentant :";
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
