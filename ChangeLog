@@ -129,6 +129,7 @@ For all :
 - Fix : On archive session with option "Affiche dans la liste des contacts (création de session) les contacts Dolibarr (plutot que les correspondant Agefodd)"
 to yes, the contact client do not change anymore
 - Fix : On desativation and reactivation of the module, only good upgrade script are launch.
+- Add : Add field goal/but in training card and in PDF fiche Pedago
 For dev : 
  - always pass in paramters of method create, update, and so on, the $user object rather tahn $user->id
-  - move all calss to class directory
+  - move all class to class directory
