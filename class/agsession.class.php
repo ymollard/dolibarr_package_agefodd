@@ -20,7 +20,7 @@
  */
 
 /**
- *	\file		/agefodd/session/agefodd_session.class.php
+ *	\file		/agefodd/session/agsession.class.php
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -37,7 +37,7 @@ class Agsession extends CommonObject
 	var $db;
 	var $error;
 	var $errors=array();
-	var $element='agefodd';
+	var $element='agsession';
 	var $table_element='agefodd_session';
     var $id;
     var $fk_soc;

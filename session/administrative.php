@@ -29,7 +29,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
@@ -223,7 +223,7 @@ if ($user->rights->agefodd->creer)
 	if ($id)
 	{		
 		// Affichage en mode "consultation"
-		$agf_session = new Agefodd_session($db);
+		$agf_session = new Agsession($db);
 		$res = $agf_session->fetch($id);
 
 		$head = session_prepare_head($agf_session);
