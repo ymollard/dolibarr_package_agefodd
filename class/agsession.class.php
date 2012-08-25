@@ -32,7 +32,7 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_session extends CommonObject
+class Agsession extends CommonObject
 {
 	var $db;
 	var $error;
@@ -677,15 +677,21 @@ class Agefodd_session extends CommonObject
 
 
 		//Create or update line in session commercial table and get line number
-		$result = $this->setCommercialSession($this->commercialid,$user);
-		if ($result==-1) {
-			$error++; $this->errors[]="Error ".$this->db->lasterror();
+		if (!empty($this->commercialid))
+		{
+			$result = $this->setCommercialSession($this->commercialid,$user);
+			if ($result==-1) {
+				$error++; $this->errors[]="Error ".$this->db->lasterror();
+			}
 		}
 
 		//Create or update line in session contact table and get line number
-		$result = $this->setContactSession($this->contactid,$user);
-		if ($result <= 0){
-			$error++; $this->errors[]="Error ".$this->db->lasterror();
+		if (!empty($this->contactid))
+		{
+			$result = $this->setContactSession($this->contactid,$user);
+			if ($result <= 0){
+				$error++; $this->errors[]="Error ".$this->db->lasterror();
+			}
 		}
 
 		if ($error==0)
@@ -909,7 +915,6 @@ class Agefodd_session extends CommonObject
 
     	if (empty($contactid) || $contactid==-1)
     	{
-    		dol_syslog(get_class($this)."::setContactSession contactid=".$contactid, LOG_DEBUG);
     		$to_delete=true;
     	}
     	else {
@@ -941,14 +946,13 @@ class Agefodd_session extends CommonObject
 						}
 						else
 						{
-							dol_syslog(get_class($this)."::setContactSession Error agefodd_contact".$contactAgefodd->error, LOG_ERR);
-							$this->db->free($resql);
+							dol_syslog(get_class($this)."::setContactSession ".$contactAgefodd->error, LOG_ERR);
     						return -1;
 						}
     				}
     			}
     			else {
-    				dol_syslog(get_class($this)."::setContactSession Error AGF_CONTACT_DOL_SESSION:".$this->db->lasterror(), LOG_ERR);
+    				dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
     				return -1;
     			}
     		}
@@ -980,13 +984,11 @@ class Agefodd_session extends CommonObject
     			$this->db->free($resql);
     		}
     		else {
-    			dol_syslog(get_class($this)."::setContactSession Error:".$this->db->lasterror(), LOG_ERR);
+    			dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
     			return -1;
     		}
     	}
-		
-    	dol_syslog(get_class($this)."::setContactSession to_update:".$to_update.", to_create:".$to_create.", to_delete:".$to_delete, LOG_DEBUG);
-    	
+
     	if ($to_update) {
 
     		// Update request
@@ -1053,10 +1055,6 @@ class Agefodd_session extends CommonObject
     	elseif ($to_create || $to_update || $to_delete)
     	{
     		$this->db->commit();
-    		return 1;
-    	}
-    	else
-    	{
     		return 1;
     	}
     }
@@ -1424,6 +1422,35 @@ class Agefodd_session extends CommonObject
 	function loadArrayTypeSession()
 	{
 		return $this->type_session_def;
+	}
+
+	/**
+	 *	Return clicable link of object (with eventually picto)
+	 *
+	 *	@param		int		$withpicto		Add picto into link
+	 *	@param		string	$option			Where point the link
+	 *	@param		int		$maxlength		Maxlength of ref
+	 *	@return		string					String with URL
+	 */
+	function getNomUrl($withpicto=0,$option='',$maxlength=0)
+	{
+		global $langs;
+
+		$result='';
+
+		if (!$option)
+		{
+			$lien = '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$this->id.'">';
+			$lienfin='</a>';
+		}
+		$newref=$this->formintitule;
+		if ($maxlength) $newref=dol_trunc($newref,$maxlength,'middle');
+
+		if ($withpicto) {
+			$result.=($lien.img_object($langs->trans("ShowSession").' '.$this->ref,'agefodd@agefodd').$lienfin.' ');
+		}
+		$result.=$lien.$newref.$lienfin;
+		return $result;
 	}
 }
 

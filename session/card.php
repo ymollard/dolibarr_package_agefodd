@@ -28,7 +28,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
@@ -54,7 +54,7 @@ $arch=GETPOST('arch','int');
 
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$result = $agf->remove($id);
 
 	if ($result > 0)
@@ -101,7 +101,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($confirm == "yes")
 	{
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$result = $agf->fetch($id);
 		$agf->archive = $_GET["arch"];
@@ -142,7 +142,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 	{
 		$error=0;
 
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$fk_session_place = GETPOST('place','int');
 		if (($fk_session_place==-1) || (empty($fk_session_place)))
@@ -376,7 +376,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 	$error=0;
 	if (! $_POST["cancel"])
 	{
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$fk_session_place = GETPOST('place','int');
 		if (($fk_session_place==-1) || (empty($fk_session_place)))
@@ -581,7 +581,7 @@ else
 	// Affichage de la fiche "session"
 	if ($id)
 	{
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 		$result = $agf->fetch($id);
 
 		if ($result)
@@ -1085,7 +1085,7 @@ else
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 
-					$stagiaires = new Agefodd_session($db);
+					$stagiaires = new Agsession($db);
 					$stagiaires->fetch_stagiaire_per_session($agf->id);
 					$nbstag = count($stagiaires->line);
 					print '<tr><td  width="20%" valign="top" ';

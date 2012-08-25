@@ -26,7 +26,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
@@ -126,7 +126,7 @@ dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$result = $agf->fetch($id);
 
 	$head = session_prepare_head($agf);

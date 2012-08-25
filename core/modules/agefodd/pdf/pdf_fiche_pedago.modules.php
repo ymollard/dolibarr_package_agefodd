@@ -24,7 +24,7 @@
 	\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_contact.class.php');
 dol_include_once('/core/lib/company.lib.php');
@@ -96,7 +96,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			//$agf_session = new Agefodd_session($this->db);
+			//$agf_session = new Agsession($this->db);
 			//$ret = $agf_session->fetch($id);
 			//if ($ret)
 			//{

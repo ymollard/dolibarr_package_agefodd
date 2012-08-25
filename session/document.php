@@ -26,7 +26,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
 dol_include_once('/agefodd/class/agefodd_convention.class.php');
@@ -176,7 +176,7 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 // Selection du bon de commande ou de la facture à lier
 if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$agf->fetch($id);
 
 	$head = session_prepare_head($agf);
@@ -246,7 +246,7 @@ dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$agf->fetch($id);
 
 	$result = $agf->fetch_societe_per_session($id);

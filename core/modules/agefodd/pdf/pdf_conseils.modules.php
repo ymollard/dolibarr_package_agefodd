@@ -24,7 +24,7 @@
 	\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_contact.class.php');
 dol_include_once('/agefodd/class/agefodd_place.class.php');
@@ -36,7 +36,7 @@ dol_include_once('/core/lib/pdf.lib.php');
 class pdf_conseils extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
-	
+
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	// gris clair
 	protected $color1 = array('190','190','190');
@@ -50,9 +50,9 @@ class pdf_conseils extends ModelePDFAgefodd
 	function pdf_conseils($db)
 	{
 		global $conf,$langs,$mysoc;
-		
+
 		$langs->load("agefodd@agefodd");
-		
+
 		$this->db = $db;
 		$this->name = 'conseil';
 		$this->description = $langs->trans('AgfModPDFConseil');
@@ -72,14 +72,14 @@ class pdf_conseils extends ModelePDFAgefodd
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
-		
+
 	}
-	
-	
+
+
 	/**
 	 *	\brief      	Fonction generant le document sur le disque
 	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
@@ -90,24 +90,24 @@ class pdf_conseils extends ModelePDFAgefodd
 	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
 		global $user,$langs,$conf;
-		
+
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
-	
+
 		if (! is_object($outputlangs)) $outputlangs=$langs;
-		
+
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf_session = new Agefodd_session($this->db);
+			$agf_session = new Agsession($this->db);
 			$ret = $agf_session->fetch($id);
 			if ($ret)
 			{
 				$agf= new Agefodd($this->db);
 				$agf->fetch($agf_session->formid);
-				
+
 				$agf_place = new Agefodd_place($this->db);
 				$agf_place->fetch($agf_session->placeid);
-				
+
 				$agf_regint = new Agefodd_reg_interieur($this->db);
 				$agf_regint->fetch($agf_place->fk_reg_interieur);
 			}
@@ -128,18 +128,18 @@ class pdf_conseils extends ModelePDFAgefodd
 
 		if (file_exists($dir))
 		{
-		
+
 			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
-			
+
 			if (class_exists('TCPDF'))
 			{
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
-			
+
 			$pdf->Open();
 			$pagenb=0;
-			
+
 			$pdf->SetDrawColor(128,128,128);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
 			$pdf->SetSubject($outputlangs->transnoentities("Conseils"));
@@ -150,7 +150,7 @@ class pdf_conseils extends ModelePDFAgefodd
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right
 			$pdf->SetAutoPageBreak(1,0);
-			
+
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
@@ -164,14 +164,14 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0,0,0);
-				
+
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
-				
+
 				/*
 				 * Header société
 				 */
-				
+
 				// Logo en haut à gauche
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 				if ($this->emetteur->logo)
@@ -196,14 +196,14 @@ class pdf_conseils extends ModelePDFAgefodd
 					$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
 					$pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
-				
+
 				$posX += $this->page_largeur - $this->marge_droite - 65;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 				$pdf->SetXY($posX, $posY +3);
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
@@ -214,26 +214,26 @@ class pdf_conseils extends ModelePDFAgefodd
 				$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
 				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
+
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2; 
-				
+				$posY += $hauteur + 2;
+
 				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				
+
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
 				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
 				$this->width = $pdf->GetStringWidth($this->str);
-				
+
 				// alignement du bord droit du container avec le haut de la page
-				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width; 
+				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 				$baseline_angle = (M_PI/2); //angle droit
 				$baseline_x = 8;
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
 				$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
-				$pdf->SetXY($baseline_x, $baseline_y);				
+				$pdf->SetXY($baseline_x, $baseline_y);
 
 				/*
 				 * Corps de page
@@ -241,7 +241,7 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				$posX = $this->marge_gauche;
 				$posY += 5;
-				
+
 				/***** Titre *****/
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
@@ -253,9 +253,9 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor(0,0,0);
 				$this->str = $agf->intitule;
-				
+
 				$hauteur=dol_nboflines_bis($this->str,50)*4;
-				
+
 				// cadre
 				$pdf->SetFillColor(255);
 				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur+3);
@@ -265,121 +265,121 @@ class pdf_conseils extends ModelePDFAgefodd
 				$posY = $pdf->GetY() + 10;
 
 				/***** Doucment required *****/
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->trans("AgfDocNeeded");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf->note1);
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				/***** Equipement required *****/
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->trans("AgfEquiNeeded");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf->note2);
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
 
-				
+
 				/***** Site *****/
-				
-				
+
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->trans("AgfLieu");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_session->placecode);
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
+
 				$posY = $pdf->GetY() + 2;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = $agf_place->adresse.' - '.$agf_place->cp.' '.$agf_place->ville; 
-				
+				$this->str = $agf_place->adresse.' - '.$agf_place->cp.' '.$agf_place->ville;
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
 
 				/***** Acces au sites *****/
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfAccesSite");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_place->acces_site);
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				/***** Réglement intérieur *****/
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfRegInt");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_regint->reg_int);
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				/***** Divers *****/
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfPlaceNote1");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_place->note1);
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
 				$pdf->AliasNbPages();
-				
+
 				// Repere de pliage
 				$pdf->SetDrawColor(220,220,220);
 				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
-		
+
 			}
-			
+
 			$pdf->Close();
-			
+
 			$pdf->Output($file,'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
-			
+
 			return 1;   // Pas d'erreur
 		}
 		else
@@ -422,14 +422,14 @@ class pdf_conseils extends ModelePDFAgefodd
 
 		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
-		
+
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-		
-		
+
+
 		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
 		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
