@@ -1364,11 +1364,7 @@ class Agefodd_session extends CommonObject
 		print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 		print '<td>'.$this->formref.'</td></tr>';
 
-		// TODO : type de la session
-		print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
-		print '<td>'.( $this->type_session?$langs->trans('AgfFormTypeSessionInter'):$langs->trans('AgfFormTypeSessionIntra') ).'</td></tr>';
-
-		// TODO : type de la session
+		// Type de la session
 		print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
 		print '<td>'.( $this->type_session?$langs->trans('AgfFormTypeSessionInter'):$langs->trans('AgfFormTypeSessionIntra') ).'</td></tr>';
 
