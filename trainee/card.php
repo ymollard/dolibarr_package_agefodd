@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/trainee/class/agefodd_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/contact/class/contact.class.php');
@@ -85,7 +85,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->mail = GETPOST('mail','alpha');
 		$agf->note = GETPOST('note','alpha');
 		$agf->fk_socpeople = GETPOST('fk_socpeople','int');
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -126,7 +126,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->tel2 = GETPOST('tel2','alpha');
 		$agf->mail = GETPOST('mail','alpha');
 		$agf->note = GETPOST('note','alpha');
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
@@ -171,7 +171,7 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 		$agf->note = $contact->note;
 		$agf->fk_socpeople = $contact->id;
 
-		$result2 = $agf->create($user->id);
+		$result2 = $agf->create($user);
 
 		if ($result2 > 0)
 		{

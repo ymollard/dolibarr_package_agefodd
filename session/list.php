@@ -27,9 +27,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -86,12 +86,12 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter
 if ($resql != -1)
 {
 	$num = $resql;
-	
+
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
 	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_trainning_ref='.$search_trainning_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site, $sortfield, $sortorder,'', $num);
-	
+
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
@@ -104,11 +104,11 @@ if ($resql != -1)
 	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"p.ref_interne","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"num",'' ,$arg_url,'',$sortfield,$sortorder);
 	print "</tr>\n";
-	
-	
+
+
 	//Search bar
 	$url_form=$_SERVER["PHP_SELF"];
-	$addcriteria=false; 
+	$addcriteria=false;
 	if (!empty($sortorder)){
 		$url_form.='?sortorder='.$sortorder;
 		$addcriteria=true;
@@ -130,57 +130,60 @@ if ($resql != -1)
 	}
 
 	print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
+	print '<input type="hidden" name="arch" value="'.$arch.'" >';
 	print '<tr class="liste_titre">';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_name" value="'.$search_trainning_name.'" size="20">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_ref" value="'.$search_trainning_ref.'" size="20">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $form->select_date($search_start_date,'search_start_date',0,0,1,'search_form');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $form->select_date($search_end_date,'search_end_date',0,0,1,'search_form');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_site_forma($search_site,'search_site',1);
-	print '</td>';	
-	
+	print '</td>';
+
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/search.png" value="'.dol_escape_htmltag($langs->trans("Search")).'" title="'.dol_escape_htmltag($langs->trans("Search")).'">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/searchclear.png" value="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'" title="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'">';
 	print '</td>';
-	
+
 	print "</tr>\n";
 	print '</form>';
-	
+
 	$var=true;
 	foreach ($agf->line as $line)
 	{
-		
+
 		// Affichage tableau des sessions
 		$var=!$var;
 		print "<tr $bc[$var]>";
-		print '<td><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
+		print '<td  style="background: #'.$line->color.'"><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
 		print '<td>'.stripslashes(dol_trunc($line->intitule, 60)).'</td>';
 		print '<td>'.$line->ref.'</td>';
 		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
 		print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
 		print '<td>'.stripslashes($line->ref_interne).'</td>';
-		print '<td>'.$line->num.'</td>';
+		print '<td>';
+		print $line->force_nb_stagiaire?$line->nb_stagiaire:$line->num;
+		print '</td>';
 		print "</tr>\n";
-		
+
 		$i++;
 	}
-	
+
 	print "</table>";
 }
 else

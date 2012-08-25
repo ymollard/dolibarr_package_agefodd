@@ -59,13 +59,17 @@ example for a Windows system: C:/My Web Sites/Dolibarr/htdocs/custom
   users.
 
 
-II - WHAT'S NEW ?
+II - UPGRADE AGEFODD
+----------------------
+Desactivate the module and activiate again
+
+III - WHAT'S NEW ?
 ------------------------
 
 Check  ChangeLog file .
 
 
-III - WHAT AGEFODD CAN DO ?
+IV - WHAT AGEFODD CAN DO ?
 -------------------------------
 
 - manage training dictionnary,
@@ -78,11 +82,10 @@ III - WHAT AGEFODD CAN DO ?
 - instant display of trainings statistics .
 
 
-IV - WISH LIST OF AGEFODD FEATURES (TODO)
+V - WISH LIST OF AGEFODD FEATURES (TODO)
 ------------------------------------------------------
 
 Wishlist of Agefodd features:
-- Facilities management (room and material booking).
 - Multi training centers management.
 - Long duration trainings' support.
 - Make the break, Agefodd can not cook cofee ( like Dolibarr  too).

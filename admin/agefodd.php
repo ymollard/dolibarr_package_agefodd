@@ -28,9 +28,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
 
@@ -110,7 +110,18 @@ if ($action == 'setvar')
 	if (! $res > 0) $error++;
 	
 	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $usesearch_contact,'chaine',0,'',$conf->entity);
+	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
+	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
+		$msg=$langs->trans("AgfAgendaModuleNedeed");
+		$error++;
+	}
+	else {
+		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda,'chaine',0,'',$conf->entity);
+	}
+	
 	if (! $res > 0) $error++;
 	
 	if (! $error)
@@ -119,7 +130,7 @@ if ($action == 'setvar')
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+		$mesg = "<font class=\"error\">".$langs->trans("Error")." ".$msg."</font>";
 	}
 }
 
@@ -172,7 +183,7 @@ if ($action == 'sessionlevel_create')
 	}
 	else
 	{
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 		
 		if ($result1!=1)
 		{
@@ -199,7 +210,7 @@ if ($action == 'sessionlevel_update')
 		//Up level of action
 		if (GETPOST('sesslevel_up_x'))
 		{
-			$result2 = $agf->shift_indice($user->id,'less');
+			$result2 = $agf->shift_indice($user,'less');
 			if ($result1!=1)
 			{
 				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -210,7 +221,7 @@ if ($action == 'sessionlevel_update')
 		//Down level of action
 		if (GETPOST('sesslevel_down_x'))
 		{
-			$result1 = $agf->shift_indice($user->id,'more');
+			$result1 = $agf->shift_indice($user,'more');
 			if ($result1!=1)
 			{
 				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -267,7 +278,7 @@ if ($action == 'sessionlevel_update')
 			}
 			else
 			{
-				$result1 = $agf->update($user->id);
+				$result1 = $agf->update($user);
 				if ($result1!=1)
 				{
 					dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -280,7 +291,7 @@ if ($action == 'sessionlevel_update')
 		if (GETPOST('sesslevel_remove_x'))
 		{
 			
-			$result = $agf->delete($user->id);
+			$result = $agf->delete($user);
 			if ($result!=1)
 			{
 				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -588,6 +599,16 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
 	print '<td>&nbsp;</td>';
 	print '</tr>';
 }
+
+//Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
+print '<tr class="pair"><td>'.$langs->trans("AgfAgendaModuleUse").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_DOL_AGENDA",$arrval,$conf->global->AGF_DOL_AGENDA);
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
 
 // utilisation formulaire Ajax sur choix site
 print '<tr class="impair">';
