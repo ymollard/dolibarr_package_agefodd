@@ -59,14 +59,17 @@ par exemple pour un systéme Windows: C:/My web sites/Dolibarr/htdocs/custom
   agefodd. Pensez à modifier ces droits au regard des priviléges réels de vos
   utilisateurs.
 
+II - MISE A NIVEAU
+------------------------
+Désactiver le module Agefodd et le réactiver
 
-II - CE QUI EST NOUVEAU
+III - CE QUI EST NOUVEAU
 ------------------------
 
 Voir fichier ChangeLog.
 
 
-III - CE QU'AGEFODD PEUT FAIRE
+IV - CE QU'AGEFODD PEUT FAIRE
 -------------------------------
 
 - gérer un catalogue de formation,
@@ -82,7 +85,7 @@ III - CE QU'AGEFODD PEUT FAIRE
 - afficher des statistiques sur l'état de la formation à l'instant t.
 
 
-IV - CE QU'AGEFODD NE PEUT PAS FAIRE (TACHES A FAIRE)
+V - CE QU'AGEFODD NE PEUT PAS FAIRE (TACHES A FAIRE)
 ------------------------------------------------------
 
 Voici un liste de fonctionnalites pas encore gerees par Agefodd:
@@ -91,7 +94,7 @@ Voici un liste de fonctionnalites pas encore gerees par Agefodd:
 - Agefodd ne gére pas les formations longues.
 - Agefodd ne fait pas le cafe (comme Dolibarr d'ailleurs).
 
-V - Contact developpeur
+VI - Contact developpeur
 -----------------------
 Le projet est héberger sur Doliforge 
 	https://doliforge.org/projects/agefodd/

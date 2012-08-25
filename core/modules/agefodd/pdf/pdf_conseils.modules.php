@@ -24,10 +24,11 @@
 	\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
 
@@ -106,6 +107,9 @@ class pdf_conseils extends ModelePDFAgefodd
 				
 				$agf_place = new Agefodd_place($this->db);
 				$agf_place->fetch($agf_session->placeid);
+				
+				$agf_regint = new Agefodd_reg_interieur($this->db);
+				$agf_regint->fetch($agf_place->fk_reg_interieur);
 			}
 		}
 
@@ -325,6 +329,21 @@ class pdf_conseils extends ModelePDFAgefodd
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($agf_place->acces_site);
+				
+				$pdf->SetXY( $posX, $posY);
+				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 8;
+				
+				/***** Réglement intérieur *****/
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
+				$pdf->SetXY($posX, $posY);
+				$this->str = $langs->transnoentities("AgfRegInt");
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
+				$posY+= 5;
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$this->str = ucfirst($agf_regint->reg_int);
 				
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');

@@ -88,7 +88,7 @@ class Agefodd extends CommonObject
 		$sql.= '"'.$this->programme.'",';
 		$sql.= '"'.$this->note1.'",';
 		$sql.= '"'.$this->note2.'",';
-		$sql.= '"'.$user.'"';
+		$sql.= '"'.$user->id.'"';
 		$sql.= ")";
 	
 		$this->db->begin();
@@ -227,7 +227,7 @@ class Agefodd extends CommonObject
 	*      \param      notrigger	    0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update($user=0, $notrigger=0)
+	function update($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -255,7 +255,7 @@ class Agefodd extends CommonObject
 		$sql.= " c.programme='".$this->programme."',";
 		$sql.= " c.note1='".$this->note1."',";
 		$sql.= " c.note2='".$this->note2."',";
-		$sql.= " c.fk_user_mod='".$user."',";
+		$sql.= " c.fk_user_mod='".$user->id."',";
 		$sql.= " c.archive=".$this->archive;
 		$sql.= " WHERE c.rowid = ".$this->id;
 		
@@ -330,7 +330,7 @@ class Agefodd extends CommonObject
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, Id of created object if OK
 	*/
-	function create_objpeda($user=0,$notrigger=0)
+	function create_objpeda($user,$notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -348,7 +348,7 @@ class Agefodd extends CommonObject
         $sql.= '"'.$this->fk_formation_catalogue.'", ';
         $sql.= '"'.$this->intitule.'", ';
         $sql.= '"'.$this->priorite.'", ';
-        $sql.= '"'.$user.'"';
+        $sql.= '"'.$user->id.'"';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -483,7 +483,7 @@ class Agefodd extends CommonObject
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update_objpeda($user=0, $notrigger=0)
+	function update_objpeda($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -498,7 +498,7 @@ class Agefodd extends CommonObject
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
 		$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
 		$sql.= " o.intitule='".$this->intitule."',";
-		$sql.= " o.fk_user_mod='".$user."',";
+		$sql.= " o.fk_user_mod='".$user->id."',";
 		$sql.= " o.priorite='".$this->priorite."'";
 		$sql.= " WHERE o.rowid = ".$this->id;
 		

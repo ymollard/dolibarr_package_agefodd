@@ -24,12 +24,12 @@
 	\version	$Id$
 */
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/core/lib/company.lib.php');

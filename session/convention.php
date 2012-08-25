@@ -28,13 +28,13 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/core/lib/company.lib.php');
 
 // Security check
@@ -85,7 +85,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		$result = $agf->fetch(0,0,$id);
 	
 		$agf->archive = $arch;
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 	
 		if ($result > 0)
 		{
@@ -149,7 +149,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
 
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -210,7 +210,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
 				
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{

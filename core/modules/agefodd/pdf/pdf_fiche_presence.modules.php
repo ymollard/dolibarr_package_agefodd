@@ -25,13 +25,13 @@
 */
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/trainer/class/agefodd_place.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/company.lib.php');

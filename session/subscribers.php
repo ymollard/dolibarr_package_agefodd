@@ -27,9 +27,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
 dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
@@ -53,7 +53,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->stagiaire = GETPOST('stagiaire','int');
 		$agf->type = GETPOST('stagiaire_type','int');
-		$result = $agf->update_stag_in_session($user->id);
+		$result = $agf->update_stag_in_session($user);
 
 		if ($result > 0)
 		{
@@ -74,7 +74,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->stagiaire = GETPOST('stagiaire','int');
 		$agf->stagiaire_type = GETPOST('stagiaire_type','int');
-		$result = $agf->create_stag_in_session($user->id);
+		$result = $agf->create_stag_in_session($user);
 
 		if ($result > 0)
 		{
@@ -154,7 +154,7 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
 
 			if ($error==0)
 			{
-				$result = $agf->update($user->id);
+				$result = $agf->update($user);
 				if ($result > 0)
 				{
 					if ($_POST['saveandclose']!='') {

@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 // Security check

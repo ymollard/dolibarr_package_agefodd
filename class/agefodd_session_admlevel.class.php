@@ -80,8 +80,6 @@ class Agefodd_session_admlevel extends CommonObject
 		if (isset($this->indice)) $this->indice=trim($this->indice);
 		if (isset($this->intitule)) $this->intitule=trim($this->intitule);
 		if (isset($this->delais_alerte)) $this->delais_alerte=trim($this->delais_alerte);
-		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
-		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
 
         // Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_admlevel(";
@@ -102,9 +100,8 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= " ".(! isset($this->indice)?'NULL':"'".$this->indice."'").",";
 		$sql.= " ".(! isset($this->intitule)?'NULL':"'".$this->db->escape($this->intitule)."'").",";
 		$sql.= " ".(! isset($this->delais_alerte)?'NULL':"'".$this->delais_alerte."'").",";
-		$sql.= " ".(! isset($this->fk_user_author)?$user:"'".$this->fk_user_author."'").",";
-		$sql.= " ".$this->db->idate(dol_now()).",";
-		$sql.= " ".(! isset($this->fk_user_mod)?$user:"'".$this->fk_user_mod."'");
+		$sql.= " ".$user->id.",";
+		$sql.= " ".$this->db->idate(dol_now());
 
 		$sql.= ")";
 
@@ -274,7 +271,7 @@ class Agefodd_session_admlevel extends CommonObject
      *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
      *  @return int     		   	 <0 if KO, >0 if OK
      */
-    function update($user=0, $notrigger=0)
+    function update($user, $notrigger=0)
     {
     	global $conf, $langs;
 		$error=0;
@@ -285,11 +282,7 @@ class Agefodd_session_admlevel extends CommonObject
 		if (isset($this->fk_parent_level)) $this->fk_parent_level=trim($this->fk_parent_level);
 		if (isset($this->indice)) $this->indice=trim($this->indice);
 		if (isset($this->intitule)) $this->intitule=trim($this->intitule);
-		if (isset($this->delais_alerte)) $this->delais_alerte=trim($this->delais_alerte);
-		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
-		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
-
-        
+		if (isset($this->delais_alerte)) $this->delais_alerte=trim($this->delais_alerte);        
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -302,11 +295,7 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= " indice=".(isset($this->indice)?$this->indice:"null").",";
 		$sql.= " intitule=".(isset($this->intitule)?"'".$this->db->escape($this->intitule)."'":"null").",";
 		$sql.= " delais_alerte=".(isset($this->delais_alerte)?$this->delais_alerte:"null").",";
-		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-		$sql.= " fk_user_mod=".(isset($this->fk_user_mod)?$this->fk_user_mod:"null").",";
-		$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null')."";
-
-        
+		$sql.= " fk_user_mod=".$user->id;
         $sql.= " WHERE rowid=".$this->id;
 
 		$this->db->begin();
@@ -425,15 +414,13 @@ class Agefodd_session_admlevel extends CommonObject
 	 *  @param  $notrigger int			 0=launch triggers after, 1=disable triggers
 	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
-	function shift_indice($user=0, $type='', $notrigger=0)
+	function shift_indice($user, $type='', $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
 		
 		// Clean parameters
 		if (isset($this->indice)) $this->indice=trim($this->indice);
-		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
-		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
 		
 		$this->db->begin();
 		
@@ -446,9 +433,8 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_admlevel SET";
 					
 				$sql.= " indice=".(isset($this->indice)?intval(intval($this->indice))+1:"null").",";
-				$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-				$sql.= " fk_user_mod=".(isset($this->fk_user_mod)?$this->fk_user_mod:"null").",";
-				$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null');
+				$sql.= " fk_user_author=".$user->id.",";
+				$sql.= " fk_user_mod=".$user->id;
 					
 				$sql.= " WHERE indice=".$this->indice;
 					
@@ -462,9 +448,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_admlevel SET";
 				
 				$sql.= " indice=".(isset($this->indice)?$this->indice:"null").",";
-				$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-				$sql.= " fk_user_mod=".(isset($this->fk_user_mod)?$this->fk_user_mod:"null").",";
-				$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null')."";
+				$sql.= " fk_user_mod=".$user->id;
 				
 				$sql.= " WHERE rowid=".$this->id;
 				
@@ -480,9 +464,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_admlevel SET';
 					
 				$sql.= ' indice=indice+10000,';
-				$sql.= ' fk_user_author='.(isset($this->fk_user_author)?$this->fk_user_author:'null').',';
-				$sql.= ' fk_user_mod='.(isset($this->fk_user_mod)?$this->fk_user_mod:'null').',';
-				$sql.= ' tms='.(dol_strlen($this->tms)!=0 ?"'".$this->db->idate($this->tms)."'": 'null');
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= ' WHERE indice>='.$this->indice.' AND indice<'.intval(intval($this->indice)+100);
 					
 				dol_syslog(get_class($this).':shift_indice:less rank is 0 sql='.$sql, LOG_DEBUG);
@@ -495,9 +477,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_admlevel SET';
 					
 				$sql.= ' indice=indice+100,';
-				$sql.= ' fk_user_author='.(isset($this->fk_user_author)?$this->fk_user_author:'null').',';
-				$sql.= ' fk_user_mod='.(isset($this->fk_user_mod)?$this->fk_user_mod:'null').',';
-				$sql.= ' tms='.(dol_strlen($this->tms)!=0 ?"'".$this->db->idate($this->tms)."'": 'null');
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= ' WHERE indice>='.intval(intval($this->indice)-100).' AND indice<'.$this->indice;
 					
 				dol_syslog(get_class($this).':shift_indice:less rank is 0 sql='.$sql, LOG_DEBUG);
@@ -510,9 +490,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_admlevel SET';
 					
 				$sql.= ' indice=indice-10100,';
-				$sql.= ' fk_user_author='.(isset($this->fk_user_author)?$this->fk_user_author:'null').',';
-				$sql.= ' fk_user_mod='.(isset($this->fk_user_mod)?$this->fk_user_mod:'null').',';
-				$sql.= ' tms='.(dol_strlen($this->tms)!=0 ?"'".$this->db->idate($this->tms)."'": 'null');
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= ' WHERE indice>='.intval(intval($this->indice)+10000).' AND indice<'.intval(intval($this->indice)+10100);
 					
 				dol_syslog(get_class($this).':shift_indice:less rank is 0 sql='.$sql, LOG_DEBUG);
@@ -532,10 +510,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_admlevel SET";
 					
 				$sql.= " indice=".(isset($this->indice)?intval(intval($this->indice)-1):"null").",";
-				$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-				$sql.= " fk_user_mod=".(isset($this->fk_user_mod)?$this->fk_user_mod:"null").",";
-				$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null')."";
-					
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= " WHERE indice=".$this->indice;
 					
 				dol_syslog(get_class($this).":shift_indice:more rank no 0 sql=".$sql, LOG_DEBUG);
@@ -548,10 +523,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_admlevel SET";
 				
 				$sql.= " indice=".(isset($this->indice)?$this->indice:"null").",";
-				$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-				$sql.= " fk_user_mod=".(isset($this->fk_user_mod)?$this->fk_user_mod:"null").",";
-				$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null')."";
-				
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= " WHERE rowid=".$this->id;
 				
 				dol_syslog(get_class($this).":shift_indice:update sql=".$sql, LOG_DEBUG);
@@ -566,9 +538,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_admlevel SET';
 					
 				$sql.= ' indice=indice+10000,';
-				$sql.= ' fk_user_author='.(isset($this->fk_user_author)?$this->fk_user_author:'null').',';
-				$sql.= ' fk_user_mod='.(isset($this->fk_user_mod)?$this->fk_user_mod:'null').',';
-				$sql.= ' tms='.(dol_strlen($this->tms)!=0 ?"'".$this->db->idate($this->tms)."'": 'null');
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= ' WHERE indice>='.$this->indice.' AND indice<'.intval(intval($this->indice)+100);
 					
 				dol_syslog(get_class($this).':shift_indice:more rank is 0 sql='.$sql, LOG_DEBUG);
@@ -581,9 +551,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_admlevel SET';
 					
 				$sql.= ' indice=indice-100,';
-				$sql.= ' fk_user_author='.(isset($this->fk_user_author)?$this->fk_user_author:'null').',';
-				$sql.= ' fk_user_mod='.(isset($this->fk_user_mod)?$this->fk_user_mod:'null').',';
-				$sql.= ' tms='.(dol_strlen($this->tms)!=0 ?"'".$this->db->idate($this->tms)."'": 'null');
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= ' WHERE indice>='.intval(intval($this->indice)+100).' AND indice<'.intval(intval($this->indice)+200);
 					
 				dol_syslog(get_class($this).':shift_indice:more rank is 0 sql='.$sql, LOG_DEBUG);
@@ -596,9 +564,7 @@ class Agefodd_session_admlevel extends CommonObject
 				$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_admlevel SET';
 					
 				$sql.= ' indice=indice-9900,';
-				$sql.= ' fk_user_author='.(isset($this->fk_user_author)?$this->fk_user_author:'null').',';
-				$sql.= ' fk_user_mod='.(isset($this->fk_user_mod)?$this->fk_user_mod:'null').',';
-				$sql.= ' tms='.(dol_strlen($this->tms)!=0 ?"'".$this->db->idate($this->tms)."'": 'null');
+				$sql.= ' fk_user_mod='.$user->id;
 				$sql.= ' WHERE indice>='.intval(intval($this->indice)+10000).' AND indice<'.intval(intval($this->indice)+10100);
 					
 				dol_syslog(get_class($this).':shift_indice:more rank is 0 sql='.$sql, LOG_DEBUG);

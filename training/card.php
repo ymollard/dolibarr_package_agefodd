@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
@@ -69,7 +69,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 	$result = $agf->fetch($id);
 
 	$agf->archive = $arch;
-	$result = $agf->update($user->id);
+	$result = $agf->update($user);
 
 	if ($result > 0)
 	{
@@ -103,7 +103,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
 		$agf->programme = GETPOST('programme');
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -143,7 +143,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
 		$agf->programme = GETPOST('programme');
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
@@ -185,7 +185,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 		$agf->fk_formation_catalogue = $idforma;
 		$agf->id = $id;
 		
-		$result = $agf->update_objpeda($user->id);
+		$result = $agf->update_objpeda($user);
 	}
 	
 	// Suppression d'un objectif pedagogique
@@ -207,7 +207,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 		$agf->priorite = GETPOST('priorite','alpha');
 		$agf->fk_formation_catalogue = $idforma;
 	    
-	    $result = $agf->create_objpeda($user->id);
+	    $result = $agf->create_objpeda($user);
 	}
 
 	if ($result > 0)

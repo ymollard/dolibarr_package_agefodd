@@ -1,1 +1,0 @@
-ALTER TABLE llx_agefodd_session ADD COLUMN type_session int NULL AFTER fk_session_place;

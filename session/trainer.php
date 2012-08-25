@@ -26,10 +26,10 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agefodd_session.class.php');
 dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
@@ -77,7 +77,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 	
 		$agf->opsid = GETPOST('opsid','int');
 		$agf->formid = GETPOST('formid','int');
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 	
 		if ($result > 0)
 		{
@@ -97,7 +97,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 	
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->formid = GETPOST('formid','int');
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 	
 		if ($result > 0)
 		{
