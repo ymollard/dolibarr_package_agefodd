@@ -32,7 +32,7 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_session extends CommonObject
+class Agsession extends CommonObject
 {
 	var $db;
 	var $error;
@@ -163,7 +163,7 @@ class Agefodd_session extends CommonObject
     				$error++; $this->errors[]="Error ".$this->db->lasterror();
     			}
     		}
-    		
+
     		//Create or update line in session contact table and get line number
     		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
     			$contactid = $this->sourcecontactid;
@@ -615,15 +615,15 @@ class Agefodd_session extends CommonObject
     {
     	global $conf, $langs;
     	$error=0;
-    	
+
     	// Update request
     	$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session SET";
     	$sql.= " fk_user_mod=".$this->db->escape($user->id).",";
     	$sql.= " archive=".(isset($this->archive)?$this->archive:"0")."";
     	$sql.= " WHERE rowid=".$this->id;
-    	
+
     	$this->db->begin();
-    	
+
     	dol_syslog(get_class($this)."::updateArchive sql=".$sql, LOG_DEBUG);
     	$resql = $this->db->query($sql);
     	if (! $resql) {
@@ -635,11 +635,11 @@ class Agefodd_session extends CommonObject
     		$this->db->commit();
     		return 1;
     	}
-    	
-    	
+
+
     }
-    
-    
+
+
     /**
      *  Update object into database
      *
