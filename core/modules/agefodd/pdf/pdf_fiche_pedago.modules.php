@@ -201,6 +201,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				//$posX += $this->page_largeur - $this->marge_droite - 65;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
+
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
@@ -292,6 +293,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$agf_op = new Agefodd($this->db);
 				$result2 = $agf_op->fetch_objpeda_per_formation($agf->id);
 
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Objectifs pédagogiques";
@@ -348,6 +350,21 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
 
+				/***** But *****/
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
+				$pdf->SetXY($posX, $posY);
+				$this->str = "But";
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
+				$posY+= 5;
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$this->str = $agf_op->but;
+				if (empty($this->str)) $this->str = "Aucun";
+
+				$pdf->SetXY( $posX, $posY);
+				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 8;
 
 				/***** Programme *****/
 
@@ -359,7 +376,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = "Programme";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$this->str =$agf_op->programme;
 				$hauteur_ligne_dans_col = 5;
