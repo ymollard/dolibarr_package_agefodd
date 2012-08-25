@@ -28,3 +28,5 @@ INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `acti
 INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES ('', 'AC_AGF_SEATTE', 'system', 'Send attestation by mail', 'agefodd', 1, NULL, 10);
 
 ALTER TABLE llx_agefodd_stagiaire_type ADD COLUMN active int NULL AFTER sort;
+
+ALTER TABLE  llx_agefodd_formation_catalogue ADD COLUMN but tinytext NULL AFTER prerequis;
