@@ -677,21 +677,15 @@ class Agsession extends CommonObject
 
 
 		//Create or update line in session commercial table and get line number
-		if (!empty($this->commercialid))
-		{
-			$result = $this->setCommercialSession($this->commercialid,$user);
-			if ($result==-1) {
-				$error++; $this->errors[]="Error ".$this->db->lasterror();
-			}
+		$result = $this->setCommercialSession($this->commercialid,$user);
+		if ($result <= 0) {
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
 
 		//Create or update line in session contact table and get line number
-		if (!empty($this->contactid))
-		{
-			$result = $this->setContactSession($this->contactid,$user);
-			if ($result <= 0){
-				$error++; $this->errors[]="Error ".$this->db->lasterror();
-			}
+		$result = $this->setContactSession($this->contactid,$user);
+		if ($result <= 0){
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
 
 		if ($error==0)
@@ -848,13 +842,12 @@ class Agsession extends CommonObject
    		if ($to_create) {
 
 	   		// INSERT request
-	   		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_commercial(fk_session_agefodd, fk_user_com, fk_user_author, datec, fk_user_mod)';
+	   		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_commercial(fk_session_agefodd, fk_user_com, fk_user_author, datec)';
 			$sql.= ' VALUES ( ';
 			$sql.= $this->db->escape($this->id).',';
 			$sql.= $this->db->escape($userid).',';
-			$sql.= $this->db->escape($user).',';
-			$sql.= $this->db->idate(dol_now()).',';
-			$sql.= $this->db->escape($user).')';
+			$sql.= $this->db->escape($user->id).',';
+			$sql.= $this->db->idate(dol_now()).')';
 
 	    	$this->db->begin();
 
@@ -896,6 +889,10 @@ class Agsession extends CommonObject
 	    	$this->db->commit();
 	    	return 1;
 	    }
+	    else {
+	    	return 1;
+	    }
+	    	
     }
 
     /**
@@ -946,13 +943,14 @@ class Agsession extends CommonObject
 						}
 						else
 						{
-							dol_syslog(get_class($this)."::setContactSession ".$contactAgefodd->error, LOG_ERR);
+							dol_syslog(get_class($this)."::setContactSession Error agefodd_contact".$contactAgefodd->error, LOG_ERR);
+							$this->db->free($resql);
     						return -1;
 						}
     				}
     			}
     			else {
-    				dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
+    				dol_syslog(get_class($this)."::setContactSession Error AGF_CONTACT_DOL_SESSION:".$this->db->lasterror(), LOG_ERR);
     				return -1;
     			}
     		}
@@ -984,11 +982,13 @@ class Agsession extends CommonObject
     			$this->db->free($resql);
     		}
     		else {
-    			dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
+    			dol_syslog(get_class($this)."::setContactSession Error:".$this->db->lasterror(), LOG_ERR);
     			return -1;
     		}
     	}
-
+		
+    	dol_syslog(get_class($this)."::setContactSession to_update:".$to_update.", to_create:".$to_create.", to_delete:".$to_delete, LOG_DEBUG);
+    	
     	if ($to_update) {
 
     		// Update request
@@ -1009,13 +1009,12 @@ class Agsession extends CommonObject
     	if ($to_create) {
 
     		// INSERT request
-    		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_contact(fk_session_agefodd, fk_agefodd_contact, fk_user_author, datec, fk_user_mod)';
+    		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_contact(fk_session_agefodd, fk_agefodd_contact, fk_user_author, datec)';
     		$sql.= ' VALUES ( ';
     		$sql.= $this->db->escape($this->id).',';
     		$sql.= $this->db->escape($contactid).',';
     		$sql.= $this->db->escape($user->id).',';
-    		$sql.= $this->db->idate(dol_now()).',';
-    		$sql.= $this->db->escape($user).')';
+    		$sql.= $this->db->idate(dol_now()).')';
 
     		$this->db->begin();
 
@@ -1055,6 +1054,10 @@ class Agsession extends CommonObject
     	elseif ($to_create || $to_update || $to_delete)
     	{
     		$this->db->commit();
+    		return 1;
+    	}
+    	else
+    	{
     		return 1;
     	}
     }
