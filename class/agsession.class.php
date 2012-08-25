@@ -37,7 +37,7 @@ class Agsession extends CommonObject
 	var $db;
 	var $error;
 	var $errors=array();
-	var $element='agsession';
+	var $element='agefodd';
 	var $table_element='agefodd_session';
     var $id;
     var $fk_soc;
