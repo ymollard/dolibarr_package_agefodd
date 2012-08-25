@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
@@ -47,7 +47,7 @@ $mesg = '';
 if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	if($stag_update_x  > 0) {
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$agf->id = GETPOST('stagerowid','int');
 		$agf->sessid = GETPOST('sessid','int');
@@ -69,7 +69,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	if($stag_add_x > 0) {
 
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->stagiaire = GETPOST('stagiaire','int');
@@ -98,7 +98,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 {
 	$stagerowid=GETPOST('stagerowid','int');
 
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$result = $agf->remove_stagiaire($stagerowid);
 
 	if ($result > 0)
@@ -123,7 +123,7 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
 	{
 		$error=0;
 
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$res = $agf->fetch($id);
 		if ($res > 0)
@@ -200,7 +200,7 @@ dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$result = $agf->fetch($id);
 
 	$head = session_prepare_head($agf);
@@ -280,7 +280,7 @@ if (!empty($id))
 		print '<table class="border" width="100%">';
 
 		// Bloc d'affichage et de modification des stagiaires
-		$stagiaires = new Agefodd_session($db);
+		$stagiaires = new Agsession($db);
 		$stagiaires->fetch_stagiaire_per_session($agf->id);
 		$nbstag = count($stagiaires->line);
 		if ($nbstag > 0)
@@ -553,7 +553,7 @@ if (!empty($id))
 		print '&nbsp';
 		print '<table class="border" width="100%">';
 
-		$stagiaires = new Agefodd_session($db);
+		$stagiaires = new Agsession($db);
 		$stagiaires->fetch_stagiaire_per_session($agf->id);
 		$nbstag = count($stagiaires->line);
 		print '<tr><td  width="20%" valign="top" ';

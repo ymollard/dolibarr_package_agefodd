@@ -24,7 +24,7 @@
 	\version	$Id$
 */
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
 dol_include_once('/agefodd/class/agefodd_contact.class.php');

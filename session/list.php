@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -77,7 +77,7 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$agf = new Agefodd_session($db);
+$agf = new Agsession($db);
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 

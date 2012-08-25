@@ -32,7 +32,7 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_session extends CommonObject
+class Agsession extends CommonObject
 {
 	var $db;
 	var $error;
@@ -1422,6 +1422,35 @@ class Agefodd_session extends CommonObject
 	function loadArrayTypeSession()
 	{
 		return $this->type_session_def;
+	}
+
+	/**
+	 *	Return clicable link of object (with eventually picto)
+	 *
+	 *	@param		int		$withpicto		Add picto into link
+	 *	@param		string	$option			Where point the link
+	 *	@param		int		$maxlength		Maxlength of ref
+	 *	@return		string					String with URL
+	 */
+	function getNomUrl($withpicto=0,$option='',$maxlength=0)
+	{
+		global $langs;
+
+		$result='';
+
+		if (!$option)
+		{
+			$lien = '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$this->id.'">';
+			$lienfin='</a>';
+		}
+		$newref=$this->formintitule;
+		if ($maxlength) $newref=dol_trunc($newref,$maxlength,'middle');
+
+		if ($withpicto) {
+			$result.=($lien.img_object($langs->trans("ShowSession").' '.$this->ref,'agefodd@agefodd').$lienfin.' ');
+		}
+		$result.=$lien.$newref.$lienfin;
+		return $result;
 	}
 }
 
