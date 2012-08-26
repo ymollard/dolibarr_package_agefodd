@@ -379,7 +379,7 @@ class Agsession extends CommonObject
     			$this->id    = $obj->rowid;
     			$this->ref    = $obj->rowid; // Use for next prev ref
     			$this->fk_soc    = $obj->fk_soc; // don't work with fetch_thirdparty()
-    			$this->socid    = $obj->socid; // work with fetch_thirdparty()
+    			$this->socid    = $obj->fk_soc; // work with fetch_thirdparty()
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;
     			$this->formid = $obj->formid;
