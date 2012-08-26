@@ -245,9 +245,16 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 	}
 	elseif ( $mdle == 'convention')
 	{
-		//print '<td style="border-left:0px; width:200px" align="right">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'action=presend_convention&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+
+		// Check if feil exist
+		$filename = 'convention_'.$id.'_'.$socid.'.pdf';
+		$file = $conf->agefodd->dir_output . '/' .$filename;
+		if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=presend_convention&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		}
+		else print $langs->trans('AgfNoDefined');
+
 		print '</td></tr>'."\n";
 	}
 	else if ($mdle == 'fiche_presence') {

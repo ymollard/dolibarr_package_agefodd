@@ -158,12 +158,33 @@ class InterfaceAgefodd
 				$ok=1;
 			}
 		}
-		// Envoi fiche pédago par mail
+		// Envoi fiche présence par mail
 		elseif ($action == 'FICHEPRESENCE_SENTBYMAIL') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
 
 			if ($object->actiontypecode == 'AC_AGF_PRES') {
+
+				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+				$langs->load("agefodd@agefodd");
+				$langs->load("agenda");
+
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+				if (empty($object->actionmsg))
+				{
+					$object->actionmsg=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
+				}
+
+				$ok=1;
+			}
+		}
+		// Envoi convention par mail
+		elseif ($action == 'CONVENTION_SENTBYMAIL') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+
+
+			if ($object->actiontypecode == 'AC_AGF_CONV') {
 
 				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 				$langs->load("agefodd@agefodd");

@@ -38,6 +38,7 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/agefodd/lib/agefodd_document.lib.php');
 dol_include_once('/core/class/html.formmail.class.php');
+include(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
 
 
 // Security check
@@ -132,6 +133,20 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				$actionmsg2=$langs->trans('Action'.FICHEPRESENCE_SENTBYMAIL,$object->client->name);
 			}
+			elseif ($models == 'convention')
+			{
+				if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
+				else $subject = $langs->trans('AgfConvention').' '.$object->ref;
+				$actiontypecode='AC_AGF_CONV';
+				$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$sendto.".\n";
+				if ($message)
+				{
+					$actionmsg.=$langs->trans('MailTopic').": ".$subject."\n";
+					$actionmsg.=$langs->trans('TextUsedInTheMessageBody').":\n";
+					$actionmsg.=$message;
+				}
+				$actionmsg2=$langs->trans('Action'.CONVENTION_SENTBYMAIL,$object->client->name);
+			}
 
 
 			// Create form object
@@ -180,8 +195,12 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 					{
 						$result=$interface->run_triggers('FICHEPRESENCE_SENTBYMAIL',$object,$user,$langs,$conf);
 					}
+					elseif ($models == 'convention')
+					{
+						$result=$interface->run_triggers('CONVENTION_SENTBYMAIL',$object,$user,$langs,$conf);
+					}
 					if ($result < 0) {
-						$error++; $this->errors=$interface->errors;
+						$error++; $object->errors=$interface->errors;
 					}
 					// Fin appel triggers
 
@@ -271,17 +290,35 @@ if (!empty($id))
 		/*
 		 * Formulaire d'envoi des documents
 		*/
-		if ($action == 'presend_pedago' || $action == 'presend_presence') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention') {
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_'.$agf->id.'.pdf';
-
 			}
 			elseif ($action == 'presend_pedago') {
 				$filename = 'fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
 			}
+			elseif ($action == 'presend_convention') {
+				$filename = 'convention_'.$agf->id.'_'.$socid.'.pdf';
+			}
 
 			$file = $conf->agefodd->dir_output . '/' .$filename;
+
+			// Init list of files
+			if (GETPOST("mode")=='init')
+			{
+				$formmail->clear_attached_files();
+				if ($action == 'presend_convention') {
+					$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
+					// Ajout fiche péda
+					$filename = 'fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
+					$file = $conf->agefodd->dir_output . '/' .$filename;
+					$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
+				}
+				else {
+					$formmail->add_attached_files($conf->agefodd->dir_output,basename($file),dol_mimetype($file));
+				}
+			}
 
 			$formmail->fromtype = 'user';
 			$formmail->fromid   = $user->id;
@@ -311,6 +348,11 @@ if (!empty($id))
 				$formmail->withbody=$langs->trans('AdfSendFichePedagogiqueBody','__FORMINTITULE__');
 				$formmail->param['models']='fiche_pedago';
 			}
+			elseif ($action == 'presend_convention') {
+				$formmail->withtopic=$langs->trans('AdfSendConvention','__FORMINTITULE__');
+				$formmail->withbody=$langs->trans('AdfSendConventionBody','__FORMINTITULE__');
+				$formmail->param['models']='convention';
+			}
 			$formmail->withbody.="\n\n--\n__SIGNATURE__\n";
 
 			// Tableau des substitutions
@@ -324,18 +366,14 @@ if (!empty($id))
 			$formmail->param['id']=$agf->id;
 			$formmail->param['returnurl']=$_SERVER["PHP_SELF"].'?id='.$agf->id;
 
-			// Init list of files
-			if (GETPOST("mode")=='init')
-			{
-				$formmail->clear_attached_files();
-				$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
-			}
-
 			if ($action == 'presend_pedago') {
 				print_fiche_titre('Envoi fiche pédagogique','','menus/mail.png');
 			}
 			elseif ($action == 'presend_presence') {
 				print_fiche_titre('Envoi feuille de présence','','menus/mail.png');
+			}
+			elseif ($action == 'presend_convention') {
+				print_fiche_titre('Envoi convention de formation','','menus/mail.png');
 			}
 			$formmail->show_form();
 
