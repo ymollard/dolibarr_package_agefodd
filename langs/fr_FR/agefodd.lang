@@ -305,3 +305,6 @@ AgfViewActioncomm = Historique
 ActionFICHEPEDAGO_SENTBYMAIL=Envoi fiche pédagogique par email à %s
 ActionAC_AGF_PRES=Envoi feuille de présence
 ActionFICHEPRESENCE_SENTBYMAIL = Envoi feuille de présence à %s
+ActionAC_AGF_SESS = Session de formation
+AgfSendCommonDocs = Documents a envoyer
+AgfModPDFConvocation = Modéle de document Convocation
