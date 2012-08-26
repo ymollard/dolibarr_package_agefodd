@@ -57,9 +57,9 @@ $formmail = new FormMail($db);
 $formAgefodd = new FormAgefodd($db);
 
 /*
- * Envoi fiche pédagogique par mail
+ * Envoi document unique
 */
-if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_POST['cancel'])
+if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_POST['cancel'])
 {
 	$langs->load('mails');
 
@@ -103,20 +103,36 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 			$sendtocc = $_POST['sendtocc'];
 			$deliveryreceipt = $_POST['deliveryreceipt'];
 
-			if ($action == 'send_pedago')
+			$models = GETPOST('models','alpha');
+			if ($models == 'fiche_pedago')
 			{
 				if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-				else $subject = $langs->transnoentities('Propal').' '.$object->ref;
+				else $subject = $langs->transnoentities('AgfFichePedagogique').' '.$object->ref;
 				$actiontypecode='AC_AGF_PEDAG';
-				$actionmsg = $langs->transnoentities('MailSentBy').' '.$from.' '.$langs->transnoentities('To').' '.$sendto.".\n";
+				$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$sendto.".\n";
 				if ($message)
 				{
-					$actionmsg.=$langs->transnoentities('MailTopic').": ".$subject."\n";
-					$actionmsg.=$langs->transnoentities('TextUsedInTheMessageBody').":\n";
+					$actionmsg.=$langs->trans('MailTopic').": ".$subject."\n";
+					$actionmsg.=$langs->trans('TextUsedInTheMessageBody').":\n";
 					$actionmsg.=$message;
 				}
-				$actionmsg2=$langs->transnoentities('Action'.FICHEPEDAGO_SENTBYMAIL);
+				$actionmsg2=$langs->trans('Action'.FICHEPEDAGO_SENTBYMAIL,$object->client->name);
 			}
+			elseif ($models == 'fiche_presence')
+			{
+				if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
+				else $subject = $langs->trans('AgfFichePresence').' '.$object->ref;
+				$actiontypecode='AC_AGF_PRES';
+				$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$sendto.".\n";
+				if ($message)
+				{
+					$actionmsg.=$langs->trans('MailTopic').": ".$subject."\n";
+					$actionmsg.=$langs->trans('TextUsedInTheMessageBody').":\n";
+					$actionmsg.=$message;
+				}
+				$actionmsg2=$langs->trans('Action'.FICHEPRESENCE_SENTBYMAIL,$object->client->name);
+			}
+
 
 			// Create form object
 			include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php');
@@ -155,7 +171,15 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 					/* Appel des triggers */
 					include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 					$interface=new Interfaces($db);
-					$result=$interface->run_triggers('FICHEPEDAGO_SENTBYMAIL',$object,$user,$langs,$conf);
+					$models = GETPOST('models','alpha');
+					if ($models == 'fiche_pedago')
+					{
+						$result=$interface->run_triggers('FICHEPEDAGO_SENTBYMAIL',$object,$user,$langs,$conf);
+					}
+					elseif ($models == 'fiche_presence')
+					{
+						$result=$interface->run_triggers('FICHEPRESENCE_SENTBYMAIL',$object,$user,$langs,$conf);
+					}
 					if ($result < 0) {
 						$error++; $this->errors=$interface->errors;
 					}
@@ -245,11 +269,18 @@ if (!empty($id))
 		print '</div>'."\n";
 
 		/*
-		 * Envoi fiche pédagogique
+		 * Formulaire d'envoi des documents
 		*/
-		if ($action == 'presend_pedago') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence') {
 
-			$filename = 'fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
+			if ($action == 'presend_presence') {
+				$filename = 'fiche_presence_'.$agf->id.'.pdf';
+
+			}
+			elseif ($action == 'presend_pedago') {
+				$filename = 'fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
+			}
+
 			$file = $conf->agefodd->dir_output . '/' .$filename;
 
 			$formmail->fromtype = 'user';
@@ -263,23 +294,34 @@ if (!empty($id))
 			$formmail->withtoccsocid=0;
 			$formmail->withtoccc=$conf->global->MAIN_EMAIL_USECCC;
 			$formmail->withtocccsocid=0;
-			$formmail->withtopic=$langs->trans('AdfSendFichePedagogique','__FORMINTITULE__');
 			$formmail->withfile=1;
-			$formmail->withbody=$langs->trans('AdfSendFichePedagogiqueBody','__FORMINTITULE__');
-			$formmail->withbody.="\n\n--\n__SIGNATURE__\n";
+
 			$formmail->withdeliveryreceipt=1;
 			$formmail->withdeliveryreceiptreadonly=1;
 			$formmail->withcancel=1;
+
+
+			if ($action == 'presend_presence') {
+				$formmail->withtopic=$langs->trans('AdfSendFeuillePresence','__FORMINTITULE__');
+				$formmail->withbody=$langs->trans('AdfSendFeuillePresenceBody','__FORMINTITULE__');
+				$formmail->param['models']='fiche_presence';
+			}
+			elseif ($action == 'presend_pedago') {
+				$formmail->withtopic=$langs->trans('AdfSendFichePedagogique','__FORMINTITULE__');
+				$formmail->withbody=$langs->trans('AdfSendFichePedagogiqueBody','__FORMINTITULE__');
+				$formmail->param['models']='fiche_pedago';
+			}
+			$formmail->withbody.="\n\n--\n__SIGNATURE__\n";
 
 			// Tableau des substitutions
 			$formmail->substit['__FORMINTITULE__']=$agf->formintitule;
 			$formmail->substit['__SIGNATURE__']=$user->signature;
 			$formmail->substit['__PERSONALIZED__']='';
-			// Tableau des parametres complementaires
+
+
+			//Tableau des parametres complementaires
+			$formmail->param['action']='send';
 			$formmail->param['id']=$agf->id;
-			$formmail->param['action']='send_pedago';
-			$formmail->param['models']='fiche_pedago';
-			//$formmail->param['fichinter_id']=$object->id;
 			$formmail->param['returnurl']=$_SERVER["PHP_SELF"].'?id='.$agf->id;
 
 			// Init list of files
@@ -288,13 +330,25 @@ if (!empty($id))
 				$formmail->clear_attached_files();
 				$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
 			}
-			print_fiche_titre('Envoi fiche pédagogique','','menus/mail.png');
+
+			if ($action == 'presend_pedago') {
+				print_fiche_titre('Envoi fiche pédagogique','','menus/mail.png');
+			}
+			elseif ($action == 'presend_presence') {
+				print_fiche_titre('Envoi feuille de présence','','menus/mail.png');
+			}
 			$formmail->show_form();
 
 		}
 
-		if(!$action || GETPOST('cancel')) {
+		/*
+		 * Envoi fiche pédagogique
+		*/
+		if ($action == 'presend_presence') {
+			$filename = 'fiche_presence_'.$agf->id.'.pdf';
+		}
 
+		if(!$action || GETPOST('cancel')) {
 
 			print '<table class="border" width="100%">'."\n";
 
@@ -303,31 +357,22 @@ if (!empty($id))
 			print $langs->trans("AgfSendCommonDocs").'</td>'."\n";
 			print '</tr>'."\n";
 
-
+			// Avant la  formation
 			print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
 
 			include_once(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
 
 			//document_send_line("Convocation", 2, 'convocation');
-			document_line("Réglement intérieur", 2, 'reglement');
+			//document_line("Réglement intérieur", 2, 'reglement');
 
-
-
-
-
-
-
-			if ($action != "presend_pedago") {
-
-				//print '<a href="'.$_SERVER['PHP_SELF'].'&id='.$id.'&action=send_pedago&mode=init">'.$langs->trans('Send').'</a>';
-				document_send_line("Envoi fiche pédagogique", 2, 'fiche_pedago','');
-			}
-			document_line("Conseils pratiques", 2, 'conseils');
+			document_send_line("Envoi fiche pédagogique", 2, 'fiche_pedago','');
 
 			// Pendant la formation
 			print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
-			document_line("Fiche de présence", 2, "fiche_presence");
-			document_line("Fiche d'évaluation", 2, "fiche_evaluation");
+
+			document_send_line("Fiche de présence", 2, "fiche_presence");
+
+			//document_line("Fiche d'évaluation", 2, "fiche_evaluation");
 
 			print '</table>'."\n";
 			print '&nbsp;'."\n";
@@ -350,23 +395,38 @@ if (!empty($id))
 					print '</tr>'."\n";
 
 					// Avant la formation
-					print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-					document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
-					document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
-					document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-					document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
+					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+					//document_send_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
+					document_send_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
+					//document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
+					//document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
 
 					// Après la formation
-					print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-					document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
-					document_line("Facture", 2, "fac", $agf->line[$i]->socid);
-					document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
+					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+					//document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
+					//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
+					//document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
 					//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
 					print '</table>';
 					if ($i < $linecount) print '&nbsp;'."\n";
 				}
 			}
 			print '</div>'."\n";
+		}
+
+		print '<div class="tabsAction">';
+		if ($action !='view_actioncomm') {
+			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=view_actioncomm&id='.$id.'">'.$langs->trans('AgfViewActioncomm').'</a>';
+		}
+
+		print '</div>';
+
+		if ($action =='view_actioncomm') {
+			// List of actions on element
+			 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formactions.class.php');
+			$formactions=new FormAgefodd($db);
+			$somethingshown=$formactions->showactions($agf,'agefodd_agsession',$socid);
+
 		}
 	}
 
