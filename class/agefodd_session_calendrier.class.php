@@ -422,7 +422,7 @@ class Agefodd_sesscalendar
      	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
-     	$session = new Agefodd_session($this->db);
+     	$session = new Agsession($this->db);
      	
      	$result = $session->fetch($this->sessid);
      	if ($result < 0) {
@@ -433,7 +433,11 @@ class Agefodd_sesscalendar
      	$action->location =  $session->placecode;
      	$action->datep = $this->heured;
      	$action->datef = $this->heuref;
-     	$action->type_code = 'AC_AGF';
+     	$action->author      = $user;   // User saving action
+     	$action->userdone    = $user;	// User doing action
+     	$action->fk_element  = $session->id;
+     	$action->elementtype = $session->element;
+     	$action->type_code = 'AC_AGF_SESS';
 
      	if ($error == 0) {
      		$result = $action->add($user);
@@ -468,7 +472,7 @@ class Agefodd_sesscalendar
      	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
-     	$session = new Agefodd_session($this->db);
+     	$session = new Agsession($this->db);
      	
      	$result = $session->fetch($this->sessid);
      	if ($result < 0) {
@@ -485,7 +489,7 @@ class Agefodd_sesscalendar
 		     	$action->location =  $session->placecode;
 		     	$action->datep = $this->heured;
 		     	$action->datef = $this->heuref;
-		     	$action->type_code = 'AC_AGF';
+		     	$action->type_code = 'AC_AGF_SESS';
      			
      			$result = $action->update($user);
      		}
