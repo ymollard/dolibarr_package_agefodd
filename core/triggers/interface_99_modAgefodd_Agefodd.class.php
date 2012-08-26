@@ -148,10 +148,10 @@ class InterfaceAgefodd
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
 
-				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfFichePedaSentByEMail",$object->ref);
 				if (empty($object->actionmsg))
 				{
-					$object->actionmsg=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+					$object->actionmsg=$langs->transnoentities("AgfFichePedaSentByEMail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
 
@@ -169,10 +169,10 @@ class InterfaceAgefodd
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
 
-				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfFichePresenceSentByEMail",$object->ref);
 				if (empty($object->actionmsg))
 				{
-					$object->actionmsg=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+					$object->actionmsg=$langs->transnoentities("AgfFichePresenceSentByEMail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
 
@@ -190,10 +190,10 @@ class InterfaceAgefodd
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
 
-				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfConventionSentByEMail",$object->ref);
 				if (empty($object->actionmsg))
 				{
-					$object->actionmsg=$langs->transnoentities("ProposalSentByEMail",$object->ref);
+					$object->actionmsg=$langs->transnoentities("AgfConventionSentByEMail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
 
