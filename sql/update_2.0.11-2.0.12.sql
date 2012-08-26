@@ -22,8 +22,6 @@ ALTER TABLE llx_agefodd_session ADD COLUMN cost_trip double(24,8) NULL AFTER cos
 
 ALTER TABLE llx_agefodd_session ADD INDEX fk_soc (fk_soc);
 
-INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES ('', 'AC_AGF', 'system', 'Link to Training', 'agefodd', 1, NULL, 10);
+INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES
+(100, 'AC_AGF', 'system', 'Link to Training', 'agefodd', 1, NULL, 10);
 
-ALTER TABLE llx_agefodd_stagiaire_type ADD COLUMN active int NULL AFTER sort;
-
-ALTER TABLE  llx_agefodd_formation_catalogue ADD COLUMN but tinytext NULL AFTER prerequis;

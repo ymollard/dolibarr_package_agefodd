@@ -293,3 +293,6 @@ AgfRegInt = Internal Rules
 AgfDeleteRegint = Delete Internal Rules
 AgfConfirmRegInt = Are you sure to delete this rules
 ActionFICHEPEDAGO_SENTBYMAIL = Send fiche pédagogique by email
+ActionAC_AGF_SESS = Training Session
+AgfSendCommonDocs = Document to send
+AgfModPDFConvocation = Convocation document Model

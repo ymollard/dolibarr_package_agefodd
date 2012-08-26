@@ -285,7 +285,6 @@ if (!empty($id))
 
 
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
-		//document_line("Convocation", 2, 'convocation');
 		document_line("Fiche pédagogique", 2, 'fiche_pedago');
 		document_line("Conseils pratiques", 2, 'conseils');
 
@@ -318,6 +317,7 @@ if (!empty($id))
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
 				document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
 				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
+				document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
 				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
 				document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
 
@@ -326,7 +326,6 @@ if (!empty($id))
 				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
 				document_line("Facture", 2, "fac", $agf->line[$i]->socid);
 				document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
-				//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
 			}
