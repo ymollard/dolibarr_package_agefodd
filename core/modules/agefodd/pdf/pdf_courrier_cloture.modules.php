@@ -32,7 +32,7 @@ $posY = 110;
  */
 
 // Recuperation des dates de formation
-$agf = new Agefodd_session($this->db);
+$agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
 if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
 else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
@@ -65,7 +65,7 @@ $pdf->SetXY($posX - 47, $posY);
 $this->str = "Facture n° ".$facnum."\n";
 
 // Recuperation des stagiaires participant à la formation
-$agf_stag = new Agefodd_session($this->db);
+$agf_stag = new Agsession($this->db);
 $result = $agf_stag->fetch_stagiaire_per_session($id, $socid);
 $stagiaires = "";
 $num = count($agf_stag->line);

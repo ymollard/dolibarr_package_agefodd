@@ -111,22 +111,28 @@ function show_fac($file, $socid, $mdle)
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
 
+
 	// Gestion des bons de commande (ou brouillon de facture)
 	if ($mdle == 'bc')
 	{
 		if ($agf->comid)
 		{
+			${'flag_bc_'.$socid} = $agf->comid;
+
 			// Consulter la fiche Dolibarr du BC
-			$legende = $langs->trans("AgfFactureSeeBon").' '.$agf->comref;
+			$legende = $langs->trans("AgfFactureSeeBon",$agf->comref);
 			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
-			${
-				'flag_bc_'.$socid} = $agf->comid;
 
-				// Délier le bon de commande
-				$legende = $langs->trans("AgfFactureUnselectBon");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
-				$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+			// Aller au formulaire d'envoi de mail
+			$legende = $langs->trans("AgfFactureSeeBonMail",$agf->comref);
+			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+			// Délier le bon de commande
+			$legende = $langs->trans("AgfFactureUnselectBon");
+			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
 		}
 		else
 		{
@@ -154,6 +160,11 @@ function show_fac($file, $socid, $mdle)
 			$legende = $langs->trans("AgfFactureSeeFac").' '.$agf->facnumber;
 			$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+			// Aller au formulaire d'envoi de mail
+			$legende = $langs->trans("AgfFactureSeeFacMail",$agf->facnumber);
+			$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?id='.$agf->comid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Délier la facture
 			$legende = $langs->trans("AgfFactureUnselectFac");
@@ -213,5 +224,44 @@ function document_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
 	else
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">'.show_doc($mdle, $socid, $nom_courrier).'</td></tr>'."\n";
+	}
+}
+
+function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
+{
+	global $conf,$langs,$id;
+	print '<tr style="height:14px">'."\n";
+	if ($level == 2)
+	{
+		print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
+		print '<td style="border-right:0px;">';
+	}
+	else print '<td colspan="2" style="border-right:0px;">';
+	print $intitule.'</td>'."\n";
+	if ( $mdle == 'bc' || $mdle == 'fac')
+	{
+		print '<td style="border-left:0px;" align="right">'.show_fac($mdle, $socid, $mdle).'</td></tr>'."\n";
+	}
+	elseif ( $mdle == 'convention')
+	{
+		//print '<td style="border-left:0px; width:200px" align="right">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		//print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'action=presend_convention&mode=init">'.$langs->trans('Send').'</a>';
+		print '</td></tr>'."\n";
+	}
+	else if ($mdle == 'fiche_presence') {
+
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_presence&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('Send').'</a>';
+		//.show_doc($mdle, $socid, $nom_courrier).
+		print '</td></tr>'."\n";
+
+	}
+	else
+	{
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" />'.$langs->trans('Send').'</a>';
+		//.show_doc($mdle, $socid, $nom_courrier).
+		print '</td></tr>'."\n";
 	}
 }

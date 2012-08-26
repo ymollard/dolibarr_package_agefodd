@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -419,7 +419,7 @@ class Agefodd_sesscalendar
      	$error = 0;
 
      	dol_include_once('/comm/action/class/actioncomm.class.php');
-     	dol_include_once('/agefodd/class/agefodd_session.class.php');
+     	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
      	$session = new Agefodd_session($this->db);
@@ -465,7 +465,7 @@ class Agefodd_sesscalendar
      	$error = 0;
 
      	dol_include_once('/comm/action/class/actioncomm.class.php');
-     	dol_include_once('/agefodd/class/agefodd_session.class.php');
+     	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
      	$session = new Agefodd_session($this->db);

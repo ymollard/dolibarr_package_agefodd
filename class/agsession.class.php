@@ -20,7 +20,7 @@
  */
 
 /**
- *	\file		/agefodd/session/agefodd_session.class.php
+ *	\file		/agefodd/session/agsession.class.php
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -32,15 +32,17 @@ require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
  *	\class		Agefodd
  *	\brief		Module Agefodd class
  */
-class Agefodd_session extends CommonObject
+class Agsession extends CommonObject
 {
 	var $db;
 	var $error;
 	var $errors=array();
-	var $element='agefodd';
+	var $element='agefodd_agsession';
 	var $table_element='agefodd_session';
     var $id;
     var $fk_soc;
+    var $client;
+    var $socid;
     var $fk_formation_catalogue;
     var $fk_session_place;
     var $nb_place;
@@ -375,7 +377,9 @@ class Agefodd_session extends CommonObject
     			$obj = $this->db->fetch_object($resql);
 
     			$this->id    = $obj->rowid;
-    			$this->ref    = $obj->rowid; // Use for next prev ref    			$this->fk_soc    = $obj->fk_soc;
+    			$this->ref    = $obj->rowid; // Use for next prev ref
+    			$this->fk_soc    = $obj->fk_soc; // don't work with fetch_thirdparty()
+    			$this->socid    = $obj->fk_soc; // work with fetch_thirdparty()
     			$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
     			$this->formintitule = $obj->formintitule;
     			$this->formid = $obj->formid;
@@ -389,6 +393,7 @@ class Agefodd_session extends CommonObject
     			$this->placeid = $obj->placeid;
     			$this->placecode = $obj->placecode;
     			$this->dated = $this->db->jdate($obj->dated);
+    			$this->datef = $this->db->jdate($obj->datef);
     			$this->notes = $obj->notes;
     			$this->color = $obj->color;
     			$this->fk_commercial = $obj->fk_commercial;
@@ -675,21 +680,15 @@ class Agefodd_session extends CommonObject
 
 
 		//Create or update line in session commercial table and get line number
-		if (!empty($this->commercialid))
-		{
-			$result = $this->setCommercialSession($this->commercialid,$user);
-			if ($result==-1) {
-				$error++; $this->errors[]="Error ".$this->db->lasterror();
-			}
+		$result = $this->setCommercialSession($this->commercialid,$user);
+		if ($result <= 0) {
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
 
 		//Create or update line in session contact table and get line number
-		if (!empty($this->contactid))
-		{
-			$result = $this->setContactSession($this->contactid,$user);
-			if ($result <= 0){
-				$error++; $this->errors[]="Error ".$this->db->lasterror();
-			}
+		$result = $this->setContactSession($this->contactid,$user);
+		if ($result <= 0){
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
 
 		if ($error==0)
@@ -846,13 +845,12 @@ class Agefodd_session extends CommonObject
    		if ($to_create) {
 
 	   		// INSERT request
-	   		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_commercial(fk_session_agefodd, fk_user_com, fk_user_author, datec, fk_user_mod)';
+	   		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_commercial(fk_session_agefodd, fk_user_com, fk_user_author, datec)';
 			$sql.= ' VALUES ( ';
 			$sql.= $this->db->escape($this->id).',';
 			$sql.= $this->db->escape($userid).',';
-			$sql.= $this->db->escape($user).',';
-			$sql.= $this->db->idate(dol_now()).',';
-			$sql.= $this->db->escape($user).')';
+			$sql.= $this->db->escape($user->id).',';
+			$sql.= $this->db->idate(dol_now()).')';
 
 	    	$this->db->begin();
 
@@ -894,6 +892,10 @@ class Agefodd_session extends CommonObject
 	    	$this->db->commit();
 	    	return 1;
 	    }
+	    else {
+	    	return 1;
+	    }
+
     }
 
     /**
@@ -944,13 +946,14 @@ class Agefodd_session extends CommonObject
 						}
 						else
 						{
-							dol_syslog(get_class($this)."::setContactSession ".$contactAgefodd->error, LOG_ERR);
+							dol_syslog(get_class($this)."::setContactSession Error agefodd_contact".$contactAgefodd->error, LOG_ERR);
+							$this->db->free($resql);
     						return -1;
 						}
     				}
     			}
     			else {
-    				dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
+    				dol_syslog(get_class($this)."::setContactSession Error AGF_CONTACT_DOL_SESSION:".$this->db->lasterror(), LOG_ERR);
     				return -1;
     			}
     		}
@@ -982,10 +985,12 @@ class Agefodd_session extends CommonObject
     			$this->db->free($resql);
     		}
     		else {
-    			dol_syslog(get_class($this)."::setContactSession ".$this->db->lasterror(), LOG_ERR);
+    			dol_syslog(get_class($this)."::setContactSession Error:".$this->db->lasterror(), LOG_ERR);
     			return -1;
     		}
     	}
+
+    	dol_syslog(get_class($this)."::setContactSession to_update:".$to_update.", to_create:".$to_create.", to_delete:".$to_delete, LOG_DEBUG);
 
     	if ($to_update) {
 
@@ -1007,13 +1012,12 @@ class Agefodd_session extends CommonObject
     	if ($to_create) {
 
     		// INSERT request
-    		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_contact(fk_session_agefodd, fk_agefodd_contact, fk_user_author, datec, fk_user_mod)';
+    		$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_contact(fk_session_agefodd, fk_agefodd_contact, fk_user_author, datec)';
     		$sql.= ' VALUES ( ';
     		$sql.= $this->db->escape($this->id).',';
     		$sql.= $this->db->escape($contactid).',';
     		$sql.= $this->db->escape($user->id).',';
-    		$sql.= $this->db->idate(dol_now()).',';
-    		$sql.= $this->db->escape($user).')';
+    		$sql.= $this->db->idate(dol_now()).')';
 
     		$this->db->begin();
 
@@ -1053,6 +1057,10 @@ class Agefodd_session extends CommonObject
     	elseif ($to_create || $to_update || $to_delete)
     	{
     		$this->db->commit();
+    		return 1;
+    	}
+    	else
+    	{
     		return 1;
     	}
     }
@@ -1420,6 +1428,35 @@ class Agefodd_session extends CommonObject
 	function loadArrayTypeSession()
 	{
 		return $this->type_session_def;
+	}
+
+	/**
+	 *	Return clicable link of object (with eventually picto)
+	 *
+	 *	@param		int		$withpicto		Add picto into link
+	 *	@param		string	$option			Where point the link
+	 *	@param		int		$maxlength		Maxlength of ref
+	 *	@return		string					String with URL
+	 */
+	function getNomUrl($withpicto=0,$option='',$maxlength=0)
+	{
+		global $langs;
+
+		$result='';
+
+		if (!$option)
+		{
+			$lien = '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$this->id.'">';
+			$lienfin='</a>';
+		}
+		$newref=$this->formintitule;
+		if ($maxlength) $newref=dol_trunc($newref,$maxlength,'middle');
+
+		if ($withpicto) {
+			$result.=($lien.img_object($langs->trans("ShowSession").' '.$this->ref,'agefodd@agefodd').$lienfin.' ');
+		}
+		$result.=$lien.$newref.$lienfin;
+		return $result;
 	}
 }
 

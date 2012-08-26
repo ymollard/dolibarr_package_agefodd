@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -77,7 +77,7 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$agf = new Agefodd_session($db);
+$agf = new Agsession($db);
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
@@ -170,7 +170,15 @@ if ($resql != -1)
 		// Affichage tableau des sessions
 		$var=!$var;
 		print "<tr $bc[$var]>";
-		print '<td  style="background: #'.$line->color.'"><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
+		// Calcul de la couleur du lien en fonction de la couleur définie sur la session
+		// http://www.w3.org/TR/AERT#color-contrast
+		// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS AFFICHER DU BLANC (#FFF)
+		$couleur_rgb = agf_hex2rgb($line->color);
+		$color_a = '';
+		if( $line->color && ((($couleur_rgb[0]*299) + ($couleur_rgb[1]*587) + ($couleur_rgb[2]*114)) /1000) < 125)
+			$color_a = ' style="color: #FFFFFF;"';
+
+		print '<td  style="background: #'.$line->color.'"><a'.$color_a.' href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
 		print '<td>'.stripslashes(dol_trunc($line->intitule, 60)).'</td>';
 		print '<td>'.$line->ref.'</td>';
 		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';

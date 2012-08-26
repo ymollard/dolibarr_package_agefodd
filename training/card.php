@@ -48,7 +48,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 {
 	$agf = new Agefodd($db);
 	$result = $agf->remove($id);
-	
+
 	if ($result > 0)
 	{
 		Header ( "Location: list.php");
@@ -102,6 +102,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->note1 = GETPOST('note1','alpha');
 		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
+		$agf->but = GETPOST('but','alpha');
 		$agf->programme = GETPOST('programme');
 		$result = $agf->update($user);
 
@@ -142,6 +143,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->note1 = GETPOST('note1','alpha');
 		$agf->note2 = GETPOST('note2','alpha');
 		$agf->prerequis = GETPOST('prerequis','alpha');
+		$agf->but = GETPOST('but','alpha');
 		$agf->programme = GETPOST('programme');
 		$result = $agf->create($user);
 
@@ -172,9 +174,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 if ($action == "obj_update" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd($db);
-	
+
 	$idforma = GETPOST('idforma','int');
-	
+
 	// MAJ d'un objectif pedagogique
 	if (GETPOST('obj_update_x'))
 	{
@@ -184,29 +186,29 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 		$agf->priorite = GETPOST('priorite','alpha');
 		$agf->fk_formation_catalogue = $idforma;
 		$agf->id = $id;
-		
+
 		$result = $agf->update_objpeda($user);
 	}
-	
+
 	// Suppression d'un objectif pedagogique
 	if (GETPOST("obj_remove_x"))
 	{
 		$result = $agf->remove_objpeda($id);
-		
+
 		if ($result < 0)
 		{
 			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
-	} 
-	
+	}
+
 	// Creation d'un nouvel objectif pedagogique
-	if (GETPOST("obj_add_x")) 
+	if (GETPOST("obj_add_x"))
 	{
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->priorite = GETPOST('priorite','alpha');
 		$agf->fk_formation_catalogue = $idforma;
-	    
+
 	    $result = $agf->create_objpeda($user);
 	}
 
@@ -238,9 +240,9 @@ if ($action == 'fichepeda' && $user->rights->agefodd->creer)
 	}
 	$model='fiche_pedago';
 	$file=$model.'_'.$id.'.pdf';
-	
+
 	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
-	
+
 	if ($result > 0)
 	{
 		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
@@ -272,7 +274,7 @@ dol_htmloutput_mesg($mesg);
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfMenuCatNew"));
-	
+
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="create_confirm">';
@@ -281,9 +283,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfIntitule").'</span></td><td>';
 	print '<input name="intitule" class="flat" size="50" value=""></td></tr>';
-	
+
 	$agf = new Agefodd($db);
-	
+
 	$defaultref='';
 	$obj = empty($conf->global->AGF_ADDON)?'mod_agefodd_simple':$conf->global->AGF_ADDON;
 	$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/'.$conf->global->AGF_ADDON.'.php');
@@ -293,9 +295,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$modAgefodd = new $obj;
 		$defaultref = $modAgefodd->getNextValue($soc,$agf);
 	}
-	
+
 	if (is_numeric($defaultref) && $defaultref <= 0) $defaultref='';
-	
+
 	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfRefInterne").'</span></td><td>';
 	print '<input name="ref_interne" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
 
@@ -305,30 +307,28 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr>';
 	print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
 	print '<textarea name="public" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
 	print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	print '</td></tr>';
-	
+
 	print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
 	print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	print '</td></tr>';
-	
+
 	print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
 	print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
 	print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	print '</td></tr>';
+
+	print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
+	print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
 	print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 
 	print '</table>';
 	print '</div>';
-	
+
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
@@ -336,7 +336,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
-	
+
 }
 else
 {
@@ -344,20 +344,20 @@ else
 	if (!empty($id))
 	{
 		if (empty($arch)) $arch = 0;
-		
+
 		$agf = new Agefodd($db);
 		$result = $agf->fetch($id);
-		
+
 		$head = training_prepare_head($agf);
 
 		dol_fiche_head($head, 'card', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
 		if ($result)
-		{			
+		{
 
 			$agf_peda=new Agefodd($db);
 			$result_peda = $agf_peda->fetch_objpeda_per_formation($id);
-			
+
 			// Affichage en mode "édition"
 			if ($action == 'edit')
 			{
@@ -390,11 +390,11 @@ else
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
 				print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->methode).'</textarea></td></tr>';
 				print '</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
 				print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->note1).'</textarea></td></tr>';
 				print '</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
 				print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->note2).'</textarea></td></tr>';
 				print '</td></tr>';
@@ -403,18 +403,22 @@ else
 				print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->prerequis).'</textarea></td></tr>';
 				print '</td></tr>';
 
+				print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
+				print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->but).'</textarea></td></tr>';
+				print '</td></tr>';
+
 				print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
 				print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->programme).'</textarea></td></tr>';
 
 				print '</table>';
 				print '</div>';
-				
+
 				print '<table style=noborder align="right">';
 				print '<tr><td align="center" colspan=2>';
 				print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 				print '</td></tr>';
-				
+
 				print '</table>';
 				print '</form>';
 
@@ -424,7 +428,7 @@ else
 				print '<div class="tabBar">';
 				print '<table class="border" width="100%">';
 				print '<tr>';
-				if ($result_peda > 0) 
+				if ($result_peda > 0)
 				{
 				    print '<td width="40">'.$langs->trans("AgfObjPoids").'</td>';
 				    print '<td>'.$langs->trans("AgfObjDesc").'</td>';
@@ -438,7 +442,7 @@ else
 				print '&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?action=edit&amp;id='.$agf->id.'&amp;objc=1">';
 				if ($user->rights->agefodd->creer)	print img_edit_add($langs->trans("AgfNewObjAdd")) ."</a></td>";
 				print '</tr>';
-				
+
 				$i = 0;
 				foreach ($agf_peda->line as $line)
 				{
@@ -451,11 +455,11 @@ else
 					print '<input type="hidden" name="priorite" value="'.$line->priorite.'">'."\n";
 					print '<tr><td align="center">'."\n";
 					print $line->priorite;
-				    
-				 
+
+
 				    print '<td width="400"><input name="intitule" class="flat" size="50" value="'.stripslashes($line->intitule).'"></td>'."\n";
 				    print "<td>";
-				    
+
 				    if ( $line->id )
 				    {
 				    	if ($user->rights->agefodd->modifier)
@@ -473,7 +477,7 @@ else
 				    print '</form>'."\n";
 				    $i++;
 				}
-				
+
 				//New Objectif peda line
 				if ($_GET["objc"])
 				{
@@ -494,7 +498,7 @@ else
 					print '</td></tr>'."\n";
 					print '</form>'."\n";
 				}
-				
+
 				print '</table>'."\n";
 				print '</div>'."\n";
 			}
@@ -503,7 +507,7 @@ else
 				/*
 				 * Affichage
 				*/
-				
+
 				//Confirmation de la suppression
 				if ($action == 'delete')
 				{
@@ -513,10 +517,10 @@ else
 
 				//Confirmation Archivage!
 				if ($action == 'archive' || $action == 'active')
-				{   
+				{
 					if ($action == 'archive') $value=1;
 					if ($action == 'active') $value=0;
-					
+
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
@@ -527,7 +531,7 @@ else
 				print '<td width="20%">'.$langs->trans("Ref").'</td><td colspan=2>';
 				print $form->showrefnav($agf,'id','',1,'rowid','id');
 				print '</td></tr>';
-				
+
 				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td>';
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
 
@@ -536,16 +540,16 @@ else
 
 				print '<tr><td>'.$langs->trans("AgfDuree").'</td><td colspan=2>';
 				print $agf->duree.'</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfPublic").'</td><td colspan=2>';
 				print stripslashes(nl2br($agf->public)).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td colspan=2>';
 				print stripslashes(nl2br($agf->methode)).'</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td colspan=2>';
 				print stripslashes(nl2br($agf->note1)).'</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td colspan=2>';
 				print stripslashes(nl2br($agf->note2)).'</td></tr>';
 
@@ -553,6 +557,11 @@ else
 				if (!empty($agf->prerequis)) $prerequis = nl2br($agf->prerequis);
 				else $prerequis = $langs->trans("AgfUndefinedPrerequis");
 				print stripslashes($prerequis).'</td></tr>';
+
+				print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td colspan=2>';
+				if (!empty($agf->but)) $but = nl2br($agf->but);
+				else $but = $langs->trans("AgfUndefinedBut");
+				print stripslashes($but).'</td></tr>';
 
 				print '<script type="text/javascript">'."\n";
 				print 'function DivStatus( div_){'."\n";
@@ -565,7 +574,7 @@ else
 				print '	}'."\n";
 				print '}'."\n";
 				print '</script>'."\n";
-				                  
+
 				print '<tr class="liste_titre"><td valign="top">'.$langs->trans("AgfProgramme").'</td>';
 				print '<td align="left" colspan=2>';
 				print '<a href="javascript:DivStatus(\'prog\');" title="afficher detail" style="font-size:14px;">+</a></td></tr>';
@@ -577,21 +586,21 @@ else
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfObjPeda").'</td></tr>';
-				
+
 				$i = 0;
 				foreach ($agf_peda->line as $line)
 				{
-				
+
 				    print '<tr>';
 				    print '<td width="40" align="center">'.$line->priorite.'</td>';
 				    print '<td>'.stripslashes($line->intitule).'</td>';
 				    print "</tr>\n";
 				    $i++;
 				}
-				
+
 				print "</table>";
-				
-				
+
+
 				if (is_file($conf->agefodd->dir_output.'/fiche_pedago_'.$id.'.pdf'))
 				{
 					print '&nbsp';
@@ -634,7 +643,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
-	
+
 	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
@@ -644,7 +653,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
 	}
 
-	if ($agf->archive == 0) 
+	if ($agf->archive == 0)
 	{
 	    $button_action = $langs->trans('AgfArchiver');
 	    if ($user->rights->agefodd->creer)
@@ -655,7 +664,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	    else
 	    {
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
-	    
+
 	    }
 	}
 	else
@@ -671,7 +680,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
 	    }
 	}
-	
+
 	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=fichepeda&id='.$id.'">'.$langs->trans('AgfPrintFichePedago').'</a>';
@@ -680,8 +689,8 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfPrintFichePedago').'</a>';
 	}
-	
-	
+
+
 }
 
 print '</div>';
