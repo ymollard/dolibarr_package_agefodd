@@ -86,7 +86,7 @@ class Agefodd_place extends CommonObject
 		$sql.= '"'.$this->notes.'",';
 		$sql.= '"'.$this->acces_site.'",';
 		$sql.= '"'.$this->note1.'",';
-		$sql.= '"'.$user.'",';
+		$sql.= '"'.$user->id.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
@@ -295,7 +295,7 @@ class Agefodd_place extends CommonObject
      *      \param      notrigger	    0=launch triggers after, 1=disable triggers
      *      \return     int         	<0 if KO, >0 if OK
      */
-    function update($user=0, $notrigger=0)
+    function update($user, $notrigger=0)
     {
 		global $conf, $langs;
 		$error=0;
@@ -325,7 +325,7 @@ class Agefodd_place extends CommonObject
 		$sql.= ' p.tel="'.$this->tel.'",';
 		$sql.= ' p.fk_societe="'.$this->fk_societe.'",';
 		$sql.= ' p.notes="'.$this->notes.'",';
-		$sql.= ' p.fk_user_mod="'.$user.'",';
+		$sql.= ' p.fk_user_mod="'.$user->id.'",';
 		$sql.= ' p.archive="'.$this->archive.'",';
 		$sql.= ' p.acces_site="'.$this->acces_site.'",';
 		$sql.= ' p.note1="'.$this->note1.'", ';
@@ -402,7 +402,7 @@ class Agefodd_place extends CommonObject
 	 *  @param	User	$user        User that ask request
 	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
-	function import_customer_adress($user=0)
+	function import_customer_adress($user)
 	{
 		global $conf, $langs;
 		$error=0;

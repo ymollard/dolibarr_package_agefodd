@@ -24,9 +24,9 @@
 	\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
 
@@ -101,7 +101,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			//$agf_session = new Agefodd_session($this->db);
+			//$agf_session = new Agsession($this->db);
 			//$ret = $agf_session->fetch($id);
 			//if ($ret)
 			//{
@@ -324,6 +324,21 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
 
+				/***** But *****/
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
+				$pdf->SetXY($posX, $posY);
+				$this->str = "But";
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
+				$posY+= 5;
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$this->str = $agf_op->but;
+				if (empty($this->str)) $this->str = "Aucun";
+
+				$pdf->SetXY( $posX, $posY);
+				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 8;
 
 				/***** Programme *****/
 

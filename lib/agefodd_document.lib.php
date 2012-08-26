@@ -192,7 +192,7 @@ function show_fac($file, $socid, $mdle)
 	return $mess;
 }
 
-function document_line($intitule, $level=2, $mdle, $socid, $nom_courrier='')
+function document_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
 {
 	print '<tr style="height:14px">'."\n";
 	if ($level == 2)

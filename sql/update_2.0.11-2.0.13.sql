@@ -26,3 +26,4 @@ INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `acti
 
 ALTER TABLE llx_agefodd_stagiaire_type ADD COLUMN active int NULL AFTER sort;
 
+ALTER TABLE  llx_agefodd_formation_catalogue ADD COLUMN but tinytext NULL AFTER prerequis;

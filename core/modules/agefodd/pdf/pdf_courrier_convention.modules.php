@@ -32,7 +32,7 @@ $posY = 110;
  */
 
 // Recuperation des dates de formation
-$agf = new Agefodd_session($this->db);
+$agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
 if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
 else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);

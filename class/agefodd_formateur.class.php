@@ -19,7 +19,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -70,11 +70,10 @@ class Agefodd_teacher extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formateur(";
-		$sql.= "fk_socpeople, fk_user_author, fk_user_mod, datec";
+		$sql.= "fk_socpeople, fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->spid.'", ';
-		$sql.= '"'.$user.'",';
-		$sql.= '"'.$user.'",';
+		$sql.= '"'.$user->id.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
@@ -271,7 +270,7 @@ class Agefodd_teacher extends CommonObject
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update($user=0, $notrigger=0)
+	function update($user, $notrigger=0)
 	{
 	global $conf, $langs;
 	$error=0;
@@ -286,8 +285,7 @@ class Agefodd_teacher extends CommonObject
 	// Update request
 	if (!isset($this->archive)) $this->archive = 0; 
 	$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formateur as s SET";
-	//$sql.= " s.fk_socpeople='".$this->fk_socpeople."',";
-	$sql.= " s.fk_user_mod='".$user."',";
+	$sql.= " s.fk_user_mod='".$user->id."',";
 	$sql.= " s.archive='".$this->archive."'";
 	$sql.= " WHERE s.rowid = ".$this->id;
 	

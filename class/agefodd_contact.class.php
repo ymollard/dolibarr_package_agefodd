@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -43,7 +43,7 @@ class Agefodd_contact extends CommonObject
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function __construct($DB) 
+	function __construct($DB)
 	{
 		$this->db = $DB;
 		return 1;
@@ -61,13 +61,13 @@ class Agefodd_contact extends CommonObject
 	{
 		global $conf, $langs;
 		$error=0;
-	
+
 		// Clean parameters
-	
-	
+
+
 		// Check parameters
 		// Put here code to add control on parameters value
-		
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_contact(";
 		$sql.= "fk_socpeople, fk_user_author, datec";
@@ -76,9 +76,9 @@ class Agefodd_contact extends CommonObject
 		$sql.= '"'.$user.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
-	
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -89,7 +89,7 @@ class Agefodd_contact extends CommonObject
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
 			// want this action call a trigger.
-			
+
 			//// Call triggers
 			//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 			//$interface=new Interfaces($this->db);
@@ -98,7 +98,7 @@ class Agefodd_contact extends CommonObject
 			//// End call triggers
 			}
 		}
-	
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -128,12 +128,12 @@ class Agefodd_contact extends CommonObject
 		global $langs;
 
 		$sql = "SELECT";
-		$sql.= " c.rowid, c.fk_socpeople,";
+		$sql.= " c.rowid,";
 		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.address, s.cp, s.ville, c.archive";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		($type == 'socid') ? $sql.= " WHERE s.fk_soc = ".$id : $sql.= " WHERE c.rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -187,7 +187,7 @@ class Agefodd_contact extends CommonObject
 		if ($arch == 0 || $arch == 1) $sql.= " WHERE c.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
-		
+
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -238,12 +238,12 @@ class Agefodd_contact extends CommonObject
 	function info($id)
 	{
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.datec, c.tms, c.fk_user_mod, c.fk_user_author";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " WHERE c.rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -258,7 +258,7 @@ class Agefodd_contact extends CommonObject
 			$this->user_creation = $obj->fk_user_author;
 			}
 			$this->db->free($resql);
-		
+
 			return 1;
 		}
 		else
@@ -276,26 +276,26 @@ class Agefodd_contact extends CommonObject
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update($user=0, $notrigger=0)
+	function update($user, $notrigger=0)
 	{
 	global $conf, $langs;
 	$error=0;
-	
+
 	// Clean parameters
-	
-	
+
+
 	// Check parameters
 	// Put here code to add control on parameters values
-	
+
 	// Update request
-	if (!isset($this->archive)) $this->archive = 0; 
+	if (!isset($this->archive)) $this->archive = 0;
 	$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_contact as c SET";
-	$sql.= " c.fk_user_mod='".$user."',";
+	$sql.= " c.fk_user_mod='".$user->id."',";
 	$sql.= " c.archive='".$this->archive."'";
 	$sql.= " WHERE c.rowid = ".$this->id;
-	
+
 	$this->db->begin();
-	
+
 	dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
 	$resql = $this->db->query($sql);
 	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -305,7 +305,7 @@ class Agefodd_contact extends CommonObject
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
 			// want this action call a trigger.
-				
+
 			//// Call triggers
 			//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 			//$interface=new Interfaces($this->db);
@@ -314,7 +314,7 @@ class Agefodd_contact extends CommonObject
 			//// End call triggers
 		}
 		}
-		
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -322,7 +322,7 @@ class Agefodd_contact extends CommonObject
 			{
 			dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
 			$this->error.=($this->error?', '.$errmsg:$errmsg);
-			}	
+			}
 			$this->db->rollback();
 			return -1*$error;
 		}
@@ -330,7 +330,7 @@ class Agefodd_contact extends CommonObject
 		{
 			$this->db->commit();
 			return 1;
-		}		
+		}
 	}
 
 
@@ -343,10 +343,10 @@ class Agefodd_contact extends CommonObject
 	{
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_contact";
 		$sql .= " WHERE rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-		
+
 		if ($resql)
 		{
 			return 1;

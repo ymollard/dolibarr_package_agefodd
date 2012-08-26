@@ -27,10 +27,10 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
-dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
 
@@ -81,7 +81,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
 		$agf->notes = GETPOST('notes','alpha');
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 		
 		if ($result > 0)
 		{
@@ -113,7 +113,7 @@ if ($action == 'update_archive' && $user->rights->agefodd->creer)
 	$result = $agf->fetch($actid);
 	$agf->archive = !($agf->archive);
 	$agf->datef = dol_mktime(0,0,0,idate('m',dol_now()),idate('d',dol_now()),idate('y',dol_now()));
-	$result = $agf->update($user->id);
+	$result = $agf->update($user);
 	
 	if ($result > 0)
 	{
@@ -185,7 +185,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf->level_rank = 0;
 		}
 		
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result < 0)
 		{
@@ -223,7 +223,7 @@ if ($user->rights->agefodd->creer)
 	if ($id)
 	{		
 		// Affichage en mode "consultation"
-		$agf_session = new Agefodd_session($db);
+		$agf_session = new Agsession($db);
 		$res = $agf_session->fetch($id);
 
 		$head = session_prepare_head($agf_session);

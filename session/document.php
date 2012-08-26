@@ -26,12 +26,12 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/agefodd/lib/agefodd_document.lib.php');
@@ -58,7 +58,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 	{
 		if ($_POST["type"] == 'bc') $agf->comid=$_POST["select"];
 		if ($_POST["type"] == 'fac') $agf->facid=$_POST["select"];
-		$result2 = $agf->update($user->id);
+		$result2 = $agf->update($user);
 	}
 	// si nouveau, on créé
 	else
@@ -70,8 +70,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 		}
 		$agf->sessid = $id;
 		$agf->socid = $socid;
-		$agf->datec  =$db->idate(dol_now());;
-		$result2 = $agf->create($user->id);
+		$result2 = $agf->create($user);
 	}
 
 	if ($result2)
@@ -97,7 +96,7 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 	{
 		if ($_GET["type"] == 'bc') $agf->comid="";
 		if ($_GET["type"] == 'fac') $agf->facid="";
-		$result2 = $agf->update($user->id);
+		$result2 = $agf->update($user);
 	}
 	if ($result2)
 	{
@@ -178,7 +177,7 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 // Selection du bon de commande ou de la facture à lier
 if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$agf->fetch($id);
 
 	$head = session_prepare_head($agf);
@@ -313,7 +312,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 
 if (!empty($id))
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$agf->fetch($id);
 
 	$result = $agf->fetch_societe_per_session($id);
@@ -351,7 +350,6 @@ if (!empty($id))
 
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
 		//document_line("Convocation", 2, 'convocation');
-		document_line("Réglement intérieur", 2, 'regint');
 		document_line("Fiche pédagogique", 2, 'fiche_pedago');
 		document_line("Conseils pratiques", 2, 'conseils');
 

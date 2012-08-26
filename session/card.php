@@ -28,12 +28,12 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
-dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
@@ -54,7 +54,7 @@ $arch=GETPOST('arch','int');
 
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$result = $agf->remove($id);
 
 	if ($result > 0)
@@ -101,13 +101,11 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($confirm == "yes")
 	{
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$result = $agf->fetch($id);
-		$agf->formateur = $agf->teacherid;
-		$agf->fk_session_place = $agf->placeid;
 		$agf->archive = $_GET["arch"];
-		$result = $agf->update($user->id);
+		$result = $agf->updateArchive($user);
 
 		if ($result > 0)
 		{
@@ -144,7 +142,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 	{
 		$error=0;
 
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$fk_session_place = GETPOST('place','int');
 		if (($fk_session_place==-1) || (empty($fk_session_place)))
@@ -204,7 +202,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 		if ($error==0)
 		{
-			$result = $agf->update($user->id);
+			$result = $agf->update($user);
 			if ($result > 0)
 			{
 				if ($_POST['saveandclose']!='') {
@@ -276,7 +274,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		if(!empty($heured)) 			$agf->heured = $heured;
 		if(!empty($heuref)) 			$agf->heuref =  $heuref;
 
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -333,7 +331,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		$agf->opsid = GETPOST('opsid','int');
 		$agf->formid = GETPOST('formid','int');
 
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -353,7 +351,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->formid = GETPOST('formid','int');
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
@@ -378,7 +376,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 	$error=0;
 	if (! $_POST["cancel"])
 	{
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 
 		$fk_session_place = GETPOST('place','int');
 		if (($fk_session_place==-1) || (empty($fk_session_place)))
@@ -435,7 +433,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 						$actions->archive = 0;
 						$actions->level_rank = $line->level_rank;
 						$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
-						$result3 = $actions->create($user->id);
+						$result3 = $actions->create($user);
 
 						if ($result3 < 0) {
 							dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
@@ -446,7 +444,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 					//Caculate the new parent level
 					$action_static = new Agefodd_sessadm($db);
-					$result4 = $action_static->setParentActionId($user->id,$agf->id);
+					$result4 = $action_static->setParentActionId($user,$agf->id);
 					if ($result4 < 0) {
 						dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
 						$mesg .= $action_static->error;
@@ -583,7 +581,7 @@ else
 	// Affichage de la fiche "session"
 	if ($id)
 	{
-		$agf = new Agefodd_session($db);
+		$agf = new Agsession($db);
 		$result = $agf->fetch($id);
 
 		if ($result)
@@ -746,10 +744,6 @@ else
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costsite" value="'.price($agf->cost_site).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
-
-					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
-
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
 					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 
@@ -1091,7 +1085,7 @@ else
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 
-					$stagiaires = new Agefodd_session($db);
+					$stagiaires = new Agsession($db);
 					$stagiaires->fetch_stagiaire_per_session($agf->id);
 					$nbstag = count($stagiaires->line);
 					print '<tr><td  width="20%" valign="top" ';

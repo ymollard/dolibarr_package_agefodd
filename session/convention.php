@@ -28,13 +28,13 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/session/class/agefodd_session_calendrier.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/core/lib/company.lib.php');
 
 // Security check
@@ -85,7 +85,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		$result = $agf->fetch(0,0,$id);
 	
 		$agf->archive = $arch;
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 	
 		if ($result > 0)
 		{
@@ -149,7 +149,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
 
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -210,7 +210,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
 				
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
@@ -254,7 +254,7 @@ dol_htmloutput_mesg($mesg);
 if ($action == 'create' && $user->rights->agefodd->creer)
 {	
 
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$resql = $agf->fetch($sessid);
 
 	// On cherche si une convention de formation a déjà été faite pour ce client.
@@ -353,7 +353,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 			$old_date = $calendrier->line[$i]->date_session;
 		}
 	
-		$stagiaires = new Agefodd_session($db);
+		$stagiaires = new Agsession($db);
 		$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
 		$art1.= '# Effectif du stage : '.$nbstag.' personne';
 		if ($nbstag > 1) $art1.= 's';
@@ -501,7 +501,7 @@ else
 
 	if ($result)
 	{
-		$agf_session = new Agefodd_session($db);
+		$agf_session = new Agsession($db);
 		$agf_session->fetch($agf->sessid);
 		
 		$head = session_prepare_head($agf_session,1);
@@ -592,7 +592,7 @@ else
 			}
 			
 			//Create a list of customer for each convention
-			//$agf_sess= new Agefodd_session($db);
+			//$agf_sess= new Agsession($db);
 			//$result_sess_soc = $agf_sess->fetch_societe_per_session($sessid);
 			//	$result = $agf->fetch($sessid, $agf_sess->line[0]->socid, 0);			
 

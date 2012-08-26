@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session.class.php $
+ *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
  *	\version	$Id$
@@ -101,7 +101,7 @@ class Agefodd_sessadm extends CommonObject
 		$sql.= $this->db->idate($this->datea).', ';
 		$sql.= '"'.$this->notes.'",';
 		$sql.= $this->archive.',';
-		$sql.= '"'.$user.'", ';
+		$sql.= '"'.$user->id.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -152,7 +152,7 @@ class Agefodd_sessadm extends CommonObject
 	 *  @param	int		$notrigger   0=launch triggers after, 1=disable triggers
 	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
-	function update($user=0, $notrigger=0)
+	function update($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error = 0;
@@ -175,7 +175,7 @@ class Agefodd_sessadm extends CommonObject
 		$sql.= " s.dated=".$this->db->idate($this->dated).",";
 		$sql.= " s.datef=".$this->db->idate($this->datef).",";
 		$sql.= " s.datea=".$this->db->idate($this->datea).",";
-		$sql.= " s.fk_user_mod='".$user."',";
+		$sql.= " s.fk_user_mod='".$user->id."',";
 		$sql.= " s.notes='".$this->notes."',";
 		$sql.= " s.archive='".$this->archive."',";
 		$sql.= " s.level_rank='".$this->level_rank."',";
@@ -441,7 +441,7 @@ class Agefodd_sessadm extends CommonObject
 	 *  @param  $notrigger int			 0=launch triggers after, 1=disable triggers
 	 *  @return int     		   	 	 <0 if KO, >0 if OK
 	 */
-	function setParentActionId($user=0, $session_id)
+	function setParentActionId($user, $session_id)
 	{
 		global $conf, $langs;
 		$error = 0;

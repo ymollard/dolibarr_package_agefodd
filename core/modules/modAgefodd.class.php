@@ -59,7 +59,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.0.14';
+		$this->version = '2.0.13';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -664,14 +664,14 @@ class modAgefodd extends DolibarrModules
 								$sql="SHOW COLUMNS FROM llx_agefodd_session_calendrier FROM dolibarrDev where Field = 'heured' and Type='datetime'";
 								$resql=$this->db->query($sql);
 								if ($resql) {
-									if ($this->db->num_rows($resql)==0) {
+									if ($this->db->num_rows($resql)==1) {
 										$dorun=false;
 									}
 								}
 								else
 								{
 									$this->error="Error ".$this->db->lasterror();
-									dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+									dol_syslog(get_class($this)."::updatefile ".$this->error, LOG_ERR);
 									$error ++;
 								}
 							}

@@ -27,7 +27,7 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 
@@ -74,7 +74,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($id);
 	
 		$agf->archive = $arch;
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 	
 		if ($result > 0)
 		{
@@ -116,7 +116,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->acces_site = GETPOST('acces_site','alpha');
 		$agf->note1 = GETPOST('note1','alpha');
-		$result = $agf->update($user->id);
+		$result = $agf->update($user);
 
 		if ($result > 0)
 		{
@@ -135,7 +135,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_place($db);
 		
 		$result = $agf->fetch($id);
-		$result = $agf->import_customer_adress($user->id);
+		$result = $agf->import_customer_adress($user);
 		
 		if ($result > 0)
 		{
@@ -175,7 +175,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->acces_site = GETPOST('acces_site','alpha');
 		$agf->note1 = GETPOST('note1','alpha');
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
