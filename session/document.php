@@ -174,70 +174,6 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 }
 
 
-// Selection du bon de commande ou de la facture à lier
-if (($action == 'link' ) && $user->rights->agefodd->creer)
-{
-	$agf = new Agsession($db);
-	$agf->fetch($id);
-
-	$head = session_prepare_head($agf);
-
-	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
-
-	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
-	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-	print '</div>'."\n";
-
-	print '<table class="border" width="100%">'."\n";
-
-	print '<tr class="liste_titre">'."\n";
-	print '<td colspan=3>';
-	print  '<a href="#">'.$langs->trans("AgfCommonDocs").'</a></td>'."\n";
-	print '</tr>'."\n";
-
-	print '<tr class="liste">'."\n";
-
-	// creation de la liste de choix
-	$agf_liste = new Agefodd_facture($db);
-	$result = $agf_liste->fetch_fac_per_soc($_GET["socid"], $_GET["type"]);
-	$num = count($agf_liste->line);
-	if ($num > 0)
-	{
-		print '<form name="fact_link" action="document.php?action=link_confirm&id='.$id.'"  method="post">'."\n";
-		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-		print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";
-		print '<input type="hidden" name="type" value="'.$_GET["type"].'">'."\n";
-
-		$var=True;
-		$options = '<option value=""></option>'."\n";;
-		for ($i = 0; $i < $num; $i++)
-		{
-			$options .= '<option value="'.$agf_liste->line[$i]->id.'">'.$agf_liste->line[$i]->ref.'</option>'."\n";
-		}
-		$select = '<select class="flat" name="select">'."\n".$options."\n".'</select>'."\n";
-
-		print '<td width="250px">';
-		($_GET["type"] == 'bc') ? print $langs->trans("AgfFactureBcSelectList") : print $langs->trans("AgfFactureFacSelectList");
-		print '</td>'."\n";
-		print '<td>'.$select.'</td>'."\n";
-		if ($user->rights->agefodd->modifier)
-		{
-			print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="bt_save" alt="'.$langs->trans("AgfModSave").'"></td>'."\n";
-		}
-		print '</form>';
-	}
-	else
-	{
-		print '<td colspan=3>';
-		($_GET["type"] == 'bc') ? print $langs->trans("AgfFactureBcNoResult") : print $langs->trans("AgfFactureFacNoResult");
-		print '</td>';
-	}
-	print '</tr>'."\n";
-
-	print '</div>'."\n";
-	exit;
-}
-
 llxHeader();
 
 $form = new Form($db);
@@ -249,7 +185,7 @@ dol_htmloutput_mesg($mesg);
 // Selection du bon de commande ou de la facture à lier
 if (($action == 'link' ) && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$agf->fetch($id);
 
 	$head = session_prepare_head($agf);
