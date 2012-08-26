@@ -28,12 +28,12 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/session/class/agefodd_sessadm.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/session/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/agefodd/lib/agefodd_document.lib.php');
@@ -63,7 +63,7 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 {
 	$langs->load('mails');
 
-	$object = new Agefodd_session($db);
+	$object = new Agsession($db);
 
 
 	$result=$object->fetch($id);
@@ -152,7 +152,6 @@ if ($action == 'send_pedago' && ! $_POST['addfile'] && ! $_POST['removedfile'] &
 					$object->fk_element		= $object->id;
 					$object->elementtype	= $object->element;
 
-
 					/* Appel des triggers */
 					include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 					$interface=new Interfaces($db);
@@ -213,7 +212,7 @@ dol_htmloutput_errors('',$errors);
 
 if (!empty($id))
 {
-	$agf = new Agefodd_session($db);
+	$agf = new Agsession($db);
 	$agf->fetch($id);
 
 	$result = $agf->fetch_societe_per_session($id);
@@ -321,7 +320,7 @@ if (!empty($id))
 			if ($action != "presend_pedago") {
 
 				//print '<a href="'.$_SERVER['PHP_SELF'].'&id='.$id.'&action=send_pedago&mode=init">'.$langs->trans('Send').'</a>';
-				document_send_line("Envoi fiche pédagogique", 2, 'fiche_pedago');
+				document_send_line("Envoi fiche pédagogique", 2, 'fiche_pedago','');
 			}
 			document_line("Conseils pratiques", 2, 'conseils');
 

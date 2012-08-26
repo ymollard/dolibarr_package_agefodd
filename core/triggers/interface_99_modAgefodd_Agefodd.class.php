@@ -200,7 +200,7 @@ class InterfaceAgefodd
 				$error ="Failed to insert : ".$actioncomm->error." ";
 				$this->error=$error;
 
-				dol_syslog("interface_modAgenda_ActionsAuto.class.php: ".$this->error, LOG_ERR);
+				dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
 				return -1;
 			}
 		}
