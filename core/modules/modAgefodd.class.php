@@ -661,11 +661,17 @@ class modAgefodd extends DolibarrModules
 						{
 							//Special test to know what kind of update script to run
 							if ($file=='update_1.0.0-2.0.sql')	{
-								$sql="SHOW COLUMNS FROM llx_agefodd_session_calendrier FROM dolibarrDev where Field = 'heured' and Type='datetime'";
+								$sql='SELECT value FROM '.MAIN_DB_PREFIX.'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
+								dol_syslog(get_class($this)."::updatefile sql:".$sql, LOG_DEBUG);
 								$resql=$this->db->query($sql);
 								if ($resql) {
 									if ($this->db->num_rows($resql)==1) {
-										$dorun=false;
+										$obj = $this->db->fetch_object($resql);	
+										$ver = intval(substr($obj->value,4,strlen($obj->value)));
+										dol_syslog(get_class($this)."::updatefile ver:".$ver, LOG_DEBUG);
+										if ($ver>=12) {
+											$dorun=false;
+										}
 									}
 								}
 								else

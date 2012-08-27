@@ -315,3 +315,4 @@ ActionAC_AGF_SESS = Training Session
 ActionAC_AGF_CONV = Send convention by email
 AgfSendCommonDocs = Document to send
 AgfModPDFConvocation = Convocation document Model
+AgfModifyTrainer = Edit trainer
