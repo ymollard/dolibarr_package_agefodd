@@ -28,9 +28,9 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/admin/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/core/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
 
@@ -183,7 +183,7 @@ if ($action == 'sessionlevel_create')
 	}
 	else
 	{
-		$result = $agf->create($user->id);
+		$result = $agf->create($user);
 		
 		if ($result1!=1)
 		{
@@ -210,7 +210,7 @@ if ($action == 'sessionlevel_update')
 		//Up level of action
 		if (GETPOST('sesslevel_up_x'))
 		{
-			$result2 = $agf->shift_indice($user->id,'less');
+			$result2 = $agf->shift_indice($user,'less');
 			if ($result1!=1)
 			{
 				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -221,7 +221,7 @@ if ($action == 'sessionlevel_update')
 		//Down level of action
 		if (GETPOST('sesslevel_down_x'))
 		{
-			$result1 = $agf->shift_indice($user->id,'more');
+			$result1 = $agf->shift_indice($user,'more');
 			if ($result1!=1)
 			{
 				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -278,7 +278,7 @@ if ($action == 'sessionlevel_update')
 			}
 			else
 			{
-				$result1 = $agf->update($user->id);
+				$result1 = $agf->update($user);
 				if ($result1!=1)
 				{
 					dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
@@ -291,7 +291,7 @@ if ($action == 'sessionlevel_update')
 		if (GETPOST('sesslevel_remove_x'))
 		{
 			
-			$result = $agf->delete($user->id);
+			$result = $agf->delete($user);
 			if ($result!=1)
 			{
 				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);

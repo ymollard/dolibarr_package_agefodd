@@ -44,13 +44,13 @@ class Agefodd extends CommonObject
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function __construct($DB) 
+	function __construct($DB)
 	{
 		$this->db = $DB;
 		return 1;
 	}
-	
-	
+
+
 	/**
 	*      \brief      Create in database
 	*      \param      user        	User that create
@@ -61,38 +61,40 @@ class Agefodd extends CommonObject
 	{
 		global $conf, $langs;
 		$error=0;
-	
+
 		// Clean parameters
 		$this->intitule = $this->db->escape($this->intitule);
 		$this->public = $this->db->escape($this->public);
 		$this->methode = $this->db->escape($this->methode);
 		$this->prerequis = $this->db->escape($this->prerequis);
+		$this->but = $this->db->escape($this->but);
 		$this->note1 = $this->db->escape($this->note1);
 		$this->note2 = $this->db->escape($this->note2);
-	
-	
+
+
 		// Check parameters
 		// Put here code to add control on parameters value
-		
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, programme, note1, note2, fk_user_author";
+		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
 		$sql.= '"'.$this->public.'",';
-		$sql.= '"'.$this->methode.'",';	
+		$sql.= '"'.$this->methode.'",';
 		$sql.= '"'.$this->prerequis.'",';
+		$sql.= '"'.$this->but.'",';
 		$sql.= '"'.$this->programme.'",';
 		$sql.= '"'.$this->note1.'",';
 		$sql.= '"'.$this->note2.'",';
-		$sql.= '"'.$user.'"';
+		$sql.= '"'.$user->id.'"';
 		$sql.= ")";
-	
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -103,7 +105,7 @@ class Agefodd extends CommonObject
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
 			// want this action call a trigger.
-			
+
 			//// Call triggers
 			//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 			//$interface=new Interfaces($this->db);
@@ -112,7 +114,7 @@ class Agefodd extends CommonObject
 			//// End call triggers
 			}
 		}
-	
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -141,13 +143,13 @@ class Agefodd extends CommonObject
 	function fetch($id)
 	{
 	global $langs;
-	
+
 	$sql = "SELECT";
 	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
-	$sql.= " c.public, c.methode, c.prerequis, c.programme, c.archive, c.note1, c.note2 ";
+	$sql.= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	$sql.= " WHERE c.rowid = ".$id;
-	
+
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 	$resql=$this->db->query($sql);
 	if ($resql)
@@ -163,13 +165,14 @@ class Agefodd extends CommonObject
 			$this->public = stripslashes($obj->public);
 			$this->methode = stripslashes($obj->methode);
 			$this->prerequis = stripslashes($obj->prerequis);
+			$this->but = stripslashes($obj->but);
 			$this->programme = stripslashes($obj->programme);
 			$this->note1 = stripslashes($obj->note1);
 			$this->note2 = stripslashes($obj->note2);
 			$this->archive = $obj->archive;
 		}
 		$this->db->free($resql);
-	
+
 		return 1;
 	}
 	else
@@ -179,8 +182,8 @@ class Agefodd extends CommonObject
 		return -1;
 	}
 	}
-	
-	
+
+
 	/**
 	*    \brief      Load info object in memory from database
 	*    \param      id          id object
@@ -189,12 +192,12 @@ class Agefodd extends CommonObject
 	function info($id)
 	{
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.datec, c.tms, c.fk_user_author, c.fk_user_mod ";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " WHERE c.rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -209,7 +212,7 @@ class Agefodd extends CommonObject
 				$this->user_modification = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
-		
+
 			return 1;
 		}
 		else
@@ -219,32 +222,33 @@ class Agefodd extends CommonObject
 			return -1;
 		}
 	}
-	
-	
+
+
 	/**
 	*      \brief      Update database
 	*      \param      user        	User that modify
 	*      \param      notrigger	    0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update($user=0, $notrigger=0)
+	function update($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
-		
+
 		// Clean parameters
 		$this->intitule = $this->db->escape($this->intitule);
 		$this->public = $this->db->escape($this->public);
 		$this->methode = $this->db->escape($this->methode);
 		$this->prerequis = $this->db->escape($this->prerequis);
+		$this->but = $this->db->escape($this->but);
 		$this->programme = $this->db->escape($this->programme);
 		$this->note1 = $this->db->escape($this->note1);
 		$this->note2 = $this->db->escape($this->note2);
-		
+
 		// Check parameters
 		// Put here code to add control on parameters values
 		// Update request
-		if (!isset($this->archive)) $this->archive = 0; 
+		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
 		$sql.= " c.ref='".$this->ref_interne."',";
 		$sql.= " c.intitule='".$this->intitule."',";
@@ -252,15 +256,16 @@ class Agefodd extends CommonObject
 		$sql.= " c.public='".$this->public."',";
 		$sql.= " c.methode='".$this->methode."',";
 		$sql.= " c.prerequis='".$this->prerequis."',";
+		$sql.= " c.but='".$this->but."',";
 		$sql.= " c.programme='".$this->programme."',";
 		$sql.= " c.note1='".$this->note1."',";
 		$sql.= " c.note2='".$this->note2."',";
-		$sql.= " c.fk_user_mod='".$user."',";
+		$sql.= " c.fk_user_mod='".$user->id."',";
 		$sql.= " c.archive=".$this->archive;
 		$sql.= " WHERE c.rowid = ".$this->id;
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -270,7 +275,7 @@ class Agefodd extends CommonObject
 				{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-					
+
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -279,7 +284,7 @@ class Agefodd extends CommonObject
 				//// End call triggers
 			}
 		}
-			
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -287,7 +292,7 @@ class Agefodd extends CommonObject
 			{
 			dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
 			$this->error.=($this->error?', '.$errmsg:$errmsg);
-			}	
+			}
 			$this->db->rollback();
 			return -1*$error;
 		}
@@ -295,10 +300,10 @@ class Agefodd extends CommonObject
 		{
 			$this->db->commit();
 			return 1;
-		}		
+		}
 	}
 
-	
+
 	/**
 	*      \brief      Supprime l'operation
 	*      \param      id          Id operation à supprimer
@@ -308,10 +313,10 @@ class Agefodd extends CommonObject
 	{
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql .= " WHERE rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-		
+
 		if ($resql)
 		{
 			return 1;
@@ -330,17 +335,17 @@ class Agefodd extends CommonObject
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, Id of created object if OK
 	*/
-	function create_objpeda($user=0,$notrigger=0)
+	function create_objpeda($user,$notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
-    	
+
 		// Clean parameters
 		$this->intitule = $this->db->escape($this->intitule);
 
 		// Check parameters
 		// Put here code to add control on parameters value
-		
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda(";
 		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user_author";
@@ -348,11 +353,11 @@ class Agefodd extends CommonObject
         $sql.= '"'.$this->fk_formation_catalogue.'", ';
         $sql.= '"'.$this->intitule.'", ';
         $sql.= '"'.$this->priorite.'", ';
-        $sql.= '"'.$user.'"';
+        $sql.= '"'.$user->id.'"';
 		$sql.= ")";
 
 		$this->db->begin();
-		
+
 	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 	   	$resql=$this->db->query($sql);
 	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -363,7 +368,7 @@ class Agefodd extends CommonObject
 		    {
 	            // Uncomment this and change MYOBJECT to your own tag if you
 	            // want this action call a trigger.
-	            
+
 	            //// Call triggers
 	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 	            //$interface=new Interfaces($this->db);
@@ -400,14 +405,14 @@ class Agefodd extends CommonObject
 	function fetch_objpeda($id_formation)
 	{
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql.= " o.intitule, o.priorite";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda";
 		$sql.= " as o";
 		$sql.= " WHERE o.rowid = ".$id_formation;
-		
-		
+
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -420,7 +425,7 @@ class Agefodd extends CommonObject
 			$this->priorite = $obj->priorite;
 			}
 			$this->db->free($resql);
-		
+
 			return 1;
 		}
 		else
@@ -440,7 +445,7 @@ class Agefodd extends CommonObject
 	function fetch_objpeda_per_formation($id_formation)
 	{
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql.= " o.rowid, o.intitule, o.priorite, o.fk_formation_catalogue, o.tms, o.fk_user_author";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda AS o";
@@ -458,11 +463,11 @@ class Agefodd extends CommonObject
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$this->line[$i]->id = $obj->rowid;
 				$this->line[$i]->intitule = stripslashes($obj->intitule);
 				$this->line[$i]->priorite = $obj->priorite;
-				
+
 				$i++;
 			}
 			$this->db->free($resql);
@@ -483,27 +488,27 @@ class Agefodd extends CommonObject
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update_objpeda($user=0, $notrigger=0)
+	function update_objpeda($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
-		
+
 		// Clean parameters
 		$this->intitule = $this->db->escape($this->intitule);
-		
+
 		// Check parameters
 		// Put here code to add control on parameters values
-		
+
 		// Update request
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
 		$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
 		$sql.= " o.intitule='".$this->intitule."',";
-		$sql.= " o.fk_user_mod='".$user."',";
+		$sql.= " o.fk_user_mod='".$user->id."',";
 		$sql.= " o.priorite='".$this->priorite."'";
 		$sql.= " WHERE o.rowid = ".$this->id;
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -513,7 +518,7 @@ class Agefodd extends CommonObject
 				{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-					
+
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -522,7 +527,7 @@ class Agefodd extends CommonObject
 				//// End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -530,7 +535,7 @@ class Agefodd extends CommonObject
 			{
 			dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
 			$this->error.=($this->error?', '.$errmsg:$errmsg);
-			}	
+			}
 			$this->db->rollback();
 			return -1*$error;
 		}
@@ -538,7 +543,7 @@ class Agefodd extends CommonObject
 		{
 			$this->db->commit();
 			return 1;
-		}		
+		}
 	}
 
 	/**
@@ -550,10 +555,10 @@ class Agefodd extends CommonObject
 	{
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda";
 		$sql .= " WHERE rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-		
+
 		if ($resql)
 		{
 			return 1;
@@ -564,7 +569,7 @@ class Agefodd extends CommonObject
 		    return -1;
 		}
     }
-    
+
     /**
      *	Initialise object with example values
      *	Id must be 0 if object instance is a specimen
@@ -583,8 +588,8 @@ class Agefodd extends CommonObject
     	$this->programme = '';
     	$this->archive = '';
     }
-    
-    
+
+
     /**
      *      Return description of training
      *
@@ -593,10 +598,10 @@ class Agefodd extends CommonObject
     function getToolTip()
     {
     	global $conf;
-    
+
     	$langs->load("admin");
     	$langs->load("agefodd@agefodd");
-    
+
     	$s='';
     	if (type=='trainning')
     	{
@@ -605,7 +610,7 @@ class Agefodd extends CommonObject
     		$s.=$langs->trans("AgfDuree").' : '.$this->duree.' H <br>';
     		$s.=$langs->trans("AgfPublic").' : '.$this->public.'<br>';
     		$s.=$langs->trans("AgfMethode").' : '.$this->methode.'<br>';
-    		
+
     		$s.='<br>';
     	}
     	return $s;
@@ -623,7 +628,7 @@ class Agefodd extends CommonObject
     function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
     {
     	global $langs;
-    
+
     	$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree,";
 		$sql.= " (SELECT MAX(sess1.datef) FROM ".MAIN_DB_PREFIX."agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
 		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession,";
@@ -634,7 +639,7 @@ class Agefodd extends CommonObject
 		$sql.= " WHERE c.archive LIKE ".$arch;
 		$sql.= " GROUP BY c.ref";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
-    
+
     	dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
     	$resql=$this->db->query($sql);
     	if ($resql)
@@ -642,7 +647,7 @@ class Agefodd extends CommonObject
     		$this->line = array();
     		$num = $this->db->num_rows($resql);
     		$i = 0;
-    
+
     		if ($num)
     		{
     			while( $i < $num)
@@ -655,7 +660,7 @@ class Agefodd extends CommonObject
     				$this->line[$i]->duree = $obj->duree;
     				$this->line[$i]->lastsession = $obj->lastsession;
     				$this->line[$i]->nbsession = $obj->nbsession;
-    				
+
     				$i++;
     			}
     		}

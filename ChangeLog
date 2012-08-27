@@ -111,10 +111,28 @@ For all :
 - Add : PDF Réglement intérieur
 - Add : Manage internal rule for location
 - Add : Add technical spec into module folder
-- Add Agenda Dolibarr management
+- Add : Agenda Dolibarr management
 - Remove : BPF document because do not exists yet
 - Fix : On update convention art. 5 is no more replace with art. 4
 - Merge Branch from jf-Ferry : searate tab for trainner and merge subrogation and trainee
 - Merge Branch from jf-Ferry : Type of session (intra-inter entreprise), session nb place, session color
 For dev :
 - Fix: Use __construct() for all class
+
+***** ChangeLog for 2.0.13 compared to 2.0.12 *****
+For all :
+- Change: PDF : merge Reglement interieur et conseil pratrique
+- Add : PDF : Add convocation model 
+- Add : type attribut on training sessions
+- Add : fields on training session 
+- Add : allow to choice a color for the session
+- Fix : On archive session with option "Affiche dans la liste des contacts (création de session) les contacts Dolibarr (plutot que les correspondant Agefodd)"
+to yes, the contact client do not change anymore
+- Fix : On desativation and reactivation of the module, only good upgrade script are launch.
+- Add : Add field goal/but in training card and in PDF fiche Pedago
+- Add : separate Tab for trainer
+- Add : Send documents by mail (link with agenda)
+- Add : better upgrade process (do not active session on upgrade version (must be from 2.0.12 to work)) 
+For dev : 
+ - always pass in paramters of method create, update, and so on, the $user object rather tahn $user->id
+  - move all class to class directory

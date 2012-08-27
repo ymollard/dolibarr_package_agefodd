@@ -24,3 +24,4 @@ ALTER TABLE llx_agefodd_session ADD INDEX fk_soc (fk_soc);
 
 INSERT INTO `llx_c_actioncomm` (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES
 (100, 'AC_AGF', 'system', 'Link to Training', 'agefodd', 1, NULL, 10);
+

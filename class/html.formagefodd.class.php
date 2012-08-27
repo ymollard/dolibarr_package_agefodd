@@ -621,4 +621,57 @@ class FormAgefodd extends Form
 	{
 		return $this->selectarray($htmlname,$this->type_session_def,$selectval,0);
 	}
+
+	/**
+	 *  Show list of actions for element
+	 *
+	 *  @param	Object	$object			Object
+	 *  @param  string	$typeelement	'invoice','propal','order','invoice_supplier','order_supplier','fichinter'
+	 *	@param	int		$socid			socid of user
+	 *	@return	int						<0 if KO, >=0 if OK
+	 */
+	function showactions($object,$typeelement,$socid=0)
+	{
+		global $langs,$conf,$user;
+		global $bc;
+
+		require_once(DOL_DOCUMENT_ROOT."/comm/action/class/actioncomm.class.php");
+
+		$actioncomm = new ActionComm($this->db);
+		$actioncomm->getActions($socid, $object->id, $typeelement);
+
+		$num = count($actioncomm->actions);
+		if ($num)
+		{
+			if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
+			//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
+			else $title=$langs->trans("Actions");
+
+			print_titre($title);
+
+			$total = 0;	$var=true;
+			print '<table class="noborder" width="100%">';
+			print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
+			print "\n";
+
+			foreach($actioncomm->actions as $action)
+			{
+				$var=!$var;
+				print '<tr '.$bc[$var].'>';
+				print '<td>'.$action->getNomUrl(1).'</td>';
+				print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
+				print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
+				$userstatic = new User($this->db);
+				$userstatic->id = $action->author->id;
+				$userstatic->firstname = $action->author->firstname;
+				$userstatic->lastname = $action->author->lastname;
+				print '<td>'.$userstatic->getNomUrl(1).'</td>';
+				print '</tr>';
+			}
+			print '</table>';
+		}
+
+		return $num;
+	}
+
 }

@@ -1,5 +1,6 @@
 <?php
-/* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+/* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,40 +20,44 @@
 
 /**
 	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
+	\brief		Page permettant la création du fichier pdf contenant les attestations de formation de
+			l'ensemble des stagiaires d'une structure pour une session donnée.
 	\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/site/class/agefodd_place.class.php');
-dol_include_once('/agefodd/site/class/agefodd_reginterieur.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
 
 
-class pdf_regint extends ModelePDFAgefodd
+class pdf_convocation extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
-	
+
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	// gris clair
 	protected $color1 = array('190','190','190');
 	// marron/orangé
 	protected $color2 = array('203', '70', '25');
 
+
 	/**
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function pdf_regint($db)
+	function pdf_convocation($db)
 	{
 		global $conf,$langs,$mysoc;
-		
+
+
 		$langs->load("agefodd@agefodd");
-		
+
 		$this->db = $db;
-		$this->name = 'regint';
-		$this->description = $langs->trans('AgfModPDFRegint');
+		$this->name = 'conseil';
+		$this->description = $langs->trans('AgfModPDFConvocation');
 
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -64,19 +69,22 @@ class pdf_regint extends ModelePDFAgefodd
 		$this->marge_droite=15;
 		$this->marge_haute=10;
 		$this->marge_basse=10;
+		$this->defaultFontSize=13;
 		$this->unit='mm';
 		$this->oriantation='P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
 		
+
+
 	}
-	
-	
+
+
 	/**
 	 *	\brief      	Fonction generant le document sur le disque
 	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
@@ -84,27 +92,25 @@ class pdf_regint extends ModelePDFAgefodd
 	 *			file		Name of file to generate
 	 *	\return	    	int     	1=ok, 0=ko
 	 */
-	function write_file($agf, $outputlangs, $file, $socid, $courrier)
+	function write_file($agf,$outputlangs, $file, $socid)
 	{
 		global $user,$langs,$conf;
-		
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
-	
+
 		if (! is_object($outputlangs)) $outputlangs=$langs;
-		
+
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf_session = new Agefodd_session($this->db);
-			$ret = $agf_session->fetch($id);
-			if ($ret)
-			{				
-				$agf_place = new Agefodd_place($this->db);
-				$agf_place->fetch($agf_session->placeid);
+			$agf = new Agsession($this->db);
+			$ret = $agf->fetch($id);
+			if ($ret) {
+				$agf_calendrier= new Agefodd_sesscalendar($this->db);
+				$agf_calendrier->fetch_all($id);
 				
-				$agf_regint = new Agefodd_reg_interieur($this->db);
-				$agf_regint->fetch($agf_place->fk_reg_interieur);
+				$agf_place = new Agefodd_place($this->db);
+				$agf_place->fetch($agf->placeid);
 			}
+			
 		}
 
 		// Definition of $dir and $file
@@ -122,18 +128,17 @@ class pdf_regint extends ModelePDFAgefodd
 
 		if (file_exists($dir))
 		{
-		
 			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
-			
+
 			if (class_exists('TCPDF'))
 			{
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
-			
+
 			$pdf->Open();
 			$pagenb=0;
-			
+
 			$pdf->SetDrawColor(128,128,128);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
 			$pdf->SetSubject($outputlangs->transnoentities("Conseils"));
@@ -144,28 +149,30 @@ class pdf_regint extends ModelePDFAgefodd
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right
 			$pdf->SetAutoPageBreak(1,0);
-			
-			// On recupere les infos societe
-			$agf_soc = new Societe($this->db);
-			$result = $agf_soc->fetch($socid);
 
-			if ($result)
+			// Recuperation des stagiaires participant à la formation
+			$agf2 = new Agsession($this->db);
+			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
+
+			if (($result && $ret))
 			{
-				// New page
+				for ($i = 0; $i < count($agf2->line); $i++ )
+				{
+					// New page
 				$pdf->AddPage();
 				$pagenb++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0,0,0);
-				
+
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
-				
+
 				/*
 				 * Header société
 				 */
-				
+
 				// Logo en haut à gauche
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 				if ($this->emetteur->logo)
@@ -190,14 +197,14 @@ class pdf_regint extends ModelePDFAgefodd
 					$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
 					$pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
-				
+
 				$posX += $this->page_largeur - $this->marge_droite - 65;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 				$pdf->SetXY($posX, $posY +3);
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
@@ -208,70 +215,126 @@ class pdf_regint extends ModelePDFAgefodd
 				$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
 				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
+
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2; 
-				
+				$posY += $hauteur + 2;
+
 				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				
+
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
 				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
 				$this->width = $pdf->GetStringWidth($this->str);
-				
+
 				// alignement du bord droit du container avec le haut de la page
-				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width; 
+				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 				$baseline_angle = (M_PI/2); //angle droit
 				$baseline_x = 8;
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
 				$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
-				$pdf->SetXY($baseline_x, $baseline_y);				
+				$pdf->SetXY($baseline_x, $baseline_y);
 
 				/*
 				 * Corps de page
 				 */
 
 				$posX = $this->marge_gauche;
-				$posY += 5;
-				
+				$posY = $posY + 5;
+
 				/***** Titre *****/
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfRegInt");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-				$posY = $pdf->GetY()+10;
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor(0,0,0);
-				$this->str = $agf_session->formintitule;
+				$pdf->SetXY($posX, $posY);
+				$this->str = "Convocation";
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
+				$posY+= 14;
 				
-				$hauteur=dol_nboflines_bis($this->str,50)*4;
+				/***** Text Convocation *****/
 				
-				// cadre
-				$pdf->SetFillColor(255);
-				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur+3);
-				// texte
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+				$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM . " a me plaisir d'inviter :";
+				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str),0,0);
+				$posY += 8 ;
+				
+				$pdf->SetXY($posX + 10, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
+				$this->str = ucfirst(strtolower($agf2->line[$i]->civilitel))." ".$outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 8;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+				$this->str = "à participer a la formation";
+				$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 2;
+				
+				$pdf->SetXY($posX + 10, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 3);
+				$this->str = $agf->formintitule;
+				$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 8;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+				$this->str = " se déroulera le: ";
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 3;
+				
+				foreach ($agf_calendrier->line as $line) {
+					$pdf->SetXY( $posX + 10, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
+					$this->str = dol_print_date($line->date_session,'daytext')." de ".dol_print_date($line->heured,'hour'). " à ".dol_print_date($line->heuref,'hour');
+					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+					$posY = $pdf->GetY() + 2;
+					
+				}
+				
+				$posY = $pdf->GetY() + 8;
+				
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+				$this->str = " a l'adresse suivante: ";
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 3;
+				
+				$pdf->SetXY($posX + 10, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
+				$this->str = $agf_place->ref_interne;
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 2;
+				
+				$pdf->SetXY($posX + 10, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
+				$this->str = $agf_place->adresse;
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 2;
+				
+				$pdf->SetXY($posX + 10, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
+				$this->str = $agf_place->cp;
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 2;
+				
+				$pdf->SetXY($posX + 10, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
+				$this->str = $agf_place->ville;
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 10;
 				
-
-				/***** Réglement intérieur *****/
+				$pdf->SetXY( $posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+				$this->str = "Dans l’attente de vous accueillir";
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 8;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfRegInt");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = ucfirst($agf_regint->reg_int);
 				
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+				$this->str = "Recevez l’expression de nos sincères salutations.";
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 8;
 				
 				// Pied de page
@@ -281,15 +344,14 @@ class pdf_regint extends ModelePDFAgefodd
 				// Repere de pliage
 				$pdf->SetDrawColor(220,220,220);
 				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
-		
+
+				}
 			}
-			
 			$pdf->Close();
-			
 			$pdf->Output($file,'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
-			
+
 			return 1;   // Pas d'erreur
 		}
 		else
@@ -301,8 +363,7 @@ class pdf_regint extends ModelePDFAgefodd
 		return 0;   // Erreur par defaut
 	}
 
-
-	/**
+		/**
 	 *   	\brief      Show header of page
 	 *      \param      pdf             	Object PDF
 	 *      \param      object          	Object invoice
@@ -332,14 +393,14 @@ class pdf_regint extends ModelePDFAgefodd
 
 		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
-		
+
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
-		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-		
-		
+
+
 		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
 		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
@@ -351,30 +412,6 @@ class pdf_regint extends ModelePDFAgefodd
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
 		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');
 
-	}
-
-	/**
-	 *   	\brief		Formatage d'une liste à puce hierarchisée
-	 *   	\param		pdf     		PDF factory
-	 *      \param		outputlang		Object lang for output
-	 */
-	function liste_a_puce($text)
-	{
-		// - 1er niveau: remplacement de '# ' en debut de ligne par une puce de niv 1 (petit rond noir)
-		// - 2éme niveau: remplacement de '## ' en début de ligne par une puce de niv 2 (tiret)
-		// - 3éme niveau: remplacement de '### ' en début de ligne par une puce de niv 3 (>)
-		// Pour annuler le formatage (début de ligne sur la mage gauche : '!#'
-		$str = "";
-		$line = explode("\n", $text);
-		foreach ($line as $row)
-		{
-			if (preg_match('/^\!# /', $row)) $str.= preg_replace('/^\!# /', '', $row)."\n";
-			elseif (preg_match('/^# /', $row)) $str.= chr(149).' '.preg_replace('/^#/', '', $row)."\n";
-			elseif (preg_match('/^## /', $row)) $str.= '   '.'-'.preg_replace('/^##/', '', $row)."\n";
-			elseif (preg_match('/^### /', $row)) $str.= '   '.'  '.chr(155).' '.preg_replace('/^###/', '', $row)."\n";
-			else $str.= '   '.$row."\n";
-		}
-		return $str;
 	}
 }
 

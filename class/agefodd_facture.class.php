@@ -74,7 +74,7 @@ class Agefodd_facture
 		$sql.= '"'.$this->facid.'", ';
 		$sql.= '"'.$this->sessid.'", ';
 		$sql.= '"'.$this->socid.'", ';
-		$sql.= '"'.$user.'", ';
+		$sql.= '"'.$user->id.'", ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 		
@@ -266,7 +266,7 @@ class Agefodd_facture
 	*      \param      notrigger	0=launch triggers after, 1=disable triggers
 	*      \return     int         	<0 if KO, >0 if OK
 	*/
-	function update($user=0, $notrigger=0)
+	function update($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -284,7 +284,7 @@ class Agefodd_facture
 		$sql.= " f.fk_commande='".$this->comid."',";
 		$sql.= " f.fk_facture='".$this->facid."',";
 		$sql.= " f.fk_societe='".$this->socid."',";
-		$sql.= " f.fk_user_mod='".$user."'";
+		$sql.= " f.fk_user_mod='".$user->id."'";
 		$sql.= " WHERE f.rowid = ".$this->id;
 		
 		$this->db->begin();
