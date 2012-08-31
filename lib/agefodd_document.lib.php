@@ -268,7 +268,7 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 	else
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" />'.$langs->trans('SendMail').'</a>';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
 		//.show_doc($mdle, $socid, $nom_courrier).
 		print '</td></tr>'."\n";
 	}

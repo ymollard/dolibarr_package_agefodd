@@ -35,6 +35,8 @@ dol_include_once('/agefodd/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/html.formagefoddsenddocs.class.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/agefodd/lib/agefodd_document.lib.php');
 dol_include_once('/core/class/html.formmail.class.php');
@@ -54,7 +56,7 @@ $mesg = '';
 if (GETPOST('mesg','int',1) && isset($_SESSION['message'])) $mesg=$_SESSION['message'];
 
 $form = new Form($db);
-$formmail = new FormMail($db);
+$formmail = new FormAgefoddsenddocs($db);
 $formAgefodd = new FormAgefodd($db);
 
 /*
@@ -247,7 +249,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 llxHeader();
 
 $form = new Form($db);
-$formmail = new FormMail($db);
+$formmail = new FormAgefoddsenddocs($db);
 $formAgefodd = new FormAgefodd($db);
 
 dol_htmloutput_mesg($mesg);
@@ -396,7 +398,7 @@ if (!empty($id))
 			print '</tr>'."\n";
 
 			// Avant la  formation
-			print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
+			print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfCommonDocs").'</td></tr>'."\n";
 
 			include_once(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
 
@@ -404,11 +406,11 @@ if (!empty($id))
 			//document_line("Réglement intérieur", 2, 'reglement');
 
 			document_send_line("Envoi fiche pédagogique", 2, 'fiche_pedago','');
+			document_send_line("Fiche de présence", 2, "fiche_presence");
 
 			// Pendant la formation
-			print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
+			//print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
 
-			document_send_line("Fiche de présence", 2, "fiche_presence");
 
 			//document_line("Fiche d'évaluation", 2, "fiche_evaluation");
 
