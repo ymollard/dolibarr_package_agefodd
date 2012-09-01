@@ -294,7 +294,7 @@ class FormAgefoddsenddocs extends FormMail
                 if (is_array($this->withto))
                 {
                     if ($this->withtofree) $out.= " ".$langs->trans("or")." ";
-                    $out.= $form->selectarray("receiver", $this->withto, GETPOST("receiver"), 1);
+                    $out.= $form->selectarray("receiver", $this->withto, GETPOST("receiver"), 0);
                 }
                 if ($this->withtosocid > 0) // deprecated. TODO Remove this. Instead, fill withto with array before calling method.
                 {
@@ -552,6 +552,51 @@ class FormAgefoddsenddocs extends FormMail
 
         return $out;
     }
+
+    /**
+     *	Return multiselect list of entities.
+     *
+     *	@param	string	$htmlname	Name of select
+     *	@param	array	$current	Current model to manage
+     *	@param	string	$option		Option
+     *	@return	void
+     */
+    function multiselect_agefodd_entities($htmlname, $current, $option='')
+    {
+    	global $conf, $langs;
+
+
+
+    	$return = '<select id="'.$htmlname.'" class="multiselect" multiple="multiple" name="'.$htmlname.'[]" '.$option.'>';
+    	/*
+    	 *
+    	iif (is_array($this->dao->entities))
+    	{
+    		foreach ($this->dao->entities as $entity)
+    		{
+    			if (is_object($current) && $current->id != $entity->id && $entity->active == 1)
+    			{
+    				$return.= '<option value="'.$entity->id.'" ';
+    				if (is_array($current->options['sharings'][$htmlname]) && in_array($entity->id, $current->options['sharings'][$htmlname]))
+    				{
+    					$return.= 'selected="selected"';
+    				}
+    				$return.= '>';
+    				$return.= $entity->label;
+    				if (empty($entity->visible))
+    				{
+    					$return.= ' ('.$langs->trans('Hidden').')';
+    				}
+    				$return.= '</option>';
+    			}
+    		}
+    	}
+    	*/
+    	$return.= '</select>';
+
+    	return $return;
+    }
+
 }
 
 ?>
