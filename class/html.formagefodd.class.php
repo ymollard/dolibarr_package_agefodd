@@ -626,11 +626,11 @@ class FormAgefodd extends Form
 	 *  Show list of actions for element
 	 *
 	 *  @param	Object	$object			Object
-	 *  @param  string	$typeelement	'invoice','propal','order','invoice_supplier','order_supplier','fichinter'
+	 *  @param  string	$typeelement	'agefodd_agsession'
 	 *	@param	int		$socid			socid of user
 	 *	@return	int						<0 if KO, >=0 if OK
 	 */
-	function showactions($object,$typeelement,$socid=0)
+	function showactions($object,$typeelement='agefodd_agsession',$socid=0)
 	{
 		global $langs,$conf,$user;
 		global $bc;
@@ -651,7 +651,7 @@ class FormAgefodd extends Form
 
 			$total = 0;	$var=true;
 			print '<table class="noborder" width="100%">';
-			print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
+			print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
 			print "\n";
 
 			foreach($actioncomm->actions as $action)
@@ -665,6 +665,7 @@ class FormAgefodd extends Form
 				$userstatic->id = $action->author->id;
 				$userstatic->firstname = $action->author->firstname;
 				$userstatic->lastname = $action->author->lastname;
+				print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
 				print '<td>'.$userstatic->getNomUrl(1).'</td>';
 				print '</tr>';
 			}
