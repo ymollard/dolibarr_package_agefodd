@@ -49,10 +49,12 @@ include(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $action=GETPOST('action','alpha');
+$pre_action=GETPOST('pre_action','alpha');
 $id=GETPOST('id','int');
 $socid=GETPOST('socid','int');
 
 $mesg = '';
+$mesgs=array();
 
 if (GETPOST('mesg','int',1) && isset($_SESSION['message'])) $mesg=$_SESSION['message'];
 
@@ -67,9 +69,9 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 {
 	$langs->load('mails');
 
+	$action=$pre_action;
+
 	$object = new Agsession($db);
-
-
 	$result=$object->fetch($id);
 
 	if ($result > 0)
@@ -173,17 +175,18 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				$mailfile = new CMailFile($subject,$send_email,$from,$message,$filepath,$mimetype,$filename,$sendtocc,'',$deliveryreceipt);
 				if ($mailfile->error)
 				{
-					$mesg='<div class="error">'.$mailfile->error.'</div>';
+					$mesgs[]=$mailfile->error;
 				}
 				else
 				{
 					$result=$mailfile->sendfile();
 					if ($result)
 					{
-						$mesg=$langs->trans('MailSuccessfulySent',$mailfile->getValidAddress($from,2),$mailfile->getValidAddress($send_email,2));	// Must not contain "
+						$mesgs[]=$langs->trans('MailSuccessfulySent',$mailfile->getValidAddress($from,2),$mailfile->getValidAddress($send_email,2));	// Must not contain "
 
 						$error=0;
-						$object->socid 			= ($contactstatic->socid > 0 ? $contactstatic->socid : ($socid > 0 ? $socid : $object->fk_soc));
+						$socid_action = ($contactstatic->socid > 0 ? $contactstatic->socid : ($socid > 0 ? $socid : $object->fk_soc));
+						$object->socid 			= $socid_action;
 						$object->sendtoid		= $send_contact_id;
 						$object->actiontypecode	= $actiontypecode;
 						$object->actionmsg		= $actionmsg;
@@ -219,23 +222,21 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 						else
 						{
 							$i++;
-							$_SESSION['message'] .= $mesg;
+							$action = '';
 						}
 					}
 					else
 					{
 						$langs->load("other");
-						$mesg='<div class="error">';
 						if ($mailfile->error)
 						{
-							$mesg.=$langs->trans('ErrorFailedToSendMail',$from,$send_email);
-							$mesg.='<br>'.$mailfile->error;
+							$mesgs[]=$langs->trans('ErrorFailedToSendMail',$from,$send_email);
+							dol_syslog($langs->trans('ErrorFailedToSendMail',$from,$send_email).' : '.$mailfile->error);
 						}
 						else
 						{
-							$mesg.='No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS';
+							$mesgs[]='No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS';
 						}
-						$mesg.='</div>';
 					}
 				}
 			}
@@ -243,11 +244,11 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 		else
 		{
 			$langs->load("other");
-			$mesg='<div class="error">'.$langs->trans('ErrorMailRecipientIsEmpty').' !</div>';
+			$mesgs[]=$langs->trans('ErrorMailRecipientIsEmpty');
 			dol_syslog('Recipient email is empty');
 		}
 	}
-	$action = '';
+
 }
 
 $extrajs = array('/agefodd/inc/multiselect/js/ui.multiselect.js');
@@ -271,8 +272,6 @@ jQuery(document).ready(function() {
 </script>';
 
 
-dol_htmloutput_mesg($mesg);
-dol_htmloutput_errors('',$errors);
 
 if (!empty($id))
 {
@@ -313,6 +312,9 @@ if (!empty($id))
 		*/
 		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention') {
 
+			//dol_htmloutput_mesg($mesg,$mesgs);
+			dol_htmloutput_errors($mesg,$mesgs);
+
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_'.$agf->id.'.pdf';
 			}
@@ -346,7 +348,7 @@ if (!empty($id))
 			$formmail->fromname = $user->getFullName($langs);
 			$formmail->frommail = $user->email;
 			$formmail->withfrom=1;
-			$formmail->withto=(!GETPOST('sendto','alpha'))?1:explode(',',GETPOST('sendto','alpha'));
+			//$formmail->withto=(!GETPOST('sendto','alpha'))?1:explode(',',GETPOST('sendto','alpha'));
 			//$formmail->withtosocid=($agf->fk_soc > 0?$agf->fk_soc:$socid);
 			$formmail->withtocc=0;
 			$formmail->withtoccsocid=0;
@@ -363,6 +365,7 @@ if (!empty($id))
 				$formmail->withtopic=$langs->trans('AdfSendFeuillePresence','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AdfSendFeuillePresenceBody','__FORMINTITULE__');
 				$formmail->param['models']='fiche_presence';
+				$formmail->param['pre_action']='presend_presence';
 
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
@@ -381,12 +384,14 @@ if (!empty($id))
 				$formmail->withtopic=$langs->trans('AdfSendFichePedagogique','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AdfSendFichePedagogiqueBody','__FORMINTITULE__');
 				$formmail->param['models']='fiche_pedago';
+				$formmail->param['pre_action']='presend_pedago';
 			}
 			elseif ($action == 'presend_convention') {
 
 				$formmail->withtopic=$langs->trans('AdfSendConvention','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AdfSendConventionBody','__FORMINTITULE__');
 				$formmail->param['models']='convention';
+				$formmail->param['pre_action']='presend_convention';
 
 				// Convention peut être envoyé à l'opca ou au client
 				// TODO:  gérer intra / inter)
@@ -433,6 +438,8 @@ if (!empty($id))
 		}
 
 		if(!$action || GETPOST('cancel')) {
+
+			dol_htmloutput_mesg($mesg,$mesgs);
 
 			print '<table class="border" width="100%">'."\n";
 
