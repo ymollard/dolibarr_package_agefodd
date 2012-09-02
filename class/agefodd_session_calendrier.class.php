@@ -323,9 +323,7 @@ class Agefodd_sesscalendar
 		$sql.= " heuref=".$this->db->idate($this->heuref).",";
 		$sql.= " fk_user_mod='".$user->id."'";
 		$sql.= " WHERE rowid = ".$this->id;
-		
-		
-		
+
 		$this->db->begin();
 		
 		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
@@ -420,6 +418,7 @@ class Agefodd_sesscalendar
 
      	dol_include_once('/comm/action/class/actioncomm.class.php');
      	dol_include_once('/agefodd/class/agsession.class.php');
+     	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
      	$session = new Agsession($this->db);
@@ -434,7 +433,6 @@ class Agefodd_sesscalendar
      	$action->datep = $this->heured;
      	$action->datef = $this->heuref;
      	$action->author      = $user;   // User saving action
-     	$action->userdone    = $user;	// User doing action
      	$action->fk_element  = $session->id;
      	$action->elementtype = $session->element;
      	$action->type_code = 'AC_AGF_SESS';

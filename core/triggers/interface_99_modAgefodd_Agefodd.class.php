@@ -108,7 +108,7 @@ class InterfaceAgefodd
         if ($action == 'ACTION_MODIFY') {
             dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
-            if ($object->type_code=='AC_AGF') {
+            if ($object->type_code=='AC_AGF_SESS') {
 
 	            $action = new ActionComm($this->db);
 	            $result = $action->fetch($object->id);
