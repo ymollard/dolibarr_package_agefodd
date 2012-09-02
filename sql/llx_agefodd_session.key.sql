@@ -24,4 +24,3 @@
 ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_agefodd_formation_catalogue_ibfk_1 FOREIGN KEY (fk_formation_catalogue) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_agefodd_session_place_ibfk_1 FOREIGN KEY (fk_session_place) REFERENCES llx_agefodd_place (rowid);
 ALTER TABLE llx_agefodd_session ADD INDEX fk_soc (fk_soc);
-ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_societe_ibfk_1 FOREIGN KEY (fk_soc) REFERENCES llx_societe (rowid);

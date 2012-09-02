@@ -21,4 +21,3 @@ ALTER TABLE llx_agefodd_session ADD COLUMN force_nb_stagiaire int NULL AFTER nb_
 ALTER TABLE llx_agefodd_session ADD COLUMN cost_trip double(24,8) NULL AFTER cost_site;
 
 ALTER TABLE llx_agefodd_session ADD INDEX fk_soc (fk_soc);
-ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_societe_ibfk_1 FOREIGN KEY (fk_soc) REFERENCES llx_societe (rowid);
