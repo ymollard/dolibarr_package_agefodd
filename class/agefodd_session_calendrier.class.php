@@ -478,6 +478,9 @@ class Agefodd_sesscalendar
      	}
      	
      	$result = $action->fetch($this->fk_actioncomm);
+     	if ($result < 0) {
+     		$error ++;
+     	}
 
      	if ($error == 0) {
      		 
