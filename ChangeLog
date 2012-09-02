@@ -136,3 +136,10 @@ to yes, the contact client do not change anymore
 For dev : 
  - always pass in paramters of method create, update, and so on, the $user object rather tahn $user->id
   - move all class to class directory
+  
+***** ChangeLog for 2.0.14 compared to 2.0.13 *****
+For All :
+   - Fix bug on updating session calendar
+   - Fix upgrade process
+For dev :
+	- Delete AGF_LAST_VERION_INSTALL in modAgefodd before create a new one 
