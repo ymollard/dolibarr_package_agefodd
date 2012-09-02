@@ -244,13 +244,30 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 		else
 		{
 			$langs->load("other");
-			$mesgs[]=$langs->trans('ErrorMailRecipientIsEmpty');
+			$mesgs[]='<div class="error">'.$langs->trans('ErrorMailRecipientIsEmpty').'</div>';
 			dol_syslog('Recipient email is empty');
 		}
 	}
+	$action = $pre_action;
 
 }
 
+/*
+ * Remove file in email form
+*/
+if (! empty($_POST['removedfile']))
+{
+	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+
+	// Set tmp user directory
+	$vardir=$conf->user->dir_output."/".$user->id;
+	$upload_dir_tmp = $vardir.'/temp';
+
+	// TODO Delete only files that was uploaded from email form
+	$mesg=dol_remove_file_process($_POST['removedfile'],0);
+	$action = $pre_action;
+
+}
 $extrajs = array('/agefodd/inc/multiselect/js/ui.multiselect.js');
 $extracss = array('/agefodd/inc/multiselect/css/ui.multiselect.css');
 
@@ -312,8 +329,7 @@ if (!empty($id))
 		*/
 		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention') {
 
-			//dol_htmloutput_mesg($mesg,$mesgs);
-			dol_htmloutput_errors($mesg,$mesgs);
+			dol_htmloutput_mesg($mesg,$mesgs);
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_'.$agf->id.'.pdf';
