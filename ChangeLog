@@ -143,3 +143,7 @@ For All :
    - Fix upgrade process
 For dev :
 	- Delete AGF_LAST_VERION_INSTALL in modAgefodd before create a new one 
+	
+***** ChangeLog for 2.0.15 compared to 2.0.14 *****
+For All :
+   - Merge EnvoisDoc from jf-ferry 
