@@ -228,53 +228,56 @@ if (!empty($id))
 		$agf->printSessionInfo();
 
 		print '&nbsp';
-		
+
 		/*
-		 * Gestion de la subrogation
+		 * Gestion de la subrogation (affiché uniquement si sessions de type inter-entreprise
 		*/
-		print '&nbsp';
-		print '<table class="border" width="100%">';
-		print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
-		if ($agf->is_OPCA==1) {
-			$isOPCA=' checked="checked" ';
-		}else {$isOPCA='';
+		if(!$agf->type_session > 0)
+		{
+			print '&nbsp';
+			print '<table class="border" width="100%">';
+			print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
+			if ($agf->is_OPCA==1) {
+				$isOPCA=' checked="checked" ';
+			}else {$isOPCA='';
+			}
+			print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
+
+			print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
+			print '	<td>';
+			print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
+			print '</td></tr>';
+
+			print '<tr><td width="20%">'.$langs->trans("AgfOPCAAdress").'</td>';
+			print '	<td>';
+			print dol_print_address($agf->OPCA_adress,'gmap','thirdparty',0);
+			print '</td></tr>';
+
+			print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
+			print '	<td>';
+			print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
+			print '</td></tr>';
+
+			print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
+			print '<td>';
+			print $agf->num_OPCA_soc;
+			print '</td></tr>';
+
+			print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
+			if ($agf->is_date_ask_OPCA==1) {
+				$chckisDtOPCA='checked="checked"';
+			}
+			print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
+			print dol_print_date($agf->date_ask_OPCA,'daytext');
+			print '</td></tr>';
+
+			print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
+			print '<td>';
+			print $agf->num_OPCA_file;
+			print '</td></tr>';
+
+			print '</table>';
 		}
-		print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
-		
-		print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
-		print '	<td>';
-		print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
-		print '</td></tr>';
-		
-		print '<tr><td width="20%">'.$langs->trans("AgfOPCAAdress").'</td>';
-		print '	<td>';
-		print dol_print_address($agf->OPCA_adress,'gmap','thirdparty',0);
-		print '</td></tr>';
-		
-		print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
-		print '	<td>';
-		print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
-		print '</td></tr>';
-		
-		print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
-		print '<td>';
-		print $agf->num_OPCA_soc;
-		print '</td></tr>';
-		
-		print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
-		if ($agf->is_date_ask_OPCA==1) {
-			$chckisDtOPCA='checked="checked"';
-		}
-		print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
-		print dol_print_date($agf->date_ask_OPCA,'daytext');
-		print '</td></tr>';
-		
-		print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
-		print '<td>';
-		print $agf->num_OPCA_file;
-		print '</td></tr>';
-		
-		print '</table>';
 
 		print '<div class="tabBar">';
 		print '<table class="border" width="100%">';
@@ -402,11 +405,12 @@ if (!empty($id))
 			print '<input type="hidden" name="action" value="edit">'."\n";
 			print '<input type="hidden" name="newstag" value="1">'."\n";
 			print '<input type="submit" class="butAction" value="'.$langs->trans("AgfStagiaireAdd").'">';
-			if ($user->rights->agefodd->creer)	{
+			if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{
 				print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
 			}
 			else {
-				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifySubrogation').'</a>';
+				if($agf->type_session) $title = ' / '.$langs->trans('AgfAvailableForIntraOnly');
+				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).$title.'">'.$langs->trans('AgfModifySubrogation').'</a>';
 			}
 			print '</td></tr>';
 			print '</form>';
@@ -423,128 +427,130 @@ if (!empty($id))
 		print '</div>';
 
 		// Print session card
-		$agf->printSessionInfo();		
+		$agf->printSessionInfo();
 
 		print '&nbsp';
 
-		if ($action == "edit_subrogation")
+		/*
+		 * Gestion de la subrogation uniquement pour une session de type intra
+		*/
+		if(!$agf->type_session > 0)
 		{
-			/*
-			 * Gestion de la subrogation
-			*/
-			print '</div>';
+			if ($action == "edit_subrogation" && $agf->type_session==0)
+			{
+				print '</div>';
 
-			print_barre_liste($langs->trans("AgfGestSubrocation"),"", "","","","",'',0);
-			print '<div class="tabBar">';
+				print_barre_liste($langs->trans("AgfGestSubrocation"),"", "","","","",'',0);
+				print '<div class="tabBar">';
 
-			print '<form name="add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
-			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-			print '<input type="hidden" name="action" value="update_subrogation">';
-			print '<input type="hidden" name="id" value="'.$agf->id.'">';
-			print '<table class="border" width="100%">';
-			print '<tr><td width="20%">'.$langs->trans("AgfSubrocation").'</td>';
-			if ($agf->is_OPCA==1) {
-				$chckisOPCA='checked="checked"';
-			}
-			print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" /></td></tr>';
+				print '<form name="add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+				print '<input type="hidden" name="action" value="update_subrogation">';
+				print '<input type="hidden" name="id" value="'.$agf->id.'">';
+				print '<table class="border" width="100%">';
+				print '<tr><td width="20%">'.$langs->trans("AgfSubrocation").'</td>';
+				if ($agf->is_OPCA==1) {
+					$chckisOPCA='checked="checked"';
+				}
+				print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" /></td></tr>';
 
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
-			print '	<td>';
-			$events=array();
-			$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'fksocpeopleOPCA', 'params' => array('add-customer-contact' => 'disabled'));
-			print $form->select_company($agf->fk_soc_OPCA,'fksocOPCA','(s.client IN (1,2))',1,1,0,$events);
-			print '</td></tr>';
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
+				print '	<td>';
+				$events=array();
+				$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'fksocpeopleOPCA', 'params' => array('add-customer-contact' => 'disabled'));
+				print $form->select_company($agf->fk_soc_OPCA,'fksocOPCA','(s.client IN (1,2))',1,1,0,$events);
+				print '</td></tr>';
 
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
-			print '	<td>';
-			if (!empty($agf->fk_soc_OPCA)) {
-				$form->select_contacts($agf->fk_soc_OPCA,$agf->fk_socpeople_OPCA,'fksocpeopleOPCA',1);
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
+				print '	<td>';
+				if (!empty($agf->fk_soc_OPCA)) {
+					$form->select_contacts($agf->fk_soc_OPCA,$agf->fk_socpeople_OPCA,'fksocpeopleOPCA',1);
+				}
+				else
+				{
+					print '<select class="flat" id="fksocpeopleOPCA" name="fksocpeopleOPCA">';
+					print '<option value="0">'.$langs->trans("AgfDefSocNeed").'</option>';
+					print '</select>';
+				}
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
+				print '<td><input size="30" type="text" class="flat" name="numOPCAsoc" value="'.$agf->num_OPCA_soc.'" /></td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
+				if ($agf->is_date_ask_OPCA==1) {
+					$chckisDtOPCA='checked="checked"';
+				}
+				print '<td><table class="nobordernopadding"><tr><td>';
+				print '<input type="checkbox" class="flat" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' /></td>';
+				print '<td>';
+				print $form->select_date($agf->date_ask_OPCA, 'ask_OPCA','','',1,'update',1,1);
+				print '</td><td>';
+				print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
+				print '</td></tr></table>';
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
+				print '<td><input size="30" type="text" class="flat" name="numOPCAFile" value="'.$agf->num_OPCA_file.'" /></td></tr>';
+
+
+				print '<tr><td align="center" colspan=2>';
+				print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+				print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
+				print '</td></tr>';
+
+				print '</table></div>';
 			}
 			else
 			{
-				print '<select class="flat" id="fksocpeopleOPCA" name="fksocpeopleOPCA">';
-				print '<option value="0">'.$langs->trans("AgfDefSocNeed").'</option>';
-				print '</select>';
+				/*
+				 * Gestion de la subrogation
+				*/
+				print '&nbsp';
+				print '<table class="border" width="100%">';
+				print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
+				if ($agf->is_OPCA==1) {
+					$isOPCA=' checked="checked" ';
+				}else {$isOPCA='';
+				}
+				print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
+				print '	<td>';
+				print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCAAdress").'</td>';
+				print '	<td>';
+				print dol_print_address($agf->OPCA_adress,'gmap','thirdparty',0);
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
+				print '	<td>';
+				print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
+				print '<td>';
+				print $agf->num_OPCA_soc;
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
+				if ($agf->is_date_ask_OPCA==1) {
+					$chckisDtOPCA='checked="checked"';
+				}
+				print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
+				print dol_print_date($agf->date_ask_OPCA,'daytext');
+				print '</td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
+				print '<td>';
+				print $agf->num_OPCA_file;
+				print '</td></tr>';
+
+				print '</table>';
 			}
-			print '</td></tr>';
-
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
-			print '<td><input size="30" type="text" class="flat" name="numOPCAsoc" value="'.$agf->num_OPCA_soc.'" /></td></tr>';
-
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
-			if ($agf->is_date_ask_OPCA==1) {
-				$chckisDtOPCA='checked="checked"';
-			}
-			print '<td><table class="nobordernopadding"><tr><td>';
-			print '<input type="checkbox" class="flat" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' /></td>';
-			print '<td>';
-			print $form->select_date($agf->date_ask_OPCA, 'ask_OPCA','','',1,'update',1,1);
-			print '</td><td>';
-			print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
-			print '</td></tr></table>';
-			print '</td></tr>';
-
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
-			print '<td><input size="30" type="text" class="flat" name="numOPCAFile" value="'.$agf->num_OPCA_file.'" /></td></tr>';
-
-
-			print '<tr><td align="center" colspan=2>';
-			print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
-			print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
-			print '</td></tr>';
-
-			print '</table></div>';
 		}
-		else
-		{
-			/*
-			 * Gestion de la subrogation
-			*/
-			print '&nbsp';
-			print '<table class="border" width="100%">';
-			print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
-			if ($agf->is_OPCA==1) {
-				$isOPCA=' checked="checked" ';
-			}else {$isOPCA='';
-			}
-			print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
-			
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
-			print '	<td>';
-			print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
-			print '</td></tr>';
-			
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCAAdress").'</td>';
-			print '	<td>';
-			print dol_print_address($agf->OPCA_adress,'gmap','thirdparty',0);
-			print '</td></tr>';
-			
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
-			print '	<td>';
-			print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
-			print '</td></tr>';
-			
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
-			print '<td>';
-			print $agf->num_OPCA_soc;
-			print '</td></tr>';
-			
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
-			if ($agf->is_date_ask_OPCA==1) {
-				$chckisDtOPCA='checked="checked"';
-			}
-			print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
-			print dol_print_date($agf->date_ask_OPCA,'daytext');
-			print '</td></tr>';
-			
-			print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
-			print '<td>';
-			print $agf->num_OPCA_file;
-			print '</td></tr>';
-			
-			print '</table>';
-		}
-
 
 		/*
 		 * Gestion des stagiaires
@@ -574,7 +580,7 @@ if (!empty($id))
 				print '<td width="300px"style="border-right: 0px;">';
 				// Infos stagiaires
 				if (strtolower($stagiaires->line[$i]->nom) == "undefined")	{
-				print $langs->trans("AgfUndefinedStagiaire");
+					print $langs->trans("AgfUndefinedStagiaire");
 				}
 				else {
 					print '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
@@ -633,13 +639,14 @@ if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" &&
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifyTrainee').'</a>';
 	}
 
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->creer && !$agf->type_session > 0)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
 	}
 	else
 	{
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifySubrogation').'</a>';
+		if($agf->type_session) $title = ' / '.$langs->trans('AgfAvailableForIntraOnly');
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).$title.'">'.$langs->trans('AgfModifySubrogation').'</a>';
 	}
 
 }
