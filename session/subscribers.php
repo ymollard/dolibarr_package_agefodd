@@ -307,14 +307,14 @@ if (!empty($id))
 
 					if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 					{
-						print $formAgefodd->select_type_stagiaire($stagiaires->line[$i]->typeid,'stagiaire_type','',1);
+						print '</td><td>'.$formAgefodd->select_type_stagiaire($stagiaires->line[$i]->typeid,'stagiaire_type','',1);
 					}
 					if ($user->rights->agefodd->modifier)
 					{
 						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
 					}
 					print '</td>';
-					}
+				}
 				else
 				{
 					print '<td width="300px" style="border-right: 0px;">';
