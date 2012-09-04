@@ -40,10 +40,9 @@ class pdf_courrier extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
-	// gris clair
-	protected $color1 = array('190','190','190');
-	// marron/orangé
-	protected $color2 = array('203', '70', '25');
+	protected $color1 = array('190','190','190');	// gris clair
+	protected $color2 = array('19', '19', '19');	// Gris très foncé
+	protected $color3 = array('118', '146', '60');	// Vert flashi
 
 	/**
 	 *	\brief		Constructor
@@ -158,10 +157,17 @@ class pdf_courrier extends ModelePDFAgefodd
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 				if ($this->emetteur->logo)
 				{
-					if (is_readable($logo))
+				if (is_readable($logo))
 					{
 						$heightLogo=pdf_getHeightForLogo($logo);
-						$pdf->Image($logo, $this->marge_gauche, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+						include_once(DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php');
+						$tmp=dol_getImageSize($logo);
+						if ($tmp['width'])
+						{
+							$widthLogo = $tmp['width'];
+						}
+						$marge_logo =  (($widthLogo*25.4)/72);
+						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
 					{
@@ -177,9 +183,9 @@ class pdf_courrier extends ModelePDFAgefodd
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 
-				$posX += $this->page_largeur - $this->marge_droite - 65;
+				//$posX += $this->page_largeur - $this->marge_droite - 65;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
@@ -189,18 +195,39 @@ class pdf_courrier extends ModelePDFAgefodd
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
 				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
 				$this->str.= ' - FRANCE'."\n";
-				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."\n";
-				$this->str.= 'fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
-				$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
+				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."";
+				if($conf->global->MAIN_INFO_SOCIETE_FAX)
+					$this->str.= '- fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
+				else
+					$this->str.= "\n";
+				//$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
 				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
+
+				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$posY += $hauteur + 2;
 
-				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				// Plateau technique
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->SetXY($posX, $posY -1);
+				$pdf->Cell(0, 5, 'Centre et plateau technique',0,0,'L');
 
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
+				$pdf->SetXY($posX, $posY +3);
+				$this->str = "3 rue Jean Marie David\n";
+				$this->str.= '35740 PACE RENNES';
+				$this->str.= ' - FRANCE'."\n";
+				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
+				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+
+				$hauteur = dol_nboflines_bis($this->str,50)*4;
+				$posY += $hauteur + 5;
+
+				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
@@ -224,7 +251,7 @@ class pdf_courrier extends ModelePDFAgefodd
 
 				// Show recipient name
 				$pdf->SetTextColor(0,0,0);
-				$pdf->SetXY($posX+2,$posY+3);
+				$pdf->SetXY($posX+20,$posY+3);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',12);
 				$this->str = $agf_soc->nom;
 				$pdf->MultiCell(96,4,$outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -256,14 +283,14 @@ class pdf_courrier extends ModelePDFAgefodd
 				}
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 				$posY = $pdf->GetY()-9; //Auto Y coord readjust for multiline name
-				$pdf->SetXY($posX+2,$posY+10);
+				$pdf->SetXY($posX+20,$posY+10);
 				$pdf->MultiCell(86,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				// Date
 				$posY = $posY + 50;
 				$this->str = ucfirst(strtolower($conf->global->MAIN_INFO_SOCIETE_VILLE)).', le '.dol_print_date(dol_now(),'daytext');
-				$pdf->SetXY($posX+2,$posY+6);
-				$pdf->Cell(0,0,$outputlangs->convToOutputCharset($this->str),0,0,"R",0);
+				$pdf->SetXY($this->marge_gauche,$posY+6);
+				$pdf->Cell(0,0,$outputlangs->convToOutputCharset($this->str),0,0,"L",0);
 
 				// Corps du courrier
 				$posY = $this->_body($pdf, $agf, $outputlangs, $courrier, $id, $socid);

@@ -1265,7 +1265,7 @@ class Agsession extends CommonObject
 	{
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,";
+		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.fk_soc, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne,";
 		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
@@ -1326,6 +1326,7 @@ class Agsession extends CommonObject
 					$obj = $this->db->fetch_object($resql);
 					$this->line[$i]->rowid = $obj->rowid;
 					$this->line[$i]->type_session = $obj->type_session;
+					$this->line[$i]->socid = $obj->fk_soc;
 					$this->line[$i]->is_date_res_site = $obj->is_date_res_site;
 					$this->line[$i]->is_date_res_trainer = $obj->is_date_res_trainer;
 					$this->line[$i]->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
@@ -1428,35 +1429,6 @@ class Agsession extends CommonObject
 	function loadArrayTypeSession()
 	{
 		return $this->type_session_def;
-	}
-
-	/**
-	 *	Return clicable link of object (with eventually picto)
-	 *
-	 *	@param		int		$withpicto		Add picto into link
-	 *	@param		string	$option			Where point the link
-	 *	@param		int		$maxlength		Maxlength of ref
-	 *	@return		string					String with URL
-	 */
-	function getNomUrl($withpicto=0,$option='',$maxlength=0)
-	{
-		global $langs;
-
-		$result='';
-
-		if (!$option)
-		{
-			$lien = '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$this->id.'">';
-			$lienfin='</a>';
-		}
-		$newref=$this->formintitule;
-		if ($maxlength) $newref=dol_trunc($newref,$maxlength,'middle');
-
-		if ($withpicto) {
-			$result.=($lien.img_object($langs->trans("ShowSession").' '.$this->ref,'agefodd@agefodd').$lienfin.' ');
-		}
-		$result.=$lien.$newref.$lienfin;
-		return $result;
 	}
 }
 
