@@ -137,6 +137,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		{
 			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
+			$action='create';
 		}
 
 	}
@@ -182,6 +183,7 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 		{
 			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
+			$action='nfcontact';
 		}
 
 	}

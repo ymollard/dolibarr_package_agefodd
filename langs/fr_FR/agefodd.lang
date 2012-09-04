@@ -316,3 +316,4 @@ ActionAC_AGF_CONV = Envoi convention par email
 AgfSendCommonDocs = Documents a envoyer
 AgfModPDFConvocation = Modéle de document Convocation
 AgfModifyTrainer = Modifier les formateurs
+AgfCiviliteMandatory=Ce stagiaire ne peux être crée la Civilité n'est pas renseignée

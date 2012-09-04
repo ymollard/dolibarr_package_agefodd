@@ -146,4 +146,5 @@ For dev :
 	
 ***** ChangeLog for 2.0.15 compared to 2.0.14 *****
 For All :
-   - Merge EnvoisDoc from jf-ferry 
+   - Merge EnvoisDoc from jf-ferry
+   - Manage error on trainee civility 
