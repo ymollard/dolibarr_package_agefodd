@@ -340,8 +340,15 @@ if (!empty($id))
 		$nbstag = count($stagiaires->line);
 		if ($nbstag > 0)
 		{
+			$fk_soc_used=array();
 			for ($i=0; $i < $nbstag; $i++)
 			{
+				$show_subrogation='';
+				// Check if it's first consult of fk_soc
+				if(! in_array($stagiaires->line[$i]->socid,$fk_soc_used)) {
+					$fk_soc_used[$i] = $stagiaires->line[$i]->socid;
+					$show_subrogation=true;
+				}
 				if ($stagiaires->line[$i]->id == $_POST["modstagid"] && $_POST["stag_remove_x"]) print '<tr bgcolor="#d5baa8">';
 				else print '<tr>';
 				print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -354,17 +361,21 @@ if (!empty($id))
 
 				if ($stagiaires->line[$i]->id == $_POST["modstagid"] && ! $_POST["stag_remove_x"])
 				{
-					print '<td colspan="2" width="45%">';
-					print'<label for="'.$htmlname.'" style="width:40%; display: inline-block;">'.$langs->trans('AgfSelectStagiaire').'</label>';
+					print '<td colspan="2" >';
+					print'<label for="'.$htmlname.'" style="width:45%; display: inline-block;margin-left:5px;">'.$langs->trans('AgfSelectStagiaire').'</label>';
 
 					print $formAgefodd->select_stagiaire($stagiaires->line[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd='.$id.')) OR (s.rowid='.$stagiaires->line[$i]->id.')');
 
-					/* Gestion OPCA pour le stagiaire si session inter-entreprise */
-					if ($agf->type_session == 1 && !$_POST['cancel'])
+					/*
+					 * Gestion OPCA pour le stagiaire si session inter-entreprise
+					 * Affiché seulement si c'est le premier tiers de la liste
+					 *
+					 */
+					if ($agf->type_session == 1 && !$_POST['cancel'] && $show_subrogation)
 					{
 						$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
 						print '<table class="noborder noshadow" width="100%" id="form_subrogation">';
-						print '<tr class="noborder"><td  class="noborder" width="40%">'.$langs->trans("AgfSubrocation").'</td>';
+						print '<tr class="noborder"><td  class="noborder" width="45%">'.$langs->trans("AgfSubrocation").'</td>';
 						if ($agf->is_OPCA==1) {
 							$chckisOPCA='checked="checked"';
 						}
@@ -411,6 +422,8 @@ if (!empty($id))
 
 						print '</table>';
 					}
+					if (! $show_subrogation)
+						print '<div class="info">'.$langs->trans('AgfInfoEditSubrogation').'</div>';
 
 					if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 					{
