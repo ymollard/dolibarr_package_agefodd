@@ -116,7 +116,7 @@ class pdf_attestation extends ModelePDFAgefodd
 
 			$pdf->Open();
 			$pagenb=0;
-			
+
 			if (class_exists('TCPDF'))
 			{
 				$pdf->setPrintHeader(false);
@@ -143,7 +143,7 @@ class pdf_attestation extends ModelePDFAgefodd
 			$result = $agf_duree->fetch($agf->id);
 
 			// Recuperation des stagiaires participant à la formation
-			$agf2 = new Agefodd_session($this->db);
+			$agf2 = new Agsession($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 
 			if ($result)

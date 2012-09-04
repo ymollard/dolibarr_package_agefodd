@@ -40,7 +40,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
 	protected $color3 = array('118', '146', '60');	// Vert flashi
 
-
 	/**
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
