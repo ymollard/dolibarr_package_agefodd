@@ -323,9 +323,7 @@ class Agefodd_sesscalendar
 		$sql.= " heuref=".$this->db->idate($this->heuref).",";
 		$sql.= " fk_user_mod='".$user->id."'";
 		$sql.= " WHERE rowid = ".$this->id;
-		
-		
-		
+
 		$this->db->begin();
 		
 		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
@@ -420,9 +418,10 @@ class Agefodd_sesscalendar
 
      	dol_include_once('/comm/action/class/actioncomm.class.php');
      	dol_include_once('/agefodd/class/agsession.class.php');
+     	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
-     	$session = new Agefodd_session($this->db);
+     	$session = new Agsession($this->db);
      	
      	$result = $session->fetch($this->sessid);
      	if ($result < 0) {
@@ -433,7 +432,10 @@ class Agefodd_sesscalendar
      	$action->location =  $session->placecode;
      	$action->datep = $this->heured;
      	$action->datef = $this->heuref;
-     	$action->type_code = 'AC_AGF';
+     	$action->author      = $user;   // User saving action
+     	$action->fk_element  = $session->id;
+     	$action->elementtype = $session->element;
+     	$action->type_code = 'AC_AGF_SESS';
 
      	if ($error == 0) {
      		$result = $action->add($user);
@@ -468,7 +470,7 @@ class Agefodd_sesscalendar
      	dol_include_once('/agefodd/class/agsession.class.php');
 
      	$action = new ActionComm($this->db);
-     	$session = new Agefodd_session($this->db);
+     	$session = new Agsession($this->db);
      	
      	$result = $session->fetch($this->sessid);
      	if ($result < 0) {
@@ -476,6 +478,9 @@ class Agefodd_sesscalendar
      	}
      	
      	$result = $action->fetch($this->fk_actioncomm);
+     	if ($result < 0) {
+     		$error ++;
+     	}
 
      	if ($error == 0) {
      		 
@@ -485,7 +490,7 @@ class Agefodd_sesscalendar
 		     	$action->location =  $session->placecode;
 		     	$action->datep = $this->heured;
 		     	$action->datef = $this->heuref;
-		     	$action->type_code = 'AC_AGF';
+		     	$action->type_code = 'AC_AGF_SESS';
      			
      			$result = $action->update($user);
      		}

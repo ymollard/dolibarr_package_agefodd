@@ -275,7 +275,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		if(!empty($heuref)) 			$agf->heuref =  $heuref;
 
 		$result = $agf->update($user);
-		
+
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
@@ -1212,7 +1212,9 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 	}
 	if ($user->rights->agefodd->modifier)
 	{
+		print '<a class="butAction" href="'.dol_buildpath('/agefodd/session/send_docs.php',1).'?action=view_actioncomm&id='.$id.'">'.$langs->trans('AgfViewActioncomm').'</a>';
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'&id='.$id.'">'.$button.'</a>';
+
 	}
 	else
 	{

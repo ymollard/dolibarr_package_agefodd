@@ -41,7 +41,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	protected $color3 = array('118', '146', '60');	// Vert flashi
 
 
-
 	/**
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
@@ -97,14 +96,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			//$agf_session = new Agsession($this->db);
-			//$ret = $agf_session->fetch($id);
-			//if ($ret)
-			//{
-				$agf= new Agefodd($this->db);
-				//$agf->fetch($agf_session->formid);
-				$agf->fetch($id);
-			//}
+			$agf= new Agefodd($this->db);
+			$agf->fetch($id);
+
 		}
 
 		// Definition of $dir and $file

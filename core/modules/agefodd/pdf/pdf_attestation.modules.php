@@ -116,6 +116,12 @@ class pdf_attestation extends ModelePDFAgefodd
 
 			$pdf->Open();
 			$pagenb=0;
+			
+			if (class_exists('TCPDF'))
+			{
+				$pdf->setPrintHeader(false);
+				$pdf->setPrintFooter(false);
+			}
 
 			$pdf->SetDrawColor(128,128,128);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
