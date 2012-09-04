@@ -43,7 +43,6 @@ $stag_update_x=GETPOST('stag_update_x','alpha');
 $stag_add_x=GETPOST('stag_add_x','alpha');
 
 $mesg = '';
-
 if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	if($stag_update_x  > 0) {
@@ -53,13 +52,61 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->stagiaire = GETPOST('stagiaire','int');
 		$agf->type = GETPOST('stagiaire_type','int');
-		$result = $agf->update_stag_in_session($user);
 
-		if ($result > 0)
+		if ($agf->update_stag_in_session($user) > 0)
 		{
-			// TODO : si session inter => ajout des infos OPCA dans la table
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
-			exit;
+			if ($agf->fetch($agf->sessid)) {
+
+				// TODO : si session inter => ajout des infos OPCA dans la table
+				if ($result && $agf->type_session == 1) {
+
+	    			/*
+	    			 *  Test si les infos existent déjà
+	    			 * -> si OUI alors on update
+	    			 * -> si NON on crée l'entrée dans la table
+	    			 */
+	    			$agf->id_opca_trainee = $agf->getOpcaForTraineeInSession(GETPOST('fk_soc_trainee','int'),GETPOST('sessid','int'));
+
+	    			$agf->fk_soc_trainee 		= GETPOST('fk_soc_trainee','int');
+	    			$agf->fk_session_agefodd 	= GETPOST('sessid','int');
+	    			$agf->is_date_ask_OPCA 		= GETPOST('isdateaskOPCA','int');
+	    			$agf->date_ask_OPCA 		= dol_mktime(0,0,0,GETPOST('ask_OPCAmonth','int'),GETPOST('ask_OPCAday','int'),GETPOST('ask_OPCAyear','int'));
+	    			$agf->is_OPCA 				= GETPOST('isOPCA','int');
+	    			$agf->fk_soc_OPCA 			= GETPOST('fksocOPCA','int');
+	    			$agf->fk_socpeople_OPCA 	= GETPOST('fksocpeopleOPCA','int');
+	    			$agf->num_OPCA_soc 			= GETPOST('numOPCAsoc','alpha');
+	    			$agf->num_OPCA_file 		= GETPOST('numOPCAFile','alpha');
+
+	    			if ($agf->id_opca_trainee > 0)
+	    			{
+	    				if ($agf->updateInfosOpca($user)) {
+	    					$mesg = '<div class="confirm">'.$langs->trans('Saved').'</div>';
+	    					$redirect=true;
+	    				}
+	    				else {
+	    					$mesg = '<div class="error">'.$agf->error.'</div>';
+	    				}
+	    			}
+	    			else {
+	    				if ($agf->saveInfosOpca($user)) {
+	    					$mesg = '<div class="confirm">'.$langs->trans('Saved').'</div>';
+	    					$redirect=true;
+	    				}
+	    				else {
+	    					$mesg = '<div class="error">'.$agf->error.'</div>';
+	    				}
+	    			}
+				}
+			}
+			else
+			{
+				$mesg = '<div class="error">'.$agf->error.'</div>';
+			}
+			if ($redirect)
+			{
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&msg=1&id=".$id);
+				exit;
+			}
 		}
 		else
 		{
@@ -283,7 +330,10 @@ if (!empty($id))
 		print '<div class="tabBar">';
 		print '<table class="border" width="100%">';
 
-		// Bloc d'affichage et de modification des stagiaires
+		/*
+		 *  Bloc d'affichage et de modification des infos sur les stagiaires
+		 *
+		 */
 		$stagiaires = new Agsession($db);
 		$stagiaires->fetch_stagiaire_per_session($agf->id);
 		$nbstag = count($stagiaires->line);
@@ -298,17 +348,20 @@ if (!empty($id))
 				print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
 				print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 				print '<input type="hidden" name="modstagid" value="'.$stagiaires->line[$i]->id.'">'."\n";
-
+				print '<input type="hidden" name="fk_soc_trainee" value="'.$stagiaires->line[$i]->socid.'">'."\n";
 				print '<td width="3%" align="center">'.($i+1).'</td>';
 
 				if ($stagiaires->line[$i]->id == $_POST["modstagid"] && ! $_POST["stag_remove_x"])
 				{
 					print '<td colspan="2" width="45%">';
+					print'<label for="'.$htmlname.'" style="width:40%; display: inline-block;">'.$langs->trans('AgfSelectStagiaire').'</label>';
+
 					print $formAgefodd->select_stagiaire($stagiaires->line[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd='.$id.')) OR (s.rowid='.$stagiaires->line[$i]->id.')');
 
 					/* Gestion OPCA pour le stagiaire si session inter-entreprise */
 					if ($agf->type_session == 1 && !$_POST['cancel'])
 					{
+						$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
 						print '<table class="noborder noshadow" width="100%" id="form_subrogation">';
 						print '<tr class="noborder"><td  class="noborder" width="40%">'.$langs->trans("AgfSubrocation").'</td>';
 						if ($agf->is_OPCA==1) {
@@ -355,18 +408,12 @@ if (!empty($id))
 						print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
 						print '<td><input size="30" type="text" class="flat" name="numOPCAFile" value="'.$agf->num_OPCA_file.'" /></td></tr>';
 
-
-						print '<tr><td align="center" colspan=2>';
-						print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
-						print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
-						print '</td></tr>';
-
 						print '</table>';
 					}
 
 					if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 					{
-						print '</td><td>'.$formAgefodd->select_type_stagiaire($stagiaires->line[$i]->typeid,'stagiaire_type','',1);
+						print '</td><td valign="top">'.$formAgefodd->select_type_stagiaire($stagiaires->line[$i]->typeid,'stagiaire_type','',1);
 					}
 					if ($user->rights->agefodd->modifier)
 					{
@@ -491,7 +538,7 @@ if (!empty($id))
 		print '&nbsp';
 
 		/*
-		 * Gestion de la subrogation uniquement pour une session de type intra
+		 * Gestion de la subrogation (formulaire d'édition) uniquement pour une session de type intra
 		*/
 		if(!$agf->type_session > 0)
 		{
@@ -563,7 +610,7 @@ if (!empty($id))
 			else
 			{
 				/*
-				 * Gestion de la subrogation
+				 * Gestion de la subrogation (affichage infos)
 				*/
 				print '&nbsp';
 				print '<table class="border" width="100%">';
