@@ -77,6 +77,11 @@ class Agefodd_stagiaire extends CommonObject
 		// Put here code to add control on parameters value
 		$this->nom = strtoupper($this->nom);
     	$this->prenom = ucfirst(strtolower($this->prenom));
+    	
+    	if (empty($this->civilite)){
+    		$error++; 
+    		$this->errors[]=$langs->trans("AgfCiviliteMandatory");
+    	}
 
 
 		// Insert request
@@ -97,14 +102,15 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= '"'.$this->note.'",';
 		$sql.= '"'.$this->fk_socpeople.'"';
 		$sql.= ")";
-
-		$this->db->begin();
-
-	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
-	   	$resql=$this->db->query($sql);
-	   	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		
 		if (! $error)
 		{
+			$this->db->begin();
+
+	   		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
+	   		$resql=$this->db->query($sql);
+	   		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		
 		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_stagiaire");
 		    if (! $notrigger)
 		    {
@@ -121,7 +127,7 @@ class Agefodd_stagiaire extends CommonObject
 		}
 
 		// Commit or rollback
-    		if ($error)
+    	if ($error)
 		{
 			foreach($this->errors as $errmsg)
 			{

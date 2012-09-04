@@ -130,6 +130,21 @@ For all :
 to yes, the contact client do not change anymore
 - Fix : On desativation and reactivation of the module, only good upgrade script are launch.
 - Add : Add field goal/but in training card and in PDF fiche Pedago
+- Add : separate Tab for trainer
+- Add : Send documents by mail (link with agenda)
+- Add : better upgrade process (do not active session on upgrade version (must be from 2.0.12 to work)) 
 For dev : 
  - always pass in paramters of method create, update, and so on, the $user object rather tahn $user->id
   - move all class to class directory
+  
+***** ChangeLog for 2.0.14 compared to 2.0.13 *****
+For All :
+   - Fix bug on updating session calendar
+   - Fix upgrade process
+For dev :
+	- Delete AGF_LAST_VERION_INSTALL in modAgefodd before create a new one 
+	
+***** ChangeLog for 2.0.15 compared to 2.0.14 *****
+For All :
+   - Merge EnvoisDoc from jf-ferry
+   - Manage error on trainee civility 

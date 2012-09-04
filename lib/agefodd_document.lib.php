@@ -230,6 +230,7 @@ function document_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
 function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
 {
 	global $conf,$langs,$id;
+	$langs->load('mails');
 	print '<tr style="height:14px">'."\n";
 	if ($level == 2)
 	{
@@ -244,15 +245,22 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 	}
 	elseif ( $mdle == 'convention')
 	{
-		//print '<td style="border-left:0px; width:200px" align="right">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		//print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'action=presend_convention&mode=init">'.$langs->trans('Send').'</a>';
+
+		// Check if feil exist
+		$filename = 'convention_'.$id.'_'.$socid.'.pdf';
+		$file = $conf->agefodd->dir_output . '/' .$filename;
+		if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=presend_convention&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		}
+		else print $langs->trans('AgfNoDefined');
+
 		print '</td></tr>'."\n";
 	}
 	else if ($mdle == 'fiche_presence') {
 
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_presence&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('Send').'</a>';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_presence&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
 		//.show_doc($mdle, $socid, $nom_courrier).
 		print '</td></tr>'."\n";
 
@@ -260,7 +268,7 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 	else
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" />'.$langs->trans('Send').'</a>';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
 		//.show_doc($mdle, $socid, $nom_courrier).
 		print '</td></tr>'."\n";
 	}

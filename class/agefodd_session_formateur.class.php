@@ -178,7 +178,7 @@ class Agefodd_session_formateur
 	$sql = "SELECT";
 	$sql.= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 	$sql.= " f.rowid as formid, f.fk_socpeople,";
-	$sql.= " sp.name, sp.firstname";
+	$sql.= " sp.name, sp.firstname, sp.email";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
 	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
 	$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -203,6 +203,7 @@ class Agefodd_session_formateur
 				$this->line[$i]->opsid = $obj->rowid;
 				$this->line[$i]->name = $obj->name;
 				$this->line[$i]->firstname = $obj->firstname;
+				$this->line[$i]->email = $obj->email;
 				$this->line[$i]->socpeopleid = $obj->fk_socpeople;
 				$this->line[$i]->formid = $obj->formid;
 				$this->line[$i]->sessid = $obj->fk_session;
