@@ -36,11 +36,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
+
 	protected $color1 = array('190','190','190');	// gris clair
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
 	protected $color3 = array('118', '146', '60');	// Vert flashi
-
-
 
 	/**
 	 *	\brief		Constructor
@@ -97,14 +96,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			//$agf_session = new Agsession($this->db);
-			//$ret = $agf_session->fetch($id);
-			//if ($ret)
-			//{
-				$agf= new Agefodd($this->db);
-				//$agf->fetch($agf_session->formid);
-				$agf->fetch($id);
-			//}
+			$agf= new Agefodd($this->db);
+			$agf->fetch($id);
+
 		}
 
 		// Definition of $dir and $file

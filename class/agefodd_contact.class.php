@@ -73,7 +73,7 @@ class Agefodd_contact extends CommonObject
 		$sql.= "fk_socpeople, fk_user_author, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->spid.'", ';
-		$sql.= '"'.$user.'",';
+		$sql.= '"'.$user->id.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 

@@ -59,7 +59,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.0.13';
+		$this->version = '2.0.15';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -649,6 +649,21 @@ class modAgefodd extends DolibarrModules
 					}
 					closedir($handle);
 				}
+				
+				// Run data_xxx.sql files (Must be done after llx_mytable.key.sql)
+				$handle=@opendir($dir);         // Dir may not exist
+				if (is_resource($handle))
+				{
+					while (($file = readdir($handle))!==false)
+					{
+						if (preg_match('/\.sql$/i',$file) && ! preg_match('/\.key\.sql$/i',$file) && substr($file,0,4) == 'data')
+						{
+							$result=run_sql($dir.$file,1,'',1);
+							if ($result <= 0) $error++;
+						}
+					}
+					closedir($handle);
+				}
 
 				// Run update_xxx.sql files
 				$handle=@opendir($dir);         // Dir may not exist
@@ -661,23 +676,40 @@ class modAgefodd extends DolibarrModules
 						{
 							//Special test to know what kind of update script to run
 							if ($file=='update_1.0.0-2.0.sql')	{
-								$sql="SHOW COLUMNS FROM llx_agefodd_session_calendrier FROM dolibarrDev where Field = 'heured' and Type='datetime'";
+								$sql="SELECT value FROM ".MAIN_DB_PREFIX."const WHERE name='AGF_LAST_VERION_INSTALL'";
+								dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
 								$resql=$this->db->query($sql);
 								if ($resql) {
 									if ($this->db->num_rows($resql)==1) {
-										$dorun=false;
+										$obj = $this->db->fetch_object($resql);	
+										$ver = intval(substr($obj->value,4,strlen($obj->value)));
+										dol_syslog(get_class($this)."::_load_tables_agefodd ver:".$ver, LOG_DEBUG);
+										if ($ver>=12) {
+											$dorun=false;
+										}
 									}
+									
+									//DELETE AGF_LAST_VERION_INSTALL to update with the new one
+									$sql='DELETE FROM '.MAIN_DB_PREFIX.'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
+									dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
+									$resql=$this->db->query($sql);
+									if (!$resql) {
+										$this->error="Error ".$this->db->lasterror();
+										dol_syslog(get_class($this)."::_load_tables_agefodd ".$this->error, LOG_ERR);
+										$error ++;
+									}
+									
 								}
 								else
 								{
 									$this->error="Error ".$this->db->lasterror();
-									dol_syslog(get_class($this)."::updatefile ".$this->error, LOG_ERR);
+									dol_syslog(get_class($this)."::_load_tables_agefodd ".$this->error, LOG_ERR);
 									$error ++;
 								}
 							}
 							if ($dorun) {
-							$result=run_sql($dir.$file,1,'',1);
-							if ($result <= 0) $error++;
+								$result=run_sql($dir.$file,1,'',1);
+								if ($result <= 0) $error++;
 							}
 						}
 					}

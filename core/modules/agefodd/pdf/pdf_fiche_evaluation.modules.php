@@ -114,6 +114,12 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 		{
 			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
 
+			if (class_exists('TCPDF'))
+			{
+				$pdf->setPrintHeader(false);
+				$pdf->setPrintFooter(false);
+			}
+			
 			$pdf->Open();
 			$pagenb=0;
 

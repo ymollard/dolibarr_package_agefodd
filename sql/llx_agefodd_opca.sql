@@ -1,6 +1,4 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 -- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
@@ -18,21 +16,21 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
---
--- Structure de la table llx_agefodd_session_calendrier
---
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
-  rowid int(11) NOT NULL auto_increment,
-  fk_agefodd_session int(11) NOT NULL,
-  date_session date NOT NULL,
-  heured datetime NOT NULL,
-  heuref datetime NOT NULL,
-  fk_actioncomm int DEFAULT NULL,
-  fk_user_author int(11) NOT NULL,
-  datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (rowid),
-  KEY idx_fk_agefodd_session (fk_agefodd_session),
-  KEY idx_fk_agefodd_session_act (fk_actioncomm)
+CREATE TABLE IF NOT EXISTS llx_agefodd_opca
+(
+	rowid int(11) NOT NULL auto_increment,
+	fk_soc_trainee	integer	NOT NULL,
+	fk_session_agefodd int(11) NOT NULL,
+	date_ask_OPCA datetime DEFAULT NULL,
+	is_date_ask_OPCA tinyint NOT NULL DEFAULT 0,
+	is_OPCA tinyint NOT NULL DEFAULT 0,
+	fk_soc_OPCA int(11) DEFAULT NULL,
+	fk_socpeople_OPCA int(11) DEFAULT NULL,
+	num_OPCA_soc varchar(100) DEFAULT NULL,
+	num_OPCA_file varchar(100) DEFAULT NULL,
+	fk_user_author	integer	NOT NULL,
+	datec	datetime  NOT NULL,
+	fk_user_mod integer NOT NULL,
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+	PRIMARY KEY  (rowid)	
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

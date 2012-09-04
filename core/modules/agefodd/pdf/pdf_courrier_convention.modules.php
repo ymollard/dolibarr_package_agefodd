@@ -59,7 +59,7 @@ $pdf->Cell(30, 5, $outputlangs->convToOutputCharset("Pièces jointes :"),0,0,"R"
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 $this->str = 'Convention de formation (x2)';
-$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,"L");
+$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,'L');
 $posY += 16;
 
 

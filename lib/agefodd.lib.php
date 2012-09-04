@@ -99,6 +99,11 @@ function session_prepare_head($object,$showconv=0)
 	$head[$h][2] = 'document';
 	$h++;
 
+	$head[$h][0] = dol_buildpath('/agefodd/session/send_docs.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfSendDocuments");
+	$head[$h][2] = 'send_docs';
+	$h++;
+
 	if ($showconv)
 	{
 		$head[$h][0] = dol_buildpath('/agefodd/session/convention.php',1).'?sessid='.$object->id;
@@ -218,7 +223,7 @@ function site_prepare_head($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath('/agefodd/site/reg_int.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfRegInt");
 	$head[$h][2] = 'reg_int';
@@ -572,5 +577,28 @@ function ebi_get_next_indice_action($id,$sessionid)
 		$error="Error ".$db->lasterror();
 		return -1;
 	}
+}
+
+/**
+ *  Converti un code couleur hexa en tableau des couleurs RGB
+ *
+ *  @param	string	$hex 	valeur hexadecimale
+ *  @return array     		définition RGB
+ */
+function agf_hex2rgb($hex) {
+	$hex = str_replace("#", "", $hex);
+
+	if(strlen($hex) == 3) {
+		$r = hexdec(substr($hex,0,1).substr($hex,0,1));
+		$g = hexdec(substr($hex,1,1).substr($hex,1,1));
+		$b = hexdec(substr($hex,2,1).substr($hex,2,1));
+	} else {
+		$r = hexdec(substr($hex,0,2));
+		$g = hexdec(substr($hex,2,2));
+		$b = hexdec(substr($hex,4,2));
+	}
+	$rgb = array($r, $g, $b);
+	//return implode(",", $rgb); // returns the rgb values separated by commas
+	return $rgb; // returns an array with the rgb values
 }
 ?>
