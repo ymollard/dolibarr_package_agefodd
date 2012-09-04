@@ -1339,7 +1339,7 @@ class Agsession extends CommonObject
 	{
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,";
+		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne,";
 		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
@@ -1399,6 +1399,7 @@ class Agsession extends CommonObject
 				{
 					$obj = $this->db->fetch_object($resql);
 					$this->line[$i]->rowid = $obj->rowid;
+					$this->line[$i]->socid = $obj->fk_soc;
 					$this->line[$i]->type_session = $obj->type_session;
 					$this->line[$i]->is_date_res_site = $obj->is_date_res_site;
 					$this->line[$i]->is_date_res_trainer = $obj->is_date_res_trainer;
@@ -1413,6 +1414,7 @@ class Agsession extends CommonObject
 					$this->line[$i]->color = $obj->color;
 					$this->line[$i]->nb_stagiaire = $obj->nb_stagiaire;
 					$this->line[$i]->force_nb_stagiaire = $obj->force_nb_stagiaire;
+					$this->line[$i]->notes = $obj->notes;
 
 					$i++;
 				}
