@@ -55,6 +55,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 
 		if ($agf->update_stag_in_session($user) > 0)
 		{
+			$redirect=true;
 			if ($agf->fetch($agf->sessid)) {
 
 				// TODO : si session inter => ajout des infos OPCA dans la table
@@ -81,19 +82,19 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 	    			{
 	    				if ($agf->updateInfosOpca($user)) {
 	    					$mesg = '<div class="confirm">'.$langs->trans('Saved').'</div>';
-	    					$redirect=true;
 	    				}
 	    				else {
 	    					$mesg = '<div class="error">'.$agf->error.'</div>';
+	    					$redirect=false;
 	    				}
 	    			}
 	    			else {
 	    				if ($agf->saveInfosOpca($user)) {
 	    					$mesg = '<div class="confirm">'.$langs->trans('Saved').'</div>';
-	    					$redirect=true;
 	    				}
 	    				else {
 	    					$mesg = '<div class="error">'.$agf->error.'</div>';
+	    					$redirect=false;
 	    				}
 	    			}
 				}
