@@ -41,6 +41,7 @@ $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
+$url_back=GETPOST('url_back','alpha');
 
 /*
  * Actions delete
@@ -97,7 +98,6 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
-
 	}
 	else
 	{
@@ -115,30 +115,44 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
+		$error='';
 		$agf = new Agefodd_stagiaire($db);
 
-		$agf->nom = GETPOST('nom','alpha');
-		$agf->prenom = GETPOST('prenom','alpha');
-		$agf->civilite = GETPOST('civilite_id','alpha');
-		$agf->socid = GETPOST('societe','int');
-		$agf->fonction =GETPOST('fonction','alpha');
-		$agf->tel1 = GETPOST('tel1','alpha');
-		$agf->tel2 = GETPOST('tel2','alpha');
-		$agf->mail = GETPOST('mail','alpha');
-		$agf->note = GETPOST('note','alpha');
-		$result = $agf->create($user);
-
-		if ($result > 0)
-		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
-			exit;
-		}
-		else
-		{
-			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+		if(!GETPOST('nom','alpha')) {
 			$mesg = '<div class="error">'.$agf->error.'</div>';
-			$action='create';
+			$error++;
 		}
+		if(!$error) {
+
+			$agf->nom = GETPOST('nom','alpha');
+			$agf->prenom = GETPOST('prenom','alpha');
+			$agf->civilite = GETPOST('civilite_id','alpha');
+			$agf->socid = GETPOST('societe','int');
+			$agf->fonction =GETPOST('fonction','alpha');
+			$agf->tel1 = GETPOST('tel1','alpha');
+			$agf->tel2 = GETPOST('tel2','alpha');
+			$agf->mail = GETPOST('mail','alpha');
+			$agf->note = GETPOST('note','alpha');
+			$result = $agf->create($user);
+
+			if ($result > 0)
+			{
+				if(strlen($url_back) > 0) {
+					Header ( "Location: ".$url_back);
+				}
+				else {
+					Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
+				}
+				exit;
+			}
+			else
+			{
+				dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+				$mesg = '<div class="error">'.$agf->error.'</div>';
+
+			}
+		}
+		$action='create';
 
 	}
 	else
@@ -151,9 +165,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 {
 	// traitement de l'import d'un contact
-
-
-
 	$contact = new Contact($db);
 	$result = $contact->fetch($_POST["contact"]);
 
@@ -209,6 +220,8 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="nfcontact_confirm">'."\n";
 	print '<input type="hidden" name="id" value="'.$id.'">'."\n";
+	if($url_back)
+		print '<input type="hidden" name="url_back" value="'.$url_back.'">'."\n";
 	print '<table class="border" width="100%">';
 
 	print '<tr><td width="20%">'. $langs->trans("AgfContactImportAsStagiaire").'</td>';
@@ -248,6 +261,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="create_confirm">';
+	if($url_back)
+		print '<input type="hidden" name="url_back" value="'.$url_back.'">'."\n";
 
 	print '<table class="border" width="100%">';
 
