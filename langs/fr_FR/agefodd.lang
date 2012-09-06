@@ -320,3 +320,5 @@ AgfCiviliteMandatory=Ce stagiaire ne peux être crée la Civilité n'est pas ren
 AgfAvailableForIntraOnly =disponible pour une session intra-entreprise uniquement
 AgfSelectStagiaire=Sélectionner le stagiaire 
 AgfInfoEditSubrogation=La gestion de la subrogation est possible depuis l'édition du premier stagiaire du même tiers.
+AgfNewParticipant=Nouveau participant
+AgfNewParticipantLinkInfo=Aller au formulaire de création d'un nouveau participant et revenir sur cette page
