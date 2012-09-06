@@ -247,29 +247,40 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
 
-		// Check if feil exist
+		// Check if file exist
 		$filename = 'convention_'.$id.'_'.$socid.'.pdf';
 		$file = $conf->agefodd->dir_output . '/' .$filename;
 		if(file_exists($file)) {
 			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=presend_convention&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
 		}
-		else print $langs->trans('AgfNoDefined');
+		else print $langs->trans('AgfDocNotDefined');
 
 		print '</td></tr>'."\n";
 	}
 	else if ($mdle == 'fiche_presence') {
 
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_presence&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
-		//.show_doc($mdle, $socid, $nom_courrier).
+		// Check if file exist
+		//$filename = 'fiche_presence_'.$id.'_'.$socid.'.pdf';
+		$filename = 'fiche_presence_'.$id.'.pdf';
+		$file = $conf->agefodd->dir_output . '/' .$filename;
+		if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_presence&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		}
+		else print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>'."\n";
 
 	}
 	else
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
-		//.show_doc($mdle, $socid, $nom_courrier).
+		// Check if file exist
+		$filename = 'fiche_peda_'.$id.'.pdf';
+		$file = $conf->agefodd->dir_output . '/' .$filename;
+		if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		}
+		else print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>'."\n";
 	}
 }
