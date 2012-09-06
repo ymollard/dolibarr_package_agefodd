@@ -16,3 +16,6 @@
 	text-align: center;
 	border: 1px solid #b1caec;
 }
+
+/* Bordures sur le tableau du formulaire de gestion de la subrogation */
+#form_subrogation, #form_subrogation tr, #form_subrogation td { border: 0;}
