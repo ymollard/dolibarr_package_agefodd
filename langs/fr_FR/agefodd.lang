@@ -322,3 +322,4 @@ AgfSelectStagiaire=Sélectionner le stagiaire
 AgfInfoEditSubrogation=La gestion de la subrogation est possible depuis l'édition du premier stagiaire du même tiers.
 AgfNewParticipant=Nouveau participant
 AgfNewParticipantLinkInfo=Aller au formulaire de création d'un nouveau participant et revenir sur cette page
+AgfNameRequiredForParticipant=Vous devez au moins indiquer le nom, le prénom et la civilité du participant!

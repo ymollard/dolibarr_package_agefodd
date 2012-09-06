@@ -115,11 +115,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
-		$error='';
+		$error=0;
 		$agf = new Agefodd_stagiaire($db);
 
-		if(!GETPOST('nom','alpha')) {
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+		if( !GETPOST('nom','alpha') && ! GETPOST('civilite_id','alpha')  && ! GETPOST('prenom','alpha')) {
+			$mesg = '<div class="error">'.$langs->trans('AgfNameRequiredForParticipant').'</div>';
 			$error++;
 		}
 		if(!$error) {
