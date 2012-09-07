@@ -487,6 +487,7 @@ if (!empty($id))
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
+				$formmail->withfile=2;
 			}
 			if ($action == 'presend_attestation') {
 
