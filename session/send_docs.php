@@ -422,6 +422,26 @@ if (!empty($id))
 							$withto[$formateur->socpeopleid] = $formateur->name.' '.$formateur->firstname .' (formateur)';
 					}
 				}
+
+				// feuille de présence peut être envoyé à l'opca
+				if ($agf->type_session &&  $socid) {
+					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
+					if (! $result_opca) {
+						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
+						$style_mesg='warning';
+					}
+					else {
+						$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+					}
+				}
+				else {
+					$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+				}
+
+				// Contact client
+				if($agf->contactid > 0)
+					$withto[$agf->contactid]		= $agf->contactname.' (Client)';
+
 				$formmail->withto=$withto;
 				$formmail->withtofree=0;
 			}
