@@ -285,9 +285,28 @@ if (! empty($_POST['removedfile']))
 
 	// TODO Delete only files that was uploaded from email form
 	$mesg=dol_remove_file_process($_POST['removedfile'],0);
+
 	$action = $pre_action;
 
 }
+
+/*
+ * Add file in email form
+*/
+if ($_POST['addfile'])
+{
+	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+
+	// Set tmp user directory TODO Use a dedicated directory for temp mails files
+	$vardir=$conf->user->dir_output."/".$user->id;
+	$upload_dir_tmp = $vardir.'/temp';
+
+	$mesg=dol_add_file_process($upload_dir_tmp,0,0);
+
+	$action = $pre_action;
+}
+
+
 $extrajs = array('/agefodd/inc/multiselect/js/ui.multiselect.js');
 $extracss = array('/agefodd/inc/multiselect/css/ui.multiselect.css');
 
@@ -373,7 +392,16 @@ if (!empty($id))
 					// Ajout fiche péda
 					$filename = 'fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
 					$file = $conf->agefodd->dir_output . '/' .$filename;
+					if (file_exists($file))
+						$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
+				}
+				elseif ($action == 'presend_presence') {
 					$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
+					// Ajout fiche péda
+					$filename = 'fiche_evaluation_'.$agf->id.'.pdf';
+					$file = $conf->agefodd->dir_output . '/' .$filename;
+					if (file_exists($file))
+						$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
 				}
 				else {
 					$formmail->add_attached_files($conf->agefodd->dir_output,basename($file),dol_mimetype($file));
@@ -414,8 +442,29 @@ if (!empty($id))
 							$withto[$formateur->socpeopleid] = $formateur->name.' '.$formateur->firstname .' (formateur)';
 					}
 				}
+
+				// feuille de présence peut être envoyé à l'opca
+				if ($agf->type_session &&  $socid) {
+					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
+					if (! $result_opca) {
+						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
+						$style_mesg='warning';
+					}
+					else {
+						$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+					}
+				}
+				else {
+					$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+				}
+
+				// Contact client
+				if($agf->contactid > 0)
+					$withto[$agf->contactid]		= $agf->contactname.' (Client)';
+
 				$formmail->withto=$withto;
 				$formmail->withtofree=0;
+				$formmail->withfile=2;
 			}
 			elseif ($action == 'presend_pedago') {
 				$formmail->withtopic=$langs->trans('AdfSendFichePedagogique','__FORMINTITULE__');
@@ -439,6 +488,7 @@ if (!empty($id))
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
+				$formmail->withfile=2;
 			}
 			if ($action == 'presend_attestation') {
 
