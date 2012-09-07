@@ -281,6 +281,22 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 				$posY+= $hauteur + 10;
 
+				/***** But *****/
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetXY($posX, $posY);
+				$this->str = "But";
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
+				$posY+= 5;
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
+				$this->str = $agf_op->but;
+				if (empty($this->str)) $this->str = "Aucun";
+
+				$pdf->SetXY( $posX, $posY);
+				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 8;
+
 				/***** Objectifs pedagogique de la formation *****/
 
 				// Récuperation
@@ -309,6 +325,24 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				}
 				$posY+= 8;
 
+				/***** Pré requis *****/
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetXY($posX, $posY);
+				$this->str = "Pré-requis";
+				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
+				$posY+= 5;
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
+				$this->str = $agf_op->prerequis;
+				if (empty($this->str)) $this->str = "Aucun";
+
+				$pdf->SetXY( $posX, $posY);
+				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 8;
+
+
+
 				/***** Public *****/
 
 				// Récuperation
@@ -327,38 +361,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
 
-
-				/***** Pré requis *****/
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
-				$pdf->SetXY($posX, $posY);
-				$this->str = "Pré-requis";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
-				$this->str = $agf_op->prerequis;
-				if (empty($this->str)) $this->str = "Aucun";
-
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
-
-				/***** But *****/
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
-				$pdf->SetXY($posX, $posY);
-				$this->str = "But";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = $agf_op->but;
-				if (empty($this->str)) $this->str = "Aucun";
-
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
 
 				/***** Programme *****/
 
