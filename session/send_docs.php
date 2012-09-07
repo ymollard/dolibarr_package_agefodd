@@ -372,7 +372,16 @@ if (!empty($id))
 					// Ajout fiche péda
 					$filename = 'fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
 					$file = $conf->agefodd->dir_output . '/' .$filename;
+					if (file_exists($file))
+						$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
+				}
+				elseif ($action == 'presend_presence') {
 					$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
+					// Ajout fiche péda
+					$filename = 'fiche_evaluation_'.$agf->id.'.pdf';
+					$file = $conf->agefodd->dir_output . '/' .$filename;
+					if (file_exists($file))
+						$formmail->add_attached_files($file,basename($file),dol_mimetype($file));
 				}
 				else {
 					$formmail->add_attached_files($conf->agefodd->dir_output,basename($file),dol_mimetype($file));
