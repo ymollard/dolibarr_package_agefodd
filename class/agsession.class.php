@@ -1473,7 +1473,7 @@ class Agsession extends CommonObject
 
 
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
-		print '<td><a href="'.dol_buildpath('/agefodd/contact/card.php',1).'?id='.$this->sourcecontactid.'">'.$this->contactname.'</a></td></tr>';
+		print '<td><a href="'.dol_buildpath('/agefodd/contact/card.php',1).'?id='.$this->contactid.'">'.$this->contactname.'</a></td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfLieu").'</td>';
 		print '<td><a href="'.dol_buildpath('/agefodd/site/card.php',1).'?id='.$this->placeid.'">'.$this->placecode.'</a></td></tr>';
