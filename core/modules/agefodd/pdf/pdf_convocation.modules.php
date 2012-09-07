@@ -79,7 +79,7 @@ class pdf_convocation extends ModelePDFAgefodd
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
-		
+
 
 
 	}
@@ -106,11 +106,11 @@ class pdf_convocation extends ModelePDFAgefodd
 			if ($ret) {
 				$agf_calendrier= new Agefodd_sesscalendar($this->db);
 				$agf_calendrier->fetch_all($id);
-				
+
 				$agf_place = new Agefodd_place($this->db);
 				$agf_place->fetch($agf->placeid);
 			}
-			
+
 		}
 
 		// Definition of $dir and $file
@@ -250,97 +250,97 @@ class pdf_convocation extends ModelePDFAgefodd
 				$this->str = "Convocation";
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 14;
-				
+
 				/***** Text Convocation *****/
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM . " a me plaisir d'inviter :";
 				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str),0,0);
 				$posY += 8 ;
-				
+
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 				$this->str = ucfirst(strtolower($agf2->line[$i]->civilitel))." ".$outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = "à participer a la formation";
 				$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 2;
-				
+
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 3);
 				$this->str = $agf->formintitule;
 				$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = " se déroulera le: ";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 3;
-				
+
 				foreach ($agf_calendrier->line as $line) {
 					$pdf->SetXY( $posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 					$this->str = dol_print_date($line->date_session,'daytext')." de ".dol_print_date($line->heured,'hour'). " à ".dol_print_date($line->heuref,'hour');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 2;
-					
+
 				}
-				
+
 				$posY = $pdf->GetY() + 8;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = " a l'adresse suivante: ";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 3;
-				
+
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 				$this->str = $agf_place->ref_interne;
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 2;
-				
+
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 				$this->str = $agf_place->adresse;
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 2;
-				
+
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 				$this->str = $agf_place->cp;
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 2;
-				
+
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 				$this->str = $agf_place->ville;
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 10;
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = "Dans l’attente de vous accueillir";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 8;
-				
-				
+
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = "Recevez l’expression de nos sincères salutations.";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + 8;
-				
+
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
 				$pdf->AliasNbPages();
-				
+
 				// Repere de pliage
 				$pdf->SetDrawColor(220,220,220);
 				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
@@ -395,18 +395,26 @@ class pdf_convocation extends ModelePDFAgefodd
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
+
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 
+		$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE." ";
+		$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
+		$this->str.= ' - FRANCE'."";
+		$this->str.= ' - tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL;
+		$this->str.= ' - email : '.$conf->global->MAIN_MAIL_EMAIL_FROM."\n";
 
 		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
+		$this->str .= $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
 		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
-		$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;
-		$this->str.= " - Code APE ".$conf->global->MAIN_INFO_APE;
-		$this->str.= " - TVA intracommunautaire ".$conf->global->MAIN_INFO_TVAINTRA;
+		//$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;
+		$this->str.= " - Code APE ".$conf->global->MAIN_INFO_APE."\n";
+		$this->str.= "N° déclaration ".$conf->global->AGF_ORGANISME_NUM;
+		$this->str.= " préfecture : ".$conf->global->AGF_ORGANISME_PREF;
+		$this->str.= " - N° TVA intra ".$conf->global->MAIN_INFO_TVAINTRA;
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);//$pdf->SetFont('Arial','I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
