@@ -317,3 +317,6 @@ AgfSendCommonDocs = Documents a envoyer
 AgfModPDFConvocation = Modéle de document Convocation
 AgfModifyTrainer = Modifier les formateurs
 AgfCiviliteMandatory=Ce stagiaire ne peux être crée la Civilité n'est pas renseignée
+AgfAvailableForIntraOnly =disponible pour une session intra-entreprise uniquement
+AgfSelectStagiaire=Sélectionner le stagiaire 
+AgfInfoEditSubrogation=La gestion de la subrogation est possible depuis l'édition du premier stagiaire du même tiers.
