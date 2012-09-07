@@ -1591,6 +1591,8 @@ class Agsession extends CommonObject
 				$this->fk_user_mod 			= $obj->fk_user_mod;
 				$this->tms 					= $this->db->jdate($obj->tms);
 
+				$this->soc_OPCA_name = $this->getValueFrom('societe', $this->fk_soc_OPCA, 'nom');
+
 			}
 			$this->db->free($resql);
 

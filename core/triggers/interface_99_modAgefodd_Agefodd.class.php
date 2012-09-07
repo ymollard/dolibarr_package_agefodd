@@ -200,6 +200,27 @@ class InterfaceAgefodd
 				$ok=1;
 			}
 		}
+		// Envoi attestation par mail
+		elseif ($action == 'ATTESTATION_SENTBYMAIL') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+
+
+			if ($object->actiontypecode == 'AC_AGF_ATTES') {
+
+				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+				$langs->load("agefodd@agefodd");
+				$langs->load("agenda");
+
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfConventionSentByEMail",$object->ref);
+				if (empty($object->actionmsg))
+				{
+					$object->actionmsg=$langs->transnoentities("AgfConventionSentByEMail",$object->ref);
+					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
+				}
+
+				$ok=1;
+			}
+		}
 
 
 		// Add entry in event table

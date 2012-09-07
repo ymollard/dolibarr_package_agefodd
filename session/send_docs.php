@@ -160,6 +160,20 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 					}
 					$actionmsg2=$langs->trans('Action'.CONVENTION_SENTBYMAIL);
 				}
+				elseif ($models == 'attestation')
+				{
+					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
+					else $subject = $langs->trans('AgfAttestation').' '.$object->ref;
+					$actiontypecode='AC_AGF_ATTES';
+					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
+					if ($message)
+					{
+						$actionmsg.=$langs->trans('MailTopic').": ".$subject."\n";
+						$actionmsg.=$langs->trans('TextUsedInTheMessageBody').":\n";
+						$actionmsg.=$message;
+					}
+					$actionmsg2=$langs->trans('Action'.ATTESTATION_SENTBYMAIL);
+				}
 
 
 				// Create form object
@@ -211,6 +225,10 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 						{
 							$result=$interface->run_triggers('CONVENTION_SENTBYMAIL',$object,$user,$langs,$conf);
 						}
+						elseif ($models == 'attestation')
+						{
+							$result=$interface->run_triggers('ATTESTATION_SENTBYMAIL',$object,$user,$langs,$conf);
+						}
 						if ($result < 0) {
 							$error++; $object->errors=$interface->errors;
 						}
@@ -247,9 +265,10 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 			$langs->load("other");
 			$mesgs[]='<div class="error">'.$langs->trans('ErrorMailRecipientIsEmpty').'</div>';
 			dol_syslog('Recipient email is empty');
+			$action = $pre_action;
 		}
 	}
-	$action = $pre_action;
+
 
 }
 
@@ -328,9 +347,7 @@ if (!empty($id))
 		/*
 		 * Formulaire d'envoi des documents
 		*/
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention') {
-
-			dol_htmloutput_mesg($mesg,$mesgs);
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention' || $action == 'presend_attestation') {
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_'.$agf->id.'.pdf';
@@ -340,6 +357,9 @@ if (!empty($id))
 			}
 			elseif ($action == 'presend_convention') {
 				$filename = 'convention_'.$agf->id.'_'.$socid.'.pdf';
+			}
+			elseif ($action == 'presend_attestation') {
+				$filename = 'attestation_'.$agf->id.'_'.$socid.'.pdf';
 			}
 
 			$file = $conf->agefodd->dir_output . '/' .$filename;
@@ -420,6 +440,36 @@ if (!empty($id))
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
 			}
+			if ($action == 'presend_attestation') {
+
+				$formmail->withtopic=$langs->trans('AdfSendAttestation','__FORMINTITULE__');
+				$formmail->withbody=$langs->trans('AdfSendAttestationBody','__FORMINTITULE__');
+				$formmail->param['models']='attestation';
+				$formmail->param['pre_action']='presend_attestation';
+
+				// Attestation peut être envoyé à l'opca ou au client
+				if ($agf->type_session &&  $socid) {
+					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
+					if (! $result_opca) {
+						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
+						$style_mesg='warning';
+					}
+					else {
+						$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+					}
+				}
+				else {
+					$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+				}
+
+				// Contact client
+				if($agf->contactid > 0)
+					$withto[$agf->contactid]		= $agf->contactname.' (Client)';
+
+				$formmail->withto=$withto;
+				$formmail->withtofree=1;
+
+			}
 
 			$formmail->withbody.="\n\n--\n__SIGNATURE__\n";
 
@@ -434,6 +484,10 @@ if (!empty($id))
 			$formmail->param['id']=$agf->id;
 			$formmail->param['returnurl']=$_SERVER["PHP_SELF"].'?id='.$agf->id;
 
+
+			dol_htmloutput_mesg($mesg,$mesgs,$style_mesg);
+
+
 			if ($action == 'presend_pedago') {
 				print_fiche_titre('Envoi fiche pédagogique','','menus/mail.png');
 			}
@@ -442,6 +496,9 @@ if (!empty($id))
 			}
 			elseif ($action == 'presend_convention') {
 				print_fiche_titre('Envoi convention de formation','','menus/mail.png');
+			}
+			elseif ($action == 'presend_attestation') {
+				print_fiche_titre('Envoi attestation de formation','','menus/mail.png');
 			}
 			$formmail->show_form();
 
@@ -511,7 +568,7 @@ if (!empty($id))
 
 					// Après la formation
 					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-					//document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
+					document_send_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
 					//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
 					//document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
 					//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
