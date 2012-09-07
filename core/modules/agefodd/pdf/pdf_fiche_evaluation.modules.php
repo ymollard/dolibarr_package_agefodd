@@ -119,7 +119,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
-			
+
 			$pdf->Open();
 			$pagenb=0;
 
@@ -508,19 +508,28 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
+
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 
-		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
-		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
-		$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;
-		$this->str.= " - Code APE ".$conf->global->MAIN_INFO_APE;
-		$this->str.= " - TVA intracommunautaire ".$conf->global->MAIN_INFO_TVAINTRA;
+		$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE." ";
+		$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
+		$this->str.= ' - FRANCE'."";
+		$this->str.= ' - tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL;
+		$this->str.= ' - email : '.$conf->global->MAIN_MAIL_EMAIL_FROM."\n";
 
-		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
+		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
+		$this->str .= $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
+		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
+		//$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;
+		$this->str.= " - Code APE ".$conf->global->MAIN_INFO_APE."\n";
+		$this->str.= "N° déclaration ".$conf->global->AGF_ORGANISME_NUM;
+		$this->str.= " préfecture : ".$conf->global->AGF_ORGANISME_PREF;
+		$this->str.= " - N° TVA intra ".$conf->global->MAIN_INFO_TVAINTRA;
+
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);//$pdf->SetFont('Arial','I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
 		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');
 
