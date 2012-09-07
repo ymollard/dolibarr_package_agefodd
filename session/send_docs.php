@@ -284,9 +284,27 @@ if (! empty($_POST['removedfile']))
 
 	// TODO Delete only files that was uploaded from email form
 	$mesg=dol_remove_file_process($_POST['removedfile'],0);
-	$action = $pre_action;
+
 
 }
+
+/*
+ * Add file in email form
+*/
+if ($_POST['addfile'])
+{
+	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+
+	// Set tmp user directory TODO Use a dedicated directory for temp mails files
+	$vardir=$conf->user->dir_output."/".$user->id;
+	$upload_dir_tmp = $vardir.'/temp';
+
+	$mesg=dol_add_file_process($upload_dir_tmp,0,0);
+
+	$action = $pre_action;
+}
+
+
 $extrajs = array('/agefodd/inc/multiselect/js/ui.multiselect.js');
 $extracss = array('/agefodd/inc/multiselect/css/ui.multiselect.css');
 
@@ -444,6 +462,7 @@ if (!empty($id))
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=0;
+				$formmail->withfile=2;
 			}
 			elseif ($action == 'presend_pedago') {
 				$formmail->withtopic=$langs->trans('AdfSendFichePedagogique','__FORMINTITULE__');
