@@ -328,8 +328,10 @@ class Agefodd_place extends CommonObject
 		$sql.= ' p.fk_user_mod="'.$user->id.'",';
 		$sql.= ' p.archive="'.$this->archive.'",';
 		$sql.= ' p.acces_site="'.$this->acces_site.'",';
-		$sql.= ' p.note1="'.$this->note1.'", ';
-		$sql.= ' p.fk_reg_interieur="'.$this->fk_reg_interieur.'"';
+		$sql.= ' p.note1="'.$this->note1.'" ';
+		if (!empty($this->fk_reg_interieur)) {
+			$sql.= ' ,p.fk_reg_interieur='.$this->fk_reg_interieur;
+		}
         $sql.= " WHERE p.rowid LIKE ".$this->id;
 
 		$this->db->begin();

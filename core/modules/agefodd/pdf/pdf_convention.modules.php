@@ -99,7 +99,7 @@ class pdf_convention extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agsession($this->db,"",$id);
+			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
 		}
 
