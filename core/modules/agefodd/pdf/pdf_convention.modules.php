@@ -591,7 +591,7 @@ class pdf_convention extends ModelePDFAgefodd
 				/*
 				 * Page 4 (Annexe 1)
 				 */
-				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$id.'.pdf';
+				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
 				if (is_file($infile)) {
 
 

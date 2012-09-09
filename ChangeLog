@@ -148,6 +148,7 @@ For dev :
 For All :
    - Merge EnvoisDoc from jf-ferry
    - Manage error on trainee civility 
+   - Correct Convention PDF Modele, now attach the correct fiche pedago
 For Dev : 
    - Correct wrong call to agsession constructor in convention PDF
    - Drop llx_agefodd_place_ibfk_2 if extists because it is not use and create bug
