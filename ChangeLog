@@ -151,7 +151,7 @@ For All :
    - Correct Convention PDF Modele, now attach the correct fiche pedago
    - Review paging of Fiche pedago
    - Manage in convention the french TVA applicable or not (according conf->society setting)
-   - Some cahpter of convention are'nt no more retreive from older one, because some data can change from on session to another 
+   - Some chapter of convention are'nt no more retreive from older one, because some data can change from on session to another 
 For Dev : 
    - Correct wrong call to agsession constructor in convention PDF
    - Drop llx_agefodd_place_ibfk_2 if extists because it is not use and create bug
