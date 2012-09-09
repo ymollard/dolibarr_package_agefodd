@@ -248,7 +248,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 						$langs->load("other");
 						if ($mailfile->error)
 						{
-							$mesgs[]=$langs->trans('ErrorFailedToSendMail',$from,$send_email);
+							$mesgs[]='<div class="error">'.$langs->trans('ErrorFailedToSendMail',$from,$send_email).'</div>';
 							dol_syslog($langs->trans('ErrorFailedToSendMail',$from,$send_email).' : '.$mailfile->error);
 						}
 						else
