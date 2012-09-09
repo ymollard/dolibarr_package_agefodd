@@ -408,7 +408,7 @@ else
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-				print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->programme).'</textarea></td></tr>';
+				print '<textarea name="programme" rows="6" cols="7" class="flat" style="width:560px;">'.stripslashes($agf->programme).'</textarea></td></tr>';
 
 				print '</table>';
 				print '</div>';
