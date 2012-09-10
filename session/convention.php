@@ -270,101 +270,96 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	}
 	
 	//intro1
-	if ($agf_conv->intro1) $intro1 = $agf_conv->intro1;
-	else
-	{
-		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-		$intro1 = "La société ".$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut." au capital de ";
-		$intro1.= $conf->global->MAIN_INFO_CAPITAL." euros, dont le siège social est à ".$conf->global->MAIN_INFO_SOCIETE_VILLE;
-		$intro1.= " (".$conf->global->MAIN_INFO_SOCIETE_CP."), immatriculée au Registre du Commerce et des Sociétés sous la référence ";
-		$intro1.= $conf->global->MAIN_INFO_RCS;
+	$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
+	$intro1 = "La société ".$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut." au capital de ";
+	$intro1.= $conf->global->MAIN_INFO_CAPITAL." euros, dont le siège social est à ".$conf->global->MAIN_INFO_SOCIETE_VILLE;
+	$intro1.= " (".$conf->global->MAIN_INFO_SOCIETE_CP."), immatriculée au Registre du Commerce et des Sociétés sous la référence ";
+	$intro1.= $conf->global->MAIN_INFO_RCS;
+	if (empty ($conf->global->AGF_ORGANISME_NUM)) {
+		$intro1.= "et en cours d’enregistrement comme organisme de formation auprès de la préfecture de/des/l'".$conf->global->AGF_ORGANISME_PREF;
+	}
+	else{ 
 		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture de l'";
 		$intro1.= $conf->global->AGF_ORGANISME_PREF." sous le numéro ".$conf->global->AGF_ORGANISME_NUM;
-		$intro1.= ", représentée par ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
 	}
+	$intro1.= ", représentée par ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
+
 	
 	//intro2
-	if ($agf_conv->intro2) $intro2 = $agf_conv->intro2;
-	else
-	{
-		// On recupere les infos societe
-		$agf_soc = new Societe($db);
-		$result = $agf_soc->fetch($socid);
+	// On recupere les infos societe
+	$agf_soc = new Societe($db);
+	$result = $agf_soc->fetch($socid);
 		
-		// if agefodd contact exist
-		$agf_contact = new Agefodd_contact($db);
-		$resql2 = $agf_contact->fetch($socid,'socid');
+	// if agefodd contact exist
+	$agf_contact = new Agefodd_contact($db);
+	$resql2 = $agf_contact->fetch($socid,'socid');
 
-		// intro2
-		$intro2 = "La société ".$agf_soc->nom.", situé au ".$agf_soc->adresse." ".$agf_soc->cp." ".$agf_soc->ville.",";
-		$intro2.= " d'identifiant SIRET". $agf_soc->siret;
-		$intro2.= " et représenté par ";
-		$intro2.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name;
-		$intro2.= " dûment habilité à ce faire,";
-	}
+	// intro2
+	$intro2 = "La société ".$agf_soc->nom.", situé ".$agf_soc->adresse." ".$agf_soc->cp." ".$agf_soc->ville.",";
+	$intro2.= " siret ". $agf_soc->siret.", ";
+	$intro2.= " représenté par ";
+	$intro2.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name;
+	$intro2.= " dûment habilité à ce faire,";
 
 	//article 1
-	if ($agf_conv->art1) $art1 = $agf_conv->art1;
-	else
+	// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)
+	// Si la ligne commence par:
+	// '!# ' aucune puce ne sera générée, la ligne commence sur la magre gauche
+	// '# ', une puce de premier niveau est mis en place
+	// '## ', une puce de second niveau est mis en place
+	// '### ', une puce de troisième niveau est mis en place
+	$art1 = "!# L'organisme accomplit l'action de formation suivante :"."\n";
+	$art1.= '# Intitulé du stage : « '.$agf->formintitule.' »'."\n";
+	$art1.= '# Objectifs :'."\n";
+	$obj_peda = new Agefodd($db);
+	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
+	for ( $i = 0; $i < count($obj_peda->line); $i++)
 	{
-		// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)
-		// Si la ligne commence par:
-		// '!# ' aucune puce ne sera générée, la ligne commence sur la magre gauche
-		// '# ', une puce de premier niveau est mis en place
-		// '## ', une puce de second niveau est mis en place
-		// '### ', une puce de troisième niveau est mis en place
-		$art1 = "!# L'organisme accomplit l'action de formation suivante :"."\n";
-		$art1.= '# Intitulé du stage : « '.$agf->formintitule.' »'."\n";
-		$art1.= '# Objectifs :'."\n";
-		$obj_peda = new Agefodd($db);
-		$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
-		for ( $i = 0; $i < count($obj_peda->line); $i++)
-		{
-			$art1.= "## ".$obj_peda->line[$i]->intitule."\n";
-		}
-		$art1.= '# Programme et méthode : cf. annexe1 (fiche pédagogique).'."\n";
-		$art1.= '# Type d\'action de formation : acquisition des connaissances.'."\n";
-		$art1.= '# Date';
-		if ($agf->dated == $agf->datef) $art1.= ": le ".dol_print_date($agf->datef);
-		else $art1.= "s: du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
-		$art1.= "\n";
-
-		// Durée de formation
-		$art1.= '# Durée : '.$agf->duree.' heures, réparties de la façon suivante :'."\n";
-
-		$calendrier = new Agefodd_sesscalendar($db);
-		$resql = $calendrier->fetch_all($sessid);
-		$blocNumber = count($calendrier->line);
-		$old_date = 0;
-		$duree = 0;
-		for ($i = 0; $i < $blocNumber; $i++)
-		{
-			if ($calendrier->line[$i]->date_session != $old_date)
-			{
-				if ($i > 0 ) $art1.= "), ";
-				$art1.= dol_print_date($calendrier->line[$i]->date_session,'daytext').' (';
-			}
-			else $art1.= '/';
-			$art1.= dol_print_date($calendrier->line[$i]->heured,'hour');
-			$art1.= ' - ';
-			$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
-			if ($i == $blocNumber - 1) $art1.=').'."\n";
-			
-			$old_date = $calendrier->line[$i]->date_session;
-		}
-	
-		$stagiaires = new Agsession($db);
-		$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
-		$art1.= '# Effectif du stage : '.$nbstag.' personne';
-		if ($nbstag > 1) $art1.= 's';
-		$art1.= ".\n";
-		// Adresse lieu de formation
-		$agf_place = new Agefodd_place($db);
-		$resql3 = $agf_place->fetch($agf->placeid);
-		$adresse = $agf_place->adresse.", ".$agf_place->cp." ".$agf_place->ville;
-		$art1.= "# Lieu : salle de formation (".$agf_place->ref_interne.') située '.$adresse.'.';
-
+		$art1.= "## ".$obj_peda->line[$i]->intitule."\n";
 	}
+	$art1.= '# Programme et méthode : cf. annexe1 (fiche pédagogique).'."\n";
+	$art1.= '# Type d\'action de formation : acquisition des connaissances.'."\n";
+	$art1.= '# Date';
+	if ($agf->dated == $agf->datef) $art1.= ": le ".dol_print_date($agf->datef);
+	else $art1.= "s: du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+	$art1.= "\n";
+
+	// Durée de formation
+	$art1.= '# Durée : '.$agf->duree.' heures, réparties de la façon suivante :'."\n";
+
+	$calendrier = new Agefodd_sesscalendar($db);
+	$resql = $calendrier->fetch_all($sessid);
+	$blocNumber = count($calendrier->line);
+	$old_date = 0;
+	$duree = 0;
+	for ($i = 0; $i < $blocNumber; $i++)
+	{
+		if ($calendrier->line[$i]->date_session != $old_date)
+		{
+			if ($i > 0 ) $art1.= "), ";
+			$art1.= dol_print_date($calendrier->line[$i]->date_session,'daytext').' (';
+		}
+		else $art1.= '/';
+		$art1.= dol_print_date($calendrier->line[$i]->heured,'hour');
+		$art1.= ' - ';
+		$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
+		if ($i == $blocNumber - 1) $art1.=').'."\n";
+		
+		$old_date = $calendrier->line[$i]->date_session;
+	}
+	
+	$art1.= '# Sanction : Acquisition de connaissance donnant lieu à  la délivrance d’une attestation de formation'."\n";
+	
+	$stagiaires = new Agsession($db);
+	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
+	$art1.= '# Effectif du stage : '.$nbstag.' personne';
+	if ($nbstag > 1) $art1.= 's';
+	$art1.= ".\n";
+	// Adresse lieu de formation
+	$agf_place = new Agefodd_place($db);
+	$resql3 = $agf_place->fetch($agf->placeid);
+	$adresse = $agf_place->adresse.", ".$agf_place->cp." ".$agf_place->ville;
+	$art1.= "# Lieu : salle de formation (".$agf_place->ref_interne.') située '.$adresse.'.';
 
 	// texte 2
 	if ($agf_conv->art2) $art2 = $agf_conv->art2;
@@ -374,29 +369,27 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	}
 
 	// texte3
-	if ($agf_conv->art3) $art3 = $agf_conv->art3;
-	else
+	$art3 = "L'organisme formera le";
+	($nbstag > 1) ? $art3.='s stagiaires ' : $art3.=' stagiaire ';
+	for ($i= 0; $i < $nbstag; $i++)
 	{
-		$art3 = "L'organisme formera le";
-		($nbstag > 1) ? $art3.='s stagiaires ' : $art3.=' stagiaire ';
-		for ($i= 0; $i < $nbstag; $i++)
+		$art3.= $stagiaires->line[$i]->nom.' '.$stagiaires->line[$i]->prenom;
+		if ($i == $nbstag - 1) $art3.= '.';
+		else
 		{
-			$art3.= $stagiaires->line[$i]->nom.' '.$stagiaires->line[$i]->prenom;
-			if ($i == $nbstag - 1) $art3.= '.';
-			else
-			{
-				if ($i == $nbstag - 2) $art3.= ' et ';
-				else  $art3.= ', ';
-			}
+			if ($i == $nbstag - 2) $art3.= ' et ';
+			else  $art3.= ', ';
 		}
 	}
 
-	// texte 4
-	if ($agf_conv->art4) $art4 = $agf_conv->art4;
-	else
-	{
+	// texte 4	
+	if ($conf->global->FACTURE_TVAOPTION=="franchise") {
+		$art4 = "L'organisme déclare ne pas être assujetti à la TVA au sens de l’art 232B du CGI (franchise de TVA). \nEn contrepartie de cette action de formation, le client devra s'acquitter des sommes suivantes :";
+	}
+	else {
 		$art4 = "L'organisme déclare être assujetti à la TVA au sens de l'article 261-4-4°-a du CGI et des articles L.900-2 et R.950-4 du code du travail. \nEn contrepartie de cette action de formation, le client devra s'acquitter des sommes suivantes :";
 	}
+	
 
 	// texte 5
 	if ($agf_conv->art5) $art5 = $agf_conv->art5;

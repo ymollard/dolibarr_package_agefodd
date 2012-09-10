@@ -269,6 +269,15 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 120);
 				$pdf->Cell(0, 5, "Convention de formation",0,0,'C');
 
+				//Determine the total number of page
+				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
+				if (is_file($infile)) {
+					$this->count_page_anexe = $pdf->setSourceFile($infile);
+					$this->count_page_anexe = $this->count_page_anexe - 1;
+				}
+				else {
+					$this->count_page_anexe = 0;
+				}
 
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
@@ -278,9 +287,12 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetDrawColor(220,220,220);
 				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
 
+
+
 				/*
 				 * Page 1
 				 */
+
 
 				// New page
 				$pdf->AddPage();
@@ -296,14 +308,14 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 				$this->str = "Entre les soussignés :";
-				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str),0,0);
-				$posY += 4 ;
+				$pdf->MultiCell(0, 0, $outputlangs->transnoentities($this->str),0,'L');
+				$posY = $pdf->GetY() + 1;
 
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = $agf_conv->intro1;
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
-				$posY = $pdf->GetY() + 8;
+				$posY = $pdf->GetY() + 1;
 
 				$pdf->SetXY( $posX, $posY);
 				$this->str = "Ci-après dénommée « l'organisme » d'une part,";
@@ -332,7 +344,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
-				$this->str = "Est conclue la convention suivante, en application des dispositions du Livre IX du Code du Travail ";
+				$this->str = "Est conclue la convention suivante, en application des dispositions du Livre III – VI° du Code du Travail ";
 				$this->str.= "portant organisation de la formation professionnelle continue dans le cadre de l'éducation permanente :";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
@@ -347,7 +359,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-				$this->str = "La présente convention a pour objet la réalisation d'une prestation de formation";
+				$this->str = "La convention a pour objet la réalisation d'une prestation de formation";
 				$this->str.= " par l'organisme auprès de membres du personnel du client";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
@@ -566,7 +578,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				$this->str = 'Fait à '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.' , en deux (2) exemplaires originaux, dont un remis ce jour au client. ';
 				$nombre = $pdf->PageNo(); 	// page suivante = annexe1
-				$this->str.= "Ce document comporte {nb} (".$literal[$nombre].") pages.";
+				$this->str.= "Ce document comporte ".$nombre." (".$literal[$nombre].") pages.";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
@@ -622,10 +634,8 @@ class pdf_convention extends ModelePDFAgefodd
 				/*
 				 * Page 4 (Annexe 1)
 				 */
-				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$id.'.pdf';
+				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
 				if (is_file($infile)) {
-
-
 					$count = $pdf->setSourceFile($infile);
 					// import all page
 					for ($i=1; $i<=$count; $i++) {
@@ -646,7 +656,7 @@ class pdf_convention extends ModelePDFAgefodd
 						// Pied de page
 						$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
 						$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
-						$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/'.$pdf->PageNo(),0, 0,'C');
+						$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/'.intval(5+$this->count_page_anexe),0, 0,'C');
 						$pdf->AliasNbPages();
 
 						// Repere de pliage
@@ -729,6 +739,9 @@ class pdf_convention extends ModelePDFAgefodd
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
 		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');
 
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
+		$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
+		$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/'.intval(5+$this->count_page_anexe),0, 0,'C');
 
 	}
 

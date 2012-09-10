@@ -69,6 +69,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		$this->espace_apres_corps_text = 4;
+		$this->espace_apres_titre = 0;
 
 		// Get source company
 		$this->emetteur=$mysoc;
@@ -306,8 +308,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Objectifs pédagogiques";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 7;
+
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
+				$posY = $pdf->GetY() + $this->espace_apres_titre;
+
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 				$hauteur = 0;
@@ -319,10 +323,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$hauteur = dol_nboflines_bis($agf_op->line[$y]->intitule,80)*3;
 
 					$pdf->Cell(10, 4, $agf_op->line[$y]->priorite.'. ', 0, 0, 'L', 0);
-					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
+					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L');
 
 				}
-				$posY+= 8;
+				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 				/***** Pré requis *****/
 
@@ -350,15 +354,18 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Publics";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
+				$posY = $pdf->GetY() + $this->espace_apres_titre;
+
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf_op->public);
 
-				$pdf->SetXY( $posX, $posY);
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
+				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
+
 
 
 				/***** Programme *****/
@@ -369,26 +376,16 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Programme";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
+				$posY = $pdf->GetY() + $this->espace_apres_titre;
+
 				$this->str =$agf_op->programme;
-				$hauteur_ligne_dans_col = 5;
-				$hauteur=dol_nboflines_bis($this->str,50)*4;
 
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->MultiCell(0, 5,$outputlangs->transnoentities($this->str),0,'L');
 
-				$hauteur_col = $hauteur / 2;
-				$hauteur_nb_lines = ($hauteur / $hauteur_ligne_dans_col)  /2;
-				$espace_entre_col = 10; // ici 1cm
-				//$largeur_col = ($this->espaceH_dispo - $espace_entre_col) / 2;
-				$largeur_col = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
-
-				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell($largeur_col, $hauteur_ligne_dans_col,$outputlangs->transnoentities($this->str),0,'L');
-
-				// Nbre de ligne * hauteur ligne + decallage titre niv 2
-				$posY = $pdf->GetY() + 8;
-
+				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 				/***** Methode pedago *****/
 
@@ -398,15 +395,15 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Méthode pédagogique";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
+				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = $agf_op->methode;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 8;
+				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 
 				/***** Duree *****/
@@ -415,8 +412,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Durée";
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5;
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
+				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				// calcul de la duree en nbre de jours
@@ -428,9 +425,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					if (ceil($jour) > 1) $this->str.='s';
 					$this->str.=').';
 				}
-				$pdf->SetXY( $posX, $posY);
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5 + 8;
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
