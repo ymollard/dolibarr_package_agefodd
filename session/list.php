@@ -29,6 +29,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -50,6 +51,7 @@ $search_end_date=dol_mktime(0,0,0,GETPOST('search_end_datemonth','int'),GETPOST(
 $search_site=GETPOST("search_site");
 
 $training_view=GETPOST("training_view",'int');
+$site_view=GETPOST('site_view','int');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x"))
@@ -91,6 +93,21 @@ if($training_view && !empty($search_training_ref) ) {
 	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
 	$agf->printFormationInfo();
+	print '</div>';
+}
+
+if($site_view ) {
+	$agf = new Agefodd_place($db);
+	$result = $agf->fetch($search_site);
+
+	if ($result)
+	{
+		$head = site_prepare_head($agf);
+
+		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
+	}
+
+	$agf->printPlaceInfo();
 	print '</div>';
 }
 

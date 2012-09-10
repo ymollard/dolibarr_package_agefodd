@@ -44,13 +44,13 @@ class Agefodd_place extends CommonObject
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function __construct($DB) 
+	function __construct($DB)
 	{
 		$this->db = $DB;
 		return 1;
 	}
-	
-	
+
+
 	/**
 	*      \brief      Create in database
 	*      \param      user        	User that create
@@ -61,17 +61,17 @@ class Agefodd_place extends CommonObject
 	{
 		global $conf, $langs;
 		$error=0;
-	
+
 		// Clean parameters
 		$this->tel = $this->db->escape($this->tel);
 		$this->notes = $this->db->escape($this->notes);
 		$this->acces_site = $this->db->escape($this->acces_site);
 		$this->note1 = $this->db->escape($this->note1);
-	
-	
+
+
 		// Check parameters
 		// Put here code to add control on parameters value
-		
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
 		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, acces_site, note1, fk_user_author, datec";
@@ -89,9 +89,9 @@ class Agefodd_place extends CommonObject
 		$sql.= '"'.$user->id.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
-	
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -102,7 +102,7 @@ class Agefodd_place extends CommonObject
 			{
 			// Uncomment this and change MYOBJECT to your own tag if you
 			// want this action call a trigger.
-			
+
 			//// Call triggers
 			//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 			//$interface=new Interfaces($this->db);
@@ -111,7 +111,7 @@ class Agefodd_place extends CommonObject
 			//// End call triggers
 			}
 		}
-	
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -139,7 +139,7 @@ class Agefodd_place extends CommonObject
     function fetch($id)
     {
     	global $langs;
-    	
+
         $sql = "SELECT";
 		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql.= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1, p.fk_reg_interieur";
@@ -147,7 +147,7 @@ class Agefodd_place extends CommonObject
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
         $sql.= " WHERE p.rowid = ".$id;
-	
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
@@ -196,7 +196,7 @@ class Agefodd_place extends CommonObject
     function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
     {
     	global $langs;
-    	
+
         $sql = "SELECT";
 		$sql.= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql.= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1";
@@ -205,20 +205,20 @@ class Agefodd_place extends CommonObject
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
 		if ($arch == 0 || $arch == 1) $sql.= " WHERE p.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
-	
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
-        
+
 			$this->line = array();
 			$num = $this->db->num_rows($resql);
-	
+
 			$i = 0;
 			while( $i < $num)
 			{
 	            $obj = $this->db->fetch_object($resql);
-	
+
 				$this->line[$i]->id = $obj->rowid;
 				$this->line[$i]->ref_interne =  stripslashes($obj->ref_interne);
 				$this->line[$i]->adresse = stripslashes($obj->adresse);
@@ -235,7 +235,7 @@ class Agefodd_place extends CommonObject
 				$this->line[$i]->archive = $obj->archive;
 				$this->line[$i]->acces_site = $obj->acces_site;
 				$this->line[$i]->note1 = $obj->note1;
-	
+
 				$i++;
 			}
 	        $this->db->free($resql);
@@ -258,7 +258,7 @@ class Agefodd_place extends CommonObject
     function info($id)
     {
     	global $langs;
-    	
+
         $sql = "SELECT";
 		$sql.= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
@@ -299,7 +299,7 @@ class Agefodd_place extends CommonObject
     {
 		global $conf, $langs;
 		$error=0;
-	
+
 		// Clean parameters
 		$this->ref_interne = trim($this->ref_interne);
 		$this->public = $this->db->escape(trim($this->public));
@@ -313,9 +313,9 @@ class Agefodd_place extends CommonObject
 
 		// Check parameters
 		// Put here code to add control on parameters values
-		
+
         // Update request
-        if (!isset($this->archive)) $this->archive = 0; 
+        if (!isset($this->archive)) $this->archive = 0;
         $sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_place as p SET';
 		$sql.= ' p.ref_interne="'.$this->ref_interne.'", ';
 		$sql.= ' p.adresse="'.$this->adresse.'", ';
@@ -335,7 +335,7 @@ class Agefodd_place extends CommonObject
         $sql.= " WHERE p.rowid LIKE ".$this->id;
 
 		$this->db->begin();
-	
+
 		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
@@ -345,7 +345,7 @@ class Agefodd_place extends CommonObject
 			{
 	            // Uncomment this and change MYOBJECT to your own tag if you
 	            // want this action call a trigger.
-				
+
 	            //// Call triggers
 	            //include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 	            //$interface=new Interfaces($this->db);
@@ -354,7 +354,7 @@ class Agefodd_place extends CommonObject
 	            //// End call triggers
 	    	}
 		}
-		
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -362,7 +362,7 @@ class Agefodd_place extends CommonObject
 			{
 	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
-			}	
+			}
 			$this->db->rollback();
 			return -1*$error;
 		}
@@ -370,10 +370,10 @@ class Agefodd_place extends CommonObject
 		{
 			$this->db->commit();
 			return 1;
-		}		
+		}
     }
 
-	
+
 	/**
 	*      \brief      Supprime l'operation
 	*      \param      id          Id operation à supprimer
@@ -383,10 +383,10 @@ class Agefodd_place extends CommonObject
 	{
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_place";
 		$sql .= " WHERE rowid = ".$id;
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-		
+
 		if ($resql)
 		{
 			return 1;
@@ -397,7 +397,7 @@ class Agefodd_place extends CommonObject
 		    return -1;
 		}
 	}
-	
+
 	/**
 	 *  Import customer adress
 	 *
@@ -408,12 +408,12 @@ class Agefodd_place extends CommonObject
 	{
 		global $conf, $langs;
 		$error=0;
-	
+
 		$sql = "SELECT";
 		$sql.= " s.address, s.cp, s.tel, s.ville, s.fk_departement, s.fk_pays";
 		$sql.= " FROM ".MAIN_DB_PREFIX."societe as s";
         $sql.= " WHERE s.rowid = ".$this->fk_societe;
-        
+
         dol_syslog(get_class($this)."::import_customer_adress sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
@@ -437,7 +437,7 @@ class Agefodd_place extends CommonObject
         			return -1;
         		}
         	}
-        	
+
         }
         else
        {
@@ -445,6 +445,32 @@ class Agefodd_place extends CommonObject
         	dol_syslog(get_class($this)."::import_customer_adress ".$this->error, LOG_ERR);
         	return -1;
         }
+	}
+
+	function printPlaceInfo() {
+		global $langs, $form;
+
+		print '<table class="border" width="100%">';
+
+		print '<tr><td width="20%">'.$langs->trans("Id").'</td>';
+		print '<td>'.$this->ref.'</td></tr>';
+
+		print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
+		print '<td>'.$this->ref_interne.'</td></tr>';
+
+		print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
+		if ($this->socid)
+		{
+			print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$this->socid.'">';
+			print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($this->socname,20).'</a>';
+		}
+		else
+		{
+			print '&nbsp;';
+		}
+		print '</tr>';
+		print '</table>';
+
 	}
 }
 

@@ -48,7 +48,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 {
 	$agf = new Agefodd_place($db);
 	$result = $agf->remove($id);
-	
+
 	if ($result > 0)
 	{
 		Header ( "Location: list.php");
@@ -70,12 +70,12 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 	if ($confirm == "yes")
 	{
 		$agf = new Agefodd_place($db);
-	
+
 		$result = $agf->fetch($id);
-	
+
 		$agf->archive = $arch;
 		$result = $agf->update($user);
-	
+
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
@@ -86,7 +86,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
 			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
-	
+
 	}
 	else
 	{
@@ -131,12 +131,12 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 	}
 	elseif (! $_POST["cancel"] && $_POST["importadress"])	{
-		
+
 		$agf = new Agefodd_place($db);
-		
+
 		$result = $agf->fetch($id);
 		$result = $agf->import_customer_adress($user);
-		
+
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
@@ -147,7 +147,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
 			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
-		
+
 	}else {
 		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
@@ -215,7 +215,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	$formcompany = new FormCompany($db);
 	print_fiche_titre($langs->trans("AgfCreatePlace"));
-	
+
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm">'."\n";
@@ -230,25 +230,25 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	/*
 	print '<tr><td>'.$langs->trans("Address").'</td>';
 	print '<td><input name="adresse" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans('CP').'</td><td>';
 	print $formcompany->select_ziptown('','zipcode',array('town','selectcountry_id'),6).'</tr>';
 	print '<tr></td><td>'.$langs->trans('Ville').'</td><td>';
 	print $formcompany->select_ziptown('','town',array('zipcode','selectcountry_id')).'</tr>';
-	
+
 	print '<tr><td>'.$langs->trans("Pays").'</td>';
 	print '<td>'.$form->select_country('','country_id').'</td></tr>';
-	
-	
+
+
 	print '<tr><td>'.$langs->trans("Phone").'</td>';
 	print '<td><input name="phone" class="flat" size="50" value=""></td></tr>';*/
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	
+
 	print '<tr><td valign="top">'.$langs->trans("AgfAccesSite").'</td>';
 	print '<td><textarea name="acces_site" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	
+
 	print '<tr><td valign="top">'.$langs->trans("AgfPlaceNote1").'</td>';
 	print '<td><textarea name="note1" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	print '</table>';
@@ -275,14 +275,14 @@ else
 		if ($result)
 		{
 			$head = site_prepare_head($agf);
-			
+
 			dol_fiche_head($head, 'card', $langs->trans("AgfSessPlace"), 0, 'address');
-				
+
 			// Affichage en mode "édition"
 			if ($action == 'edit')
 			{
 				$formcompany = new FormCompany($db);
-				
+
 				print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="post">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 				print '<input type="hidden" name="action" value="update">'."\n";
@@ -300,16 +300,16 @@ else
 
 				print '<tr><td>'.$langs->trans("Address").'</td>';
 				print '<td><input name="adresse" class="flat" size="50" value="'.$agf->adresse.'"></td></tr>';
-				
-				
+
+
 				print '<tr><td>'.$langs->trans('CP').'</td><td>';
 				print $formcompany->select_ziptown($agf->cp,'zipcode',array('town','selectcountry_id'),6).'</tr>';
 				print '<tr></td><td>'.$langs->trans('Ville').'</td><td>';
 				print $formcompany->select_ziptown($agf->ville,'town',array('zipcode','selectcountry_id')).'</tr>';
-				
+
 				print '<tr><td>'.$langs->trans("Pays").'</td>';
 				print '<td>'.$form->select_country($agf->pays,'country_id').'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("Phone").'</td>';
 				print '<td><input name="phone" class="flat" size="50" value="'.$agf->tel.'"></td></tr>';
 
@@ -318,7 +318,7 @@ else
 
 				print '<tr><td valign="top">'.$langs->trans("AgfAccesSite").'</td>';
 				print '<td><textarea name="acces_site" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->acces_site.'</textarea></td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfPlaceNote1").'</td>';
 				print '<td><textarea name="note1" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->note1.'</textarea></td></tr>';
 
@@ -332,13 +332,13 @@ else
 				print '</td></tr>';
 				print '</table>';
 				print '</form>';
-					
+
 				print '</div>'."\n";
 			}
 			else
 			{
 				// Affichage en mode "consultation"
-				
+
 				/*
 				 * Confirmation de la suppression
 				 */
@@ -354,7 +354,7 @@ else
 				{
 					if ($action == 'archive') $value=1;
 					if ($action == 'active') $value=0;
-					
+
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?arch=".$value."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
@@ -363,7 +363,7 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("Id").'</td>';
 				print '<td>'.$form->showrefnav($agf,'id	','',1,'rowid','id').'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
 				print '<td>'.$agf->ref_interne.'</td></tr>';
 
@@ -377,6 +377,7 @@ else
 				{
 				    print '&nbsp;';
 				}
+				print '</tr>';
 
 				print '<tr><td rowspan=3 valign="top">'.$langs->trans("Address").'</td>';
 				print '<td>'.$agf->adresse.'</td></tr>';
@@ -386,18 +387,18 @@ else
 
 				print '<tr>';
 				print '<td>'.$agf->pays.'</td></tr>';
-				
+
 				print '</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("Phone").'</td>';
 				print '<td>'.dol_print_phone($agf->tel).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfNotes").'</td>';
 				print '<td>'.nl2br($agf->notes).'</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfAccesSite").'</td>';
 				print '<td>'.nl2br($agf->acces_site).'</td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfPlaceNote1").'</td>';
 				print '<td>'.nl2br($agf->note1).'</td></tr>';
 

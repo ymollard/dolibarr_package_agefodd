@@ -235,6 +235,11 @@ function site_prepare_head($object)
 	$head[$h][2] = 'reg_int';
 	$h++;
 
+	$head[$h][0] = dol_buildpath('/agefodd/session/list.php',1).'?site_view=1&search_site='.$object->id;
+	$head[$h][1] = $langs->trans("AgfMenuSess");
+	$head[$h][2] = 'sessions';
+	$h++;
+
 	$head[$h][0] = dol_buildpath('/agefodd/site/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");
 	$head[$h][2] = 'info';
