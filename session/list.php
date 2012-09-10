@@ -28,6 +28,7 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -43,17 +44,18 @@ $arch=GETPOST('arch','int');
 
 //Search criteria
 $search_trainning_name=GETPOST("search_trainning_name");
-$search_trainning_ref=GETPOST("search_trainning_ref");
+$search_training_ref=GETPOST("search_training_ref",'alpha');
 $search_start_date=dol_mktime(0,0,0,GETPOST('search_start_datemonth','int'),GETPOST('search_start_dateday','int'),GETPOST('search_start_dateyear','int'));
 $search_end_date=dol_mktime(0,0,0,GETPOST('search_end_datemonth','int'),GETPOST('search_end_dateday','int'),GETPOST('search_end_dateyear','int'));
 $search_site=GETPOST("search_site");
 
+$training_view=GETPOST("training_view",'int');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x"))
 {
 	$search_trainning_name='';
-	$search_trainning_ref='';
+	$search_training_ref='';
 	$search_start_date="";
 	$search_end_date="";
 	$search_site="";
@@ -61,7 +63,7 @@ if (GETPOST("button_removefilter_x"))
 
 $filter=array();
 if (!empty($search_trainning_name)) {$filter['c.intitule']=$search_trainning_name;}
-if (!empty($search_trainning_ref)) {$filter['c.ref']=$search_trainning_ref;}
+if (!empty($search_training_ref)) {$filter['c.ref']=$search_training_ref;}
 if (!empty($search_start_date)) {$filter['s.dated']=$search_start_date;}
 if (!empty($search_end_date)) {$filter['s.datef']=$search_end_date;}
 if (!empty($search_site) && $search_site!=-1) {$filter['s.fk_session_place']=$search_site;}
@@ -77,10 +79,22 @@ $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$agf = new Agsession($db);
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
+if($training_view && !empty($search_training_ref) ) {
+	$agf = new Agefodd($db);
+	$result = $agf->fetch('',$search_training_ref);
+
+	$head = training_prepare_head($agf);
+
+	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
+
+	$agf->printFormationInfo();
+	print '</div>';
+}
+
+$agf = new Agsession($db);
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
 
 if ($resql != -1)
@@ -90,12 +104,12 @@ if ($resql != -1)
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_trainning_ref='.$search_trainning_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site, $sortfield, $sortorder,'', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site, $sortfield, $sortorder,'', $num);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url='&page='.$page.'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_trainning_ref='.$search_trainning_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site;
+	$arg_url='&page='.$page.'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site;
 	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","",$arg_url,'',$sortfield,$sortorder);
@@ -140,7 +154,7 @@ if ($resql != -1)
 	print '</td>';
 
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_trainning_ref" value="'.$search_trainning_ref.'" size="20">';
+	print '<input type="text" class="flat" name="search_training_ref" value="'.$search_training_ref.'" size="20">';
 	print '</td>';
 
 	print '<td class="liste_titre">';

@@ -140,7 +140,7 @@ class Agefodd extends CommonObject
 	*			arch	archive (0=no, 1=yes, 2=all)
 	*    \return     int         <0 if KO, >0 if OK
 	*/
-	function fetch($id)
+	function fetch($id,$ref='')
 	{
 	global $langs;
 
@@ -148,7 +148,10 @@ class Agefodd extends CommonObject
 	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
 	$sql.= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-	$sql.= " WHERE c.rowid = ".$id;
+	if($id && !$ref)
+		$sql.= " WHERE c.rowid = ".$id;
+	if(!$id && $ref)
+		$sql.= " WHERE c.ref = '".$ref."'";
 
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 	$resql=$this->db->query($sql);
@@ -673,6 +676,26 @@ class Agefodd extends CommonObject
     		dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
     		return -1;
     	}
+    }
+
+    function printFormationInfo() {
+    	global $form, $langs;
+
+    	print '<table class="border" width="100%">';
+
+		print "<tr>";
+		print '<td width="20%">'.$langs->trans("Ref").'</td><td colspan=2>';
+		print $this->ref;
+		print '</td></tr>';
+
+		print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td>';
+		print '<td colspan=2>'.stripslashes($this->intitule).'</td></tr>';
+
+		print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';
+		print $this->ref_interne.'</td></tr>';
+
+		print '</table>';
+
     }
 }
 

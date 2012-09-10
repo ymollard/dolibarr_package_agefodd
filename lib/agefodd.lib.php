@@ -44,6 +44,12 @@ function training_prepare_head($object)
 	$hselected = $h;
 	$h++;
 
+	$head[$h][0] = dol_buildpath('/agefodd/session/list.php',1).'?training_view=1&search_training_ref='.$object->ref_interne;
+	$head[$h][1] = $langs->trans("AgfMenuSess");
+	$head[$h][2] = 'sessions';
+	$hselected = $h;
+	$h++;
+
 	$head[$h][0] = dol_buildpath('/agefodd/training/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");
 	$head[$h][2] = 'info';

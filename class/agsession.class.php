@@ -1383,7 +1383,6 @@ class Agsession extends CommonObject
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 
 		$resql = $this->db->query($sql);
-
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 
