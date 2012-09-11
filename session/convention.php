@@ -276,10 +276,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$intro1.= " (".$conf->global->MAIN_INFO_SOCIETE_CP."), immatriculée au Registre du Commerce et des Sociétés sous la référence ";
 	$intro1.= $conf->global->MAIN_INFO_RCS;
 	if (empty ($conf->global->AGF_ORGANISME_NUM)) {
-		$intro1.= "et en cours d’enregistrement comme organisme de formation auprès de la préfecture de/des/l'".$conf->global->AGF_ORGANISME_PREF;
+		$intro1.= "et en cours d’enregistrement comme organisme de formation auprès de la préfecture ".$conf->global->AGF_ORGANISME_PREF;
 	}
 	else{ 
-		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture de l'";
+		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture ";
 		$intro1.= $conf->global->AGF_ORGANISME_PREF." sous le numéro ".$conf->global->AGF_ORGANISME_NUM;
 	}
 	$intro1.= ", représentée par ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";

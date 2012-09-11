@@ -45,7 +45,7 @@ if (empty($sortfield)) $sortfield="c.rowid";
 
 if ($page == -1) { $page = 0 ; }
 
-$limit = $conf->liste_limit;
+$limit = $conf->global->AGF_NUM_LIST;
 $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;

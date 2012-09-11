@@ -222,6 +222,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_NUM_LIST";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 100;
+		$this->const[$r][3] = 'Number of element in the list';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) $conf->agefodd->enabled=0; // This is to avoid warnings

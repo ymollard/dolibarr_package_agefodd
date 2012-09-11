@@ -578,7 +578,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				$this->str = 'Fait à '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.' , en deux (2) exemplaires originaux, dont un remis ce jour au client. ';
 				$nombre = $pdf->PageNo(); 	// page suivante = annexe1
-				$this->str.= "Ce document comporte ".$nombre." (".$literal[$nombre].") pages.";
+				$this->str.= "Ce document comporte ".$nombre." (".$literal[$nombre-1].") pages.";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 

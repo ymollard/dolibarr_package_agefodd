@@ -113,6 +113,11 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
+	$nb_num_list=GETPOST('AGF_NUM_LIST','int');
+	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
 	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
 		$msg=$langs->trans("AgfAgendaModuleNedeed");
@@ -465,6 +470,15 @@ print '<td align="left">';
 print '<input type="text" name="AGF_ORGANISME_REPRESENTANT" value="'.$conf->global->AGF_ORGANISME_REPRESENTANT.'" size="20" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfRepresantHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+//Nombre d'element dans les list
+print '<tr class="pair"><td>'.$langs->trans("AgfNbElemList").'</td>';
+print '<td align="left">';
+print '<input type="text" name="AGF_NUM_LIST" value="'.$conf->global->AGF_NUM_LIST.'" size="5" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfNbElemListHelp"),1,'help');
 print '</td>';
 print '</tr>';
 

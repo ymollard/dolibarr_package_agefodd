@@ -159,3 +159,7 @@ For Dev :
    ***** ChangeLog for 2.0.16 compared to 2.0.15 *****
 For All :
    - Add session list tab in trainning and site screen
+   - Merge EnvoieDoc from jf-ferry
+   - Correct the litteral number of page for the convention PDF
+   - correct some syntax in PDF
+   - add parameters in admin to change number of elements display in all list screen
