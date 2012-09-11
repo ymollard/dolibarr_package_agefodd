@@ -184,7 +184,7 @@ class InterfaceAgefodd
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
 
-			if ($object->actiontypecode == 'AC_AGF_CONV') {
+			if ($object->actiontypecode == 'AC_AGF_CONVE') {
 
 				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 				$langs->load("agefodd@agefodd");
