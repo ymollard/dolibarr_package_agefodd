@@ -439,7 +439,7 @@ if (!empty($id))
 				if($num > 0) {
 					foreach ($agftrainersess->line as $formateur) {
 						if($formateur->email != '')
-							$withto[$formateur->socpeopleid] = $formateur->name.' '.$formateur->firstname .' (formateur)';
+							$withto[$formateur->socpeopleid] = $formateur->name.' '.$formateur->firstname .' - '.$formateur->email.' (formateur)';
 					}
 				}
 
@@ -451,16 +451,24 @@ if (!empty($id))
 						$style_mesg='warning';
 					}
 					else {
-						$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($agf->fk_socpeople_OPCA);
+						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 					}
 				}
 				else {
-					$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($agf->fk_socpeople_OPCA);
+					$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 				}
 
 				// Contact client
 				if($agf->contactid > 0)
-					$withto[$agf->contactid]		= $agf->contactname.' (Client)';
+				{
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($agf->contactid);
+					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
+				}
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=0;
@@ -480,11 +488,14 @@ if (!empty($id))
 				$formmail->param['pre_action']='presend_convention';
 
 				// Convention peut être envoyé à l'opca ou au client
-				// TODO:  gérer intra / inter)
-				$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+				$contactstatic = new Contact($db);
+				$contactstatic->fetch($agf->fk_socpeople_OPCA);
+				$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 
 				// Contact client
-				$withto[$agf->contactid] 			= $agf->contactname.' (Client)';
+				$contactstatic = new Contact($db);
+				$contactstatic->fetch($agf->contactid);
+				$withto[$agf->contactid] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
@@ -500,21 +511,29 @@ if (!empty($id))
 				// Attestation peut être envoyé à l'opca ou au client
 				if ($agf->type_session &&  $socid) {
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
-					if (! $result_opca) {
+					if (! $result_opca)
+					{
 						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
 						$style_mesg='warning';
 					}
-					else {
-						$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+					elseif ($agf->is_OPCA)
+					{
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($agf->fk_socpeople_OPCA);
+						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 					}
 				}
 				else {
-					$withto[$agf->fk_socpeople_OPCA] 	= $agf->soc_OPCA_name.' (OPCA)';
+					if ($agf->is_OPCA)
+						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 				}
 
 				// Contact client
-				if($agf->contactid > 0)
-					$withto[$agf->contactid]		= $agf->contactname.' (Client)';
+				if($agf->contactid > 0) {
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($agf->contactid);
+					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
+				}
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
