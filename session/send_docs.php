@@ -426,6 +426,11 @@ if (!empty($id))
 			$formmail->withcancel=1;
 
 
+			/*--------------------------------------------------------------
+			 *
+			 * Définition des destinataires selon type de document demandé
+			 *
+			 *-------------------------------------------------------------*/
 			if ($action == 'presend_presence') {
 				$formmail->withtopic=$langs->trans('AdfSendFeuillePresence','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AdfSendFeuillePresenceBody','__FORMINTITULE__');
