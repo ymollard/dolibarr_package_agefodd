@@ -523,7 +523,7 @@ class Agsession extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " DISTINCT so.rowid as socid,";
-		$sql.= " s.rowid, so.nom as socname ";
+		$sql.= " s.rowid, s.type_session, s.is_OPCA, s.fk_soc_OPCA , so.nom as socname ";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
@@ -547,9 +547,12 @@ class Agsession extends CommonObject
 				while( $i < $num)
 				{
 	                $obj = $this->db->fetch_object($resql);
-	                $this->line[$i]->sessid = $obj->sessid;
+	                $this->line[$i]->sessid = $obj->rowid;
 					$this->line[$i]->socname = $obj->socname;
 	                $this->line[$i]->socid = $obj->socid;
+	                $this->line[$i]->type_session = $obj->type_session;
+	                $this->line[$i]->is_OPCA = $obj->is_OPCA;
+	                $this->line[$i]->fk_soc_OPCA = $obj->fk_soc_OPCA;
 					$i++;
 				}
 			}
@@ -1567,7 +1570,7 @@ class Agsession extends CommonObject
 		$sql.= " WHERE t.fk_soc_trainee = ".$fk_soc_trainee;
 		$sql.= " AND t.fk_session_agefodd = ".$id_session;
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::getOpcaForTraineeInSession sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -1575,7 +1578,7 @@ class Agsession extends CommonObject
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				$this->opca_rowid					= $obj->rowid;
+				$this->opca_rowid			= $obj->rowid;
 				$this->fk_soc_trainee 		= $obj->fk_soc_trainee;
 				$this->fk_session_agefodd 	= $obj->fk_session_agefodd;
 				$this->date_ask_OPCA 		= $this->db->jdate($obj->date_ask_OPCA);
