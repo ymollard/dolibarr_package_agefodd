@@ -324,7 +324,31 @@ if (!empty($id))
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
 				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
-				document_line("Facture", 2, "fac", $agf->line[$i]->socid);
+
+				$text_fac = "Facture";
+				if($agf->line[$i]->type_session) { // session inter
+					$agfstat = new Agsession($db);
+					// load les infos OPCA pour la session
+					$agfstat->getOpcaForTraineeInSession($agf->line[$i]->sessid,$agf->line[$i]->sessid);
+					// Facture à l'OPCA si subrogation
+					$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
+
+					// Si subrogation et info renseigné
+					if ($soc_to_select > 0 && $agfstat->is_OPCA)
+					{
+						$text_fac.=' (ajouter contact OPCA en tant que subrogation)';
+					}
+					elseif(!$agfstat->is_OPCA) // Pas de subrogation
+					{
+						$text_fac.=" (pas de subrogation)";
+					}
+					else // OPCA non renseignée
+					{
+						$text_fac.= ' <span class="error">subrogation : aucun tiers indiqué pour le contact facturation de l\'OPCA. <a href="'.dol_buildpath("/agefodd/session/subscribers.php",1).'?action=edit&id='.$id.'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a></span>';
+					}
+				}
+				document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
+
 				document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
