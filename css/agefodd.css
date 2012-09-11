@@ -19,3 +19,9 @@
 
 /* Bordures sur le tableau du formulaire de gestion de la subrogation */
 #form_subrogation, #form_subrogation tr, #form_subrogation td { border: 0;}
+
+/* Multi select des destinataires dans les envois de document */
+.ui-multiselect {width: 50% !important;}
+.ui-multiselect div.selected,
+.ui-multiselect div.available
+ {width: 49.9% !important; padding: 0;; margin: 0;}
