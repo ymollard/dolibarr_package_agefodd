@@ -159,14 +159,13 @@ For Dev :
    ***** ChangeLog for 2.0.16 compared to 2.0.15 *****
 For All :
    - Merge EnvoieDoc from jf-ferry :
-      - Changement de la couleur des template
       - Add session list tab in trainning and site screen
       - Change some description into document screen
       - improvement of envoie doc screen and better mail layout
    - Correct the litteral number of page for the convention PDF
    - correct some syntax in PDF
    - add parameters in admin to change number of elements display in all list screen
-   - Correct own trainning format in agefodd configuration 
+   - Correct town trainning format in agefodd configuration 
    - Change type of but, prerequis, public, method for extand to text (more than 255 caracters)
    - Correct mistake into fiche presence
    - Add color picker for PDF model in configuration
