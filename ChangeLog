@@ -167,3 +167,9 @@ For All :
    - correct some syntax in PDF
    - add parameters in admin to change number of elements display in all list screen
    - Correct own trainning format in agefodd configuration 
+   - Change type of but, prerequis, public, method for extand to text (more than 255 caracters)
+   - Correct mistake into fiche presence
+   - Add color picker for PDF model in configuration
+For Dev : 
+   - Rename file update_1.0-2.0 to avoid this file to be run. Use this file only for migration from Agefodd for Dolibarr 2.9 to this version
+   - Remove "Plateau technique" from PDF 

@@ -29,6 +29,7 @@ dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 class pdf_attestation extends ModelePDFAgefodd
@@ -38,7 +39,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $color1 = array('190','190','190');	// gris clair
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	protected $color3;
 
 
 	/**
@@ -69,6 +70,8 @@ class pdf_attestation extends ModelePDFAgefodd
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 
+		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined

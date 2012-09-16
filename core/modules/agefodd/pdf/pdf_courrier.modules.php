@@ -32,6 +32,7 @@ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_contact.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 
@@ -42,7 +43,7 @@ class pdf_courrier extends ModelePDFAgefodd
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $color1 = array('190','190','190');	// gris clair
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	protected $color3;
 
 	/**
 	 *	\brief		Constructor
@@ -73,6 +74,8 @@ class pdf_courrier extends ModelePDFAgefodd
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 
+		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -166,7 +169,7 @@ class pdf_courrier extends ModelePDFAgefodd
 						{
 							$widthLogo = $tmp['width'];
 						}
-						$marge_logo =  (($widthLogo*25.4)/72);
+						$marge_logo =  (($widthLogo*25.4)/72) + 10;
 						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
@@ -206,25 +209,7 @@ class pdf_courrier extends ModelePDFAgefodd
 				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2;
-
-				// Plateau technique
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, 'Centre et plateau technique',0,0,'L');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = "3 rue Jean Marie David\n";
-				$this->str.= '35740 PACE RENNES';
-				$this->str.= ' - FRANCE'."\n";
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 5;
+				$posY = $pdf->GetY() + 10;
 
 				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);

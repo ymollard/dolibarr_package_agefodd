@@ -45,7 +45,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $color1 = array('190','190','190');	// gris clair
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	protected $color3;
 
 	/**
 	 *	\brief		Constructor
@@ -76,6 +76,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 
+		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -207,14 +209,14 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			if (is_readable($logo))
 			{
 				$heightLogo=pdf_getHeightForLogo($logo);
-						include_once(DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php');
-						$tmp=dol_getImageSize($logo);
-						if ($tmp['width'])
-						{
-							$widthLogo = $tmp['width'];
-						}
-						$marge_logo =  (($widthLogo*25.4)/72);
-						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+				include_once(DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php');
+				$tmp=dol_getImageSize($logo);
+				if ($tmp['width'])
+				{
+					$widthLogo = $tmp['width'];
+				}
+				$marge_logo =  (($widthLogo*25.4)/72) + 10;
+				$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 			}
 			else
 			{
@@ -230,53 +232,33 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 
-		//$posX += $this->page_largeur - $this->marge_droite - 65;
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
+		$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+		$pdf->SetXY($posX, $posY -1);
+		$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
+		$pdf->SetXY($posX, $posY +3);
+		$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
+		$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
+		$this->str.= ' - FRANCE'."\n";
+		$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."";
+		if($conf->global->MAIN_INFO_SOCIETE_FAX)
+			$this->str.= '- fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
+		else
+			$this->str.= "\n";
+		//$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
+		$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
-				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-				$this->str.= ' - FRANCE'."\n";
-				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."";
-				if($conf->global->MAIN_INFO_SOCIETE_FAX)
-					$this->str.= '- fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
-				else
-					$this->str.= "\n";
-				//$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
-				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
+		$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
+		$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+		$posY = $pdf->GetY() + 10;
+		
+		$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+		$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2;
-
-				// Plateau technique
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, 'Centre et plateau technique',0,0,'L');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = "3 rue Jean Marie David\n";
-				$this->str.= '35740 PACE RENNES';
-				$this->str.= ' - FRANCE'."\n";
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 5;
-
-				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-
-				// Mise en page de la baseline
+		// Mise en page de la baseline
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
 		$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
 		$this->width = $pdf->GetStringWidth($this->str);
@@ -396,7 +378,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$h_ligne = 6;
 
 		$larg_col1 = 10;
-		$larg_col2 = 30;
+		$larg_col2 = 29;
 		$larg_col3 = 120;
 		$larg_col4 = 60;
 		$haut_col2 = 0;
@@ -407,26 +389,20 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		for ($i=0; $i < $nbform; $i++)
 		{
-		// Nom
-			//$pdf->SetXY($posX, $posY);
-			//$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			//$this->str = "Nom :";
-			//$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			//$this->str = $agf->teachername;
-			$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);;
+			$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = "le formateur atteste par la présente avoir dispensé la formation ci-dessus nommée";
+			$this->str = ",le formateur, atteste par la présente avoir dispensé la formation ci-dessus nommée.";
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = "signature: ";
+			$this->str = "Signature: ";
 			$pdf->Cell($larg_col4, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			// Cadre
@@ -438,7 +414,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		}
 
-		$posY+= 4;
+		$posY = $pdf->GetY() + 4;
 
 
 		/***** Bloc stagiaire *****/
@@ -447,12 +423,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
-		$this->str = "Les stagaires";
+		$this->str = "Les stagiaires";
 		$pdf->Cell(0,4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 		$posY+= 4;
 
 		$cadre_tableau=array($posX -2 , $posY );
-
 
 		$larg_col1 = 40;
 		$larg_col2 = 40;
@@ -491,31 +466,28 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Date
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($agf->id);
-		//count($agf_date->line)
-		$largeur_date = 16;
-		for ($y = 0; $y < 10; $y++)	{
+		$largeur_date = 18;
+		for ($y = 0; $y < 6; $y++)	{
 			// Jour
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( 20 * $y), $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
 			if ($agf_date->line[$y]->date_session) {
-				$date = dol_print_date($agf_date->line[$y]->date_session,'daytext');
+				$date = dol_print_date($agf_date->line[$y]->date_session,'daytextshort');
 			}
 			else {
 				$date = '';
 			}
-			//$this->str = dol_print_date($agf_date->line[$y]->date);
 			$this->str = $date;
-			if ($last_day == $agf_date->line[$y]->date_session)	{
+			if ($last_day == $agf_date->line[$y]->date_session)    {
 				$same_day += 1;
 				$pdf->SetFillColor(255,255,255);
-				$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ( $largeur_date * $y) - ( $largeur_date * ($same_day)), $posY);
-				$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",1);
 			}
 			else {
 				$same_day = 0;
-				$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY);
-				$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
 			}
+			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ( $largeur_date * $y) - ( $largeur_date * ($same_day)), $posY);
+			$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",$same_day);
+			
 			// horaires
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY + 4);
 			if ($agf_date->line[$y]->heured && $agf_date->line[$y]->heuref)	{

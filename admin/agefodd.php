@@ -117,6 +117,9 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
+	$pdf_color=GETPOST('AGF_PDF_COLOR','alpha');
+	$res = dolibarr_set_const($db, 'AGF_PDF_COLOR', $pdf_color,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
 	
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
 	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
@@ -315,7 +318,7 @@ if ($action == 'sessionlevel_update')
  *
  */
 
-llxHeader();
+llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
 
 $form=new Form($db);
 $formAgefodd=new FormAgefodd($db);
@@ -474,13 +477,42 @@ print '</td>';
 print '</tr>';
 
 //Nombre d'element dans les list
-print '<tr class="pair"><td>'.$langs->trans("AgfNbElemList").'</td>';
+print '<tr class="impair"><td>'.$langs->trans("AgfNbElemList").'</td>';
 print '<td align="left">';
 print '<input type="text" name="AGF_NUM_LIST" value="'.$conf->global->AGF_NUM_LIST.'" size="5" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfNbElemListHelp"),1,'help');
 print '</td>';
 print '</tr>';
+
+print '<tr class="pair"><td>'.$langs->trans("AgfPDFBaseColor").'</td>';
+print '<td  align="left"><input id="AGF_PDF_COLOR" type="text" size="8" name="AGF_PDF_COLOR" value="'.$conf->global->AGF_PDF_COLOR.'" /></td><td></td></tr>';
+
+print '<script type="text/javascript" language="javascript">
+$(document).ready(function() {
+$("#AGF_PDF_COLOR").css("backgroundColor", \'#'.$conf->global->AGF_PDF_COLOR.'\');
+$("#AGF_PDF_COLOR").ColorPicker({
+color: \'#'.$conf->global->AGF_PDF_COLOR.'\',
+onShow: function (colpkr) {
+$(colpkr).fadeIn(500);
+return false;
+},
+onHide: function (colpkr) {
+$(colpkr).fadeOut(500);
+return false;
+},
+onChange: function (hsb, hex, rgb) {
+$("#AGF_PDF_COLOR").css("backgroundColor", \'#\' + hex);
+},
+onSubmit: function (hsb, hex, rgb) {
+$("#AGF_PDF_COLOR").val(hex);
+}
+});
+})
+.bind(\'keyup\', function(){
+$(this).ColorPickerSetColor(this.value);
+});
+</script>';
 
 //Utilisation d'un type de stagaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';
