@@ -43,10 +43,9 @@ $action = GETPOST('action','alpha');
 
 if ($action == 'updateMask')
 {
-	$maskconsttraining=GETPOST('maskconstproject','alpha');
-	$masktraining=GETPOST('maskproject','alpha');
+	$masktype=GETPOST('value');
 
-	if ($maskconsttraining)  $res = dolibarr_set_const($db,$maskconsttraining,$masktraining,'chaine',0,'',$conf->entity);
+	if ($masktype)  $res = dolibarr_set_const($db,'AGF_ADDON',$masktype,'chaine',0,'',$conf->entity);
 
 	if (! $res > 0) $error++;
 
@@ -394,7 +393,7 @@ foreach ($dirmodels as $reldir)
 						}
 						else
 						{
-							print '<a href="'.$_SERVER["PHP_SELF"].'?action=setmod&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
+							print '<a href="'.$_SERVER["PHP_SELF"].'?action=updateMask&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
 						}
 						print '</td>';
 

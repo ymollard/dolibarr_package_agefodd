@@ -156,7 +156,7 @@ For Dev :
    - Correct wrong call to agsession constructor in convention PDF
    - Drop llx_agefodd_place_ibfk_2 if extists because it is not use and create bug
    
-   ***** ChangeLog for 2.0.16 compared to 2.0.15 *****
+***** ChangeLog for 2.0.16 compared to 2.0.15 *****
 For All :
    - Merge EnvoieDoc from jf-ferry :
       - Add session list tab in trainning and site screen
@@ -172,3 +172,9 @@ For All :
 For Dev : 
    - Rename file update_1.0-2.0 to avoid this file to be run. Use this file only for migration from Agefodd for Dolibarr 2.9 to this version
    - Remove "Plateau technique" from PDF 
+   
+***** ChangeLog for 2.0.17 compared to 2.0.16 *****
+For All :
+	- Fix Bug on Universal mask (Bug #541)
+For Dev : 
+	- Add entity column to prepare multicompany module functionnality 
