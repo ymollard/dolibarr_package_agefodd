@@ -276,7 +276,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
-				$this->str = $agf_op->but;
+				$this->str = $agf->but;
 				if (empty($this->str)) $this->str = "Aucun";
 
 				$pdf->SetXY($posX, $posY);
@@ -286,8 +286,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				/***** Objectifs pedagogique de la formation *****/
 
 				// Récuperation
-				$agf_op = new Agefodd($this->db);
-				$result2 = $agf_op->fetch_objpeda_per_formation($agf->id);
+				$result2 = $agf->fetch_objpeda_per_formation($agf->id);
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
@@ -299,14 +298,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 				$hauteur = 0;
 				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
-				for ( $y = 0; $y < count($agf_op->line); $y++)
+				for ( $y = 0; $y < count($agf->line); $y++)
 				{
 					if ($y > 0) $posY+= $hauteur;
 					$pdf->SetXY ($posX, $posY);
-					$hauteur = dol_nboflines_bis($agf_op->line[$y]->intitule,80)*3;
+					$hauteur = dol_nboflines_bis($agf->line[$y]->intitule,80)*3;
 
-					$pdf->Cell(10, 4, $agf_op->line[$y]->priorite.'. ', 0, 0, 'L', 0);
-					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L');
+					$pdf->Cell(10, 4, $agf->line[$y]->priorite.'. ', 0, 0, 'L', 0);
+					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->line[$y]->intitule), 0,'L');
 
 				}
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
@@ -320,7 +319,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
-				$this->str = $agf_op->prerequis;
+				$this->str = $agf->prerequis;
 				if (empty($this->str)) $this->str = "Aucun";
 
 				$pdf->SetXY( $posX, $posY);
@@ -331,9 +330,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Public *****/
 
-				// Récuperation
-				$agf_op->fetch($agf->id);
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Publics";
@@ -342,7 +338,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-				$this->str = ucfirst($agf_op->public);
+				$this->str = ucfirst($agf->public);
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
@@ -353,16 +349,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Programme *****/
 
-				// Récuperation
-				//$agf_op->fetch($agf->formid);
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Programme";
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
-				$this->str =$agf_op->programme;
+				$this->str =$agf->programme;
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
@@ -372,9 +365,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Methode pedago *****/
 
-				// Récuperation
-				$agf_op->fetch($agf->id);
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = "Méthode pédagogique";
@@ -382,7 +372,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$this->str = $agf_op->methode;
+				$this->str = $agf->methode;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -400,7 +390,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				// calcul de la duree en nbre de jours
-				$jour = $agf_op->duree / 7;
+				$jour = $agf->duree / 7;
 				if ($jour < 1) $this->str = $agf_op->duree.' heures.';
 				else
 				{
