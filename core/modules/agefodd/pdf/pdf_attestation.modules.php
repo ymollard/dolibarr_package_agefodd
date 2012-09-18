@@ -52,8 +52,8 @@ class pdf_attestation extends ModelePDFAgefodd
 
 
 		$this->db = $db;
-		$this->name = "ebic";
-		$this->description = $langs->trans('Modèle de document pour les attestatiions de formation');
+		$this->name = "attestation";
+		$this->description = $langs->trans('Modèle de document pour les attestations de formation');
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
@@ -89,7 +89,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	 */
 	function write_file($agf,$outputlangs, $file, $socid)
 	{
-		global $user,$langs,$conf;
+		global $user,$langs,$conf,$mysoc;
 
 		if (! is_object($outputlangs)) $outputlangs=$langs;
 
@@ -352,9 +352,9 @@ class pdf_attestation extends ModelePDFAgefodd
 	 */
 	function _pagefoot(&$pdf,$object,$outputlangs)
 	{
-		global $conf,$langs;
+		global $conf,$langs,$mysoc;
 
-		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM." - Organisme de formation enregistré à la préfecture de ".$conf->global->AGF_ORGANISME_PREF." sous le n° ".$conf->global->AGF_ORGANISME_NUM;
+		$this->str = $mysoc->name." - Organisme de formation enregistré à la préfecture de ".$conf->global->AGF_ORGANISME_PREF." sous le n° ".$conf->global->AGF_ORGANISME_NUM;
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
