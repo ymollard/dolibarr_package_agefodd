@@ -119,7 +119,6 @@ class Agsession extends CommonObject
 
     	// Insert request
     	$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session(";
-
     	$sql.= "fk_soc,";
     	$sql.= "fk_formation_catalogue,";
     	$sql.= "fk_session_place,";
@@ -130,7 +129,8 @@ class Agsession extends CommonObject
     	$sql.= "notes,";
     	$sql.= "fk_user_author,";
     	$sql.= "datec,";
-    	$sql.= "fk_user_mod";
+    	$sql.= "fk_user_mod,";
+    	$sql.= "entity";
     	$sql.= ") VALUES (";
     	$sql.= " ".(! isset($this->fk_soc)?'NULL':"'".$this->fk_soc."'").",";
     	$sql.= " ".(! isset($this->fk_formation_catalogue)?'NULL':"'".$this->fk_formation_catalogue."'").",";
@@ -143,7 +143,7 @@ class Agsession extends CommonObject
     	$sql.= " ".$this->db->escape($user->id).",";
     	$sql.= " ".$this->db->idate(dol_now()).",";
     	$sql.= " ".$this->db->escape($user->id);
-
+    	$sql.= ", ".$conf->entity;
     	$sql.= ")";
 
     	$this->db->begin();
@@ -367,6 +367,7 @@ class Agsession extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as concactOPCA ";
 		$sql.= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
     	$sql.= " WHERE t.rowid = ".$id;
+    	$sql.= " AND t.entity IN (".getEntity('agsession').")";
 
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
     	$resql=$this->db->query($sql);
@@ -1366,6 +1367,8 @@ class Agsession extends CommonObject
 			$sql.= " AND sa.archive LIKE 1";
 		}
 		else $sql.= " WHERE s.archive LIKE ".$arch;
+
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 
 		//Manage filter
 		if (!empty($filter)){
