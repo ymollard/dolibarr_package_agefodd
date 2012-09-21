@@ -77,7 +77,7 @@ class Agefodd extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author";
+		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author,entity";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= '"'.$this->ref_interne.'", ';
@@ -90,7 +90,8 @@ class Agefodd extends CommonObject
 		$sql.= '"'.$this->programme.'",';
 		$sql.= '"'.$this->note1.'",';
 		$sql.= '"'.$this->note2.'",';
-		$sql.= '"'.$user->id.'"';
+		$sql.= '"'.$user->id.'",';
+		$sql.= '"'.$conf->entity.'"';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -640,6 +641,7 @@ class Agefodd extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as a";
 		$sql.= " ON c.rowid = a.fk_formation_catalogue";
 		$sql.= " WHERE c.archive LIKE ".$arch;
+		$sql.= " AND c.entity IN (".getEntity('agsession').")";
 		$sql.= " GROUP BY c.ref";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 

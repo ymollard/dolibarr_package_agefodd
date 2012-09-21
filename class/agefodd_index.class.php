@@ -137,6 +137,7 @@ class Agefodd_index
 		$sql = "SELECT count(*) as num";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql.= " WHERE archive LIKE 0";
+		$sql.= " AND entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);

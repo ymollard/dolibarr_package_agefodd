@@ -69,6 +69,7 @@ class FormAgefodd extends Form
 		$sql = "SELECT c.rowid, c.intitule, c.ref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " WHERE archive LIKE 0";
+		$sql.= " AND entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY ".$order;
 
 		dol_syslog(get_class($this)."::select_formation sql=".$sql, LOG_DEBUG);
