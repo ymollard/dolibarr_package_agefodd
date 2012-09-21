@@ -43,7 +43,7 @@ class Agefodd_index
 	*	\brief		Constructor
 	*	\param		DB	Database handler
 	*/
-	function Agefodd_index($DB) 
+	function Agefodd_index($DB)
 	{
 	$this->db = $DB;
 	return 1;
@@ -58,7 +58,7 @@ class Agefodd_index
 	function fetch_student_nb()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT DISTINCT";
 		$sql.= " s.fk_stagiaire,";
 		$sql.= " se.archive";
@@ -66,7 +66,7 @@ class Agefodd_index
 		$sql.= " LEFT JOIN  ".MAIN_DB_PREFIX."agefodd_session as se";
 		$sql.= " ON se.rowid = s.fk_session_agefodd";
 		$sql.= " WHERE se.archive LIKE 1";
-		
+
 		dol_syslog(get_class($this)."::fetch_student_nb sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -75,7 +75,7 @@ class Agefodd_index
 			if ($num == '') $num = 0;
 			$this->db->free($resql);
 			return $num;
-			
+
 			//return 1;
 		}
 		else
@@ -94,12 +94,13 @@ class Agefodd_index
 	function fetch_session_nb()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT count(*) as num";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session";
 		$sql.= " WHERE archive LIKE 1";
+		$sql.= " AND entity IN (".getEntity('agsession').")";
 
-	
+
 		dol_syslog(get_class($this)."::fetch_session_nb sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -110,7 +111,7 @@ class Agefodd_index
 				$this->num = $obj->num;
 			}
 			else $this->num = 0;
-			
+
 			$this->db->free($resql);
 			return 1;
 
@@ -132,11 +133,11 @@ class Agefodd_index
 	function fetch_formation_nb()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT count(*) as num";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql.= " WHERE archive LIKE 0";
-	
+
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -167,14 +168,15 @@ class Agefodd_index
 	function fetch_heures_sessions_nb()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT  sum(f.duree) AS total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
 		$sql.= " WHERE s.archive LIKE 1";
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		//$sql.= " GROUP BY f.duree";
-	
+
 		dol_syslog(get_class($this)."::fetch_heures_sessions_nb sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -205,7 +207,7 @@ class Agefodd_index
 	function fetch_heures_stagiaires_nb()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT  sum(f.duree) AS total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire AS ss";
@@ -213,8 +215,9 @@ class Agefodd_index
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
 		$sql.= " WHERE s.archive LIKE 1";
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		//$sql.= " GROUP BY f.duree";
-	
+
 		dol_syslog(get_class($this)."::fetch_heures_stagiaires_nb sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -245,14 +248,15 @@ class Agefodd_index
 	function fetch_last_formations($number=5)
 	{
 		global $langs;
-	
+
 		$sql = "SELECT c.intitule, s.dated, s.datef, s.fk_formation_catalogue, s.rowid as id";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " WHERE s.archive LIKE 1";
+		$sql.= " AND entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY s.dated DESC LIMIT ".$number;
-	
+
 		dol_syslog(get_class($this)."::fetch_last_formations sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -291,16 +295,17 @@ class Agefodd_index
 	function fetch_top_formations($number=5)
 	{
 		global $langs;
-	
+
 		$sql = "SELECT c.intitule, count(*) as num, c.duree, ";
 		$sql.= " s.fk_formation_catalogue";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " WHERE s.archive LIKE 1";
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		$sql.= " GROUP BY c.intitule";
 		$sql.= " ORDER BY num DESC LIMIT ".$number;
-	
+
 		dol_syslog(get_class($this)."::fetch_top_formations sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -337,11 +342,12 @@ class Agefodd_index
 	function fetch_session($archive=0)
 	{
 		global $langs;
-	
+
 		$sql = "SELECT count(*) as total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session";
 		$sql.= " WHERE archive LIKE ".$archive;
-	
+		$sql.= " AND entity IN (".getEntity('agsession').")";
+
 		dol_syslog(get_class($this)."::fetch_session sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -350,7 +356,7 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->total = $obj->total;
-			}			
+			}
 			$this->db->free($resql);
 			return 1;
 
@@ -373,10 +379,11 @@ class Agefodd_index
 	function fetch_tache_en_retard($jour=0)
 	{
 		global $langs;
-	
+
 		$sql = "SELECT rowid,fk_agefodd_session";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_adminsitu";
 		$sql.= " WHERE (datea - INTERVAL ".$jour." DAY) <= NOW() AND archive LIKE 0 AND (NOW() < datef)";
+		$sql.= " AND entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch_tache_en_retard sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -387,17 +394,17 @@ class Agefodd_index
 				$this->line = array();
 				$num = $this->db->num_rows($resql);
 				$i = 0;
-				
+
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-				
+
 					$this->line[$i]->rowid = $obj->rowid;
 					$this->line[$i]->sessid = $obj->fk_agefodd_session;
-						
+
 					$i++;
 				}
-			}			
+			}
 			$this->db->free($resql);
 			return 1;
 
@@ -418,10 +425,11 @@ class Agefodd_index
 	function fetch_tache_en_cours()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT count(*) as total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_adminsitu";
 		$sql.= " WHERE archive LIKE 0";
+		$sql.= " AND entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch_tache_en_cours sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -431,7 +439,7 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->total = $obj->total;
-			}			
+			}
 			$this->db->free($resql);
 			return 1;
 
@@ -443,7 +451,7 @@ class Agefodd_index
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *    \brief	Load object in memory from database
 	 *    \param	id	id admin action (in table agefodd_session_adminsitu)
@@ -452,7 +460,7 @@ class Agefodd_index
 	function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf=0)
 	{
 		global $langs;
-	
+
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql.= " s.delais_alerte, s.indice, s.dated, s.datef, s.datea, s.notes,";
@@ -468,16 +476,18 @@ class Agefodd_index
 		{
 			if ($delais_sup!=1) $delais_sup_sql= 's.datea - INTERVAL '.$delais_sup.' DAY';
 			else $delais_sup_sql='s.datea';
-			
+
 			if ($delais_inf!=1) $delais_inf_sql= 's.datea - INTERVAL '.$delais_inf.' DAY';
 			else $delais_inf_sql='s.datea';
-			
+
 			$sql.= " AND  ( ";
 			$sql.= ' NOW() BETWEEN ('.$delais_sup_sql.') AND ('.$delais_inf_sql.')';
 			$sql.= " )";
 		}
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
+
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
-	
+
 		dol_syslog(get_class($this)."::fetch_session_per_dateLimit sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -485,14 +495,14 @@ class Agefodd_index
 			$this->line = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-	
+
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-	
+
 				$this->line[$i]->rowid = $obj->rowid;
 				$this->line[$i]->sessid = $obj->fk_agefodd_session;
-					
+
 				$i++;
 			}
 			$this->db->free($resql);
@@ -514,7 +524,7 @@ class Agefodd_index
 	function fetch_session_to_archive()
 	{
 		global $langs;
-	
+
 		// Il faut que toutes les tâches administratives soit crées (top_level);
 		$sql = "SELECT MAX(sa.datea), sa.rowid, sa.fk_agefodd_session";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
@@ -523,8 +533,9 @@ class Agefodd_index
 		$sql.= " WHERE sa.archive LIKE 1";
 		$sql.= " AND sa.level_rank=0";
 		$sql.= " AND s.archive LIKE 0";
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		$sql.= " GROUP BY sa.fk_agefodd_session";
-		
+
 		dol_syslog(get_class($this)."::fetch_session_to_archive sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -535,9 +546,9 @@ class Agefodd_index
 				$obj = $this->db->fetch_object($resql);
 				$this->sessid = $obj->fk_agefodd_session;
 			}
-			
+
 			$this->db->free($resql);
-			
+
 			return $num;
 		}
 		else
