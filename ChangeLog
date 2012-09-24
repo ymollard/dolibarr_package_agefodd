@@ -181,4 +181,7 @@ For All :
 	- Merge from jf-ferry : multicompagny module compatibility
 For Dev : 
 	- Add entity column to prepare multicompany module functionnality
-	- change way to get society info in PDF use $mysoc global is better than $conf->global->MAIN_SOC.... 
+	- change way to get society info in PDF use $mysoc global is better than $conf->global->MAIN_SOC....
+	
+	***** ChangeLog for 2.0.18 compared to 2.0.17 *****
+	 
