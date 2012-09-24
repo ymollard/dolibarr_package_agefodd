@@ -300,6 +300,10 @@ class FormAgefodd extends Form
 		$sql.= " ON so.rowid = s.fk_soc";
 		if (!empty($filter)) {
 			$sql .= ' WHERE '.$filter;
+			$sql.= " AND s.entity IN (".getEntity('agsession').")";
+		}
+		else {
+			$sql.= " WHERE s.entity IN (".getEntity('agsession').")";
 		}
 		$sql.= " ORDER BY fullname";
 

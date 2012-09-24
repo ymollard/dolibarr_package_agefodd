@@ -77,9 +77,9 @@ class Agefodd_stagiaire extends CommonObject
 		// Put here code to add control on parameters value
 		$this->nom = strtoupper($this->nom);
     	$this->prenom = ucfirst(strtolower($this->prenom));
-    	
+
     	if (empty($this->civilite)){
-    		$error++; 
+    		$error++;
     		$this->errors[]=$langs->trans("AgfCiviliteMandatory");
     	}
 
@@ -88,7 +88,9 @@ class Agefodd_stagiaire extends CommonObject
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_stagiaire(";
 		$sql.= "nom, prenom, civilite, fk_user_author, datec, ";
 		$sql.= "fk_soc, fonction, tel1, tel2, mail, note,fk_socpeople";
+		$sql.= ",entity";
 		$sql.= ") VALUES (";
+
 		$sql.= '"'.$this->nom.'", ';
 		$sql.= '"'.$this->prenom.'", ';
 		$sql.= '"'.$this->civilite.'", ';
@@ -101,8 +103,9 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= '"'.$this->mail.'", ';
 		$sql.= '"'.$this->note.'",';
 		$sql.= '"'.$this->fk_socpeople.'"';
+		$sql.= ',"' .$conf->entity.'"';
 		$sql.= ")";
-		
+
 		if (! $error)
 		{
 			$this->db->begin();
@@ -110,7 +113,7 @@ class Agefodd_stagiaire extends CommonObject
 	   		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 	   		$resql=$this->db->query($sql);
 	   		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-		
+
 		    $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_stagiaire");
 		    if (! $notrigger)
 		    {
@@ -166,6 +169,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
 		$sql.= " ON s.civilite = civ.code";
         $sql.= " WHERE s.rowid = ".$id;
+        $sql.= " AND s.entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
@@ -273,6 +277,10 @@ class Agefodd_stagiaire extends CommonObject
 			}
 			if (!empty($sqlwhere))	{$sql .= ' WHERE '. $sqlwhere;}
 		}
+		else {
+			$sql.= " WHERE s.entity IN (".getEntity('agsession').")";
+		}
+
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 
