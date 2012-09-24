@@ -437,7 +437,7 @@ if (!empty($id))
 				}
 				else
 				{
-					print '<td width="25%" style="border-right: 0px;">';
+					print '<td width="40%">';
 					// info stagiaire
 					if (strtolower($stagiaires->line[$i]->nom) == "undefined")
 					{
@@ -445,13 +445,59 @@ if (!empty($id))
 					}
 					else
 					{
-						print '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
-						print img_object($langs->trans("ShowContact"),"contact").' ';
-						print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-
+						$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
+						$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
+						$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
 						$contact_static= new Contact($db);
 						$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
-						print ' ('.$contact_static->getCivilityLabel().')';
+						$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
+	
+						if ($agf->type_session == 1)
+						{
+							print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
+							print $trainee_info;
+							print '</td></tr>';
+							
+							$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
+							print '<tr class="noborder"><td  class="noborder" width="45%">'.$langs->trans("AgfSubrocation").'</td>';
+							if ($agf->is_OPCA==1) {
+								$chckisOPCA='checked="checked"';
+							}
+							print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" readonly="readonly"/></td></tr>';
+						
+							print '<tr><td>'.$langs->trans("AgfOPCAName").'</td>';
+							print '	<td>';
+							print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
+							print '</td></tr>';
+						
+							print '<tr><td>'.$langs->trans("AgfOPCAContact").'</td>';
+							print '	<td>';
+							print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
+							print '</td></tr>';
+						
+							print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
+							print '<td>'.$agf->num_OPCA_soc.'</td></tr>';
+						
+							print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
+							if ($agf->is_date_ask_OPCA==1) {
+								$chckisDtOPCA='checked="checked"';
+							}
+							print '<td><table class="nobordernopadding"><tr><td>';
+							print '<input type="checkbox" class="flat" name="isdateaskOPCA" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';
+							print '<td>';
+							print dol_print_date($agf->date_ask_OPCA,'daytext');
+							print '</td><td>';
+							print '</td></tr></table>';
+							print '</td></tr>';
+						
+							print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
+							print '<td>'.$agf->num_OPCA_file.'</td></tr>';
+						
+							print '</table>';
+						}
+						else {
+							print $trainee_info;
+						}
 	           		}
 	   				print '</td>';
 					print '<td width="30%" style="border-left: 0px;">';
@@ -467,7 +513,7 @@ if (!empty($id))
 					}
 					if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 					{
-						print '</td><td width="30%" style="border-left: 0px;">'.stripslashes($stagiaires->line[$i]->type);
+						print '</td><td width="20%" style="border-left: 0px;">'.stripslashes($stagiaires->line[$i]->type);
 					}
 					print '</td><td>';
 
@@ -698,19 +744,65 @@ if (!empty($id))
 			for ($i=0; $i < $nbstag; $i++)
 			{
 				print '<td witdth="20px" align="center">'.($i+1).'</td>';
-				print '<td width="300px"style="border-right: 0px;">';
+				print '<td width="400px"style="border-right: 0px;">';
 				// Infos stagiaires
 				if (strtolower($stagiaires->line[$i]->nom) == "undefined")	{
 					print $langs->trans("AgfUndefinedStagiaire");
 				}
 				else {
-					print '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
-					print img_object($langs->trans("ShowContact"),"contact").' ';
-					print strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-
+					$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
+					$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
+					$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
 					$contact_static= new Contact($db);
 					$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
-					print ' ('.$contact_static->getCivilityLabel().')';
+					$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
+
+					if ($agf->type_session == 1)
+					{
+						print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
+						print $trainee_info;
+						print '</td></tr>';
+						
+						$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
+						print '<tr class="noborder"><td  class="noborder" width="45%">'.$langs->trans("AgfSubrocation").'</td>';
+						if ($agf->is_OPCA==1) {
+							$chckisOPCA='checked="checked"';
+						}
+						print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" readonly="readonly"/></td></tr>';
+					
+						print '<tr><td>'.$langs->trans("AgfOPCAName").'</td>';
+						print '	<td>';
+						print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
+						print '</td></tr>';
+					
+						print '<tr><td>'.$langs->trans("AgfOPCAContact").'</td>';
+						print '	<td>';
+						print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
+						print '</td></tr>';
+					
+						print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
+						print '<td>'.$agf->num_OPCA_soc.'</td></tr>';
+					
+						print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
+						if ($agf->is_date_ask_OPCA==1) {
+							$chckisDtOPCA='checked="checked"';
+						}
+						print '<td><table class="nobordernopadding"><tr><td>';
+						print '<input type="checkbox" class="flat" name="isdateaskOPCA" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';
+						print '<td>';
+						print dol_print_date($agf->date_ask_OPCA,'daytext');
+						print '</td><td>';
+						print '</td></tr></table>';
+						print '</td></tr>';
+					
+						print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
+						print '<td>'.$agf->num_OPCA_file.'</td></tr>';
+					
+						print '</table>';
+					}
+					else {
+						print $trainee_info;
+					}
 				}
 				print '</td>';
 				print '<td style="border-left: 0px; border-right: 0px;">';
