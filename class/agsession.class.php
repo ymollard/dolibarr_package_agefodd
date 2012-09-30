@@ -213,6 +213,52 @@ class Agsession extends CommonObject
     	}
     }
 
+    /**
+     *	Load an object from its id and create a new one in database
+     *
+     *	@param	int		$fromid     Id of object to clone
+     * 	@return	int					New id of clone
+     */
+    function createFromClone($fromid)
+    {
+    	global $user,$langs;
+
+    	$error=0;
+
+    	$object=new Agsession($this->db);
+
+    	$this->db->begin();
+
+    	// Load source object
+    	$object->fetch($fromid);
+    	$object->id=0;
+    	$object->statut=0;
+    	$object->nb_stagiaire=0;
+
+
+    	// Create clone
+    	$result=$object->create($user);
+
+    	// Other options
+    	if ($result < 0)
+    	{
+    		$this->error=$object->error;
+    		$error++;
+    	}
+
+    	// End
+    	if (! $error)
+    	{
+    		$this->db->commit();
+    		return $object->id;
+    	}
+    	else
+    	{
+    		$this->db->rollback();
+    		return -1;
+    	}
+    }
+
 
     /**
      *  Create object (trainee in session) into database
