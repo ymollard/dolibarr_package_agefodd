@@ -1561,6 +1561,7 @@ class Agsession extends CommonObject
 		$sql.= " t.is_OPCA,";
 		$sql.= " t.fk_soc_OPCA,";
 		$sql.= " t.fk_socpeople_OPCA,";
+		$sql.= " concactOPCA.name as concactOPCAname, concactOPCA.firstname as concactOPCAfirstname,";
 		$sql.= " t.num_OPCA_soc,";
 		$sql.= " t.num_OPCA_file,";
 		$sql.= " t.fk_user_author,";
@@ -1569,6 +1570,8 @@ class Agsession extends CommonObject
 		$sql.= " t.tms";
 
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_opca as t";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as concactOPCA ";
+		$sql.= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
 
 		$sql.= " WHERE t.fk_soc_trainee = ".$fk_soc_trainee;
 		$sql.= " AND t.fk_session_agefodd = ".$id_session;
@@ -1597,6 +1600,7 @@ class Agsession extends CommonObject
 				$this->tms 					= $this->db->jdate($obj->tms);
 
 				$this->soc_OPCA_name = $this->getValueFrom('societe', $this->fk_soc_OPCA, 'nom');
+				$this->contact_name_OPCA = $obj->concactOPCAname.' '.$obj->concactOPCAfirstname;
 
 			}
 			$this->db->free($resql);
