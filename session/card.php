@@ -408,59 +408,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 			{
 				// Si la création de la session s'est bien passée,
 				// on crée automatiquement toutes les tâches administratives associées...
-				$admlevel = new Agefodd_session_admlevel($db);
-				$result2 = $admlevel->fetch_all();
-
-				if ($result2 > 0)
-				{
-					foreach ($admlevel->line as $line)
-					{
-						$actions = new Agefodd_sessadm($db);
-
-						$actions->datea = dol_time_plus_duree($agf->dated,$line->alerte,'d');
-						$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
-
-						if ($actions->datea > $agf->datef)
-						{
-							$actions->datef = dol_time_plus_duree($actions->datea,7,'d');
-						}
-						else
-						{
-							$actions->datef = $agf->datef;
-						}
-
-						$actions->fk_agefodd_session_admlevel = $line->rowid;
-						$actions->fk_agefodd_session = $agf->id;
-						$actions->delais_alerte = $line->alerte;
-						$actions->intitule = $line->intitule;
-						$actions->indice = $line->indice;
-						$actions->archive = 0;
-						$actions->level_rank = $line->level_rank;
-						$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
-						$result3 = $actions->create($user);
-
-						if ($result3 < 0) {
-							dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
-							$mesg .= $actions->error;
-							$error++;
-						}
-					}
-
-					//Caculate the new parent level
-					$action_static = new Agefodd_sessadm($db);
-					$result4 = $action_static->setParentActionId($user,$agf->id);
-					if ($result4 < 0) {
-						dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
-						$mesg .= $action_static->error;
-						$error++;
-					}
-				}
-				else
-				{
-					dol_syslog("agefodd:session:card error=".$admlevel->error, LOG_ERR);
-					$mesg .= $admlevel->error;
-					$error++;
-				}
+				$result = $agf->createAdmLevelForSession($user);
 			}
 			else
 			{
