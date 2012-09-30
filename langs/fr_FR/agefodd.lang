@@ -333,3 +333,5 @@ AgfSendWarningNoMailOpca=Pas d'infos sur l'OPCA
 AgfNbElemList=Nombre d'élément dans les ecran type "Liste"
 AgfNbElemListHelp=Dans toute les ecrans type "liste" d'Agefodd (Gestion des sites, Catalogues des formations, Session en court,...)
 AgfPDFBaseColor=Couleur de base des PDF
+AgfCreateNewSite=Créer un nouveau site
+AgfCreateNewSiteHelp=Aller au formulaire de création d'un site puis revenir sur cette page 
