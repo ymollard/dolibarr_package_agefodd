@@ -95,6 +95,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($id);
 
 		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->ref = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
@@ -136,6 +137,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf = new Agefodd($db);
 
 		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->ref = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
@@ -298,8 +300,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	if (is_numeric($defaultref) && $defaultref <= 0) $defaultref='';
 
-	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfRefInterne").'</span></td><td>';
-	print '<input name="ref_interne" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
+	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("Ref").'</span></td><td>';
+	print '<input name="ref" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
+
+	print '<tr><td width="20%"><span>'.$langs->trans("AgfRefInterne").'</span></td><td>';
+	print '<input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
 	print '<input name="duree" class="flat" size="50" value=""></td></tr>';
@@ -375,6 +380,9 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td><td>';
 				print '<input name="intitule" class="flat" size="50" value="'.stripslashes($agf->intitule).'"></td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("Ref").'</td><td>';
+				print '<input name="ref" class="flat" size="50" value="'.$agf->ref.'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
 				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
@@ -534,6 +542,9 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td>';
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
+
+				print '<tr><td>'.$langs->trans("Ref").'</td><td colspan=2>';
+				print $agf->ref.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';
 				print $agf->ref_interne.'</td></tr>';
