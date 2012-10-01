@@ -408,59 +408,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 			{
 				// Si la création de la session s'est bien passée,
 				// on crée automatiquement toutes les tâches administratives associées...
-				$admlevel = new Agefodd_session_admlevel($db);
-				$result2 = $admlevel->fetch_all();
-
-				if ($result2 > 0)
-				{
-					foreach ($admlevel->line as $line)
-					{
-						$actions = new Agefodd_sessadm($db);
-
-						$actions->datea = dol_time_plus_duree($agf->dated,$line->alerte,'d');
-						$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
-
-						if ($actions->datea > $agf->datef)
-						{
-							$actions->datef = dol_time_plus_duree($actions->datea,7,'d');
-						}
-						else
-						{
-							$actions->datef = $agf->datef;
-						}
-
-						$actions->fk_agefodd_session_admlevel = $line->rowid;
-						$actions->fk_agefodd_session = $agf->id;
-						$actions->delais_alerte = $line->alerte;
-						$actions->intitule = $line->intitule;
-						$actions->indice = $line->indice;
-						$actions->archive = 0;
-						$actions->level_rank = $line->level_rank;
-						$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
-						$result3 = $actions->create($user);
-
-						if ($result3 < 0) {
-							dol_syslog("agefodd:session:card error=".$actions->error, LOG_ERR);
-							$mesg .= $actions->error;
-							$error++;
-						}
-					}
-
-					//Caculate the new parent level
-					$action_static = new Agefodd_sessadm($db);
-					$result4 = $action_static->setParentActionId($user,$agf->id);
-					if ($result4 < 0) {
-						dol_syslog("agefodd:session:card error=".$action_static->error, LOG_ERR);
-						$mesg .= $action_static->error;
-						$error++;
-					}
-				}
-				else
-				{
-					dol_syslog("agefodd:session:card error=".$admlevel->error, LOG_ERR);
-					$mesg .= $admlevel->error;
-					$error++;
-				}
+				$result = $agf->createAdmLevelForSession($user);
 			}
 			else
 			{
@@ -485,6 +433,33 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 	{
 		Header ( "Location: list.php");
 		exit;
+	}
+}
+
+// Action clone object
+if ($action == 'confirm_clone' && $confirm == 'yes')
+{
+	if (1==0 &&  ! GETPOST('clone_content') /*&& ! GETPOST('clone_receivers')*/ )
+	{
+		$mesg='<div class="error">'.$langs->trans("NoCloneOptionsSpecified").'</div>';
+	}
+	else
+	{
+		$agf = new Agsession($db);
+		if ($agf->fetch($id) > 0)
+		{
+			$result=$agf->createFromClone($id, $hookmanager);
+			if ($result > 0)
+			{
+				header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
+				exit;
+			}
+			else
+			{
+				$mesg=$agf->error;
+				$action='';
+			}
+		}
 	}
 }
 
@@ -923,6 +898,14 @@ else
 						if ($ret == 'html') print '<br>';
 					}
 
+					// Confirm delete
+					if ($action == 'clone')
+					{
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("CloneSession"),$langs->trans("ConfirmCloneSession"),"confirm_clone",'','',1);
+						//$ret=$form->formconfirm($_SERVER["PHP_SELF"].'?id='.$id, $langs->trans('CloneSession'), $langs->trans('ConfirmCloneSession',$agf->ref), 'confirm_clone','','',1);
+						if ($ret == 'html') print '<br>';
+					}
+
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					print '</div>';
@@ -1120,33 +1103,33 @@ else
 								$contact_static= new Contact($db);
 								$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
 								$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
-			
+
 								if ($agf->type_session == 1)
 								{
 									print '<table class="nobordernopadding" width="100%"><tr><td colspan="2">';
 									print $trainee_info;
 									print '</td></tr>';
-									
+
 									$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
 									print '<tr><td width="45%">'.$langs->trans("AgfSubrocation").'</td>';
 									if ($agf->is_OPCA==1) {
 										$chckisOPCA='checked="checked"';
 									}
 									print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" readonly="readonly"/></td></tr>';
-								
+
 									print '<tr><td>'.$langs->trans("AgfOPCAName").'</td>';
 									print '	<td>';
 									print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$agf->fk_soc_OPCA.'">'.$agf->soc_OPCA_name.'</a>';
 									print '</td></tr>';
-								
+
 									print '<tr><td>'.$langs->trans("AgfOPCAContact").'</td>';
 									print '	<td>';
 									print '<a href="'.dol_buildpath('/contact/fiche.php',1).'?id='.$agf->fk_socpeople_OPCA.'">'.$agf->contact_name_OPCA.'</a>';
 									print '</td></tr>';
-								
+
 									print '<tr><td width="20%">'.$langs->trans("AgfOPCANumClient").'</td>';
 									print '<td>'.$agf->num_OPCA_soc.'</td></tr>';
-								
+
 									print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
 									if ($agf->is_date_ask_OPCA==1) {
 										$chckisDtOPCA='checked="checked"';
@@ -1158,10 +1141,10 @@ else
 									print '</td><td>';
 									print '</td></tr></table>';
 									print '</td></tr>';
-								
+
 									print '<tr><td width="20%">'.$langs->trans("AgfOPCANumFile").'</td>';
 									print '<td>'.$agf->num_OPCA_file.'</td></tr>';
-								
+
 									print '</table>';
 								}
 								else {
@@ -1266,6 +1249,7 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 	if ($user->rights->agefodd->modifier)
 	{
 		print '<a class="butAction" href="'.dol_buildpath('/agefodd/session/send_docs.php',1).'?action=view_actioncomm&id='.$id.'">'.$langs->trans('AgfViewActioncomm').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=clone&id='.$id.'">'.$langs->trans('ToClone').'</a>';
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'&id='.$id.'">'.$button.'</a>';
 
 	}
