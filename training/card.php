@@ -95,6 +95,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($id);
 
 		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->ref = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
@@ -136,6 +137,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf = new Agefodd($db);
 
 		$agf->intitule = GETPOST('intitule','alpha');
+		$agf->ref = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
@@ -297,34 +299,38 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	}
 
 	if (is_numeric($defaultref) && $defaultref <= 0) $defaultref='';
+	$defaultref = GETPOST('ref','alpha')?GETPOST('ref'):$defaultref;
 
-	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfRefInterne").'</span></td><td>';
-	print '<input name="ref_interne" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
+	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("Ref").'</span></td><td>';
+	print '<input name="ref" class="flat" size="50" value="'.$defaultref.'"></td></tr>';
+
+	print '<tr><td width="20%"><span>'.$langs->trans("AgfRefInterne").'</span></td><td>';
+	print '<input name="ref_interne" class="flat" size="50" value="'.GETPOST('ref_interne','alpha').'"></td></tr>';
 
 	print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
-	print '<input name="duree" class="flat" size="50" value=""></td></tr>';
+	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','alpha').'"></td></tr>';
 
 	print '<tr>';
 	print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
-	print '<textarea name="public" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="public" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('public','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
-	print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('methode','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
-	print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('note1','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
-	print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('note2','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
-	print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('prerequis','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
-	print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('but','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-	print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;">'.GETPOST('programme','alpha').'</textarea></td></tr>';
 
 	print '</table>';
 	print '</div>';
@@ -375,6 +381,9 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td><td>';
 				print '<input name="intitule" class="flat" size="50" value="'.stripslashes($agf->intitule).'"></td></tr>';
+
+				print '<tr><td width="20%">'.$langs->trans("Ref").'</td><td>';
+				print '<input name="ref" class="flat" size="50" value="'.$agf->ref.'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
 				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
@@ -534,6 +543,9 @@ else
 
 				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td>';
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
+
+				print '<tr><td>'.$langs->trans("Ref").'</td><td colspan=2>';
+				print $agf->ref.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';
 				print $agf->ref_interne.'</td></tr>';
