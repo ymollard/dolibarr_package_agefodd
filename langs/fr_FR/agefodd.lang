@@ -335,3 +335,5 @@ AgfNbElemListHelp=Dans toute les ecrans type "liste" d'Agefodd (Gestion des site
 AgfPDFBaseColor=Couleur de base des PDF
 CloneSession=Cloner la session
 ConfirmCloneSession=Confirmer le clonage de la session de formation ? Les infos participants et formateurs ne seront pas reprises.
+AgfCreateNewSite=Créer un nouveau site
+AgfCreateNewSiteHelp=Aller au formulaire de création d'un site puis revenir sur cette page 

@@ -41,6 +41,8 @@ $confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
 
+$url_return=GETPOST('url_return','alpha');
+
 /*
  * Actions delete
  */
@@ -179,7 +181,10 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		if ($result > 0)
 		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
+			if($url_return)
+				Header ( "Location: ".$url_return);
+			else
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
 			exit;
 		}
 		else
@@ -219,6 +224,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm">'."\n";
+
+	print '<input type="hidden" name="url_return" value="'.$url_return.'">'."\n";
 
 	print '<table class="border" width="100%">'."\n";
 
