@@ -451,6 +451,28 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 			$result=$agf->createFromClone($id, $hookmanager);
 			if ($result > 0)
 			{
+				if(GETPOST('clone_calendar') )
+				{
+					// Reprendre les infos du calendrier
+					$calendrierstat = new Agefodd_sesscalendar($db);
+					$calendrier = new Agefodd_sesscalendar($db);
+					$calendrier->fetch_all($id);
+					$blocNumber = count($calendrier->line);
+					if ($blocNumber > 0)
+					{
+						$old_date = 0;
+						$duree = 0;
+						for ($i = 0; $i < $blocNumber; $i++)
+						{
+							$calendrierstat->sessid = $result;
+							$calendrierstat->date_session = $calendrier->line[$i]->date_session;
+							$calendrierstat->heured = $calendrier->line[$i]->heured;
+							$calendrierstat->heuref = $calendrier->line[$i]->heuref;
+
+							$result1 = $calendrierstat->create($user);
+						}
+					}
+				}
 				header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
 				exit;
 			}
@@ -901,7 +923,11 @@ else
 					// Confirm delete
 					if ($action == 'clone')
 					{
-						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("CloneSession"),$langs->trans("ConfirmCloneSession"),"confirm_clone",'','',1);
+						$formquestion=array(
+							'text' => $langs->trans("ConfirmClone"),
+							array('type' => 'checkbox', 'name' => 'clone_calendar','label' => $langs->trans("AgfCloneSessionCalendar"),   'value' => 1)
+						);
+						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("CloneSession"),$langs->trans("ConfirmCloneSession"),"confirm_clone",$formquestion,'',1);
 						//$ret=$form->formconfirm($_SERVER["PHP_SELF"].'?id='.$id, $langs->trans('CloneSession'), $langs->trans('ConfirmCloneSession',$agf->ref), 'confirm_clone','','',1);
 						if ($ret == 'html') print '<br>';
 					}

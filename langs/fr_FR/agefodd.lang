@@ -334,4 +334,5 @@ AgfNbElemList=Nombre d'élément dans les ecran type "Liste"
 AgfNbElemListHelp=Dans toute les ecrans type "liste" d'Agefodd (Gestion des sites, Catalogues des formations, Session en court,...)
 AgfPDFBaseColor=Couleur de base des PDF
 CloneSession=Cloner la session
+AgfCloneSessionCalendar=Cloner la session avec les infos du calendrier
 ConfirmCloneSession=Confirmer le clonage de la session de formation ? Les infos participants et formateurs ne seront pas reprises.
