@@ -20,7 +20,9 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formateur (
   rowid int(11) NOT NULL auto_increment,
-  fk_socpeople int(11) NOT NULL,
+  fk_socpeople int(11),
+  fk_user int(11),
+  type_trainer varchar(20),
   archive tinyint NOT NULL DEFAULT 0,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,

@@ -1619,11 +1619,6 @@ class Agsession extends CommonObject
 		print '</table>';
 	}
 
-	function loadArrayTypeSession()
-	{
-		return $this->type_session_def;
-	}
-
 	/**
 	 *	Return clicable link of object (with eventually picto)
 	 *

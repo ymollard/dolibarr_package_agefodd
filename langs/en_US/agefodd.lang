@@ -320,3 +320,5 @@ AgfCiviliteMandatory=To create a trainnee the civility of the contact is mandato
 AgfNbElemList=Number of element display in list screen
 AgfNbElemListHelp=In all kind of list screen in Agefodd (list of trainning, list of session, etc...)
 AgfPDFBaseColor=Base color for PDF
+AgfUser=Dolibarr users list
+AgfModifierFicheUser=Update user
