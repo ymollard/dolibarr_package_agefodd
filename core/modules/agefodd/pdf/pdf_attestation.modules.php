@@ -195,6 +195,17 @@ class pdf_attestation extends ModelePDFAgefodd
 							 $pdf->Image($logo, $this->marge_gauche + 3, $this->marge_haute + 3, 40);
 					}
 
+					// Affichage du logo commanditaire (optionnel)
+					if($conf->global->AGF_USE_LOGO_CLIENT)
+					{
+						$staticsoc = new Societe($this->db);
+						$staticsoc->fetch($agf->socid);
+						$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
+						$logo_client=$dir.$staticsoc->logo;
+						if (file_exists($logo_client))
+							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
+					}
+
 					$newY = $this->marge_haute + 30;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetTextColor(76,76,76);
