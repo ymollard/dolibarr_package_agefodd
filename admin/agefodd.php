@@ -120,6 +120,10 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_PDF_COLOR', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
+	$pdf_color=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $pdf_color,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
 	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
 		$msg=$langs->trans("AgfAgendaModuleNedeed");
@@ -512,6 +516,18 @@ $("#AGF_PDF_COLOR").val(hex);
 $(this).ColorPickerSetColor(this.value);
 });
 </script>';
+
+
+// Affichage du logo commanditaire
+print '<tr class="pair"><td>'.$langs->trans("AgfUseCustomerLogo").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_USE_LOGO_CLIENT",$arrval,$conf->global->AGF_USE_LOGO_CLIENT);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseCustomerLogoHelp"),1,'help');
+print '</td>';
+print '</tr>';
 
 //Utilisation d'un type de stagaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';

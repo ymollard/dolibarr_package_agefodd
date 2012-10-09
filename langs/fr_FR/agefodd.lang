@@ -341,3 +341,5 @@ AgfCloneSessionCalendar=Cloner la session avec les infos du calendrier
 ConfirmCloneSession=Confirmer le clonage de la session de formation ? Les infos participants et formateurs ne seront pas reprises.
 AgfUser=Liste des utilisateurs Dolibarr
 AgfModifierFicheUser=Modifier l'utilisateur
+AgfUseCustomerLogo=Afficher le logo du commanditaire sur les documents
+AgfUseCustomerLogoHelp=Affiche le logo du commanditaire de la session (client) si renseigné sur la fiche tier
