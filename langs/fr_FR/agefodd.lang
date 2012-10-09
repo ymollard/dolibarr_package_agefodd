@@ -343,3 +343,5 @@ AgfUser=Liste des utilisateurs Dolibarr
 AgfModifierFicheUser=Modifier l'utilisateur
 AgfUseCustomerLogo=Afficher le logo du commanditaire sur les documents
 AgfUseCustomerLogoHelp=Affiche le logo du commanditaire de la session (client) si renseigné sur la fiche tier
+AgfImageSupp=Image à ajouter sur les documents (tampon commercial / signature)
+AgfInfoTamponHelp=Cette image sera ajoutée sur certains documents PDF d'une session de formation

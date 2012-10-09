@@ -33,6 +33,7 @@ dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
+require_once(DOL_DOCUMENT_ROOT."/core/lib/images.lib.php");
 
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
@@ -61,6 +62,8 @@ if ($action == 'updateMask')
 
 if ($action == 'setvar')
 {
+	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+
 	$use_typestag=GETPOST('AGF_USE_STAGIAIRE_TYPE','int');
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -124,6 +127,47 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
+	if ($_FILES["imagesup"]["tmp_name"])
+	{
+		if (preg_match('/([^\\/:]+)$/i',$_FILES["imagesup"]["name"],$reg))
+		{
+			$original_file=$reg[1];
+	
+			$isimage=image_format_supported($original_file);
+			if ($isimage >= 0)
+			{
+				dol_syslog("Move file ".$_FILES["imagesup"]["tmp_name"]." to ".$conf->agefodd->dir_output.'/logos/'.$original_file);
+				if (! is_dir($conf->agefodd->dir_output.'/images/'))
+				{
+					dol_mkdir($conf->agefodd->dir_output.'/images/');
+				}
+				$result=dol_move_uploaded_file($_FILES["imagesup"]["tmp_name"],$conf->agefodd->dir_output.'/images/'.$original_file,1,0,$_FILES['imagesup']['error']);
+				if ($result > 0)
+				{
+					dolibarr_set_const($db, "AGF_INFO_TAMPON",$original_file,'chaine',0,'',$conf->entity);
+	
+				}
+				else if (preg_match('/^ErrorFileIsInfectedWithAVirus/',$result))
+				{
+					$langs->load("errors");
+					$tmparray=explode(':',$result);
+					$msg = '<div class="error">'.$langs->trans('ErrorFileIsInfectedWithAVirus',$tmparray[1]).'</div>';
+					$error++;
+				}
+				else
+				{
+					$msg = '<div class="error">'.$langs->trans("ErrorFailedToSaveFile").'</div>';
+					$error++;
+				}
+			}
+			else
+			{
+				$msg = '<div class="error">'.$langs->trans("ErrorOnlyPngJpgSupported").'</div>';
+				$error++;
+			}
+		}
+	}
+
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
 	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
 		$msg=$langs->trans("AgfAgendaModuleNedeed");
@@ -143,6 +187,16 @@ if ($action == 'setvar')
 	{
 		$mesg = "<font class=\"error\">".$langs->trans("Error")." ".$msg."</font>";
 	}
+}
+
+if ($action == 'removeimagesup')
+{
+	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+
+	$logofile=$conf->agefodd->dir_output.'/images/'.$conf->global->AGF_INFO_TAMPON;
+	dol_delete_file($logofile);
+	dolibarr_del_const($db, "AGF_INFO_TAMPON",$conf->entity);
+
 }
 
 if ($action == 'sessionlevel_create')
@@ -442,7 +496,7 @@ print_titre($langs->trans("AgfAdmVar"));
 
 print '<table class="noborder" width="100%">';
 
-print '<form method="post" action="'.$_SERVER['PHP_SELF'].'">';
+print '<form method="post" action="'.$_SERVER['PHP_SELF'].'" enctype="multipart/form-data" >';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="setvar">';
 
@@ -528,6 +582,31 @@ print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseCustomerLogoHelp"),1,'help');
 print '</td>';
 print '</tr>';
+
+// Image supplémentaire (tampon / signature)
+$var=!$var;
+print '<tr '.$bc[$var].'><td>'.$langs->trans("AgfImageSupp").' (png,jpg)</td><td>';
+print '<table width="100%" class="nocellnopadd"><tr class="nocellnopadd"><td valign="middle" class="nocellnopadd">';
+print '<input type="file" class="flat" name="imagesup" size="40">';
+print '</td><td valign="middle" align="right">';
+if ($conf->global->AGF_INFO_TAMPON)
+{
+	if (file_exists($conf->agefodd->dir_output.'/images/'.$conf->global->AGF_INFO_TAMPON))
+	{
+		print ' &nbsp; ';
+		print '<img src="'.DOL_URL_ROOT.'/viewimage.php?modulepart=agefodd&amp;file='.urlencode('/images/'.$conf->global->AGF_INFO_TAMPON).'" alt="AGF_INFO_TAMPON" />';
+		print '<a href="'.$_SERVER["PHP_SELF"].'?action=removeimagesup">'.img_delete($langs->trans("Delete")).'</a>';
+	}
+}
+else
+{
+	print '<img height="30" src="'.DOL_URL_ROOT.'/theme/common/nophoto.jpg">';
+}
+print '</td></tr></table>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfInfoTamponHelp"),1,'help');
+
+print '</td></tr>';
 
 //Utilisation d'un type de stagaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';
