@@ -43,10 +43,9 @@ $action = GETPOST('action','alpha');
 
 if ($action == 'updateMask')
 {
-	$maskconsttraining=GETPOST('maskconstproject','alpha');
-	$masktraining=GETPOST('maskproject','alpha');
+	$masktype=GETPOST('value');
 
-	if ($maskconsttraining)  $res = dolibarr_set_const($db,$maskconsttraining,$masktraining,'chaine',0,'',$conf->entity);
+	if ($masktype)  $res = dolibarr_set_const($db,'AGF_ADDON',$masktype,'chaine',0,'',$conf->entity);
 
 	if (! $res > 0) $error++;
 
@@ -111,6 +110,14 @@ if ($action == 'setvar')
 	
 	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$nb_num_list=GETPOST('AGF_NUM_LIST','int');
+	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$pdf_color=GETPOST('AGF_PDF_COLOR','alpha');
+	$res = dolibarr_set_const($db, 'AGF_PDF_COLOR', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
@@ -310,7 +317,7 @@ if ($action == 'sessionlevel_update')
  *
  */
 
-llxHeader();
+llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
 
 $form=new Form($db);
 $formAgefodd=new FormAgefodd($db);
@@ -386,7 +393,7 @@ foreach ($dirmodels as $reldir)
 						}
 						else
 						{
-							print '<a href="'.$_SERVER["PHP_SELF"].'?action=setmod&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
+							print '<a href="'.$_SERVER["PHP_SELF"].'?action=updateMask&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
 						}
 						print '</td>';
 
@@ -467,6 +474,44 @@ print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfRepresantHelp"),1,'help');
 print '</td>';
 print '</tr>';
+
+//Nombre d'element dans les list
+print '<tr class="impair"><td>'.$langs->trans("AgfNbElemList").'</td>';
+print '<td align="left">';
+print '<input type="text" name="AGF_NUM_LIST" value="'.$conf->global->AGF_NUM_LIST.'" size="5" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfNbElemListHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+print '<tr class="pair"><td>'.$langs->trans("AgfPDFBaseColor").'</td>';
+print '<td  align="left"><input id="AGF_PDF_COLOR" type="text" size="8" name="AGF_PDF_COLOR" value="'.$conf->global->AGF_PDF_COLOR.'" /></td><td></td></tr>';
+
+print '<script type="text/javascript" language="javascript">
+$(document).ready(function() {
+$("#AGF_PDF_COLOR").css("backgroundColor", \'#'.$conf->global->AGF_PDF_COLOR.'\');
+$("#AGF_PDF_COLOR").ColorPicker({
+color: \'#'.$conf->global->AGF_PDF_COLOR.'\',
+onShow: function (colpkr) {
+$(colpkr).fadeIn(500);
+return false;
+},
+onHide: function (colpkr) {
+$(colpkr).fadeOut(500);
+return false;
+},
+onChange: function (hsb, hex, rgb) {
+$("#AGF_PDF_COLOR").css("backgroundColor", \'#\' + hex);
+},
+onSubmit: function (hsb, hex, rgb) {
+$("#AGF_PDF_COLOR").val(hex);
+}
+});
+})
+.bind(\'keyup\', function(){
+$(this).ColorPickerSetColor(this.value);
+});
+</script>';
 
 //Utilisation d'un type de stagaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';

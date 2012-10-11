@@ -77,7 +77,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd
 		$sql = "SELECT MAX(SUBSTRING(ref FROM ".$posindice.")) as max";
         $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue";
 		$sql.= " WHERE ref LIKE '".$this->prefix."____-%'";
-        $sql.= " AND entity = ".$conf->entity;
+       // $sql.= " AND entity = ".$conf->entity;
         $resql=$db->query($sql);
         if ($resql)
         {

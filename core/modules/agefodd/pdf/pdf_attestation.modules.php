@@ -29,6 +29,7 @@ dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 class pdf_attestation extends ModelePDFAgefodd
@@ -38,7 +39,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $color1 = array('190','190','190');	// gris clair
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	protected $color3;
 
 
 	/**
@@ -51,8 +52,8 @@ class pdf_attestation extends ModelePDFAgefodd
 
 
 		$this->db = $db;
-		$this->name = "ebic";
-		$this->description = $langs->trans('Modèle de document pour les attestatiions de formation');
+		$this->name = "attestation";
+		$this->description = $langs->trans('Modèle de document pour les attestations de formation');
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
@@ -69,6 +70,8 @@ class pdf_attestation extends ModelePDFAgefodd
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 
+		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -86,7 +89,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	 */
 	function write_file($agf,$outputlangs, $file, $socid)
 	{
-		global $user,$langs,$conf;
+		global $user,$langs,$conf,$mysoc;
 
 		if (! is_object($outputlangs)) $outputlangs=$langs;
 
@@ -349,9 +352,9 @@ class pdf_attestation extends ModelePDFAgefodd
 	 */
 	function _pagefoot(&$pdf,$object,$outputlangs)
 	{
-		global $conf,$langs;
+		global $conf,$langs,$mysoc;
 
-		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM." - Organisme de formation enregistré à la préfecture de ".$conf->global->AGF_ORGANISME_PREF." sous le n° ".$conf->global->AGF_ORGANISME_NUM;
+		$this->str = $mysoc->name." - Organisme de formation enregistré à la préfecture de ".$conf->global->AGF_ORGANISME_PREF." sous le n° ".$conf->global->AGF_ORGANISME_NUM;
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);

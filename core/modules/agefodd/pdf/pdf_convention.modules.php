@@ -33,6 +33,7 @@ dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/core/lib/company.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 class pdf_convention extends ModelePDFAgefodd
@@ -42,7 +43,7 @@ class pdf_convention extends ModelePDFAgefodd
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $color1 = array('190','190','190');	// gris clair
 	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3 = array('118', '146', '60');	// Vert flashi
+	protected $color3;
 
 
 	/**
@@ -76,6 +77,8 @@ class pdf_convention extends ModelePDFAgefodd
 
 		$this->hApresTitreArticle = 10;
 		$this->hApresCorpsArticle = 8;
+		
+		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
 
 		// Get source company
 		$this->emetteur=$mysoc;
@@ -92,7 +95,7 @@ class pdf_convention extends ModelePDFAgefodd
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
-		global $user,$langs,$conf;
+		global $user,$langs,$conf,$mysoc;
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 
@@ -185,7 +188,7 @@ class pdf_convention extends ModelePDFAgefodd
 						{
 							$widthLogo = $tmp['width'];
 						}
-						$marge_logo =  (($widthLogo*25.4)/72);
+						$marge_logo =  (($widthLogo*25.4)/72) + 10;
 						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
@@ -207,44 +210,26 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
+					$pdf->Cell(0, 5, $mysoc->name,0,0,'L');
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 				$pdf->SetXY($posX, $posY +3);
-				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
-				$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-				$this->str.= ' - FRANCE'."\n";
-				$this->str.= 'tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL."";
-				if($conf->global->MAIN_INFO_SOCIETE_FAX)
-					$this->str.= '- fax : '.$conf->global->MAIN_INFO_SOCIETE_FAX."\n";
+				$this->str = $mysoc->address."\n";
+				$this->str.= $mysoc->zip.' '.$mysoc->town;
+				$this->str.= ' - '.$mysoc->country."\n";
+				$this->str.= 'tél : '.$mysoc->phone."";
+				if($mysoc->fax)
+					$this->str.= ' - Fax : '.$mysoc->fax."\n";
 				else
 					$this->str.= "\n";
-				//$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
-				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
+				$this->str.= 'Courriel : '.$mysoc->email."\n";
+				$this->str.= 'Site web : '.$mysoc->url."\n";
 
 				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2;
-
-				// Plateau technique
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-				$pdf->SetXY($posX, $posY -1);
-				$pdf->Cell(0, 5, 'Centre et plateau technique',0,0,'L');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-				$pdf->SetXY($posX, $posY +3);
-				$this->str = "3 rue Jean Marie David\n";
-				$this->str.= '35740 PACE RENNES';
-				$this->str.= ' - FRANCE'."\n";
-				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 5;
-
+				$posY = $pdf->GetY() + 10;
+				
 				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
@@ -578,7 +563,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				$this->str = 'Fait à '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.' , en deux (2) exemplaires originaux, dont un remis ce jour au client. ';
 				$nombre = $pdf->PageNo(); 	// page suivante = annexe1
-				$this->str.= "Ce document comporte ".$nombre." (".$literal[$nombre].") pages.";
+				$this->str.= "Ce document comporte ".$nombre." (".$literal[$nombre-1].") pages.";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
@@ -654,8 +639,9 @@ class pdf_convention extends ModelePDFAgefodd
 						$pdf->useTemplate($tplIdx, 0, 0, $this->page_largeur);
 
 						// Pied de page
+						$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
-						$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
+						$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 10);
 						$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/'.intval(5+$this->count_page_anexe),0, 0,'C');
 						$pdf->AliasNbPages();
 
@@ -708,39 +694,39 @@ class pdf_convention extends ModelePDFAgefodd
 	 */
 	function _pagefoot(&$pdf,$object,$outputlangs)
 	{
-		global $conf,$langs;
+		global $conf,$langs,$mysoc;
 
-		$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
-		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
+		$this->str = $mysoc->name;
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 
-		$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE." ";
-		$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-		$this->str.= ' - FRANCE'."";
-		$this->str.= ' - tél : '.$conf->global->MAIN_INFO_SOCIETE_TEL;
-		$this->str.= ' - email : '.$conf->global->MAIN_MAIL_EMAIL_FROM."\n";
+		$this->str = $mysoc->address." ";
+		$this->str.= $mysoc->zip.' '.$mysoc->town;
+		$this->str.= ' - '.$mysoc->country."";
+		$this->str.= ' - tél : '.$mysoc->phone;
+		$this->str.= ' - email : '.$mysoc->email."\n";
 
-		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-		$this->str .= $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
-		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;
-		//$this->str.= " - RCS ".$conf->global->MAIN_INFO_RCS;
-		$this->str.= " - Code APE ".$conf->global->MAIN_INFO_APE."\n";
+		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
+		$this->str .= $statut." au capital de ".$mysoc->capital." euros";
+		$this->str.= " - SIRET ".$mysoc->idprof2;
+		$this->str.= " - RCS ".$mysoc->idprof4;
+		$this->str.= " - Code APE ".$mysoc->idprof3."\n";
 		$this->str.= "N° déclaration ".$conf->global->AGF_ORGANISME_NUM;
 		$this->str.= " préfecture : ".$conf->global->AGF_ORGANISME_PREF;
-		$this->str.= " - N° TVA intra ".$conf->global->MAIN_INFO_TVAINTRA;
+		$this->str.= " - N° TVA intra ".$mysoc->tva_intra;
 
-		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);//$pdf->SetFont('Arial','I',7);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
 		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',6);
-		$pdf->SetXY( $this->droite - 20, $this->page_hauteur - 12);
+		$pdf->SetXY($this->droite - 20, $this->page_hauteur - 10);
 		$pdf->Cell(0, 3, 'page '.$pdf->PageNo().'/'.intval(5+$this->count_page_anexe),0, 0,'C');
 
 	}

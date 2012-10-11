@@ -75,6 +75,7 @@ class Agefodd_place extends CommonObject
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
 		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, acces_site, note1, fk_user_author, datec";
+		$sql.= ",entity";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->adresse.'", ';
@@ -88,6 +89,7 @@ class Agefodd_place extends CommonObject
 		$sql.= '"'.$this->note1.'",';
 		$sql.= '"'.$user->id.'",';
 		$sql.= $this->db->idate(dol_now());
+		$sql.= ',"' .$conf->entity.'"';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -147,6 +149,7 @@ class Agefodd_place extends CommonObject
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
         $sql.= " WHERE p.rowid = ".$id;
+        $sql.= " AND p.entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
@@ -203,7 +206,9 @@ class Agefodd_place extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
-		if ($arch == 0 || $arch == 1) $sql.= " WHERE p.archive LIKE ".$arch;
+        $sql.= " WHERE o.entity IN (".getEntity('agsession').")";
+
+        if ($arch == 0 || $arch == 1) $sql.= " AND p.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);

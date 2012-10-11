@@ -45,7 +45,7 @@ if (empty($sortfield)) $sortfield="c.rowid";
 
 if ($page == -1) { $page = 0 ; }
 
-$limit = $conf->liste_limit;
+$limit = $conf->global->AGF_NUM_LIST;
 $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -63,7 +63,8 @@ print '<table class="noborder" width="100%">';
 print "<tr class=\"liste_titre\">";
 print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Ref"),$_SERVER['PHP_SELF'],"c.ref","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref_interne","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","",'&arch='.$arch,'',$sortfield,$sortorder);
@@ -75,19 +76,20 @@ if ($resql)
 {
 	foreach ($agf->line as $line)
 	{
-			
+
 		// Affichage tableau des formations
 		$var=!$var;
 		print "<tr $bc[$var]>";
 		print '<td><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
 		print '<td>'.stripslashes($line->intitule).'</td>';
 		print '<td>'.$line->ref.'</td>';
+		print '<td>'.$line->ref_interne.'</td>';
 		print '<td>'.dol_print_date($line->datec,'daytext').'</td>';
 		print '<td>'.$line->duree.'</td>';
 		print '<td>'.dol_print_date($line->lastsession,'daytext').'</td>';
 		print '<td>'.$line->nbsession.'</td>';
 		print "</tr>\n";
-		
+
 		$i++;
 	}
 }
@@ -95,7 +97,7 @@ else
 {
 	dol_syslog("agefodd::trainer::list ".$agf->error, LOG_ERR);
 }
-    
+
 print "</table>";
 
 llxFooter('$Date: 2010-03-30 07:39:02 +0200 (mar. 30 mars 2010) $ - $Revision: 53 $');

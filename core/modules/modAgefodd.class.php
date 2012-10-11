@@ -59,7 +59,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.0.16';
+		$this->version = '2.0.18';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -220,6 +220,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_NUM_LIST";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 100;
+		$this->const[$r][3] = 'Number of element in the list';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_PDF_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'cb4619';
+		$this->const[$r][3] = 'Base color for PDF';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 

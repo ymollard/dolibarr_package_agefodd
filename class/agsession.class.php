@@ -119,7 +119,6 @@ class Agsession extends CommonObject
 
     	// Insert request
     	$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session(";
-
     	$sql.= "fk_soc,";
     	$sql.= "fk_formation_catalogue,";
     	$sql.= "fk_session_place,";
@@ -130,7 +129,8 @@ class Agsession extends CommonObject
     	$sql.= "notes,";
     	$sql.= "fk_user_author,";
     	$sql.= "datec,";
-    	$sql.= "fk_user_mod";
+    	$sql.= "fk_user_mod,";
+    	$sql.= "entity";
     	$sql.= ") VALUES (";
     	$sql.= " ".(! isset($this->fk_soc)?'NULL':"'".$this->fk_soc."'").",";
     	$sql.= " ".(! isset($this->fk_formation_catalogue)?'NULL':"'".$this->fk_formation_catalogue."'").",";
@@ -143,7 +143,7 @@ class Agsession extends CommonObject
     	$sql.= " ".$this->db->escape($user->id).",";
     	$sql.= " ".$this->db->idate(dol_now()).",";
     	$sql.= " ".$this->db->escape($user->id);
-
+    	$sql.= ", ".$conf->entity;
     	$sql.= ")";
 
     	$this->db->begin();
@@ -210,6 +210,54 @@ class Agsession extends CommonObject
     	{
     		$this->db->commit();
     		return $this->id;
+    	}
+    }
+
+    /**
+     *	Load an object from its id and create a new one in database
+     *
+     *	@param	int		$fromid     Id of object to clone
+     * 	@return	int					New id of clone
+     */
+    function createFromClone($fromid)
+    {
+    	global $user,$langs;
+
+    	$error=0;
+
+    	$object=new Agsession($this->db);
+
+    	$this->db->begin();
+
+    	// Load source object
+    	$object->fetch($fromid);
+    	$object->id=0;
+    	$object->statut=0;
+    	$object->nb_stagiaire=0;
+
+
+    	// Create clone
+    	$result=$object->create($user);
+
+    	$result = $object->createAdmLevelForSession($user);
+
+    	// Other options
+    	if ($result < 0)
+    	{
+    		$this->error=$object->error;
+    		$error++;
+    	}
+
+    	// End
+    	if (! $error)
+    	{
+    		$this->db->commit();
+    		return $object->id;
+    	}
+    	else
+    	{
+    		$this->db->rollback();
+    		return -1;
     	}
     }
 
@@ -287,7 +335,70 @@ class Agsession extends CommonObject
 		}
     }
 
+    /**
+     * Create admin level for a session
+     */
+    function createAdmLevelForSession($user) {
+    	$error='';
 
+    	require_once('agefodd_sessadm.class.php');
+    	require_once('agefodd_session_admlevel.class.php');
+    	$admlevel = new Agefodd_session_admlevel($this->db);
+    	$result2 = $admlevel->fetch_all();
+
+    	if ($result2 > 0)
+    	{
+    		foreach ($admlevel->line as $line)
+    		{
+    			$actions = new Agefodd_sessadm($this->db);
+
+    			$actions->datea = dol_time_plus_duree($this->dated,$line->alerte,'d');
+    			$actions->dated = dol_time_plus_duree($actions->datea,-7,'d');
+
+    			if ($actions->datea > $this->datef)
+    			{
+    				$actions->datef = dol_time_plus_duree($actions->datea,7,'d');
+    			}
+    			else
+    			{
+    				$actions->datef = $this->datef;
+    			}
+
+    			$actions->fk_agefodd_session_admlevel = $line->rowid;
+    			$actions->fk_agefodd_session = $this->id;
+    			$actions->delais_alerte = $line->alerte;
+    			$actions->intitule = $line->intitule;
+    			$actions->indice = $line->indice;
+    			$actions->archive = 0;
+    			$actions->level_rank = $line->level_rank;
+    			$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
+    			$result3 = $actions->create($user);
+
+    			if ($result3 < 0) {
+    				dol_syslog(get_class($this)."::createAdmLevelForSession error=".$actions->error, LOG_ERR);
+    				$this->error = $actions->error;
+    				$error++;
+    			}
+    		}
+
+    		//Caculate the new parent level
+    		$action_static = new Agefodd_sessadm($this->db);
+    		$result4 = $action_static->setParentActionId($user,$this->id);
+    		if ($result4 < 0) {
+    			dol_syslog(get_class($this)."::createAdmLevelForSession error=".$action_static->error, LOG_ERR);
+    			$this->error = $action_static->error;
+    			$error++;
+    		}
+    	}
+    	else
+    	{
+    		dol_syslog(get_class($this)."::createAdmLevelForSession error=".$admlevel->error, LOG_ERR);
+    		$this->error = $admlevel->error;
+    		$error++;
+    	}
+
+    	return $error;
+    }
     /**
      *  Load object in memory from database
      *
@@ -367,6 +478,7 @@ class Agsession extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as concactOPCA ";
 		$sql.= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
     	$sql.= " WHERE t.rowid = ".$id;
+    	$sql.= " AND t.entity IN (".getEntity('agsession').")";
 
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
     	$resql=$this->db->query($sql);
@@ -1367,6 +1479,8 @@ class Agsession extends CommonObject
 		}
 		else $sql.= " WHERE s.archive LIKE ".$arch;
 
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
+
 		//Manage filter
 		if (!empty($filter)){
 			foreach($filter as $key => $value) {
@@ -1505,11 +1619,6 @@ class Agsession extends CommonObject
 		print '</table>';
 	}
 
-	function loadArrayTypeSession()
-	{
-		return $this->type_session_def;
-	}
-
 	/**
 	 *	Return clicable link of object (with eventually picto)
 	 *
@@ -1558,6 +1667,7 @@ class Agsession extends CommonObject
 		$sql.= " t.is_OPCA,";
 		$sql.= " t.fk_soc_OPCA,";
 		$sql.= " t.fk_socpeople_OPCA,";
+		$sql.= " concactOPCA.name as concactOPCAname, concactOPCA.firstname as concactOPCAfirstname,";
 		$sql.= " t.num_OPCA_soc,";
 		$sql.= " t.num_OPCA_file,";
 		$sql.= " t.fk_user_author,";
@@ -1566,6 +1676,8 @@ class Agsession extends CommonObject
 		$sql.= " t.tms";
 
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_opca as t";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as concactOPCA ";
+		$sql.= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
 
 		$sql.= " WHERE t.fk_soc_trainee = ".$fk_soc_trainee;
 		$sql.= " AND t.fk_session_agefodd = ".$id_session;
@@ -1594,6 +1706,7 @@ class Agsession extends CommonObject
 				$this->tms 					= $this->db->jdate($obj->tms);
 
 				$this->soc_OPCA_name = $this->getValueFrom('societe', $this->fk_soc_OPCA, 'nom');
+				$this->contact_name_OPCA = $obj->concactOPCAname.' '.$obj->concactOPCAfirstname;
 
 			}
 			$this->db->free($resql);

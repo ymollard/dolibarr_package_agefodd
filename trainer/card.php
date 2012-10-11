@@ -92,13 +92,47 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
  * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
  */
 
-if ($action == 'create_confirm' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd_teacher($db);
 
 		$agf->spid = $_POST["spid"];
+		$agf->type_trainer = $agf->type_trainer_def[1];
+		$result = $agf->create($user);
+
+		if ($result > 0)
+		{
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
+			exit;
+		}
+		else
+		{
+			dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
+			$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
+		}
+	}
+	else
+	{
+		Header ( "Location: list.php");
+		exit;
+	}
+}
+
+
+/*
+ * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
+*/
+
+if ($action == 'create_confirm_user' && $user->rights->agefodd->creer)
+{
+	if (! $_POST["cancel"])
+	{
+		$agf = new Agefodd_teacher($db);
+
+		$agf->fk_user = $_POST["fk_user"];
+		$agf->type_trainer = $agf->type_trainer_def[0];
 		$result = $agf->create($user);
 
 		if ($result > 0)
@@ -136,11 +170,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfFormateurAdd"));
 	
-	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+	print '<form name="create_contact" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="create_confirm">'."\n";
+	print '<input type="hidden" name="action" value="create_confirm_contact">'."\n";
 
-	print '<div class="warning">La fiche formateur ne peut être créée qu\'à partir d\'un contact déjà existant dans Dolibarr.';
+	print '<div class="warning">La fiche formateur peut être créée à partir d\'un contact déjà existant dans Dolibarr.';
 	print '<br>Si ce contact n\'existe pas, vous devez le créer à partir de la fiche de création d\'un <a href="'.DOL_URL_ROOT.'/contact/fiche.php?action=create">nouveau contact</a>. Sinon, selectionnez le contact dans la liste déroulante ci dessous.</div>';
 
 	print '<table class="border" width="100%">'."\n";
@@ -159,7 +193,6 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 	
 	print '</table>';
-	print '</div>';
 
 
 	print '<table style=noborder align="right">';
@@ -169,7 +202,46 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
+	
+	print '<br>';
+	print '<br>';
+	print '<br>';
+	
+	print '<form name="create_user" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+	print '<input type="hidden" name="action" value="create_confirm_user">'."\n";
+	
+	print '<div class="warning">La fiche formateur peut être créée à partir d\'un utilisateur de Dolibarr.';
+	print '<br>Si ce contact n\'existe pas, vous devez le créer à partir de la fiche de création d\'un <a href="'.DOL_URL_ROOT.'user/fiche.php?action=create">nouvelle utilisateur</a>. Sinon, selectionnez l\'utilisateur dans la liste déroulante ci dessous.</div>';
+	
+	print '<table class="border" width="100%">'."\n";
+	
+	print '<tr><td>'.$langs->trans("AgfUser").'</td>';
+	print '<td>';
+	
+	$agf_static = new Agefodd_teacher($db);
+	$agf_static->fetch_all('ASC','s.name, s.firstname','',0);
+	$exclude_array = array();
+	foreach($agf_static->line as $line)
+	{
+		$exclude_array[]=$line->fk_user;
+	}
+	$form->select_users('','fk_user',1,$exclude_array);
+	print '</td></tr>';
+	
+	print '</table>';
+	
+	
+	
+	print '<table style=noborder align="right">';
+	print '<tr><td align="center" colspan=2>';
+	print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
+	print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
+	print '</td></tr>';
+	print '</table>';
+	print '</form>';
 
+	print '</div>';
 }
 else
 {
@@ -214,7 +286,7 @@ else
 
 			print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id').'</td></tr>';
-
+			
 			print '<tr><td>'.$langs->trans("Name").'</td>';
 			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->name).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
 
@@ -240,14 +312,27 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
-	if ($user->rights->agefodd->creer)
-	{
-		print '<a class="butAction" href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->spid.'">'.$langs->trans('AgfModifierFicheContact').'</a>';
+	if ($agf->type_trainer==$agf->type_trainer_def[1]) {
+		if ($user->rights->societe->contact->creer)
+		{
+			print '<a class="butAction" href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$agf->spid.'">'.$langs->trans('AgfModifierFicheContact').'</a>';
+		}
+		else
+		{
+			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifierFicheContact').'</a>';
+		}
 	}
-	else
-	{
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifierFicheContact').'</a>';
-	}
+	elseif ($agf->type_trainer==$agf->type_trainer_def[0]) {
+		if ($user->rights->user->user->creer)
+		{
+			print '<a class="butAction" href="'.DOL_URL_ROOT.'/user/fiche.php?id='.$agf->fk_user.'">'.$langs->trans('AgfModifierFicheUser').'</a>';
+		}
+		else
+		{
+			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifierFicheUser').'</a>';
+		}
+	}	
+	
 	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';

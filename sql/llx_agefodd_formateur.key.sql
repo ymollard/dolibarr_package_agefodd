@@ -21,4 +21,4 @@
 
 
 ALTER TABLE llx_agefodd_formateur ADD INDEX idx_agefodd_formateur_fk_socpeople (fk_socpeople);
-ALTER TABLE llx_agefodd_formateur ADD CONSTRAINT llx_agefodd_formateur_ibfk_1 FOREIGN KEY (fk_socpeople) REFERENCES llx_socpeople (rowid);
+ALTER TABLE llx_agefodd_formateur ADD INDEX idx_agefodd_formateur_fk_user (fk_user);

@@ -77,9 +77,10 @@ class Agefodd extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref, intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author";
+		$sql.= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author,entity";
 		$sql.= ") VALUES (";
 	  	$sql.= $this->db->idate(dol_now()).', ';
+		$sql.= '"'.$this->ref.'", ';
 		$sql.= '"'.$this->ref_interne.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->duree.'", ';
@@ -90,7 +91,8 @@ class Agefodd extends CommonObject
 		$sql.= '"'.$this->programme.'",';
 		$sql.= '"'.$this->note1.'",';
 		$sql.= '"'.$this->note2.'",';
-		$sql.= '"'.$user->id.'"';
+		$sql.= '"'.$user->id.'",';
+		$sql.= '"'.$conf->entity.'"';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -145,7 +147,7 @@ class Agefodd extends CommonObject
 	global $langs;
 
 	$sql = "SELECT";
-	$sql.= " c.rowid, c.ref, c.intitule, c.duree,";
+	$sql.= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
 	$sql.= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 	if($id && !$ref)
@@ -161,8 +163,8 @@ class Agefodd extends CommonObject
 		{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->ref = $obj->rowid; //use for next prev ref
-			$this->ref_interne = $obj->ref;
+			$this->ref = $obj->ref; //use for next prev ref
+			$this->ref_interne = $obj->ref_interne;
 			$this->intitule = stripslashes($obj->intitule);
 			$this->duree = $obj->duree;
 			$this->public = stripslashes($obj->public);
@@ -253,7 +255,8 @@ class Agefodd extends CommonObject
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
-		$sql.= " c.ref='".$this->ref_interne."',";
+		$sql.= " c.ref='".$this->ref."',";
+		$sql.= " c.ref_interne='".$this->ref_interne."',";
 		$sql.= " c.intitule='".$this->intitule."',";
 		$sql.= " c.duree='".$this->duree."',";
 		$sql.= " c.public='".$this->public."',";
@@ -640,6 +643,7 @@ class Agefodd extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as a";
 		$sql.= " ON c.rowid = a.fk_formation_catalogue";
 		$sql.= " WHERE c.archive LIKE ".$arch;
+		$sql.= " AND c.entity IN (".getEntity('agsession').")";
 		$sql.= " GROUP BY c.ref";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 

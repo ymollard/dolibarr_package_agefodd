@@ -38,7 +38,8 @@ class Agefodd_teacher extends CommonObject
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd_formateur';
-        var $id;
+    var $id;
+    var $type_trainer_def=array();
 
 	/**
 	*	\brief		Constructor
@@ -47,6 +48,7 @@ class Agefodd_teacher extends CommonObject
 	function __construct($DB) 
 	{
 		$this->db = $DB;
+		$this->type_trainer_def=array(0=>'user',1 =>'socpeople');
 		return 1;
 	}
 
@@ -70,9 +72,20 @@ class Agefodd_teacher extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formateur(";
-		$sql.= "fk_socpeople, fk_user_author, datec";
+		$sql.= "fk_socpeople,fk_user, type_trainer, fk_user_author, datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->spid.'", ';
+		//trainer is user
+		if ($this->type_trainer==$this->type_trainer_def[0]) {
+			$sql.= 'NULL, ';
+			$sql.= '"'.$this->fk_user.'", ';
+			$sql.= '"'.$this->type_trainer_def[0].'", ';
+		}
+		//trainer is Dolibarr contact
+		elseif ($this->type_trainer==$this->type_trainer_def[1]) {
+			$sql.= '"'.$this->spid.'", ';
+			$sql.= 'NULL, ';
+			$sql.= '"'.$this->type_trainer_def[1].'", ';
+		}
 		$sql.= '"'.$user->id.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
@@ -129,12 +142,15 @@ class Agefodd_teacher extends CommonObject
 		global $langs;
 
 		$sql = "SELECT";
-		$sql.= " f.rowid, f.fk_socpeople, f.archive,";
-		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.phone, s.email, s.phone_mobile";
+		$sql.= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
+		$sql.= " s.rowid as spid , s.name as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, "; 
+		$sql.= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
+		$sql.= " u.name as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
+		$sql.= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid";
 		$sql.= " WHERE f.rowid = ".$id;
-		//$sql.= " AND f.archive LIKE ".$arch;
 		
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -145,11 +161,29 @@ class Agefodd_teacher extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->ref = $obj->rowid; // Use for show_next_prev
-				$this->spid = $obj->spid;
-				$this->name = $obj->name;
-				$this->firstname = $obj->firstname;
-				$this->civilite = $obj->civilite;
 				$this->archive = $obj->archive;
+				$this->type_trainer=$obj->type_trainer;
+				
+				//trainer is user
+				if ($this->type_trainer==$this->type_trainer_def[0]) {
+					$this->fk_user = $obj->fk_user;
+					$this->name = $obj->u_name;
+					$this->firstname = $obj->u_firstname;
+					$this->civilite = $obj->u_civilite;
+					$this->phone = $obj->u_phone;
+					$this->email = $obj->u_email;
+					$this->phone_mobile = $obj->u_phone_mobile;
+				}
+				//trainer is Dolibarr contact
+				elseif ($this->type_trainer==$this->type_trainer_def[1]) {
+					$this->spid = $obj->spid;
+					$this->name = $obj->sp_name;
+					$this->firstname = $obj->sp_firstname;
+					$this->civilite = $obj->sp_civilite;
+					$this->phone = $obj->sp_phone;
+					$this->email = $obj->sp_email;
+					$this->phone_mobile = $obj->sp_phone_mobile;
+				}
 			}
 			$this->db->free($resql);
 			return 1;
@@ -177,10 +211,14 @@ class Agefodd_teacher extends CommonObject
 		global $langs;
 
 		$sql = "SELECT";
-		$sql.= " f.rowid, f.fk_socpeople, f.archive, f.fk_socpeople, ";
-		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.phone, s.email, s.phone_mobile";
+		$sql.= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
+		$sql.= " s.rowid as spid , s.name as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, "; 
+		$sql.= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
+		$sql.= " u.name as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
+		$sql.= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid";
 		if ($arch == 0 || $arch == 1) $sql.= " WHERE f.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
@@ -199,15 +237,29 @@ class Agefodd_teacher extends CommonObject
 				{
 					$obj = $this->db->fetch_object($resql);
 					$this->line[$i]->id = $obj->rowid;
-					$this->line[$i]->spid = $obj->spid;
-					$this->line[$i]->name = $obj->name;
-					$this->line[$i]->firstname = $obj->firstname;
-					$this->line[$i]->civilite = $obj->civilite;
-					$this->line[$i]->phone = $obj->phone;
-					$this->line[$i]->email = $obj->email;
-					$this->line[$i]->phone_mobile = $obj->phone_mobile;
+					$this->line[$i]->type_trainer = $obj->type_trainer;
 					$this->line[$i]->archive = $obj->archive;
-					$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+					//trainer is user
+					if ($this->line[$i]->type_trainer==$this->type_trainer_def[0]) {
+						$this->line[$i]->fk_user = $obj->fk_user;
+						$this->line[$i]->name = $obj->u_name;
+						$this->line[$i]->firstname = $obj->u_firstname;
+						$this->line[$i]->civilite = $obj->u_civilite;
+						$this->line[$i]->phone = $obj->u_phone;
+						$this->line[$i]->email = $obj->u_email;
+						$this->line[$i]->phone_mobile = $obj->u_phone_mobile;
+						$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+					}
+					//trainer is Dolibarr contact
+					elseif ($this->line[$i]->type_trainer==$this->type_trainer_def[1]) {
+						$this->line[$i]->spid = $obj->spid;
+						$this->line[$i]->name = $obj->sp_name;
+						$this->line[$i]->firstname = $obj->sp_firstname;
+						$this->line[$i]->civilite = $obj->sp_civilite;
+						$this->line[$i]->phone = $obj->sp_phone;
+						$this->line[$i]->email = $obj->sp_email;
+						$this->line[$i]->phone_mobile = $obj->sp_phone_mobile;
+					}
 					$i++;
 				}
 			}

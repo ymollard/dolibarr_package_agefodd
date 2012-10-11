@@ -156,6 +156,33 @@ For Dev :
    - Correct wrong call to agsession constructor in convention PDF
    - Drop llx_agefodd_place_ibfk_2 if extists because it is not use and create bug
    
-   ***** ChangeLog for 2.0.16 compared to 2.0.15 *****
+***** ChangeLog for 2.0.16 compared to 2.0.15 *****
 For All :
-   - Add session list tab in trainning and site screen
+   - Merge EnvoieDoc from jf-ferry :
+      - Add session list tab in trainning and site screen
+      - Change some description into document screen
+      - improvement of envoie doc screen and better mail layout
+   - Correct the litteral number of page for the convention PDF
+   - correct some syntax in PDF
+   - add parameters in admin to change number of elements display in all list screen
+   - Correct town trainning format in agefodd configuration 
+   - Change type of but, prerequis, public, method for extand to text (more than 255 caracters)
+   - Correct mistake into fiche presence
+   - Add color picker for PDF model in configuration
+For Dev : 
+   - Rename file update_1.0-2.0 to avoid this file to be run. Use this file only for migration from Agefodd for Dolibarr 2.9 to this version
+   - Remove "Plateau technique" from PDF 
+   
+***** ChangeLog for 2.0.17 compared to 2.0.16 *****
+For All :
+	- Fix Bug on Universal mask (Bug #541)
+	- Uniformize pagefoot for PDF
+	- Display subrogation info in all case
+	- Merge from jf-ferry : multicompagny module compatibility
+For Dev : 
+	- Add entity column to prepare multicompany module functionnality
+	- change way to get society info in PDF use $mysoc global is better than $conf->global->MAIN_SOC....
+	
+***** ChangeLog for 2.0.18 compared to 2.0.17 *****
+For All :
+	- Can create trainer from dolibarr user list
