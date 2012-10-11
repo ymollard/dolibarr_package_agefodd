@@ -72,7 +72,7 @@ class Agefodd_teacher extends CommonObject
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formateur(";
-		$sql.= "fk_socpeople,fk_user, type_trainer, fk_user_author, datec";
+		$sql.= "fk_socpeople,fk_user, type_trainer, fk_user_author, entity, datec";
 		$sql.= ") VALUES (";
 		//trainer is user
 		if ($this->type_trainer==$this->type_trainer_def[0]) {
@@ -87,6 +87,7 @@ class Agefodd_teacher extends CommonObject
 			$sql.= '"'.$this->type_trainer_def[1].'", ';
 		}
 		$sql.= '"'.$user->id.'",';
+		$sql.= '"'.$conf->entity.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 	
@@ -151,6 +152,7 @@ class Agefodd_teacher extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid";
 		$sql.= " WHERE f.rowid = ".$id;
+		$sql.= " AND f.entity IN (".getEntity('agsession').")";
 		
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -219,7 +221,9 @@ class Agefodd_teacher extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid";
-		if ($arch == 0 || $arch == 1) $sql.= " WHERE f.archive LIKE ".$arch;
+		$sql.= " WHERE f.entity IN (".getEntity('agsession').")";
+		if ($arch == 0 || $arch == 1) $sql.= " AND f.archive LIKE ".$arch;
+		
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 		

@@ -54,22 +54,20 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	$result = $agf->delete($user);
 	
 	if ($result > 0)
+	{
+		$agf_place=new Agefodd_place($db);
+		$agf_place->id=$id;
+		$result = $agf_place->remove_reg_int($user);
+		
+		if ($result > 0) {
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+			exit;
+		}
+		else
 		{
-			
-			$agf_place=new Agefodd_place($db);
-			$result_place = $agf_place->fetch($id);
-			$agf_place->fk_reg_interieur='';
-			$result = $agf_place->update($user);
-			
-			if ($result > 0) {
-				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$result);
-				exit;
-			}
-			else
-			{
-				dol_syslog("agefodd::site::reg_int error=".$agf_place->error, LOG_ERR);
-				$mesg='<div class="error">'.$agf_place->error.'</div>';
-			}
+			dol_syslog("agefodd::site::reg_int error=".$agf_place->error, LOG_ERR);
+			$mesg='<div class="error">'.$agf_place->error.'</div>';
+		}
 	}
 	else
 	{
@@ -142,7 +140,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$result = $agf_place->update($user);
 			
 			if ($result > 0) {
-				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 				exit;
 			}
 			else
@@ -165,8 +163,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		exit;
 	}
 }
-
-
 
 /*
  * View

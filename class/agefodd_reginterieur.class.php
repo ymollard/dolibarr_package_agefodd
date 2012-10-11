@@ -74,11 +74,9 @@ class Agefodd_reg_interieur extends CommonObject
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
 
-        
-
 		// Check parameters
 		// Put here code to add control on parameters values
-
+		
         // Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_reg_interieur(";
 		$sql.= "reg_int,";
@@ -254,7 +252,7 @@ class Agefodd_reg_interieur extends CommonObject
 	 *
      *	@param  User	$user        User that delete
      *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
-	 *  @return	int					 <0 if KO, >0 if OK
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function delete($user, $notrigger=0)
 	{

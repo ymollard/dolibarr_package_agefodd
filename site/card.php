@@ -49,7 +49,8 @@ $url_return=GETPOST('url_return','alpha');
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_place($db);
-	$result = $agf->remove($id);
+	$agf->id=$id;
+	$result = $agf->remove($user);
 
 	if ($result > 0)
 	{

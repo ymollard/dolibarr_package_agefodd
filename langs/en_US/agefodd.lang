@@ -322,3 +322,4 @@ AgfNbElemListHelp=In all kind of list screen in Agefodd (list of trainning, list
 AgfPDFBaseColor=Base color for PDF
 AgfUser=Dolibarr users list
 AgfModifierFicheUser=Update user
+AgfErrorTraineeInSession=This trainee is in a traning session and cannot be deleted

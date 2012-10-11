@@ -185,4 +185,10 @@ For Dev :
 	
 ***** ChangeLog for 2.0.18 compared to 2.0.17 *****
 For All :
-	- Can create trainer from dolibarr user list
+	- Can create trainer from Dolibarr user list
+	- Add ref interne on Training catalogue
+	- Add Multicompany for trainer,catalogue, contact (correspondant)
+	- Location : Fix bug on creation of internal Rule
+For Dev : 
+	- Add Multicompany for catalogue (fetch method)
+	- remove llx_agefodd_reg_interieur foreign key to allow Internal Rule creation. Manage foreign key by code

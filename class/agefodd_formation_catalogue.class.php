@@ -154,6 +154,7 @@ class Agefodd extends CommonObject
 		$sql.= " WHERE c.rowid = ".$id;
 	if(!$id && $ref)
 		$sql.= " WHERE c.ref = '".$ref."'";
+	$sql.= " AND c.entity IN (".getEntity('agsession').")";
 
 	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 	$resql=$this->db->query($sql);
@@ -163,7 +164,8 @@ class Agefodd extends CommonObject
 		{
 			$obj = $this->db->fetch_object($resql);
 			$this->id = $obj->rowid;
-			$this->ref = $obj->ref; //use for next prev ref
+			$this->ref = $obj->rowid; //use for next prev ref
+			$this->ref_obj = $obj->ref; //use for next prev ref
 			$this->ref_interne = $obj->ref_interne;
 			$this->intitule = stripslashes($obj->intitule);
 			$this->duree = $obj->duree;

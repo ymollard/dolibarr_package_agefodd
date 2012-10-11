@@ -24,6 +24,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   rowid int(11) NOT NULL auto_increment,
+  entity int(11) NOT NULL DEFAULT 1,
   nom varchar(50) NOT NULL,
   prenom varchar(50) NOT NULL,
   civilite varchar(6) NOT NULL,

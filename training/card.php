@@ -375,7 +375,7 @@ else
 				print '<table class="border" width="100%">';
 
 				print "<tr>";
-				print '<td width="20%">'.$langs->trans("Ref").'</td><td>';
+				print '<td width="20%">'.$langs->trans("Id").'</td><td>';
 				print $agf->id;
 				print '</td></tr>';
 
@@ -383,7 +383,7 @@ else
 				print '<input name="intitule" class="flat" size="50" value="'.stripslashes($agf->intitule).'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("Ref").'</td><td>';
-				print '<input name="ref" class="flat" size="50" value="'.$agf->ref.'"></td></tr>';
+				print '<input name="ref" class="flat" size="50" value="'.$agf->ref_obj.'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
 				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
@@ -537,7 +537,7 @@ else
 				print '<table class="border" width="100%">';
 
 				print "<tr>";
-				print '<td width="20%">'.$langs->trans("Ref").'</td><td colspan=2>';
+				print '<td width="20%">'.$langs->trans("Id").'</td><td colspan=2>';
 				print $form->showrefnav($agf,'id','',1,'rowid','id');
 				print '</td></tr>';
 
@@ -545,7 +545,7 @@ else
 				print '<td colspan=2>'.stripslashes($agf->intitule).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Ref").'</td><td colspan=2>';
-				print $agf->ref.'</td></tr>';
+				print $agf->ref_obj.'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("AgfRefInterne").'</td><td colspan=2>';
 				print $agf->ref_interne.'</td></tr>';

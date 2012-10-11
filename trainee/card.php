@@ -58,7 +58,12 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+		if (strpos($agf->error,'llx_agefodd_session_stagiaire_ibfk_2')) {
+			$agf->error=$langs->trans("AgfErrorTraineeInSession");
+		}
+		else {
+			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
+		}
 		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }

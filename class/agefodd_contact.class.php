@@ -70,10 +70,11 @@ class Agefodd_contact extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_contact(";
-		$sql.= "fk_socpeople, fk_user_author, datec";
+		$sql.= "fk_socpeople, fk_user_author, entity, datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->spid.'", ';
 		$sql.= '"'.$user->id.'",';
+		$sql.= '"' .$conf->entity.'",';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -132,7 +133,13 @@ class Agefodd_contact extends CommonObject
 		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.address, s.cp, s.ville, c.archive";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
-		($type == 'socid') ? $sql.= " WHERE s.fk_soc = ".$id : $sql.= " WHERE c.rowid = ".$id;
+		if ($type == 'socid') {
+			$sql.= " WHERE s.fk_soc = ".$id; 
+		}
+		else {
+			$sql.= " WHERE c.rowid = ".$id;
+		}
+		$sql.= " AND c.entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -184,7 +191,8 @@ class Agefodd_contact extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = s.fk_soc";
-		if ($arch == 0 || $arch == 1) $sql.= " WHERE c.archive LIKE ".$arch;
+		$sql.= " WHERE c.entity IN (".getEntity('agsession').")";
+		if ($arch == 0 || $arch == 1) $sql.= " AND c.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) { $sql.=$this->db->plimit( $limit + 1 ,$offset);}
 

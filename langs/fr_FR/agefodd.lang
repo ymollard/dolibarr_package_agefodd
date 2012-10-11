@@ -341,3 +341,4 @@ AgfCloneSessionCalendar=Cloner la session avec les infos du calendrier
 ConfirmCloneSession=Confirmer le clonage de la session de formation ? Les infos participants et formateurs ne seront pas reprises.
 AgfUser=Liste des utilisateurs Dolibarr
 AgfModifierFicheUser=Modifier l'utilisateur
+AgfErrorTraineeInSession=Ce stagiaires est enregistré dans une session. Il ne peux être supprimer.

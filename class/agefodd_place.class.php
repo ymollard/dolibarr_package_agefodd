@@ -26,6 +26,7 @@
  */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
+dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
 
 /**
  *	\class		Agefodd
@@ -206,7 +207,7 @@ class Agefodd_place extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid";
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
-        $sql.= " WHERE o.entity IN (".getEntity('agsession').")";
+        $sql.= " WHERE p.entity IN (".getEntity('agsession').")";
 
         if ($arch == 0 || $arch == 1) $sql.= " AND p.archive LIKE ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
@@ -379,27 +380,136 @@ class Agefodd_place extends CommonObject
     }
 
 
-	/**
-	*      \brief      Supprime l'operation
-	*      \param      id          Id operation à supprimer
-	*      \return     int         <0 si ko, >0 si ok
-	*/
-	function remove($id)
+ 	/**
+	 *  Delete object in database
+	 *
+     *	@param  User	$user        User that delete
+     *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return	 int					 <0 if KO, >0 if OK
+	 */
+	function remove($user, $notrigger=0)
 	{
-		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_place";
-		$sql .= " WHERE rowid = ".$id;
-
-		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query ($sql);
-
-		if ($resql)
+		
+		global $conf, $langs;
+		$error=0;
+		
+		if (! $error)
 		{
-			return 1;
+			if (! $notrigger)
+			{
+				// Uncomment this and change MYOBJECT to your own tag if you
+				// want this action call a trigger.
+		
+				//// Call triggers
+				//include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				//$interface=new Interfaces($this->db);
+				//$result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
+				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				//// End call triggers
+			}
+		}
+		
+		if (! $error)
+		{
+			$fk_reg_interieur=0;
+			
+			$sql = "SELECT";
+			$sql.= " p.rowid, p.fk_reg_interieur";
+			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
+			$sql.= " WHERE p.rowid = ".$this->id;
+			
+			$this->db->begin();
+			
+			dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
+			$resql=$this->db->query($sql);
+			if (! $resql) {
+				$error++; $this->errors[]="Error ".$this->db->lasterror();
+			}
+			
+			if (! $error)
+			{
+				if ($this->db->num_rows($resql))
+				{
+					$obj = $this->db->fetch_object($resql);
+					$fk_reg_interieur = $obj->fk_reg_interieur;
+				}
+				
+				$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_place";
+				$sql .= " WHERE rowid = ".$this->id;
+				
+				dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
+				$resql=$this->db->query ($sql);
+				if (! $resql) {
+					$error++; $this->errors[]="Error ".$this->db->lasterror();
+				}
+				
+				if ((!$error) && !(empty($fk_reg_interieur)))
+				{
+					$agf_regint = new Agefodd_reg_interieur($this->db);
+					$agf_regint->id=$fk_reg_interieur;
+					$result = $agf_regint->delete($user);
+					
+					if ($result < 0){
+						$error++; $this->errors[]="Error ".$agf_regint->errors;
+					} 
+				}
+				
+			}
+		}
+		
+		// Commit or rollback
+		if ($error)
+		{
+			foreach($this->errors as $errmsg)
+			{
+				dol_syslog(get_class($this)."::delete ".$errmsg, LOG_ERR);
+				$this->error.=($this->error?', '.$errmsg:$errmsg);
+			}
+			$this->db->rollback();
+			return -1*$error;
 		}
 		else
 		{
-		    $this->error=$this->db->lasterror();
-		    return -1;
+			$this->db->commit();
+			return 1;
+		}	
+	}
+	
+ 	/**
+	 *  Update  reg int to null for this place
+	 *
+     *	@param  User	$user        User that delete
+	 *  @return	 int					 <0 if KO, >0 if OK
+	 */
+	function remove_reg_int($user)
+	{
+		global $conf, $langs;
+		$error=0;
+		
+		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_place as p SET fk_reg_interieur=NULL, fk_user_mod="'.$user->id.'"';
+		$sql .= " WHERE rowid = ".$this->id;
+	
+		$this->db->begin();
+
+		dol_syslog(get_class($this)."::remove_reg_int sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+
+		// Commit or rollback
+		if ($error)
+		{
+			foreach($this->errors as $errmsg)
+			{
+	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+	            $this->error.=($this->error?', '.$errmsg:$errmsg);
+			}
+			$this->db->rollback();
+			return -1*$error;
+		}
+		else
+		{
+			$this->db->commit();
+			return 1;
 		}
 	}
 
