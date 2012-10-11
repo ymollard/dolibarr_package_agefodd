@@ -189,6 +189,11 @@ For All :
 	- Add ref interne on Training catalogue
 	- Add Multicompany for trainer,catalogue, contact (correspondant)
 	- Location : Fix bug on creation of internal Rule
+	- Clone session
 For Dev : 
 	- Add Multicompany for catalogue (fetch method)
 	- remove llx_agefodd_reg_interieur foreign key to allow Internal Rule creation. Manage foreign key by code
+	
+***** ChangeLog for 2.0.19 compared to 2.0.18 *****
+For All :
+	- Add option for jf-ferry to add picture of customer on doc
