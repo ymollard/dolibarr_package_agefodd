@@ -476,7 +476,7 @@ if (!empty($id))
 				}
 
 				$formmail->withto=$withto;
-				$formmail->withtofree=0;
+				$formmail->withtofree=1;
 				$formmail->withfile=2;
 			}
 			elseif ($action == 'presend_pedago') {
