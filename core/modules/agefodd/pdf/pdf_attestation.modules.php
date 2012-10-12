@@ -195,6 +195,17 @@ class pdf_attestation extends ModelePDFAgefodd
 							 $pdf->Image($logo, $this->marge_gauche + 3, $this->marge_haute + 3, 40);
 					}
 
+					// Affichage du logo commanditaire (optionnel)
+					if($conf->global->AGF_USE_LOGO_CLIENT)
+					{
+						$staticsoc = new Societe($this->db);
+						$staticsoc->fetch($agf->socid);
+						$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
+						$logo_client=$dir.$staticsoc->logo;
+						if (file_exists($logo_client))
+							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
+					}
+
 					$newY = $this->marge_haute + 30;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetTextColor(76,76,76);
@@ -287,6 +298,14 @@ class pdf_attestation extends ModelePDFAgefodd
 					$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
 					$pdf->Cell(100, 0, $this->str, 0, 0, 'R', 0);
 
+					// Incrustation image tampon
+					if($conf->global->AGF_INFO_TAMPON)
+					{
+						$dir=$conf->agefodd->dir_output.'/images/';
+						$img_tampon=$dir.$conf->global->AGF_INFO_TAMPON;
+						if (file_exists($img_tampon))
+							$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY+5, 50);
+					}
 
 					// Pied de page		$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
 					$this->_pagefoot($pdf,$agf,$outputlangs);
