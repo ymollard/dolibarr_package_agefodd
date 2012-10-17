@@ -315,7 +315,7 @@ if (!empty($id))
 
 				// Avant la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-				document_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
+				document_line("Bon de commande", 2, "bc", $agf->line[$i]->socid);
 				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
 				document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
 				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
@@ -329,7 +329,7 @@ if (!empty($id))
 				if($agf->line[$i]->type_session) { // session inter
 					$agfstat = new Agsession($db);
 					// load les infos OPCA pour la session
-					$agfstat->getOpcaForTraineeInSession($agf->line[$i]->sessid,$agf->line[$i]->sessid);
+					$agfstat->getOpcaForTraineeInSession($agf->line[$i]->socid,$agf->line[$i]->sessid);
 					// Facture à l'OPCA si subrogation
 					$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
 

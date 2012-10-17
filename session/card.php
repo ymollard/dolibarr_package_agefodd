@@ -188,7 +188,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		if ($force_nb_stagiaire==1 && $agf->force_nb_stagiaire!='') {
 			$agf->force_nb_stagiaire = 1;
 		}
-		else {	$agf->force_nb_stagiaire = 0;
+		else {	
+			$agf->force_nb_stagiaire = 0;
 		}
 
 		$cost_trip = GETPOST('costtrip','alpha');
@@ -491,7 +492,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
  * View
  */
 
-llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
+llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js','/agefodd/includes/lib.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css','/agefodd/includes/lib.js'));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
@@ -690,22 +691,21 @@ else
 					print '<tr><td width="20%">'.$langs->trans("AgfNumberPlaceAvailable").'</td>';
 					print '<td><input size="4" type="text" class="flat" name="nb_place" value="'.$agf->nb_place.'" />'.'</td></tr>';
 
-					$forced = false;
-					$checked = false;
 					if ($agf->force_nb_stagiaire) {
-						$forced = true;
-						$selected=true;
+						$disabled = 'disabled="disabled"';
+						$checked = 'checked="checked"';
 					}
-					// Si forcé on doit pouvoir saisir une valeur
-					$disabled = ($forced ? '':'disabled="disabled"');
+					else {
+						$disabled = '';
+						$checked = '';
+					}
+					// Si non forcé on doit pouvoir saisir une valeur
 					print '<tr><td width="20%">'.$langs->trans("AgfNbreParticipants").'</td>';
-					print '<td><input size="4" type="text" class="flat" name="nb_stagiaire" '.$disabled.' value="'.($agf->nb_stagiaire>0?$agf->nb_stagiaire:'0').'" />'.'</td></tr>';
+					print '<td><input size="4" type="text" class="flat" id="nb_stagiaire" name="nb_stagiaire" '.$disabled.' value="'.($agf->nb_stagiaire>0?$agf->nb_stagiaire:'0').'" />'.'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfForceNbreParticipants").'</td>';
-					// ($agf->force_nb_stagiaire>0?$agf->nb_stagiaire:'0')
 					print '<td>';
-					$checked = ($agf->force_nb_stagiaire == 1 ? 'checked="checked"':'');
-					print '<input size="4" type="checkbox" '.$checked.' name="force_nb_stagiaire" value="1" />'.'</td></tr>';
+					print '<input size="4" type="checkbox" '.$checked.' name="force_nb_stagiaire" value="1" onclick="fnForceUpdate(this);" />'.'</td></tr>';
 
 					print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 					if (!empty($agf->note)) $notes = nl2br($agf->note);

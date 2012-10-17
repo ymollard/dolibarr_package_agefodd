@@ -805,6 +805,11 @@ class Agsession extends CommonObject
 		if ($result <= 0){
 			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
+		
+		if ($this->force_nb_stagiaire==1) {
+			$this->fetch_stagiaire_per_session($this->id);
+			$this->nb_stagiaire=count($this->line);
+		}
 
 		if ($error==0)
 		{

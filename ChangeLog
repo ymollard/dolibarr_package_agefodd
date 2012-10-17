@@ -198,3 +198,4 @@ For Dev :
 For All :
 	- Add option for jf-ferry to add picture of customer on doc
 	- Add missing english translation
+	- Fix behaviour on force update number of trainee per session
