@@ -174,7 +174,7 @@ function show_fac($file, $socid, $mdle)
 		}
 		else
 		{
-			if (!empty(${"flag_bc_$socid"}))
+			if (!empty(${"flag_bc_$socid"}) || 1)
 			{
 				$mess = '';
 
