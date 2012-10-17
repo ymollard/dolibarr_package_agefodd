@@ -231,6 +231,17 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$text=$this->emetteur->name;
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
+		
+		// Affichage du logo commanditaire (optionnel)
+		if($conf->global->AGF_USE_LOGO_CLIENT)
+		{
+			$staticsoc = new Societe($this->db);
+			$staticsoc->fetch($agf->socid);
+			$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
+			$logo_client=$dir.$staticsoc->logo;
+			if (file_exists($logo_client))
+				$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 90, $this->marge_haute + 10, 40);
+		}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 		$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
@@ -537,6 +548,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 			$posY += $h_ligne;
 		}
+		
+		// Incrustation image tampon
+		if($conf->global->AGF_INFO_TAMPON)
+		{
+			$dir=$conf->agefodd->dir_output.'/images/';
+			$img_tampon=$dir.$conf->global->AGF_INFO_TAMPON;
+			if (file_exists($img_tampon))
+				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
+		}
 
 		// Cachet et signature
 		$posY += 2;
@@ -552,6 +572,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$pdf->SetXY($posX + 92, $posY);
 		$this->str = "cachet de l'organisme de formation et signature de son représentant :";
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
+		
+
 
 		// Pied de page
 		$this->_pagefoot($pdf,$agf,$outputlangs);
