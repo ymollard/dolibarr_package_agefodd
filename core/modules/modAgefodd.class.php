@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+ * Copyright (C) 2010-2012	Regis Houssin	<regis@dolibarr.fr>
  * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,9 +41,9 @@ class modAgefodd extends DolibarrModules
 	 *   \brief      Constructor. Define names, constants, directories, boxes, permissions
 	 *   \param      DB      Database handler
 	 */
-	function __construct($DB)
+	function __construct($db)
 	{
-		$this->db = $DB;
+		$this->db = $db;
 
 		// Id for module (must be unique).
 		// Use here a free id (See in Home -> System information -> Dolibarr for list of used modules id).
@@ -222,7 +222,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_NUM_LIST";
 		$this->const[$r][1] = "chaine";
@@ -230,7 +230,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Number of element in the list';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_PDF_COLOR";
 		$this->const[$r][1] = "chaine";
@@ -240,7 +240,10 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][5] = 0;
 
 		// Dictionnaries
-		if (! isset($conf->agefodd->enabled)) $conf->agefodd->enabled=0; // This is to avoid warnings
+		if (! isset($conf->agefodd->enabled)) {
+			$conf->agefodd = (object) array();
+			$conf->agefodd->enabled=0; // This is to avoid warnings
+		}
 		$this->dictionnaries=array(
 				'langs'=>'agefodd@agefodd',
 				'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type"),		// List of tables we want to see into dictonnary editor
