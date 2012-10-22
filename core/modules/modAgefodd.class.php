@@ -43,6 +43,8 @@ class modAgefodd extends DolibarrModules
 	 */
 	function __construct($db)
 	{
+		global $conf;
+
 		$this->db = $db;
 
 		// Id for module (must be unique).
