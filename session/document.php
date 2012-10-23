@@ -1,27 +1,27 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  * 	\file		/agefodd/session/document.php
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
- */
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -115,11 +115,11 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 
 /*
  * View
- */
+*/
 
 /*
  * Action create and refresh pdf document
- */
+*/
 if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->creer)
 {
 	$cour=GETPOST('cour','alpha');
@@ -148,7 +148,7 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 
 /*
  * Action delete pdf document
- */
+*/
 if ($action == 'del' && $user->rights->agefodd->creer)
 {
 	$cour=GETPOST('cour','alpha');
@@ -156,9 +156,9 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	$idform=GETPOST('idform','alpha');
 
 	if (!empty($cour))
-	    $file = $conf->agefodd->dir_output.'/'.$model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
+		$file = $conf->agefodd->dir_output.'/'.$model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
 	elseif (!empty($socid))
-	    $file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'_'.$socid.'.pdf';
+	$file = $conf->agefodd->dir_output.'/'.$model.'_'.$id.'_'.$socid.'.pdf';
 	elseif ($model=='fiche_pedago') {
 		$file = $conf->agefodd->dir_output.'/'.$model.'_'.$idform.'.pdf';
 	}
@@ -264,7 +264,7 @@ if (!empty($id))
 
 
 		/*
-		* Confirmation de la suppression
+		 * Confirmation de la suppression
 		*/
 		if ($action == 'delete')
 		{
@@ -304,54 +304,55 @@ if (!empty($id))
 			{
 				$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
 
-				${'flag_bc_'.$agf->line[$i]->socid} = 0;
+				${
+					'flag_bc_'.$agf->line[$i]->socid} = 0;
 
-				print '<table class="border" width="100%">'."\n";
+					print '<table class="border" width="100%">'."\n";
 
-				print '<tr class="liste_titre">'."\n";
-				print '<td colspan=3>';
-				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
-				print '</tr>'."\n";
+					print '<tr class="liste_titre">'."\n";
+					print '<td colspan=3>';
+					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+					print '</tr>'."\n";
 
-				// Avant la formation
-				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-				document_line("Bon de commande", 2, "bc", $agf->line[$i]->socid);
-				document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
-				document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
-				document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-				document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
+					// Avant la formation
+					print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+					document_line("Bon de commande", 2, "bc", $agf->line[$i]->socid);
+					document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
+					document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
+					document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
+					document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
 
-				// Après la formation
-				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
+					// Après la formation
+					print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+					document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
 
-				$text_fac = "Facture";
-				if($agf->line[$i]->type_session) { // session inter
-					$agfstat = new Agsession($db);
-					// load les infos OPCA pour la session
-					$agfstat->getOpcaForTraineeInSession($agf->line[$i]->socid,$agf->line[$i]->sessid);
-					// Facture à l'OPCA si subrogation
-					$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
+					$text_fac = "Facture";
+					if($agf->line[$i]->type_session) { // session inter
+						$agfstat = new Agsession($db);
+						// load les infos OPCA pour la session
+						$agfstat->getOpcaForTraineeInSession($agf->line[$i]->socid,$agf->line[$i]->sessid);
+						// Facture à l'OPCA si subrogation
+						$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
 
-					// Si subrogation et info renseigné
-					if ($soc_to_select > 0 && $agfstat->is_OPCA)
-					{
-						$text_fac.=' (ajouter contact OPCA en tant que subrogation)';
+						// Si subrogation et info renseigné
+						if ($soc_to_select > 0 && $agfstat->is_OPCA)
+						{
+							$text_fac.=' (ajouter contact OPCA en tant que subrogation)';
+						}
+						elseif(!$agfstat->is_OPCA) // Pas de subrogation
+						{
+							$text_fac.=" (pas de subrogation)";
+						}
+						else // OPCA non renseignée
+						{
+							$text_fac.= ' <span class="error">subrogation : aucun tiers indiqué pour le contact facturation de l\'OPCA. <a href="'.dol_buildpath("/agefodd/session/subscribers.php",1).'?action=edit&id='.$id.'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a></span>';
+						}
 					}
-					elseif(!$agfstat->is_OPCA) // Pas de subrogation
-					{
-						$text_fac.=" (pas de subrogation)";
-					}
-					else // OPCA non renseignée
-					{
-						$text_fac.= ' <span class="error">subrogation : aucun tiers indiqué pour le contact facturation de l\'OPCA. <a href="'.dol_buildpath("/agefodd/session/subscribers.php",1).'?action=edit&id='.$id.'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a></span>';
-					}
-				}
-				document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
+					document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
 
-				document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
-				print '</table>';
-				if ($i < $linecount) print '&nbsp;'."\n";
+					document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
+					print '</table>';
+					if ($i < $linecount) print '&nbsp;'."\n";
 			}
 		}
 		print '</div>'."\n";

@@ -1,27 +1,27 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  * 	\file		/agefodd/session/subscribers.php
  * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
- */
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -69,16 +69,16 @@ if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agef
 }
 
 
-if ($action=='edit' && $user->rights->agefodd->creer) {	
-	
+if ($action=='edit' && $user->rights->agefodd->creer) {
+
 	if($form_update_x > 0)
 	{
 		$agf = new Agefodd_session_formateur($db);
-	
+
 		$agf->opsid = GETPOST('opsid','int');
 		$agf->formid = GETPOST('formid','int');
 		$result = $agf->update($user);
-	
+
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
@@ -90,15 +90,15 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
-	
+
 	if($form_add_x > 0)
 	{
 		$agf = new Agefodd_session_formateur($db);
-	
+
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->formid = GETPOST('formid','int');
 		$result = $agf->create($user);
-	
+
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
@@ -115,7 +115,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
@@ -132,29 +132,29 @@ if (!empty($id))
 	$head = session_prepare_head($agf);
 
 	dol_fiche_head($head, 'trainers', $langs->trans("AgfSessionDetail"), 0, 'group');
-	
+
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 	print '</div>';
-	
+
 	// Print session card
 	$agf->printSessionInfo();
-	
+
 	print '&nbsp';
-	
+
 	if ($action == 'edit')
 	{
 		print_barre_liste($langs->trans("AgfFormateur"),"", "","","","",'',0);
 
 		/*
 		 * Confirmation de la suppression
-		 */
+		*/
 		if ($_POST["form_remove_x"]){
-			// Param url = id de la ligne formateur dans session - id session 
+			// Param url = id de la ligne formateur dans session - id session
 			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?opsid=".$_POST["opsid"].'&id='.$id,$langs->trans("AgfDeleteForm"),$langs->trans("AgfConfirmDeleteForm"),"confirm_delete_form",'','',1);
 			if ($ret == 'html') print '<br>';
 		}
-	
+
 		print '<div class="tabBar">';
 		print '<table class="border" width="100%">';
 
@@ -194,11 +194,11 @@ if (!empty($id))
 						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
 						print img_object($langs->trans("ShowContact"),"contact").' ';
 						print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-                    }
-                    print '</td>';
+					}
+					print '</td>';
 					print '<td>';
-							
-							
+						
+						
 					if ($user->rights->agefodd->modifier)
 					{
 						print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="form_edit" alt="'.$langs->trans("AgfModSave").'">';
@@ -231,8 +231,8 @@ if (!empty($id))
 			print '</td>';
 			print '</form>';
 			print '</tr>'."\n";
-		} 
-	
+		}
+
 		print '</table>';
 		if (!isset($_POST["newform"]))	{
 			print '</div>';
@@ -263,19 +263,19 @@ if (!empty($id))
 		print '</td>';
 		if ($nbform < 1)
 		{
-		    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
+			print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
 		}
 		else
 		{
-		    print '<td>';
-		    for ($i=0; $i < $nbform; $i++) {
+			print '<td>';
+			for ($i=0; $i < $nbform; $i++) {
 				// Infos formateurs
 				print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
 				print img_object($langs->trans("ShowContact"),"contact").' ';
 				print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-				if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';                                        
-		    }
-            print '</td>';
+				if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
+			}
+			print '</td>';
 			print "</tr>\n";
 		}
 		print "</table>";

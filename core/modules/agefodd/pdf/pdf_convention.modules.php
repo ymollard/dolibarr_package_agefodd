@@ -1,27 +1,27 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page permettant la création de la convention de formation au format pdf pour uen structure donnée.
-	\version	$Id$
+ \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \brief		Page permettant la création de la convention de formation au format pdf pour uen structure donnée.
+\version	$Id$
 */
 
 dol_include_once('/agefodd/class/agsession.class.php');
@@ -77,7 +77,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 		$this->hApresTitreArticle = 10;
 		$this->hApresCorpsArticle = 8;
-		
+
 		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
 
 		// Get source company
@@ -89,7 +89,7 @@ class pdf_convention extends ModelePDFAgefodd
 	/**
 	 *	\brief      	Fonction generant le document sur le disque
 	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
-	*			outputlangs	Lang object for output language
+	 *			outputlangs	Lang object for output language
 	 *			file		Name of file to generate
 	 *	\return	    	int     	1=ok, 0=ko
 	 */
@@ -162,7 +162,7 @@ class pdf_convention extends ModelePDFAgefodd
 			{
 				/*
 				 * Page de garde
-				 */
+				*/
 
 				// New page
 				$pdf->AddPage();
@@ -210,7 +210,7 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
-					$pdf->Cell(0, 5, $mysoc->name,0,0,'L');
+				$pdf->Cell(0, 5, $mysoc->name,0,0,'L');
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 				$pdf->SetXY($posX, $posY +3);
@@ -229,7 +229,7 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				$posY = $pdf->GetY() + 10;
-				
+
 				$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
@@ -276,7 +276,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				/*
 				 * Page 1
-				 */
+				*/
 
 
 				// New page
@@ -394,7 +394,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				/*
 				 * Page 2
-				 */
+				*/
 
 				// New page
 				$pdf->AddPage();
@@ -535,7 +535,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				/*
 				 * Page 3
-				 */
+				*/
 
 				// New page
 				$pdf->AddPage();
@@ -618,7 +618,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				/*
 				 * Page 4 (Annexe 1)
-				 */
+				*/
 				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
 				if (is_file($infile)) {
 					$count = $pdf->setSourceFile($infile);

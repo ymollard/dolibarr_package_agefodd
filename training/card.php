@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *  \file       	/agefodd/training/card.php
  *  \brief      	Page fiche d'une operation sur CCA
- *  \version		$Id$
- */
+*  \version		$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -43,7 +43,7 @@ $arch=GETPOST('arch','int');
 
 /*
  * Actions delete
- */
+*/
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd($db);
@@ -73,19 +73,19 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 
 	if ($result > 0)
 	{
-	    Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
-	    exit;
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+		exit;
 	}
 	else
 	{
-	    dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-	    $mesg = '<div class="error">'.$agf->error.'</div>';
+		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf->error.'</div>';
 	}
 }
 
 /*
  * Action update (fiche de formation)
- */
+*/
 if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
@@ -129,7 +129,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 /*
  * Action create (fiche formation)
- */
+*/
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
@@ -171,7 +171,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 /*
  * Action create (objectif pedagogique)
- */
+*/
 
 if ($action == "obj_update" && $user->rights->agefodd->creer)
 {
@@ -211,7 +211,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 		$agf->priorite = GETPOST('priorite','alpha');
 		$agf->fk_formation_catalogue = $idforma;
 
-	    $result = $agf->create_objpeda($user);
+		$result = $agf->create_objpeda($user);
 	}
 
 	if ($result > 0)
@@ -262,7 +262,7 @@ if ($action == 'fichepeda' && $user->rights->agefodd->creer)
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
@@ -272,7 +272,7 @@ dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
- */
+*/
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfMenuCatNew"));
@@ -439,14 +439,14 @@ else
 				print '<tr>';
 				if ($result_peda > 0)
 				{
-				    print '<td width="40">'.$langs->trans("AgfObjPoids").'</td>';
-				    print '<td>'.$langs->trans("AgfObjDesc").'</td>';
-				    print '<td>';
+					print '<td width="40">'.$langs->trans("AgfObjPoids").'</td>';
+					print '<td>'.$langs->trans("AgfObjDesc").'</td>';
+					print '<td>';
 				}
 				elseif (empty($_GET["objc"]))
 				{
-				    print '<td width="400">'.$langs->trans("AgfNoObj").'</td>';
-				    print '<td>';
+					print '<td width="400">'.$langs->trans("AgfNoObj").'</td>';
+					print '<td>';
 				}
 				print '&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?action=edit&amp;id='.$agf->id.'&amp;objc=1">';
 				if ($user->rights->agefodd->creer)	print img_edit_add($langs->trans("AgfNewObjAdd")) ."</a></td>";
@@ -455,9 +455,9 @@ else
 				$i = 0;
 				foreach ($agf_peda->line as $line)
 				{
-				    print '<form name="obj_update_'.$line->id.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
-				    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-				    print '<input type="hidden" name="action" value="obj_update">'."\n";
+					print '<form name="obj_update_'.$line->id.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+					print '<input type="hidden" name="action" value="obj_update">'."\n";
 
 					print '<input type="hidden" name="id" value="'.$line->id.'">'."\n";
 					print '<input type="hidden" name="idforma" value="'.$id.'">'."\n";
@@ -466,25 +466,25 @@ else
 					print $line->priorite;
 
 
-				    print '<td width="400"><input name="intitule" class="flat" size="50" value="'.stripslashes($line->intitule).'"></td>'."\n";
-				    print "<td>";
+					print '<td width="400"><input name="intitule" class="flat" size="50" value="'.stripslashes($line->intitule).'"></td>'."\n";
+					print "<td>";
 
-				    if ( $line->id )
-				    {
-				    	if ($user->rights->agefodd->modifier)
+					if ( $line->id )
+					{
+						if ($user->rights->agefodd->modifier)
 						{
-						    print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
+							print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
 						}
 						print '&nbsp;';
 						if ($user->rights->agefodd->creer)
 						{
-						    print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="obj_remove" alt="'.$langs->trans("AgfModSave").'">';
+							print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="obj_remove" alt="'.$langs->trans("AgfModSave").'">';
 						}
-				    }
+					}
 
-				    print '</td></tr>'."\n";
-				    print '</form>'."\n";
-				    $i++;
+					print '</td></tr>'."\n";
+					print '</form>'."\n";
+					$i++;
 				}
 
 				//New Objectif peda line
@@ -603,11 +603,11 @@ else
 				foreach ($agf_peda->line as $line)
 				{
 
-				    print '<tr>';
-				    print '<td width="40" align="center">'.$line->priorite.'</td>';
-				    print '<td>'.stripslashes($line->intitule).'</td>';
-				    print "</tr>\n";
-				    $i++;
+					print '<tr>';
+					print '<td width="40" align="center">'.$line->priorite.'</td>';
+					print '<td>'.stripslashes($line->intitule).'</td>';
+					print "</tr>\n";
+					$i++;
 				}
 
 				print "</table>";
@@ -640,8 +640,8 @@ else
 
 /*
  * Barre d'actions
- *
- */
+*
+*/
 
 print '<div class="tabsAction">';
 
@@ -667,30 +667,30 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 
 	if ($agf->archive == 0)
 	{
-	    $button_action = $langs->trans('AgfArchiver');
-	    if ($user->rights->agefodd->creer)
-	    {
-		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=archive&id='.$id.'">';
-		print $button_action.'</a>';
-	    }
-	    else
-	    {
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
+		$button_action = $langs->trans('AgfArchiver');
+		if ($user->rights->agefodd->creer)
+		{
+			print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=archive&id='.$id.'">';
+			print $button_action.'</a>';
+		}
+		else
+		{
+			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
 
-	    }
+		}
 	}
 	else
 	{
-	    $button_action = $langs->trans('AgfActiver');
-	    if ($user->rights->agefodd->creer)
-	    {
-		    print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=active&id='.$id.'">';
-		    print $button_action.'</a>';
-	    }
-	    else
-	    {
-		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
-	    }
+		$button_action = $langs->trans('AgfActiver');
+		if ($user->rights->agefodd->creer)
+		{
+			print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=active&id='.$id.'">';
+			print $button_action.'</a>';
+		}
+		else
+		{
+			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$button_action.'</a>';
+		}
 	}
 
 	if ($user->rights->agefodd->creer)

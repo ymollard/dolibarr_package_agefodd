@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  * 	\file		/agefodd/index.php
  * 	\brief		Tableau de bord du module de formation pro. (Agefodd).
- * 	\Version	$Id$
- */
+* 	\Version	$Id$
+*/
 
 /*error_reporting(E_ALL);
  ini_set('display_errors', true);
@@ -49,7 +49,7 @@ print '<table width="auto">';
 //colonne gauche
 print '<tr><td width=auto>';
 print '<table class="noborder" width="400px">';
-print '<tr class="liste_titre"><td colspan=4>Statistiques</td></tr>';	
+print '<tr class="liste_titre"><td colspan=4>Statistiques</td></tr>';
 
 $agf = new Agefodd_index($db);
 
@@ -62,32 +62,32 @@ print $agf->num.'</a>&nbsp;</td></tr>';
 
 // nbre de stagiaires formés
 $resql = $agf->fetch_student_nb();
-print '<tr class="liste"><td>Stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';
 
 
 // nbre de sessions realisées
 $resql = $agf->fetch_session_nb();
 $nb_total_session = $agf->num;
-print '<tr class="liste"><td>Sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';
 
 
 // Nbre d'heure/session délivrées
 $resql = $agf->fetch_heures_sessions_nb();
-print '<tr class="liste"><td>Heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 $total_heures = $agf->total;
 
 
 
 // Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
-print '<tr class="liste"><td>Heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';	
+print '<tr class="liste"><td>Heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 
 print '<table>';
 print '&nbsp;';
 print '<table class="noborder" width="400px">';
 
 // Les 5 dernieres sessions
-print '<tr class="liste_titre"><td colspan=4>5 dernières sessions réalisées</td></tr>';	
+print '<tr class="liste_titre"><td colspan=4>5 dernières sessions réalisées</td></tr>';
 $resql = $agf->fetch_last_formations(5);
 $num = count($agf->line);
 for ($i=0; $i < $num; $i++)
@@ -131,15 +131,15 @@ print '<td width="50px" align="right">Nombre</td></tr>';
 // sessions en cours
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(0);
-print '<td colspan="2" >sessions en cours</td><td align="right">';	
-print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<td colspan="2" >sessions en cours</td><td align="right">';
+print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;
 
 // tâches en retard
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="red">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $resql = $agf->fetch_tache_en_retard(0);
 $nbre = count($agf->line);
 print '<td>'.$langs->trans("AgfAlertLevel0").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;</td></tr>' ;	
+print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;</td></tr>' ;
 
 // Taches urgentes (3 jours avant limite)
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="orange">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
@@ -163,13 +163,13 @@ print '</td></tr>';
 print '<tr class="liste"><td width="10px">&nbsp;</td><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';
 $resql = $agf->fetch_tache_en_cours();
 print '<td>'.$langs->trans("AgfAlertLevel3").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;
 
 // sessions à archiver
 print '<tr class="liste"><td width="10px" valign="top">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $num = $agf->fetch_session_to_archive();
 print '<td colspan="2" >sessions prêtes à être archivées</td><td align="right">';
-if ($num != 0)print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->sessid.'">'.$num.'</a>&nbsp;';	
+if ($num != 0)print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->sessid.'">'.$num.'</a>&nbsp;';
 else print '0&nbsp;';
 print '</td></tr>';
 
@@ -178,9 +178,9 @@ print '</td></tr>';
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(1);
 if ($resql)
-{	
-	print '<td colspan="2" >sessions archivées</td><td align="right">';	
-	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=1">'.$agf->total.'</a>&nbsp;</td></tr>' ;	
+{
+	print '<td colspan="2" >sessions archivées</td><td align="right">';
+	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=1">'.$agf->total.'</a>&nbsp;</td></tr>' ;
 	//$db->free($resql);
 }
 else

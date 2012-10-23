@@ -1,27 +1,27 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
-	\version	$Id$
+ \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
+\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/class/agsession.class.php');
@@ -74,7 +74,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$this->espace_apres_titre = 0;
 
 		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -85,7 +85,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	/**
 	 *	\brief      	Fonction generant le document sur le disque
 	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
-	*			outputlangs	Lang object for output language
+	 *			outputlangs	Lang object for output language
 	 *			file		Name of file to generate
 	 *	\return	    	int     	1=ok, 0=ko
 	 */
@@ -162,7 +162,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/*
 				 * Header société
-				 */
+				*/
 
 				// Logo en haut à droite
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
@@ -241,7 +241,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/*
 				 * Corps de page
-				 */
+				*/
 
 				$posX = $this->marge_gauche;
 				$posY = $posY + 5;
