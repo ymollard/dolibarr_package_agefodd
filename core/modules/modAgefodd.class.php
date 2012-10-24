@@ -240,7 +240,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][5] = 0;
 
 		// Dictionnaries
-		if (! isset($conf->agefodd->enabled)) $conf->agefodd->enabled=0; // This is to avoid warnings
+		if (! empty($conf->agefodd->enabled)) $conf->agefodd->enabled=0; // This is to avoid warnings
 		$this->dictionnaries=array(
 		'langs'=>'agefodd@agefodd',
 		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type"),		// List of tables we want to see into dictonnary editor
