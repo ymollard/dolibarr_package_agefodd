@@ -1,35 +1,35 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
  *	\ingroup	agefodd
  *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
- *	\version	$Id$
- */
+*	\version	$Id$
+*/
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
  *	\class		Agefodd
  *	\brief		Module Agefodd class
- */
+*/
 class Agefodd_index
 {
 	var $db;
@@ -37,24 +37,24 @@ class Agefodd_index
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-        var $id;
+	var $id;
 
 	/**
-	*	\brief		Constructor
-	*	\param		DB	Database handler
-	*/
+	 *	\brief		Constructor
+	 *	\param		DB	Database handler
+	 */
 	function Agefodd_index($DB)
 	{
-	$this->db = $DB;
-	return 1;
+		$this->db = $DB;
+		return 1;
 	}
 
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, $num of student if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, $num of student if OK
+	 */
 	function fetch_student_nb()
 	{
 		global $langs;
@@ -88,9 +88,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_session_nb()
 	{
 		global $langs;
@@ -127,9 +127,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_formation_nb()
 	{
 		global $langs;
@@ -163,9 +163,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_heures_sessions_nb()
 	{
 		global $langs;
@@ -202,9 +202,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_heures_stagiaires_nb()
 	{
 		global $langs;
@@ -243,9 +243,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_last_formations($number=5)
 	{
 		global $langs;
@@ -290,9 +290,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_top_formations($number=5)
 	{
 		global $langs;
@@ -337,9 +337,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_session($archive=0)
 	{
 		global $langs;
@@ -373,10 +373,10 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \param     int     day of overshoot
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \param     int     day of overshoot
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_tache_en_retard($jour=0)
 	{
 		global $langs;
@@ -420,9 +420,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_tache_en_cours()
 	{
 		global $langs;
@@ -519,9 +519,9 @@ class Agefodd_index
 
 
 	/**
-	*    \brief	Load object in memory from database
-	*    \return    int     <0 if KO, 1 if OK
-	*/
+	 *    \brief	Load object in memory from database
+	 *    \return    int     <0 if KO, 1 if OK
+	 */
 	function fetch_session_to_archive()
 	{
 		global $langs;

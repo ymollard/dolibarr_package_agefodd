@@ -1,29 +1,29 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
-/**	
+/**
  * 	\file       /agefodd/admin/agefodd.php
  *	\ingroup    agefodd
  *	\brief      agefood module setup page
- *	\version    $Id$
- */
+*	\version    $Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -67,62 +67,62 @@ if ($action == 'setvar')
 	$use_typestag=GETPOST('AGF_USE_STAGIAIRE_TYPE','int');
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$def_typestag=GETPOST('AGF_DEFAULT_STAGIAIRE_TYPE','int');
 	if (!empty($def_typestag))
 	{
 		$res = dolibarr_set_const($db, 'AGF_DEFAULT_STAGIAIRE_TYPE', $def_typestag,'chaine',0,'',$conf->entity);
 		if (! $res > 0) $error++;
 	}
-	
+
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$num_org=GETPOST('AGF_ORGANISME_NUM','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_NUM', $num_org,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$org_rep=GETPOST('AGF_ORGANISME_REPRESENTANT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_REPRESENTANT', $org_rep,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_training=GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_trainer=GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_trainee=GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_site=GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_stagstype=GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_contact=GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$nb_num_list=GETPOST('AGF_NUM_LIST','int');
 	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$pdf_color=GETPOST('AGF_PDF_COLOR','alpha');
 	$res = dolibarr_set_const($db, 'AGF_PDF_COLOR', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$pdf_color=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -132,7 +132,7 @@ if ($action == 'setvar')
 		if (preg_match('/([^\\/:]+)$/i',$_FILES["imagesup"]["name"],$reg))
 		{
 			$original_file=$reg[1];
-	
+
 			$isimage=image_format_supported($original_file);
 			if ($isimage >= 0)
 			{
@@ -145,7 +145,7 @@ if ($action == 'setvar')
 				if ($result > 0)
 				{
 					dolibarr_set_const($db, "AGF_INFO_TAMPON",$original_file,'chaine',0,'',$conf->entity);
-	
+
 				}
 				else if (preg_match('/^ErrorFileIsInfectedWithAVirus/',$result))
 				{
@@ -176,9 +176,9 @@ if ($action == 'setvar')
 	else {
 		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda,'chaine',0,'',$conf->entity);
 	}
-	
+
 	if (! $res > 0) $error++;
-	
+
 	if (! $error)
 	{
 		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
@@ -202,16 +202,16 @@ if ($action == 'removeimagesup')
 if ($action == 'sessionlevel_create')
 {
 	$agf = new Agefodd_session_admlevel($db);
-	
+
 	$parent_level = GETPOST('parent_level','int');
-	
+
 	if (!empty($parent_level))
 	{
 		$agf->fk_parent_level = $parent_level;
-		
+
 		$agf_static = new Agefodd_session_admlevel($db);
 		$result_stat = $agf_static->fetch($agf->fk_parent_level);
-		
+
 		if ($result_stat > 0)
 		{
 			if (!empty($agf_static->id))
@@ -238,10 +238,10 @@ if ($action == 'sessionlevel_create')
 		$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
 		$agf->level_rank = 0;
 	}
-	
+
 	$agf->intitule = GETPOST('intitule','alpha');
 	$agf->delais_alerte = GETPOST('delai','int');
-	
+
 	if ($agf->level_rank>3)
 	{
 		$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
@@ -249,29 +249,29 @@ if ($action == 'sessionlevel_create')
 	else
 	{
 		$result = $agf->create($user);
-		
+
 		if ($result1!=1)
 		{
 			dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
 	}
-		
-	
+
+
 }
 
 if ($action == 'sessionlevel_update')
 {
 	$agf = new Agefodd_session_admlevel($db);
-	
+
 	$id = GETPOST('id','int');
 	$parent_level = GETPOST('parent_level','int');
-	
+
 	$result = $agf->fetch($id);
-	
+
 	if ($result > 0)
 	{
-	
+
 		//Up level of action
 		if (GETPOST('sesslevel_up_x'))
 		{
@@ -282,7 +282,7 @@ if ($action == 'sessionlevel_update')
 				$mesg = '<div class="error">'.$agf->error.'</div>';
 			}
 		}
-		
+
 		//Down level of action
 		if (GETPOST('sesslevel_down_x'))
 		{
@@ -293,22 +293,22 @@ if ($action == 'sessionlevel_update')
 				$mesg = '<div class="error">'.$agf->error.'</div>';
 			}
 		}
-		
+
 		//Update action
 		if (GETPOST('sesslevel_update_x'))
 		{
 			$agf->intitule = GETPOST('intitule','alpha');
 			$agf->delais_alerte = GETPOST('delai','int');
-			
+				
 			if (!empty($parent_level))
 			{
 				if ($parent_level!=$agf->fk_parent_level)
 				{
 					$agf->fk_parent_level = $parent_level;
-				
+
 					$agf_static = new Agefodd_session_admlevel($db);
 					$result_stat = $agf_static->fetch($agf->fk_parent_level);
-				
+
 					if ($result_stat > 0)
 					{
 						if (!empty($agf_static->id))
@@ -336,7 +336,7 @@ if ($action == 'sessionlevel_update')
 				$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
 				$agf->level_rank = 0;
 			}
-			
+				
 			if ($agf->level_rank>3)
 			{
 				$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
@@ -351,11 +351,11 @@ if ($action == 'sessionlevel_update')
 				}
 			}
 		}
-		
+
 		//Delete action
 		if (GETPOST('sesslevel_remove_x'))
 		{
-			
+				
 			$result = $agf->delete($user);
 			if ($result!=1)
 			{
@@ -372,8 +372,8 @@ if ($action == 'sessionlevel_update')
 
 /*
  *  Admin Form
- *
- */
+*
+*/
 
 llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
 
@@ -404,14 +404,14 @@ $dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 foreach ($dirmodels as $reldir)
 {
 	$dir = dol_buildpath("/agefodd/core/modules/agefodd/");
-	
+
 	if (is_dir($dir))
 	{
 		$handle = opendir($dir);
 		if (is_resource($handle))
 		{
 			$var=true;
-			
+				
 			while (($file = readdir($handle))!==false)
 			{
 				if (preg_match('/^(mod_.*)\.php$/i',$file,$reg))
@@ -422,13 +422,13 @@ foreach ($dirmodels as $reldir)
 					require_once($dir.$file.".php");
 
 					$module = new $file;
-					
+						
 					// Show modules according to features level
 					if ($module->version == 'development'  && $conf->global->MAIN_FEATURES_LEVEL < 2) continue;
 					if ($module->version == 'experimental' && $conf->global->MAIN_FEATURES_LEVEL < 1) continue;
 
 					if ($module->isEnabled())
-					{	
+					{
 						$var=!$var;
 						print '<tr '.$bc[$var].'><td>'.$module->nom."</td><td>\n";
 						print $module->info();
@@ -546,30 +546,30 @@ print '<tr class="pair"><td>'.$langs->trans("AgfPDFBaseColor").'</td>';
 print '<td  align="left"><input id="AGF_PDF_COLOR" type="text" size="8" name="AGF_PDF_COLOR" value="'.$conf->global->AGF_PDF_COLOR.'" /></td><td></td></tr>';
 
 print '<script type="text/javascript" language="javascript">
-$(document).ready(function() {
-$("#AGF_PDF_COLOR").css("backgroundColor", \'#'.$conf->global->AGF_PDF_COLOR.'\');
-$("#AGF_PDF_COLOR").ColorPicker({
-color: \'#'.$conf->global->AGF_PDF_COLOR.'\',
-onShow: function (colpkr) {
-$(colpkr).fadeIn(500);
-return false;
+	$(document).ready(function() {
+	$("#AGF_PDF_COLOR").css("backgroundColor", \'#'.$conf->global->AGF_PDF_COLOR.'\');
+		$("#AGF_PDF_COLOR").ColorPicker({
+		color: \'#'.$conf->global->AGF_PDF_COLOR.'\',
+			onShow: function (colpkr) {
+			$(colpkr).fadeIn(500);
+			return false;
 },
-onHide: function (colpkr) {
-$(colpkr).fadeOut(500);
-return false;
+			onHide: function (colpkr) {
+			$(colpkr).fadeOut(500);
+			return false;
 },
-onChange: function (hsb, hex, rgb) {
-$("#AGF_PDF_COLOR").css("backgroundColor", \'#\' + hex);
+			onChange: function (hsb, hex, rgb) {
+			$("#AGF_PDF_COLOR").css("backgroundColor", \'#\' + hex);
 },
-onSubmit: function (hsb, hex, rgb) {
-$("#AGF_PDF_COLOR").val(hex);
+			onSubmit: function (hsb, hex, rgb) {
+			$("#AGF_PDF_COLOR").val(hex);
 }
 });
 })
-.bind(\'keyup\', function(){
-$(this).ColorPickerSetColor(this.value);
+			.bind(\'keyup\', function(){
+			$(this).ColorPickerSetColor(this.value);
 });
-</script>';
+			</script>';
 
 
 // Affichage du logo commanditaire
@@ -794,10 +794,10 @@ if ($result0>0)
 	print '<td>'.$langs->trans("AgfDelaiSessionLevel").'</td>';
 	print '<td></td>';
 	print "</tr>\n";
-	
+
 	$var=true;
 	foreach ($admlevel->line as $line)
-	{   
+	{
 		$var=!$var;
 		$toplevel='';
 		print '<form name="SessionLevel_update_'.$line->rowid.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
@@ -805,7 +805,7 @@ if ($result0>0)
 		print '<input type="hidden" name="id" value="'.$line->rowid.'">'."\n";
 		print '<input type="hidden" name="action" value="sessionlevel_update">'."\n";
 		print '<tr '.$bc[$var].'>';
-		
+
 		print '<td>';
 		if ($line->indice!=ebi_get_adm_indice_per_rank($line->level_rank,$line->fk_parent_level,'MIN'))
 		{
@@ -816,12 +816,12 @@ if ($result0>0)
 			print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/1downarrow.png" border="0" name="sesslevel_down" alt="'.$langs->trans("Save").'">';
 		}
 		print '</td>';
-		
+
 		print '<td>'.str_repeat('&nbsp;&nbsp;&nbsp;',$line->level_rank).'<input type="text" name="intitule" value="'.$line->intitule.'" size="30"/></td>';
 		print '<td>'.$formAgefodd->select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
 		print '<td><input type="text" name="delai" value="'.$line->alerte.'"/></td>';
 		print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'">';
- 		print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sesslevel_remove" alt="'.$langs->trans("Delete").'"></td>';
+		print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sesslevel_remove" alt="'.$langs->trans("Delete").'"></td>';
 		print '</tr>';
 		print '</form>';
 	}

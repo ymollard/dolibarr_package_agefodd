@@ -1,23 +1,23 @@
 <?php
 /* Copyright (C) 2010 Regis Houssin  <regis@dolibarr.fr>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- * or see http://www.gnu.org/
- */
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* or see http://www.gnu.org/
+*/
 
 /**
-* 	\file       agefodd/core/modules/agefodd/mod_agefodd_universal.php
+ * 	\file       agefodd/core/modules/agefodd/mod_agefodd_universal.php
  *	\ingroup    project
  *	\brief      Fichier contenant la classe du modele de numerotation de reference de projet Universal
  */
@@ -26,21 +26,21 @@ dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 /**
  * 	Classe du modele de numerotation de reference de projet Universal
- */
+*/
 class mod_agefodd_universal extends ModeleNumRefAgefodd
 {
 	var $version='dolibarr';		// 'development', 'experimental', 'dolibarr'
 	var $error = '';
 	var $nom = 'Universal';
 
-    /**
-     *  Renvoi la description du modele de numerotation
-     * 
-     *  @return     string      Texte descripif
-     */
+	/**
+	 *  Renvoi la description du modele de numerotation
+	 *
+	 *  @return     string      Texte descripif
+	 */
 	function info()
-    {
-    	global $conf,$langs;
+	{
+		global $conf,$langs;
 
 		$langs->load("agefodd@agefodd");
 		$langs->load("admin");
@@ -72,20 +72,20 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 		$texte.= '</form>';
 
 		return $texte;
-    }
+	}
 
-    /**
-     *  Renvoi un exemple de numerotation
-     * 
-     *  @return     string      Example
-     */
-    function getExample()
-    {
-    	global $conf,$langs,$mysoc;
+	/**
+	 *  Renvoi un exemple de numerotation
+	 *
+	 *  @return     string      Example
+	 */
+	function getExample()
+	{
+		global $conf,$langs,$mysoc;
 
-    	$old_code_client=$mysoc->code_client;
-    	$mysoc->code_client='CCCCCCCCCC';
-    	$numExample = $this->getNextValue($mysoc,'');
+		$old_code_client=$mysoc->code_client;
+		$mysoc->code_client='CCCCCCCCCC';
+		$numExample = $this->getNextValue($mysoc,'');
 		$mysoc->code_client=$old_code_client;
 
 		if (! $numExample)
@@ -93,17 +93,17 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 			$numExample = $langs->trans('NotConfigured');
 		}
 		return $numExample;
-    }
+	}
 
-   /**
-	*  Return next value
-	* 
-	*  @param	Societe		$objsoc		Object third party
-	*  @param  Training		$agf		Object training
-	*  @return  string					Value if OK, 0 if KO
-	*/
-    function getNextValue($objsoc,$agf)
-    {
+	/**
+	 *  Return next value
+	 *
+	 *  @param	Societe		$objsoc		Object third party
+	 *  @param  Training		$agf		Object training
+	 *  @return  string					Value if OK, 0 if KO
+	 */
+	function getNextValue($objsoc,$agf)
+	{
 		global $db,$conf;
 
 		require_once(DOL_DOCUMENT_ROOT ."/core/lib/functions2.lib.php");
@@ -124,17 +124,17 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 	}
 
 
-    /**   
-     *  Return next reference not yet used as a reference
-     * 
-     *  @param	Societe		$objsoc     Object third party
-     *  @param  Project		$project	Object project
-     *  @return string      			Next not used reference
-     */
-    function project_get_num($objsoc=0,$agf='')
-    {
-        return $this->getNextValue($objsoc,$agf);
-    }
+	/**
+	 *  Return next reference not yet used as a reference
+	 *
+	 *  @param	Societe		$objsoc     Object third party
+	 *  @param  Project		$project	Object project
+	 *  @return string      			Next not used reference
+	 */
+	function project_get_num($objsoc=0,$agf='')
+	{
+		return $this->getNextValue($objsoc,$agf);
+	}
 }
 
 ?>

@@ -1,29 +1,29 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
- * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+* Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *  \file       	/agefodd/session/card.php
- *  \brief      	Page fiche session de formation
- *  \version		$Id$
- */
+*  \brief      	Page fiche session de formation
+*  \version		$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -50,7 +50,7 @@ $arch=GETPOST('arch','int');
 
 /*
  * Actions delete session
- */
+*/
 
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
@@ -72,7 +72,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions delete period
- */
+*/
 
 if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
@@ -95,7 +95,7 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 
 /*
  * Actions archive/active
- */
+*/
 
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
@@ -111,8 +111,8 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		{
 			// Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
 			foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
-			    //echo "$filename effacé <br>";
-			    if(is_file($filename)) unlink("$filename");
+				//echo "$filename effacé <br>";
+				if(is_file($filename)) unlink("$filename");
 			}
 
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
@@ -135,7 +135,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 
 /*
  * Action update (fiche session)
- */
+*/
 if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_update_x"] && ! $_POST["period_update_x"])
 {
 	if (! $_POST["cancel"])
@@ -170,14 +170,26 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->date_res_site = dol_mktime(0,0,0,GETPOST('res_sitemonth','int'),GETPOST('res_siteday','int'),GETPOST('res_siteyear','int'));
 		$agf->date_res_trainer = dol_mktime(0,0,0,GETPOST('res_trainmonth','int'),GETPOST('res_trainday','int'),GETPOST('res_trainyear','int'));
 
-		if ($agf->date_res_site=='') {$isdateressite=0;} else {$isdateressite=GETPOST('isdateressite','alpha');}
-		if ($agf->date_res_trainer=='')	{ $isdaterestrainer=0;} else {$isdaterestrainer=GETPOST('isdaterestrainer','alpha');}
+		if ($agf->date_res_site=='') {
+			$isdateressite=0;
+		} else {$isdateressite=GETPOST('isdateressite','alpha');
+		}
+		if ($agf->date_res_trainer=='')	{
+			$isdaterestrainer=0;
+		} else {$isdaterestrainer=GETPOST('isdaterestrainer','alpha');
+		}
 
-		if ($isdateressite==1 && $agf->date_res_site!='') {$agf->is_date_res_site = 1;}
-		else {	$agf->is_date_res_site = 0;	$agf->date_res_site='';}
+		if ($isdateressite==1 && $agf->date_res_site!='') {
+			$agf->is_date_res_site = 1;
+		}
+		else {	$agf->is_date_res_site = 0;	$agf->date_res_site='';
+		}
 
-		if ($isdaterestrainer==1 && $agf->date_res_trainer!='') {	$agf->is_date_res_trainer = 1;}
-		else {	$agf->is_date_res_trainer = 0; $agf->date_res_trainer='';}
+		if ($isdaterestrainer==1 && $agf->date_res_trainer!='') {
+			$agf->is_date_res_trainer = 1;
+		}
+		else {	$agf->is_date_res_trainer = 0; $agf->date_res_trainer='';
+		}
 
 		$fk_soc				= GETPOST('fk_soc','int');
 		$color				= GETPOST('color','alpha');
@@ -188,7 +200,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		if ($force_nb_stagiaire==1 && $agf->force_nb_stagiaire!='') {
 			$agf->force_nb_stagiaire = 1;
 		}
-		else {	
+		else {
 			$agf->force_nb_stagiaire = 0;
 		}
 
@@ -242,9 +254,9 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 /*
  * Action update
- * - changement ou ajout periode dans fiche session
- * - changement ou ajout formateur dans fiche session
- */
+* - changement ou ajout periode dans fiche session
+* - changement ou ajout formateur dans fiche session
+*/
 if ($action == 'edit' && $user->rights->agefodd->creer)
 {
 	if($_POST["period_update_x"])
@@ -371,7 +383,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 /*
  * Action create (nouvelle session de formation)
- */
+*/
 
 if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 {
@@ -490,7 +502,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 
 /*
  * View
- */
+*/
 
 llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js','/agefodd/includes/lib.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css','/agefodd/includes/lib.js'));
 $form = new Form($db);
@@ -500,7 +512,7 @@ dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
- */
+*/
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
@@ -624,30 +636,30 @@ else
 					print '<td><input id="colorpicker" type="text" size="8" name="color" value="'.$agf->color.'" /></td></tr>';
 
 					print '<script type="text/javascript" language="javascript">
-					$(document).ready(function() {
+						$(document).ready(function() {
 						$("#colorpicker").css("backgroundColor", \'#'.$agf->color.'\');
-						$("#colorpicker").ColorPicker({
-							 color: \'#'.$agf->color.'\',
-							onShow: function (colpkr) {
+							$("#colorpicker").ColorPicker({
+							color: \'#'.$agf->color.'\',
+								onShow: function (colpkr) {
 								$(colpkr).fadeIn(500);
 								return false;
-							},
-							onHide: function (colpkr) {
+				},
+								onHide: function (colpkr) {
 								$(colpkr).fadeOut(500);
 								return false;
-							},
-							onChange: function (hsb, hex, rgb) {
+				},
+								onChange: function (hsb, hex, rgb) {
 								$("#colorpicker").css("backgroundColor", \'#\' + hex);
-							},
-							onSubmit: function (hsb, hex, rgb) {
+				},
+								onSubmit: function (hsb, hex, rgb) {
 								$("#colorpicker").val(hex);
-							}
-						 });
-					})
-					.bind(\'keyup\', function(){
-						$(this).ColorPickerSetColor(this.value);
-					});
-					</script>';
+				}
+				});
+				})
+								.bind(\'keyup\', function(){
+								$(this).ColorPickerSetColor(this.value);
+				});
+								</script>';
 					print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 					print '<td>';
 					$form->select_users($agf->commercialid, 'commercial',1, array(1));
@@ -767,12 +779,12 @@ else
 
 					/*
 					 * Gestion Calendrier
-					 */
+					*/
 					print_barre_liste($langs->trans("AgfCalendrier"),"", "","","","",'',0);
 
 					/*
 					 * Confirmation de la suppression
-					 */
+					*/
 					if ($_POST["period_remove_x"])
 					{
 						// Param url = id de la periode à supprimer - id session
@@ -906,8 +918,8 @@ else
 				{
 					// Affichage en mode "consultation"
 					/*
-					 * Confirmation de la suppression
-					 */
+					* Confirmation de la suppression
+					*/
 					if ($action == 'delete')
 					{
 						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
@@ -915,7 +927,7 @@ else
 					}
 
 					/*
-					* Confirmation de l'archivage/activation suppression
+					 * Confirmation de l'archivage/activation suppression
 					*/
 					if (isset($_GET["arch"]))
 					{
@@ -927,8 +939,8 @@ else
 					if ($action == 'clone')
 					{
 						$formquestion=array(
-							'text' => $langs->trans("ConfirmClone"),
-							array('type' => 'checkbox', 'name' => 'clone_calendar','label' => $langs->trans("AgfCloneSessionCalendar"),   'value' => 1)
+						'text' => $langs->trans("ConfirmClone"),
+						array('type' => 'checkbox', 'name' => 'clone_calendar','label' => $langs->trans("AgfCloneSessionCalendar"),   'value' => 1)
 						);
 						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("CloneSession"),$langs->trans("ConfirmCloneSession"),"confirm_clone",$formquestion,'',1);
 						//$ret=$form->formconfirm($_SERVER["PHP_SELF"].'?id='.$id, $langs->trans('CloneSession'), $langs->trans('ConfirmCloneSession',$agf->ref), 'confirm_clone','','',1);
@@ -952,7 +964,10 @@ else
 						print '&nbsp';
 						print '<table class="border" width="100%">';
 						print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
-						if ($agf->is_OPCA==1) { $isOPCA=' checked="checked" ';}else {$isOPCA='';	}
+						if ($agf->is_OPCA==1) {
+							$isOPCA=' checked="checked" ';
+						}else {$isOPCA='';
+						}
 						print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
 
 						print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
@@ -976,7 +991,9 @@ else
 						print '</td></tr>';
 
 						print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
-						if ($agf->is_date_ask_OPCA==1) {$chckisDtOPCA='checked="checked"';}
+						if ($agf->is_date_ask_OPCA==1) {
+							$chckisDtOPCA='checked="checked"';
+						}
 						print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
 						print dol_print_date($agf->date_ask_OPCA,'daytext');
 						print '</td></tr>';
@@ -991,7 +1008,7 @@ else
 
 					/*
 					 * Gestion des cout
-					 */
+					*/
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormateur").'</td>';
@@ -1011,7 +1028,7 @@ else
 
 					/*
 					 * Gestion des formateurs
-					 */
+					*/
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 
@@ -1023,28 +1040,28 @@ else
 					print '</td>';
 					if ($nbform < 1)
 					{
-					    print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
+						print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
 					}
 					else
 					{
-					    print '<td>';
-					    for ($i=0; $i < $nbform; $i++)
-					    {
-						// Infos formateurs
-						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
-						print img_object($langs->trans("ShowContact"),"contact").' ';
-						print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
-						if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
+						print '<td>';
+						for ($i=0; $i < $nbform; $i++)
+						{
+							// Infos formateurs
+							print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
+							print img_object($langs->trans("ShowContact"),"contact").' ';
+							print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
+							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 
-					    }
-	                                    print '</td>';
-					    print "</tr>\n";
+						}
+						print '</td>';
+						print "</tr>\n";
 					}
 					print "</table>";
 
 					/*
 					 * Gestion du calendrier
-					 */
+					*/
 
 					print '&nbsp';
 					print '<table class="border" width="100%">';
@@ -1201,8 +1218,8 @@ else
 							else {
 								print '&nbsp;';
 							}
-						print '</td>';
-						print "</tr>\n";
+							print '</td>';
+							print "</tr>\n";
 						}
 					}
 					print "</table>";
@@ -1224,8 +1241,8 @@ else
 
 /*
  * Barre d'actions
- *
- */
+*
+*/
 
 print '<div class="tabsAction">';
 

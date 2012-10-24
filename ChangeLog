@@ -199,3 +199,4 @@ For All :
 	- Add option for jf-ferry to add picture of customer on doc
 	- Add missing english translation
 	- Fix behaviour on force update number of trainee per session
+	- Fix bug #582 on fiche pedage (duration is not display) 
