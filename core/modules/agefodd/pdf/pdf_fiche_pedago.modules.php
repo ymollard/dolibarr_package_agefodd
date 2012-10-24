@@ -391,10 +391,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				// calcul de la duree en nbre de jours
 				$jour = $agf->duree / 7;
-				if ($jour < 1) $this->str = $agf_op->duree.' heures.';
+				if ($jour < 1) $this->str = $agf->duree.' heures.';
 				else
 				{
-					$this->str = $agf_op->duree.' heures ('.ceil($jour).' jour';
+					$this->str = $agf->duree.' heures ('.ceil($jour).' jour';
 					if (ceil($jour) > 1) $this->str.='s';
 					$this->str.=').';
 				}
