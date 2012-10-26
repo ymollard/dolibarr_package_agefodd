@@ -221,6 +221,27 @@ class InterfaceAgefodd
 				$ok=1;
 			}
 		}
+		elseif ($action == 'CLOTURE_SENTBYMAIL') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		
+		
+			if ($object->actiontypecode == 'AC_AGF_CLOT') {
+		
+				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+				$langs->load("agefodd@agefodd");
+				$langs->load("agenda");
+		
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfClotureSentByEmail",$object->ref);
+				if (empty($object->actionmsg))
+				{
+					$object->actionmsg=$langs->transnoentities("AgfClotureSentByEmail",$object->ref);
+					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
+				}
+		
+				$ok=1;
+			}
+		}
+		
 
 
 		// Add entry in event table

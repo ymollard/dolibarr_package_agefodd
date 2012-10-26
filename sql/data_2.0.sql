@@ -33,3 +33,4 @@ INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active
 INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030004, 'AC_AGF_PEDAGO', 'agefodd', 'Send Fiche pédagogique by mail', 'agefodd', 1, NULL, 40);
 INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030005, 'AC_AGF_PRES', 'agefodd', 'Send Fiche présence by mail', 'agefodd', 1, NULL, 50);
 INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030006, 'AC_AGF_ATTES', 'agefodd', 'Send attestation by mail', 'agefodd', 1, NULL, 60);
+INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030006, 'AC_AGF_CLOT', 'agefodd', 'Send dossier cloture by mail', 'agefodd', 1, NULL, 70);

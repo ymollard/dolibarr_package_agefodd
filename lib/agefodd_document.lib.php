@@ -285,6 +285,18 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 		else print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>'."\n";
 	}
+	elseif ( $mdle == 'cloture')
+	{
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		//$filename = 'fiche_pedago_'.$idform.'.pdf';
+		//$file = $conf->agefodd->dir_output . '/' .$filename;
+		//if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=presend_cloture&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		//}
+		//else print $langs->trans('AgfDocNotDefined');
+		print '</td></tr>'."\n";
+	}
 	else
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
