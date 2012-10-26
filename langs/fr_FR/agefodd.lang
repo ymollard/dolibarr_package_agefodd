@@ -247,7 +247,6 @@ AgfUseSearchToSelectStagType=Utiliser une liste améliorée de recherche pour le
 AgfUseSearchToSelectContact=Utiliser une liste améliorée de recherche pour le choix d'un contact Agefodd (plutôt qu'une liste déroulante).
 AgfUseStagType = Utilisation du type de stagaire
 AgfUseStagTypeHelp = Lors de l'ajout d'un stagaire a une formation, un type de stagaire est demandé
-AgfUseStagType = Utilisation du type de stagaire
 AgfUseStagTypeDefault = Type de stagaire par defaut
 AgfSessionCommercial = Commercial en charge
 AgfSessionContact = Contact Client
