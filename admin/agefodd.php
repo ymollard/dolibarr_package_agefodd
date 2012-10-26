@@ -75,6 +75,11 @@ if ($action == 'setvar')
 		if (! $res > 0) $error++;
 	}
 
+	
+	$pref_val=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
+	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $pref_val,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -607,6 +612,17 @@ print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfInfoTamponHelp"),1,'help');
 
 print '</td></tr>';
+
+// Forcer la liaison d'une facture sans nécessiter de bon de commande
+print '<tr class="pair"><td>'.$langs->trans("AgfUseFacWhithoutOrder").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_USE_FAC_WITHOUT_ORDER",$arrval,$conf->global->AGF_USE_FAC_WITHOUT_ORDER);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseFacWhithoutOrderHelp"),1,'help');
+print '</td>';
+print '</tr>';
 
 //Utilisation d'un type de stagaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';
