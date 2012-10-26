@@ -19,8 +19,8 @@
 
 /**
  *      \file       agefodd/core/class/html.formagefodd.class.php
-*      \brief      Fichier de la classe des fonctions predefinie de composants html agefodd
-*/
+ *      \brief      Fichier de la classe des fonctions predefinie de composants html agefodd
+ */
 
 
 /**
@@ -54,7 +54,7 @@ class FormAgefodd extends Form
 	 * @param   string	$sort			Name of Value to show/edit (not used in this function)
 	 * @param	 int	$showempty		Add an empty field
 	 * @param	 int	$forcecombo		Force to use combo box
-     * @param	 array	$event			Event options
+	 * @param	 array	$event			Event options
 	 * @return	string					HTML select field
 	 */
 	function select_formation($selectid, $htmlname='formation', $sort='intitule', $showempty=0, $forcecombo=0, $event=array())
@@ -222,7 +222,7 @@ class FormAgefodd extends Form
 	 *  @param	string 	$htmlname 	    Name of HTML control
 	 *  @param	int		$showempty		Add an empty field
 	 *  @param	int		$forcecombo		Force to use combo box
-     *  @param	array	$event			Event options
+	 *  @param	array	$event			Event options
 	 *  @return string         			The HTML control
 	 */
 	function select_site_forma($selectid, $htmlname='place', $showempty=0, $forcecombo=0, $event=array())
@@ -285,7 +285,7 @@ class FormAgefodd extends Form
 	 *  @param	string  $filter     	SQL part for filter
 	 *  @param	int		$showempty		Add an empty field
 	 *  @param	int		$forcecombo		Force to use combo box
-     *  @param	array	$event			Event options
+	 *  @param	array	$event			Event options
 	 *  @return string         		The HTML control
 	 */
 	function select_stagiaire($selectid='', $htmlname='stagiaire', $filter='', $showempty=0, $forcecombo=0, $event=array())
@@ -366,7 +366,7 @@ class FormAgefodd extends Form
 	{
 		global $conf,$langs;
 
-			$sql = "SELECT";
+		$sql = "SELECT";
 		$sql.= " c.rowid, ";
 		$sql.= " s.name, s.firstname, s.civilite, ";
 		$sql.= " soc.nom as socname";
@@ -432,7 +432,7 @@ class FormAgefodd extends Form
 	 *  @param	string  $filter      SQL part for filter
 	 *  @param	int		$showempty		Add an empty field
 	 *  @param	int		$forcecombo		Force to use combo box
-     *  @param	array	$event			Event options
+	 *  @param	array	$event			Event options
 	 *  @return string         		The HTML control
 	 */
 	function select_formateur($selectid='', $htmlname='formateur', $filter='', $showempty=0, $forcecombo=0, $event=array())

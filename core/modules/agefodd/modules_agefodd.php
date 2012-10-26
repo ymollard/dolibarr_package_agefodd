@@ -1,35 +1,35 @@
 <?php
 /* Copyright (C) 2010 Regis Houssin  <regis@dolibarr.fr>
  * Copyright (C) 2012 Florian Henry  <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- * or see http://www.gnu.org/
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* or see http://www.gnu.org/
+*/
 
 /**
  *		\file       agefodd/modules/agefodd/modules_agefodd.php
  *      \ingroup    project
  *      \brief      File that contain parent class for projects models
  *                  and parent class for projects numbering models
- */
+*/
 require_once(DOL_DOCUMENT_ROOT."/core/class/commondocgenerator.class.php");
 
 
 /**
  *  \class      ModelePDFCommandes
  *  \brief      Classe mere des modeles de commandes
- */
+*/
 abstract class ModelePDFAgefodd extends CommonDocGenerator
 {
 	var $error='';
@@ -108,7 +108,7 @@ abstract class ModeleNumRefAgefodd
 
 	/**
 	 *  Renvoi prochaine valeur attribuee
-	 *	
+	 *
 	 *	@param	Societe		$objsoc		Object third party
 	 *	@param	Project		$project	Object project
 	 *	@return	string					Valeur
@@ -144,7 +144,7 @@ abstract class ModeleNumRefAgefodd
  *	\return  	int        		<0 if KO, >0 if OK
  */
 function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier='')
-{		
+{
 	global $conf,$langs;
 	$langs->load('agefodd@agefodd');
 
@@ -154,7 +154,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	if (file_exists($nomModele))
 	{
 		require_once($nomModele);
-		
+
 		$classname = "pdf_".$typeModele;
 
 		$obj = new $classname($db);

@@ -20,6 +20,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formateur (
   rowid int(11) NOT NULL auto_increment,
+  entity int(11) NOT NULL DEFAULT 1,
   fk_socpeople int(11),
   fk_user int(11),
   type_trainer varchar(20),

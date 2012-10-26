@@ -22,6 +22,7 @@
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   rowid int(6) NOT NULL auto_increment,
   ref varchar(40) NOT NULL,
+  ref_interne varchar(80) NULL,
   entity int(11) NOT NULL DEFAULT 1,
   intitule varchar(80) NOT NULL,
   duree int(6) NOT NULL,

@@ -1,27 +1,27 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
-	\version	$Id$
+ \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
+\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/session/class/agefodd_session.class.php');
@@ -34,7 +34,7 @@ dol_include_once('/core/lib/pdf.lib.php');
 class pdf_demo extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
-	
+
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	// gris clair
 	protected $color1 = array('190','190','190');
@@ -44,13 +44,13 @@ class pdf_demo extends ModelePDFAgefodd
 	/**
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
-	 */
+	*/
 	function pdf_demo($db)
 	{
 		global $conf,$langs,$mysoc;
-		
+
 		$langs->load("agefodd@agefodd");
-		
+
 		$this->db = $db;
 		$this->name = 'fiche_pedago';
 		$this->description = $langs->trans('AgfModPDFFichePeda');
@@ -70,29 +70,29 @@ class pdf_demo extends ModelePDFAgefodd
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
-		
+
 	}
-	
-	
+
+
 	/**
 	 *	\brief      	Fonction generant le document sur le disque
 	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
-	*			outputlangs	Lang object for output language
+	 *			outputlangs	Lang object for output language
 	 *			file		Name of file to generate
 	 *	\return	    	int     	1=ok, 0=ko
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
 		global $user,$langs,$conf;
-		
+
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
-	
+
 		if (! is_object($outputlangs)) $outputlangs=$langs;
-		
+
 		if (! is_object($agf))
 		{
 			$id = $agf;
@@ -115,18 +115,18 @@ class pdf_demo extends ModelePDFAgefodd
 
 		if (file_exists($dir))
 		{
-		
+
 			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
-			
+				
 			if (class_exists('TCPDF'))
 			{
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
-			
+				
 			$pdf->Open();
 			$pagenb=0;
-			
+				
 			$pdf->SetDrawColor(128,128,128);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
@@ -137,7 +137,7 @@ class pdf_demo extends ModelePDFAgefodd
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right
 			$pdf->SetAutoPageBreak(1,0);
-			
+				
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
@@ -151,14 +151,14 @@ class pdf_demo extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0,0,0);
-				
+
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
-				
+
 				/*
 				 * Header société
-				 */
-				
+				*/
+
 				// Logo en haut à gauche
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 				if ($this->emetteur->logo)
@@ -181,14 +181,14 @@ class pdf_demo extends ModelePDFAgefodd
 					$text=$this->emetteur->name;
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
-				
+
 				$posX += $this->page_largeur - $this->marge_droite - 50;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $conf->global->MAIN_INFO_SOCIETE_NOM,0,0,'L');
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 				$pdf->SetXY($posX, $posY +3);
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_ADRESSE."\n";
@@ -199,20 +199,20 @@ class pdf_demo extends ModelePDFAgefodd
 				$this->str.= 'courriel : '.$conf->global->MAIN_INFO_SOCIETE_MAIL."\n";
 				$this->str.= 'site web : '.$conf->global->MAIN_INFO_SOCIETE_WEB."\n";
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
+
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY += $hauteur + 2; 
-				
+				$posY += $hauteur + 2;
+
 				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				
+
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
 				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
 				$this->width = $pdf->GetStringWidth($this->str);
-				
+
 				// alignement du bord droit du container avec le haut de la page
-				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width; 
+				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 				$baseline_angle = (M_PI/2); //angle droit
 				$baseline_x = 8;
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
@@ -221,15 +221,15 @@ class pdf_demo extends ModelePDFAgefodd
 				$pdf->SetXY($baseline_x, $baseline_y);
 				//print
 				//$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
-				
+
 
 				/*
 				 * Corps de page
-				 */
+				*/
 
 				$posX = $this->marge_gauche;
 				$posY = $posY + 5;
-				
+
 				/***** Titre *****/
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
@@ -242,7 +242,7 @@ class pdf_demo extends ModelePDFAgefodd
 				$pdf->SetTextColor(0,0,0);
 				$this->str = $agf->formintitule;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
+
 				// cadre
 				$pdf->SetFillColor(255);
 				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur+3);
@@ -251,33 +251,33 @@ class pdf_demo extends ModelePDFAgefodd
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 				$posY+= $hauteur + 10;
 
-		
-				
+
+
 				/***** Public *****/
-				
-				
+
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfPDFDemoDemo");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				$this->str = ucfirst($langs->transnoentities('AgfPDFDemoText'));
-				
+
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY+= $hauteur + 8;
 			}
-			
+				
 			$pdf->Close();
-			
+				
 			$pdf->Output($file,'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
-			
+				
 			return 1;   // Pas d'erreur
 		}
 		else
@@ -320,14 +320,14 @@ class pdf_demo extends ModelePDFAgefodd
 
 		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
-		
+
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-		
-		
+
+
 		$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 		$this->str = $statut." au capital de ".$conf->global->MAIN_INFO_CAPITAL." euros";
 		$this->str.= " - SIRET ".$conf->global->MAIN_INFO_SIRET;

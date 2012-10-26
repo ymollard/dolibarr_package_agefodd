@@ -19,14 +19,14 @@
 --
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_contact
-(
-	rowid int(11) NOT NULL auto_increment,
-	fk_socpeople	integer	NOT NULL,
-	archive tinyint NOT NULL DEFAULT 0,
-	fk_user_author	integer	NOT NULL,
-	datec	datetime  NOT NULL,
-	fk_user_mod integer NOT NULL,
-	tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-	PRIMARY KEY  (rowid)	
+CREATE TABLE IF NOT EXISTS llx_agefodd_contact (
+rowid int(11) NOT NULL auto_increment,
+entity int(11) NOT NULL DEFAULT 1,
+fk_socpeople	integer	NOT NULL,
+archive tinyint NOT NULL DEFAULT 0,
+fk_user_author	integer	NOT NULL,
+datec	datetime  NOT NULL,
+fk_user_mod integer NOT NULL,
+tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+PRIMARY KEY  (rowid)	
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
