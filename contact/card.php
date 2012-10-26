@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *  \file       	/agefodd/contact/card.php
  *  \brief      	Page fiche site de formation
- *  \version		$Id$
- */
+*  \version		$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -44,12 +44,12 @@ $arch=GETPOST('arch','int');
 
 /*
  * Actions delete
- */
+*/
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_contact($db);
 	$result = $agf->remove($id);
-	
+
 	if ($result > 0)
 	{
 		Header ( "Location: list.php");
@@ -65,7 +65,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions archive/active
- */
+*/
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($confirm == "yes")
@@ -74,9 +74,9 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 
 		$result = $agf->fetch($id,'peopleid');
 		$agf->archive = $arch;
-		
+
 		$result = $agf->update($user);
-	
+
 		if ($result > 0)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
@@ -87,7 +87,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 			dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
 			$mesg='<div class="error">'.$agf->error.'</div>';
 		}
-	
+
 	}
 	else
 	{
@@ -99,7 +99,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 
 /*
  * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
- */
+*/
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
@@ -133,7 +133,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
@@ -143,7 +143,7 @@ dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
- */
+*/
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfCreateContact"));
@@ -160,7 +160,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td>'.$langs->trans("AgfContact").'</td>';
 	print '<td>';
-	
+
 	$agf_static = new Agefodd_contact($db);
 	$nbcontact = $agf_static->fetch_all('ASC','rowid','',0);
 	$exclude_array = array();
@@ -171,10 +171,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 			$exclude_array[]=$line->fk_socpeople;
 		}
 	}
-	
+
 	$form->select_contacts(0,'','spid',1,$exclude_array);
 	print '</td></tr>';
-	
+
 	print '</table>';
 	print '</div>';
 
@@ -199,23 +199,23 @@ else
 		if ($result)
 		{
 			$head = contact_prepare_head($agf);
-				
+
 			dol_fiche_head($head, 'card', $langs->trans("AgfContactFiche"), 0, 'user');
-			
+				
 			// Affichage en mode "consultation"
-			
+				
 			/*
 			 * Confirmation de la suppression
-			 */
+			*/
 			if ($action == 'delete')
 			{
 				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteContact"),$langs->trans("AgfConfirmDeleteContact"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
-			
+				
 			/*
 			 * Confirmation de l'archivage/activation suppression
-			 */
+			*/
 			if ($action=='archive' || $action=='active')
 			{
 				if ($action == 'archive') $value=1;
@@ -248,8 +248,8 @@ else
 
 /*
  * Barre d'actions
- *
- */
+*
+*/
 
 print '<div class="tabsAction">';
 
@@ -271,7 +271,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
 	}
-	
+
 	if ($user->rights->agefodd->modifier)
 	{
 		if ($agf->archive == 0)

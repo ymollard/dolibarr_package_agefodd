@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *  \file       	/agefodd/session/convention.php
  *  \brief      	Page fiche convention de formation
- *  \version		$Id$
- */
+*  \version		$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -53,13 +53,13 @@ $langs->load("companies");
 
 /*
  * Actions delete
- */
+*/
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 
 	$agf = new Agefodd_convention($db);
 	$result = $agf->remove($id);
-	
+
 	if ($result > 0)
 	{
 		Header ( 'Location: document.php?id='.$sessid);
@@ -75,18 +75,18 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions archive/active (convention de formation)
- */
+*/
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($_POST["confirm"] == "yes")
 	{
 		$agf = new Agefodd_convention($db);
-	
+
 		$result = $agf->fetch(0,0,$id);
-	
+
 		$agf->archive = $arch;
 		$result = $agf->update($user);
-	
+
 		if ($result > 0)
 		{
 			Header ( 'Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid.'&socid='.$agf->socid);
@@ -97,7 +97,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
 			$mesg = '<div class="error">'.$agf->error.'</div>';
 		}
-	
+
 	}
 	else
 	{
@@ -111,7 +111,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 
 /*
  * Action update (convention de formation)
- */
+*/
 if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"])
@@ -132,7 +132,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$art8 = GETPOST('art8','alpha');
 		$sig = GETPOST('sig','alpha');
 		$notes = GETPOST('notes','alpha');
-		
+
 
 		if (!empty($intro1)) $agf->intro1 = $intro1;
 		if (!empty($intro2)) $agf->intro2 = $intro2;
@@ -173,7 +173,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 /*
  * Action create (convention de formation)
- */
+*/
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
@@ -193,7 +193,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$art8 = GETPOST('art8','alpha');
 		$sig = GETPOST('sig','alpha');
 		$notes = GETPOST('notes','alpha');
-		
+
 
 		if (!empty($intro1)) $agf->intro1 = $intro1;
 		if (!empty($intro2)) $agf->intro2 = $intro2;
@@ -209,7 +209,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		if (!empty($notes)) $agf->notes = $notes;
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
-				
+
 		$result = $agf->create($user);
 
 		if ($result > 0)
@@ -240,7 +240,7 @@ if ((empty($id)) && (empty($socid)) && (empty($action)))
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
@@ -250,9 +250,9 @@ dol_htmloutput_mesg($mesg);
 
 /*
  * Affichage de la fiche convention en mode création
- */
+*/
 if ($action == 'create' && $user->rights->agefodd->creer)
-{	
+{
 
 	$agf = new Agsession($db);
 	$resql = $agf->fetch($sessid);
@@ -262,13 +262,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	// Sinon on prends les valeurs par défault du script...
 	$agf_last = new Agefodd_convention($db);
 	$result = $agf_last->fetch_last_conv_per_socity($socid);
-	if ($result > 0) 
+	if ($result > 0)
 	{
 		$agf_conv = new Agefodd_convention($db);
 		$result = $agf_conv->fetch($agf_last->sessid, $socid);
 		if($agf_last->sessid) $last_conv = 'ok';
 	}
-	
+
 	//intro1
 	$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
 	$intro1 = "La société ".$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut." au capital de ";
@@ -278,18 +278,18 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	if (empty ($conf->global->AGF_ORGANISME_NUM)) {
 		$intro1.= "et en cours d’enregistrement comme organisme de formation auprès de la préfecture ".$conf->global->AGF_ORGANISME_PREF;
 	}
-	else{ 
+	else{
 		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture ";
 		$intro1.= $conf->global->AGF_ORGANISME_PREF." sous le numéro ".$conf->global->AGF_ORGANISME_NUM;
 	}
 	$intro1.= ", représentée par ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
 
-	
+
 	//intro2
 	// On recupere les infos societe
 	$agf_soc = new Societe($db);
 	$result = $agf_soc->fetch($socid);
-		
+
 	// if agefodd contact exist
 	$agf_contact = new Agefodd_contact($db);
 	$resql2 = $agf_contact->fetch($socid,'socid');
@@ -344,12 +344,12 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$art1.= ' - ';
 		$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
 		if ($i == $blocNumber - 1) $art1.=').'."\n";
-		
+
 		$old_date = $calendrier->line[$i]->date_session;
 	}
-	
+
 	$art1.= '# Sanction : Acquisition de connaissance donnant lieu à  la délivrance d’une attestation de formation'."\n";
-	
+
 	$stagiaires = new Agsession($db);
 	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
 	$art1.= '# Effectif du stage : '.$nbstag.' personne';
@@ -382,14 +382,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		}
 	}
 
-	// texte 4	
+	// texte 4
 	if ($conf->global->FACTURE_TVAOPTION=="franchise") {
 		$art4 = "L'organisme déclare ne pas être assujetti à la TVA au sens de l’art 232B du CGI (franchise de TVA). \nEn contrepartie de cette action de formation, le client devra s'acquitter des sommes suivantes :";
 	}
 	else {
 		$art4 = "L'organisme déclare être assujetti à la TVA au sens de l'article 261-4-4°-a du CGI et des articles L.900-2 et R.950-4 du code du travail. \nEn contrepartie de cette action de formation, le client devra s'acquitter des sommes suivantes :";
 	}
-	
+
 
 	// texte 5
 	if ($agf_conv->art5) $art5 = $agf_conv->art5;
@@ -403,9 +403,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	else
 	{
 		$art6 = "En application de l'article L 6354-1 du code du travail, il est convenu entre les signataires de la présente convention, que faute de réalisation totale ou partielle de la prestation de formation, l'organisme de formation remboursera au cocontractant les sommes qu'il aura indûment perçues de ce fait. C'est-à-dire les sommes qui ne correspondront pas à la réalisation de la prestation de formation.\n
-La non réalisation totale de l'action due à la carence du prestataire ou au renoncement à la prestation par l'acheteur ne donnera pas lieu à une facturation au titre de la formation professionnelle continue.\n
-La réalisation partielle de la prestation de formation, imputable ou non à l'organisme de formation ou à son client, ne donnera lieu qu'à facturation, au titre de la formation professionnelle continue, des sommes correspondants à la réalisation effective de la prestation.\n
-En cas de dédit par le client à moins de 5 jours francs, avant le début de l'action mentionnée à l'Article 1, ou d'abandon en cours de formation par un ou plusieurs stagiaires, l'organisme retiendra sur le coût total, les sommes qu'il aura réellement dépensées ou engagées pour la réalisation de la dite action, conformément aux dispositions de l'Article L 920-9 du Code du Travail.";
+			La non réalisation totale de l'action due à la carence du prestataire ou au renoncement à la prestation par l'acheteur ne donnera pas lieu à une facturation au titre de la formation professionnelle continue.\n
+			La réalisation partielle de la prestation de formation, imputable ou non à l'organisme de formation ou à son client, ne donnera lieu qu'à facturation, au titre de la formation professionnelle continue, des sommes correspondants à la réalisation effective de la prestation.\n
+			En cas de dédit par le client à moins de 5 jours francs, avant le début de l'action mentionnée à l'Article 1, ou d'abandon en cours de formation par un ou plusieurs stagiaires, l'organisme retiendra sur le coût total, les sommes qu'il aura réellement dépensées ou engagées pour la réalisation de la dite action, conformément aux dispositions de l'Article L 920-9 du Code du Travail.";
 	}
 
 	//article 7
@@ -413,7 +413,7 @@ En cas de dédit par le client à moins de 5 jours francs, avant le début de l'
 	else
 	{
 		$art7 = "En cas de litige entre les deux parties, celles-ci s'engagent à rechercher préalablement une solution amiable.
-En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de la préfecture dont dépend ".$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
+			En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de la préfecture dont dépend ".$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
 	}
 
 	// Signature du client
@@ -426,7 +426,7 @@ En cas d'échec d'une solution négociée, les parties conviennent expressément
 	}
 
 	print_fiche_titre($langs->trans("AgfNewConv"));
-	
+
 	print '<div class="warning">';
 	($last_conv == 'ok') ? print $langs->trans("AgfConvLastWarning") : print $langs->trans("AgfConvDefaultWarning");
 	print '</div>'."\n";
@@ -437,7 +437,7 @@ En cas d'échec d'une solution négociée, les parties conviennent expressément
 	print '<input type="hidden" name="socid" value="'.$socid.'">'."\n";
 
 	print '<table class="border" width="100%">'."\n";
-	
+
 	print '<tr><td valign="top" width="200px">'.$langs->trans("Societe").'</td>';
 	print '<td>'.$agf_soc->nom.'</td></tr>';
 
@@ -496,13 +496,13 @@ else
 	{
 		$agf_session = new Agsession($db);
 		$agf_session->fetch($agf->sessid);
-		
+
 		$head = session_prepare_head($agf_session,1);
-		
+
 		$hselected='convention';
-		
+
 		dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'bill');
-		
+
 		// Affichage en mode "édition"
 		if ($action == 'edit')
 		{
@@ -517,38 +517,38 @@ else
 
 			print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 			print '<td>'.$agf->socname.'</td></tr>';
-			
-			
+				
+				
 			print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 			print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->intro1.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionIntro2").'</td>';
 			print '<td><textarea name="intro2" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->intro2.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt1").'</td>';
 			print '<td><textarea name="art1" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art1.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt2").'</td>';
 			print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art2.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt3").'</td>';
 			print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art3.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt4").'</td>';
 			print '<td><textarea name="art4" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art4.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt5").'</td>';
 			print '<td><textarea name="art5" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art5.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt6").'</td>';
 			print '<td><textarea name="art6" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art6.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt7").'</td>';
 			print '<td><textarea name="art7" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->art7.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionSig").'</td>';
 			print '<td><textarea name="sig" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->sig.'</textarea></td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'<br /><span style=" font-size:smaller; font-style:italic;">'.$langs->trans("AgfConvNotesExplic").'</span></td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->notes.'</textarea></td></tr>';
 
@@ -561,14 +561,14 @@ else
 			print '</td></tr>';
 			print '</table>';
 			print '</form>';
-				
+
 			print '</div>'."\n";
 		}
 		else
 		{
 
 			/*
-			* Confirmation de la suppression
+			 * Confirmation de la suppression
 			*/
 			if ($action == 'delete')
 			{
@@ -576,73 +576,73 @@ else
 				if ($ret == 'html') print '<br>';
 			}
 			/*
-			* Confirmation de l'archivage/activation suppression
+			 * Confirmation de l'archivage/activation suppression
 			*/
 			if (isset($_GET["arch"]))
 			{
 				$ret=$form->form_confirm("convention.php?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
-			
+				
 			//Create a list of customer for each convention
 			//$agf_sess= new Agsession($db);
 			//$result_sess_soc = $agf_sess->fetch_societe_per_session($sessid);
-			//	$result = $agf->fetch($sessid, $agf_sess->line[0]->socid, 0);			
+			//	$result = $agf->fetch($sessid, $agf_sess->line[0]->socid, 0);
 
 			print '<table class="border" width="100%">'."\n";
-			
+				
 			print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 			print '<td>';
 			print $agf->socname;
-			
+				
 			/*if ($result_sess_soc >= 1)
-			{ 
-				print '<form name="update" action="convention_fiche.php?id='.$id.'" method="GET">'."\n";
-				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-				print '<input type="hidden" name="id" value="'.$id.'">'."\n";
-				print '<input type="hidden" name="sessid" value="'.$sessid.'">'."\n";
-				print '<select name="socid">';
-				foreach ($agf_sess->line as $line)
-				{
-					print '<option value="'.$line->socid.'">'.$line->socname.'</option>';
-				}
-				print '</select>';
-				print '<input type="button" value="voir"/>';
-				print '</form>';			
+			 {
+			print '<form name="update" action="convention_fiche.php?id='.$id.'" method="GET">'."\n";
+			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+			print '<input type="hidden" name="id" value="'.$id.'">'."\n";
+			print '<input type="hidden" name="sessid" value="'.$sessid.'">'."\n";
+			print '<select name="socid">';
+			foreach ($agf_sess->line as $line)
+			{
+			print '<option value="'.$line->socid.'">'.$line->socname.'</option>';
+			}
+			print '</select>';
+			print '<input type="button" value="voir"/>';
+			print '</form>';
 			}*/
 			print '</td></tr>';
-			
+				
 
 			print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 			print '<td>'.nl2br($agf->intro1).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionIntro2").'</td>';
 			print '<td>'.nl2br($agf->intro2).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt1").'</td>';
 			print '<td>'.ebi_liste_a_puce($agf->art1, true).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt2").'</td>';
 			print '<td>'.nl2br($agf->art2).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt3").'</td>';
 			print '<td>'.nl2br($agf->art3).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt4").'</td>';
 			print '<td>'.nl2br($agf->art4).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt5").'</td>';
 			print '<td>'.nl2br($agf->art5).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt6").'</td>';
 			print '<td>'.nl2br($agf->art6).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionArt7").'</td>';
 			print '<td>'.nl2br($agf->art7).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfConventionSig").'</td>';
 			print '<td>'.nl2br($agf->sig).'</td></tr>';
-		
+
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'<br /><span style=" font-size:smaller; font-style:italic;">'.$langs->trans("AgfConvNotesExplic").'</span></td>';
 			print '<td valign="top">'.nl2br($agf->notes).'</td></tr>';
 
@@ -657,8 +657,8 @@ else
 
 /*
  * Barre d'actions
- *
- */
+*
+*/
 
 print '<div class="tabsAction">';
 

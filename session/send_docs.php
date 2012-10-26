@@ -1,29 +1,29 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- * Copyright (C) 2012       JF FERRY        <jfefe@aternatik.fr>
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012       JF FERRY        <jfefe@aternatik.fr>
 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  * 	\file		/agefodd/session/send_docs.php
- * 	\brief		Page permettant d'envoyer les documents relatifs à la session de formation
- */
+* 	\brief		Page permettant d'envoyer les documents relatifs à la session de formation
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -314,18 +314,18 @@ llxHeader('',$langs->trans("AgfSendCommonDocs"),'','','','',$extrajs,$extracss);
 
 
 print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
+	jQuery(document).ready(function() {
 	jQuery.extend($.ui.multiselect.locale, {
-		addAll:\''. $langs->transnoentities("AddAll").'\',
+	addAll:\''. $langs->transnoentities("AddAll").'\',
 		removeAll:\''. $langs->transnoentities("RemoveAll").'\',
-		itemsCount:\''. $langs->transnoentities("ItemsCount").'\'
-	});
-	jQuery(function(){
-		jQuery("#receiver").addClass("multiselect").attr("multiple","multiple").attr("name","receiver[]");
-		jQuery(".multiselect").multiselect({sortable: false, searchable: false});
-	});
+			itemsCount:\''. $langs->transnoentities("ItemsCount").'\'
 });
-</script>';
+				jQuery(function(){
+				jQuery("#receiver").addClass("multiselect").attr("multiple","multiple").attr("name","receiver[]");
+				jQuery(".multiselect").multiselect({sortable: false, searchable: false});
+});
+});
+				</script>';
 
 
 
@@ -347,7 +347,7 @@ if (!empty($id))
 
 
 		/*
-		* Confirmation de la suppression
+		 * Confirmation de la suppression
 		*/
 		if ($action == 'delete')
 		{
@@ -624,30 +624,31 @@ if (!empty($id))
 				{
 					$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
 
-					${'flag_bc_'.$agf->line[$i]->socid} = 0;
+					${
+						'flag_bc_'.$agf->line[$i]->socid} = 0;
 
-					print '<table class="border" width="100%">'."\n";
+						print '<table class="border" width="100%">'."\n";
 
-					print '<tr class="liste_titre">'."\n";
-					print '<td colspan=3>';
-					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
-					print '</tr>'."\n";
+						print '<tr class="liste_titre">'."\n";
+						print '<td colspan=3>';
+						print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+						print '</tr>'."\n";
 
-					// Avant la formation
-					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-					//document_send_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
-					document_send_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
-					//document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-					//document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
+						// Avant la formation
+						//print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+						//document_send_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
+						document_send_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
+						//document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
+						//document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
 
-					// Après la formation
-					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-					document_send_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
-					//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
-					//document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
-					//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
-					print '</table>';
-					if ($i < $linecount) print '&nbsp;'."\n";
+						// Après la formation
+						//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+						document_send_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
+						//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
+						//document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
+						//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
+						print '</table>';
+						if ($i < $linecount) print '&nbsp;'."\n";
 				}
 			}
 			print '</div>'."\n";
@@ -662,7 +663,7 @@ if (!empty($id))
 
 		if ($action =='view_actioncomm') {
 			// List of actions on element
-			 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formactions.class.php');
+			include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formactions.class.php');
 			$formactions=new FormAgefodd($db);
 			$somethingshown=$formactions->showactions($agf,'agefodd_agsession',$socid);
 

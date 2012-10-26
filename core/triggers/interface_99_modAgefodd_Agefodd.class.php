@@ -21,7 +21,7 @@
 /**
  *  \file       agefodd/core/triggers/interface_90_agefodd.class.php
  *  \ingroup    core
- *  \brief      Fichier qui permet de lancer un trigger avec la mise a jours d'une action
+*  \brief      Fichier qui permet de lancer un trigger avec la mise a jours d'une action
 */
 
 
@@ -98,31 +98,31 @@ class InterfaceAgefodd
 	 *      @return int         			<0 if KO, 0 if no triggered ran, >0 if OK
 	 */
 	function run_trigger($action,$object,$user,$langs,$conf)
-    {
-    	dol_include_once('/comm/action/class/actioncomm.class.php');
-    	dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-        // Put here code you want to execute when a Dolibarr business events occurs.
-        // Data and type of action are stored into $object and $action
+	{
+		dol_include_once('/comm/action/class/actioncomm.class.php');
+		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+		// Put here code you want to execute when a Dolibarr business events occurs.
+		// Data and type of action are stored into $object and $action
 
-        // Users
-        if ($action == 'ACTION_MODIFY') {
-            dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		// Users
+		if ($action == 'ACTION_MODIFY') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
-            if ($object->type_code=='AC_AGF_SESS') {
+			if ($object->type_code=='AC_AGF_SESS') {
 
-	            $action = new ActionComm($this->db);
-	            $result = $action->fetch($object->id);
+				$action = new ActionComm($this->db);
+				$result = $action->fetch($object->id);
 
-	            if ($result != -1) {
+				if ($result != -1) {
 
-	            	if ($object->id == $action->id) {
+					if ($object->id == $action->id) {
 
-	            		$agf_cal = new Agefodd_sesscalendar($this->db);
-	            		$result = $agf_cal->fetch_by_action($action->id);
-	            		if ($result != -1) {
+						$agf_cal = new Agefodd_sesscalendar($this->db);
+						$result = $agf_cal->fetch_by_action($action->id);
+						if ($result != -1) {
 
-	            			$dt_array =  getdate($action->datep);
-	            			$agf_cal->date_session = dol_mktime(0,0,0,$dt_array['mon'],$dt_array['mday'],$dt_array['year']);
+							$dt_array =  getdate($action->datep);
+							$agf_cal->date_session = dol_mktime(0,0,0,$dt_array['mon'],$dt_array['mday'],$dt_array['year']);
 							$agf_cal->heured = $action->datep;
 							$agf_cal->heuref = $action->datef;
 

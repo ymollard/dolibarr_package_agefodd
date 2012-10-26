@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  * 	\file		/agefodd/trainee/list.php
  * 	\brief		Page présentant la liste des stagiaires enregistrés
- * 	\version	$Id$
- */
+* 	\version	$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -84,7 +84,9 @@ if (! $sortorder) $sortorder="DESC";
 if (! $sortfield) $sortfield="s.rowid";
 
 
-if ($page == -1) { $page = 0 ; }
+if ($page == -1) {
+	$page = 0 ;
+}
 
 $limit = $conf->global->AGF_NUM_LIST;
 $offset = $limit * $page ;
@@ -98,91 +100,91 @@ $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result != -1)
 {
-    
-    print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder,'', $result);
 
-    print '<table class="noborder" width="100%">';
-    print '<tr class="liste_titre">';
-    $arg_url='&page='.$page.'&search_name='.$search_name.'&search_firstname='.$search_firstname.'&search_civ='.$search_civ.'&search_soc='.$search_soc.'&search_tel='.$search_tel.'&search_mail='.$search_mail;
-    print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfNomPrenom"),$_SERVER['PHP_SELF'],"s.nom","",$arg_url,'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"civ.code","",$arg_url,'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"so.nom","",$arg_url,'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel1","",$arg_url,'',$sortfield,$sortorder);
-    print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.mail","",$arg_url,'',$sortfield,$sortorder);
-    print '<td>&nbsp;</td>';
-    print "</tr>\n";
-    
-    //Search bar
-    $url_form=$_SERVER["PHP_SELF"];
-    $addcriteria=false;
-    if (!empty($sortorder)){
-    	$url_form.='?sortorder='.$sortorder;
-    	$addcriteria=true;
-    }
-    if (!empty($sortfield)){
-    	if ($addcriteria){
-    		$url_form.='&sortfield='.$sortfield;
-    	}
-    	else {$url_form.='?sortfield='.$sortfield;
-    	}
-    	$addcriteria=true;
-    }
-    if (!empty($page)){
-    	if ($addcriteria){
-    		$url_form.='&page='.$page;
-    	}
-    	else {$url_form.='?page='.$page;
-    	}
-    }
-    
-    print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
-    print '<tr class="liste_titre">';
-    
-    print '<td>&nbsp;</td>';
-    
-    print '<td class="liste_titre">';
-    print '<input type="text" class="flat" name="search_name" value="'.$search_name.'" size="10">';
-    print '<input type="text" class="flat" name="search_firstname" value="'.$search_firstname.'" size="10">';
-    print '</td>';
-    
-    print '<td class="liste_titre">';
-    print $formcompagny->select_civility($search_civ,'search_civ');
-    print '</td>';
-    
-    print '<td class="liste_titre">';
-    print '<input type="text" class="flat" name="search_soc" value="'.$search_soc.'" size="20">';
-    print '</td>';
-    
-    print '<td class="liste_titre">';
-    print '<input type="text" class="flat" name="search_tel" value="'.$search_tel.'" size="10">';
-    print '</td>';
-    
-    print '<td class="liste_titre">';
-    print '<input type="text" class="flat" name="search_mail" value="'.$search_mail.'" size="20">';
-    print '</td>';
-    
-    print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/search.png" value="'.dol_escape_htmltag($langs->trans("Search")).'" title="'.dol_escape_htmltag($langs->trans("Search")).'">';
-    print '&nbsp; ';
-    print '<input type="image" class="liste_titre" name="button_removefilter" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/searchclear.png" value="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'" title="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'">';
-    print '</td>';
-    
-    print "</tr>\n";
-    print '</form>';
+	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder,'', $result);
 
-    $var=true;
-    foreach ($agf->line as $line)
-    {
-	
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	$arg_url='&page='.$page.'&search_name='.$search_name.'&search_firstname='.$search_firstname.'&search_civ='.$search_civ.'&search_soc='.$search_soc.'&search_tel='.$search_tel.'&search_mail='.$search_mail;
+	print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfNomPrenom"),$_SERVER['PHP_SELF'],"s.nom","",$arg_url,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"civ.code","",$arg_url,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"so.nom","",$arg_url,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel1","",$arg_url,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.mail","",$arg_url,'',$sortfield,$sortorder);
+	print '<td>&nbsp;</td>';
+	print "</tr>\n";
+
+	//Search bar
+	$url_form=$_SERVER["PHP_SELF"];
+	$addcriteria=false;
+	if (!empty($sortorder)){
+		$url_form.='?sortorder='.$sortorder;
+		$addcriteria=true;
+	}
+	if (!empty($sortfield)){
+		if ($addcriteria){
+			$url_form.='&sortfield='.$sortfield;
+		}
+		else {$url_form.='?sortfield='.$sortfield;
+		}
+		$addcriteria=true;
+	}
+	if (!empty($page)){
+		if ($addcriteria){
+			$url_form.='&page='.$page;
+		}
+		else {$url_form.='?page='.$page;
+		}
+	}
+
+	print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
+	print '<tr class="liste_titre">';
+
+	print '<td>&nbsp;</td>';
+
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_name" value="'.$search_name.'" size="10">';
+	print '<input type="text" class="flat" name="search_firstname" value="'.$search_firstname.'" size="10">';
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	print $formcompagny->select_civility($search_civ,'search_civ');
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_soc" value="'.$search_soc.'" size="20">';
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_tel" value="'.$search_tel.'" size="10">';
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_mail" value="'.$search_mail.'" size="20">';
+	print '</td>';
+
+	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/search.png" value="'.dol_escape_htmltag($langs->trans("Search")).'" title="'.dol_escape_htmltag($langs->trans("Search")).'">';
+	print '&nbsp; ';
+	print '<input type="image" class="liste_titre" name="button_removefilter" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/searchclear.png" value="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'" title="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'">';
+	print '</td>';
+
+	print "</tr>\n";
+	print '</form>';
+
+	$var=true;
+	foreach ($agf->line as $line)
+	{
+
 		// Affichage liste des stagiaires
 		$var=!$var;
 		print "<tr $bc[$var]>";
 		print '<td><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"user").' '.$line->rowid.'</a></td>';
 		print '<td>'.strtoupper($line->nom).' '.ucfirst($line->prenom).'</td>';
-		
+
 		$contact_static= new Contact($db);
 		$contact_static->civilite_id = $line->civilite;
-		
+
 		print '<td>'.$contact_static->getCivilityLabel().'</td>';
 		print '<td>';
 		if ($line->socid)
@@ -199,10 +201,10 @@ if ($result != -1)
 		print '<td>'.dol_print_email($line->mail, $line->rowid, $line->socid,'AC_EMAIL',25).'</td>';
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
-	
-    }
-    
-    print "</table>";
+
+	}
+
+	print "</table>";
 }
 else
 {

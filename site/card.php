@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *  \file       	/agefodd/site/card.php $
  *  \brief      	Page fiche site de formation
- *  \version		$Id$
- */
+*  \version		$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -45,11 +45,12 @@ $url_return=GETPOST('url_return','alpha');
 
 /*
  * Actions delete
- */
+*/
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_place($db);
-	$result = $agf->remove($id);
+	$agf->id=$id;
+	$result = $agf->remove($user);
 
 	if ($result > 0)
 	{
@@ -66,7 +67,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions archive/active
- */
+*/
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 {
 	if ($confirm == "yes")
@@ -99,7 +100,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 
 /*
  * Action update (fiche site de formation)
- */
+*/
 if ($action == 'update' && $user->rights->agefodd->creer)
 {
 	if (! $_POST["cancel"] && ! $_POST["importadress"])
@@ -159,7 +160,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 /*
  * Action create (fiche site de formation)
- */
+*/
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 {
@@ -205,7 +206,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 /*
  * View
- */
+*/
 
 llxHeader();
 
@@ -215,7 +216,7 @@ dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
- */
+*/
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	$formcompany = new FormCompany($db);
@@ -235,7 +236,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Societe").'</span></td>';
 	print '<td>'.$form->select_company('','societe','((s.client IN (1,2)) OR (s.fournisseur=1))',1,1,0).'</td></tr>';
 	/*
-	print '<tr><td>'.$langs->trans("Address").'</td>';
+	 print '<tr><td>'.$langs->trans("Address").'</td>';
 	print '<td><input name="adresse" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td>'.$langs->trans('CP').'</td><td>';
@@ -348,14 +349,14 @@ else
 
 				/*
 				 * Confirmation de la suppression
-				 */
+				*/
 				if ($action == 'delete')
 				{
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeletePlace"),$langs->trans("AgfConfirmDeletePlace"),"confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 				/*
-				* Confirmation de l'archivage/activation suppression
+				 * Confirmation de l'archivage/activation suppression
 				*/
 				if ($action=='archive' || $action=='active')
 				{
@@ -377,12 +378,12 @@ else
 				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 				if ($agf->socid)
 				{
-				    print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
-				    print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
+					print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->socid.'">';
+					print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
 				}
 				else
 				{
-				    print '&nbsp;';
+					print '&nbsp;';
 				}
 				print '</tr>';
 
@@ -425,8 +426,8 @@ else
 
 /*
  * Barre d'actions
- *
- */
+*
+*/
 
 print '<div class="tabsAction">';
 

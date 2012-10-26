@@ -1,26 +1,26 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Contenu du fichier pdf "courrier accompagnant l'envoi du dossier de clotûre"
-	\version	$Id$
+ \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \brief		Contenu du fichier pdf "courrier accompagnant l'envoi du dossier de clotûre"
+\version	$Id$
 */
 
 $posX = 100;
@@ -29,7 +29,7 @@ $posY = 110;
 
 /*
  *  Rubrique "Objet"
- */
+*/
 
 // Recuperation des dates de formation
 $agf = new Agsession($this->db);
@@ -49,7 +49,7 @@ $posY += 6;
 
 /*
  *  Rubrique "Pièces jointes"
- */
+*/
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
@@ -80,7 +80,7 @@ $posY += 36;
 
 /*
  *  Corps de lettre
- */
+*/
 
 if ($num > 6)
 {

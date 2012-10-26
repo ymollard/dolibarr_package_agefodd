@@ -1,28 +1,28 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 
 /**
-	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
-	\brief		Page permettant la création du fichier pdf contenant les attestations de formation de
-			l'ensemble des stagiaires d'une structure pour une session donnée.
-	\version	$Id$
+ \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \brief		Page permettant la création du fichier pdf contenant les attestations de formation de
+l'ensemble des stagiaires d'une structure pour une session donnée.
+\version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/class/agsession.class.php');
@@ -71,7 +71,7 @@ class pdf_attestation extends ModelePDFAgefodd
 		$this->milieu = $this->espaceH_dispo / 2;
 
 		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -83,7 +83,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	/**
 	 *	\brief      	Fonction generant le document sur le disque
 	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
-	*			outputlangs	Lang object for output language
+	 *			outputlangs	Lang object for output language
 	 *			file		Name of file to generate
 	 *	\return	    	int     	1=ok, 0=ko
 	 */
@@ -192,7 +192,18 @@ class pdf_attestation extends ModelePDFAgefodd
 					if ($this->emetteur->logo)
 					{
 						if (is_readable($logo))
-							 $pdf->Image($logo, $this->marge_gauche + 3, $this->marge_haute + 3, 40);
+							$pdf->Image($logo, $this->marge_gauche + 3, $this->marge_haute + 3, 40);
+					}
+
+					// Affichage du logo commanditaire (optionnel)
+					if($conf->global->AGF_USE_LOGO_CLIENT)
+					{
+						$staticsoc = new Societe($this->db);
+						$staticsoc->fetch($agf->socid);
+						$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
+						$logo_client=$dir.$staticsoc->logo;
+						if (file_exists($logo_client))
+							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
 					}
 
 					$newY = $this->marge_haute + 30;
@@ -261,7 +272,7 @@ class pdf_attestation extends ModelePDFAgefodd
 						$hauteur = $nblines * 5;
 						$pdf->Cell(10, 5, $agf_op->line[$y]->priorite.'. ', 0, 0, 'R', 0);
 						$pdf->MultiCell($width, 5,
-						$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
+							$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
 
 					}
 
@@ -287,6 +298,14 @@ class pdf_attestation extends ModelePDFAgefodd
 					$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
 					$pdf->Cell(100, 0, $this->str, 0, 0, 'R', 0);
 
+					// Incrustation image tampon
+					if($conf->global->AGF_INFO_TAMPON)
+					{
+						$dir=$conf->agefodd->dir_output.'/images/';
+						$img_tampon=$dir.$conf->global->AGF_INFO_TAMPON;
+						if (file_exists($img_tampon))
+							$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY+5, 50);
+					}
 
 					// Pied de page		$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
 					$this->_pagefoot($pdf,$agf,$outputlangs);
