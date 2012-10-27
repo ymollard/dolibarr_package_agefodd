@@ -28,6 +28,8 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/contact/class/contact.class.php');
@@ -128,27 +130,124 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$error++;
 		}
 		if(!$error) {
+			
+			$create_thirdparty = GETPOST('create_thirdparty','int');
+			$create_contact = GETPOST('create_contact','int');
 
-			$agf->nom = GETPOST('nom','alpha');
-			$agf->prenom = GETPOST('prenom','alpha');
-			$agf->civilite = GETPOST('civilite_id','alpha');
-			$agf->socid = GETPOST('societe','int');
-			$agf->fonction =GETPOST('fonction','alpha');
-			$agf->tel1 = GETPOST('tel1','alpha');
-			$agf->tel2 = GETPOST('tel2','alpha');
-			$agf->mail = GETPOST('mail','alpha');
-			$agf->note = GETPOST('note','alpha');
+			$name = GETPOST('nom','alpha');
+			$firstname = GETPOST('prenom','alpha');
+			$civilite_id = GETPOST('civilite_id','alpha');
+			$socid = GETPOST('societe','int');
+			$fonction = GETPOST('fonction','alpha');
+			$tel1 = GETPOST('tel1','alpha');
+			$tel2 = GETPOST('tel2','alpha');
+			$mail = GETPOST('mail','alpha');
+			$note = GETPOST('note','alpha');
+			
+			$societe_name = GETPOST('societe_name');
+			$address = GETPOST('adresse','alpha');
+			$zip = GETPOST('zipcode','alpha');
+			$town = GETPOST('town','alpha');
+			
+			$stagiaire_type = GETPOST('stagiaire_type','int');
+			$session_id = GETPOST('session_id','int');
+			
+			$agf->nom = $name;
+			$agf->prenom = $firstname;
+			$agf->civilite = $civilite_id;
+			$agf->socid = $socid;
+			$agf->fonction = $fonction;
+			$agf->tel1 = $tel1;
+			$agf->tel2 = $tel2;
+			$agf->mail = $mail;
+			$agf->note = $note;
+			
+			
+			// Création tiers demandé
+			if($create_thirdparty > 0) {
+				
+				$socstatic = new Societe($db);
+				
+				$socstatic->name = $societe_name;
+				$socstatic->tel = $tel1;
+				$socstatic->email = $mail;
+				$socstatic->address=$address;
+				$socstatic->zip=$zip;
+				$socstatic->town=$town;
+				$socstatic->client=1;
+				
+				$result = $socstatic->create($user);
+				
+				if (! $result >= 0)
+				{
+					$error=$socstatic->error; $errors=$socstatic->errors;
+				}
+								
+				$agf->socid=$socstatic->id;
+
+			}
+			
+			// Création du contact si demandé
+			if($create_contact > 0) {
+					
+				$contact=new Contact($db);
+					
+				$contact->civilite_id		= $civilite_id;
+				$contact->name				= $name;
+				$contact->firstname			= $firstname;
+				$contact->address			= $address;
+				$contact->zip				= $zip;
+				$contact->town				= $$town;
+				$contact->state_id      	= $state_id;
+				$contact->country_id		= $objectcountry_id;
+				$contact->socid				= ($socstatic->id > 0?$socstatic->id:$socid);	// fk_soc
+				$contact->status			= 1;
+				$contact->email				= $mail;
+				$contact->phone_pro			= $tel1;
+				$contact->mobile			= $tel2;
+				$contact->priv				= 0;
+					
+				$result=$contact->create($user);
+				if (! $result >= 0)
+				{
+					$error=$contact->error; $errors=$contact->errors;
+				}
+				$agf->fk_socpeople=$contact->id;
+			}
+			
 			$result = $agf->create($user);
-
+			
 			if ($result > 0)
 			{
+				
+				// Inscrire dans la session
+				if($session_id > 0) 
+				{
+					$sessionstat = new Agsession($db);
+					$sessionstat->sessid = GETPOST('session_id','int');
+					$sessionstat->stagiaire = $agf->id;
+					$sessionstat->stagiaire_type = GETPOST('stagiaire_type','int');
+					$result = $sessionstat->create_stag_in_session($user);
+				}
+		
+				if ($result > 0)
+				{
+					$mesg = '<div class="success">'.$langs->trans('SuccessCreateStagInSession').'</div>';
+					$url_back = dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$session_id;
+				}
+				else
+				{
+					dol_syslog("agefodd:trainee:card error=".$agf->error, LOG_ERR);
+					$mesg = '<div class="error">'.$agf->error.'</div>';
+				}
 				if(strlen($url_back) > 0) {
 					Header ( "Location: ".$url_back);
 				}
 				else {
-					Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
+					Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id);
 				}
 				exit;
+					
 			}
 			else
 			{
@@ -213,7 +312,8 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 llxHeader();
 
 $form = new Form($db);
-$formcompagny = new FormCompany($db);
+$formcompany = new FormCompany($db);
+$formAgefodd = new FormAgefodd($db);
 
 dol_htmloutput_mesg($mesg);
 
@@ -271,37 +371,106 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<table class="border" width="100%">';
 
-	print '<tr><td><span class="fieldrequired">'.$langs->trans("Lastname").'</span></td>';
-	print '<td><input name="nom" class="flat" size="50" value=""></td></tr>';
-
-	print '<tr><td><span class="fieldrequired">'.$langs->trans("Firstname").'</span></td>';
-	print '<td><input name="prenom" class="flat" size="50" value=""></td></tr>';
-
-	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
-
-	print '<td>'.$formcompagny->select_civility().'</td>';
-	print '</tr>';
-
-	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
-
+	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("ThirdParty").'</strong></td>';
+	
+	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td colspan="3">';
 	print $form->select_company('','societe','(s.client IN (1,2))',1,1);
-
 	print '</td></tr>';
+	
+	
+	print '<tr><td colspan="">'.$langs->trans('CreateANewThirPartyFromTraineeForm');
+	print img_picto($langs->trans("CreateANewThirPartyFromTraineeFormInfo"),'help');
+	print '</td>';
+	print '<td colspan="3">';
+	print '<input type="radio" id="create_thirdparty_confirm" name="create_thirdparty" value="1" '.(GETPOST('create_thirdparty','int')?'checked="checked"':'').'/> <label for="create_thirdparty_confirm">'.$langs->trans('Yes').'</label>';
+	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" '.(!GETPOST('create_thirdparty','int')?'checked="checked"':'').' value="-1"/> <label for="create_thirdparty_cancel">'.$langs->trans('no').'</label>';
+	print '</td>';
+	print '	</tr>';
+	
+	print '<tr><td>'.$langs->trans("ThirdPartyName").'</td>';
+	print '<td colspan="3"><input name="societe_name" class="flat" size="50" value=""></td></tr>';
+	
+	// Address
+	print '<tr><td valign="top">'.$langs->trans('Address').'</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
+	print $object->address;
+	print '</textarea></td></tr>';
+	
+	// Zip / Town
+	print '<tr><td>'.$langs->trans('Zip').'</td><td>';
+	print $formcompany->select_ziptown($object->zip,'zipcode',array('town','selectcountry_id','departement_id'),6);
+	print '</td><td>'.$langs->trans('Town').'</td><td>';
+	print $formcompany->select_ziptown($object->town,'town',array('zipcode','selectcountry_id','departement_id'));
+	print '</td></tr>';
+	
+	
+	// Infos participant
+	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("Participant").'</strong></td>';
+	
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
+	print '<td colspan="3">'.$formcompany->select_civility().'</td>';
+	print '</tr>';
+	
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("Lastname").'</span></td>';
+	print '<td colspan="3"><input name="nom" class="flat" size="50" value=""></td></tr>';
+	
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("Firstname").'</span></td>';
+	print '<td colspan="3"><input name="prenom" class="flat" size="50" value=""></td></tr>';
+	
+	print '<tr><td colspan="">'.$langs->trans('CreateANewContactFromTraineeForm');
+	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"),'help');
+	print '</td>';
+	print '<td colspan="3">';
+	print '<input type="radio" id="create_contact_confirm" name="create_contact" value="1" '.(GETPOST('create_thirdparty','int')?'checked="checked"':'').'/> <label for="create_contact_confirm">'.$langs->trans('Yes').'</label>';
+	print '<input type="radio" id="create_contact_cancel" name="create_contact" '.(!GETPOST('create_contact','int')?'checked="checked"':'').' value="-1"/> <label for="create_contact_cancel">'.$langs->trans('no').'</label>';
+	print '</td>';
+	print '	</tr>';
 
 	print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
-	print '<td><input name="fonction" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="fonction" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td>'.$langs->trans("Phone").'</td>';
-	print '<td><input name="tel1" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="tel1" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td>'.$langs->trans("Mobile").'</td>';
-	print '<td><input name="tel2" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="tel2" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td>'.$langs->trans("Mail").'</td>';
-	print '<td><input name="mail" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="mail" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
-	print '<td><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	
+	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("AgfSessionToRegister").'</strong></td>';
+	
+	// Session
+	if (empty($sortorder)) $sortorder="ASC";
+	if (empty($sortfield)) $sortfield="s.dated";
+	if (empty($arch)) $arch = 0;
+		
+	if ($page == -1) { $page = 0 ; }
+		
+	$limit = $conf->global->AGF_NUM_LIST;
+	$agf = new Agsession($db);
+		
+	$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
+	$sessions = array();
+	foreach ($agf->line as $line)
+	{
+		$sessions[$line->rowid] = $line->ref_interne.' - '.$line->intitule.' - '.dol_print_date($line->dated,'daytext');
+	}
+		
+	print '<tr class="agelfoddline">';
+	print '<td>'.$langs->trans('SelectAgefoddSession').'</td>';
+	print '<td colspan="3">';
+	print $form->selectarray('session_id',$sessions,GETPOST('session_id'),1);
+	print '</td>';
+	print '</tr>';
+		
+	// Public stagiaire
+	print '<tr class="agelfoddline"><td>'.$langs->trans("AgfPublic").'</td><td colspan="3">';
+	print $formAgefodd->select_type_stagiaire(GETPOST('stagiaire_type','int'),'stagiaire_type','',1);
+	print '</td></tr>';
+	
 
 	print '</table>';
 	print '</div>';
@@ -353,7 +522,7 @@ else
 
 					print '<tr><td>'.$langs->trans("AgfCivilite").'</td>';
 
-					print '<td>'.$formcompagny->select_civility($agf->civilite).'</td>';
+					print '<td>'.$formcompany->select_civility($agf->civilite).'</td>';
 					print '</tr>';
 
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
