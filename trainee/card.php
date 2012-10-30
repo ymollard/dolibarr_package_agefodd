@@ -466,10 +466,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td>';
 	print '</tr>';
 		
-	// Public stagiaire
-	print '<tr class="agelfoddline"><td>'.$langs->trans("AgfPublic").'</td><td colspan="3">';
-	print $formAgefodd->select_type_stagiaire(GETPOST('stagiaire_type','int'),'stagiaire_type','',1);
-	print '</td></tr>';
+	if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
+	{
+		// Public stagiaire
+		print '<tr class="agelfoddline"><td>'.$langs->trans("AgfPublic").'</td><td colspan="3">';
+		print $formAgefodd->select_type_stagiaire(GETPOST('stagiaire_type','int'),'stagiaire_type','',1);
+		print '</td></tr>';
+	}
 	
 
 	print '</table>';

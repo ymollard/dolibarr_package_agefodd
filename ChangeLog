@@ -200,3 +200,6 @@ For All :
 	- Add missing english translation
 	- Fix behaviour on force update number of trainee per session
 	- Fix bug #582 on fiche pedage (duration is not display) 
+	- Review adn improve of trainee creation page
+	- Functionnal documentation updated
+	- Option to link invoice without order

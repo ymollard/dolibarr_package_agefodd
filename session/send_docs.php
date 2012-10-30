@@ -570,7 +570,7 @@ if (!empty($id))
 				$formmail->withbody=$langs->trans('AdfSendAttestationBody','__FORMINTITULE__');
 				$formmail->param['models']='attestation';
 				$formmail->param['pre_action']='presend_attestation';
-
+				
 				// Attestation peut être envoyé à l'opca ou au commanditaire
 				if ($agf->type_session &&  $socid) {
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
@@ -580,7 +580,7 @@ if (!empty($id))
 						$style_mesg='warning';
 					}
 					elseif ($agf->is_OPCA)
-					{
+					{	
 						$contactstatic = new Contact($db);
 						$contactstatic->fetch($agf->fk_socpeople_OPCA);
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
@@ -601,8 +601,11 @@ if (!empty($id))
 					
 				}
 				else {
-					if ($agf->is_OPCA)
+					if ($agf->is_OPCA) {
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($agf->fk_socpeople_OPCA);
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
+					}
 				}
 
 				// Contact commanditaire
@@ -658,8 +661,11 @@ if (!empty($id))
 					}
 				}
 				else {
-					if ($agf->is_OPCA)
+					if ($agf->is_OPCA) {
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($agf->fk_socpeople_OPCA);
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
+					}
 				}
 				
 				// Contact commanditaire

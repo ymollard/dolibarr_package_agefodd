@@ -51,7 +51,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agf->id = GETPOST('stagerowid','int');
 		$agf->sessid = GETPOST('sessid','int');
 		$agf->stagiaire = GETPOST('stagiaire','int');
-		$agf->type = GETPOST('stagiaire_type','int');
+		$agf->stagiaire_type = GETPOST('stagiaire_type','int');
 
 		if ($agf->update_stag_in_session($user) > 0)
 		{
@@ -817,7 +817,7 @@ if (!empty($id))
 				print '</td>';
 				print '<td style="border-left: 0px;">';
 				// Infos mode de financement
-				if ($stagiaires->line[$i]->type) {
+				if (($stagiaires->line[$i]->type) && (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 					print '<div class=adminaction>';
 					print $langs->trans("AgfStagiaireModeFinancement");
 					print '-<span>'.stripslashes($stagiaires->line[$i]->type).'</span></div>';

@@ -1223,8 +1223,7 @@ class Agsession extends CommonObject
 		$sql.= " s.fk_session_agefodd='".$this->sessid."',";
 		$sql.= " s.fk_stagiaire='".$this->stagiaire."',";
 		$sql.= " s.fk_user_mod='".$user->id."',";
-		$sql.= " s.fk_agefodd_stagiaire_type='".$this->stagiaire_type."',";
-		$sql.= " s.fk_agefodd_stagiaire_type='".$this->type."'";
+		$sql.= " s.fk_agefodd_stagiaire_type='".$this->stagiaire_type."' ";
 		$sql.= " WHERE s.rowid = ".$this->id;
 
 		$this->db->begin();
