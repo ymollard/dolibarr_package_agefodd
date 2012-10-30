@@ -196,10 +196,14 @@ For Dev :
 	
 ***** ChangeLog for 2.0.19 compared to 2.0.18 *****
 For All :
-	- Add option for jf-ferry to add picture of customer on doc
+	- Add option from jf-ferry to add picture of customer on doc
 	- Add missing english translation
 	- Fix behaviour on force update number of trainee per session
 	- Fix bug #582 on fiche pedage (duration is not display) 
 	- Review adn improve of trainee creation page
 	- Functionnal documentation updated
 	- Option to link invoice without order
+	
+	***** ChangeLog for 2.0.20 compared to 2.0.19 *****
+For All :
+	- review page title (tag <TITLE>)
