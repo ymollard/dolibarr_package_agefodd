@@ -179,7 +179,7 @@ function show_fac($file, $socid, $mdle)
 			else
 			{
 				if (!empty(${
-					"flag_bc_$socid"}))
+					"flag_bc_$socid"}) || $conf->global->AGF_USE_FAC_WITHOUT_ORDER)
 					{
 						$mess = '';
 

@@ -538,15 +538,27 @@ if (!empty($id))
 				$formmail->param['models']='convention';
 				$formmail->param['pre_action']='presend_convention';
 
-				// Convention peut être envoyé à l'opca ou au client
+				// Convention peut être envoyé à l'opca ou au commanditaire
 				$contactstatic = new Contact($db);
 				$contactstatic->fetch($agf->fk_socpeople_OPCA);
 				$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 
-				// Contact client
+				// Contact Commanditaire
 				$contactstatic = new Contact($db);
 				$contactstatic->fetch($agf->contactid);
-				$withto[$agf->contactid] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
+				$withto[$agf->contactid] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Commanditaire)';
+				
+				// Contact participant
+				if ($agf->type_session &&  $socid > 0) {
+					$socstatic = new Societe($db);
+					$socstatic->id=$socid;
+					$soc_contact = $socstatic->contact_property_array('email');
+					foreach($soc_contact as $id => $mail) {
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($id);
+						$withto[$id] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Participant)';
+					}
+				}
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
@@ -559,7 +571,7 @@ if (!empty($id))
 				$formmail->param['models']='attestation';
 				$formmail->param['pre_action']='presend_attestation';
 
-				// Attestation peut être envoyé à l'opca ou au client
+				// Attestation peut être envoyé à l'opca ou au commanditaire
 				if ($agf->type_session &&  $socid) {
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
 					if (! $result_opca)
@@ -573,18 +585,35 @@ if (!empty($id))
 						$contactstatic->fetch($agf->fk_socpeople_OPCA);
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 					}
+					
+					// Contact participant
+					if($socid > 0) {
+						$socstatic = new Societe($db);
+						$socstatic->id=$socid;
+						$soc_contact = $socstatic->contact_property_array('email');
+						foreach($soc_contact as $id => $mail) {
+							$contactstatic = new Contact($db);
+							$contactstatic->fetch($id);
+							$withto[$id] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Participant)';
+						}
+					}
+					
+					
 				}
 				else {
 					if ($agf->is_OPCA)
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 				}
 
-				// Contact client
+				// Contact commanditaire
 				if($agf->contactid > 0) {
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($agf->contactid);
-					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
+					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Commanditaire)';
 				}
+				
+				
+				
 
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
@@ -601,7 +630,7 @@ if (!empty($id))
 				// Envoi de fichier libre
 				$formmail->withfile=2;
 				
-				// Dossier de cloture peut être envoyé à l'opca ou au client
+				// Dossier de cloture peut être envoyé au participant ou à l'opca ou au commanditaire
 				if ($agf->type_session &&  $socid) {
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
 					if (! $result_opca)
@@ -615,13 +644,25 @@ if (!empty($id))
 						$contactstatic->fetch($agf->fk_socpeople_OPCA);
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 					}
+					
+					// Contact participant
+					if ($agf->type_session &&  $socid > 0) {
+						$socstatic = new Societe($db);
+						$socstatic->id=$socid;
+						$soc_contact = $socstatic->contact_property_array('email');
+						foreach($soc_contact as $id => $mail) {
+							$contactstatic = new Contact($db);
+							$contactstatic->fetch($id);
+							$withto[$id] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Participant)';
+						}
+					}
 				}
 				else {
 					if ($agf->is_OPCA)
 						$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
 				}
 				
-				// Contact client
+				// Contact commanditaire
 				if($agf->contactid > 0) {
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($agf->contactid);
