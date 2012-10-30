@@ -240,7 +240,7 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
  * View
 */
 $arrayofcss = array('/agefodd/css/agefodd.css');
-llxHeader($head, '','','','','','',$arrayofcss,'');
+llxHeader($head, $langs->trans("AgfSessionDetail"),'','','','','',$arrayofcss,'');
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);

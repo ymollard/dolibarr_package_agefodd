@@ -32,7 +32,8 @@ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-llxHeader();
+$langs->load('agefodd@agefodd');
+llxHeader('',$langs->trans('AgfMenuCat'));
 
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');

@@ -39,7 +39,7 @@ dol_include_once('/core/lib/date.lib.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-llxHeader();
+llxHeader('',$langs->trans('AgefoddShort'));
 
 print_barre_liste($langs->trans("AgfBilanGlobal"), $page, "index.php","&socid=$socid",$sortfield,$sortorder,'',$num);
 

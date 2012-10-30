@@ -242,7 +242,7 @@ if ((empty($id)) && (empty($socid)) && (empty($action)))
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfConvention"));
 
 $form = new Form($db);
 

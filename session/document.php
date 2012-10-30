@@ -174,7 +174,7 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 }
 
 
-llxHeader();
+llxHeader('',$langs->trans("AgfSessionDetail"));
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);

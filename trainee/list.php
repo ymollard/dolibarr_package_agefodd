@@ -34,7 +34,7 @@ dol_include_once('/core/class/html.formcompany.class.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-llxHeader();
+llxHeader('',$langs->trans("AgfStagiaireList"));
 
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');

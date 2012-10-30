@@ -168,7 +168,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfRegInt"));
 
 $form = new Form($db);
 

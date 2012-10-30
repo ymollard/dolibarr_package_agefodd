@@ -308,8 +308,8 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 /*
  * View
 */
-
-llxHeader();
+$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("AgfMenuActStagiaireNew") : $langs->trans("AgfStagiaireDetail") );
+llxHeader('',$title);
 
 $form = new Form($db);
 $formcompany = new FormCompany($db);

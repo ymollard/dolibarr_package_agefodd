@@ -208,7 +208,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
  * View
 */
 
-llxHeader();
+$title = ($action == 'create' ? $langs->trans("AgfCreatePlace") : $langs->trans("AgfSessPlace"));
+llxHeader('',$title);
 
 $form = new Form($db);
 

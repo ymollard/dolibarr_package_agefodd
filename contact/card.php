@@ -135,7 +135,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
  * View
 */
 
-llxHeader();
+$title = ($action == 'create' ? $langs->trans("AgfCreateContact") : $langs->trans("AgfContactFiche"));
+llxHeader('',$title);
 
 $form = new Form($db);
 

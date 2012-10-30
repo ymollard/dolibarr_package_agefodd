@@ -157,8 +157,8 @@ if ($action == 'create_confirm_user' && $user->rights->agefodd->creer)
 /*
  * View
 */
-
-llxHeader();
+$title = ($action == 'create' ? $langs->trans("AgfFormateurAdd") : $langs->trans("AgfTeacher"));
+llxHeader('',$title);
 
 $form = new Form($db);
 

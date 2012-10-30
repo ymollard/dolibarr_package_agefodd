@@ -45,7 +45,7 @@ $db->begin();
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfTeacherDetail"));
 
 $agf = new Agefodd_teacher($db);
 $agf->info($id);

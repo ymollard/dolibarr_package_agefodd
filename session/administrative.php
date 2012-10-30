@@ -210,7 +210,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfSessionDetail"));
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);

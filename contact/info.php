@@ -45,7 +45,7 @@ $db->begin();
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfContactFiche"));
 
 $agf = new Agefodd_contact($db);
 $agf->info($id);

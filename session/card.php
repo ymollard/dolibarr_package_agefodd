@@ -504,7 +504,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
  * View
 */
 
-llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js','/agefodd/includes/lib.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css','/agefodd/includes/lib.js'));
+llxHeader('',$langs->trans("AgfSessionDetail"),'','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js','/agefodd/includes/lib.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css','/agefodd/includes/lib.js'));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 

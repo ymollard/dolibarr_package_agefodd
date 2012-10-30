@@ -42,7 +42,7 @@ $mesg = '';
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfSessionDetail"));
 
 $agf = new Agsession($db);
 $agf->fetch($id);

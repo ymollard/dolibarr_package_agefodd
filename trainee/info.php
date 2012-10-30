@@ -43,7 +43,7 @@ $mesg = '';
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfStagiaireDetail"));
 
 $agf = new Agefodd_stagiaire($db);
 $agf->fetch($id);

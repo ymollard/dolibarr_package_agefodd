@@ -263,8 +263,8 @@ if ($action == 'fichepeda' && $user->rights->agefodd->creer)
 /*
  * View
 */
-
-llxHeader();
+$title = ($action == 'create' ? $langs->trans("AgfMenuCatNew") : $langs->trans("AgfCatalogDetail"));
+llxHeader('',$title);
 
 $form = new Form($db);
 

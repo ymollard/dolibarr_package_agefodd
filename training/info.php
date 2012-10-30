@@ -43,7 +43,7 @@ $mesg = '';
  * View
 */
 
-llxHeader();
+llxHeader('',$langs->trans("AgfCatalogDetail"));
 
 $agf = new Agefodd($db);
 $agf->fetch($id);

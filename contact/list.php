@@ -33,7 +33,7 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-llxHeader();
+llxHeader('',$langs->trans("AgfContact"));
 
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');

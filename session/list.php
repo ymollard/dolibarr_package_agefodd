@@ -36,8 +36,6 @@ dol_include_once('/agefodd/class/html.formagefodd.class.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-llxHeader();
-
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');
 $page=GETPOST('page','int');
@@ -95,6 +93,11 @@ $pagenext = $page + 1;
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
+
+if (empty($arch)) $title = $langs->trans("AgfMenuSessAct");
+elseif ($arch == 2 ) $title = $langs->trans("AgfMenuSessArchReady");
+else $title = $langs->trans("AgfMenuSessArch");
+llxHeader('',$title);
 
 if($training_view && !empty($search_training_ref) ) {
 	$agf = new Agefodd($db);
