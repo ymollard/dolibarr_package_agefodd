@@ -207,3 +207,5 @@ For All :
 	***** ChangeLog for 2.0.20 compared to 2.0.19 *****
 For All :
 	- review page title (tag <TITLE>)
+	- Fix Bug #589 on PDF Asttestation (duration  and objectif are not display)
+	- Task #591 complete (PDF foot page render only fill information)

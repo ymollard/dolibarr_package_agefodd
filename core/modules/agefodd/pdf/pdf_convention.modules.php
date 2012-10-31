@@ -697,13 +697,13 @@ class pdf_convention extends ModelePDFAgefodd
 		global $conf,$langs,$mysoc;
 
 		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
-		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
+		$pdf->Line($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
 		$this->str = $mysoc->name;
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
-		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
+		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 
 		$this->str = $mysoc->address." ";
@@ -713,13 +713,15 @@ class pdf_convention extends ModelePDFAgefodd
 		$this->str.= ' - email : '.$mysoc->email."\n";
 
 		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-		$this->str .= $statut." au capital de ".$mysoc->capital." euros";
-		$this->str.= " - SIRET ".$mysoc->idprof2;
-		$this->str.= " - RCS ".$mysoc->idprof4;
-		$this->str.= " - Code APE ".$mysoc->idprof3."\n";
-		$this->str.= "N° déclaration ".$conf->global->AGF_ORGANISME_NUM;
-		$this->str.= " préfecture : ".$conf->global->AGF_ORGANISME_PREF;
-		$this->str.= " - N° TVA intra ".$mysoc->tva_intra;
+		$this->str.= $statut;
+		if (!empty($mysoc->capital)) {$this->str.=" au capital de ".$mysoc->capital." euros";}
+		if (!empty($mysoc->idprof2)) {$this->str.= " - SIRET ".$mysoc->idprof2;}
+		if (!empty($mysoc->idprof4)) {$this->str.= " - RCS ".$mysoc->idprof4;}
+		if (!empty($mysoc->idprof3)) {$this->str.= " - Code APE ".$mysoc->idprof3;}
+		$this->str.="\n";
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= " N° déclaration ".$conf->global->AGF_ORGANISME_NUM;}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= " préfecture ".$conf->global->AGF_ORGANISME_PREF;}
+		if (!empty($mysoc->tva_intra)) {$this->str.=" - N° TVA intra ".$mysoc->tva_intra;}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);

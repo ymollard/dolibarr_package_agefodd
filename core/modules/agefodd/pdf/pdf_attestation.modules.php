@@ -139,11 +139,11 @@ class pdf_attestation extends ModelePDFAgefodd
 
 			// Récuperation des objectifs pedagogique de la formation
 			$agf_op = new Agefodd($this->db);
-			$result2 = $agf_op->fetch_objpeda_per_formation($agf->id);
+			$result2 = $agf_op->fetch_objpeda_per_formation($agf->fk_formation_catalogue);
 
 			// Récupération de la duree de la formation
 			$agf_duree = new Agefodd($this->db);
-			$result = $agf_duree->fetch($agf->id);
+			$result = $agf_duree->fetch($agf->fk_formation_catalogue);
 
 			// Recuperation des stagiaires participant à la formation
 			$agf2 = new Agsession($this->db);
