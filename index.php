@@ -39,6 +39,8 @@ dol_include_once('/core/lib/date.lib.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
+$langs->load('agefodd@agefodd');
+
 llxHeader('',$langs->trans('AgefoddShort'));
 
 print_barre_liste($langs->trans("AgfBilanGlobal"), $page, "index.php","&socid=$socid",$sortfield,$sortorder,'',$num);
@@ -49,45 +51,45 @@ print '<table width="auto">';
 //colonne gauche
 print '<tr><td width=auto>';
 print '<table class="noborder" width="400px">';
-print '<tr class="liste_titre"><td colspan=4>Statistiques</td></tr>';
+print '<tr class="liste_titre"><td colspan=4>'.$langs->trans("AgfIndexStatistique").'</td></tr>';
 
 $agf = new Agefodd_index($db);
 
 // Nbre de formation au catalogue actuellement
 $resql = $agf->fetch_formation_nb();
-print '<tr class="liste"><td>Formation au catalogue actuellement: </td><td align="right">';
+print '<tr class="liste"><td>'.$langs->trans("AgfIndexTrainCat").' </td><td align="right">';
 print '<a href="'.dol_buildpath('/agefodd/training/list.php',1).'?mainmenu=agefodd">';
 print $agf->num.'</a>&nbsp;</td></tr>';
 
 
 // nbre de stagiaires formés
 $resql = $agf->fetch_student_nb();
-print '<tr class="liste"><td>Stagiaires formés: </td><td align="right">'.$resql.'&nbsp;</td></tr>';
+print '<tr class="liste"><td>'.$langs->trans("AgfIndexTraineeTrained").' </td><td align="right">'.$resql.'&nbsp;</td></tr>';
 
 
 // nbre de sessions realisées
 $resql = $agf->fetch_session_nb();
 $nb_total_session = $agf->num;
-print '<tr class="liste"><td>Sessions réalisées: </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';
+print '<tr class="liste"><td>'.$langs->trans("AgfIndexSessDo").' </td><td align="right">'.$nb_total_session.'&nbsp;</td></tr>';
 
 
 // Nbre d'heure/session délivrées
 $resql = $agf->fetch_heures_sessions_nb();
-print '<tr class="liste"><td>Heures/sessions délivrées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
+print '<tr class="liste"><td>'.$langs->trans("AgfIndexHourSessDo").' </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 $total_heures = $agf->total;
 
 
 
 // Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
-print '<tr class="liste"><td>Heures/stagiaires réalisées : </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
+print '<tr class="liste"><td>'.$langs->trans("AgfIndexHourTrainneDo").'  </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 
 print '<table>';
 print '&nbsp;';
 print '<table class="noborder" width="400px">';
 
 // Les 5 dernieres sessions
-print '<tr class="liste_titre"><td colspan=4>5 dernières sessions réalisées</td></tr>';
+print '<tr class="liste_titre"><td colspan=4>'.$langs->trans("AgfIndex5sess").'</td></tr>';
 $resql = $agf->fetch_last_formations(5);
 $num = count($agf->line);
 for ($i=0; $i < $num; $i++)
@@ -106,7 +108,7 @@ print '&nbsp;';
 print '<table class="noborder" width="400px">';
 
 // top 5 des formations
-print '<tr class="liste_titre"><td colspan=4>Top 5 des formations délivrées (nb d\'occurence, % pondéré à la durée)</td></tr>';
+print '<tr class="liste_titre"><td colspan=4>'.$langs->trans("AgfIndexTop5").'</td></tr>';
 $resql = $agf->fetch_top_formations(5);
 $num = count($agf->line);
 for ($i=0; $i < $num; $i++)
@@ -125,7 +127,7 @@ print '</td><td width="auto" valign="top">';
 
 // tableau de bord travail
 print '<table class="noborder" width="500px" align="left">';
-print '<tr class="liste_titre"><td colspan=3> Tableau de bord de travail</td>';
+print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfIndexBoard").' </td>';
 print '<td width="50px" align="right">Nombre</td></tr>';
 
 // sessions en cours

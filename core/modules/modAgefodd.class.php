@@ -320,7 +320,7 @@ class modAgefodd extends DolibarrModules
 
 		$this->menu[$r]=array(	'fk_menu'=>0,
 		'type'=>'top',
-		'titre'=>'Gestion Formation',
+		'titre'=>'Module103000Name',
 		'mainmenu'=>'agefodd',
 		'leftmenu'=>'0',
 		'url'=>'/agefodd/index.php',
