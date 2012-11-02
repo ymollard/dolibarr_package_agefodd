@@ -703,13 +703,13 @@ else
 					print '<tr><td width="20%">'.$langs->trans("AgfNumberPlaceAvailable").'</td>';
 					print '<td><input size="4" type="text" class="flat" name="nb_place" value="'.$agf->nb_place.'" />'.'</td></tr>';
 
-					if ($agf->force_nb_stagiaire) {
+					if ($agf->force_nb_stagiaire==0 || empty($agf->force_nb_stagiaire)) {
 						$disabled = 'disabled="disabled"';
-						$checked = 'checked="checked"';
+						$checked = '';
 					}
 					else {
 						$disabled = '';
-						$checked = '';
+						$checked = 'checked="checked"';
 					}
 					// Si non forcé on doit pouvoir saisir une valeur
 					print '<tr><td width="20%">'.$langs->trans("AgfNbreParticipants").'</td>';

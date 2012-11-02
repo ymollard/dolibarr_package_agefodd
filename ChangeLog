@@ -210,3 +210,4 @@ For All :
 	- Fix Bug #589 on PDF Asttestation (duration  and objectif are not display)
 	- Task #591 complete (PDF foot page render only fill information)
 	- Add translation for index pages and module titles
+	- Change behaviour of function "auto calcul nb trainne" in session card
