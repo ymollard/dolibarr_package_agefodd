@@ -59,12 +59,9 @@ class Agefodd_index
 	{
 		global $langs;
 
-		$sql = "SELECT DISTINCT";
-		$sql.= " s.fk_stagiaire,";
-		$sql.= " se.archive";
-		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_stagiaire as s";
-		$sql.= " LEFT JOIN  ".MAIN_DB_PREFIX."agefodd_session as se";
-		$sql.= " ON se.rowid = s.fk_session_agefodd";
+		$sql = "SELECT ";
+		$sql.= " sum(se.nb_stagiaire) as nb_sta ";
+		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as se";
 		$sql.= " WHERE se.archive LIKE 1";
 
 		dol_syslog(get_class($this)."::fetch_student_nb sql=".$sql, LOG_DEBUG);
@@ -72,7 +69,13 @@ class Agefodd_index
 		if ($resql)
 		{
 			$num = $this->db->num_rows($resql);
-			if ($num == '') $num = 0;
+			if ($num == '') {
+				$num = 0;
+			}
+			else {
+				$obj = $this->db->fetch_object($resql);
+				$num = $obj->nb_sta;
+			}
 			$this->db->free($resql);
 			return $num;
 
