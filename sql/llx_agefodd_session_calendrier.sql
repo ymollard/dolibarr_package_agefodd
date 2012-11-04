@@ -33,6 +33,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY idx_fk_agefodd_session (fk_agefodd_session),
-  KEY idx_fk_agefodd_session_act (fk_actioncomm)
+  KEY idx_fk_agefodd_session_cal (fk_agefodd_session),
+  KEY idx_fk_agefodd_session_act_cal (fk_actioncomm)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

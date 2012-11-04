@@ -27,5 +27,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_objectifs_peda (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY fk_formation_catalogue (fk_formation_catalogue)
+  KEY fk_formation_catalogue_obj_peda (fk_formation_catalogue)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

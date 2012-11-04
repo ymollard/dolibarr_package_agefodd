@@ -39,6 +39,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP  on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY idx_fk_agefodd_session (fk_agefodd_session),
-  KEY idx_fk_societe (fk_societe)
+  KEY idx_fk_agefodd_session_conv (fk_agefodd_session),
+  KEY idx_fk_societe_conv (fk_societe)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

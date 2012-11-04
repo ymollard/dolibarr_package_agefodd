@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   mail varchar(100) default NULL,
   note text,
   PRIMARY KEY  (rowid),
-  KEY nom (nom),
-  KEY fk_soc (fk_soc)
+  KEY nom_sta (nom),
+  KEY fk_soc_sta (fk_soc)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 

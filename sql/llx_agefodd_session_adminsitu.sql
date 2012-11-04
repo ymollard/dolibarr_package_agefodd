@@ -40,5 +40,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   archive tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY  (rowid),
-  KEY fk_agefodd_session (fk_agefodd_session)
+  KEY fk_agefodd_session_adminsitu (fk_agefodd_session)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

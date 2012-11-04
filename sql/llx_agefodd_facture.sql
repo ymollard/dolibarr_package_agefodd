@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_facture (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY idx_fk_facture (fk_facture),
-  KEY idx_fk_societe (fk_societe),
-  KEY idx_fk_session (fk_session),
-  KEY idx_fk_commande (fk_commande)
+  KEY idx_fk_facture_fac (fk_facture),
+  KEY idx_fk_societe_fac (fk_societe),
+  KEY idx_fk_session_fac (fk_session),
+  KEY idx_fk_commande_fac (fk_commande)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

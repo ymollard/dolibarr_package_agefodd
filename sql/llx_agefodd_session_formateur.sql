@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY fk_session (fk_session),
-  KEY idx_fk_agefodd_formateur (fk_agefodd_formateur)
+  KEY fk_session_sess_form (fk_session),
+  KEY idx_fk_agefodd_sess_formateur (fk_agefodd_formateur)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 

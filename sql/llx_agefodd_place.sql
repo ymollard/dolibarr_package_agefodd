@@ -41,6 +41,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY archive (archive)
+  KEY archive_place (archive)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 

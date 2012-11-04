@@ -28,6 +28,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_contact (
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (rowid),
-  KEY fk_session (fk_session_agefodd)
+  KEY fk_session_sess_contact (fk_session_agefodd)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
