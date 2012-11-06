@@ -214,3 +214,4 @@ For All :
 	- Better calculation of nb trainee trained in frist stat pages
 For Dev:
 	-Rename index on tables to be unique in all dolibarr database 
+	-Save correct convention creation date

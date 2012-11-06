@@ -98,7 +98,7 @@ class Agefodd_convention
 		$sql.= '"'.$this->sig.'", ';
 		$sql.= '"'.$this->notes.'", ';
 		$sql.= '"'.$user->id.'", ';
-		$sql.= '"'.$this->datec.'"';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
 		$this->db->begin();
