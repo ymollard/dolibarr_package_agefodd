@@ -166,8 +166,10 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 						{
 							$widthLogo = $tmp['width'];
 						}
-						$marge_logo =  (($widthLogo*25.4)/72) + 10;
-						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+						// Calcul de la largeur du logo en mm en fonction de la résolution (300dpi)
+						// 1 inch = 25.4mm
+						$marge_logo =  (($widthLogo*25.4)/300);
+						$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
 					{
