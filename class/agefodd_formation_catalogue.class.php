@@ -360,12 +360,13 @@ class Agefodd extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda(";
-		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user_author";
+		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user_author,datec";
 		$sql.= ") VALUES (";
 		$sql.= '"'.$this->fk_formation_catalogue.'", ';
 		$sql.= '"'.$this->intitule.'", ';
 		$sql.= '"'.$this->priorite.'", ';
-		$sql.= '"'.$user->id.'"';
+		$sql.= '"'.$user->id.'",';
+		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
 		$this->db->begin();

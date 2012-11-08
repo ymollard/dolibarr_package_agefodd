@@ -1,10 +1,10 @@
 INSERT INTO llx_agefodd_stagiaire_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
-(1,'financement par l''employeur (contrat pro.)', 3, '0000-00-00 00:00:00', '2010-06-30 18:47:43', 0, 0),
-(2,'financement par l''employeur (autre)', 4, '0000-00-00 00:00:00', '2010-06-30 18:47:56', 0, 0),
-(3,'demandeur d''emploi avec financement public', 5, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
-(4,'autre', 6, '0000-00-00 00:00:00', '2010-06-30 18:48:11', 0, 0),
-(5,'DIF', 1, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0),
-(6,'Période PRO', 2, '0000-00-00 00:00:00', '2010-06-30 18:48:05', 0, 0);
+(1,'financement par l''employeur (contrat pro.)', 3, now(), now(), 0, 0),
+(2,'financement par l''employeur (autre)', 4, now(), now(), 0, 0),
+(3,'demandeur d''emploi avec financement public', 5, now(), now(), 0, 0),
+(4,'autre', 6, now(), now(), 0, 0),
+(5,'DIF', 1, now(), now(), 0, 0),
+(6,'Période PRO', 2, now(), now(), 0, 0);
 
 INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, indice, intitule, delais_alerte, fk_user_author, datec, fk_user_mod, tms) VALUES
 (1, 0, 0, 100, 'Préparation de l''action', -40, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
