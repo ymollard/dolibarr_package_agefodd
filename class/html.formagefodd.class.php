@@ -232,6 +232,7 @@ class FormAgefodd extends Form
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
 		$sql.= " WHERE archive LIKE 0";
+		$sql.= " AND p.entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY p.ref_interne";
 
 		dol_syslog(get_class($this)."::select_site_forma sql=".$sql, LOG_DEBUG);
