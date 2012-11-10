@@ -211,7 +211,12 @@ For All :
 	- Task #591 complete (PDF foot page render only fill information)
 	- Add translation for index pages and module titles
 	- Change behaviour of function "auto calcul nb trainne" in session card
-	- Better calculation of nb trainee trained in frist stat pages
+	- Better calculation of nb trainee trained in first stat pages
+	- Better comptatibility module for multicompny
+	- Fix : Sort of list place
+	- Better error management in place update screen 
 For Dev:
-	-Rename index on tables to be unique in all dolibarr database 
-	-Save correct convention creation date
+	- Rename index on tables to be unique in all dolibarr database 
+	- Save correct convention creation date in formation catalogue and objectif peda
+	- Set correct creation date in create stagaire_type sql script
+	
