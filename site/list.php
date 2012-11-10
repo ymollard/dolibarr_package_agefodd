@@ -74,7 +74,7 @@ else
 print '<a href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'">'.$txt.'</a>'."\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid",'',"&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"p.rowid",'',"&arch=".$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"p.ref_interne",'', "&arch=".$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"s.nom",'',"&arch=".$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel","","&arch=".$arch,'',$sortfield,$sortorder);
