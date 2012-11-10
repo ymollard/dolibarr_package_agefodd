@@ -219,4 +219,4 @@ For Dev:
 	- Rename index on tables to be unique in all dolibarr database 
 	- Save correct convention creation date in formation catalogue and objectif peda
 	- Set correct creation date in create stagaire_type sql script
-	
+	- Fix some query for PostgreSQL compatibility	

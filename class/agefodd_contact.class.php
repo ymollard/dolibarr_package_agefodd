@@ -194,7 +194,7 @@ class Agefodd_contact extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = s.fk_soc";
 		$sql.= " WHERE c.entity IN (".getEntity('agsession').")";
-		if ($arch == 0 || $arch == 1) $sql.= " AND c.archive LIKE ".$arch;
+		if ($arch == 0 || $arch == 1) $sql.= " AND c.archive = ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
 		if (!empty($limit)) {
 			$sql.=$this->db->plimit( $limit + 1 ,$offset);

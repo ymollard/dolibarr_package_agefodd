@@ -68,7 +68,7 @@ class FormAgefodd extends Form
 
 		$sql = "SELECT c.rowid, c.intitule, c.ref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
-		$sql.= " WHERE archive LIKE 0";
+		$sql.= " WHERE archive = 0";
 		$sql.= " AND entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY ".$order;
 
@@ -231,7 +231,7 @@ class FormAgefodd extends Form
 
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
-		$sql.= " WHERE archive LIKE 0";
+		$sql.= " WHERE archive = 0";
 		$sql.= " AND p.entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY p.ref_interne";
 
@@ -374,7 +374,7 @@ class FormAgefodd extends Form
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = s.fk_soc";
-		$sql.= " WHERE c.archive LIKE 0";
+		$sql.= " WHERE c.archive = 0";
 		if (!empty($filter)) {
 			$sql .= ' AND '.$filter;
 		}
@@ -446,7 +446,7 @@ class FormAgefodd extends Form
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
 		$sql.= " ON sp.rowid = s.fk_socpeople";
-		$sql.= " WHERE s.archive LIKE 0";
+		$sql.= " WHERE s.archive = 0";
 		if (!empty($filter)) {
 			$sql .= ' AND '.$filter;
 		}

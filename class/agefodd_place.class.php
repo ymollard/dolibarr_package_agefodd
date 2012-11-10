@@ -211,7 +211,7 @@ class Agefodd_place extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_pays as pays ON pays.rowid = p.fk_pays";
 		$sql.= " WHERE p.entity IN (".getEntity('agsession').")";
 
-		if ($arch == 0 || $arch == 1) $sql.= " AND p.archive LIKE ".$arch;
+		if ($arch == 0 || $arch == 1) $sql.= " AND p.archive = ".$arch;
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);

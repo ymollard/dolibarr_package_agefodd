@@ -1467,7 +1467,7 @@ class Agsession extends CommonObject
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne,";
-		$sql.= " (SELECT count(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
+		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd=s.rowid) as num";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
@@ -1480,14 +1480,14 @@ class Agsession extends CommonObject
 
 		if ($arch == 2)
 		{
-			$sql.= " WHERE s.archive LIKE 0";
+			$sql.= " WHERE s.archive = 0";
 			$sql.= " AND sa.indice=";
 			$sql.= "(";
 			$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE level_rank=0";
 			$sql.= ")";
-			$sql.= " AND sa.archive LIKE 1";
+			$sql.= " AND sa.archive = 1";
 		}
-		else $sql.= " WHERE s.archive LIKE ".$arch;
+		else $sql.= " WHERE s.archive = ".$arch;
 
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 
@@ -1506,7 +1506,7 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql.= " GROUP BY (s.rowid)";
+		$sql.= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 
 		$resql = $this->db->query($sql);

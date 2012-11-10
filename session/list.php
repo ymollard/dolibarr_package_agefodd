@@ -79,7 +79,7 @@ if (!empty($search_site) && $search_site!=-1) {
 }
 
 if (empty($sortorder)) $sortorder="DESC";
-if (empty($sortfield)) $sortfield="c.rowid";
+if (empty($sortfield)) $sortfield="s.rowid";
 if (empty($arch)) $arch = 0;
 
 if ($page == -1) {

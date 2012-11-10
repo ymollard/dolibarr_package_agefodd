@@ -648,14 +648,13 @@ class Agefodd extends CommonObject
 
 		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree,";
 		$sql.= " (SELECT MAX(sess1.datef) FROM ".MAIN_DB_PREFIX."agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
-		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession,";
-		$sql.= " a.dated";
+		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as a";
 		$sql.= " ON c.rowid = a.fk_formation_catalogue";
-		$sql.= " WHERE c.archive LIKE ".$arch;
+		$sql.= " WHERE c.archive = ".$arch;
 		$sql.= " AND c.entity IN (".getEntity('agsession').")";
-		$sql.= " GROUP BY c.ref";
+		$sql.= " GROUP BY c.ref,c.rowid";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
