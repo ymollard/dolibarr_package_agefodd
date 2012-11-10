@@ -108,23 +108,31 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_place($db);
 
 		$result = $agf->fetch($id);
-
-		$agf->ref_interne = GETPOST('ref_interne','alpha');
-		$agf->adresse = GETPOST('adresse','alpha');
-		$agf->cp = GETPOST('zipcode','alpha');
-		$agf->ville = GETPOST('town','alpha');
-		$agf->pays_id = GETPOST('country_id','int');
-		$agf->tel = GETPOST('phone','alpha');
-		$agf->fk_societe = GETPOST('societe','int');
-		$agf->notes = GETPOST('notes','alpha');
-		$agf->acces_site = GETPOST('acces_site','alpha');
-		$agf->note1 = GETPOST('note1','alpha');
-		$result = $agf->update($user);
-
-		if ($result > 0)
+		if($result > 0) 
 		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
-			exit;
+			$agf->ref_interne = GETPOST('ref_interne','alpha');
+			$agf->adresse = GETPOST('adresse','alpha');
+			$agf->cp = GETPOST('zipcode','alpha');
+			$agf->ville = GETPOST('town','alpha');
+			$agf->pays_id = GETPOST('country_id','int');
+			$agf->tel = GETPOST('phone','alpha');
+			$agf->fk_societe = GETPOST('societe','int');
+			$agf->notes = GETPOST('notes','alpha');
+			$agf->acces_site = GETPOST('acces_site','alpha');
+			$agf->note1 = GETPOST('note1','alpha');
+			$result = $agf->update($user);
+	
+			if ($result > 0)
+			{
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+				exit;
+			}
+			else
+			{
+				dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
+				$mesg='<div class="error">'.$agf->error.'</div>';
+				$action = 'edit';
+			}
 		}
 		else
 		{
