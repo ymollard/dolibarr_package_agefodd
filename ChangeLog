@@ -214,7 +214,8 @@ For All :
 	- Better calculation of nb trainee trained in first stat pages
 	- Better comptatibility module for multicompny
 	- Fix : Sort of list place
-	- Better error management in place update screen 
+	- Better error management in place update screen
+	- Add all compagny in document liée (Customer session, OPCA trainee, OPCA session)  
 For Dev:
 	- Rename index on tables to be unique in all dolibarr database 
 	- Save correct convention creation date in formation catalogue and objectif peda

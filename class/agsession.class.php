@@ -633,6 +633,7 @@ class Agsession extends CommonObject
 	 */
 	function fetch_societe_per_session($id)
 	{
+		$error=0;
 		global $langs;
 
 		$sql = "SELECT";
@@ -672,14 +673,178 @@ class Agsession extends CommonObject
 			}
 
 			$this->db->free($resql);
-			return $num;
 		}
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
-			return -1;
+			dol_syslog(get_class($this)."::fetch_societe_per_session ".$this->error, LOG_ERR);
+			$error++;
 		}
+		
+		//Get OPCA Soc
+		$sql = "SELECT";
+		$sql.= " DISTINCT so.rowid as socid,";
+		$sql.= " s.rowid, s.type_session, s.is_OPCA, s.fk_soc_OPCA , so.nom as socname ";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = s.fk_soc_OPCA";
+		$sql.= " WHERE s.rowid = ".$id;
+		$sql.= " ORDER BY so.nom";
+		
+		dol_syslog(get_class($this)."::fetch_societe_per_session OPCA sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$add_soc=0;
+			$num_other = $this->db->num_rows($resql);
+
+			if ($num_other)
+			{
+				$i = 0;
+				while( $i < $num_other)
+				{
+					$obj = $this->db->fetch_object($resql);
+					if (!empty($obj->fk_soc_OPCA)) {
+						$this->line[$num+$i]->sessid = $obj->rowid;
+						$this->line[$num+$i]->socname = $obj->socname;
+						$this->line[$num+$i]->socid = $obj->socid;
+						$this->line[$num+$i]->type_session = $obj->type_session;
+						$this->line[$num+$i]->is_OPCA = $obj->is_OPCA;
+						$this->line[$num+$i]->fk_soc_OPCA = $obj->fk_soc_OPCA;
+						$add_soc++;
+					}
+					$i++;
+				}
+			}
+		
+			$this->db->free($resql);
+			
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_societe_per_session OPCA ".$this->error, LOG_ERR);
+			$error++;
+		}
+		
+		$num = $num+$add_soc;
+		
+		
+		//Get OPCA Soc of trainee
+
+		$sql = "SELECT";
+		$sql.= " DISTINCT soOPCATrainee.rowid as socid,";
+		$sql.= " s.rowid, s.type_session, s.is_OPCA, s.fk_soc_OPCA , soOPCATrainee.nom as socname ";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
+		$sql.= " ON s.rowid = ss.fk_session_agefodd";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
+		$sql.= " ON sa.rowid = ss.fk_stagiaire";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = sa.fk_soc";
+		$sql.= " LEFT JOIN llx_agefodd_opca AS soOPCA ON soOPCA.fk_soc_trainee = so.rowid ";
+		$sql.= " AND soOPCA.fk_session_agefodd = s.rowid ";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soOPCATrainee";
+		$sql.= " ON soOPCATrainee.rowid = soOPCA.fk_soc_OPCA";
+		$sql.= " WHERE s.rowid = ".$id;
+		$sql.= " ORDER BY so.nom";
+		
+		
+		dol_syslog(get_class($this)."::fetch_societe_per_session OPCAtrainee sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$add_soc=0;
+			$num_other = $this->db->num_rows($resql);
+		
+			if ($num_other)
+			{
+				$i = 0;
+				while( $i < $num_other)
+				{
+					$obj = $this->db->fetch_object($resql);
+					if (!empty($obj->socid)) {
+						$this->line[$num+$i]->sessid = $obj->rowid;
+						$this->line[$num+$i]->socname = $obj->socname;
+						$this->line[$num+$i]->socid = $obj->socid;
+						$this->line[$num+$i]->type_session = $obj->type_session;
+						$this->line[$num+$i]->is_OPCA = $obj->is_OPCA;
+						$this->line[$num+$i]->fk_soc_OPCA = $obj->fk_soc_OPCA;
+						$add_soc++;
+					}
+					$i++;
+				}
+			}
+		
+			$this->db->free($resql);
+				
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_societe_per_session OPCAtrainee ".$this->error, LOG_ERR);
+			$error++;
+		}
+		
+		$num = $num+$add_soc;
+		
+		//Get session customer
+		
+		$sql = "SELECT";
+		$sql.= " DISTINCT s.fk_soc as socid,";
+		$sql.= " s.rowid, s.type_session, s.is_OPCA, s.fk_soc_OPCA , so.nom as socname ";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = s.fk_soc";
+		$sql.= " WHERE s.rowid = ".$id;
+		$sql.= " ORDER BY so.nom";
+		
+		
+		dol_syslog(get_class($this)."::fetch_societe_per_session OPCAtrainee sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$add_soc=0;
+			$num_other = $this->db->num_rows($resql);
+		
+			if ($num_other)
+			{
+				$i = 0;
+				while( $i < $num_other)
+				{
+					$obj = $this->db->fetch_object($resql);
+					if (!empty($obj->socid)) {
+						$this->line[$num+$i]->sessid = $obj->rowid;
+						$this->line[$num+$i]->socname = $obj->socname;
+						$this->line[$num+$i]->socid = $obj->socid;
+						$this->line[$num+$i]->type_session = $obj->type_session;
+						$this->line[$num+$i]->is_OPCA = $obj->is_OPCA;
+						$this->line[$num+$i]->fk_soc_OPCA = $obj->fk_soc_OPCA;
+						$add_soc++;
+					}
+					$i++;
+				}
+			}
+		
+			$this->db->free($resql);
+		
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_societe_per_session OPCAtrainee ".$this->error, LOG_ERR);
+			$error++;
+		}
+		
+		$num = $num+$add_soc;
+		
+		if (!$error) {
+			return $num;
+		}else {
+			return -1;
+		} 
+			
+		
 	}
 
 
