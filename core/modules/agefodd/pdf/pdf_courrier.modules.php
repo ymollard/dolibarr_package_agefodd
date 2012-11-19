@@ -219,7 +219,7 @@ class pdf_courrier extends ModelePDFAgefodd
 
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
-				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
+				$this->str = $outputlangs->transnoentities($mysoc->url);
 				$this->width = $pdf->GetStringWidth($this->str);
 
 				// alignement du bord droit du container avec le haut de la page
@@ -250,7 +250,7 @@ class pdf_courrier extends ModelePDFAgefodd
 				$agf_contact = new Agefodd_contact($this->db);
 				$result = $agf_contact->fetch($socid);
 				// on en profite pour préparer la ligne "madame, monsieur"
-				$this->madame_monsieur = 'Madame, Monsieur,';
+				$this->madame_monsieur = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4');
 				$this->str = '';
 				if ($agf_contact->name)
 				{
@@ -260,9 +260,7 @@ class pdf_courrier extends ModelePDFAgefodd
 						$this->str.= $agf_contact->address."\n".$agf_contact->cp.' '.$agf_contact->ville;
 					}
 					else $this->str.= $agf_soc->adresse_full;
-					//$this->str.= $agf_contact->address."\n".$agf_contact->cp.' '.$agf_contact->ville;
-					$civ = array("MR" => "Monsieur", "MME" => "Madame", "MLE" => "Mademoiselle");
-					($civ[$agf_contact->civilite]) ? $this->madame_monsieur = $civ[$agf_contact->civilite].',' : $this->madame_monsieur;
+					$this->madame_monsieur = $langs->transnoentities("Civility".$agf_contact->civilite);
 				}
 				// else socity contact
 				else
@@ -276,7 +274,7 @@ class pdf_courrier extends ModelePDFAgefodd
 
 				// Date
 				$posY = $posY + 50;
-				$this->str = ucfirst(strtolower($conf->global->MAIN_INFO_SOCIETE_VILLE)).', le '.dol_print_date(dol_now(),'daytext');
+				$this->str = ucfirst(strtolower($mysoc->town)).', '.$outputlangs->transnoentities('AgfPDFFichePres8').' '.dol_print_date(dol_now(),'daytext');
 				$pdf->SetXY($this->marge_gauche,$posY+6);
 				$pdf->Cell(0,0,$outputlangs->convToOutputCharset($this->str),0,0,"L",0);
 
@@ -285,7 +283,7 @@ class pdf_courrier extends ModelePDFAgefodd
 
 				// Signataire
 				$pdf->SetXY($posX + 10, $posY + 10);
-				$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT."\nresponsable formation";
+				$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT."\n".$outputlangs->transnoentities('AgfPDFCourrierRep');
 				$pdf->MultiCell(50,4, $outputlangs->convToOutputCharset($this->str),0,'C');
 
 				// Pied de page

@@ -274,7 +274,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Mise en page de la baseline
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
-		$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
+		$this->str = $outputlangs->transnoentities($mysoc->url);
 		$this->width = $pdf->GetStringWidth($this->str);
 
 		// alignement du bord droit du container avec le haut de la page
@@ -296,7 +296,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',18);
 		$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
-		$this->str = "FICHE DE PRESENCE";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres1');
 		$pdf->Cell(0,6, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
 		$posY+= 6 + 4;
 
@@ -304,11 +304,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor(0, 0, 0);
-		$this->str = "Nous, « ".$conf->global->MAIN_INFO_SOCIETE_NOM." », demeurant ";
-		$this->str.= $conf->global->MAIN_INFO_SOCIETE_ADRESSE.' ';
-		$this->str.= $conf->global->MAIN_INFO_SOCIETE_CP.' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-		$this->str.=", représentés par ".AGF_ORGANISME_REPRESENTANT.",\n";
-		$this->str.="attestons par la présente de la réalité des informations portées ci-dessous à votre connaissance.";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2').' « '.$mysoc->name.' »,'. $outputlangs->transnoentities('AgfPDFFichePres3').' ';
+		$this->str.= $mysoc->address.' ';
+		$this->str.= $mysoc->zip.' '.$mysoc->town;
+		$this->str.=$outputlangs->transnoentities('AgfPDFFichePres4').' '.AGF_ORGANISME_REPRESENTANT.",\n";
+		$this->str.=$outputlangs->transnoentities('AgfPDFFichePres5');
 		$pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str),0,'C');
 		$hauteur = dol_nboflines_bis($this->str,50)*2;
 		$posY += $hauteur + 2;
@@ -316,7 +316,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		/***** Bloc formation *****/
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
-		$this->str = "La formation";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres23');
 		$pdf->Cell(0,4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 		$posY+= 4;
 
@@ -336,7 +336,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Intitulé
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = "Intitulé :";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres6');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 		$pdf->SetXY($posX + $larg_col1, $posY);
@@ -350,11 +350,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Période
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = "Période :";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
-		if ($agf->dated == $agf->datef) $this->str = "le ".dol_print_date($agf->datef,'daytext');
-		else $this->str = "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef,'daytext');
+		if ($agf->dated == $agf->datef) $this->str = $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef,'daytext');
+		else $this->str = $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef,'daytext');
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->MultiCell($larg_col2,4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
@@ -362,7 +362,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Lieu
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posY - $hauteur);
-		$this->str = "Lieu de formation :";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres11');
 		$pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 		$agf_place = new Agefodd_place($this->db);
@@ -384,7 +384,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		$pdf->SetXY($posX - 2, $posY -2);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
-		$this->str = "Le(s) formateur(s)";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres12');
 		$pdf->Cell(0,4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 		$posY+= 2;
 
@@ -411,12 +411,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = ",le formateur, atteste par la présente avoir dispensé la formation ci-dessus nommée.";
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres13');
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = "Signature: ";
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres14')." ";
 			$pdf->Cell($larg_col4, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			// Cadre
@@ -437,7 +437,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
-		$this->str = "Les stagiaires";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres15');
 		$pdf->Cell(0,4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 		$posY+= 4;
 
@@ -458,22 +458,22 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Nom
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = "Nom et prénom";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
 		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),R,2,"C",0);
 		// Société
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = "Société";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres17');
 		$pdf->Cell($larg_col2, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
 		// Signature
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = "Signature";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
 		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),LR,2,"C",0);
 
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY+ 3);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
-		$this->str = "(j'atteste par la présente avoir reçu la formation ci-dessus nommée)";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres19');
 		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),LR,2,"C",0);
 		$posY += $h_ligne;
 
@@ -565,15 +565,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$posY += 2;
 		$posX -=2;
 		$pdf->SetXY($posX, $posY);
-		$this->str = "Fait pour valoir ce que de droit";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres20');
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 		$pdf->SetXY($posX + 55, $posY);
-		$this->str = "date :";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres21');
 		$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 		$pdf->SetXY($posX + 92, $posY);
-		$this->str = "cachet de l'organisme de formation et signature de son représentant :";
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres22');
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 		// Pied de page

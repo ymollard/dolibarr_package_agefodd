@@ -34,16 +34,16 @@ $posY = 110;
 // Recuperation des dates de formation
 $agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
-if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
-else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+if ($agf->dated == $agf->datef) $this->date.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
+else $this->date.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
-$pdf->Cell(30, 6, "Objet :",0,0,"R",0);
+$pdf->Cell(30, 6, $outputlangs->transnoentities('AgfPDFCourrierAcceuil1'),0,0,"R",0);
 
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$this->str = "Formation professionnelle réalisée ".$this->date;
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil2')." ".$this->date;
 $pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str) ,0,0,"L",0);
 $posY += 6;
 
@@ -53,7 +53,7 @@ $posY += 6;
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
-$pdf->Cell(30, 5, $outputlangs->convToOutputCharset("Pièces jointes :"),0,0,"R",0);
+$pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'),0,0,"R",0);
 
 
 // Recuperation de la réference de la facture
@@ -62,7 +62,7 @@ $ret = $agf_fac->fetch($id, $socid);
 $facnum = $agf_fac->facnumber;
 
 $pdf->SetXY($posX - 47, $posY);
-$this->str = "Facture n° ".$facnum."\n";
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierCloture1').' '.$facnum."\n";
 
 // Recuperation des stagiaires participant à la formation
 $agf_stag = new Agsession($this->db);
@@ -70,9 +70,9 @@ $result = $agf_stag->fetch_stagiaire_per_session($id, $socid);
 $stagiaires = "";
 $num = count($agf_stag->line);
 
-($num > 1) ? $this->str.= "Attestations de formation (x".$num.")" : $this->str.= "Attestation de formation";
+($num > 1) ? $this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture2').$num.")" : $this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture3');
 $this->str.= "\n";
-$this->str.= "Copie de la feuille d'émargement\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture4')."\n";
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 $pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str));
 $posY += 36;
@@ -84,14 +84,14 @@ $posY += 36;
 
 if ($num > 6)
 {
-	$stagiaires.= $num." de vos collaborateurs. ";
+	$stagiaires.= $num.' '.$outputlangs->transnoentities('AgfPDFCourrierCloture5')." ";
 }
 else
 {
 	for ($i = 0; $i < $num; $i++)
 	{
 		if ($i < ($num - 1) && $i > 0 )  $stagiaires.= ', ';
-		if ($i == ($num - 1) && $i > 0) $stagiaires.= ' et ';
+		if ($i == ($num - 1) && $i > 0) $stagiaires.= ' '.$outputlangs->transnoentities('AgfPDFCourrierCloture6').' ';
 		$stagiaires.= ucfirst(strtolower($agf_stag->line[$i]->civilitel)).' '.$agf_stag->line[$i]->prenom.' '.$agf_stag->line[$i]->nom;
 		if ($i == ($num - 1)) $stagiaires.= '.';
 	}
@@ -100,12 +100,13 @@ $stagiaires.="\n\n";
 
 $pdf->SetXY($posX - 80, $posY);
 
-$this->str = "Madame, Monsieur,\n\n\n";
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4')."\n\n\n";
 
-$this->str.= "Veuillez trouver ci-joint les documents administratifs relatifs à la formation ";
-$this->str.= '« '.$agf->formintitule." » suivie par ";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture7')." ";
+$this->str.= '« '.$agf->formintitule." » ".$outputlangs->transnoentities('AgfPDFCourrierCloture8')." ";
 $this->str.= $stagiaires;
-$this->str.= "Vous en souhaitant bonne réception.\n\nCordialement,";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11')."\n\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil13');
 
 $pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str));
 

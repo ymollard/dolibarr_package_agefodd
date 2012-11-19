@@ -34,16 +34,17 @@ $posY = 110;
 // Recuperation des dates de formation
 $agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
-if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
-else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+if ($agf->dated == $agf->datef) $this->date.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
+else $this->date.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);
+
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
-$pdf->Cell(30, 6, "Objet :",0,0,"R",0);
+$pdf->Cell(30, 6, $outputlangs->transnoentities('AgfPDFCourrierAcceuil1'),0,0,"R",0);
 
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$this->str = "Formation professionnelle réalisée ".$this->date;
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil2')." ".$this->date;
 $pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str) ,0,0,"L",0);
 $posY += 6;
 
@@ -54,11 +55,11 @@ $posY += 6;
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
-$pdf->Cell(30, 5, $outputlangs->convToOutputCharset("Pièces jointes :"),0,0,"R",0);
+$pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'),0,0,"R",0);
 
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$this->str = 'Convention de formation (x2)';
+$this->str = $outputlangs->transnoentities('AgfConvention').' (x2)';
 $pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,'L');
 $posY += 16;
 
@@ -69,12 +70,14 @@ $posY += 16;
 
 $pdf->SetXY($posX - 80, $posY);
 
-$this->str = $this->madame_monsieur."\n\n\n";
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4')."\n\n\n";
 
-$this->str.= "Veuillez trouver ci-joint deux exemplaires de la convention de formation relative à la formation\n";
-$this->str.= '« '.$agf->formintitule." » qui se déroulera ".$this->date.".\n\n";
-$this->str.= "Merci de bien vouloir nous retourner dans les meilleurs délais un exemplaire signé, chaque page ayant été paraphée.\n\n";
-$this->str.= "Vous en souhaitant bonne réception.\n\nCordialement,";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierConv1')."\n";
+$this->str.= '« '.$agf->formintitule." » ".$outputlangs->transnoentities('AgfPDFCourrierConv2')." ".$this->date.".\n\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierConv3')."\n\n";
+
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11')."\n\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil13');
 $pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str));
 
 $hauteur = dol_nboflines_bis($this->str,50)*4;

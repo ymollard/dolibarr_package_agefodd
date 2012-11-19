@@ -53,7 +53,7 @@ class pdf_attestation extends ModelePDFAgefodd
 
 		$this->db = $db;
 		$this->name = "attestation";
-		$this->description = $langs->trans('Modèle de document pour les attestations de formation');
+		$this->description = $langs->trans('AgfPDFAttestation');
 
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
@@ -210,13 +210,13 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetTextColor(76,76,76);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 20);
-					$pdf->Cell(0, 0, "Attestation de formation", 0, 0,'C', 0);
+					$pdf->Cell(0, 0, $outputlangs->transnoentities('AgfPDFAttestation1'), 0, 0,'C', 0);
 					$pdf->SetTextColor('','','');
 
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
-					$this->str1 = "Ce document atteste que  " .ucfirst(strtolower($agf2->line[$i]->civilitel)).' ';
+					$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2')." " .ucfirst(strtolower($agf2->line[$i]->civilitel)).' ';
 					$this->width1 = $pdf->GetStringWidth($this->str1);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 16);
@@ -235,7 +235,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$newY = $newY + 6;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$this->str = 'a effectivement suivi avec assiduité le module de formation intitulé';
+					$this->str = ' '.$outputlangs->transnoentities('AgfPDFAttestation3');
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 18);
@@ -243,16 +243,16 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
 
-					$this->str = "Cette formation s'est déroulée ";
-					if ($agf->dated == $agf->datef) $this->str.= "le ".dol_print_date($agf->datef);
-					else $this->str.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
-					$this->str.= " (pour un total de ".$agf_duree->duree."h effectives).";
+					$this->str = $outputlangs->transnoentities('AgfPDFAttestation4')." ";
+					if ($agf->dated == $agf->datef) $this->str.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
+					else $this->str.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);
+					$this->str.= ' '.$outputlangs->transnoentities('AgfPDFAttestation5').$agf_duree->duree.$outputlangs->transnoentities('AgfPDFAttestation6');
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 
-					$this->str = "A l'issue de cette formation, le stagiaire est arrivé aux objectifs suivants :";
+					$this->str = $outputlangs->transnoentities('AgfPDFAttestation7');
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
@@ -279,13 +279,13 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
 					$newY = $newY + 20;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$this->str = "Avec les félicitations du pôle formation de ".$conf->global->MAIN_INFO_SOCIETE_NOM.",";
+					$this->str = $outputlangs->transnoentities('AgfPDFAttestation8')." ".$mysoc->name.",";
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 
 
 					$newY = $newY + 20;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$this->str = "fait à ".$conf->global->MAIN_INFO_SOCIETE_VILLE.", le ";
+					$this->str = $outputlangs->transnoentities('AgfPDFConv20')." ".$mysoc->town.", ".$outputlangs->transnoentities('AgfPDFFichePres8');
 					$pdf->Cell(80, 0, $outputlangs->transnoentities($this->str), 0, 0, 'R', 0);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);

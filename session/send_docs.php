@@ -741,8 +741,8 @@ if (!empty($id))
 			//document_send_line("Convocation", 2, 'convocation');
 			//document_line("Réglement intérieur", 2, 'reglement');
 
-			document_send_line("Envoi fiche pédagogique", 2, 'fiche_pedago','');
-			document_send_line("Fiche de présence", 2, "fiche_presence");
+			document_send_line($langs->trans("ActionFICHEPEDAGO_SENTBYMAIL"), 2, 'fiche_pedago','');
+			document_send_line($langs->trans("AgfFichePresence"), 2, "fiche_presence");
 			
 
 			// Pendant la formation
@@ -760,33 +760,28 @@ if (!empty($id))
 			{
 				if (!empty($agf->line[$i]->socid))
 				{
-					$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
+					print '<table class="border" width="100%">'."\n";
 
-					${
-						'flag_bc_'.$agf->line[$i]->socid} = 0;
+					print '<tr class="liste_titre">'."\n";
+					print '<td colspan=3>';
+					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+					print '</tr>'."\n";
 
-						print '<table class="border" width="100%">'."\n";
+					// Avant la formation
+					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+					//document_send_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
+					document_send_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
+					//document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
+					//document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
 
-						print '<tr class="liste_titre">'."\n";
-						print '<td colspan=3>';
-						print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
-						print '</tr>'."\n";
-
-						// Avant la formation
-						//print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-						//document_send_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
-						document_send_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
-						//document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-						//document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
-
-						// Après la formation
-						//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-						document_send_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
-						//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
-						document_send_line("Dossier de clôture", 2, "cloture", $agf->line[$i]->socid);
-						//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
-						print '</table>';
-						if ($i < $linecount) print '&nbsp;'."\n";
+					// Après la formation
+					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+					document_send_line($langs->trans("AdfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
+					//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
+					document_send_line($langs->trans("AgfCourrierCloture"), 2, "cloture", $agf->line[$i]->socid);
+					//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
+					print '</table>';
+					if ($i < $linecount) print '&nbsp;'."\n";
 				}
 			}
 			print '</div>'."\n";

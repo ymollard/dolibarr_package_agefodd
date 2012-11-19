@@ -18,7 +18,7 @@
 */
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \file		pdf_acceuil_courrier.module.php
  \brief		Contenu du fichier pdf "courrier accompagnant l'envoi du dossier d'accueil"
 \version	$Id$
 */
@@ -35,16 +35,16 @@ $posY = 110;
 // Recuperation des dates de formation
 $agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
-if ($agf->dated == $agf->datef) $this->date.= "le ".dol_print_date($agf->datef);
-else $this->date.= "du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+if ($agf->dated == $agf->datef) $this->date.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
+else $this->date.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
-$pdf->Cell(30, 6, "Objet :",0,0,"R",0);
+$pdf->Cell(30, 6, $outputlangs->transnoentities('AgfPDFCourrierAcceuil1'),0,0,"R",0);
 
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$this->str = "Formation professionnelle réalisée ".$this->date;
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil2')." ".$this->date;
 $pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str) ,0,0,"L",0);
 $posY += 6;
 
@@ -55,15 +55,15 @@ $posY += 6;
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
-$pdf->Cell(30, 5, $outputlangs->convToOutputCharset("Pièces jointes :"),0,0,"R",0);
+$pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'),0,0,"R",0);
 
 
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$this->str = "Convocation\n";
-$this->str.= "Programme\n";
-$this->str.= "Fiche pédagogique\n";
-$this->str.= "Fiche de conseils pratiques";
+$this->str = $outputlangs->transnoentities('AgfPDFConvocation')."\n";
+$this->str.= $outputlangs->transnoentities('AgfProgramme')."\n";
+$this->str.= $outputlangs->transnoentities('AgfFichePedagogique')."\n";
+$this->str.= $outputlangs->transnoentities('AgfConseilsPratique');
 $pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str));
 $posY += 36;
 
@@ -79,7 +79,7 @@ $stagiaires = "";
 $num = count($agf_stag->line);
 if ($num > 6)
 {
-	$stagiaires.= $num." de vos collaborateurs. ";
+	$stagiaires.= $num.' '.$outputlangs->transnoentities('AgfPDFCourrierAcceuil12')." ";
 }
 else
 {
@@ -94,15 +94,16 @@ else
 }
 $pdf->SetXY($posX - 80, $posY);
 
-$this->str = "Madame, Monsieur,\n\n\n";
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4')."\n\n\n";
 
-$this->str.= "Vous avez souhaité faire participer à la formation cité en objet ".$stagiaires;
-$this->str.= "Cette formation se déroulera " . $this->date;
-$this->str.= " dans les locaux du ".$agf->placecode.".\n";
-$this->str.= "Nous vous prions de trouver en pièce jointe l'ensemble des documents utiles au bon déroulement de cette prestation.\n";
-$this->str.= "Merci de bien vouloir les transmettre à chacun des participants: certains sont indispensables";
-$this->str.= " au bon déroulement de la formation.\n\n";
-$this->str.= "Vous en souhaitant bonne réception.\n\nCordialement,";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil5')." ".$stagiaires;
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil6')." " . $this->date;
+$this->str.= ' '.$outputlangs->transnoentities('AgfPDFCourrierAcceuil7')." ".$agf->placecode.".\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil8')."\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil9');
+$this->str.= ' '.$outputlangs->transnoentities('AgfPDFCourrierAcceuil10')."\n\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11')."\n\n";
+$this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil13');
 $pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str));
 
 $hauteur = dol_nboflines_bis($this->str,50)*4;

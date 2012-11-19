@@ -240,7 +240,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Fiche d'évaluation de la formation";
+				$this->str = $outputlangs->transnoentities('AgfFicheEval');
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 10;
 
@@ -262,7 +262,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',9);
 
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Session du ";
+				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval1')." ";
 				if ($agf->dated == $agf->dated) $this->str .= dol_print_date($agf->dated);
 				else $this->str .= dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
@@ -280,7 +280,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 				$pdf->SetXY($posX, $posY);
 				//$this->str = "formateur: ".$agf->teachername;
-				($nbform > 1) ? $this->str = "formateurs : " : $this->str = "formateur :";
+				($nbform > 1) ? $this->str = $outputlangs->transnoentities('AgfPDFFicheEval2')." " : $this->str = $outputlangs->transnoentities('AgfPDFFicheEval3')." ";
 				$this->str .= $forma_str;
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 10;
@@ -294,7 +294,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',10);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Les objectifs sont-ils atteints?";
+				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval4');
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5 + 1;
 
@@ -328,7 +328,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Indiquez votre degré d'accord envers chacun des énnoncés présentés ci-dessous, en utilisant l'échelle suivante (pour chaque affirmation, indiquez le chiffre correspondant le plus à votre appréciation):";
+				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval5');
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0,'C',0);
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$posY+= $hauteur + 1;
@@ -353,11 +353,11 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				// ligne 2
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("pas du tout d'accord"),1,0,'C');
-				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("en désaccord partiel"),1,0,'C');
-				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("plus ou moins d'accord"),1,0,'C');
-				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("en accord partiel"),1,0,'C');
-				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("tout à fait d'accord"),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval6'),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval7'),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval8'),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval9'),1,0,'C');
+				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval10'),1,0,'C');
 				$posY+= 5 + 10;
 
 
@@ -367,63 +367,63 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$hauteur_ligne = 6;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("J'étais motivé pour suivre ce stage."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval11'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Les objectifs de la formation étaient clairs et précis."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval12'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Le contenu de la formation correspondait à mes besoins et à mes préoccupations."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval13'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("L'enchainement des modules a favorisé mon apprentissage."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval14'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Les exercices et les activités étaient pertinents."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval15'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Le(s) formateur(s) communiquai(en)t de façon claire et dynamique."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval16'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Le déroulement de la formation a respecté le rythme d'apprentissage des participants."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval17'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Cette formation m'a permit d'augmenter mon niveau de connaissance et de compétence."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval18'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Si cela était possible, je serai en mesure d'utiliser ces compétences dès mon retour au travail."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval19'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Je parlerai positivement de cette formation à mon entourage."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval20'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= $hauteur_ligne;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(170, $hauteur_ligne, $outputlangs->convToOutputCharset("Je suis satisfait des conditions matérielles dans lesquelles s'est déroulée la formation."),1,0,'L');
+				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval21'),1,0,'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""),1,0,'C');
 				$posY+= 5 + $hauteur_ligne;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',11);
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(0, $hauteur_ligne, $outputlangs->convToOutputCharset("Merci de bien vouloir commenter chacun des points dont le score est inférieur ou égal à 3."),0,0,'C');
+				$pdf->Cell(0, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval22'),0,0,'C');
 				$posY+= $hauteur_ligne;
 
 
@@ -431,7 +431,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);
 				$pdf->SetXY($posX, $posY);
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset("Commentaires et/ou recommandations"),0,0,'L');
+				$pdf->Cell(0, 5, $outputlangs->transnoentities('AgfPDFFicheEval23'),0,0,'L');
 
 				$hauteur = $this->page_hauteur - 20 - $posY - 5;
 
