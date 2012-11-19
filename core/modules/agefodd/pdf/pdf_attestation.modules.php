@@ -373,7 +373,11 @@ class pdf_attestation extends ModelePDFAgefodd
 	{
 		global $conf,$langs,$mysoc;
 
-		$this->str = $mysoc->name." - Organisme de formation enregistré à la préfecture de ".$conf->global->AGF_ORGANISME_PREF." sous le n° ".$conf->global->AGF_ORGANISME_NUM;
+		$this->str = $mysoc->name;
+		$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot12').' ';
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot10').' '.$conf->global->AGF_ORGANISME_PREF;}
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot11').' '.$conf->global->AGF_ORGANISME_NUM;}
+		
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);

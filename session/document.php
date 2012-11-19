@@ -44,7 +44,6 @@ $action=GETPOST('action','alpha');
 $id=GETPOST('id','int');
 $socid=GETPOST('socid','int');
 
-
 $mesg = '';
 
 // lie une facture ou un bon de commande à la session
@@ -285,13 +284,13 @@ if (!empty($id))
 
 
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
-		document_line("Fiche pédagogique", 2, 'fiche_pedago');
-		document_line("Conseils pratiques", 2, 'conseils');
+		document_line($langs->trans("AgfFichePedagogique"), 2, 'fiche_pedago');
+		document_line($langs->trans("AgfConseilsPratique"), 2, 'conseils');
 
 		// Pendant la formation
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
-		document_line("Fiche de présence", 2, "fiche_presence");
-		document_line("Fiche d'évaluation", 2, "fiche_evaluation");
+		document_line($langs->trans("AgfFichePresence"), 2, "fiche_presence");
+		document_line($langs->trans("AgfFicheEval"), 2, "fiche_evaluation");
 
 		print '</table>'."\n";
 		print '&nbsp;'."\n";
@@ -302,63 +301,57 @@ if (!empty($id))
 		{
 			if (!empty($agf->line[$i]->socid))
 			{
-				$ext = '_'.$id.'_'.$agf->line[$i]->socid.'.pdf';
+				print '<table class="border" width="100%">'."\n";
 
-				${
-					'flag_bc_'.$agf->line[$i]->socid} = 0;
+				print '<tr class="liste_titre">'."\n";
+				print '<td colspan=3>';
+				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+				print '</tr>'."\n";
 
-					print '<table class="border" width="100%">'."\n";
+				// Avant la formation
+				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+				document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->line[$i]->socid);
+				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
+				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->line[$i]->socid);
+				document_line($langs->trans("AgfCourrierConv"), 2, "courrier", $agf->line[$i]->socid,'convention');
+				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');
 
-					print '<tr class="liste_titre">'."\n";
-					print '<td colspan=3>';
-					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
-					print '</tr>'."\n";
+				// Après la formation
+				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+				document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
 
-					// Avant la formation
-					print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-					document_line("Bon de commande", 2, "bc", $agf->line[$i]->socid);
-					document_line("Convention de formation", 2, "convention", $agf->line[$i]->socid);
-					document_line("Convocation", 2, 'convocation', $agf->line[$i]->socid);
-					document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-					document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
+				$text_fac = $langs->trans("AgfFacture");
+				if($agf->line[$i]->type_session) { // session inter
+					$agfstat = new Agsession($db);
+					// load les infos OPCA pour la session
+					$agfstat->getOpcaForTraineeInSession($agf->line[$i]->socid,$agf->line[$i]->sessid);
+					// Facture à l'OPCA si subrogation
+					$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
 
-					// Après la formation
-					print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-					document_line("Attestations de formation", 2, "attestation", $agf->line[$i]->socid);
-
-					$text_fac = "Facture";
-					if($agf->line[$i]->type_session) { // session inter
-						$agfstat = new Agsession($db);
-						// load les infos OPCA pour la session
-						$agfstat->getOpcaForTraineeInSession($agf->line[$i]->socid,$agf->line[$i]->sessid);
-						// Facture à l'OPCA si subrogation
-						$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
-
-						// Si subrogation et info renseigné
-						if ($soc_to_select > 0 && $agfstat->is_OPCA)
-						{
-							$text_fac.=' (ajouter contact OPCA en tant que subrogation)';
-						}
-						elseif(!$agfstat->is_OPCA) // Pas de subrogation
-						{
-							$text_fac.=" (pas de subrogation)";
-						}
-						else // OPCA non renseignée
-						{
-							$text_fac.= ' <span class="error">subrogation : aucun tiers indiqué pour le contact facturation de l\'OPCA. <a href="'.dol_buildpath("/agefodd/session/subscribers.php",1).'?action=edit&id='.$id.'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a></span>';
-						}
+					// Si subrogation et info renseigné
+					if ($soc_to_select > 0 && $agfstat->is_OPCA)
+					{
+						$text_fac.=' '.$langs->trans("AgfOPCASub1");
 					}
-					document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
+					elseif(!$agfstat->is_OPCA) // Pas de subrogation
+					{
+						$text_fac.=' '.$langs->trans("AgfOPCASub2");
+					}
+					else // OPCA non renseignée
+					{
+						$text_fac.= ' <span class="error">'.$langs->trans("AgfOPCASubErr").' <a href="'.dol_buildpath("/agefodd/session/subscribers.php",1).'?action=edit&id='.$id.'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a></span>';
+					}
+				}
+				document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
 
-					document_line("Courrier accompagnant l'envoi du dossier de clôture", 2, "courrier", $agf->line[$i]->socid, 'cloture');
-					print '</table>';
-					if ($i < $linecount) print '&nbsp;'."\n";
+				document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->line[$i]->socid, 'cloture');
+				print '</table>';
+				if ($i < $linecount) print '&nbsp;'."\n";
 			}
 		}
 		print '</div>'."\n";
 	}
 
 }
-
-llxFooter('');
+llxFooter();
 ?>

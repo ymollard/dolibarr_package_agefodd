@@ -251,7 +251,7 @@ class Agefodd_convention
 		global $langs;
 
 		$sql = "SELECT";
-		$sql.= " c.rowid, c.fk_commande, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
+		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
 		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql.= " FROM ".MAIN_DB_PREFIX."commandedet as c";
 		$sql.= " WHERE c.fk_commande = ".$comid;
@@ -288,6 +288,57 @@ class Agefodd_convention
 		{
 			$this->error="Error ".$this->db->lasterror();
 			dol_syslog(get_class($this)."::fetch_commande_lines ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+	
+	/**
+	 *    \brief	Recupére les infos concernant la commande associée à la convention
+	 *    \param	commid	int	id commande
+	 *    \return     	int     <0 if KO, >0 if OK
+	 */
+	function fetch_facture_lines($factid)
+	{
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
+		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc";
+		$sql.= " FROM ".MAIN_DB_PREFIX."facturedet as c";
+		$sql.= " WHERE c.fk_facture = ".$factid;
+	
+		dol_syslog(get_class($this)."::fetch_facture_lines sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+	
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+	
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+				$this->line[$i]->rowid = $obj->rowid;
+				$this->line[$i]->fk_product = $obj->fk_product;
+				$this->line[$i]->description = $obj->description;
+				$this->line[$i]->tva_tx = $obj->tva_tx;
+				$this->line[$i]->remise_percent = $obj->remise_percent;
+				$this->line[$i]->fk_remise_except = $obj->fk_remise_except;
+				$this->line[$i]->price = $obj->price;
+				$this->line[$i]->qty = $obj->qty;
+				$this->line[$i]->total_ht = $obj->total_ht;
+				$this->line[$i]->total_tva = $obj->total_tva;
+				$this->line[$i]->total_ttc = $obj->total_ttc;
+				$i++;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_facture_lines ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}

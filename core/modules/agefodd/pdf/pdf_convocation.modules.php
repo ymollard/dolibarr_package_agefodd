@@ -221,13 +221,14 @@ class pdf_convocation extends ModelePDFAgefodd
 					$this->str = $mysoc->address."\n";
 					$this->str.= $mysoc->zip.' '.$mysoc->town;
 					$this->str.= ' - '.$mysoc->country."\n";
-					$this->str.= 'tél : '.$mysoc->phone."";
-					if($mysoc->fax)
-						$this->str.= ' - Fax : '.$mysoc->fax."\n";
-					else
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
+					if($mysoc->fax) {
+						$this->str.= ' '.$outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";
+					}else {
 						$this->str.= "\n";
-					$this->str.= 'Courriel : '.$mysoc->email."\n";
-					$this->str.= 'Site web : '.$mysoc->url."\n";
+					}
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";
 
 					$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
 					$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -239,7 +240,7 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					// Mise en page de la baseline
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
-					$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
+					$this->str = $outputlangs->transnoentities($mysoc->url);
 					$this->width = $pdf->GetStringWidth($this->str);
 
 					// alignement du bord droit du container avec le haut de la page
@@ -262,7 +263,7 @@ class pdf_convocation extends ModelePDFAgefodd
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 					$pdf->SetTextColor(0,0,0);
 					$pdf->SetXY($posX, $posY);
-					$this->str = "Convocation";
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation');
 					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 					$posY+= 14;
 
@@ -270,7 +271,7 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY( $posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM . " a le plaisir d'inviter :";
+					$this->str = $mysoc->name.' '.$outputlangs->transnoentities('AgfPDFConvocation1');
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str),0,0);
 					$posY += 8 ;
 
@@ -282,7 +283,7 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = "à participer a la formation";
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation2');
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 2;
 
@@ -294,14 +295,14 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = " se déroulera le: ";
+					$this->str = ' '.$outputlangs->transnoentities('AgfPDFConvocation3').' ';
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 3;
 
 					foreach ($agf_calendrier->line as $line) {
 						$pdf->SetXY( $posX + 10, $posY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
-						$this->str = dol_print_date($line->date_session,'daytext')." de ".dol_print_date($line->heured,'hour'). " à ".dol_print_date($line->heuref,'hour');
+						$this->str = dol_print_date($line->date_session,'daytext').' '.$outputlangs->transnoentities('AgfPDFConvocation4').' '.dol_print_date($line->heured,'hour').' '.$outputlangs->transnoentities('AgfPDFConvocation5').' '.dol_print_date($line->heuref,'hour');
 						$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 						$posY = $pdf->GetY() + 2;
 
@@ -311,7 +312,7 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = " a l'adresse suivante: ";
+					$this->str = ' '.$outputlangs->transnoentities('AgfPDFConvocation6').' ';
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 3;
 
@@ -341,14 +342,14 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY( $posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = "Dans l’attente de vous accueillir";
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation7');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 8;
 
 
 					$pdf->SetXY( $posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = "Recevez l’expression de nos sincères salutations.";
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation8');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 8;
 
@@ -415,23 +416,23 @@ class pdf_convocation extends ModelePDFAgefodd
 		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-
+	
 		$this->str = $mysoc->address." ";
 		$this->str.= $mysoc->zip.' '.$mysoc->town;
-		$this->str.= ' - '.$mysoc->country."";
-		$this->str.= ' - tél : '.$mysoc->phone;
-		$this->str.= ' - email : '.$mysoc->email."\n";
+		$this->str.= ' - '.$mysoc->country;
+		$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot1').' '.$mysoc->phone;
+		$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot2').' '.$mysoc->email."\n";
 
 		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
 		$this->str.= $statut;
-		if (!empty($mysoc->capital)) {$this->str.=" au capital de ".$mysoc->capital." euros";}
-		if (!empty($mysoc->idprof2)) {$this->str.= " - SIRET ".$mysoc->idprof2;}
-		if (!empty($mysoc->idprof4)) {$this->str.= " - RCS ".$mysoc->idprof4;}
-		if (!empty($mysoc->idprof3)) {$this->str.= " - Code APE ".$mysoc->idprof3;}
+		if (!empty($mysoc->capital)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);}
+		if (!empty($mysoc->idprof2)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;}
+		if (!empty($mysoc->idprof4)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;}
+		if (!empty($mysoc->idprof3)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;}
 		$this->str.="\n";
-		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= " N° déclaration ".$conf->global->AGF_ORGANISME_NUM;}
-		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= " préfecture ".$conf->global->AGF_ORGANISME_PREF;}
-		if (!empty($mysoc->tva_intra)) {$this->str.= " - N° TVA intra ".$mysoc->tva_intra;}
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;}
+		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);

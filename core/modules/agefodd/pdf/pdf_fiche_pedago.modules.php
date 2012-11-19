@@ -211,13 +211,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = $mysoc->address."\n";
 				$this->str.= $mysoc->zip.' '.$mysoc->town;
 				$this->str.= ' - '.$mysoc->country."\n";
-				$this->str.= 'tél : '.$mysoc->phone."";
-				if($mysoc->fax)
-					$this->str.= ' - Fax : '.$mysoc->fax."\n";
-				else
+				$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
+				if($mysoc->fax) {
+					$this->str.= ' '.$outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";
+				}else {
 					$this->str.= "\n";
-				$this->str.= 'Courriel : '.$mysoc->email."\n";
-				$this->str.= 'Site web : '.$mysoc->url."\n";
+				}
+				$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";
+				$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";
 
 				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -252,7 +253,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
 				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Fiche pédagogique";
+				$this->str = $outputlangs->transnoentities('AgfFichePedagogique');
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 10;
 
@@ -273,13 +274,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "But";
+				$this->str = $outputlangs->transnoentities('AgfBut');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 				$this->str = $agf->but;
-				if (empty($this->str)) $this->str = "Aucun";
+				if (empty($this->str)) $this->str = $outputlangs->transnoentities('AgfUndefinedBut');
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -292,7 +293,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Objectifs pédagogiques";
+				$this->str = $outputlangs->transnoentities('AgfObjPeda');
 
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
@@ -316,13 +317,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Pré-requis";
+				$this->str = $outputlangs->transnoentities('AgfPrerequis');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$this->str = $agf->prerequis;
-				if (empty($this->str)) $this->str = "Aucun";
+				if (empty($this->str)) $this->str = $outputlangs->transnoentities('AgfUndefinedPrerequis');
 
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -334,7 +335,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Publics";
+				$this->str = $outputlangs->transnoentities('AgfPublic');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
@@ -353,7 +354,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Programme";
+				$this->str = $outputlangs->transnoentities('AgfProgramme');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
@@ -369,7 +370,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Méthode pédagogique";
+				$this->str = $outputlangs->transnoentities('AgfMethode');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
@@ -386,17 +387,17 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// Durée
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
 				$pdf->SetXY($posX, $posY);
-				$this->str = "Durée";
+				$this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
 				// calcul de la duree en nbre de jours
 				$jour = $agf->duree / 7;
-				if ($jour < 1) $this->str = $agf->duree.' heures.';
+				if ($jour < 1) $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
 				else
 				{
-					$this->str = $agf->duree.' heures ('.ceil($jour).' jour';
+					$this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').' ('.ceil($jour).' '.$outputlangs->transnoentities('AgfPDFFichePeda3');
 					if (ceil($jour) > 1) $this->str.='s';
 					$this->str.=').';
 				}
@@ -470,21 +471,21 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 		$this->str = $mysoc->address." ";
 		$this->str.= $mysoc->zip.' '.$mysoc->town;
-		$this->str.= ' - '.$mysoc->country."";
-		$this->str.= ' - tél : '.$mysoc->phone;
-		$this->str.= ' - email : '.$mysoc->email."\n";
+		$this->str.= ' - '.$mysoc->country;
+		$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot1').' '.$mysoc->phone;
+		$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot2').' '.$mysoc->email."\n";
 
 		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
 		$this->str.= $statut;
-		if (!empty($mysoc->capital)) {$this->str.=" au capital de ".$mysoc->capital." euros";}
-		if (!empty($mysoc->idprof2)) {$this->str.= " - SIRET ".$mysoc->idprof2;}
-		if (!empty($mysoc->idprof4)) {$this->str.= " - RCS ".$mysoc->idprof4;}
-		if (!empty($mysoc->idprof3)) {$this->str.= " - Code APE ".$mysoc->idprof3;}
+		if (!empty($mysoc->capital)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);}
+		if (!empty($mysoc->idprof2)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;}
+		if (!empty($mysoc->idprof4)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;}
+		if (!empty($mysoc->idprof3)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;}
 		$this->str.="\n";
-		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= " N° déclaration ".$conf->global->AGF_ORGANISME_NUM;}
-		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= " préfecture ".$conf->global->AGF_ORGANISME_PREF;}
-		if (!empty($mysoc->tva_intra)) {$this->str.= " - N° TVA intra ".$mysoc->tva_intra;}
-
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;}
+		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
+		
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
 		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');

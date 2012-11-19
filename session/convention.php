@@ -271,18 +271,27 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	//intro1
 	$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-	$intro1 = "La société ".$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut." au capital de ";
-	$intro1.= $conf->global->MAIN_INFO_CAPITAL." euros, dont le siège social est à ".$conf->global->MAIN_INFO_SOCIETE_VILLE;
-	$intro1.= " (".$conf->global->MAIN_INFO_SOCIETE_CP."), immatriculée au Registre du Commerce et des Sociétés sous la référence ";
-	$intro1.= $conf->global->MAIN_INFO_RCS;
+	$intro1 = $langs->trans('AgfConvIntro1_1').' '.$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut.$langs->trans('AgfConvIntro1_2').' ';
+	if (!empty($conf->global->MAIN_INFO_CAPITAL)) {
+		$capital_text=$conf->global->MAIN_INFO_CAPITAL.' '.$langs->trans("Currency".$conf->currency);
+	} else {
+		$capital_text='';
+	}
+	$intro1.= $capital_text.' '.$statut.' '.$langs->trans('AgfConvIntro1_3').' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
+	$intro1.= ' ('.$conf->global->MAIN_INFO_SOCIETE_CP.') ';
+	if (!empty($conf->global->MAIN_INFO_RCS)) {
+		$intro1.= $langs->trans('AgfConvIntro1_4').' '.$conf->global->MAIN_INFO_RCS;
+	}
 	if (empty ($conf->global->AGF_ORGANISME_NUM)) {
-		$intro1.= "et en cours d’enregistrement comme organisme de formation auprès de la préfecture ".$conf->global->AGF_ORGANISME_PREF;
+		$intro1.= ' '.$langs->trans('AgfConvIntro1_5').' '.$conf->global->AGF_ORGANISME_PREF;
 	}
 	else{
-		$intro1.= " et enregistré comme organisme de formation auprès de la préfecture ";
-		$intro1.= $conf->global->AGF_ORGANISME_PREF." sous le numéro ".$conf->global->AGF_ORGANISME_NUM;
+		$intro1.= $langs->trans('AgfConvIntro1_6');
+		$intro1.= $conf->global->AGF_ORGANISME_PREF.' '.$langs->trans('AgfConvIntro1_7').' '.$conf->global->AGF_ORGANISME_NUM;
 	}
-	$intro1.= ", représentée par ".$conf->global->AGF_ORGANISME_REPRESENTANT.", dûment habilité à ce faire en sa qualité de gérant,";
+	if (!empty($conf->global->AGF_ORGANISME_REPRESENTANT)) {
+		$intro1.= $langs->trans('AgfConvIntro1_8').' '.$conf->global->AGF_ORGANISME_REPRESENTANT.$langs->trans('AgfConvIntro1_9');
+	}
 
 
 	//intro2
@@ -295,11 +304,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$resql2 = $agf_contact->fetch($socid,'socid');
 
 	// intro2
-	$intro2 = "La société ".$agf_soc->nom.", situé ".$agf_soc->adresse." ".$agf_soc->cp." ".$agf_soc->ville.",";
-	$intro2.= " siret ". $agf_soc->siret.", ";
-	$intro2.= " représenté par ";
+	$intro2 = $langs->trans('AgfConvIntro2_1').' '.$agf_soc->nom.$langs->trans('AgfConvIntro2_2').' '.$agf_soc->adresse." ".$agf_soc->cp." ".$agf_soc->ville.",";
+	$intro2.= ' '.$langs->trans('AgfConvIntro2_3').' '. $agf_soc->siret.", ";
+	$intro2.= ' '.$langs->trans('AgfConvIntro2_4').' ';
 	$intro2.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name;
-	$intro2.= " dûment habilité à ce faire,";
+	$intro2.= ' '.$langs->trans('AgfConvIntro2_5');
 
 	//article 1
 	// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)
@@ -308,25 +317,28 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	// '# ', une puce de premier niveau est mis en place
 	// '## ', une puce de second niveau est mis en place
 	// '### ', une puce de troisième niveau est mis en place
-	$art1 = "!# L'organisme accomplit l'action de formation suivante :"."\n";
-	$art1.= '# Intitulé du stage : « '.$agf->formintitule.' »'."\n";
-	$art1.= '# Objectifs :'."\n";
+	$art1 = $langs->trans('AgfConvArt1_1')."\n";
+	$art1.= $langs->trans('AgfConvArt1_2').' '.$agf->formintitule.' '.$langs->trans('AgfConvArt1_3')." \n";
+	$art1.= $langs->trans('AgfConvArt1_4')."\n";	
+	
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
 	for ( $i = 0; $i < count($obj_peda->line); $i++)
 	{
 		$art1.= "## ".$obj_peda->line[$i]->intitule."\n";
 	}
-	$art1.= '# Programme et méthode : cf. annexe1 (fiche pédagogique).'."\n";
-	$art1.= '# Type d\'action de formation : acquisition des connaissances.'."\n";
-	$art1.= '# Date';
-	if ($agf->dated == $agf->datef) $art1.= ": le ".dol_print_date($agf->datef);
-	else $art1.= "s: du ".dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+	$art1.= $langs->trans('AgfConvArt1_5')."\n";
+	$art1.= $langs->trans('AgfConvArt1_6')."\n";
+	$art1.= $langs->trans('AgfConvArt1_7');
+	
+	if ($agf->dated == $agf->datef) $art1.= $langs->trans('AgfConvArt1_8').' '.dol_print_date($agf->datef);
+	else $art1.= $langs->trans('AgfConvArt1_9').' '.dol_print_date($agf->dated).' '.$langs->trans('AgfConvArt1_10').' '.dol_print_date($agf->datef);
+		
 	$art1.= "\n";
 
 	// Durée de formation
-	$art1.= '# Durée : '.$agf->duree.' heures, réparties de la façon suivante :'."\n";
-
+	$art1.= $langs->trans('AgfConvArt1_11').' '.$agf->duree.$langs->trans('AgfConvArt1_12').' '."\n";
+	
 	$calendrier = new Agefodd_sesscalendar($db);
 	$resql = $calendrier->fetch_all($sessid);
 	$blocNumber = count($calendrier->line);
@@ -348,72 +360,72 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$old_date = $calendrier->line[$i]->date_session;
 	}
 
-	$art1.= '# Sanction : Acquisition de connaissance donnant lieu à  la délivrance d’une attestation de formation'."\n";
+	$art1.= $langs->trans('AgfConvArt1_13')."\n";
 
 	$stagiaires = new Agsession($db);
 	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
-	$art1.= '# Effectif du stage : '.$nbstag.' personne';
-	if ($nbstag > 1) $art1.= 's';
-	$art1.= ".\n";
+	$art1.= $langs->trans('AgfConvArt1_14').' '.$nbstag.' '.$langs->trans('AgfConvArt1_15');
+	if ($nbstag > 1) $art1.= $langs->trans('AgfConvArt1_16');
+	$art1.= $langs->trans('AgfConvArt1_17')."\n";
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);
 	$resql3 = $agf_place->fetch($agf->placeid);
 	$adresse = $agf_place->adresse.", ".$agf_place->cp." ".$agf_place->ville;
-	$art1.= "# Lieu : salle de formation (".$agf_place->ref_interne.') située '.$adresse.'.';
+	$art1.= $langs->trans('AgfConvArt1_18').$agf_place->ref_interne.$langs->trans('AgfConvArt1_19').$adresse.'.';
 
 	// texte 2
 	if ($agf_conv->art2) $art2 = $agf_conv->art2;
 	else
 	{
-		$art2 = "Cf. annexe 1 (fiche pédagogique).";
+		$art2 = $langs->trans('AgfConvArt2_1');
 	}
 
 	// texte3
-	$art3 = "L'organisme formera le";
-	($nbstag > 1) ? $art3.='s stagiaires ' : $art3.=' stagiaire ';
+	$art3 = $langs->trans('AgfConvArt3_1');
+	($nbstag > 1) ? $art3.=$langs->trans('AgfConvArt3_2').' ' : $art3.=' '.$langs->trans('AgfConvArt3_3').' ';
+	
 	for ($i= 0; $i < $nbstag; $i++)
 	{
 		$art3.= $stagiaires->line[$i]->nom.' '.$stagiaires->line[$i]->prenom;
 		if ($i == $nbstag - 1) $art3.= '.';
 		else
 		{
-			if ($i == $nbstag - 2) $art3.= ' et ';
+			if ($i == $nbstag - 2) $art3.= $langs->trans('AgfConvArt3_4');
 			else  $art3.= ', ';
 		}
 	}
 
 	// texte 4
 	if ($conf->global->FACTURE_TVAOPTION=="franchise") {
-		$art4 = "L'organisme déclare ne pas être assujetti à la TVA au sens de l’art 232B du CGI (franchise de TVA). \nEn contrepartie de cette action de formation, le client devra s'acquitter des sommes suivantes :";
+		$art4 = $langs->trans('AgfConvArt4_1');
 	}
 	else {
-		$art4 = "L'organisme déclare être assujetti à la TVA au sens de l'article 261-4-4°-a du CGI et des articles L.900-2 et R.950-4 du code du travail. \nEn contrepartie de cette action de formation, le client devra s'acquitter des sommes suivantes :";
+		$art4 = $langs->trans('AgfConvArt4_3');
 	}
-
+	$art4.="\n".$langs->trans('AgfConvArt4_2');
 
 	// texte 5
 	if ($agf_conv->art5) $art5 = $agf_conv->art5;
 	else
 	{
-		$art5 = "La facture correspondant à la somme indiquée ci-dessus sera adressée, service fait, par l'organisme au client qui en règlera le montant sur le compte de l'organisme.";
+		$art5 = $langs->trans('AgfConvArt5_1');
 	}
 
 	//article 6
-	if ($agf_conv->art6) $art6 = $agf_conv->art6;
-	else
-	{
-		$art6 = "En application de l'article L 6354-1 du code du travail, il est convenu entre les signataires de la présente convention, que faute de réalisation totale ou partielle de la prestation de formation, l'organisme de formation remboursera au cocontractant les sommes qu'il aura indûment perçues de ce fait. C'est-à-dire les sommes qui ne correspondront pas à la réalisation de la prestation de formation.\n
-			La non réalisation totale de l'action due à la carence du prestataire ou au renoncement à la prestation par l'acheteur ne donnera pas lieu à une facturation au titre de la formation professionnelle continue.\n
-			La réalisation partielle de la prestation de formation, imputable ou non à l'organisme de formation ou à son client, ne donnera lieu qu'à facturation, au titre de la formation professionnelle continue, des sommes correspondants à la réalisation effective de la prestation.\n
-			En cas de dédit par le client à moins de 5 jours francs, avant le début de l'action mentionnée à l'Article 1, ou d'abandon en cours de formation par un ou plusieurs stagiaires, l'organisme retiendra sur le coût total, les sommes qu'il aura réellement dépensées ou engagées pour la réalisation de la dite action, conformément aux dispositions de l'Article L 920-9 du Code du Travail.";
+	if ($agf_conv->art6) { $art6 = $agf_conv->art6; }
+	else {
+		$art6 = $langs->trans('AgfConvArt6_1')."\n";
+		$art6.= $langs->trans('AgfConvArt6_2')."\n";
+		$art6.=	$langs->trans('AgfConvArt6_3')."\n";
+		$art6.= $langs->trans('AgfConvArt6_4')."\n";
 	}
 
 	//article 7
 	if ($agf_conv->art7) $art7 = $agf_conv->art7;
 	else
 	{
-		$art7 = "En cas de litige entre les deux parties, celles-ci s'engagent à rechercher préalablement une solution amiable.
-			En cas d'échec d'une solution négociée, les parties conviennent expressément d'attribuer compétence exclusive aux tribunaux de la préfecture dont dépend ".$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
+		$art7 = $langs->trans('AgfConvArt7_1');
+		$art7 .= $langs->trans('AgfConvArt7_2').' '.$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
 	}
 
 	// Signature du client
@@ -421,7 +433,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	else
 	{
 		$sig = $agf_soc->nom."\n";
-		$sig.= "représenté par ";
+		$sig.= $langs->trans('AgfConvArtSig').' ';
 		$sig.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name." (*)";
 	}
 

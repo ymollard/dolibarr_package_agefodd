@@ -237,6 +237,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Base color for PDF';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_USE_FAC_WITHOUT_ORDER";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Can link invocie without order to session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {
