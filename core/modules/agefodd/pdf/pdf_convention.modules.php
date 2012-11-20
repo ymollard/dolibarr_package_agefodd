@@ -34,6 +34,7 @@ dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/societe/class/societe.class.php');
 
 
 class pdf_convention extends ModelePDFAgefodd
@@ -123,7 +124,6 @@ class pdf_convention extends ModelePDFAgefodd
 
 		if (file_exists($dir))
 		{
-
 			$pdf=pdf_getInstance($this->format,$this->unit,$this->orientation);
 
 			if (class_exists('TCPDF'))
@@ -245,7 +245,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
-				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
+				$this->str = $outputlangs->transnoentities($mysoc->url);
 				$this->width = $pdf->GetStringWidth($this->str);
 
 				// alignement du bord droit du container avec le haut de la page
@@ -257,11 +257,36 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 				$pdf->SetXY($baseline_x, $baseline_y);
 
-				//TItre page de garde
+				//TItre page de garde 1
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',25);
 				$pdf->SetTextColor($this->color3[0], $this->color3[1], $this->color3[2]);
-				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 120);
-				$pdf->Cell(0, 5, $langs->trans('AgfConvention'),0,0,'C');
+				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 110);
+				
+				$customer=new Societe($this->db);
+				$customer->fetch($socid);
+				// If customer is personnal entity, the french low ask contrat and not convention
+				if ($customer->typent_id==8) {
+					$titre = $outputlangs->transnoentities('AgfPDFConventionContrat');
+				}
+				else {
+					$titre = $outputlangs->transnoentities('AgfPDFConvention');
+				}
+				
+				$pdf->MultiCell(0, 5, $titre,0,'C');	
+				
+				//TItre page de garde 2
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',10);
+				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 130);
+				
+				// If customer is personnal entity, the french low ask contrat and not convention
+				if ($customer->typent_id==8) {
+					$titre = $outputlangs->transnoentities('AgfPDFConventionContratLawNum');
+				}
+				else {
+					$titre = $outputlangs->transnoentities('AgfPDFConventionLawNum');
+				}
+				$pdf->MultiCell(0, 5, $titre,0,'C');
 
 				//Determine the total number of page
 				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';

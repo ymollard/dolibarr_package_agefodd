@@ -510,8 +510,6 @@ class Agsession extends CommonObject
 				$this->datef = $this->db->jdate($obj->datef);
 				$this->notes = $obj->notes;
 				$this->color = $obj->color;
-				$this->fk_commercial = $obj->fk_commercial;
-				$this->fk_contact_client = $obj->fk_contact_client;
 				$this->cost_trainer = $obj->cost_trainer;
 				$this->cost_site = $obj->cost_site;
 				$this->cost_trip = $obj->cost_trip;
