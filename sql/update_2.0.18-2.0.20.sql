@@ -18,6 +18,7 @@ ALTER TABLE llx_agefodd_session_stagiaire DROP INDEX fk_session, ADD INDEX fk_se
 ALTER TABLE llx_agefodd_session_stagiaire DROP INDEX fk_agefodd_stagiaire_type, ADD INDEX fk_agefodd_stagiaire_type_sess_sta (fk_agefodd_stagiaire_type);
 ALTER TABLE llx_agefodd_stagiaire DROP INDEX nom, ADD INDEX nom_sta (nom);
 ALTER TABLE llx_agefodd_stagiaire DROP INDEX fk_soc, ADD INDEX fk_soc_sta (fk_soc);
+ALTER TABLE llx_agefodd_session DROP INDEX fk_soc, ADD INDEX fk_soc_session (fk_soc);
 
 
 
