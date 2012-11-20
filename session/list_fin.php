@@ -33,6 +33,9 @@ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
+dol_include_once('/commande/class/commande.class.php');
+dol_include_once('/compta/facture/class/facture.class.php');
+
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -40,51 +43,24 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');
 $page=GETPOST('page','int');
-$arch=GETPOST('arch','int');
 
 //Search criteria
-$search_trainning_name=GETPOST("search_trainning_name");
-$search_training_ref=GETPOST("search_training_ref",'alpha');
-$search_start_date=dol_mktime(0,0,0,GETPOST('search_start_datemonth','int'),GETPOST('search_start_dateday','int'),GETPOST('search_start_dateyear','int'));
-$search_end_date=dol_mktime(0,0,0,GETPOST('search_end_datemonth','int'),GETPOST('search_end_dateday','int'),GETPOST('search_end_dateyear','int'));
-$search_site=GETPOST("search_site");
-
-$training_view=GETPOST("training_view",'int');
-$site_view=GETPOST('site_view','int');
+$search_orderid=GETPOST('search_orderid','int');
+$search_invoiceid=GETPOST('search_invoiceid','int');
+$search_orderref=GETPOST('search_orderref','alpha');
+$search_invoiceref=GETPOST('search_invoiceref','alpha');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x"))
 {
-	$search_trainning_name='';
-	$search_training_ref='';
-	$search_start_date="";
-	$search_end_date="";
-	$search_site="";
-}
-
-$filter=array();
-if (!empty($search_trainning_name)) {
-	$filter['c.intitule']=$search_trainning_name;
-}
-if (!empty($search_training_ref)) {
-	$filter['c.ref']=$search_training_ref;
-}
-if (!empty($search_start_date)) {
-	$filter['s.dated']=$search_start_date;
-}
-if (!empty($search_end_date)) {
-	$filter['s.datef']=$search_end_date;
-}
-if (!empty($search_site) && $search_site!=-1) {
-	$filter['s.fk_session_place']=$search_site;
-}
-if (!empty($search_order) && $search_order!=-1) {
-	$filter['s.fk_session_place']=$search_order;
+	$search_orderid='';
+	$search_invoiceid='';
+	$search_orderref='';
+	$search_invoiceref='';
 }
 
 if (empty($sortorder)) $sortorder="DESC";
 if (empty($sortfield)) $sortfield="s.rowid";
-if (empty($arch)) $arch = 0;
 
 if ($page == -1) {
 	$page = 0 ;
@@ -98,61 +74,62 @@ $pagenext = $page + 1;
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-if (empty($arch)) $title = $langs->trans("AgfMenuSessAct");
-elseif ($arch == 2 ) $title = $langs->trans("AgfMenuSessArchReady");
-else $title = $langs->trans("AgfMenuSessArch");
+$title = $langs->trans("AgfMenuSessByInvoiceOrder");
 llxHeader('',$title);
 
-if($training_view && !empty($search_training_ref) ) {
-	$agf = new Agefodd($db);
-	$result = $agf->fetch('',$search_training_ref);
-
-	$head = training_prepare_head($agf);
-
-	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
-
-	$agf->printFormationInfo();
-	print '</div>';
+if (!empty($search_orderid)) {
+	$order=new Commande($db);
+	$order->fetch($search_orderid);
+	$search_orderref=$order->ref;
 }
 
-if($site_view ) {
-	$agf = new Agefodd_place($db);
-	$result = $agf->fetch($search_site);
-
-	if ($result)
-	{
-		$head = site_prepare_head($agf);
-
-		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
-	}
-
-	$agf->printPlaceInfo();
-	print '</div>';
+if (!empty($search_invoiceid)) {
+	$invoice=new Facture($db);
+	$invoice->fetch($search_invoiceid);
+	$search_invoiceref=$invoice->ref;
 }
+
+if (!empty($search_orderref)) {
+	$order=new Commande($db);
+	$order->fetch('',$search_orderref);
+	$search_orderid=$order->id;
+}
+
+if (!empty($search_invoiceref)) {
+	$invoice=new Facture($db);
+	$invoice->fetch('',$search_invoiceref);
+	$search_invoiceid=$invoice->id;
+}
+
 
 $agf = new Agsession($db);
-$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
+$resql = $agf->fetch_all_by_order_invoice($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid);
 
 if ($resql != -1)
 {
+	
 	$num = $resql;
 
-	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
-	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
-	else $menu = $langs->trans("AgfMenuSessArch");
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site, $sortfield, $sortorder,'', $num);
+	$menu = $langs->trans("AgfMenuSessAct");
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&search_orderid='.$search_orderid.'&search_invoiceid='.$search_invoiceid, $sortfield, $sortorder,'', $num);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url='&page='.$page.'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site;
+	$arg_url='&page='.$page.'&search_orderid='.$search_orderid.'&search_invoiceid='.$search_invoiceid;
 	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"p.ref_interne","",$arg_url,'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"s.nb_stagiaire",'' ,$arg_url,'',$sortfield,$sortorder);
+	if (!(empty($search_orderref))) {
+		print_liste_field_titre($langs->trans("AgfBonCommande"),$_SERVEUR['PHP_SELF'],"order.ref",'' ,$arg_url,'',$sortfield,$sortorder);
+	}
+	if (!(empty($search_invoiceref))) {
+		print_liste_field_titre($langs->trans("AgfFacture"),$_SERVEUR['PHP_SELF'],"invoice.facnumber",'' ,$arg_url,'',$sortfield,$sortorder);
+	}
+	print '<td>&nbsp;</td>';
 	print "</tr>\n";
 
 
@@ -179,41 +156,31 @@ if ($resql != -1)
 		}
 		$addcriteria=true;
 	}
-	if (!empty($arch)){
-		if ($addcriteria){
-			$url_form.='&arch='.$arch;
-		}
-		else {$url_form.='?arch='.$arch;
-		}
-		$addcriteria=true;
-	}
-
+	
 	print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
-	print '<input type="hidden" name="arch" value="'.$arch.'" >';
 	print '<tr class="liste_titre">';
 
 	print '<td>&nbsp;</td>';
 
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_trainning_name" value="'.$search_trainning_name.'" size="20">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref" value="'.$search_training_ref.'" size="20">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $form->select_date($search_start_date,'search_start_date',0,0,1,'search_form');
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $form->select_date($search_end_date,'search_end_date',0,0,1,'search_form');
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $formAgefodd->select_site_forma($search_site,'search_site',1);
-	print '</td>';
-
+	print '<td>&nbsp;</td>';
+	
+	print '<td>&nbsp;</td>';
+	
+	print '<td>&nbsp;</td>';
+	
+	print '<td>&nbsp;</td>';
+	
+	print '<td>&nbsp;</td>';
+	if (!(empty($search_orderref))) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_orderref" value="'.$search_orderref.'" size="20">';
+		print '</td>';
+	}
+	if (!(empty($search_invoiceref))) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_invoiceref" value="'.$search_invoiceref.'" size="20">';
+		print '</td>';
+	}
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/search.png" value="'.dol_escape_htmltag($langs->trans("Search")).'" title="'.dol_escape_htmltag($langs->trans("Search")).'">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/searchclear.png" value="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'" title="'.dol_escape_htmltag($langs->trans("RemoveFilter")).'">';
@@ -243,9 +210,8 @@ if ($resql != -1)
 		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
 		print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
 		print '<td>'.stripslashes($line->ref_interne).'</td>';
-		print '<td>';
-		print $line->nb_stagiaire;
-		print '</td>';
+		print '<td>'.$line->orderref.'</td>';
+		print '<td>'.$line->invoiceref.'</td>';
 		print "</tr>\n";
 
 		$i++;

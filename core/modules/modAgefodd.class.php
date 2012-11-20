@@ -279,6 +279,9 @@ class modAgefodd extends DolibarrModules
 		// 'propal'           to add a tab in propal view
 		// 'member'           to add a tab in fundation member view
 		// 'contract'         to add a tab in contract view
+		// Array to add new pages in new tabs
+		$this->tabs = array('order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_orderid=__ID__',
+		'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__');
 
 
 		// Boxes
@@ -618,7 +621,7 @@ class modAgefodd extends DolibarrModules
 	 */
 	function load_tables()
 	{
-		return $this->_load_tables_agefodd('/agefodd/sql/');
+		return $this->_load_tables('/agefodd/sql/');
 	}
 
 	/**
@@ -631,7 +634,7 @@ class modAgefodd extends DolibarrModules
 	 *  @param	string	$reldir		Relative directory where to scan files
 	 *  @return	int     			<=0 if KO, >0 if OK
 	 */
-	function _load_tables_agefodd($reldir)
+	/*function _load_tables_agefodd($reldir)
 	{
 		global $db,$conf;
 
@@ -751,7 +754,7 @@ class modAgefodd extends DolibarrModules
 		}
 
 		return $ok;
-	}
+	}*/
 }
 
 ?>
