@@ -305,7 +305,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				{
 					if ($y > 0) $posY+= $hauteur;
 					$pdf->SetXY ($posX, $posY);
-					$hauteur = dol_nboflines_bis($agf->line[$y]->intitule,80)*3;
+					$hauteur = dol_nboflines_bis($agf->line[$y]->intitule,80)*4;
 
 					$pdf->Cell(10, 4, $agf->line[$y]->priorite.'. ', 0, 0, 'L', 0);
 					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->line[$y]->intitule), 0,'L');

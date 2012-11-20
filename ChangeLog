@@ -219,6 +219,7 @@ For All :
 		- you can now generate Convention for OPCA or Customer as you wish
 	- Add translation key for all PDF and convention
 	- Add tab Session in Order and Invoice screen  
+	- Fix bug on trainee creation (always create contact of customer) 
 For Dev:
 	- Rename index on tables to be unique in all dolibarr database 
 	- Save correct convention creation date in formation catalogue and objectif peda

@@ -125,26 +125,30 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	{
 		$error=0;
 		$agf = new Agefodd_stagiaire($db);
+		
+		$name = GETPOST('nom','alpha');
+		$firstname = GETPOST('prenom','alpha');
+		$civilite_id = GETPOST('civilite_id','alpha');
 
-		if( !GETPOST('nom','alpha') && ! GETPOST('civilite_id','alpha')  && ! GETPOST('prenom','alpha')) {
+		if(empty($name) || empty($firstname)) {
 			$mesg = '<div class="error">'.$langs->trans('AgfNameRequiredForParticipant').'</div>';
+			$error++;
+		}
+		if( empty($civilite_id)) {
+			$mesg = '<div class="error">'.$langs->trans('AgfCiviliteMandatory').'</div>';
 			$error++;
 		}
 		if(!$error) {
 			
 			$create_thirdparty = GETPOST('create_thirdparty','int');
 			$create_contact = GETPOST('create_contact','int');
-
-			$name = GETPOST('nom','alpha');
-			$firstname = GETPOST('prenom','alpha');
-			$civilite_id = GETPOST('civilite_id','alpha');
+			
 			$socid = GETPOST('societe','int');
 			$fonction = GETPOST('fonction','alpha');
 			$tel1 = GETPOST('tel1','alpha');
 			$tel2 = GETPOST('tel2','alpha');
 			$mail = GETPOST('mail','alpha');
 			$note = GETPOST('note','alpha');
-			
 			$societe_name = GETPOST('societe_name');
 			$address = GETPOST('adresse','alpha');
 			$zip = GETPOST('zipcode','alpha');
@@ -166,7 +170,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			
 			// Création tiers demandé
 			if($create_thirdparty > 0) {
-				
 				$socstatic = new Societe($db);
 				
 				$socstatic->name = $societe_name;
@@ -205,7 +208,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				$contact->status			= 1;
 				$contact->email				= $mail;
 				$contact->phone_pro			= $tel1;
-				$contact->mobile			= $tel2;
+				$contact->phone_mobile		= $tel2;
+				$contact->poste				= $fonction;
 				$contact->priv				= 0;
 					
 				$result=$contact->create($user);
@@ -229,18 +233,19 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 					$sessionstat->stagiaire = $agf->id;
 					$sessionstat->stagiaire_type = GETPOST('stagiaire_type','int');
 					$result = $sessionstat->create_stag_in_session($user);
+					
+					if ($result > 0)
+					{
+						$mesg = '<div class="success">'.$langs->trans('SuccessCreateStagInSession').'</div>';
+						$url_back = dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$session_id;
+					}
+					else
+					{
+						dol_syslog("agefodd:trainee:card error=".$agf->error, LOG_ERR);
+						$mesg = '<div class="error">'.$agf->error.'</div>';
+					}
 				}
 		
-				if ($result > 0)
-				{
-					$mesg = '<div class="success">'.$langs->trans('SuccessCreateStagInSession').'</div>';
-					$url_back = dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$session_id;
-				}
-				else
-				{
-					dol_syslog("agefodd:trainee:card error=".$agf->error, LOG_ERR);
-					$mesg = '<div class="error">'.$agf->error.'</div>';
-				}
 				if(strlen($url_back) > 0) {
 					Header ( "Location: ".$url_back);
 				}
@@ -383,8 +388,16 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print img_picto($langs->trans("CreateANewThirPartyFromTraineeFormInfo"),'help');
 	print '</td>';
 	print '<td colspan="3">';
-	print '<input type="radio" id="create_thirdparty_confirm" name="create_thirdparty" value="1" '.(GETPOST('create_thirdparty','int')?'checked="checked"':'').'/> <label for="create_thirdparty_confirm">'.$langs->trans('Yes').'</label>';
-	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" '.(!GETPOST('create_thirdparty','int')?'checked="checked"':'').' value="-1"/> <label for="create_thirdparty_cancel">'.$langs->trans('no').'</label>';
+	if (GETPOST('create_thirdparty','int')>0) {
+		$checkedYes='checked="checked"';
+		$checkedNo='';
+	}else {
+		$checkedYes='';
+		$checkedNo='checked="checked"';
+	}
+		
+	print '<input type="radio" id="create_thirdparty_confirm" name="create_thirdparty" value="1" '.$checkedYes.'/> <label for="create_thirdparty_confirm">'.$langs->trans('Yes').'</label>';
+	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" '.$checkedNo.' value="-1"/> <label for="create_thirdparty_cancel">'.$langs->trans('no').'</label>';
 	print '</td>';
 	print '	</tr>';
 	
@@ -421,8 +434,15 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"),'help');
 	print '</td>';
 	print '<td colspan="3">';
-	print '<input type="radio" id="create_contact_confirm" name="create_contact" value="1" '.(GETPOST('create_thirdparty','int')?'checked="checked"':'').'/> <label for="create_contact_confirm">'.$langs->trans('Yes').'</label>';
-	print '<input type="radio" id="create_contact_cancel" name="create_contact" '.(!GETPOST('create_contact','int')?'checked="checked"':'').' value="-1"/> <label for="create_contact_cancel">'.$langs->trans('no').'</label>';
+	if (GETPOST('create_contact','int')>0) {
+		$checkedYes='checked="checked"';
+		$checkedNo='';
+	}else {
+		$checkedYes='';
+		$checkedNo='checked="checked"';
+	}
+	print '<input type="radio" id="create_contact_confirm" name="create_contact" value="1" '.$checkedYes.'/> <label for="create_contact_confirm">'.$langs->trans('Yes').'</label>';
+	print '<input type="radio" id="create_contact_cancel" name="create_contact" '.$checkedNo.' value="-1"/> <label for="create_contact_cancel">'.$langs->trans('no').'</label>';
 	print '</td>';
 	print '	</tr>';
 

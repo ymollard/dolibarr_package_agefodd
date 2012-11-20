@@ -463,6 +463,8 @@ if (!empty($id))
 							print '<tr class="noborder"><td  class="noborder" width="45%">'.$langs->trans("AgfSubrocation").'</td>';
 							if ($agf->is_OPCA==1) {
 								$chckisOPCA='checked="checked"';
+							}else {
+								$chckisOPCA='';
 							}
 							print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" readonly="readonly"/></td></tr>';
 
@@ -482,6 +484,8 @@ if (!empty($id))
 							print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
 							if ($agf->is_date_ask_OPCA==1) {
 								$chckisDtOPCA='checked="checked"';
+							}else {
+								$chckisDtOPCA='';
 							}
 							print '<td><table class="nobordernopadding"><tr><td>';
 							print '<input type="checkbox" class="flat" name="isdateaskOPCA" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';

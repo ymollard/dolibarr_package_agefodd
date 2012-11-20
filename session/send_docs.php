@@ -768,19 +768,10 @@ if (!empty($id))
 					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
 					print '</tr>'."\n";
 
-					// Avant la formation
-					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
-					//document_send_line("bon de commande", 2, "bc", $agf->line[$i]->socid);
 					document_send_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
-					//document_line("Courrier accompagnant l'envoi des conventions de formation", 2, "courrier", $agf->line[$i]->socid,'convention');
-					//document_line("Courrier accompagnant l'envoi du dossier d'accueil", 2, "courrier", $agf->line[$i]->socid, 'accueil');
-
-					// Après la formation
-					//print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
 					document_send_line($langs->trans("AdfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
-					//document_send_line("Facture", 2, "fac", $agf->line[$i]->socid);
 					document_send_line($langs->trans("AgfCourrierCloture"), 2, "cloture", $agf->line[$i]->socid);
-					//document_line("for test only", 2, "courrier", $agf->line[$i]->socid, "test");
+
 					print '</table>';
 					if ($i < $linecount) print '&nbsp;'."\n";
 				}
