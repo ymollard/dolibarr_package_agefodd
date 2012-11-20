@@ -20,12 +20,11 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_reg_interieur (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   reg_int text NULL,
   notes tinytext NOT NULL,
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (rowid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

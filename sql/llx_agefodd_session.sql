@@ -23,7 +23,7 @@
 --
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   entity int(11) NOT NULL DEFAULT 1,
   fk_soc int NULL,
   fk_formation_catalogue int(11) NOT NULL,
@@ -54,6 +54,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  archive tinyint NOT NULL DEFAULT 0,
-  PRIMARY KEY  (rowid)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  archive tinyint NOT NULL DEFAULT 0
+) ENGINE=InnoDB;

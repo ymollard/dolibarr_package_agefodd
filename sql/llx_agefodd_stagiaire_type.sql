@@ -24,13 +24,12 @@
 --
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_type (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   intitule varchar(80) NOT NULL,
   sort tinyint(4) NOT NULL,
   active int NULL,
   datec datetime NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   fk_user_author int(11) NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  PRIMARY KEY  (rowid)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+  fk_user_mod int(11) NOT NULL
+) ENGINE=InnoDB;

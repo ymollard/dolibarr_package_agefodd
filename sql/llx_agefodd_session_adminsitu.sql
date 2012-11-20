@@ -22,7 +22,7 @@
 -- Structure de la table llx_agefodd_session_adminsitu
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   fk_agefodd_session_admlevel int(11) NOT NULL default '0',
   fk_agefodd_session int(11) NOT NULL,
   intitule varchar(100) default NULL,
@@ -38,7 +38,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
   tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  archive tinyint NOT NULL DEFAULT 0,
-  PRIMARY KEY  (rowid),
-  KEY fk_agefodd_session_adminsitu (fk_agefodd_session)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  archive tinyint NOT NULL DEFAULT 0
+) ENGINE=InnoDB;

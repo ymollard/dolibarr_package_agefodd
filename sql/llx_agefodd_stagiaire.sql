@@ -23,7 +23,7 @@
 --
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   entity int(11) NOT NULL DEFAULT 1,
   nom varchar(50) NOT NULL,
   prenom varchar(50) NOT NULL,
@@ -38,9 +38,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   tel1 varchar(30) default NULL,
   tel2 varchar(30) default NULL,
   mail varchar(100) default NULL,
-  note text,
-  PRIMARY KEY  (rowid),
-  KEY nom_sta (nom),
-  KEY fk_soc_sta (fk_soc)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+  note text
+) ENGINE=InnoDB;
 

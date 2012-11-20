@@ -23,3 +23,5 @@
 --
 ALTER TABLE llx_agefodd_session_formateur ADD CONSTRAINT llx_agefodd_session_formateur_ibfk_1 FOREIGN KEY (fk_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_session_formateur ADD CONSTRAINT llx_agefodd_session_formateur_ibfk_2 FOREIGN KEY (fk_agefodd_formateur) REFERENCES llx_agefodd_formateur (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_session_formateur ADD INDEX fk_session_sess_form (fk_session);
+ALTER TABLE llx_agefodd_session_formateur ADD INDEX idx_fk_agefodd_sess_formateur (fk_agefodd_formateur);

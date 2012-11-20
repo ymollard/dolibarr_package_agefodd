@@ -22,3 +22,5 @@
 -- Contraintes pour la table llx_agefodd_formation_objectifs_peda
 --
 ALTER TABLE llx_agefodd_formation_objectifs_peda ADD CONSTRAINT llx_agefodd_formation_objectifs_peda_ibfk_1 FOREIGN KEY (fk_formation_catalogue) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_formation_objectifs_peda ADD INDEX fk_formation_catalogue_obj_peda (fk_formation_catalogue);
+

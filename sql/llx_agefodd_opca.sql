@@ -18,7 +18,7 @@
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS llx_agefodd_opca
 (
-	rowid int(11) NOT NULL auto_increment,
+	rowid int(11) NOT NULL auto_increment PRIMARY KEY,
 	fk_soc_trainee	integer	NOT NULL,
 	fk_session_agefodd int(11) NOT NULL,
 	date_ask_OPCA datetime DEFAULT NULL,
@@ -31,6 +31,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_opca
 	fk_user_author	integer	NOT NULL,
 	datec	datetime  NOT NULL,
 	fk_user_mod integer NOT NULL,
-	tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-	PRIMARY KEY  (rowid)	
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP	
+) ENGINE=InnoDB;

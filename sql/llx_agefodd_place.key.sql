@@ -22,3 +22,4 @@
 -- Contraintes pour la table llx_agefodd_place
 --
 ALTER TABLE llx_agefodd_place ADD CONSTRAINT llx_agefodd_session_ibfk_1 FOREIGN KEY (fk_pays) REFERENCES llx_c_pays (rowid);
+ALTER TABLE llx_agefodd_place ADD INDEX archive_place (archive);

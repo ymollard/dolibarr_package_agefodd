@@ -22,3 +22,5 @@
 -- Contraintes pour la table llx_agefodd_convention
 --
 ALTER TABLE llx_agefodd_convention ADD CONSTRAINT llx_agefodd_convention_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_convention ADD INDEX idx_fk_agefodd_session_conv (fk_agefodd_session);
+ALTER TABLE llx_agefodd_convention ADD INDEX idx_fk_societe_conv (fk_societe);

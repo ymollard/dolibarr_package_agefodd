@@ -215,11 +215,13 @@ For All :
 	- Better comptatibility module for multicompny
 	- Fix : Sort of list place
 	- Better error management in place update screen
-	- Add all compagny in document liée (Customer session, OPCA trainee, OPCA session)
+	- Display all compagny link to a session in Document screen (Customer session, OPCA trainee, OPCA session)
+		- you can now generate Convention for OPCA or Customer as you wish
 	- Add translation key for all PDF and convention
 	- Add tab Session in Order and Invoice screen  
 For Dev:
 	- Rename index on tables to be unique in all dolibarr database 
 	- Save correct convention creation date in formation catalogue and objectif peda
 	- Set correct creation date in create stagaire_type sql script
-	- Fix some query for PostgreSQL compatibility	
+	- Fix some query for PostgreSQL compatibility
+	- Review creation table SQL script to be complient with Dolibarr and PostgreSQL query	

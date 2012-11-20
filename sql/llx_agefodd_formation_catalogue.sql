@@ -20,7 +20,7 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
-  rowid int(6) NOT NULL auto_increment,
+  rowid int(6) NOT NULL auto_increment PRIMARY KEY,
   ref varchar(40) NOT NULL,
   ref_interne varchar(80) NULL,
   entity int(11) NOT NULL DEFAULT 1,
@@ -37,7 +37,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (rowid),
-  UNIQUE KEY ref_form_cat (ref)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

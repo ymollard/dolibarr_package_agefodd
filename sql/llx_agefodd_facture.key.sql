@@ -22,3 +22,7 @@
 -- Contraintes pour la table llx_agefodd_facture
 --
 ALTER TABLE llx_agefodd_facture ADD CONSTRAINT llx_agefodd_facture_ibfk_1 FOREIGN KEY (fk_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_facture ADD INDEX idx_fk_facture_fac (fk_facture);
+ALTER TABLE llx_agefodd_facture ADD INDEX idx_fk_societe_fac (fk_societe);
+ALTER TABLE llx_agefodd_facture ADD INDEX idx_fk_session_fac (fk_session);
+ALTER TABLE llx_agefodd_facture ADD INDEX idx_fk_commande_fac (fk_commande);

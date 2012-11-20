@@ -19,7 +19,7 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formateur (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   entity int(11) NOT NULL DEFAULT 1,
   fk_socpeople int(11),
   fk_user int(11),
@@ -28,6 +28,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formateur (
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (rowid)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

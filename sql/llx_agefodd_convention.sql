@@ -19,7 +19,7 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
-  rowid int(11) NOT NULL auto_increment,
+  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
   fk_agefodd_session int(11) NOT NULL,
   fk_societe int(11) NOT NULL,
   intro1 text NOT NULL,
@@ -37,8 +37,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
   fk_user_author int(11) NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP  on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (rowid),
-  KEY idx_fk_agefodd_session_conv (fk_agefodd_session),
-  KEY idx_fk_societe_conv (fk_societe)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP  on update CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
