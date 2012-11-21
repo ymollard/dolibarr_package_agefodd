@@ -227,3 +227,7 @@ For Dev:
 	- Set correct creation date in create stagaire_type sql script
 	- Fix some query for PostgreSQL compatibility
 	- Review creation table SQL script to be complient with Dolibarr and PostgreSQL query	
+	
+	
+***** ChangeLog for 2.0.21 compared to 2.0.20 *****
+For All :

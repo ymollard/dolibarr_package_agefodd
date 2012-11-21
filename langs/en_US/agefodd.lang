@@ -554,3 +554,5 @@ AgfPDFConventionLawNum=(Article L. 6353-2 et R. 6353-1 du code du travail)
 AgfPDFConventionContrat=Contrat de formation professionnelle
 AgfPDFConventionContratLawNum=(Articles L. 6353-3 à 6353-7 du code du travail)
 AgfMenuSessByInvoiceOrder=Seesion List by Order or Invoice
+AgfMenuDemoAdmin=Module Administration
+AgfMenuDemoAdminDetail=Module Administration (like Admin-module-agefodd)
