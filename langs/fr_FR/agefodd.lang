@@ -571,4 +571,4 @@ AgfMenuSessByInvoiceOrder=Liste des session par Commande ou Facture
 AgfMenuDemoAdmin=Administration du module 
 AgfMenuDemoAdminDetail=Administration du module (comme Admin-module-agefodd)
 AgfUseMainNameOfContact=Activer la variable dolibarr global MAIN_USE_COMPANY_NAME_OF_CONTACT
-AgfUseMainNameOfContactHelp=lorsque cette variable est activé sur les facture et les commande si un contact est ajouter en temps que Contact Client facturation c'est lui et sa sociéter qui appraisent dans les PDF générés
+AgfUseMainNameOfContactHelp=Lorsque cette variable est activé sur les facture et les commande si un contact est ajouter en temps que Contact Client facturation c'est lui et sa sociéter qui appraisent dans les PDF générés (utile pour la subrogation)
