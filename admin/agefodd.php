@@ -131,6 +131,10 @@ if ($action == 'setvar')
 	$pdf_color=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
+	
+	$use_dol_company_name=GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT','alpha');
+	$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name,'chaine',1,'',$conf->entity);
+	if (! $res > 0) $error++;
 
 	if ($_FILES["imagesup"]["tmp_name"])
 	{
@@ -782,7 +786,16 @@ else
 	print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
 	print '</td>';
 }
-print '<td>&nbsp;</td>';
+
+// Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
+print '<tr class="pair"><td>'.$langs->trans("AgfUseMainNameOfContact").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("MAIN_USE_COMPANY_NAME_OF_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseMainNameOfContactHelp"),1,'help');
+print '</td>';
 print '</tr>';
 
 print '<tr class="pair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
