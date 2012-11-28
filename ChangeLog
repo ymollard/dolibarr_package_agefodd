@@ -232,3 +232,4 @@ For Dev:
 ***** ChangeLog for 2.0.21 compared to 2.0.20 *****
 For All :
 	- Add option to activate MAIN_USE_COMPANY_NAME_OF_CONTACT in admin (see help for detail)
+	- Add statistique blok (thank to jf-ferry)
