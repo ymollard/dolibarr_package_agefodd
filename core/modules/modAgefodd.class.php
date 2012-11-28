@@ -324,6 +324,12 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'supprimer';
 		$r++;
+		
+		$this->rights[$r][0] = 103005;
+		$this->rights[$r][1] = 'Voir stats';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'viewstats';
+		$r++;
 
 		// Main menu entries
 		$this->menus = array();
@@ -447,6 +453,21 @@ class modAgefodd extends DolibarrModules
 		'target'=>'',
 		'user'=>0);
 		$r++;
+
+		$this->menu[$r]=array(	'fk_menu'=>'r=5',
+		'type'=>'left',
+		'titre'=>'AgfMenuSessStats',
+		'mainmenu'=>'agefodd',
+		'url'=>'/agefodd/session/stats/index.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>205,
+		'enabled'=>1,
+		'perms'=>'$user->rights->agefodd->viewstats',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		
 		// 3
 		$this->menu[$r]=array(	'fk_menu'=>'r=0',
 		'type'=>'left',
@@ -461,7 +482,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=9',
+		$this->menu[$r]=array(	'fk_menu'=>'r=10',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaireList',
 		'mainmenu'=>'agefodd',
@@ -474,7 +495,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=9',
+		$this->menu[$r]=array(	'fk_menu'=>'r=10',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaireNew',
 		'mainmenu'=>'agefodd',
@@ -487,7 +508,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=9',
+		$this->menu[$r]=array(	'fk_menu'=>'r=10',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaireNewFromContact',
 		'mainmenu'=>'agefodd',
@@ -513,7 +534,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=13',
+		$this->menu[$r]=array(	'fk_menu'=>'r=14',
 		'type'=>'left',
 		'titre'=>'AgfMenuSite',
 		'mainmenu'=>'agefodd',
@@ -526,7 +547,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=13',
+		$this->menu[$r]=array(	'fk_menu'=>'r=14',
 		'type'=>'left',
 		'titre'=>'AgfMenuFormateur',
 		'mainmenu'=>'agefodd',
@@ -539,7 +560,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=13',
+		$this->menu[$r]=array(	'fk_menu'=>'r=14',
 		'type'=>'left',
 		'titre'=>'AgfMenuContact',
 		'mainmenu'=>'agefodd',
