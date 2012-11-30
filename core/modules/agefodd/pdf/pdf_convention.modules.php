@@ -32,6 +32,7 @@ dol_include_once('/agefodd/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/core/lib/function.lib.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/societe/class/societe.class.php');
@@ -475,7 +476,7 @@ class pdf_convention extends ModelePDFAgefodd
 				for ($i = 0; $i < count($agf_comdetails->line); $i++)
 				{
 					$pdf->SetXY( $posX, $posY + 1);
-					$pdf->MultiCell($w[0], 4, $outputlangs->transnoentities($agf_comdetails->line[$i]->description),0,'L',$fill);
+					$pdf->writeHTMLCell($w[0], 4, $posX, $posY + 1,$outputlangs->transnoentities($agf_comdetails->line[$i]->description));
 					$hauteur = dol_nboflines_bis($agf_comdetails->line[$i]->description,50)*4;
 					$pdf->SetXY( $posX + $w[0], $posY);
 					$pdf->Cell($w[1],6,vatrate($agf_comdetails->line[$i]->tva_tx,1),0,0,'C',$fill);

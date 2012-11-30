@@ -290,6 +290,44 @@ class InterfaceAgefodd
 				return -1;
 			}
 		}
+		
+		//Update action label if training is change on a session
+		if ($action == 'AGSESSION_UPDATE') {
+			// Change Trainning session actino if needed
+			require_once(DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php');
+			
+			$actioncomm = new ActionComm($this->db);
+			$actioncomm->getActions(0, $object->id, 'agefodd_agsession');
+			
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+			
+			$agftraincat= new Agefodd($this->db);
+			$agftraincat->fetch($object->fk_formation_catalogue);
+			
+			
+			$num = count($actioncomm->actions);
+			if ($num)
+			{
+				foreach($actioncomm->actions as $action)
+				{
+					if (strpos($action->label,$agftraincat->intitule)===false) {
+						$action->label=$agftraincat->intitule.'('.$agftraincat->ref_obj.')';
+						$ret = $action->update($user);
+						
+						if ($ret < 0)
+						{
+							$error ="Failed to update : ".$action->error." ";
+							$this->error=$error;
+						
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
+							return -1;
+						}
+					}
+				}
+			}
+				
+		}
+		
 		return 0;
 	}
 

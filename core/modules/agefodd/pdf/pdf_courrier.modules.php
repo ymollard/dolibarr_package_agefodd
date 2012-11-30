@@ -252,21 +252,24 @@ class pdf_courrier extends ModelePDFAgefodd
 				// on en profite pour préparer la ligne "madame, monsieur"
 				$this->madame_monsieur = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4');
 				$this->str = '';
-				if ($agf_contact->name)
+				if (!(empty($agf->contactname))) {
+					$this->str= ucfirst(strtolower($agf->contactcivilite)).' '.$agf->contactname."\n";
+					$this->madame_monsieur = $langs->transnoentities("Civility".$agf->contactcivilite);
+				} 
+				if (($agf_contact->name) && (empty($this->str)))
 				{
-					$this->str.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->name.' '.$agf_contact->firstname."\n";
-					if (!empty($agf_contact->address))
-					{
-						$this->str.= $agf_contact->address."\n".$agf_contact->cp.' '.$agf_contact->ville;
-					}
-					else $this->str.= $agf_soc->adresse_full;
+					$this->str= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->name.' '.$agf_contact->firstname."\n";
 					$this->madame_monsieur = $langs->transnoentities("Civility".$agf_contact->civilite);
 				}
-				// else socity contact
+				if (!empty($agf_contact->address))
+				{
+					$this->str.= $agf_contact->address."\n".$agf_contact->cp.' '.$agf_contact->ville;
+				}
 				else
 				{
 					$this->str = $agf_soc->adresse_full;
 				}
+				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 				$posY = $pdf->GetY()-9; //Auto Y coord readjust for multiline name
 				$pdf->SetXY($posX+20,$posY+10);

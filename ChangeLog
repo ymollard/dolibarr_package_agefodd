@@ -233,3 +233,5 @@ For Dev:
 For All :
 	- Add option to activate MAIN_USE_COMPANY_NAME_OF_CONTACT in admin (see help for detail)
 	- Add statistique blok (thank to jf-ferry)
+	- Fix bug #613 - erreur lors du "clonage de session"
+	- Fix bug #614 - bug affichage sur convention
