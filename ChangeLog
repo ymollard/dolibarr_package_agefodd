@@ -236,3 +236,6 @@ For All :
 	- Fix bug #613 - erreur lors du "clonage de session"
 	- Fix bug #614 - bug affichage sur convention
 	- Fix bug #612 - Contact sur courrier accompagnant l'envoi du dossier de clôture
+	
+***** ChangeLog for 2.0.22 compared to 2.0.21 *****
+For All :
