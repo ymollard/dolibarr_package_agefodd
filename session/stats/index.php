@@ -23,7 +23,15 @@
  *  \brief      Page des stats factures
  */
 
-require("../../../../main.inc.php");
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
+$res=@include("../../../main.inc.php");				// For root directory
+if (! $res) $res=@include("../../../../main.inc.php");	// For "custom" directory
+if (! $res) die("Include of main fails");
+
 require_once(DOL_DOCUMENT_ROOT."/core/class/dolgraph.class.php");
 dol_include_once("/agefodd/class/sessionstats.class.php");
 dol_include_once("/agefodd/class/html.formagefodd.class.php");
