@@ -235,3 +235,4 @@ For All :
 	- Add statistique blok (thank to jf-ferry)
 	- Fix bug #613 - erreur lors du "clonage de session"
 	- Fix bug #614 - bug affichage sur convention
+	- Fix bug #612 - Contact sur courrier accompagnant l'envoi du dossier de clôture
