@@ -19,13 +19,13 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_facture (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  fk_commande int(11) NOT NULL,
-  fk_facture int(11) NOT NULL,
-  fk_session int(11) NOT NULL,
-  fk_societe int(11) NOT NULL,
-  fk_user_author int(11) NOT NULL,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  fk_commande integer NOT NULL,
+  fk_facture integer NOT NULL,
+  fk_session integer NOT NULL,
+  fk_societe integer NOT NULL,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

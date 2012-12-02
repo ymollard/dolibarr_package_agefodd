@@ -22,14 +22,14 @@
 -- Structure de la table llx_agefodd_session_admlevel
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_admlevel (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  level_rank int(11) NOT NULL default 0,
-  fk_parent_level int(11) default 0,
-  indice int(11) NOT NULL,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  level_rank integer NOT NULL default 0,
+  fk_parent_level integer default 0,
+  indice integer NOT NULL,
   intitule varchar(150) NOT NULL,
-  delais_alerte int(11) NOT NULL,
-  fk_user_author int(11) NOT NULL,
+  delais_alerte integer NOT NULL,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

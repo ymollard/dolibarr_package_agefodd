@@ -39,7 +39,26 @@ class Agefodd_place extends CommonObject
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd_place';
+
 	var $id;
+    
+	var $entity;
+	var $ref_interne;
+	var $adresse;
+	var $cp;
+	var $ville;
+	var $fk_pays;
+	var $tel;
+	var $fk_societe;
+	var $notes;
+	var $acces_site;
+	var $note1;
+	var $archive;
+	var $fk_reg_interieur;
+	var $fk_user_author;
+	var $datec='';
+	var $fk_user_mod;
+	var $tms='';
 
 	/**
 	 *	\brief		Constructor
@@ -64,59 +83,87 @@ class Agefodd_place extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->tel = $this->db->escape($this->tel);
-		$this->notes = $this->db->escape($this->notes);
-		$this->acces_site = $this->db->escape($this->acces_site);
-		$this->note1 = $this->db->escape($this->note1);
+		
+		if (isset($conf->entity)) $this->entity=trim($conf->entity);
+		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
+		if (isset($this->adresse)) $this->adresse=trim($this->adresse);
+		if (isset($this->cp)) $this->cp=trim($this->cp);
+		if (isset($this->ville)) $this->ville=trim($this->ville);
+		if (isset($this->fk_pays)) $this->fk_pays=trim($this->fk_pays);
+		if (isset($this->tel)) $this->tel=trim($this->tel);
+		if (isset($this->fk_societe)) $this->fk_societe=trim($this->fk_societe);
+		if (isset($this->notes)) $this->notes=trim($this->notes);
+		if (isset($this->acces_site)) $this->acces_site=trim($this->acces_site);
+		if (isset($this->note1)) $this->note1=trim($this->note1);
+		if (isset($this->archive)) $this->archive=trim($this->archive);
+		if (isset($this->fk_reg_interieur)) $this->fk_reg_interieur=trim($this->fk_reg_interieur);
+		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
+		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
 
 
 		// Check parameters
 		// Put here code to add control on parameters value
-
+		$this->datec = dol_now();
+		
+		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
-		$sql.= "ref_interne, adresse, cp, ville, fk_pays, tel, fk_societe, notes, acces_site, note1, fk_user_author, datec";
-		$sql.= ",entity";
+		
+		$sql.= "entity,";
+		$sql.= "ref_interne,";
+		$sql.= "adresse,";
+		$sql.= "cp,";
+		$sql.= "ville,";
+		$sql.= "fk_pays,";
+		$sql.= "tel,";
+		$sql.= "fk_societe,";
+		$sql.= "notes,";
+		$sql.= "acces_site,";
+		$sql.= "note1,";
+		$sql.= "fk_user_author,";
+		$sql.= "fk_user_mod,";
+		$sql.= "datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->ref_interne.'", ';
-		$sql.= '"'.$this->adresse.'", ';
-		$sql.= '"'.$this->cp.'", ';
-		$sql.= '"'.$this->ville.'", ';
-		$sql.= '"'.$this->pays.'",';
-		$sql.= '"'.$this->tel.'",';
-		$sql.= '"'.$this->fk_societe.'",';
-		$sql.= '"'.$this->notes.'",';
-		$sql.= '"'.$this->acces_site.'",';
-		$sql.= '"'.$this->note1.'",';
-		$sql.= '"'.$user->id.'",';
-		$sql.= $this->db->idate(dol_now());
-		$sql.= ',"' .$conf->entity.'"';
+		
+		$sql.= " ".(! isset($conf->entity)?'NULL':"'".$conf->entity."'").",";
+		$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->db->escape($this->ref_interne)."'").",";
+		$sql.= " ".(! isset($this->adresse)?'NULL':"'".$this->db->escape($this->adresse)."'").",";
+		$sql.= " ".(! isset($this->cp)?'NULL':"'".$this->db->escape($this->cp)."'").",";
+		$sql.= " ".(! isset($this->ville)?'NULL':"'".$this->db->escape($this->ville)."'").",";
+		$sql.= " ".(! isset($this->fk_pays)?'NULL':"'".$this->fk_pays."'").",";
+		$sql.= " ".(! isset($this->tel)?'NULL':"'".$this->db->escape($this->tel)."'").",";
+		$sql.= " ".(! isset($this->fk_societe)?'NULL':"'".$this->fk_societe."'").",";
+		$sql.= " ".(! isset($this->notes)?'NULL':"'".$this->db->escape($this->notes)."'").",";
+		$sql.= " ".(! isset($this->acces_site)?'NULL':"'".$this->db->escape($this->acces_site)."'").",";
+		$sql.= " ".(! isset($this->note1)?'NULL':"'".$this->db->escape($this->note1)."'").",";
+		$sql.= " ".$user->id.",";
+		$sql.= " ".$user->id.",";
+		$sql.= " ".(! isset($this->datec) || dol_strlen($this->datec)==0?'NULL':$this->db->idate($this->datec))."";
 		$sql.= ")";
 
-		$this->db->begin();
-
+		// Insert request		
 		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
-		if (! $resql) {
-			$error++; $this->errors[]="Error ".$this->db->lasterror();
-		}
+		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		
 		if (! $error)
 		{
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_place");
+		
 			if (! $notrigger)
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-
+		
 				//// Call triggers
-				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+				//include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
 				//$result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
 				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				//// End call triggers
 			}
 		}
-
+		
 		// Commit or rollback
 		if ($error)
 		{
@@ -309,38 +356,46 @@ class Agefodd_place extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->ref_interne = trim($this->ref_interne);
-		$this->public = $this->db->escape(trim($this->public));
-		$this->methode = $this->db->escape(trim($this->methode));
-		$this->programme = $this->db->escape(trim($this->programme));
-		$this->tel = $this->db->escape(trim($this->tel));
-		$this->notes = $this->db->escape(trim($this->notes));
-		$this->acces_site = $this->db->escape(trim($this->acces_site));
-		$this->note1 = $this->db->escape(trim($this->note1));
-		$this->fk_reg_interieur = $this->db->escape(trim($this->fk_reg_interieur));
+		if (isset($this->entity)) $this->entity=trim($this->entity);
+		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
+		if (isset($this->adresse)) $this->adresse=trim($this->adresse);
+		if (isset($this->cp)) $this->cp=trim($this->cp);
+		if (isset($this->ville)) $this->ville=trim($this->ville);
+		if (isset($this->fk_pays)) $this->fk_pays=trim($this->fk_pays);
+		if (isset($this->tel)) $this->tel=trim($this->tel);
+		if (isset($this->fk_societe)) $this->fk_societe=trim($this->fk_societe);
+		if (isset($this->notes)) $this->notes=trim($this->notes);
+		if (isset($this->acces_site)) $this->acces_site=trim($this->acces_site);
+		if (isset($this->note1)) $this->note1=trim($this->note1);
+		if (isset($this->archive)) $this->archive=trim($this->archive);
+		if (isset($this->fk_reg_interieur)) $this->fk_reg_interieur=trim($this->fk_reg_interieur);
+		
+		if (!isset($this->archive)) $this->archive = 0;
 
 		// Check parameters
 		// Put here code to add control on parameters values
 
 		// Update request
-		if (!isset($this->archive)) $this->archive = 0;
-		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_place as p SET';
-		$sql.= ' p.ref_interne="'.$this->ref_interne.'", ';
-		$sql.= ' p.adresse="'.$this->adresse.'", ';
-		$sql.= ' p.cp="'.$this->cp.'", ';
-		$sql.= ' p.ville="'.$this->ville.'", ';
-		$sql.= ' p.fk_pays="'.$this->pays_id.'",';
-		$sql.= ' p.tel="'.$this->tel.'",';
-		$sql.= ' p.fk_societe="'.$this->fk_societe.'",';
-		$sql.= ' p.notes="'.$this->notes.'",';
-		$sql.= ' p.fk_user_mod="'.$user->id.'",';
-		$sql.= ' p.archive="'.$this->archive.'",';
-		$sql.= ' p.acces_site="'.$this->acces_site.'",';
-		$sql.= ' p.note1="'.$this->note1.'" ';
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_place SET";
+		$sql.= " ref_interne=".(isset($this->ref_interne)?"'".$this->db->escape($this->ref_interne)."'":"null").",";
+		$sql.= " adresse=".(isset($this->adresse)?"'".$this->db->escape($this->adresse)."'":"null").",";
+		$sql.= " cp=".(isset($this->cp)?"'".$this->db->escape($this->cp)."'":"null").",";
+		$sql.= " ville=".(isset($this->ville)?"'".$this->db->escape($this->ville)."'":"null").",";
+		$sql.= " fk_pays=".(isset($this->fk_pays)?$this->fk_pays:"null").",";
+		$sql.= " tel=".(isset($this->tel)?"'".$this->db->escape($this->tel)."'":"null").",";
+		$sql.= " fk_societe=".(isset($this->fk_societe)?$this->fk_societe:"null").",";
+		$sql.= " notes=".(isset($this->notes)?"'".$this->db->escape($this->notes)."'":"null").",";
+		$sql.= " acces_site=".(isset($this->acces_site)?"'".$this->db->escape($this->acces_site)."'":"null").",";
+		$sql.= " note1=".(isset($this->note1)?"'".$this->db->escape($this->note1)."'":"null").",";
+		$sql.= " archive=".$this->archive.",";
 		if (!empty($this->fk_reg_interieur)) {
-			$sql.= ' ,p.fk_reg_interieur='.$this->fk_reg_interieur;
+			$sql.= " fk_reg_interieur=".(isset($this->fk_reg_interieur)?$this->fk_reg_interieur:"null").",";
 		}
-		$sql.= " WHERE p.rowid LIKE ".$this->id;
+		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
+		$sql.= " datec=".(dol_strlen($this->datec)!=0 ? "'".$this->db->idate($this->datec)."'" : 'null').",";
+		$sql.= " fk_user_mod=".$user->id.",";
+		$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null')."";
+		$sql.= " WHERE rowid=".$this->id;
 
 		$this->db->begin();
 
@@ -490,7 +545,7 @@ class Agefodd_place extends CommonObject
 		global $conf, $langs;
 		$error=0;
 
-		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_place as p SET fk_reg_interieur=NULL, fk_user_mod="'.$user->id.'"';
+		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_place as p SET fk_reg_interieur=NULL, fk_user_mod=\''.$user->id.'\'';
 		$sql .= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();

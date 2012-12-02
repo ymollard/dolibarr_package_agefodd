@@ -19,14 +19,14 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formateur (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  entity int(11) NOT NULL DEFAULT 1,
-  fk_socpeople int(11),
-  fk_user int(11),
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  entity integer NOT NULL DEFAULT 1,
+  fk_socpeople integer,
+  fk_user integer,
   type_trainer varchar(20),
-  archive tinyint NOT NULL DEFAULT 0,
-  fk_user_author int(11) NOT NULL,
+  archive smallint NOT NULL DEFAULT 0,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

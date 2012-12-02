@@ -23,22 +23,23 @@
 --
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_place (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
   ref_interne varchar(80) NOT NULL,
-  adresse varchar(255) NOT NULL,
-  cp varchar(10) NOT NULL,
-  ville varchar(50) NOT NULL,
-  fk_pays int(11) NOT NULL,
-  tel varchar(20) default NULL,
-  fk_societe int(11) NOT NULL,
-  notes text NOT NULL,
+  adresse varchar(255),
+  cp varchar(10),
+  ville varchar(50),
+  fk_pays integer,
+  tel varchar(20),
+  fk_societe integer NOT NULL,
+  notes text,
   acces_site text,
   note1 text,
-  archive tinyint NOT NULL DEFAULT 0,
-  fk_reg_interieur int NULL,
-  fk_user_author int(11) NOT NULL,
+  archive smallint NOT NULL DEFAULT 0,
+  fk_reg_interieur integer,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  entity integer NOT NULL DEFAULT 1
 ) ENGINE=InnoDB;
 

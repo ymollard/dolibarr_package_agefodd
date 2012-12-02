@@ -20,12 +20,12 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
-  rowid int(6) NOT NULL auto_increment PRIMARY KEY,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
   ref varchar(40) NOT NULL,
   ref_interne varchar(80) NULL,
-  entity int(11) NOT NULL DEFAULT 1,
+  entity integer NOT NULL DEFAULT 1,
   intitule varchar(80) NOT NULL,
-  duree int(6) NOT NULL,
+  duree integer NOT NULL,
   public text NULL,
   methode text NULL,
   prerequis text NULL,
@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   programme text NULL,
   note1 text NULL,
   note2 text NULL,
-  archive tinyint NOT NULL DEFAULT 0,
-  fk_user_author int(11) NOT NULL,
+  archive smallint NOT NULL DEFAULT 0,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

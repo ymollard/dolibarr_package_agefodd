@@ -20,12 +20,12 @@
 -- Structure de la table llx_agefodd_session_commercial
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_commercial (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  fk_session_agefodd int(11) NOT NULL,
-  fk_user_com int(11) NOT NULL,
-  fk_user_author int(11) NOT NULL,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  fk_session_agefodd integer NOT NULL,
+  fk_user_com integer NOT NULL,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 

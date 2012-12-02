@@ -18,18 +18,18 @@
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS llx_agefodd_opca
 (
-	rowid int(11) NOT NULL auto_increment PRIMARY KEY,
+	rowid integer NOT NULL auto_increment PRIMARY KEY,
 	fk_soc_trainee	integer	NOT NULL,
-	fk_session_agefodd int(11) NOT NULL,
+	fk_session_agefodd integer NOT NULL,
 	date_ask_OPCA datetime DEFAULT NULL,
-	is_date_ask_OPCA tinyint NOT NULL DEFAULT 0,
-	is_OPCA tinyint NOT NULL DEFAULT 0,
-	fk_soc_OPCA int(11) DEFAULT NULL,
-	fk_socpeople_OPCA int(11) DEFAULT NULL,
+	is_date_ask_OPCA smallint NOT NULL DEFAULT 0,
+	is_OPCA smallint NOT NULL DEFAULT 0,
+	fk_soc_OPCA integer DEFAULT NULL,
+	fk_socpeople_OPCA integer DEFAULT NULL,
 	num_OPCA_soc varchar(100) DEFAULT NULL,
 	num_OPCA_file varchar(100) DEFAULT NULL,
 	fk_user_author	integer	NOT NULL,
 	datec	datetime  NOT NULL,
 	fk_user_mod integer NOT NULL,
-	tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP	
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

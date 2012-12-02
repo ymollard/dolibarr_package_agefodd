@@ -22,21 +22,21 @@
 -- Structure de la table llx_agefodd_session_adminsitu
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  fk_agefodd_session_admlevel int(11) NOT NULL default '0',
-  fk_agefodd_session int(11) NOT NULL,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  fk_agefodd_session_admlevel integer NOT NULL default '0',
+  fk_agefodd_session integer NOT NULL,
   intitule varchar(100) default NULL,
-  delais_alerte int(11) NOT NULL,
-  indice int(11) NOT NULL,
-  level_rank int(11) NOT NULL default '0',
-  fk_parent_level int(11) default '0',
+  delais_alerte integer NOT NULL,
+  indice integer NOT NULL,
+  level_rank integer NOT NULL default '0',
+  fk_parent_level integer default '0',
   dated datetime default NULL,
   datef datetime NOT NULL,
   datea datetime NOT NULL,
   notes text NOT NULL,
-  fk_user_author int(11) NOT NULL,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  archive tinyint NOT NULL DEFAULT 0
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  archive smallint NOT NULL DEFAULT 0
 ) ENGINE=InnoDB;

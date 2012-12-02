@@ -22,14 +22,14 @@
 -- Structure de la table llx_agefodd_session_calendrier
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  fk_agefodd_session int(11) NOT NULL,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  fk_agefodd_session integer NOT NULL,
   date_session date NOT NULL,
   heured datetime NOT NULL,
   heuref datetime NOT NULL,
   fk_actioncomm int DEFAULT NULL,
-  fk_user_author int(11) NOT NULL,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

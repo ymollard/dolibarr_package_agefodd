@@ -34,6 +34,8 @@ include_once(DOL_DOCUMENT_ROOT ."/core/modules/DolibarrModules.class.php");
  */
 class modAgefodd extends DolibarrModules
 {
+	
+	var $error;
 	/**
 	 *	Constructor.
 	 *	@param	DoliDB		Database handler
@@ -610,11 +612,31 @@ class modAgefodd extends DolibarrModules
 	 */
 	function init()
 	{
+		global $conf;
+		
 		$sql = array();
 
 		$result=$this->load_tables();
 
-		return $this->_init($sql);
+		if ($this->db->type=='pgsql') {
+			dol_syslog(get_class($this)."::init this->db->type=".$this->db->type, LOG_DEBUG);
+			$res=@include_once(DOL_DOCUMENT_ROOT ."/core/lib/admin.lib.php");
+			dol_syslog(get_class($this)."::init res=".$res, LOG_DEBUG);
+			foreach($conf->file->dol_document_root as $dirroot)
+			{
+				$dir = $dirroot.'/agefodd/lib/sql/';
+				
+				
+				$handle=@opendir($dir);         // Dir may not exists
+				if (is_resource($handle))
+				{
+					
+					$result=run_sql($dir.'agefodd_function.sql',1,'',1);
+				}
+			}
+		}
+		
+		return $this->_init($sql);		
 	}
 
 	/**

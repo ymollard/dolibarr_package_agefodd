@@ -18,12 +18,12 @@
 --
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_objectifs_peda (
-  rowid int(11) NOT NULL auto_increment PRIMARY KEY,
-  fk_formation_catalogue int(11) NOT NULL,
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  fk_formation_catalogue integer NOT NULL,
   intitule varchar(150) NOT NULL,
-  priorite int(2) default NULL,
-  fk_user_author int(11) NOT NULL,
+  priorite smallint default NULL,
+  fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
-  fk_user_mod int(11) NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
