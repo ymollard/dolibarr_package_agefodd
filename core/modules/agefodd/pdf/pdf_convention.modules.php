@@ -475,15 +475,17 @@ class pdf_convention extends ModelePDFAgefodd
 				$total_ttc = 0;
 				for ($i = 0; $i < count($agf_comdetails->line); $i++)
 				{
-					$pdf->SetXY( $posX, $posY + 1);
-					$pdf->writeHTMLCell($w[0], 4, $posX, $posY + 1,$outputlangs->transnoentities($agf_comdetails->line[$i]->description));
-					$hauteur = dol_nboflines_bis($agf_comdetails->line[$i]->description,50)*4;
+					$pdf->SetXY($posX, $posY);
+					$hauteur=$posY;
+					$pdf->writeHTMLCell($w[0], 4, $posX, $posY,$outputlangs->transnoentities($agf_comdetails->line[$i]->description));
+					$posY = $pdf->GetY();
+					$hauteur=($hauteur-$posY);
 					$pdf->SetXY( $posX + $w[0], $posY);
-					$pdf->Cell($w[1],6,vatrate($agf_comdetails->line[$i]->tva_tx,1),0,0,'C',$fill);
-					$pdf->Cell($w[2],6,price($agf_comdetails->line[$i]->price),0,0,'R',$fill);
-					$pdf->Cell($w[3],6,$agf_comdetails->line[$i]->qty,0,0,'C',$fill);
-					$pdf->Cell($w[4],6,price($agf_comdetails->line[$i]->total_ht),0,0,'R',$fill);
-					$pdf->Cell($w[5],6,price($agf_comdetails->line[$i]->total_ttc),0,0,'R',$fill);
+					$pdf->Cell($w[1],$hauteur,vatrate($agf_comdetails->line[$i]->tva_tx,1),0,0,'C',$fill);
+					$pdf->Cell($w[2],$hauteur,price($agf_comdetails->line[$i]->price),0,0,'R',$fill);
+					$pdf->Cell($w[3],$hauteur,$agf_comdetails->line[$i]->qty,0,0,'C',$fill);
+					$pdf->Cell($w[4],$hauteur,price($agf_comdetails->line[$i]->total_ht),0,0,'R',$fill);
+					$pdf->Cell($w[5],$hauteur,price($agf_comdetails->line[$i]->total_ttc),0,0,'R',$fill);
 
 					$pdf->SetXY( $posX, $posY);
 					$pdf->Cell($w[0],$hauteur,'','LRT',0,'R',$fill);
@@ -494,7 +496,7 @@ class pdf_convention extends ModelePDFAgefodd
 					$pdf->Cell($w[5],$hauteur,'','LRT',0,'R',$fill);
 
 					$pdf->Ln();
-					$posY += $hauteur;
+					$posY = $pdf->GetY();
 
 					$total_ht += $agf_comdetails->line[$i]->total_ht;
 					$total_tva += $agf_comdetails->line[$i]->total_tva;
