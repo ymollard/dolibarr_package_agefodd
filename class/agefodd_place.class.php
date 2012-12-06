@@ -391,10 +391,7 @@ class Agefodd_place extends CommonObject
 		if (!empty($this->fk_reg_interieur)) {
 			$sql.= " fk_reg_interieur=".(isset($this->fk_reg_interieur)?$this->fk_reg_interieur:"null").",";
 		}
-		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-		$sql.= " datec=".(dol_strlen($this->datec)!=0 ? "'".$this->db->idate($this->datec)."'" : 'null').",";
-		$sql.= " fk_user_mod=".$user->id.",";
-		$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null')."";
+		$sql.= " fk_user_mod=".$user->id;
 		$sql.= " WHERE rowid=".$this->id;
 
 		$this->db->begin();
