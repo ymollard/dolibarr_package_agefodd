@@ -18,17 +18,18 @@
  */
 
 /**
- *       \file       htdocs/compta/facture/class/facturestats.class.php
- *       \ingroup    factures
- *       \brief      Fichier de la classe de gestion des stats des factures
+ *       \file       agefodd/class/sessionstats.class.php
+ *       \ingroup    agefodd
+ *       \brief      Fichier de la classe de gestion des stats des Formation
  */
 include_once DOL_DOCUMENT_ROOT . "/core/class/stats.class.php";
 include_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
 
 dol_include_once("/agefodd/class/agsession.class.php");
+
 /**
  *       \class      SessionStats
- *       \brief      Classe permettant la gestion des stats des factures
+ *       \brief      Classe permettant la gestion des stats des Sessions de formations
  */
 class SessionStats extends Stats
 {
@@ -63,8 +64,6 @@ class SessionStats extends Stats
 		$this->from = MAIN_DB_PREFIX.$object->table_element;
 		$this->field='sell_price';
 		
-		
-
 		//$this->where = " fk_statut > 0";
 		$this->where.= " entity = ".$conf->entity;
 		//if ($mode == 'customer') $this->where.=" AND (fk_statut <> 3 OR close_code <> 'replaced')";	// Exclude replaced invoices as they are duplicated (we count closed invoices for other reasons)

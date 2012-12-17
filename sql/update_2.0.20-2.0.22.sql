@@ -5,8 +5,8 @@ ALTER TABLE llx_agefodd_place MODIFY fk_pays integer;
 ALTER TABLE llx_agefodd_place MODIFY tel varchar(20);
 ALTER TABLE llx_agefodd_place MODIFY notes text;
 ALTER TABLE llx_agefodd_place MODIFY fk_reg_interieur integer NULL;
-
-
+ALTER TABLE llx_agefodd_facture MODIFY fk_commande integer;
+ALTER TABLE llx_agefodd_facture MODIFY fk_facture integer;
 
 
 

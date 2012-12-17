@@ -18,17 +18,16 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
- *	\ingroup	agefodd
- *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_index.class.php
+ *  \ingroup    agefodd
+ *  \brief      Index page function
+ */
+
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	Index pages
 */
 class Agefodd_index
 {
@@ -40,8 +39,9 @@ class Agefodd_index
 	var $id;
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function Agefodd_index($DB)
 	{
@@ -50,10 +50,10 @@ class Agefodd_index
 	}
 
 
-
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, $num of student if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_student_nb()
 	{
@@ -91,8 +91,9 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_session_nb()
 	{
@@ -127,11 +128,10 @@ class Agefodd_index
 		}
 	}
 
-
-
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_formation_nb()
 	{
@@ -166,8 +166,9 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_heures_sessions_nb()
 	{
@@ -205,8 +206,9 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_heures_stagiaires_nb()
 	{
@@ -244,10 +246,11 @@ class Agefodd_index
 		}
 	}
 
-
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @param	int 	$number 	number of sessions to display
+	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_last_formations($number=5)
 	{
@@ -290,11 +293,11 @@ class Agefodd_index
 		}
 	}
 
-
-
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @param	int 	$number 	number of sessions to display
+	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_top_formations($number=5)
 	{
@@ -340,8 +343,10 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @param	int 	$archive 	Archive
+	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_session($archive=0)
 	{
@@ -376,9 +381,10 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param     int     day of overshoot
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @param	int 	$jour 		Nb day to display
+	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_tache_en_retard($jour=0)
 	{
@@ -423,8 +429,9 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_tache_en_cours()
 	{
@@ -457,9 +464,15 @@ class Agefodd_index
 	}
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id admin action (in table agefodd_session_adminsitu)
-	 *    \return    int     <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    	Sort Order
+	 *  @param	string $sortfield    	Sort field
+	 *  @param	int $limit    			offset limit
+	 *  @param	int $offset    			offset limit
+	 *  @param	int $delais_sup    		high limit
+	 *  @param	int $delais_inf    		low limit
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf=0)
 	{
@@ -522,8 +535,9 @@ class Agefodd_index
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *  
+	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_session_to_archive()
 	{
@@ -565,5 +579,4 @@ class Agefodd_index
 
 
 }
-# $Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $
 ?>

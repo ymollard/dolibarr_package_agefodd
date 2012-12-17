@@ -18,17 +18,15 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_stagiaire.class.php $
- *	\ingroup	agefodd
- *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/convention.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage convention object
+ */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd_convention
- *	\brief		Module Agefodd class
+ *	Convention class
 */
 class Agefodd_convention
 {
@@ -40,8 +38,9 @@ class Agefodd_convention
 	var $id;
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -51,10 +50,11 @@ class Agefodd_convention
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -62,18 +62,18 @@ class Agefodd_convention
 		$error=0;
 		 
 		// Clean parameters
-		$this->intro1 = $this->db->escape($this->intro1);
-		$this->intro2 = $this->db->escape($this->intro2);
-		$this->art1 = $this->db->escape($this->art1);
-		$this->art2 = $this->db->escape($this->art2);
-		$this->art3 = $this->db->escape($this->art3);
-		$this->art4 = $this->db->escape($this->art4);
-		$this->art5 = $this->db->escape($this->art5);
-		$this->art6 = $this->db->escape($this->art6);
-		$this->art7 = $this->db->escape($this->art7);
-		$this->art8 = $this->db->escape($this->art8);
-		$this->sig = $this->db->escape($this->sig);
-		$this->notes = $this->db->escape($this->notes);
+		if (isset($this->intro1)) $this->intro1 = $this->db->escape(trim($this->intro1));
+		if (isset($this->intro2)) $this->intro2 = $this->db->escape(trim($this->intro2));
+		if (isset($this->art1)) $this->art1 = $this->db->escape(trim($this->art1));
+		if (isset($this->art2)) $this->art2 = $this->db->escape(trim($this->art2));
+		if (isset($this->art3)) $this->art3 = $this->db->escape(trim($this->art3));
+		if (isset($this->art4)) $this->art4 = $this->db->escape(trim($this->art4));
+		if (isset($this->art5)) $this->art5 = $this->db->escape(trim($this->art5));
+		if (isset($this->art6)) $this->art6 = $this->db->escape(trim($this->art6));
+		if (isset($this->art7)) $this->art7 = $this->db->escape(trim($this->art7));
+		if (isset($this->art8)) $this->art8 = $this->db->escape(trim($this->art8));
+		if (isset($this->sig)) $this->sig = $this->db->escape(trim($this->sig));
+		if (isset($this->notes)) $this->notes = $this->db->escape(trim($this->notes));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -81,23 +81,24 @@ class Agefodd_convention
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_convention(";
 		$sql.= "fk_agefodd_session, fk_societe, intro1, intro2, art1, art2, art3,";
-		$sql.= " art4, art5, art6, art7, art8, sig, notes, fk_user_author, datec";
+		$sql.= " art4, art5, art6, art7, art8, sig, notes, fk_user_author, fk_user_mod, datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->sessid.'", ';
-		$sql.= '"'.$this->socid.'", ';
-		$sql.= '"'.$this->intro1.'", ';
-		$sql.= '"'.$this->intro2.'", ';
-		$sql.= '"'.$this->art1.'", ';
-		$sql.= '"'.$this->art2.'", ';
-		$sql.= '"'.$this->art3.'", ';
-		$sql.= '"'.$this->art4.'", ';
-		$sql.= '"'.$this->art5.'", ';
-		$sql.= '"'.$this->art6.'", ';
-		$sql.= '"'.$this->art7.'", ';
-		$sql.= '"'.$this->art8.'", ';
-		$sql.= '"'.$this->sig.'", ';
-		$sql.= '"'.$this->notes.'", ';
-		$sql.= '"'.$user->id.'", ';
+		$sql.= "'".$this->sessid."', ";
+		$sql.= "'".$this->socid."', ";
+		$sql.= "'".$this->intro1."', ";
+		$sql.= "'".$this->intro2."', ";
+		$sql.= "'".$this->art1."', ";
+		$sql.= "'".$this->art2."', ";
+		$sql.= "'".$this->art3."', ";
+		$sql.= "'".$this->art4."', ";
+		$sql.= "'".$this->art5."', ";
+		$sql.= "'".$this->art6."', ";
+		$sql.= "'".$this->art7."', ";
+		$sql.= "'".$this->art8."', ";
+		$sql.= "'".$this->sig."', ";
+		$sql.= "'".$this->notes."', ";
+		$sql.= $user->id.', ';
+		$sql.= $user->id.', ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -144,11 +145,10 @@ class Agefodd_convention
 
 
 	/**
-	 *    \brief	Recupére les infos concernant une convention
-	 *    \param	sessid	int	id session
-	 *		socid	int	id societe
-	 *		type	str	état facturation (commande (bc) ou facture (fac))
-	 *    \return     	int     <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($sessid, $socid, $id=0)
 	{
@@ -204,11 +204,10 @@ class Agefodd_convention
 
 
 	/**
-	 *    \brief	Recupére les infos concernant la dernière convention relaisé pour une société donnée
-	 *    \param	sessid	int	id session
-	 *		socid	int	id societe
-	 *		type	str	état facturation (commande (bc) ou facture (fac))
-	 *    \return     	int     <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$socid    soc id
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_last_conv_per_socity($socid)
 	{
@@ -242,9 +241,10 @@ class Agefodd_convention
 
 
 	/**
-	 *    \brief	Recupére les infos concernant la commande associée à la convention
-	 *    \param	commid	int	id commande
-	 *    \return     	int     <0 if KO, >0 if OK
+	 *  Load order lines object in memory from database
+	 *
+	 *  @param	int		$comid    order id
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_commande_lines($comid)
 	{
@@ -293,9 +293,10 @@ class Agefodd_convention
 	}
 	
 	/**
-	 *    \brief	Recupére les infos concernant la commande associée à la convention
-	 *    \param	commid	int	id commande
-	 *    \return     	int     <0 if KO, >0 if OK
+	 *  Load Invoice lines object in memory from database
+	 *
+	 *  @param	int		$factid    invoice id
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_facture_lines($factid)
 	{
@@ -344,9 +345,10 @@ class Agefodd_convention
 	}
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -384,10 +386,11 @@ class Agefodd_convention
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -395,23 +398,18 @@ class Agefodd_convention
 		$error=0;
 
 		// Clean parameters
-		$this->intro1 = $this->db->escape($this->intro1);
-		$this->intro2 = $this->db->escape($this->intro2);
-		$this->art1 = $this->db->escape($this->art1);
-		$this->art2 = $this->db->escape($this->art2);
-		$this->art3 = $this->db->escape($this->art3);
-		$this->art4 = $this->db->escape($this->art4);
-		$this->art5 = $this->db->escape($this->art5);
-		$this->art6 = $this->db->escape($this->art6);
-		$this->art7 = $this->db->escape($this->art7);
-		$this->art8 = $this->db->escape($this->art8);
-		$this->sig = $this->db->escape($this->sig);
-		$this->notes = $this->db->escape($this->notes);
-
-
-		// Check parameters
-		// Put here code to add control on parameters values
-
+		if (isset($this->intro1)) $this->intro1 = $this->db->escape(trim($this->intro1));
+		if (isset($this->intro2)) $this->intro2 = $this->db->escape(trim($this->intro2));
+		if (isset($this->art1)) $this->art1 = $this->db->escape(trim($this->art1));
+		if (isset($this->art2)) $this->art2 = $this->db->escape(trim($this->art2));
+		if (isset($this->art3)) $this->art3 = $this->db->escape(trim($this->art3));
+		if (isset($this->art4)) $this->art4 = $this->db->escape(trim($this->art4));
+		if (isset($this->art5)) $this->art5 = $this->db->escape(trim($this->art5));
+		if (isset($this->art6)) $this->art6 = $this->db->escape(trim($this->art6));
+		if (isset($this->art7)) $this->art7 = $this->db->escape(trim($this->art7));
+		if (isset($this->art8)) $this->art8 = $this->db->escape(trim($this->art8));
+		if (isset($this->sig)) $this->sig = $this->db->escape(trim($this->sig));
+		if (isset($this->notes)) $this->notes = $this->db->escape(trim($this->notes));
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
@@ -428,9 +426,9 @@ class Agefodd_convention
 		$sql.= " c.art8='".$this->art8."',";
 		$sql.= " c.sig='".$this->sig."',";
 		$sql.= " c.notes='".$this->notes."',";
-		$sql.= " c.fk_societe='".$this->socid."',";
-		$sql.= " c.fk_agefodd_session='".$this->sessid."',";
-		$sql.= " c.fk_user_mod='".$user->id."'";
+		$sql.= " c.fk_societe=".$this->socid.",";
+		$sql.= " c.fk_agefodd_session=".$this->sessid.",";
+		$sql.= " c.fk_user_mod=".$user->id." ";
 		$sql.= " WHERE c.rowid = ".$this->id;
 
 		$this->db->begin();
@@ -475,9 +473,11 @@ class Agefodd_convention
 
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  User	$user        User that delete
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{
@@ -499,6 +499,4 @@ class Agefodd_convention
 	}
 
 }
-
-# $Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $
 ?>

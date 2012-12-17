@@ -19,17 +19,16 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_catalogue.class.php $
-*	\ingroup	agefodd
-*	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_foramtion_catalogue.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage training object
+ */
+
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	trainning Class
 */
 class Agefodd extends CommonObject
 {
@@ -41,8 +40,9 @@ class Agefodd extends CommonObject
 	var $id;
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -52,10 +52,11 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -63,36 +64,35 @@ class Agefodd extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->intitule = $this->db->escape($this->intitule);
-		$this->public = $this->db->escape($this->public);
-		$this->methode = $this->db->escape($this->methode);
-		$this->prerequis = $this->db->escape($this->prerequis);
-		$this->but = $this->db->escape($this->but);
-		$this->note1 = $this->db->escape($this->note1);
-		$this->note2 = $this->db->escape($this->note2);
-
-
-		// Check parameters
-		// Put here code to add control on parameters value
+		if (isset($this->intitule)) $this->intitule = $this->db->escape(trim($this->intitule));
+		if (isset($this->public)) $this->public = $this->db->escape(trim($this->public));
+		if (isset($this->methode)) $this->methode = $this->db->escape(trim($this->methode));
+		if (isset($this->prerequis)) $this->prerequis = $this->db->escape(trim($this->prerequis));
+		if (isset($this->but)) $this->but = $this->db->escape(trim($this->but));
+		if (isset($this->note1)) $this->note1 = $this->db->escape(trim($this->note1));
+		if (isset($this->note2)) $this->note2 = $this->db->escape(trim($this->note2));
+		
+		if (empty($this->duree)) $this->duree = 0;
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author,entity";
+		$sql.= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author,fk_user_mod,entity";
 		$sql.= ") VALUES (";
 		$sql.= $this->db->idate(dol_now()).', ';
-		$sql.= '"'.$this->ref.'", ';
-		$sql.= '"'.$this->ref_interne.'", ';
-		$sql.= '"'.$this->intitule.'", ';
-		$sql.= '"'.$this->duree.'", ';
-		$sql.= '"'.$this->public.'",';
-		$sql.= '"'.$this->methode.'",';
-		$sql.= '"'.$this->prerequis.'",';
-		$sql.= '"'.$this->but.'",';
-		$sql.= '"'.$this->programme.'",';
-		$sql.= '"'.$this->note1.'",';
-		$sql.= '"'.$this->note2.'",';
-		$sql.= '"'.$user->id.'",';
-		$sql.= '"'.$conf->entity.'"';
+		$sql.= " ".(! isset($this->ref_obj)?'NULL':"'".$this->ref_obj."'").",";
+		$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->ref_interne."'").",";
+		$sql.= " ".(! isset($this->intitule)?'NULL':"'".$this->intitule."'").",";
+		$sql.= " ".(! isset($this->duree)?'NULL':$this->duree).",";
+		$sql.= " ".(! isset($this->public)?'NULL':"'".$this->public."'").",";
+		$sql.= " ".(! isset($this->methode)?'NULL':"'".$this->methode."'").",";
+		$sql.= " ".(! isset($this->prerequis)?'NULL':"'".$this->prerequis."'").",";
+		$sql.= " ".(! isset($this->but)?'NULL':"'".$this->but."'").",";
+		$sql.= " ".(! isset($this->programme)?'NULL':"'".$this->programme."'").",";
+		$sql.= " ".(! isset($this->note1)?'NULL':"'".$this->note1."'").",";
+		$sql.= " ".(! isset($this->note2)?'NULL':"'".$this->note2."'").",";
+		$sql.= " ".$user->id.',';
+		$sql.= " ".$user->id.',';
+		$sql.= " ".$conf->entity.' ';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -139,10 +139,10 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id object
-	 *			arch	archive (0=no, 1=yes, 2=all)
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($id,$ref='')
 	{
@@ -194,9 +194,10 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -234,10 +235,11 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	    0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -245,34 +247,38 @@ class Agefodd extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->intitule = $this->db->escape($this->intitule);
-		$this->public = $this->db->escape($this->public);
-		$this->methode = $this->db->escape($this->methode);
-		$this->prerequis = $this->db->escape($this->prerequis);
-		$this->but = $this->db->escape($this->but);
-		$this->programme = $this->db->escape($this->programme);
-		$this->note1 = $this->db->escape($this->note1);
-		$this->note2 = $this->db->escape($this->note2);
+		$this->intitule = $this->db->escape(trim($this->intitule));
+		$this->ref_obj = $this->db->escape(trim($this->ref_obj));
+		$this->ref_interne = $this->db->escape(trim($this->ref_interne));
+		$this->public = $this->db->escape(trim($this->public));
+		$this->methode = $this->db->escape(trim($this->methode));
+		$this->prerequis = $this->db->escape(trim($this->prerequis));
+		$this->but = $this->db->escape(trim($this->but));
+		$this->programme = $this->db->escape(trim($this->programme));
+		$this->note1 = $this->db->escape(trim($this->note1));
+		$this->note2 = $this->db->escape(trim($this->note2));
 
 		// Check parameters
 		// Put here code to add control on parameters values
+		if (empty($this->duree)) $this->duree = 0;
+		
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c SET";
-		$sql.= " c.ref='".$this->ref."',";
-		$sql.= " c.ref_interne='".$this->ref_interne."',";
-		$sql.= " c.intitule='".$this->intitule."',";
-		$sql.= " c.duree='".$this->duree."',";
-		$sql.= " c.public='".$this->public."',";
-		$sql.= " c.methode='".$this->methode."',";
-		$sql.= " c.prerequis='".$this->prerequis."',";
-		$sql.= " c.but='".$this->but."',";
-		$sql.= " c.programme='".$this->programme."',";
-		$sql.= " c.note1='".$this->note1."',";
-		$sql.= " c.note2='".$this->note2."',";
-		$sql.= " c.fk_user_mod='".$user->id."',";
-		$sql.= " c.archive=".$this->archive;
-		$sql.= " WHERE c.rowid = ".$this->id;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue SET";
+		$sql.= " ref=".(isset($this->ref_obj)?"'".$this->ref_obj."'":"null").",";
+		$sql.= " ref_interne=".(isset($this->ref_interne)?"'".$this->ref_interne."'":"null").",";
+		$sql.= " intitule=".(isset($this->intitule)?"'".$this->intitule."'":"null").",";
+		$sql.= " duree=".(isset($this->duree)?$this->duree:"null").",";
+		$sql.= " public=".(isset($this->public)?"'".$this->public."'":"null").",";
+		$sql.= " methode=".(isset($this->methode)?"'".$this->methode."'":"null").",";
+		$sql.= " prerequis=".(isset($this->prerequis)?"'".$this->prerequis."'":"null").",";
+		$sql.= " but=".(isset($this->but)?"'".$this->but."'":"null").",";
+		$sql.= " programme=".(isset($this->programme)?"'".$this->programme."'":"null").",";
+		$sql.= " note1=".(isset($this->note1)?"'".$this->note1."'":"null").",";
+		$sql.= " note2=".(isset($this->note2)?"'".$this->note2."'":"null").",";
+		$sql.= " fk_user_mod=".$user->id.",";
+		$sql.= " archive=".$this->archive;
+		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
 
@@ -317,9 +323,10 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  int 	$id		Id to delete
+	 *  @return	 int		<0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{
@@ -342,10 +349,11 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create pegagogic goal
+	 *
+	 *	@param  User	$user        User that delete
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function create_objpeda($user,$notrigger=0)
 	{
@@ -360,12 +368,13 @@ class Agefodd extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda(";
-		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user_author,datec";
+		$sql.= "fk_formation_catalogue, intitule, priorite, fk_user_author,fk_user_mod,datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->fk_formation_catalogue.'", ';
-		$sql.= '"'.$this->intitule.'", ';
-		$sql.= '"'.$this->priorite.'", ';
-		$sql.= '"'.$user->id.'",';
+		$sql.= " ".$this->fk_formation_catalogue.', ';
+		$sql.= "'".$this->intitule."', ";
+		$sql.= " ".$this->priorite.", ";
+		$sql.= " ".$user->id.',';
+		$sql.= " ".$user->id.',';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -413,11 +422,12 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id object
-	 *    \return	int	<0 if KO, >0 if OK
+	 * Load object in memory from database
+	 *
+	 *  @param  int		$id	 	id of object
+	 *  @return	 int			<0 if KO, >0 if OK
 	 */
-	function fetch_objpeda($id_formation)
+	function fetch_objpeda($id)
 	{
 		global $langs;
 
@@ -425,7 +435,7 @@ class Agefodd extends CommonObject
 		$sql.= " o.intitule, o.priorite";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda";
 		$sql.= " as o";
-		$sql.= " WHERE o.rowid = ".$id_formation;
+		$sql.= " WHERE o.rowid = ".$id;
 
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -453,9 +463,10 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *    \brief	Recupere les objectifs pedagogiques d'une formation
-	 *    \param	id	int	id formation
-	 *    \return	int	<0 if KO, >0 if OK
+	 * Load object in memory from database
+	 *
+	 *  @param  int		$id_formation	 training concern by objectif peda
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function fetch_objpeda_per_formation($id_formation)
 	{
@@ -498,10 +509,11 @@ class Agefodd extends CommonObject
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update_objpeda($user, $notrigger=0)
 	{
@@ -509,18 +521,18 @@ class Agefodd extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->intitule = $this->db->escape($this->intitule);
+		$this->intitule = $this->db->escape(trim($this->intitule));
 
 		// Check parameters
 		// Put here code to add control on parameters values
 
 		// Update request
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda as o SET";
-		$sql.= " o.fk_formation_catalogue='".$this->fk_formation_catalogue."',";
-		$sql.= " o.intitule='".$this->intitule."',";
-		$sql.= " o.fk_user_mod='".$user->id."',";
-		$sql.= " o.priorite='".$this->priorite."'";
-		$sql.= " WHERE o.rowid = ".$this->id;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_objectifs_peda SET";
+		$sql.= " fk_formation_catalogue=".$this->fk_formation_catalogue.",";
+		$sql.= " intitule='".$this->intitule."',";
+		$sql.= " fk_user_mod=".$user->id.",";
+		$sql.= " priorite=".$this->priorite." ";
+		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
 
@@ -564,9 +576,10 @@ class Agefodd extends CommonObject
 	}
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  int 	$id		Id to delete
+	 *  @return	 int		<0 if KO, >0 if OK
 	 */
 	function remove_objpeda($id)
 	{
@@ -610,7 +623,7 @@ class Agefodd extends CommonObject
 	/**
 	 *      Return description of training
 	 *
-	 *		@return	string					HTML translated description
+	 *		@return	string		HTML translated description
 	 */
 	function getToolTip()
 	{
@@ -634,13 +647,14 @@ class Agefodd extends CommonObject
 	}
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	$sortorder	Load object in memory from database
-	 *		$sortfield
-	 *		$limit
-	 *		$offset
-	 *		$arch 	int (0 for only active record, 1 for only archive record)
-	 *    \return    int     <0 if KO, $num of teacher if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    Sort Order
+	 *  @param	string $sortfield    Sort field
+	 *  @param	int $limit    	offset limit
+	 *  @param	int $offset    	offset limit
+	 *  @param	int $arch    	archive
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
 	{
@@ -692,6 +706,11 @@ class Agefodd extends CommonObject
 		}
 	}
 
+	/**
+	 *  Return information of Place
+	 *
+	 *  @return void
+	 */
 	function printFormationInfo() {
 		global $form, $langs;
 
@@ -712,10 +731,4 @@ class Agefodd extends CommonObject
 
 	}
 }
-
-
-
-
-
-# $Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $
 ?>

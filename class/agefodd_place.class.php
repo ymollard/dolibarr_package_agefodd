@@ -125,7 +125,7 @@ class Agefodd_place extends CommonObject
 		$sql.= "datec";
 		$sql.= ") VALUES (";
 		
-		$sql.= " ".(! isset($conf->entity)?'NULL':"'".$conf->entity."'").",";
+		$sql.= " ".$conf->entity.",";
 		$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->db->escape($this->ref_interne)."'").",";
 		$sql.= " ".(! isset($this->adresse)?'NULL':"'".$this->db->escape($this->adresse)."'").",";
 		$sql.= " ".(! isset($this->cp)?'NULL':"'".$this->db->escape($this->cp)."'").",";
@@ -362,7 +362,6 @@ class Agefodd_place extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
 		if (isset($this->adresse)) $this->adresse=trim($this->adresse);
 		if (isset($this->cp)) $this->cp=trim($this->cp);

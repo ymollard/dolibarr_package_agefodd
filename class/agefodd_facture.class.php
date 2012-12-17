@@ -18,17 +18,15 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_stagiaire.class.php $
- *	\ingroup	agefodd
- *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_facture.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage Invoice object
+ */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd_facture
- *	\brief		Module Agefodd class
+ *	Invoice Class
 */
 class Agefodd_facture
 {
@@ -40,8 +38,9 @@ class Agefodd_facture
 	var $id;
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -51,10 +50,11 @@ class Agefodd_facture
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -70,11 +70,11 @@ class Agefodd_facture
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_facture(";
 		$sql.= "fk_commande, fk_facture, fk_session, fk_societe, fk_user_author, datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->comid.'", ';
-		$sql.= '"'.$this->facid.'", ';
-		$sql.= '"'.$this->sessid.'", ';
-		$sql.= '"'.$this->socid.'", ';
-		$sql.= '"'.$user->id.'", ';
+		$sql.= "'".$this->comid."', ";
+		$sql.= "'".$this->facid."', ";
+		$sql.= "'".$this->sessid."', ";
+		$sql.= "'".$this->socid."', ";
+		$sql.= "".$user->id.', ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -121,11 +121,11 @@ class Agefodd_facture
 
 
 	/**
-	 *    \brief	Recupére les infos de commande/facturation d'une session pour une société donnée
-	 *    \param	sessid	int	id session
-	 *		socid	int	id societe
-	 *		type	str	état facturation (commande (bc) ou facture (fac))
-	 *    \return     	int     <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$sessid    Id Session
+	 *  @param	int		$socid    Id soc
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($sessid, $socid)
 	{
@@ -171,11 +171,11 @@ class Agefodd_facture
 	}
 
 	/**
-	 *    \brief	Recupére les infos de commande/facturation d'une session pour une société donnée
-	 *    \param	sessid	int	id session
-	 *		socid	int	id societe
-	 *		type	str	type de document cherché (commande (bc) ou facture (fac))
-	 *    \return     	int     <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$socid    Id Session
+	 *  @param	string		$type    bc is default
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_fac_per_soc($socid, $type='bc')
 	{
@@ -223,9 +223,10 @@ class Agefodd_facture
 
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -263,10 +264,11 @@ class Agefodd_facture
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -282,11 +284,11 @@ class Agefodd_facture
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_facture as f SET";
-		$sql.= " f.fk_commande='".$this->comid."',";
-		$sql.= " f.fk_facture='".$this->facid."',";
-		$sql.= " f.fk_societe='".$this->socid."',";
-		$sql.= " f.fk_user_mod='".$user->id."'";
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_facture SET";
+		$sql.= " fk_commande='".$this->comid.",";
+		$sql.= " fk_facture='".$this->facid.",";
+		$sql.= " fk_societe='".$this->socid.",";
+		$sql.= " fk_user_mod='".$user->id."";
 		$sql.= " WHERE f.rowid = ".$this->id;
 
 		$this->db->begin();
@@ -331,9 +333,10 @@ class Agefodd_facture
 
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  int 	$id		object to delete
+	 *  @return	 int		<0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{

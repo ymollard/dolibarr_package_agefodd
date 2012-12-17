@@ -83,6 +83,8 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_stagiaire($db);
 
 		$result = $agf->fetch($id);
+		
+		$fk_socpeople= GETPOST('fk_socpeople','int');
 
 		$agf->nom = GETPOST('nom','alpha');
 		$agf->prenom = GETPOST('prenom','alpha');
@@ -93,7 +95,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->tel2 = GETPOST('tel2','alpha');
 		$agf->mail = GETPOST('mail','alpha');
 		$agf->note = GETPOST('note','alpha');
-		$agf->fk_socpeople = GETPOST('fk_socpeople','int');
+		if (!empty($fk_socpeople)) $agf->fk_socpeople =$fk_socpeople;
 		$result = $agf->update($user);
 
 		if ($result > 0)

@@ -80,13 +80,13 @@ class Agefodd_stagiaire extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->nom = trim($this->nom);
-		$this->prenom = trim($this->prenom);
-		$this->fonction = $this->db->escape(trim($this->fonction));
-		$this->tel1 = $this->db->escape(trim($this->tel1));
-		$this->tel2 = $this->db->escape(trim($this->tel2));
-		$this->mail = $this->db->escape(trim($this->mail));
-		$this->note = $this->db->escape(trim($this->note));
+		if (isset($this->nom)) $this->nom = trim($this->nom);
+		if (isset($this->prenom)) $this->prenom = trim($this->prenom);
+		if (isset($this->fonction)) $this->fonction = $this->db->escape(trim($this->fonction));
+		if (isset($this->tel1)) $this->tel1 = $this->db->escape(trim($this->tel1));
+		if (isset($this->tel2)) $this->tel2 = $this->db->escape(trim($this->tel2));
+		if (isset($this->mail)) $this->mail = $this->db->escape(trim($this->mail));
+		if (isset($this->note)) $this->note = $this->db->escape(trim($this->note));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -454,31 +454,31 @@ class Agefodd_stagiaire extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		$this->nom = trim($this->nom);
-		$this->prenom = trim($this->prenom);
-		$this->fonction = $this->db->escape(trim($this->fonction));
-		$this->tel1 = $this->db->escape(trim($this->tel1));
-		$this->tel2 = $this->db->escape(trim($this->tel2));
-		$this->mail = $this->db->escape(trim($this->mail));
-		$this->note = $this->db->escape(trim($this->note));
-
+		if (isset($this->nom)) $this->nom = trim($this->nom);
+		if (isset($this->prenom)) $this->prenom = trim($this->prenom);
+		if (isset($this->fonction)) $this->fonction = $this->db->escape(trim($this->fonction));
+		if (isset($this->tel1)) $this->tel1 = $this->db->escape(trim($this->tel1));
+		if (isset($this->tel2)) $this->tel2 = $this->db->escape(trim($this->tel2));
+		if (isset($this->mail)) $this->mail = $this->db->escape(trim($this->mail));
+		if (isset($this->note)) $this->note = $this->db->escape(trim($this->note));
+		
 		// Check parameters
 		// Put here code to add control on parameters values
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire SET";
-		$sql.= " nom='".$this->nom."',";
-		$sql.= " prenom='".$this->prenom."',";
-		$sql.= " civilite='".$this->civilite."',";
+		$sql.= " nom=".(isset($this->ref)?"'".$this->nom."'":"null").",";
+		$sql.= " prenom=".(isset($this->ref)?"'".$this->prenom."'":"null").",";
+		$sql.= " civilite=".(isset($this->ref)?"'".$this->civilite."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id.",";
-		$sql.= " fk_soc=".$this->socid.",";
-		$sql.= " fonction='".$this->fonction."',";
-		$sql.= " tel1='".$this->tel1."',";
-		$sql.= " tel2='".$this->tel2."',";
-		$sql.= " mail='".$this->mail."',";
-		$sql.= " note='".$this->note."',";
-		$sql.= " fk_socpeople=".$this->fk_socpeople." ";
+		$sql.= " fk_soc=".(isset($this->socid)?$this->socid:"null").",";
+		$sql.= " fonction=".(isset($this->fonction)?"'".$this->fonction."'":"null").",";
+		$sql.= " tel1=".(isset($this->tel1)?"'".$this->tel1."'":"null").",";
+		$sql.= " tel2=".(isset($this->tel2)?"'".$this->tel2."'":"null").",";
+		$sql.= " mail=".(isset($this->mail)?"'".$this->mail."'":"null").",";
+		$sql.= " note=".(isset($this->note)?"'".$this->note."'":"null").",";
+		$sql.= " fk_socpeople=".(isset($this->fk_socpeople)?$this->fk_socpeople:"null")." ";
 		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();

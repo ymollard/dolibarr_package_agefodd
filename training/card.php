@@ -96,7 +96,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($id);
 
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->ref = GETPOST('ref','alpha');
+		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
@@ -136,9 +136,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd($db);
-
+		
 		$agf->intitule = GETPOST('intitule','alpha');
-		$agf->ref = GETPOST('ref','alpha');
+		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->public = GETPOST('public','alpha');
@@ -308,8 +308,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td width="20%"><span>'.$langs->trans("AgfRefInterne").'</span></td><td>';
 	print '<input name="ref_interne" class="flat" size="50" value="'.GETPOST('ref_interne','alpha').'"></td></tr>';
 
-	print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
-	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','alpha').'"></td></tr>';
+	print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
+	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','int').'"></td></tr>';
 
 	print '<tr>';
 	print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
@@ -380,16 +380,16 @@ else
 				print $agf->id;
 				print '</td></tr>';
 
-				print '<tr><td width="20%">'.$langs->trans("AgfIntitule").'</td><td>';
+				print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfIntitule").'</td><td>';
 				print '<input name="intitule" class="flat" size="50" value="'.stripslashes($agf->intitule).'"></td></tr>';
 
-				print '<tr><td width="20%">'.$langs->trans("Ref").'</td><td>';
+				print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("Ref").'</td><td>';
 				print '<input name="ref" class="flat" size="50" value="'.$agf->ref_obj.'"></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfRefInterne").'</td><td>';
 				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
-				print '<tr><td width="20%">'.$langs->trans("AgfDuree").'</td><td>';
+				print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
 				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
 
 				print '<tr>';
