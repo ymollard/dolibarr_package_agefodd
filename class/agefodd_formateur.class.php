@@ -19,17 +19,15 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
-*	\ingroup	agefodd
-*	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_formateur.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage trainer
+ */
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	Trainner Class
 */
 class Agefodd_teacher extends CommonObject
 {
@@ -40,11 +38,21 @@ class Agefodd_teacher extends CommonObject
 	var $table_element='agefodd_formateur';
 	var $id;
 	var $type_trainer_def=array();
-
+	
+	var $entity;
+	var $fk_socpeople;
+	var $fk_user;
+	var $type_trainer;
+	var $archive;
+	var $fk_user_author;
+	var $datec='';
+	var $fk_user_mod;
+	
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
-	*/
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
+	 */
 	function __construct($DB)
 	{
 		$this->db = $DB;
@@ -52,12 +60,12 @@ class Agefodd_teacher extends CommonObject
 		return 1;
 	}
 
-
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -65,29 +73,34 @@ class Agefodd_teacher extends CommonObject
 		$error=0;
 
 		// Clean parameters
-
-
-		// Check parameters
-		// Put here code to add control on parameters value
+		if (isset($this->entity)) $this->entity=trim($this->entity);
+		if (isset($this->fk_socpeople)) $this->fk_socpeople=trim($this->fk_socpeople);
+		if (isset($this->fk_user)) $this->fk_user=trim($this->fk_user);
+		if (isset($this->type_trainer)) $this->type_trainer=trim($this->type_trainer);
+		if (isset($this->archive)) $this->archive=trim($this->archive);
+		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
+		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
+		
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formateur(";
-		$sql.= "fk_socpeople,fk_user, type_trainer, fk_user_author, entity, datec";
+		$sql.= "fk_socpeople,fk_user, type_trainer, fk_user_author, fk_user_mod, entity, datec";
 		$sql.= ") VALUES (";
 		//trainer is user
 		if ($this->type_trainer==$this->type_trainer_def[0]) {
 			$sql.= 'NULL, ';
-			$sql.= '"'.$this->fk_user.'", ';
-			$sql.= '"'.$this->type_trainer_def[0].'", ';
+			$sql.= " ".$this->fk_user.", ";
+			$sql.= "'".$this->type_trainer_def[0]."', ";
 		}
 		//trainer is Dolibarr contact
 		elseif ($this->type_trainer==$this->type_trainer_def[1]) {
-			$sql.= '"'.$this->spid.'", ';
+			$sql.= " ".$this->spid.", ";
 			$sql.= 'NULL, ';
-			$sql.= '"'.$this->type_trainer_def[1].'", ';
+			$sql.= "'".$this->type_trainer_def[1]."', ";
 		}
-		$sql.= '"'.$user->id.'",';
-		$sql.= '"'.$conf->entity.'",';
+		$sql.= " ".$user->id.",";
+		$sql.= " ".$user->id.",";
+		$sql.= " ".$conf->entity.",";
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -135,10 +148,10 @@ class Agefodd_teacher extends CommonObject
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	int     teacher rowid
-	 *    		str     archive or not ('1' or '0' (type enum))
-	 *    \return    int     <0 if KO, 1 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($id, $arch=0)
 	{
@@ -202,13 +215,14 @@ class Agefodd_teacher extends CommonObject
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	$sortorder	Load object in memory from database
-	 *		$sortfield
-	 *		$limit
-	 *		$offset
-	 *		$arch 	int (0 for only active record, 1 for only archive record)
-	 *    \return    int     <0 if KO, $num of teacher if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    Sort Order
+	 *  @param	string $sortfield    Sort field
+	 *  @param	int $limit    	offset limit
+	 *  @param	int $offset    	offset limit
+	 *  @param	int $arch    	archive
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
 	{
@@ -285,9 +299,10 @@ class Agefodd_teacher extends CommonObject
 
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -325,10 +340,11 @@ class Agefodd_teacher extends CommonObject
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -344,10 +360,10 @@ class Agefodd_teacher extends CommonObject
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formateur as s SET";
-		$sql.= " s.fk_user_mod='".$user->id."',";
-		$sql.= " s.archive='".$this->archive."'";
-		$sql.= " WHERE s.rowid = ".$this->id;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formateur SET";
+		$sql.= " fk_user_mod=".$user->id." ,";
+		$sql.= " archive=".$this->archive." ";
+		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
 
@@ -392,9 +408,11 @@ class Agefodd_teacher extends CommonObject
 
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id	int	Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  User	$user        User that delete
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{

@@ -215,6 +215,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Last version installed to know change table to execute';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		$this->const[$r][6] = 0;
 
 		$r++;
 		$this->const[$r][0] = "AGF_DOL_AGENDA";
@@ -626,11 +627,9 @@ class modAgefodd extends DolibarrModules
 			{
 				$dir = $dirroot.'/agefodd/lib/sql/';
 				
-				
 				$handle=@opendir($dir);         // Dir may not exists
 				if (is_resource($handle))
 				{
-					
 					$result=run_sql($dir.'agefodd_function.sql',1,'',1);
 				}
 			}
@@ -664,7 +663,7 @@ class modAgefodd extends DolibarrModules
 	 */
 	function load_tables()
 	{
-		return $this->_load_tables('/agefodd/sql/');
+		return $this->_load_tables_agefodd('/agefodd/sql/');
 	}
 
 	/**
@@ -677,7 +676,7 @@ class modAgefodd extends DolibarrModules
 	 *  @param	string	$reldir		Relative directory where to scan files
 	 *  @return	int     			<=0 if KO, >0 if OK
 	 */
-	/*function _load_tables_agefodd($reldir)
+	function _load_tables_agefodd($reldir)
 	{
 		global $db,$conf;
 
@@ -744,42 +743,40 @@ class modAgefodd extends DolibarrModules
 				{
 					while (($file = readdir($handle))!==false)
 					{
-						$dorun =true;
+						$dorun = false;
 						if (preg_match('/\.sql$/i',$file) && ! preg_match('/\.key\.sql$/i',$file) && substr($file,0,6) == 'update')
 						{
+							//dol_syslog(get_class($this)."::_load_tables_agefodd analyse file:".$file, LOG_DEBUG);
+							
 							//Special test to know what kind of update script to run
-							if ($file=='update_1.0.0-2.0.sql')	{
-								$sql="SELECT value FROM ".MAIN_DB_PREFIX."const WHERE name='AGF_LAST_VERION_INSTALL'";
-								dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
-								$resql=$this->db->query($sql);
-								if ($resql) {
-									if ($this->db->num_rows($resql)==1) {
-										$obj = $this->db->fetch_object($resql);
-										$ver = intval(substr($obj->value,4,strlen($obj->value)));
-										dol_syslog(get_class($this)."::_load_tables_agefodd ver:".$ver, LOG_DEBUG);
-										if ($ver>=12) {
-											$dorun=false;
-										}
+							$sql="SELECT value FROM ".MAIN_DB_PREFIX."const WHERE name='AGF_LAST_VERION_INSTALL'";
+							
+							//dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
+							$resql=$this->db->query($sql);
+							if ($resql) {
+								if ($this->db->num_rows($resql)==1) {
+									$obj = $this->db->fetch_object($resql);
+									$last_version_install=$obj->value;
+									//dol_syslog(get_class($this)."::_load_tables_agefodd last_version_install:".$last_version_install, LOG_DEBUG);
+									
+									$tmpversion=explode('_',$file);
+									$fileversion_array=explode('-',$tmpversion[1]);
+									$fileversion=str_replace('.sql','',$fileversion_array[1]);
+									//dol_syslog(get_class($this)."::_load_tables_agefodd fileversion:".$fileversion, LOG_DEBUG);
+									if (version_compare($last_version_install, $fileversion)==-1) {
+										$dorun = true;
+										//dol_syslog(get_class($this)."::_load_tables_agefodd run file:".$file, LOG_DEBUG);
 									}
-
-									//DELETE AGF_LAST_VERION_INSTALL to update with the new one
-									$sql='DELETE FROM '.MAIN_DB_PREFIX.'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
-									dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
-									$resql=$this->db->query($sql);
-									if (!$resql) {
-										$this->error="Error ".$this->db->lasterror();
-										dol_syslog(get_class($this)."::_load_tables_agefodd ".$this->error, LOG_ERR);
-										$error ++;
-									}
-
-								}
-								else
-								{
-									$this->error="Error ".$this->db->lasterror();
-									dol_syslog(get_class($this)."::_load_tables_agefodd ".$this->error, LOG_ERR);
-									$error ++;
+									
 								}
 							}
+							else
+							{
+								$this->error="Error ".$this->db->lasterror();
+								dol_syslog(get_class($this)."::_load_tables_agefodd ".$this->error, LOG_ERR);
+								$error ++;
+							}
+							
 							if ($dorun) {
 								$result=run_sql($dir.$file,1,'',1);
 								if ($result <= 0) $error++;
@@ -795,9 +792,19 @@ class modAgefodd extends DolibarrModules
 				}
 			}
 		}
+		
+		//DELETE AGF_LAST_VERION_INSTALL to update with the new one
+		$sql='DELETE FROM '.MAIN_DB_PREFIX.'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
+		dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		 if (!$resql) {
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::_load_tables_agefodd ".$this->error, LOG_ERR);
+			$error ++;
+		}
 
 		return $ok;
-	}*/
+	}
 }
 
 ?>

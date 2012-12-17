@@ -19,19 +19,18 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_stagiaire.class.php $
-*	\ingroup	agefodd
-*	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_stagiaire.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage trainee object
+ */
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 require_once(DOL_DOCUMENT_ROOT."/contact/class/contact.class.php");
 
 
+
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	Trainee Class
 */
 class Agefodd_stagiaire extends CommonObject
 {
@@ -41,10 +40,25 @@ class Agefodd_stagiaire extends CommonObject
 	var $element='agefodd';
 	var $table_element='agefodd_stagiaire';
 	var $id;
+	
+	var $nom;
+	var $prenom;
+	var $fonction;
+	var $tel1;
+	var $tel2;
+	var $mail;
+	var $note;
+	
+	var $socid;
+	var $socname;
+	var $fk_socpeople;
+	
+	var $line=array();
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -54,10 +68,11 @@ class Agefodd_stagiaire extends CommonObject
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -86,24 +101,25 @@ class Agefodd_stagiaire extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_stagiaire(";
-		$sql.= "nom, prenom, civilite, fk_user_author, datec, ";
+		$sql.= "nom, prenom, civilite, fk_user_author,fk_user_mod, datec, ";
 		$sql.= "fk_soc, fonction, tel1, tel2, mail, note,fk_socpeople";
 		$sql.= ",entity";
 		$sql.= ") VALUES (";
 
-		$sql.= '"'.$this->nom.'", ';
-		$sql.= '"'.$this->prenom.'", ';
-		$sql.= '"'.$this->civilite.'", ';
-		$sql.= '"'.$user->id.'", ';
+		$sql.= " ".(isset($this->nom)?"'".$this->nom."'":"null").", ";
+		$sql.= " ".(isset($this->prenom)?"'".$this->prenom."'":"null").", ";
+		$sql.= " ".(isset($this->civilite)?"'".$this->civilite."'":"null").", ";
+		$sql.= ' '.$user->id.", ";
+		$sql.= ' '.$user->id.", ";
 		$sql.= $this->db->idate(dol_now()).', ';
-		$sql.= '"'.$this->socid.'", ';
-		$sql.= '"'.$this->fonction.'", ';
-		$sql.= '"'.$this->tel1.'", ';
-		$sql.= '"'.$this->tel2.'", ';
-		$sql.= '"'.$this->mail.'", ';
-		$sql.= '"'.$this->note.'",';
-		$sql.= '"'.$this->fk_socpeople.'"';
-		$sql.= ',"' .$conf->entity.'"';
+		$sql.= " ".(isset($this->socid)?$this->db->escape($this->socid):"null").", ";
+		$sql.= " ".(isset($this->fonction)?"'".$this->fonction."'":"null").", ";
+		$sql.= " ".(isset($this->tel1)?"'".$this->tel1."'":"null").", ";
+		$sql.= " ".(isset($this->tel2)?"'".$this->tel2."'":"null").", ";
+		$sql.= " ".(isset($this->mail)?"'".$this->mail."'":"null").", ";
+		$sql.= " ".(isset($this->note)?"'".$this->note."'":"null").", ";
+		$sql.= " ".(isset($this->fk_socpeople)?$this->db->escape($this->fk_socpeople):"null").", ";
+		$sql.= " ".$conf->entity;
 		$sql.= ")";
 
 		if (! $error)
@@ -151,10 +167,10 @@ class Agefodd_stagiaire extends CommonObject
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id object
-	 *			arch	archive (0=no, 1=yes, 2=all)
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($id)
 	{
@@ -385,9 +401,10 @@ class Agefodd_stagiaire extends CommonObject
 
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -425,10 +442,11 @@ class Agefodd_stagiaire extends CommonObject
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -449,19 +467,19 @@ class Agefodd_stagiaire extends CommonObject
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire as s SET";
-		$sql.= " s.nom='".$this->nom."',";
-		$sql.= " s.prenom='".$this->prenom."',";
-		$sql.= " s.civilite='".$this->civilite."',";
-		$sql.= " s.fk_user_mod='".$user->id."',";
-		$sql.= " s.fk_soc='".$this->socid."',";
-		$sql.= " s.fonction='".$this->fonction."',";
-		$sql.= " s.tel1='".$this->tel1."',";
-		$sql.= " s.tel2='".$this->tel2."',";
-		$sql.= " s.mail='".$this->mail."',";
-		$sql.= " s.note='".$this->note."',";
-		$sql.= " s.fk_socpeople='".$this->fk_socpeople."'";
-		$sql.= " WHERE s.rowid = ".$this->id;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire SET";
+		$sql.= " nom='".$this->nom."',";
+		$sql.= " prenom='".$this->prenom."',";
+		$sql.= " civilite='".$this->civilite."',";
+		$sql.= " fk_user_mod=".$user->id.",";
+		$sql.= " fk_soc=".$this->socid.",";
+		$sql.= " fonction='".$this->fonction."',";
+		$sql.= " tel1='".$this->tel1."',";
+		$sql.= " tel2='".$this->tel2."',";
+		$sql.= " mail='".$this->mail."',";
+		$sql.= " note='".$this->note."',";
+		$sql.= " fk_socpeople=".$this->fk_socpeople." ";
+		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
 
@@ -506,9 +524,11 @@ class Agefodd_stagiaire extends CommonObject
 
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  User	$user        User that delete
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{

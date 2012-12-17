@@ -26,7 +26,7 @@
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 
 /**
- *	Put here description of your class
+ *	Internal Rule class
 */
 class Agefodd_reg_interieur extends CommonObject
 {
@@ -36,13 +36,17 @@ class Agefodd_reg_interieur extends CommonObject
 	var $element='agefodd';			//!< Id that identify managed objects
 	var $table_element='llx_agefodd_reg_interieur';	//!< Name of table without prefix where object is stored
 
-	var $id;
+	
+    var $id;
+    
 	var $reg_int;
 	var $notes;
 	var $fk_user_author;
 	var $datec='';
 	var $fk_user_mod;
-
+	var $placeid;
+	var $placecode;
+	
 	/**
 	 *  Constructor
 	 *
@@ -82,10 +86,12 @@ class Agefodd_reg_interieur extends CommonObject
 		$sql.= "reg_int,";
 		$sql.= "notes,";
 		$sql.= "fk_user_author,";
+		$sql.= "fk_user_mod,";
 		$sql.= "datec";
 		$sql.= ") VALUES (";
 		$sql.= " ".(! isset($this->reg_int)?'NULL':"'".$this->db->escape($this->reg_int)."'").",";
 		$sql.= " ".(! isset($this->notes)?'NULL':"'".$this->db->escape($this->notes)."'").",";
+		$sql.= " '".$user->id."', ";
 		$sql.= " '".$user->id."', ";
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
@@ -193,13 +199,10 @@ class Agefodd_reg_interieur extends CommonObject
 		$error=0;
 
 		// Clean parameters
-
 		if (isset($this->reg_int)) $this->reg_int=trim($this->reg_int);
 		if (isset($this->notes)) $this->notes=trim($this->notes);
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
-		// Check parameters
-		// Put here code to add control on parameters values
 
 		// Update request
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_reg_interieur SET";

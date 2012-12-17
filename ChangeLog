@@ -239,3 +239,9 @@ For All :
 	
 ***** ChangeLog for 2.0.22 compared to 2.0.21 *****
 For All :
+	- Better installation/upgrade process (run only structure update required)
+	- Change database structure to be more clean
+	- Add postgresql compatibility
+For Dev :
+	- Reveiw function comment for all class 
+	 

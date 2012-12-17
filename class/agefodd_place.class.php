@@ -19,18 +19,16 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_formation_catalogue.class.php $
-*	\ingroup	agefodd
-*	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_place.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage location object
+ */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	Location Class
 */
 class Agefodd_place extends CommonObject
 {
@@ -59,10 +57,12 @@ class Agefodd_place extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
+	var $line=array();
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -72,10 +72,11 @@ class Agefodd_place extends CommonObject
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -84,7 +85,6 @@ class Agefodd_place extends CommonObject
 
 		// Clean parameters
 		
-		if (isset($conf->entity)) $this->entity=trim($conf->entity);
 		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
 		if (isset($this->adresse)) $this->adresse=trim($this->adresse);
 		if (isset($this->cp)) $this->cp=trim($this->cp);
@@ -184,9 +184,10 @@ class Agefodd_place extends CommonObject
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($id)
 	{
@@ -214,9 +215,9 @@ class Agefodd_place extends CommonObject
 				$this->adresse = stripslashes($obj->adresse);
 				$this->cp = $obj->cp;
 				$this->ville = stripslashes($obj->ville);
-				$this->pays_id = $obj->fk_pays;
-				$this->pays = $obj->country;
-				$this->pays_code = $obj->country_code;
+				$this->fk_pays = $obj->fk_pays;
+				$this->country = $obj->country;
+				$this->country_code = $obj->country_code;
 				$this->tel = stripslashes($obj->tel);
 				$this->fk_societe = $obj->fk_societe;
 				$this->notes = stripslashes($obj->notes);
@@ -239,12 +240,15 @@ class Agefodd_place extends CommonObject
 		}
 	}
 
-
-
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    Sort Order
+	 *  @param	string $sortfield    Sort field
+	 *  @param	int $limit    	offset limit
+	 *  @param	int $offset    	offset limit
+	 *  @param	int $arch    	archive
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
 	{
@@ -280,8 +284,8 @@ class Agefodd_place extends CommonObject
 				$this->line[$i]->cp = $obj->cp;
 				$this->line[$i]->ville = stripslashes($obj->ville);
 				$this->line[$i]->pays_id = $obj->fk_pays;
-				$this->line[$i]->pays = $obj->country;
-				$this->line[$i]->pays_code = $obj->country_code;
+				$this->line[$i]->country = $obj->country;
+				$this->line[$i]->country_code = $obj->country_code;
 				$this->line[$i]->tel = stripslashes($obj->tel);
 				$this->line[$i]->fk_societe = $obj->fk_societe;
 				$this->line[$i]->notes = stripslashes($obj->notes);
@@ -306,9 +310,10 @@ class Agefodd_place extends CommonObject
 
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -345,10 +350,11 @@ class Agefodd_place extends CommonObject
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	    0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -596,7 +602,7 @@ class Agefodd_place extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 				$this->adresse = $obj->address;
 				$this->cp = $obj->cp;
-				$this->pays_id = $obj->fk_pays;
+				$this->fk_pays = $obj->fk_pays;
 				$this->ville = $obj->ville;
 				$this->tel = $obj->tel;
 				$result=$this->update($user);
@@ -610,7 +616,6 @@ class Agefodd_place extends CommonObject
 					return -1;
 				}
 			}
-
 		}
 		else
 		{
@@ -620,7 +625,13 @@ class Agefodd_place extends CommonObject
 		}
 	}
 
+	/**
+	 *  Return information of Place
+	 *
+	 *  @return void
+	 */
 	function printPlaceInfo() {
+		
 		global $langs, $form;
 
 		print '<table class="border" width="100%">';
@@ -632,13 +643,11 @@ class Agefodd_place extends CommonObject
 		print '<td>'.$this->ref_interne.'</td></tr>';
 
 		print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
-		if ($this->socid)
-		{
+		if ($this->socid) {
 			print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$this->socid.'">';
 			print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($this->socname,20).'</a>';
 		}
-		else
-		{
+		else {
 			print '&nbsp;';
 		}
 		print '</tr>';

@@ -30,6 +30,7 @@ if (! $res) die("Include of main fails");
 
 dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/function.lib.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 
 // Security check
@@ -115,7 +116,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			$agf->adresse = GETPOST('adresse','alpha');
 			$agf->cp = GETPOST('zipcode','alpha');
 			$agf->ville = GETPOST('town','alpha');
-			$agf->pays_id = GETPOST('country_id','int');
+			$agf->fk_pays = GETPOST('country_id','int');
 			$agf->tel = GETPOST('phone','alpha');
 			$agf->fk_societe = GETPOST('societe','int');
 			$agf->notes = GETPOST('notes','alpha');
@@ -178,11 +179,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_place($db);
 
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
-		//$agf->adresse = GETPOST('adresse','alpha');
-		//$agf->cp = GETPOST('zipcode','alpha');
-		//$agf->ville = GETPOST('town','alpha');
-		//$agf->pays = GETPOST('country_id','int');
-		//$agf->tel = GETPOST('phone','alpha');
 		$agf->fk_societe = GETPOST('societe','int');
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->acces_site = GETPOST('acces_site','alpha');
@@ -245,21 +241,6 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Societe").'</span></td>';
 	print '<td>'.$form->select_company('','societe','((s.client IN (1,2)) OR (s.fournisseur=1))',1,1,0).'</td></tr>';
-	/*
-	 print '<tr><td>'.$langs->trans("Address").'</td>';
-	print '<td><input name="adresse" class="flat" size="50" value=""></td></tr>';
-
-	print '<tr><td>'.$langs->trans('CP').'</td><td>';
-	print $formcompany->select_ziptown('','zipcode',array('town','selectcountry_id'),6).'</tr>';
-	print '<tr></td><td>'.$langs->trans('Ville').'</td><td>';
-	print $formcompany->select_ziptown('','town',array('zipcode','selectcountry_id')).'</tr>';
-
-	print '<tr><td>'.$langs->trans("Pays").'</td>';
-	print '<td>'.$form->select_country('','country_id').'</td></tr>';
-
-
-	print '<tr><td>'.$langs->trans("Phone").'</td>';
-	print '<td><input name="phone" class="flat" size="50" value=""></td></tr>';*/
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -326,7 +307,7 @@ else
 				print $formcompany->select_ziptown($agf->ville,'town',array('zipcode','selectcountry_id')).'</tr>';
 
 				print '<tr><td>'.$langs->trans("Pays").'</td>';
-				print '<td>'.$form->select_country($agf->pays,'country_id').'</td></tr>';
+				print '<td>'.$form->select_country($agf->country,'country_id').'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Phone").'</td>';
 				print '<td><input name="phone" class="flat" size="50" value="'.$agf->tel.'"></td></tr>';
@@ -404,7 +385,11 @@ else
 				print '<td>'.$agf->cp.' - '.$agf->ville.'</td></tr>';
 
 				print '<tr>';
-				print '<td>'.$agf->pays.'</td></tr>';
+				print '<td>';
+				$img=picto_from_langcode($agf->country_code);
+				if ($agf->isInEEC()) print $form->textwithpicto(($img?$img.' ':'').$agf->country,$langs->trans("CountryIsInEEC"),1,0);
+				else print ($img?$img.' ':'').$agf->country;
+				print '</td></tr>';
 
 				print '</td></tr>';
 
