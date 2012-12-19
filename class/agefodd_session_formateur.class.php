@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2012	Florian Henry		<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,17 +19,15 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agefodd_session_formateur.php $
- *	\ingroup	agefodd
- *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_session_formateur.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage traner session object
+ */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	Manage traner session object
 */
 class Agefodd_session_formateur
 {
@@ -40,8 +39,9 @@ class Agefodd_session_formateur
 	var $id;
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -51,10 +51,11 @@ class Agefodd_session_formateur
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      int 	user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -70,11 +71,12 @@ class Agefodd_session_formateur
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_formateur(";
-		$sql.= "fk_session,fk_agefodd_formateur, fk_user_author, datec";
+		$sql.= "fk_session,fk_agefodd_formateur, fk_user_author,fk_user_mod, datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->sessid.'", ';
-		$sql.= '"'.$this->formid.'", ';
-		$sql.= '"'.$user->id.'", ';
+		$sql.= " ".$this->sessid.", ";
+		$sql.= " ".$this->formid.', ';
+		$sql.= " ".$user->id.', ';
+		$sql.= " ".$user->id.', ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -122,10 +124,10 @@ class Agefodd_session_formateur
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id	id object
-	 *			arch	archive (0=no, 1=yes, 2=all)
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch($id)
 	{
@@ -140,7 +142,7 @@ class Agefodd_session_formateur
 		$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
 		$sql.= " ON f.fk_socpeople = sp.rowid";
-		$sql.= " WHERE s.rowid = ".$id;
+		$sql.= " WHERE sf.rowid = ".$id;
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -169,9 +171,10 @@ class Agefodd_session_formateur
 
 
 	/**
-	 *    \brief	Load object in memory from database
-	 *    \param	id		Session ID
-	 *    \return	int		<0 if KO, number of row if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id session object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_formateur_per_session($id)
 	{
@@ -179,15 +182,18 @@ class Agefodd_session_formateur
 
 		$sql = "SELECT";
 		$sql.= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
-		$sql.= " f.rowid as formid, f.fk_socpeople,";
-		$sql.= " sp.name, sp.firstname, sp.email";
+		$sql.= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
+		$sql.= " sp.name as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
+		$sql.= " u.name as name_user, u.firstname as firstname_user, u.email as email_user";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
 		$sql.= " ON f.fk_socpeople = sp.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as u";
+		$sql.= " ON f.fk_user = u.rowid";
 		$sql.= " WHERE sf.fk_session = ".$id;
-		$sql.= " ORDER BY name ASC";
+		$sql.= " ORDER BY sf.rowid ASC";
 
 		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -202,13 +208,28 @@ class Agefodd_session_formateur
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					$this->line[$i]->opsid = $obj->rowid;
-					$this->line[$i]->name = $obj->name;
-					$this->line[$i]->firstname = $obj->firstname;
-					$this->line[$i]->email = $obj->email;
-					$this->line[$i]->socpeopleid = $obj->fk_socpeople;
-					$this->line[$i]->formid = $obj->formid;
-					$this->line[$i]->sessid = $obj->fk_session;
+					
+					$line = new AgfSessionTrainer();
+					
+					$line->opsid = $obj->rowid;
+					if (!empty($obj->fk_socpeople)) {
+						$line->name = $obj->name_socp;
+						$line->firstname = $obj->firstname_socp;
+						$line->email = $obj->email_socp;
+					}
+					if (!empty($obj->fk_user)) {
+						$line->name = $obj->name_user;
+						$line->firstname = $obj->firstname_user;
+						$line->email = $obj->email_user;
+					}
+					
+					$line->socpeopleid = $obj->fk_socpeople;
+					$line->userid = $obj->fk_user;
+					$line->formid = $obj->formid;
+					$line->sessid = $obj->fk_session;
+					
+					$this->line[$i]=$line;
+					
 					$i++;
 				}
 			}
@@ -226,10 +247,11 @@ class Agefodd_session_formateur
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -245,10 +267,10 @@ class Agefodd_session_formateur
 
 
 		// Update request
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur as sf SET";
-		$sql.= " sf.fk_agefodd_formateur='".$this->formid."',";
-		$sql.= " sf.fk_user_mod='".$user->id."'";
-		$sql.= " WHERE sf.rowid = ".$this->opsid;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur SET";
+		$sql.= " fk_agefodd_formateur=".$this->formid.",";
+		$sql.= " fk_user_mod=".$user->id." ";
+		$sql.= " WHERE rowid = ".$this->opsid;
 
 		$this->db->begin();
 
@@ -293,9 +315,10 @@ class Agefodd_session_formateur
 
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *  @param  int		$id		 id of object to delete
+	 *  @return	 int					 <0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{
@@ -315,10 +338,24 @@ class Agefodd_session_formateur
 			return -1;
 		}
 	}
-
-
-
 }
 
-# $Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $
-?>
+/**
+ *	Session trainer line Class
+ */
+Class AgfSessionTrainer {
+	
+	var $opsid;
+	var $name;
+	var $firstname;
+	var $email;
+	var $socpeopleid;
+	var $userid;
+	var $formid;
+	var $sessid;
+	
+	function __construct()
+	{
+		return 1;
+	}
+}

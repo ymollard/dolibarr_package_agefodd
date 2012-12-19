@@ -24,6 +24,10 @@
 * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
 */
 
+/*error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);*/
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -379,6 +383,8 @@ if (!empty($id))
 						print '<tr class="noborder"><td  class="noborder" width="45%">'.$langs->trans("AgfSubrocation").'</td>';
 						if ($agf->is_OPCA==1) {
 							$chckisOPCA='checked="checked"';
+						}else {
+							$chckisOPCA='';
 						}
 						print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" /></td></tr>';
 
@@ -408,6 +414,8 @@ if (!empty($id))
 						print '<tr><td width="20%">'.$langs->trans("AgfOPCADateDemande").'</td>';
 						if ($agf->is_date_ask_OPCA==1) {
 							$chckisDtOPCA='checked="checked"';
+						}else {
+							$chckisDtOPCA='';
 						}
 						print '<td><table class="nobordernopadding"><tr><td>';
 						print '<input type="checkbox" class="flat" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' /></td>';
@@ -678,6 +686,7 @@ if (!empty($id))
 				/*
 				 * Gestion de la subrogation (affichage infos)
 				*/
+				
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
@@ -719,7 +728,7 @@ if (!empty($id))
 				print '<td>';
 				print $agf->num_OPCA_file;
 				print '</td></tr>';
-
+				
 				print '</table>';
 			}
 		}

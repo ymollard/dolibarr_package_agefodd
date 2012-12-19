@@ -26,6 +26,18 @@
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
+
+class Agefodd_index_line {
+	var $sessid;
+	var $rowid;
+	var $intitule;
+	var $dated;
+	var $datef;
+	var $idforma;
+	var $id;
+	var $num;
+	var $duree;
+}
 /**
  *	Index pages
 */
@@ -69,17 +81,19 @@ class Agefodd_index
 		if ($resql)
 		{
 			$num = $this->db->num_rows($resql);
-			if ($num == '') {
-				$num = 0;
-			}
-			else {
+
+			if (!empty($num)){
 				$obj = $this->db->fetch_object($resql);
 				$num = $obj->nb_sta;
+				if (empty($num)) {
+					$num = 0;
+				}
+			}else {
+				$num = 0;
 			}
 			$this->db->free($resql);
+			
 			return $num;
-
-			//return 1;
 		}
 		else
 		{
@@ -142,7 +156,7 @@ class Agefodd_index
 		$sql.= " WHERE archive = 0";
 		$sql.= " AND entity IN (".getEntity('agsession').")";
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_formation_nb sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -159,7 +173,7 @@ class Agefodd_index
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_formation_nb ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -261,7 +275,7 @@ class Agefodd_index
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " WHERE s.archive = 1";
-		$sql.= " AND entity IN (".getEntity('agsession').")";
+		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY s.dated DESC LIMIT ".$number;
 
 		dol_syslog(get_class($this)."::fetch_last_formations sql=".$sql, LOG_DEBUG);
@@ -274,11 +288,17 @@ class Agefodd_index
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->intitule = $obj->intitule;
-				$this->line[$i]->dated = $this->db->idate($obj->dated);
-				$this->line[$i]->datef = $this->db->idate($obj->datef);
-				$this->line[$i]->idforma = $obj->fk_formation_catalogue;
-				$this->line[$i]->id = $obj->id;
+				
+				$line = new Agefodd_index_line();
+				
+				$line->intitule = $obj->intitule;
+				$line->dated = $this->db->idate($obj->dated);
+				$line->datef = $this->db->idate($obj->datef);
+				$line->idforma = $obj->fk_formation_catalogue;
+				$line->id = $obj->id;
+				
+				$this->line[$i]=$line;
+				
 				$i++;
 			}
 			$this->db->free($resql);
@@ -303,14 +323,14 @@ class Agefodd_index
 	{
 		global $langs;
 
-		$sql = "SELECT c.intitule, count(*) as num, c.duree, ";
+		$sql = "SELECT c.intitule, count(s.rowid) as num, c.duree, ";
 		$sql.= " s.fk_formation_catalogue";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " WHERE s.archive = 1";
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
-		$sql.= " GROUP BY c.intitule";
+		$sql.= " GROUP BY c.intitule, c.duree,s.fk_formation_catalogue";
 		$sql.= " ORDER BY num DESC LIMIT ".$number;
 
 		dol_syslog(get_class($this)."::fetch_top_formations sql=".$sql, LOG_DEBUG);
@@ -323,10 +343,15 @@ class Agefodd_index
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->intitule = $obj->intitule;
-				$this->line[$i]->num = $obj->num;
-				$this->line[$i]->duree = $obj->duree;
-				$this->line[$i]->idforma = $obj->fk_formation_catalogue;
+				
+				$line = new Agefodd_index_line();
+				$line->intitule = $obj->intitule;
+				$line->num = $obj->num;
+				$line->duree = $obj->duree;
+				$line->idforma = $obj->fk_formation_catalogue;
+				
+				$this->line[$i]=$line;
+				
 				$i++;
 			}
 			$this->db->free($resql);
@@ -389,11 +414,16 @@ class Agefodd_index
 	function fetch_tache_en_retard($jour=0)
 	{
 		global $langs;
+		
+		$intervalday=$jour.' DAY';
+		
+		if ($this->db->type=='pgsql') {
+			$intervalday="'".$jour." DAYS'";
+		}
 
 		$sql = "SELECT rowid,fk_agefodd_session";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_adminsitu";
-		$sql.= " WHERE (datea - INTERVAL ".$jour." DAY) <= NOW() AND archive = 0 AND (NOW() < datef)";
-		$sql.= " AND entity IN (".getEntity('agsession').")";
+		$sql.= " WHERE (datea - INTERVAL ".$intervalday.") <= NOW() AND archive = 0 AND (NOW() < datef)";
 
 		dol_syslog(get_class($this)."::fetch_tache_en_retard sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -408,10 +438,14 @@ class Agefodd_index
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-
-					$this->line[$i]->rowid = $obj->rowid;
-					$this->line[$i]->sessid = $obj->fk_agefodd_session;
-
+					
+					$line = new Agefodd_index_line();
+					
+					$line->rowid = $obj->rowid;
+					$line->sessid = $obj->fk_agefodd_session;
+					
+					$this->line[$i]=$line;
+					
 					$i++;
 				}
 			}
@@ -440,7 +474,6 @@ class Agefodd_index
 		$sql = "SELECT count(*) as total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session_adminsitu";
 		$sql.= " WHERE archive = 0";
-		$sql.= " AND entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch_tache_en_cours sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -477,6 +510,15 @@ class Agefodd_index
 	function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf=0)
 	{
 		global $langs;
+		
+		$intervalday_sup=$delais_sup.' DAY';
+		$intervalday_inf=$delais_inf.' DAY';
+		
+		if ($this->db->type=='pgsql') {
+			$intervalday_sup="'".$delais_sup." DAYS'";
+			$intervalday_inf="'".$delais_inf." DAYS'";
+		}
+		
 
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
@@ -491,17 +533,16 @@ class Agefodd_index
 		$sql.= " WHERE s.archive = 0 AND (NOW() < s.datef)";
 		if ( !empty($delais_sup) && !empty($delais_inf) )
 		{
-			if ($delais_sup!=1) $delais_sup_sql= 's.datea - INTERVAL '.$delais_sup.' DAY';
+			if ($delais_sup!=1) $delais_sup_sql= 's.datea - INTERVAL '.$intervalday_sup;
 			else $delais_sup_sql='s.datea';
 
-			if ($delais_inf!=1) $delais_inf_sql= 's.datea - INTERVAL '.$delais_inf.' DAY';
+			if ($delais_inf!=1) $delais_inf_sql= 's.datea - INTERVAL '.$intervalday_inf;
 			else $delais_inf_sql='s.datea';
 
 			$sql.= " AND  ( ";
 			$sql.= ' NOW() BETWEEN ('.$delais_sup_sql.') AND ('.$delais_inf_sql.')';
 			$sql.= " )";
 		}
-		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 
 		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
 
@@ -517,8 +558,13 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				$this->line[$i]->rowid = $obj->rowid;
-				$this->line[$i]->sessid = $obj->fk_agefodd_session;
+				
+				$line = new Agefodd_index_line();
+				
+				$line->rowid = $obj->rowid;
+				$line->sessid = $obj->fk_agefodd_session;
+				
+				$this->line[$i]=$line;
 
 				$i++;
 			}
@@ -544,7 +590,7 @@ class Agefodd_index
 		global $langs;
 
 		// Il faut que toutes les tâches administratives soit crées (top_level);
-		$sql = "SELECT MAX(sa.datea), sa.rowid, sa.fk_agefodd_session";
+		$sql = "SELECT MAX(sa.datea), sa.fk_agefodd_session";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " ON s.rowid = sa.fk_agefodd_session";

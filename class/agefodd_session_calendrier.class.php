@@ -18,17 +18,15 @@
 */
 
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
- *	\ingroup	agefodd
- *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_session_calendrier.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage location object
+ */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd
- *	\brief		Module Agefodd class
+ *	Session calendar class
 */
 class Agefodd_sesscalendar
 {
@@ -40,8 +38,9 @@ class Agefodd_sesscalendar
 	var $id;
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -51,10 +50,11 @@ class Agefodd_sesscalendar
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -78,14 +78,15 @@ class Agefodd_sesscalendar
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_calendrier(";
-		$sql.= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author, datec";
+		$sql.= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->sessid.'", ';
+		$sql.= " ".$this->sessid.", ";
 		$sql.= $this->db->idate($this->date_session).', ';
 		$sql.= $this->db->idate($this->heured).', ';
 		$sql.= $this->db->idate($this->heuref).', ';
 		$sql.= " ".(! isset($this->fk_actioncomm)?'NULL':"'".$this->db->escape($this->fk_actioncomm)."'").",";
-		$sql.= '"'.$user->id.'", ';
+		$sql.= ' '.$user->id.', ';
+		$sql.= ' '.$user->id.', ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -217,9 +218,10 @@ class Agefodd_sesscalendar
 
 
 	/**
-	 *    \brief	Récupére le calendrier d'une session (les blocs horaires)
-	 *    \param	id	id session
-	 *    \return     int     <0 if KO, >0 if OK
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id of session 
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_all($id)
 	{
@@ -262,9 +264,10 @@ class Agefodd_sesscalendar
 
 
 	/**
-	 *    \brief      Load info object in memory from database
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -302,10 +305,11 @@ class Agefodd_sesscalendar
 
 
 	/**
-	 *      \brief      Update database
-	 *      \param      user        	User that modify
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, >0 if OK
+	 *  Update object into database
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
 	{
@@ -323,7 +327,7 @@ class Agefodd_sesscalendar
 		$sql.= " date_session=".$this->db->idate($this->date_session).",";
 		$sql.= " heured=".$this->db->idate($this->heured).",";
 		$sql.= " heuref=".$this->db->idate($this->heuref).",";
-		$sql.= " fk_user_mod='".$user->id."'";
+		$sql.= " fk_user_mod=".$user->id." ";
 		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
@@ -376,9 +380,10 @@ class Agefodd_sesscalendar
 	}
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *  @param  int		$id	 id to delete
+	 *  @return	 int		 <0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{

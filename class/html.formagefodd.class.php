@@ -131,7 +131,7 @@ class FormAgefodd extends Form
 		$sql.= " t.intitule";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as t";
 		if ($excludeid!='') {
-			$sql.= ' WHERE t.rowid<>"'.$excludeid.'"';
+			$sql.= ' WHERE t.rowid<>\''.$excludeid.'\'';
 		}
 		$sql.= " ORDER BY t.indice";
 
@@ -182,7 +182,7 @@ class FormAgefodd extends Form
 		$sql.= " t.level_rank,";
 		$sql.= " t.intitule";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as t";
-		$sql.= ' WHERE t.fk_agefodd_session="'.$session_id.'"';
+		$sql.= ' WHERE t.fk_agefodd_session=\''.$session_id.'\'';
 		$sql.= " ORDER BY t.indice";
 
 		dol_syslog(get_class($this)."::select_action_session sql=".$sql, LOG_DEBUG);
@@ -441,16 +441,19 @@ class FormAgefodd extends Form
 		global $conf,$langs;
 
 		$sql = "SELECT";
-		$sql.= " s.rowid, s.fk_socpeople,";
-		$sql.= " s.rowid, CONCAT(sp.name,' ',sp.firstname) as fullname";
+		$sql.= " s.rowid, s.fk_socpeople, s.fk_user,";
+		$sql.= " s.rowid, CONCAT(sp.name,' ',sp.firstname) as fullname_contact,";
+		$sql.= " CONCAT(u.name,' ',u.firstname) as fullname_user";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
 		$sql.= " ON sp.rowid = s.fk_socpeople";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as u";
+		$sql.= " ON u.rowid = s.fk_user";
 		$sql.= " WHERE s.archive = 0";
 		if (!empty($filter)) {
 			$sql .= ' AND '.$filter;
 		}
-		$sql.= " ORDER BY fullname";
+		$sql.= " ORDER BY s.rowid";
 
 		dol_syslog(get_class($this)."::select_formateur sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
@@ -470,7 +473,12 @@ class FormAgefodd extends Form
 				while ($i < $num)
 				{
 					$obj = $this->db->fetch_object($result);
-					$label = $obj->fullname;
+					if (!empty($obj->fk_socpeople)) {
+						$label = $obj->fullname_contact;
+					}
+					if (!empty($obj->fk_user)) {
+						$label = $obj->fullname_user;
+					}
 
 					if ($selectid > 0 && $selectid == $obj->rowid)
 					{

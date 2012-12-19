@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
   art6 text NOT NULL,
   art7 text NOT NULL,
   art8 text NOT NULL,
-  sig smallint NOT NULL,
+  sig text,
   notes text NOT NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,

@@ -184,24 +184,35 @@ function show_fac($file, $socid, $mdle)
 			}
 			else
 			{
-				if ($conf->global->AGF_USE_FAC_WITHOUT_ORDER)
-					{
-						$mess = '';
+				if ($conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
+					$mess = '';
 
-						// Créer la facture
-						$legende = $langs->trans("AgfFactureAddFac");
-						$commande_static= new Commande($db);
-						$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
-						$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					// Créer la facture
+					$legende = $langs->trans("AgfFactureAddFac");
+					$commande_static= new Commande($db);
+					$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-						// lier une facture existante
-						$legende = $langs->trans("AgfFactureSelectFac");
-						$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
-					}
-					else
-					{
-						$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
-					}
+					// lier une facture existante
+					$legende = $langs->trans("AgfFactureSelectFac");
+					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+				}
+				elseif (!empty($agf->comid)) {
+					$mess = '';
+					
+					// Créer la facture
+					$legende = $langs->trans("AgfFactureAddFac");
+					$commande_static= new Commande($db);
+					$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					
+					// lier une facture existante
+					$legende = $langs->trans("AgfFactureSelectFac");
+					$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+				}else
+				{
+					$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
+				}
 			}
 		}
 		else

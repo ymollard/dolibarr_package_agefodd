@@ -68,13 +68,14 @@ class Agefodd_facture
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_facture(";
-		$sql.= "fk_commande, fk_facture, fk_session, fk_societe, fk_user_author, datec";
+		$sql.= "fk_commande, fk_facture, fk_session, fk_societe, fk_user_author,fk_user_mod, datec";
 		$sql.= ") VALUES (";
-		$sql.= "'".$this->comid."', ";
-		$sql.= "'".$this->facid."', ";
-		$sql.= "'".$this->sessid."', ";
-		$sql.= "'".$this->socid."', ";
-		$sql.= "".$user->id.', ';
+		$sql.= " ".(empty($this->comid)?'NULL':$this->comid).", ";
+		$sql.= " ".(empty($this->facid)?'NULL':$this->facid).", ";
+		$sql.= " ".$this->sessid.", ";
+		$sql.= " ".$this->socid.", ";
+		$sql.= " ".$user->id.', ';
+		$sql.= " ".$user->id.', ';
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -87,7 +88,7 @@ class Agefodd_facture
 		}
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_stagiaire");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_facture");
 			if (! $notrigger)
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -221,7 +222,6 @@ class Agefodd_facture
 
 	}
 
-
 	/**
 	 *  Give information on the object
 	 *
@@ -285,11 +285,11 @@ class Agefodd_facture
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_facture SET";
-		$sql.= " fk_commande='".$this->comid.",";
-		$sql.= " fk_facture='".$this->facid.",";
-		$sql.= " fk_societe='".$this->socid.",";
-		$sql.= " fk_user_mod='".$user->id."";
-		$sql.= " WHERE f.rowid = ".$this->id;
+		$sql.= " fk_commande=".(empty($this->comid)?'NULL':$this->comid).",";
+		$sql.= " fk_facture=".(empty($this->facid)?'NULL':$this->facid).",";
+		$sql.= " fk_societe=".$this->socid.",";
+		$sql.= " fk_user_mod=".$user->id;
+		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
 

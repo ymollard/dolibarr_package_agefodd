@@ -17,18 +17,17 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+
 /**
- *	\file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/agsession.class.php $
- *	\ingroup	agefodd
- *	\brief		CRUD class file (Create/Read/Update/Delete) for agefodd module
-*	\version	$Id$
-*/
+ *  \file       agefodd/class/agefodd_sessadm.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage Administrative Task object
+ */
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
 /**
- *	\class		Agefodd_sessadm
- *	\brief		Module Agefodd Session administration class
+ *	Administrative task level Class
 */
 class Agefodd_sessadm extends CommonObject
 {
@@ -52,8 +51,9 @@ class Agefodd_sessadm extends CommonObject
 
 
 	/**
-	 *	\brief		Constructor
-	 *	\param		DB	Database handler
+	 *  Constructor
+	 *
+	 *  @param	DoliDb		$db      Database handler
 	 */
 	function __construct($DB)
 	{
@@ -63,10 +63,11 @@ class Agefodd_sessadm extends CommonObject
 
 
 	/**
-	 *      \brief      Create in database
-	 *      \param      user        	User that create
-	 *      \param      notrigger	0=launch triggers after, 1=disable triggers
-	 *      \return     int         	<0 if KO, Id of created object if OK
+	 *  Create object into database
+	 *
+	 *  @param	User	$user        User that create
+	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @return int      		   	 <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger=0)
 	{
@@ -87,21 +88,22 @@ class Agefodd_sessadm extends CommonObject
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_adminsitu (";
 		$sql.= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte, ";
-		$sql.= "indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_author, datec";
+		$sql.= "indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_author,fk_user_mod, datec";
 		$sql.= ") VALUES (";
-		$sql.= '"'.$this->fk_agefodd_session_admlevel.'", ';
-		$sql.= '"'.$this->fk_agefodd_session.'", ';
-		$sql.= '"'.$this->intitule.'", ';
-		$sql.= '"'.$this->delais_alerte.'", ';
-		$sql.= '"'.$this->indice.'", ';
-		$sql.= '"'.$this->level_rank.'", ';
-		$sql.= '"'.$this->fk_parent_level.'", ';
+		$sql.= "'".$this->fk_agefodd_session_admlevel."', ";
+		$sql.= "'".$this->fk_agefodd_session."', ";
+		$sql.= "'".$this->db->escape($this->intitule)."', ";
+		$sql.= "'".$this->delais_alerte."', ";
+		$sql.= "'".$this->indice."', ";
+		$sql.= "'".$this->level_rank."', ";
+		$sql.= "'".$this->fk_parent_level."', ";
 		$sql.= $this->db->idate($this->dated).', ';
 		$sql.= $this->db->idate($this->datef).', ';
 		$sql.= $this->db->idate($this->datea).', ';
-		$sql.= '"'.$this->notes.'",';
+		$sql.= "'".$this->db->escape($this->notes)."', ";
 		$sql.= $this->archive.',';
-		$sql.= '"'.$user->id.'", ';
+		$sql.= " ".$user->id.", ";
+		$sql.= " ".$user->id.", ";
 		$sql.= $this->db->idate(dol_now());
 		$sql.= ")";
 
@@ -148,10 +150,10 @@ class Agefodd_sessadm extends CommonObject
 	}
 
 	/**
-	 *  Load object in memory from database
+	 *  Update object into database
 	 *
-	 *  @param	int		$user        User id that modify
-	 *  @param	int		$notrigger   0=launch triggers after, 1=disable triggers
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
 	 *  @return int     		   	 <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger=0)
@@ -172,18 +174,17 @@ class Agefodd_sessadm extends CommonObject
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s SET";
-		$sql.= " s.delais_alerte='".$this->delais_alerte."',";
-		$sql.= " s.dated=".$this->db->idate($this->dated).",";
-		$sql.= " s.datef=".$this->db->idate($this->datef).",";
-		$sql.= " s.datea=".$this->db->idate($this->datea).",";
-		$sql.= " s.fk_user_mod='".$user->id."',";
-		$sql.= " s.notes='".$this->notes."',";
-		$sql.= " s.archive='".$this->archive."',";
-		$sql.= " s.level_rank='".$this->level_rank."',";
-		$sql.= " s.fk_parent_level='".$this->fk_parent_level."',";
-		$sql.= " s.archive='".$this->archive."'";
-		$sql.= " WHERE s.rowid = ".$this->id;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_adminsitu SET";
+		$sql.= " delais_alerte='".$this->delais_alerte."',";
+		$sql.= " dated=".$this->db->idate($this->dated).",";
+		$sql.= " datef=".$this->db->idate($this->datef).",";
+		$sql.= " datea=".$this->db->idate($this->datea).",";
+		$sql.= " fk_user_mod=".$user->id.",";
+		$sql.= " notes='".$this->notes."',";
+		$sql.= " archive=".$this->archive.",";
+		$sql.= " level_rank=".$this->level_rank.",";
+		$sql.= " fk_parent_level=".$this->fk_parent_level;
+		$sql.= " WHERE rowid = ".$this->id;
 
 		//print $sql;
 		//exit;
@@ -305,19 +306,24 @@ class Agefodd_sessadm extends CommonObject
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->level = $obj->fk_agefodd_session_admlevel;
-				$this->line[$i]->sessid = $obj->fk_agefodd_session;
-				$this->line[$i]->intitule = $obj->intitule;
-				$this->line[$i]->indice = $obj->indice;
-				$this->line[$i]->level_rank = $obj->level_rank;
-				$this->line[$i]->fk_parent_level = $obj->fk_parent_level;
-				$this->line[$i]->delais_alerte = $obj->delais_alerte;
-				$this->line[$i]->dated = $this->db->jdate($obj->dated);
-				$this->line[$i]->datef = $this->db->jdate($obj->datef);
-				$this->line[$i]->datea = $this->db->jdate($obj->datea);
-				$this->line[$i]->notes = $obj->notes;
-				$this->line[$i]->archive = $obj->archive;
+				
+				$line = new AgfSessAdm();
+				
+				$line->id = $obj->rowid;
+				$line->level = $obj->fk_agefodd_session_admlevel;
+				$line->sessid = $obj->fk_agefodd_session;
+				$line->intitule = $obj->intitule;
+				$line->indice = $obj->indice;
+				$line->level_rank = $obj->level_rank;
+				$line->fk_parent_level = $obj->fk_parent_level;
+				$line->delais_alerte = $obj->delais_alerte;
+				$line->dated = $this->db->jdate($obj->dated);
+				$line->datef = $this->db->jdate($obj->datef);
+				$line->datea = $this->db->jdate($obj->datea);
+				$line->notes = $obj->notes;
+				$line->archive = $obj->archive;
+				
+				$this->line[$i]=$line;
 
 				$i++;
 			}
@@ -336,9 +342,10 @@ class Agefodd_sessadm extends CommonObject
 
 
 	/**
-	 *    \brief      Load info object in memory from database (onglet suivi)
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Give information on the object
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function info($id)
 	{
@@ -375,9 +382,10 @@ class Agefodd_sessadm extends CommonObject
 	}
 
 	/**
-	 *      \brief      Supprime l'operation
-	 *      \param      id          Id operation à supprimer
-	 *      \return     int         <0 si ko, >0 si ok
+	 *  Delete object in database
+	 *
+	 *	@param  int		$id		id to delete
+	 *  @return	 int			<0 if KO, >0 if OK
 	 */
 	function remove($id)
 	{
@@ -399,9 +407,10 @@ class Agefodd_sessadm extends CommonObject
 	}
 
 	/**
-	 *    \brief      Load info object in memory from database (onglet suivi)
-	 *    \param      id          id object
-	 *    \return     int         <0 if KO, >0 if OK
+	 *  Load Date of session in memory
+	 *
+	 *	@param  int		$id		id to delete
+	 *  @return	 int			<0 if KO, >0 if OK
 	 */
 	function get_session_dated($sessid)
 	{
@@ -486,5 +495,27 @@ class Agefodd_sessadm extends CommonObject
 	}
 
 }
-# $Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $
-?>
+
+/**
+ *	Session admnistrative line Class
+ */
+Class AgfSessAdm {
+	var $id;
+	var $level;
+	var $sessid;
+	var $intitule;
+	var $indice;
+	var $level_rank;
+	var $fk_parent_level;
+	var $delais_alerte;
+	var $dated;
+	var $datef;
+	var $datea;
+	var $notes;
+	var $archive;
+	
+	function __construct()
+	{
+		return 1;
+	}
+}

@@ -17,16 +17,15 @@
 */
 
 /**
- *  \file       agefodd/admin/class/agefodd_session_admlevel.class.php
- *  \ingroup    mymodule othermodule1 othermodule2
- *  \brief      This file is an example for a CRUD class file (Create/Read/Update/Delete)
-*				Initialy built by build_class_from_table on 2012-05-15 14:13
-*/
+ *  \file       agefodd/class/agefodd_session_admlevel.class.php
+ *  \ingroup    agefodd
+ *  \brief      Manage Session administrative task object
+ */
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 
 /**
- *	Put here description of your class
+ *	Administrative task by session Class
 */
 class Agefodd_session_admlevel extends CommonObject
 {
@@ -90,9 +89,9 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= "intitule,";
 		$sql.= "delais_alerte,";
 		$sql.= "fk_user_author,";
-		$sql.= "datec,";
-		$sql.= "fk_user_mod";
-
+		$sql.= "fk_user_mod,";
+		$sql.= "datec";
+		
 		$sql.= ") VALUES (";
 
 		$sql.= " ".(! isset($this->level_rank)?'NULL':"'".$this->level_rank."'").",";
@@ -101,8 +100,9 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= " ".(! isset($this->intitule)?'NULL':"'".$this->db->escape($this->intitule)."'").",";
 		$sql.= " ".(! isset($this->delais_alerte)?'NULL':"'".$this->delais_alerte."'").",";
 		$sql.= " ".$user->id.",";
+		$sql.= " ".$user->id.",";
 		$sql.= " ".$this->db->idate(dol_now());
-
+		
 		$sql.= ")";
 
 		$this->db->begin();

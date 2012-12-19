@@ -545,7 +545,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td>'.$langs->trans("Customer").'</td>';
 	print '<td>';
-	print $form->select_company(GETPOST('fk_soc','int'),'fk_soc','',1, 'customer');
+	if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
+		$events=array();
+		$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'contact', 'params' => array('add-customer-contact' => 'disabled'));
+		print $form->select_company(GETPOST('fk_soc','int'),'fk_soc','',1,1,0,$events);
+	} else {
+		print $form->select_company(GETPOST('fk_soc','int'),'fk_soc','',1,1);
+	}
 	print '</td></tr>';
 
 	if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
@@ -678,7 +684,14 @@ else
 					print '</td></tr>';
 
 					print '<tr><td>'.$langs->trans("Customer").'</td>';
-					print '<td>'.$form->select_company($agf->fk_soc,'fk_soc','',1, 'customer').'</td></tr>';
+					print '<td>';
+					if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
+						$events=array();
+						$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'contact', 'params' => array('add-customer-contact' => 'disabled'));
+						print $form->select_company($agf->fk_soc,'fk_soc','',1,1,0,$events);
+					} else {
+						print $form->select_company($agf->fk_soc,'fk_soc','',1,1);
+					}
 
 					if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 						print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
@@ -1211,7 +1224,7 @@ else
 							print '</td>';
 							print '<td style="border-left: 0px;">';
 							// Infos mode de financement
-							if ($stagiaires->line[$i]->type) {
+							if ($stagiaires->line[$i]->type && (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 								print '<div class=adminaction>';
 								print $langs->trans("AgfStagiaireModeFinancement");
 								print '-<span>'.stripslashes($stagiaires->line[$i]->type).'</span></div>';

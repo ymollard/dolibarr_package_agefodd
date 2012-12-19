@@ -21,7 +21,6 @@
 /**
  *  \file       	/agefodd/session/administrative.php
  *  \brief      	Page de gestion des tâches administratives (session de formation)
-*  \version		$Id$
 */
 
 
@@ -113,7 +112,8 @@ if ($action == 'update_archive' && $user->rights->agefodd->creer)
 	$agf = new Agefodd_sessadm($db);
 
 	$result = $agf->fetch($actid);
-	$agf->archive = !($agf->archive);
+	if ($agf->archive==1) {$agf->archive=0;}
+	else  {$agf->archive=1;}
 	$agf->datef = dol_mktime(0,0,0,idate('m',dol_now()),idate('d',dol_now()),idate('y',dol_now()));
 	$result = $agf->update($user);
 

@@ -7,6 +7,7 @@ ALTER TABLE llx_agefodd_place MODIFY notes text;
 ALTER TABLE llx_agefodd_place MODIFY fk_reg_interieur integer NULL;
 ALTER TABLE llx_agefodd_facture MODIFY fk_commande integer;
 ALTER TABLE llx_agefodd_facture MODIFY fk_facture integer;
+ALTER TABLE llx_agefodd_convention MODIFY sig text;
 
 
 

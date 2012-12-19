@@ -372,7 +372,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$agf_place = new Agefodd_place($db);
 	$resql3 = $agf_place->fetch($agf->placeid);
 	$adresse = $agf_place->adresse.", ".$agf_place->cp." ".$agf_place->ville;
-	$art1.= $langs->trans('AgfConvArt1_18').$agf_place->ref_interne.$langs->trans('AgfConvArt1_19').$adresse.'.';
+	$art1.= $langs->trans('AgfConvArt1_18').$agf_place->ref_interne.$langs->trans('AgfConvArt1_19').' '.$adresse.'.';
 
 	// texte 2
 	if ($agf_conv->art2) $art2 = $agf_conv->art2;
@@ -391,7 +391,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		if ($i == $nbstag - 1) $art3.= '.';
 		else
 		{
-			if ($i == $nbstag - 2) $art3.= $langs->trans('AgfConvArt3_4');
+			if ($i == $nbstag - 2) $art3.= ' '.$langs->trans('AgfConvArt3_4').' ';
 			else  $art3.= ', ';
 		}
 	}

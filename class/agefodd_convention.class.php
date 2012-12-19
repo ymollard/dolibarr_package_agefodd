@@ -111,7 +111,7 @@ class Agefodd_convention
 		}
 		if (! $error)
 		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_stagiaire");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_convention");
 			if (! $notrigger)
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -413,23 +413,23 @@ class Agefodd_convention
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_convention as c SET";
-		$sql.= " c.intro1='".$this->intro1."',";
-		$sql.= " c.intro2='".$this->intro2."',";
-		$sql.= " c.art1='".$this->art1."',";
-		$sql.= " c.art2='".$this->art2."',";
-		$sql.= " c.art3='".$this->art3."',";
-		$sql.= " c.art4='".$this->art4."',";
-		$sql.= " c.art5='".$this->art5."',";
-		$sql.= " c.art6='".$this->art6."',";
-		$sql.= " c.art7='".$this->art7."',";
-		$sql.= " c.art8='".$this->art8."',";
-		$sql.= " c.sig='".$this->sig."',";
-		$sql.= " c.notes='".$this->notes."',";
-		$sql.= " c.fk_societe=".$this->socid.",";
-		$sql.= " c.fk_agefodd_session=".$this->sessid.",";
-		$sql.= " c.fk_user_mod=".$user->id." ";
-		$sql.= " WHERE c.rowid = ".$this->id;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_convention SET";
+		$sql.= " intro1='".$this->intro1."',";
+		$sql.= " intro2='".$this->intro2."',";
+		$sql.= " art1='".$this->art1."',";
+		$sql.= " art2='".$this->art2."',";
+		$sql.= " art3='".$this->art3."',";
+		$sql.= " art4='".$this->art4."',";
+		$sql.= " art5='".$this->art5."',";
+		$sql.= " art6='".$this->art6."',";
+		$sql.= " art7='".$this->art7."',";
+		$sql.= " art8='".$this->art8."',";
+		$sql.= " sig='".$this->sig."',";
+		$sql.= " notes='".$this->notes."',";
+		$sql.= " fk_societe=".$this->socid.",";
+		$sql.= " fk_agefodd_session=".$this->sessid.",";
+		$sql.= " fk_user_mod=".$user->id." ";
+		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
 

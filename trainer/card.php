@@ -21,7 +21,6 @@
 /**
  *  \file       	/agefodd/trainer/card.php
  *  \brief      	Page fiche site de formation
-*  \version		$Id$
 */
 
 $res=@include("../../main.inc.php");				// For root directory

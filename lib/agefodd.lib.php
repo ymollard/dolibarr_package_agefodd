@@ -289,6 +289,7 @@ function ebi_get_level_number($session)
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as l";
 	$sql.= " WHERE l.level_rank = 0 AND l.fk_agefodd_session=".$session;
 
+	dol_syslog("ebi_get_level_number sql=".$sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -313,9 +314,10 @@ function ebi_get_adm_lastFinishLevel($sessid)
 
 	$sql = "SELECT COUNT(*) as level";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu as s";
-	$sql.= ' WHERE s.level_rank = 0 AND s.datef < '.$db->idate(dol_now()).' ';
+	$sql.= ' WHERE s.level_rank = 0 AND s.datef < \''.$db->idate(dol_now()).'\' ';
 	$sql.= " AND fk_agefodd_session = ".$sessid;
 
+	dol_syslog("ebi_get_adm_lastFinishLevel sql=".$sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result)
 	{
