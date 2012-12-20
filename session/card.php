@@ -284,7 +284,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		$result = $agf->fetch($modperiod);
 
 		if(!empty($modperiod)) 			$agf->id = $modperiod;
-		if(!empty($dateyear)) 			$agf->date_session = $date_session;
+		if(!empty($date_session)) 		$agf->date_session = $date_session;
 		if(!empty($heured)) 			$agf->heured = $heured;
 		if(!empty($heuref)) 			$agf->heuref =  $heuref;
 
