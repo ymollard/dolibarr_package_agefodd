@@ -242,12 +242,13 @@ For All :
 	- Better installation/upgrade process (run only structure update required)
 	- Change database structure to upgrade performance and reliability
 	- Add postgresql compatibility
-	- Index : Fix lots of bugs on index (first figures page)
+	- Index (first figures page): Fix lots of bugs on index
 	- Session : On create Session contact is refresh automaticly on customer selection(according to settings (show Dolibarr contact in creation of session=>Yes,Thirdsparty settings combox-box=>Yes))
 	- Session : display trainnee funding only if option activated
 	- Session: Add trainer : if trainne is a user, it's now possible to select it (bug occured if combo-box for trainer is not active) 
 	- Session : Fix Bug on create session : Customer contact is correctly save
 	- Session : Fix Bug on update calendar : new date correctly saved
+	- Index (first figures page): Add english missings translations
 For Dev :
 	- Review function comment for all class
 	- Review $this->line[$i]->... in some class to avoid "create object from empty property" if display PHP error message is ON  

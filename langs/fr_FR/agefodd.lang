@@ -578,3 +578,5 @@ AgfNumberOfSessions=Nombre de sessions
 AgfNumberOfSessionsByMonth=Nombre de sessions par mois
 AmountOfTrainings=Montant des sessions
 AmountOfBillsByMonthHT=Montant des sessions par mois
+AgfRunningSession=Session en court
+AgfSessionReadyArchive=Sessions prêtes à être archivées

@@ -564,3 +564,5 @@ AgfNumberOfSessions=Number of sessions
 AgfNumberOfSessionsByMonth=Number of sessions by month
 AmountOfTrainings=Amount of training sessions
 AmountOfBillsByMonthHT=Amount of training sessions by month
+AgfRunningSession=Running sessions
+AgfSessionReadyArchive=Session ready to archive

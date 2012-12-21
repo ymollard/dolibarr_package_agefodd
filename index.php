@@ -134,7 +134,7 @@ print '<td width="50px" align="right">Nombre</td></tr>';
 // sessions en cours
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $resql = $agf->fetch_session(0);
-print '<td colspan="2" >sessions en cours</td><td align="right">';
+print '<td colspan="2" >'.$langs->trans("AgfRunningSession").'</td><td align="right">';
 print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.'</a>&nbsp;</td></tr>' ;
 
 // tâches en retard
@@ -171,7 +171,7 @@ print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'">'.$agf->total.
 // sessions à archiver
 print '<tr class="liste"><td width="10px" valign="top">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';
 $num = $agf->fetch_session_to_archive();
-print '<td colspan="2" >sessions prêtes à être archivées</td><td align="right">';
+print '<td colspan="2" >'.$langs->trans("AgfSessionReadyArchive").'</td><td align="right">';
 if ($num != 0)print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->sessid.'">'.$num.'</a>&nbsp;';
 else print '0&nbsp;';
 print '</td></tr>';
@@ -182,7 +182,7 @@ print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDet
 $resql = $agf->fetch_session(1);
 if ($resql)
 {
-	print '<td colspan="2" >sessions archivées</td><td align="right">';
+	print '<td colspan="2" >'.$langs->trans("AgfMenuSessArchList").'</td><td align="right">';
 	print '<a href="'.dol_buildpath('/agefodd/session/list.php',1).'?arch=1">'.$agf->total.'</a>&nbsp;</td></tr>' ;
 	//$db->free($resql);
 }
