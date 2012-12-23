@@ -248,6 +248,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Can link invocie without order to session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_LINK_OPCA_ADRR_TO_CONTACT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Display OPCA adress from OPCA contact rather than OPCA';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {

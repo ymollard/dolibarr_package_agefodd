@@ -350,7 +350,8 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 			$exclude_array[]=$line->fk_socpeople;
 		}
 	}
-	$form->select_contacts(0,'','contact',1,$exclude_array);
+	//$form->select_contacts(0,'','contact',1,$exclude_array);
+	print $formAgefodd->select_contacts_combobox(0,'','contact',1,$exclude_array);
 	print '</td></tr>';
 
 	print '</table>';

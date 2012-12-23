@@ -566,3 +566,5 @@ AmountOfTrainings=Amount of training sessions
 AmountOfBillsByMonthHT=Amount of training sessions by month
 AgfRunningSession=Running sessions
 AgfSessionReadyArchive=Session ready to archive
+AgfLinkOPCAAddrToContact=Link OPCA adress to OPCA contact rather than OPCA customer
+AgfLinkOPCAAddrToContactHelp=In session, OPCA adress display will be the OPCA contact if exists, else it will be the OPCA adress

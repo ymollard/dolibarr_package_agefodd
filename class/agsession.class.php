@@ -66,6 +66,8 @@ class Agsession extends CommonObject
 	var $soc_OPCA_name;
 	var $fk_socpeople_OPCA;
 	var $contact_name_OPCA;
+	var $OPCA_contact_adress;
+	var $OPCA_adress;
 	var $num_OPCA_soc;
 	var $num_OPCA_file;
 	var $fk_user_author;
@@ -412,7 +414,7 @@ class Agsession extends CommonObject
 	 */
 	function fetch($id)
 	{
-		global $langs;
+		global $langs,$conf;
 
 		$sql = "SELECT";
 		$sql.= " t.rowid,";
@@ -459,7 +461,8 @@ class Agsession extends CommonObject
 		$sql.= " agecont.fk_socpeople as sourcecontactid, ";
 		$sql.= " agecont.rowid as contactid, ";
 		$sql.= " socOPCA.address as opca_adress, socOPCA.cp as opca_cp, socOPCA.ville as opca_ville, ";
-		$sql.= " socOPCA.nom as soc_opca_name ";
+		$sql.= " socOPCA.nom as soc_opca_name, ";
+		$sql.= " concactOPCA.address as opca_contact_adress, concactOPCA.cp as opca_contact_cp, concactOPCA.ville as opca_contact_ville ";
 
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as t";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
@@ -526,7 +529,11 @@ class Agsession extends CommonObject
 				$this->is_OPCA = $obj->is_opca;
 				$this->fk_soc_OPCA = $obj->fk_soc_opca;
 				$this->soc_OPCA_name = $obj->soc_opca_name;
-				$this->OPCA_adress = $obj->opca_adress."\n". $obj->opca_cp.' - '. $obj->opca_ville;
+				if (($conf->global->AGF_LINK_OPCA_ADRR_TO_CONTACT) && (!empty($obj->opca_contact_adress))){
+					$this->OPCA_adress = $obj->opca_contact_adress."\n". $obj->opca_contact_cp.' - '. $obj->opca_contact_ville;
+				}else {
+					$this->OPCA_adress = $obj->opca_adress."\n". $obj->opca_cp.' - '. $obj->opca_ville;
+				}
 				$this->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
 				$this->contact_name_OPCA = $obj->concact_opca_name.' '.$obj->concact_opca_firstname;
 				$this->num_OPCA_soc = $obj->num_opca_soc;

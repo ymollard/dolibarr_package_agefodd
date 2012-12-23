@@ -76,8 +76,8 @@ if ($action == 'setvar')
 	}
 
 	
-	$pref_val=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
-	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $pref_val,'chaine',0,'',$conf->entity);
+	$use_fac_without_order=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
+	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
@@ -128,12 +128,16 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_PDF_COLOR', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
-	$pdf_color=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $pdf_color,'chaine',0,'',$conf->entity);
+	$logo_client=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
 	$use_dol_company_name=GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT','alpha');
 	$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name,'chaine',1,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$add_OPCA_link_contact=GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
 	if ($_FILES["imagesup"]["tmp_name"])
@@ -795,6 +799,17 @@ print $form->selectarray("MAIN_USE_COMPANY_NAME_OF_CONTACT",$arrval,$conf->globa
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseMainNameOfContactHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+// Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
+print '<tr class="pair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
