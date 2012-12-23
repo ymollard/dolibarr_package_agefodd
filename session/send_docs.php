@@ -515,11 +515,11 @@ if (!empty($id))
 				}
 
 				// Contact client
-				if($agf->contactid > 0)
+				if($agf->sourcecontactid > 0)
 				{
 					$contactstatic = new Contact($db);
-					$contactstatic->fetch($agf->contactid);
-					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
+					$contactstatic->fetch($agf->sourcecontactid);
+					$withto[$agf->sourcecontactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
 				}
 
 				$formmail->withto=$withto;
@@ -542,14 +542,18 @@ if (!empty($id))
 				// Convention peut être envoyé à l'opca ou au commanditaire
 				$contactstatic = new Contact($db);
 				$contactstatic->fetch($agf->fk_socpeople_OPCA);
-				$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
+				if (!empty($contactstatic->email)) {
+					$withto[$agf->fk_socpeople_OPCA] 	= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (OPCA)';
+				}
 
 				// Contact Commanditaire
-				$contactstatic = new Contact($db);
-				$contactstatic->fetch($agf->contactid);
-				$withto[$agf->contactid] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Commanditaire)';
+				if (!empty($agf->sourcecontactid)) {
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($agf->sourcecontactid);
+					$withto[$agf->sourcecontactid] 			= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Commanditaire)';
+				}
 				
-				// Contact participant
+				// Contact participant if inter-entreprise
 				if ($agf->type_session &&  $socid > 0) {
 					$socstatic = new Societe($db);
 					$socstatic->id=$socid;
@@ -572,7 +576,7 @@ if (!empty($id))
 				$formmail->param['models']='attestation';
 				$formmail->param['pre_action']='presend_attestation';
 				
-				// Attestation peut être envoyé à l'opca ou au commanditaire
+				// Attestation peut être envoyé à l'opca ou au commanditaire if inter-entreprise
 				if ($agf->type_session &&  $socid) {
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
 					if (! $result_opca)
@@ -610,15 +614,12 @@ if (!empty($id))
 				}
 
 				// Contact commanditaire
-				if($agf->contactid > 0) {
+				if (!empty($agf->sourcecontactid)) {
 					$contactstatic = new Contact($db);
-					$contactstatic->fetch($agf->contactid);
-					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Commanditaire)';
+					$contactstatic->fetch($agf->sourcecontactid);
+					$withto[$agf->sourcecontactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Commanditaire)';
 				}
 				
-				
-				
-
 				$formmail->withto=$withto;
 				$formmail->withtofree=1;
 
@@ -670,10 +671,10 @@ if (!empty($id))
 				}
 				
 				// Contact commanditaire
-				if($agf->contactid > 0) {
+				if (!empty($agf->sourcecontactid)) {
 					$contactstatic = new Contact($db);
-					$contactstatic->fetch($agf->contactid);
-					$withto[$agf->contactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
+					$contactstatic->fetch($agf->sourcecontactid);
+					$withto[$agf->sourcecontactid]		= $contactstatic->lastname.' '.$contactstatic->firstname.' - '.$contactstatic->email.' (Client)';
 				}
 				
 				$formmail->withto=$withto;
