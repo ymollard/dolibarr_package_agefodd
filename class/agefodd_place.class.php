@@ -97,14 +97,10 @@ class Agefodd_place extends CommonObject
 		if (isset($this->note1)) $this->note1=trim($this->note1);
 		if (isset($this->archive)) $this->archive=trim($this->archive);
 		if (isset($this->fk_reg_interieur)) $this->fk_reg_interieur=trim($this->fk_reg_interieur);
-		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
-		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
-
-
+		
 		// Check parameters
 		// Put here code to add control on parameters value
-		$this->datec = dol_now();
-		
+	
 		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
@@ -138,7 +134,7 @@ class Agefodd_place extends CommonObject
 		$sql.= " ".(! isset($this->note1)?'NULL':"'".$this->db->escape($this->note1)."'").",";
 		$sql.= " ".$user->id.",";
 		$sql.= " ".$user->id.",";
-		$sql.= " ".(! isset($this->datec) || dol_strlen($this->datec)==0?'NULL':$this->db->idate($this->datec))."";
+		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ")";
 
 		// Insert request		

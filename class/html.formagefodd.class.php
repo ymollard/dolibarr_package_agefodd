@@ -18,7 +18,7 @@
 */
 
 /**
- *      \file       agefodd/core/class/html.formagefodd.class.php
+ *      \file       agefodd/class/html.formagefodd.class.php
  *      \brief      Fichier de la classe des fonctions predefinie de composants html agefodd
  */
 

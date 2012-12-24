@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ *  Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -81,13 +82,13 @@ class Agefodd_sesscalendar
 		$sql.= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec";
 		$sql.= ") VALUES (";
 		$sql.= " ".$this->sessid.", ";
-		$sql.= $this->db->idate($this->date_session).', ';
-		$sql.= $this->db->idate($this->heured).', ';
-		$sql.= $this->db->idate($this->heuref).', ';
+		$sql.= "'".$this->db->idate($this->date_session)."', ";
+		$sql.= "'".$this->db->idate($this->heured)."', ";
+		$sql.= "'".$this->db->idate($this->heuref)."', ";
 		$sql.= " ".(! isset($this->fk_actioncomm)?'NULL':"'".$this->db->escape($this->fk_actioncomm)."'").",";
 		$sql.= ' '.$user->id.', ';
 		$sql.= ' '.$user->id.', ';
-		$sql.= $this->db->idate(dol_now());
+		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ")";
 
 		$this->db->begin();
@@ -324,9 +325,9 @@ class Agefodd_sesscalendar
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_calendrier SET";
-		$sql.= " date_session=".$this->db->idate($this->date_session).",";
-		$sql.= " heured=".$this->db->idate($this->heured).",";
-		$sql.= " heuref=".$this->db->idate($this->heuref).",";
+		$sql.= " date_session='".$this->db->idate($this->date_session)."',";
+		$sql.= " heured='".$this->db->idate($this->heured)."',";
+		$sql.= " heuref='".$this->db->idate($this->heuref)."',";
 		$sql.= " fk_user_mod=".$user->id." ";
 		$sql.= " WHERE rowid = ".$this->id;
 

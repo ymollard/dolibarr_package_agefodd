@@ -568,3 +568,6 @@ AgfRunningSession=Running sessions
 AgfSessionReadyArchive=Session ready to archive
 AgfLinkOPCAAddrToContact=Link OPCA adress to OPCA contact rather than OPCA customer
 AgfLinkOPCAAddrToContactHelp=In session, OPCA adress display will be the OPCA contact if exists, else it will be the OPCA adress
+AgfAdminCalendarTemplate=Manage template for training session time calendar
+AgfDaySession=Session Day
+AgfCalendarFromTemplate=From template

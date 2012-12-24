@@ -582,3 +582,6 @@ AgfRunningSession=Session en court
 AgfSessionReadyArchive=Sessions prêtes à être archivées
 AgfLinkOPCAAddrToContact=Afficher l'adresse du contact OPCA plutot que celle de l'OPCA
 AgfLinkOPCAAddrToContactHelp=Dans les session, L'adresse de l4OPCA sera celle du contact OPCA si elle existe, sinon cela reste celle de l'OPCA
+AgfAdminCalendarTemplate=Modéle de plage de temps des sessions
+AgfDaySession=Jour de la session
+AgfCalendarFromTemplate=Du modèle

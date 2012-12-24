@@ -251,6 +251,34 @@ function site_prepare_head($object)
 }
 
 /**
+ *  Return head table for admin tabs screen
+ *
+ *  @return array      		   	 head table of tabs
+ */
+function agefodd_admin_prepare_head()
+{
+	global $langs, $conf;
+
+	$langs->load("agefodd@agefodd");
+
+	$h = 0;
+	$head = array();
+
+	$head[$h][0] = dol_buildpath("/agefodd/admin/agefodd.php",1);
+	$head[$h][1] = $langs->trans("Settings");
+	$head[$h][2] = 'settings';
+	$h++;
+	$head[$h][0] = dol_buildpath("/agefodd/admin/about.php",1);
+	$head[$h][1] = $langs->trans("About");
+	$head[$h][2] = 'about';
+	$h++;
+
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd');
+
+	return $head;
+}
+
+/**
  *  Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
  *
  *  @return int      		   	 nbre de niveaux

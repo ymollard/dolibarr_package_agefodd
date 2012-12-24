@@ -22,7 +22,6 @@
  * 	\file       /agefodd/admin/agefodd.php
  *	\ingroup    agefodd
  *	\brief      agefood module setup page
-*	\version    $Id$
 */
 
 $res=@include("../../main.inc.php");				// For root directory
@@ -30,6 +29,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
+dol_include_once('/agefodd/class/agefodd_calendrier.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
@@ -383,6 +383,33 @@ if ($action == 'sessionlevel_update')
 	}
 }
 
+if ($action=='sessioncalendar_create'){	
+	$tmpl_calendar = new Agefoddcalendrier($db);
+	$tmpl_calendar->day_session=GETPOST('newday','int');
+	$tmpl_calendar->heured=GETPOST('periodstart','alpha');
+	$tmpl_calendar->heuref=GETPOST('periodend','alpha');
+	
+	$result = $tmpl_calendar->create($user);
+	if ($result!=1)
+	{
+		dol_syslog("Agefodd::agefodd error=".$tmpl_calendar->error, LOG_ERR);
+		$mesg = '<div class="error">'.$tmpl_calendar->error.'</div>';
+	}
+}
+
+
+
+if ($action=='sessioncalendar_delete') {
+	$tmpl_calendar = new Agefoddcalendrier($db);
+	$tmpl_calendar->id=GETPOST('id','int');
+	$result = $tmpl_calendar->delete($user);
+	if ($result!=1)
+	{
+		dol_syslog("Agefodd::agefodd error=".$tmpl_calendar->error, LOG_ERR);
+		$mesg = '<div class="error">'.$tmpl_calendar->error.'</div>';
+	}
+}
+
 /*
  *  Admin Form
 *
@@ -397,6 +424,10 @@ dol_htmloutput_mesg($mesg);
 
 $linkback='<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
 print_fiche_titre($langs->trans("AgefoddSetupDesc"),$linkback,'setup');
+
+// Configuration header
+$head = agefodd_admin_prepare_head();
+dol_fiche_head($head, 'settings', $langs->trans("Module103000Name"), 0,"agefodd@agefodd");
 
 // Agefodd numbering module
 print_titre($langs->trans("AgfAdminTrainingNumber"));
@@ -888,6 +919,56 @@ else
 }
 print '</table><br>';
 
+print_titre($langs->trans("AgfAdminCalendarTemplate"));
+
+
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("AgfAdminCalendarTemplate").'</td>';
+print "</tr>\n";
+print '<tr><td>';
+print '<table class="noborder" width="100%">';
+print '<tr>';
+print '<td>'.$langs->trans("AgfDaySession").'</td>';
+print '<td>'.$langs->trans("AgfPeriodTimeB").'</td>';
+print '<td>'.$langs->trans("AgfPeriodTimeE").'</td>';
+print '<td></td>';
+print '</tr>';
+
+$tmpl_calendar = new Agefoddcalendrier($db);
+$tmpl_calendar->fetch_all();
+foreach($tmpl_calendar->lines as $line) {
+	
+	print '<form name="SessionCalendar_'.$line->id.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+	print '<input type="hidden" name="action" value="sessioncalendar_delete">'."\n";
+	print '<input type="hidden" name="id" value="'.$line->id.'">'."\n";
+	print '<tr>';
+	print '<td>'.$line->day_session.'</td>';
+	print '<td>'.$line->heured.'</td>';
+	print '<td>'.$line->heuref.'</td>';
+	print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sessioncalendar_delete" alt="'.$langs->trans("Save").'"></td>';
+	print '</tr>';
+	print '</form>';
+}
+
+print '<form name="SessionCalendar_new" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+print '<input type="hidden" name="action" value="sessioncalendar_create">'."\n";
+print '<tr>';
+print '<td><select id="newday" class="flat" name="newday">';
+for ($i = 1; $i <= 10; $i++) {
+	print '<option value="'.$i.'">'.$i.'</option>';
+}
+print '</select></td>';
+print '<td>'.$formAgefodd->select_time('','periodstart').'</td>';
+print '<td>'.$formAgefodd->select_time('','periodend').'</td>';
+print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sessioncalendar_create" alt="'.$langs->trans("Save").'"></td>';
+print '</tr>';
+print '</table>';
+print '</td></tr>';
+print '</table>';
+print '</form>';
 
 $db->close();
 
