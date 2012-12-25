@@ -264,14 +264,14 @@ class pdf_attestation extends ModelePDFAgefodd
 					for ( $y = 0; $y < count($agf_op->line); $y++)
 					{
 						$newY = $newY + $hauteur;
-						$pdf->SetXY ($this->marge_gauche + 50, $newY);
+						$pdf->SetXY ($this->marge_gauche + 62, $newY);
 						$width = 160;
 						$StringWidth = $pdf->GetStringWidth($agf_op->line[$y]->intitule);
 						if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
 						else $nblines = 1;
 						$hauteur = $nblines * 5;
 						$pdf->Cell(10, 5, $agf_op->line[$y]->priorite.'. ', 0, 0, 'R', 0);
-						$pdf->MultiCell($width, 5,
+						$pdf->MultiCell($width,0,
 							$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
 
 					}

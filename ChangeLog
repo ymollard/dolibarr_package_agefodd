@@ -250,7 +250,9 @@ For All :
 	- Session : Fix Bug on update calendar : new date correctly saved
 	- Index (first figures page): Add english missings translations
 	- Session Calendar/admin : Task #450 - Crée une journée type et permettre de la choisir sur la gestion du calendrier de la session
+	- PDF attestation : Task #623 - Attestation de formation
+	- PDF convetion : task #615 - Première page convention de formation
 For Dev :
 	- Review function comment for all class
 	- Review $this->line[$i]->... in some class to avoid "create object from empty property" if display PHP error message is ON  
-	 
+	- Move multiselect directory from inc/multiselect to lib/multiselect 

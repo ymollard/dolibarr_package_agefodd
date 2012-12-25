@@ -326,8 +326,8 @@ if ($_POST['addfile'])
 }
 
 
-$extrajs = array('/agefodd/inc/multiselect/js/ui.multiselect.js');
-$extracss = array('/agefodd/inc/multiselect/css/ui.multiselect.css','/agefodd/css/agefodd.css');
+$extrajs = array('/agefodd/lib/multiselect/js/ui.multiselect.js');
+$extracss = array('/agefodd/lib/multiselect/css/ui.multiselect.css','/agefodd/css/agefodd.css');
 
 llxHeader('',$langs->trans("AgfSendCommonDocs"),'','','','',$extrajs,$extracss);
 

@@ -288,6 +288,31 @@ class pdf_convention extends ModelePDFAgefodd
 					$titre = $outputlangs->transnoentities('AgfPDFConventionLawNum');
 				}
 				$pdf->MultiCell(0, 5, $titre,0,'C');
+				
+				
+				$this->str = $agf->formintitule;
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
+				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 180);
+				$pdf->MultiCell(0, 5, $this->str,0,'C');
+				
+				if ($agf->dated!=$agf->datef) {
+					$this->str = dol_print_date($agf->dated,'daytext').' - '.dol_print_date($agf->datef,'daytext');
+				}else {
+					$this->str = dol_print_date($agf->dated,'daytext');
+				}
+				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 185);
+				$pdf->MultiCell(0, 5, $this->str,0,'C');
+				
+				// If customer is personnal entity, the french low ask contrat and not convention
+				if ($customer->typent_id==8) {
+					$this->str = 'trainee:'.$customer->name;//Trainer NAme;
+				}
+				else {
+					$this->str = $customer->name;//Customer NAme;
+				}
+				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 190);
+				$pdf->MultiCell(0, 5, $this->str,0,'C');
+				
 
 				//Determine the total number of page
 				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
@@ -351,7 +376,6 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str= $agf_conv->intro2;
-				//$this->str.= " dûment habilité à ce faire,";
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
