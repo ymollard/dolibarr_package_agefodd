@@ -24,11 +24,12 @@
 \version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/session/class/agefodd_session.class.php');
-dol_include_once('/agefodd/training/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/contact/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
 class pdf_demo extends ModelePDFAgefodd
@@ -51,7 +52,7 @@ class pdf_demo extends ModelePDFAgefodd
 		$langs->load("agefodd@agefodd");
 
 		$this->db = $db;
-		$this->name = 'fiche_pedago';
+		$this->name = 'demo';
 		$this->description = $langs->trans('AgfModPDFFichePeda');
 
 		// Dimension page pour format A4 en portrait
@@ -99,7 +100,7 @@ class pdf_demo extends ModelePDFAgefodd
 		if (! is_object($agf))
 		{
 			$id = $agf;
-			$agf = new Agefodd_session($this->db);
+			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
 		}
 
@@ -168,7 +169,14 @@ class pdf_demo extends ModelePDFAgefodd
 					if (is_readable($logo))
 					{
 						$heightLogo=pdf_getHeightForLogo($logo);
-						$pdf->Image($logo, $this->marge_gauche, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+						include_once(DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php');
+						$tmp=dol_getImageSize($logo);
+						if ($tmp['width'])
+						{
+							$widthLogo = $tmp['width'];
+						}
+						$marge_logo =  (($widthLogo*25.4)/300);
+						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
 					}
 					else
 					{
