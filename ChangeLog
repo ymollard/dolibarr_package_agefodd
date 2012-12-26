@@ -262,3 +262,6 @@ For Dev :
 	- Move multiselect directory from inc/multiselect to includes/multiselect
 	- Add about pages 
 	- Enabled required other Dolibarr modules on Agefodd activation 
+	
+***** ChangeLog for 2.0.23 compared to 2.0.22 *****
+For All :
