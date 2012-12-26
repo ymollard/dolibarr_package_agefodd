@@ -63,6 +63,30 @@ if ($action == 'updateMask')
 if ($action == 'setvar')
 {
 	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+	
+	$text_color=GETPOST('AGF_TEXT_COLOR','alpha');
+	if (!empty($text_color)) {
+		$res = dolibarr_set_const($db, 'AGF_TEXT_COLOR', $text_color,'chaine',0,'',$conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_TEXT_COLOR', '000000','chaine',0,'',$conf->entity);
+	}
+	if (! $res > 0) $error++;
+	
+	$head_color=GETPOST('AGF_HEAD_COLOR','alpha');
+	if (!empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', $head_color,'chaine',0,'',$conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', 'CB4619','chaine',0,'',$conf->entity);
+	}
+	if (! $res > 0) $error++;
+	
+	$foot_color=GETPOST('AGF_FOOT_COLOR','alpha');
+	if (!empty($foot_color)) {
+		$res = dolibarr_set_const($db, 'AGF_FOOT_COLOR', $foot_color,'chaine',0,'',$conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_FOOT_COLOR', 'BEBEBE','chaine',0,'',$conf->entity);
+	}
+	if (! $res > 0) $error++;
 
 	$use_typestag=GETPOST('AGF_USE_STAGIAIRE_TYPE','int');
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
@@ -75,7 +99,6 @@ if ($action == 'setvar')
 		if (! $res > 0) $error++;
 	}
 
-	
 	$use_fac_without_order=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
 	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -122,10 +145,6 @@ if ($action == 'setvar')
 
 	$nb_num_list=GETPOST('AGF_NUM_LIST','int');
 	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$pdf_color=GETPOST('AGF_PDF_COLOR','alpha');
-	$res = dolibarr_set_const($db, 'AGF_PDF_COLOR', $pdf_color,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
 	$logo_client=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
@@ -586,35 +605,27 @@ print $form->textwithpicto('',$langs->trans("AgfNbElemListHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
-print '<tr class="pair"><td>'.$langs->trans("AgfPDFBaseColor").'</td>';
-print '<td  align="left"><input id="AGF_PDF_COLOR" type="text" size="8" name="AGF_PDF_COLOR" value="'.$conf->global->AGF_PDF_COLOR.'" /></td><td></td></tr>';
-
-print '<script type="text/javascript" language="javascript">
-	$(document).ready(function() {
-	$("#AGF_PDF_COLOR").css("backgroundColor", \'#'.$conf->global->AGF_PDF_COLOR.'\');
-		$("#AGF_PDF_COLOR").ColorPicker({
-		color: \'#'.$conf->global->AGF_PDF_COLOR.'\',
-			onShow: function (colpkr) {
-			$(colpkr).fadeIn(500);
-			return false;
-},
-			onHide: function (colpkr) {
-			$(colpkr).fadeOut(500);
-			return false;
-},
-			onChange: function (hsb, hex, rgb) {
-			$("#AGF_PDF_COLOR").css("backgroundColor", \'#\' + hex);
-},
-			onSubmit: function (hsb, hex, rgb) {
-			$("#AGF_PDF_COLOR").val(hex);
-}
-});
-})
-			.bind(\'keyup\', function(){
-			$(this).ColorPickerSetColor(this.value);
-});
-			</script>';
-
+//PDF Base color
+print '<tr class="pair"><td>'.$langs->trans("AgfPDFTextColor").'</td>';
+print '<td nowrap="nowrap">';
+print $formAgefodd->select_color($conf->global->AGF_TEXT_COLOR, "AGF_TEXT_COLOR");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+print '<tr class="impair">';
+print '<td>'.$langs->trans("AgfPDFHeadColor").'</td>';
+print '<td nowrap="nowrap">';
+print $formAgefodd->select_color($conf->global->AGF_HEAD_COLOR, "AGF_HEAD_COLOR");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+print '<tr  class="pair">';
+print '<td>'.$langs->trans("AgfPDFFootColor").'</td>';
+print '<td nowrap="nowrap">';
+print $formAgefodd->select_color($conf->global->AGF_FOOT_COLOR, "AGF_FOOT_COLOR");
+print '</td>';
+print '<td></td>';
+print "</tr>";
 
 // Affichage du logo commanditaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseCustomerLogo").'</td>';
@@ -834,7 +845,7 @@ print '</td>';
 print '</tr>';
 
 // Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
-print '<tr class="pair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
+print '<tr class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
 print '<td align="left">';
 $arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);

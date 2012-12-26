@@ -236,23 +236,29 @@ For All :
 	- Fix bug #613 - erreur lors du "clonage de session"
 	- Fix bug #614 - bug affichage sur convention
 	- Fix bug #612 - Contact sur courrier accompagnant l'envoi du dossier de clôture
-	
+
+
 ***** ChangeLog for 2.0.22 compared to 2.0.21 *****
 For All :
 	- Better installation/upgrade process (run only structure update required)
 	- Change database structure to upgrade performance and reliability
 	- Add postgresql compatibility
-	- Index (first figures page): Fix lots of bugs on index
+	- Index (first figures page): Fix lots of bugs on figures
 	- Session : On create Session contact is refresh automaticly on customer selection(according to settings (show Dolibarr contact in creation of session=>Yes,Thirdsparty settings combox-box=>Yes))
 	- Session : display trainnee funding only if option activated
-	- Session: Add trainer : if trainne is a user, it's now possible to select it (bug occured if combo-box for trainer is not active) 
+	- Session : Add option to display contact OPCA adress rather than OPCA adress
+	- Session : Fix bug on add trainer : if trainne is a user, it's now possible to select it (bug occured if combo-box for trainer is not active) 
 	- Session : Fix Bug on create session : Customer contact is correctly save
 	- Session : Fix Bug on update calendar : new date correctly saved
 	- Index (first figures page): Add english missings translations
 	- Session Calendar/admin : Task #450 - Crée une journée type et permettre de la choisir sur la gestion du calendrier de la session
 	- PDF attestation : Task #623 - Attestation de formation
 	- PDF convetion : task #615 - Première page convention de formation
+	- PDF customization : tasks #650 - 2 more color selector for PDF customization (thanks to sgiovagnoli for his contribution)
+	- PDF timecard (fiche presence) : tasks #649 - PDF Timecard (fiche presence) behaviours
 For Dev :
 	- Review function comment for all class
 	- Review $this->line[$i]->... in some class to avoid "create object from empty property" if display PHP error message is ON  
-	- Move multiselect directory from inc/multiselect to lib/multiselect 
+	- Move multiselect directory from inc/multiselect to includes/multiselect
+	- Add about pages 
+	- Enabled required other Dolibarr modules on Agefodd activation 

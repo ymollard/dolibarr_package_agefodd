@@ -38,7 +38,7 @@ dol_include_once('/core/lib/company.lib.php');
 
 
 
-class pdf_fiche_presence extends ModelePDFAgefodd
+class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 
@@ -51,13 +51,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function pdf_fiche_presence($db)
+	function __construct($db)
 	{
 		global $conf,$langs,$mysoc;
 
 
 		$this->db = $db;
-		$this->name = "fiche_presence";
+		$this->name = "fiche_presence_trainee";
 		$this->description = $langs->trans('AgfModPDFFichePres');
 
 		// Dimension page pour format A4 en paysage
@@ -88,11 +88,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 
 	/**
-	 *	\brief      	Fonction generant le document sur le disque
-	 *	\param	    	agf		Objet document a generer (ou id si ancienne methode)
-	 *			outputlangs	Lang object for output language
-	 *			file		Name of file to generate
-	 *	\return	    	int     	1=ok, 0=ko
+	 *  Fonction generant le document sur le disque
+	 *
+	 *  @param	object	$agf        	Objet document a generer (ou id si ancienne methode)
+	 *  @param  object	$outputlangs	Lang object for output language
+	 *  @param  string	$file			Name of file to generate
+	 *  @param	int		$socid			thirdparty id
+	 *  @return int      		   		<0 if KO, Id of created object if OK
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
@@ -155,8 +157,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				$nbsta=count($agf->line);
 
 				//$blocsta=0;
-				for ($blocsta=0; $blocsta <= (intval($nbsta/10)); $blocsta++)	{
-					$this->_pagebody($pdf, $agf, 1, $outputlangs,$blocsta);
+				foreach ($agf->line as $line)	{
+					$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
 				}
 			}
 
@@ -182,9 +184,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 *      \param      object          	Object invoice
 	 *      \param      showaddress     	0=no, 1=yes
 	 *      \param      outputlangs		Object lang for output
-	 *      \param      $blocsta		Number of stagiaire bloc to display
+	 *      \param      $line			Trainee object
 	 */
-	function _pagebody(&$pdf, $agf, $showaddress=1, $outputlangs, $blocsta=0)
+	function _pagebody(&$pdf, $agf, $showaddress=1, $outputlangs, $line)
 	{
 		global $user,$langs,$conf, $mysoc;
 
@@ -429,18 +431,16 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		/***** Bloc stagiaire *****/
 
-		$resql = $agf->fetch_stagiaire_per_session($agf->id);
+		//$resql = $agf->fetch_stagiaire_per_session($agf->id);
 
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres15');
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres26');
 		$pdf->Cell(0,4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 		$posY+= 4;
 
-		$cadre_tableau=array($posX -2 , $posY );
-
-		$larg_col1 = 40;
-		$larg_col2 = 40;
+		$larg_col1 = 30;
+		$larg_col2 = 30;
 		$larg_col3 = 50;
 		$larg_col4 = 112;
 		$haut_col2 = 0;
@@ -449,104 +449,78 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$haut_cadre = 0;
 
 		// Entête
-		// Cadre
-		$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne +8);
-		// Nom
+		
+		// Date
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
-		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),R,2,"C",0);
-		// Société
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres24');
+		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
+		// Horarie
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres17');
-		$pdf->Cell($larg_col2, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres25');
+		$pdf->Cell($larg_col2, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
+		
+		//Trainee
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
+		$this->str = $this->str = $line->nom.' '.$line->prenom.' - '.dol_trunc($line->socname, 27);
+		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),TR,2,"C",0);
+		
+		$posY= $pdf->GetY();
+		
 		// Signature
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
-		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),LR,2,"C",0);
-
+		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),R,2,"C",0);
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY+ 3);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres19');
-		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),LR,2,"C",0);
-		$posY += $h_ligne;
+		$pdf->Cell(0, 7, $outputlangs->convToOutputCharset($this->str),BR,2,"C",0);
+		$posY= $pdf->GetY();
+		
+		
 
+		// ligne
+		$h_ligne = 9;
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+		
 		// Date
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($agf->id);
-		$largeur_date = 18;
-		for ($y = 0; $y < 6; $y++)	{
+		foreach ($agf_date->line as $linedate)	{
 			// Jour
-			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( 20 * $y), $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
-			if ($agf_date->line[$y]->date_session) {
-				$date = dol_print_date($agf_date->line[$y]->date_session,'daytextshort');
+			if ($linedate->date_session) {
+				$date = dol_print_date($linedate->date_session,'daytextshort');
 			}
 			else {
 				$date = '';
 			}
 			$this->str = $date;
-			if ($last_day == $agf_date->line[$y]->date_session)    {
-				$same_day += 1;
-				$pdf->SetFillColor(255,255,255);
-			}
-			else {
-				$same_day = 0;
-			}
-			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ( $largeur_date * $y) - ( $largeur_date * ($same_day)), $posY);
-			$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",$same_day);
-				
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
+		
 			// horaires
-			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY + 4);
-			if ($agf_date->line[$y]->heured && $agf_date->line[$y]->heuref)	{
-				$this->str =  dol_print_date($agf_date->line[$y]->heured,'hour').' - '.dol_print_date($agf_date->line[$y]->heuref,'hour');
+			if ($linedate->heured && $linedate->heuref)	{
+				$this->str =  dol_print_date($linedate->heured,'hour').' - '.dol_print_date($linedate->heuref,'hour');
 			}
 			else {
 				$this->str = '';
 			}
+			$pdf->SetXY($posX+$larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-			$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
-
-			$last_day = $agf_date->line[$y]->date_session;
+			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
+			
+			// Cadre pour signature
+			$pdf->Rect($posX+$larg_col1+$larg_col2, $posY, 128, $h_ligne);
+			
+			$posY= $pdf->GetY();
 		}
 		$posY += 8;
 
-		// ligne
-		$h_ligne = 7;
-		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-
-		$nbsta=count($agf->line);
-		if (intval($blocsta+10)<$nbsta){
-			$limitsta=intval($blocsta+10);
-		}else{
-			$limitsta=$nbsta;
-		}
-
-		for ($y = intval($blocsta*10); $y <= $limitsta+15; $y++)
-		{
-			// Cadre
-			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
-
-			// Nom
-			$pdf->SetXY($posX, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = $agf->line[$y]->nom.' '.$agf->line[$y]->prenom;
-			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),R,2,"L",0);
-
-			// Société
-			$pdf->SetXY($posX + $larg_col1, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = dol_trunc($agf->line[$y]->socname, 27);
-			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
-
-			for ($i = 0; $i < 5; $i++)
-			{
-				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
-			}
-			$posY += $h_ligne;
-		}
 		
 		// Incrustation image tampon
 		if($conf->global->AGF_INFO_TAMPON)

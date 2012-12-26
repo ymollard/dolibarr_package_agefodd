@@ -36,10 +36,9 @@ class pdf_demo extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
-	// gris clair
-	protected $color1 = array('190','190','190');
-	// marron/orangé
-	protected $color2 = array('203', '70', '25');
+	protected $colorfooter;
+	protected $colortext;
+	protected $colorhead;
 
 	/**
 	 *	\brief		Constructor
@@ -71,6 +70,10 @@ class pdf_demo extends ModelePDFAgefodd
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 
+		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
+		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
+		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -126,8 +129,7 @@ class pdf_demo extends ModelePDFAgefodd
 				
 			$pdf->Open();
 			$pagenb=0;
-				
-			$pdf->SetDrawColor(128,128,128);
+
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
 			$pdf->SetCreator("Dolibarr ".DOL_VERSION.' (Agefodd module)');
@@ -150,7 +152,7 @@ class pdf_demo extends ModelePDFAgefodd
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
-				$pdf->SetTextColor(0,0,0);
+				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
@@ -182,10 +184,8 @@ class pdf_demo extends ModelePDFAgefodd
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 
-				$posX += $this->page_largeur - $this->marge_droite - 50;
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 				$pdf->SetXY($posX, $posY -1);
 				$pdf->Cell(0, 5, $mysoc->name,0,0,'L');
 
@@ -194,21 +194,17 @@ class pdf_demo extends ModelePDFAgefodd
 				$this->str = $mysoc->address."\n";
 				$this->str.= $mysoc->zip.' '.$mysoc->town;
 				$this->str.= ' - '.$mysoc->country."\n";
-				$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
-				if($mysoc->fax) {
-					$this->str.= ' '.$outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";
-				}else {
-					$this->str.= "\n";
-				}
-				$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";
-				$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";
+				if ($mysoc->phone) {$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";}
+				if ($mysoc->fax) {$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";}
+				if ($mysoc->email) {$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";}
+				if ($mysoc->url) {$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";}
 				
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$posY += $hauteur + 2;
 
-				$pdf->SetDrawColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 				// Mise en page de la baseline
@@ -222,10 +218,8 @@ class pdf_demo extends ModelePDFAgefodd
 				$baseline_x = 8;
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
-				$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
 				$pdf->SetXY($baseline_x, $baseline_y);
-				//print
-				//$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
+
 
 
 				/*
@@ -237,14 +231,14 @@ class pdf_demo extends ModelePDFAgefodd
 
 				/***** Titre *****/
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',15);
-				$pdf->SetTextColor($this->color2[0], $this->color2[1], $this->color2[2]);
+				$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities('AgfPDFDemoTitle');
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 10;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
-				$pdf->SetTextColor(0,0,0);
+				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$this->str = $agf->formintitule;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 
@@ -328,7 +322,7 @@ class pdf_demo extends ModelePDFAgefodd
 
 		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
-		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
+		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 

@@ -26,7 +26,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/lib/PHP Markdown 1.0.1o/markdown.php');
+dol_include_once('/agefodd/includes/PHP Markdown 1.0.1/markdown.php');
 
 // Translations
 $langs->load("agefodd@agefodd");

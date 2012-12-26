@@ -37,9 +37,9 @@ class pdf_attestation extends ModelePDFAgefodd
 	var $emetteur;	// Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
-	protected $color1 = array('190','190','190');	// gris clair
-	protected $color2 = array('19', '19', '19');	// Gris très foncé
-	protected $color3;
+	protected $colorfooter;
+	protected $colortext;
+	protected $colorhead;
 
 
 	/**
@@ -69,9 +69,11 @@ class pdf_attestation extends ModelePDFAgefodd
 		$this->oriantation='l';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
-
-		$this->color3 = agf_hex2rgb($conf->global->AGF_PDF_COLOR);
-
+		
+		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
+		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
+		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -126,7 +128,6 @@ class pdf_attestation extends ModelePDFAgefodd
 				$pdf->setPrintFooter(false);
 			}
 
-			$pdf->SetDrawColor(128,128,128);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
 			$pdf->SetCreator("Dolibarr ".DOL_VERSION.' (Agefodd module)');
@@ -159,10 +160,9 @@ class pdf_attestation extends ModelePDFAgefodd
 					$this->_pagehead($pdf, $agf, 1, $outputlangs);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 9);
 					$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
-					$pdf->SetTextColor(0,0,0);
 
 					// On met en place le cadre
-					$pdf->SetDrawColor($this->color3[0], $this->color3[1], $this->color3[2]);
+					$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 					$ep_line1 = 1;
 					$pdf->SetLineWidth($ep_line1);
 					// Haut
@@ -208,13 +208,14 @@ class pdf_attestation extends ModelePDFAgefodd
 
 					$newY = $this->marge_haute + 30;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$pdf->SetTextColor(76,76,76);
+					$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 20);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('AgfPDFAttestation1'), 0, 0,'C', 0);
-					$pdf->SetTextColor('','','');
+					
 
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
+					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
 					$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2')." " .ucfirst(strtolower($agf2->line[$i]->civilitel)).' ';
 					$this->width1 = $pdf->GetStringWidth($this->str1);
@@ -242,7 +243,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
-
+					
 					$this->str = $outputlangs->transnoentities('AgfPDFAttestation4')." ";
 					if ($agf->dated == $agf->datef) $this->str.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
 					else $this->str.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);
@@ -321,12 +322,6 @@ class pdf_attestation extends ModelePDFAgefodd
 					$baseline_x = $this->page_largeur - $this->marge-gauche - 12;
 					$baseline_y = $baseline_ecart + 30;
 					$baseline_width = $this->width;
-					$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
-
-					//print
-					//$pdf->Cell($baseline_width,0,$this->str,0,2,"L",0);
-
-
 				}
 			}
 			$pdf->Close();
@@ -380,7 +375,7 @@ class pdf_attestation extends ModelePDFAgefodd
 		
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
-		$pdf->SetTextColor($this->color1[0], $this->color1[1], $this->color1[2]);
+		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->Cell(0, 6, $outputlangs->transnoentities($this->str),0, 0, 'C', 0);
 	}
 }

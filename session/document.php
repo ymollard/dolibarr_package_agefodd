@@ -291,6 +291,8 @@ if (!empty($id))
 		// Pendant la formation
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
 		document_line($langs->trans("AgfFichePresence"), 2, "fiche_presence");
+		document_line($langs->trans("AgfFichePresenceEmpty"), 2, "fiche_presence_empty");
+		document_line($langs->trans("AgfFichePresenceTrainee"), 2, "fiche_presence_trainee");
 		document_line($langs->trans("AgfFicheEval"), 2, "fiche_evaluation");
 
 		print '</table>'."\n";
@@ -315,8 +317,8 @@ if (!empty($id))
 				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
 				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->line[$i]->socid);
 				document_line($langs->trans("AgfCourrierConv"), 2, "courrier", $agf->line[$i]->socid,'convention');
-				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');
-
+				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');				
+				
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
 				document_line($langs->trans("AdfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);

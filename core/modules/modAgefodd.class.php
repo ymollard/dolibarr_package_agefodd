@@ -86,7 +86,7 @@ class modAgefodd extends DolibarrModules
 		$this->module_parts = array('triggers' => 1);
 
 		// Dependencies
-		$this->depends = array();		// List of modules id that must be enabled if this module is enabled
+		$this->depends = array('modSociete', 'modPropale', 'modCommande', 'modComptabilite', 'modFacture', 'modBanque', 'modFournisseur', 'modService', 'modAgenda');		// List of modules id that must be enabled if this module is enabled
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->phpmin = array(4,3);					// Minimum version of PHP required by module
 		$this->need_dolibarr_version = array(3,2);	// Minimum version of Dolibarr required by module
@@ -232,14 +232,6 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Number of element in the list';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-
-		$r++;
-		$this->const[$r][0] = "AGF_PDF_COLOR";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = 'cb4619';
-		$this->const[$r][3] = 'Base color for PDF';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
 		
 		$r++;
 		$this->const[$r][0] = "AGF_USE_FAC_WITHOUT_ORDER";
@@ -257,6 +249,30 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
+		$r++;
+		$this->const[$r][0] = "AGF_TEXT_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '000000';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_HEAD_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'CB4619';
+		$this->const[$r][3] = 'Text color header in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_FOOT_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'BEBEBE';
+		$this->const[$r][3] = 'Text color of PDF footer, in hexadccimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = (object) array();

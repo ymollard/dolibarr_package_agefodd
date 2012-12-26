@@ -38,7 +38,7 @@ dol_include_once('/core/lib/company.lib.php');
 
 
 
-class pdf_fiche_presence extends ModelePDFAgefodd
+class pdf_fiche_presence_empty extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 
@@ -51,13 +51,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function pdf_fiche_presence($db)
+	function __construct($db)
 	{
 		global $conf,$langs,$mysoc;
 
 
 		$this->db = $db;
-		$this->name = "fiche_presence";
+		$this->name = "fiche_presence_empty";
 		$this->description = $langs->trans('AgfModPDFFichePres');
 
 		// Dimension page pour format A4 en paysage
@@ -429,7 +429,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		/***** Bloc stagiaire *****/
 
-		$resql = $agf->fetch_stagiaire_per_session($agf->id);
+		//$resql = $agf->fetch_stagiaire_per_session($agf->id);
 
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
@@ -474,42 +474,19 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$posY += $h_ligne;
 
 		// Date
-		$agf_date = new Agefodd_sesscalendar($this->db);
-		$resql = $agf_date->fetch_all($agf->id);
+		$this->str ='';
 		$largeur_date = 18;
 		for ($y = 0; $y < 6; $y++)	{
 			// Jour
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( 20 * $y), $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
-			if ($agf_date->line[$y]->date_session) {
-				$date = dol_print_date($agf_date->line[$y]->date_session,'daytextshort');
-			}
-			else {
-				$date = '';
-			}
-			$this->str = $date;
-			if ($last_day == $agf_date->line[$y]->date_session)    {
-				$same_day += 1;
-				$pdf->SetFillColor(255,255,255);
-			}
-			else {
-				$same_day = 0;
-			}
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ( $largeur_date * $y) - ( $largeur_date * ($same_day)), $posY);
 			$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",$same_day);
 				
 			// horaires
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY + 4);
-			if ($agf_date->line[$y]->heured && $agf_date->line[$y]->heuref)	{
-				$this->str =  dol_print_date($agf_date->line[$y]->heured,'hour').' - '.dol_print_date($agf_date->line[$y]->heuref,'hour');
-			}
-			else {
-				$this->str = '';
-			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 			$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
-
-			$last_day = $agf_date->line[$y]->date_session;
 		}
 		$posY += 8;
 
@@ -532,13 +509,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = $agf->line[$y]->nom.' '.$agf->line[$y]->prenom;
 			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),R,2,"L",0);
 
 			// Société
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = dol_trunc($agf->line[$y]->socname, 27);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
 
 			for ($i = 0; $i < 5; $i++)

@@ -6,7 +6,7 @@ Quick Start
 1) Install Agefodd
 2) What's new ?
 3) What Agefodd is made for ?
-4) Wish list of Agefodd features (todo)
+4) Contact
 
 
 I - INSTALL AGEFODD
@@ -81,11 +81,9 @@ IV - WHAT AGEFODD CAN DO ?
 - documents automatic generation,
 - instant display of trainings statistics .
 
-
-V - WISH LIST OF AGEFODD FEATURES (TODO)
-------------------------------------------------------
-
-Wishlist of Agefodd features:
-- Multi training centers management.
-- Long duration trainings' support.
-- Make the break, Agefodd can not cook cofee ( like Dolibarr  too).
+VI - Contact
+-----------------------
+Web site Agefodd project : 
+	https://doliforge.org/projects/agefodd/
+	
+For question, contact me : florian.henry@open-concept.pro
