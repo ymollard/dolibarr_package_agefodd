@@ -19,7 +19,7 @@
 
 
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_fiche_presence.modules.php
+ \file		agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_landscape.modules.php
  \brief		Page permettant la création de la fiche de présence d'une format donnée au format pdf
 \version	$Id$
 */
@@ -38,7 +38,7 @@ dol_include_once('/core/lib/company.lib.php');
 
 
 
-class pdf_fiche_presence extends ModelePDFAgefodd
+class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 {
 	var $emetteur;	// Objet societe qui emet
 
@@ -51,7 +51,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 *	\brief		Constructor
 	 *	\param		db		Database handler
 	 */
-	function pdf_fiche_presence($db)
+	function pdf_fiche_presence_landscape($db)
 	{
 		global $conf,$langs,$mysoc;
 
@@ -63,15 +63,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
 		$formatarray=pdf_getFormat();
-		$this->page_largeur = $formatarray['width']; // use standard but reverse width and height to get Landscape format
-		$this->page_hauteur = $formatarray['height']; // use standard but reverse width and height to get Landscape format
+		$this->page_largeur = $formatarray['height']; // use standard but reverse width and height to get Landscape format
+		$this->page_hauteur = $formatarray['width']; // use standard but reverse width and height to get Landscape format
 		$this->format = array($this->page_largeur,$this->page_hauteur);
-		$this->marge_gauche=10;
-		$this->marge_droite=10;
+		$this->marge_gauche=15;
+		$this->marge_droite=15;
 		$this->marge_haute=10;
 		$this->marge_basse=10;
 		$this->unit='mm';
-		$this->oriantation='P';
+		$this->oriantation='l';// use Landscape format
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
@@ -323,8 +323,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$posY+= 2;
 
 		$larg_col1 = 20;
-		$larg_col2 = 90;
-		$larg_col3 = 30;
+		$larg_col2 = 130;
+		$larg_col3 = 35;
 		$larg_col4 = 82;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
@@ -368,8 +368,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->str = $agf_place->ref_interne."\n". $agf_place->adresse."\n".$agf_place->cp." ".$agf_place->ville;
 		$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
-		$posY += $hauteur+5;
-		$haut_col4 += $hauteur +7;
+		$posY += $hauteur;
+		$haut_col4 += $hauteur + 2;
+		
 
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
@@ -388,9 +389,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$h_ligne = 6;
 
 		$larg_col1 = 10;
-		$larg_col2 = 29;
+		$larg_col2 = 70;
 		$larg_col3 = 120;
-		$larg_col4 = 60;
+		$larg_col4 = 62;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
 
@@ -402,7 +403,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);
+			$this->str = "Nom :";
+			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
+				
+			$pdf->SetXY($posX + $larg_col1, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			//$this->str = $agf->teachername;
+			$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);;
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
@@ -439,8 +446,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		$cadre_tableau=array($posX -2 , $posY );
 
-		$larg_col1 = 40;
-		$larg_col2 = 40;
+			
+	
+		$larg_col1 = 50;
+		$larg_col2 = 45;
 		$larg_col3 = 50;
 		$larg_col4 = 112;
 		$haut_col2 = 0;
@@ -476,8 +485,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Date
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($agf->id);
-		$largeur_date = 18;
-		for ($y = 0; $y < 6; $y++)	{
+		//count($agf_date->line)
+		$largeur_date = 17;
+		for ($y = 0; $y < 10; $y++)	{
 			// Jour
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( 20 * $y), $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
@@ -491,12 +501,14 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			if ($last_day == $agf_date->line[$y]->date_session)    {
 				$same_day += 1;
 				$pdf->SetFillColor(255,255,255);
+				$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ( $largeur_date * $y) - ( $largeur_date * ($same_day)), $posY);
+				$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",1);
 			}
 			else {
 				$same_day = 0;
+				$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY);
+				$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
 			}
-			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ( $largeur_date * $y) - ( $largeur_date * ($same_day)), $posY);
-			$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",$same_day);
 				
 			// horaires
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY + 4);
@@ -524,7 +536,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$limitsta=$nbsta;
 		}
 
-		for ($y = intval($blocsta*10); $y <= $limitsta+15; $y++)
+			
+		for ($y = intval($blocsta*10); $y <= $limitsta; $y++)
 		{
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
@@ -541,7 +554,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->str = dol_trunc($agf->line[$y]->socname, 27);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
 
-			for ($i = 0; $i < 5; $i++)
+							
+			for ($i = 0; $i < 10; $i++)
 			{
 				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 			}
@@ -559,7 +573,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Cachet et signature
 		$posY += 2;
-		$posX -=2;
 		$pdf->SetXY($posX, $posY);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres20');
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);

@@ -593,3 +593,4 @@ AgfPDFFootColor=Couleur des pieds de pages des éditions
 Settings=Paramétrage du module Agefodd
 AgfFichePresenceEmpty=Fiche de présence vide
 AgfFichePresenceTrainee=Fiche de présence par participants
+AgfFichePresenceTraineeLandscape = Fiche de présence (format paysage)

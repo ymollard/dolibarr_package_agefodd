@@ -19,9 +19,8 @@
 
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
- \brief		Page permettant la création du fichier pdf contenant les attestations de formation de
-l'ensemble des stagiaires d'une structure pour une session donnée.
+ \file		agefodd/core/modules/agefodd/pdf/pdf_convocation.modules.php
+ \brief		Page permettant la création du fichier pdf convocation.
 \version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');

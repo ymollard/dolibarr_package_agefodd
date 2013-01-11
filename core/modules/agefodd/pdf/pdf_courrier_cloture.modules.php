@@ -18,7 +18,7 @@
 */
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \file		agefodd/core/modules/agefodd/pdf/pdf_acceuil_cloture.module.php
  \brief		Contenu du fichier pdf "courrier accompagnant l'envoi du dossier de clotûre"
 \version	$Id$
 */

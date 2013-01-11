@@ -18,7 +18,7 @@
 */
 
 /**
- \file		pdf_acceuil_courrier.module.php
+ \file		agefodd/core/modules/agefodd/pdf/pdf_acceuil_courrier.module.php
  \brief		Contenu du fichier pdf "courrier accompagnant l'envoi du dossier d'accueil"
 \version	$Id$
 */

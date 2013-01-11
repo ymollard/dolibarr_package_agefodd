@@ -293,6 +293,7 @@ if (!empty($id))
 		document_line($langs->trans("AgfFichePresence"), 2, "fiche_presence");
 		document_line($langs->trans("AgfFichePresenceEmpty"), 2, "fiche_presence_empty");
 		document_line($langs->trans("AgfFichePresenceTrainee"), 2, "fiche_presence_trainee");
+		document_line($langs->trans("AgfFichePresenceTraineeLandscape"), 2, "fiche_presence_landscape");
 		document_line($langs->trans("AgfFicheEval"), 2, "fiche_evaluation");
 
 		print '</table>'."\n";

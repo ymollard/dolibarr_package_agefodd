@@ -19,7 +19,7 @@
 
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \file		agefodd/core/modules/agefodd/pdf/pdf_convention.modules.php
  \brief		Page permettant la création de la convention de formation au format pdf pour uen structure donnée.
 \version	$Id$
 */

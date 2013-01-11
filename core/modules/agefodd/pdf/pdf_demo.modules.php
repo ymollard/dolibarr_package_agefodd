@@ -19,7 +19,7 @@
 
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \file		agefodd/core/modules/agefodd/pdf/pdf_demo.modules.php
  \brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
 \version	$Id$
 */

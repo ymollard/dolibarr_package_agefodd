@@ -265,3 +265,5 @@ For Dev :
 	
 ***** ChangeLog for 2.0.23 compared to 2.0.22 *****
 For All :
+	- Add Timecard in landscpe format
+	- Fix bug 677,678,679,680

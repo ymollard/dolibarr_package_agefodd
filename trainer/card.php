@@ -224,7 +224,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$exclude_array = array();
 	foreach($agf_static->line as $line)
 	{
-		$exclude_array[]=$line->fk_user;
+		if ((!empty($line->fk_user)) && (!in_array($line->fk_user,$exclude_array))){
+			$exclude_array[]=$line->fk_user;
+		}
 	}
 	$form->select_users('','fk_user',1,$exclude_array);
 	print '</td></tr>';

@@ -71,6 +71,7 @@ class Agefodd extends CommonObject
 		if (isset($this->but)) $this->but = $this->db->escape(trim($this->but));
 		if (isset($this->note1)) $this->note1 = $this->db->escape(trim($this->note1));
 		if (isset($this->note2)) $this->note2 = $this->db->escape(trim($this->note2));
+		if (isset($this->note2)) $this->programme = $this->db->escape(trim($this->programme));
 		
 		if (empty($this->duree)) $this->duree = 0;
 

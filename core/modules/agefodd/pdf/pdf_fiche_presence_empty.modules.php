@@ -19,7 +19,7 @@
 
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
+ \file		agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_empty.modules.php
  \brief		Page permettant la création de la fiche de présence d'une format donnée au format pdf
 \version	$Id$
 */

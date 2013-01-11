@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   fk_soc int NULL,
   fk_formation_catalogue integer NOT NULL,
   fk_session_place integer NOT NULL,
+  type_session integer NULL,
   nb_place int NULL,
   nb_stagiaire int NULL,
   force_nb_stagiaire int NULL,

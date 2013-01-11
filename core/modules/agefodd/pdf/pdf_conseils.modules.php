@@ -19,8 +19,8 @@
 
 
 /**
- \file		$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/s_liste.php $
- \brief		Page permettant la création de la fiche pedagogique d'une formation au format pdf
+ \file		agefodd/core/modules/agefodd/pdf/pdf_conseils.modules.php
+ \brief		Page permettant la création du fichier pdf conseils
 \version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
