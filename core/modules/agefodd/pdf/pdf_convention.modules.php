@@ -607,11 +607,11 @@ class pdf_convention extends ModelePDFAgefodd
 				$literal = array('un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze');
 				// Date
 
-				$date = $outputlangs->transnoentities('AgfPDFConv19').' '.dol_print_date(dol_now(),'daytext');
+				$date = $outputlangs->transnoentities('AgfPDFConv19').' '.dol_print_date(dol_now(),'daytext').' ';
 
-				$this->str = $outputlangs->transnoentities('AgfPDFConv20').' '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.$outputlangs->transnoentities('AgfPDFConv21');
+				$this->str = $outputlangs->transnoentities('AgfPDFConv20').' '.$conf->global->MAIN_INFO_SOCIETE_VILLE.', '.$date.$outputlangs->transnoentities('AgfPDFConv21').' ';
 				$nombre = $pdf->PageNo(); 	// page suivante = annexe1
-				$this->str.= $outputlangs->transnoentities('AgfPDFConv22')." ".$nombre." (".$literal[$nombre-1].") ".$outputlangs->transnoentities('AgfPDFConv23');
+				$this->str.= $outputlangs->transnoentities('AgfPDFConv22')." ".$nombre." (".$literal[$nombre-1].") ".$outputlangs->transnoentities('AgfPDFConv23').' ';
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
