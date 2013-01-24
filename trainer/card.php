@@ -28,6 +28,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
 dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
 
@@ -161,6 +162,7 @@ $title = ($action == 'create' ? $langs->trans("AgfFormateurAdd") : $langs->trans
 llxHeader('',$title);
 
 $form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
 dol_htmloutput_mesg($mesg);
 /*
@@ -189,7 +191,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	{
 		$exclude_array[]=$line->fk_socpeople;
 	}
-	$form->select_contacts(0,'','spid',1,$exclude_array);
+	print $formAgefodd->select_contacts_combobox(0,'','spid',1,$exclude_array);
 	print '</td></tr>';
 
 	print '</table>';

@@ -718,7 +718,7 @@ class FormAgefodd extends Form
 		if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
 		$sql.= " ORDER BY sp.name ASC";
 	
-		dol_syslog(get_class($this)."::select_contacts sql=".$sql);
+		dol_syslog(get_class($this)."::select_contacts_combobox sql=".$sql);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
