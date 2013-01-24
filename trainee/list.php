@@ -32,6 +32,8 @@ dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 
+$langs->load('agefodd@agefodd');
+
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 

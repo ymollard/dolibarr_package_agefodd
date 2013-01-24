@@ -580,7 +580,7 @@ class Agsession extends CommonObject
 		$sql.= " sa.nom, sa.prenom,";
 		$sql.= " civ.code as civilite, civ.civilite as civilitel,";
 		$sql.= " so.nom as socname, so.rowid as socid,";
-		$sql.= " st.rowid as typeid, st.intitule as type";
+		$sql.= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
@@ -590,6 +590,8 @@ class Agsession extends CommonObject
 		$sql.= " ON civ.code = sa.civilite";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON so.rowid = sa.fk_soc";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sope";
+		$sql.= " ON sope.rowid = sa.fk_socpeople";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_type as st";
 		$sql.= " ON st.rowid = ss.fk_agefodd_stagiaire_type";
 		$sql.= " WHERE s.rowid = ".$id;
@@ -621,6 +623,11 @@ class Agsession extends CommonObject
 				$line->socid = $obj->socid;
 				$line->typeid = $obj->typeid;
 				$line->type = $obj->type;
+				if (empty($obj->stamail)) {
+					$line->email = $obj->socpemail;
+				} else {
+					$line->email = $obj->mail;
+				}
 				
 				$this->line[$i]=$line;
 				
@@ -2311,6 +2318,7 @@ class AgfTraineeLine
 	var $socid;
 	var $typeid;
 	var $type;
+	var $email;
 
 	function __construct()
 	{
@@ -2369,6 +2377,7 @@ class AgfSessionLine
 	var $nb_stagiaire;
 	var $force_nb_stagiaire;
 	var $notes;
+	
 	
 	function __construct()
 	{

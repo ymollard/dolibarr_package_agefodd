@@ -195,6 +195,11 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 	print '</div>'."\n";
+	
+	// Print session card
+	$agf->printSessionInfo();
+	
+	print '&nbsp';
 
 	print '<table class="border" width="100%">'."\n";
 
@@ -275,6 +280,11 @@ if (!empty($id))
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 		print '</div>'."\n";
+		
+		// Print session card
+		$agf->printSessionInfo();
+		
+		print '&nbsp';
 
 		print '<table class="border" width="100%">'."\n";
 

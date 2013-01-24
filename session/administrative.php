@@ -419,7 +419,7 @@ if ($user->rights->agefodd->creer)
 					else
 					{
 						$txtalt=$langs->trans("AgfTerminatedPoint");
-						$src_state=dol_buildpath('/agefodd/img/done.png',1);
+						$src_state=dol_buildpath('/agefodd/img/ok.png',1);
 					}
 						
 					print '<td align="center" valign="top"><a href="'.$_SERVER['PHP_SELF'].'?action=update_archive&id='.$id.'&actid='.$line->id.'"><img alt="'.$txtalt.'" src="'.$src_state.'"/></a></td>';

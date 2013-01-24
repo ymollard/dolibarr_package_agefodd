@@ -265,5 +265,11 @@ For Dev :
 	
 ***** ChangeLog for 2.0.23 compared to 2.0.22 *****
 For All :
-	- Add Timecard in landscpe format
-	- Fix bug 677,678,679,680
+	- Add Timecard in landscape format
+	- Fix bug 677,678,679,680,682
+	- Task tasks_agefodd #688 done - 	Add litte session header in Session->document tabs
+	- Add Convocation send document behaviours
+	- Fix translation in Send documents screen 
+	- tasks_agefodd #687 - Send convocation 
+For Dev :
+	- Update licence version from GPL v2 to GPL v3

@@ -490,6 +490,7 @@ class pdf_convention extends ModelePDFAgefodd
 					$hauteur=$posY;
 					$pdf->writeHTMLCell($w[0], 4, $posX, $posY,$outputlangs->transnoentities($agf_comdetails->line[$i]->description));
 					$posY = $pdf->GetY();
+					$posYlast = $posY;
 					$hauteur=($hauteur-$posY);
 					$pdf->SetXY( $posX + $w[0], $posY);
 					$pdf->Cell($w[1],$hauteur,vatrate($agf_comdetails->line[$i]->tva_tx,1),0,0,'C',$fill);
@@ -543,7 +544,8 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 3);
 				$this->str = $outputlangs->transnoentities('AgfPDFConv7').' '.++$art." - ".$outputlangs->transnoentities('AgfPDFConv15');
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
-				$posY += $this->hApresTitreArticle;
+				
+				$posY = $pdf->GetY() + $this->hApresTitreArticle;
 
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
