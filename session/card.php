@@ -313,7 +313,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 		//From template
 		$idtemplate=GETPOST('fromtemplate','int');
-		if ($idtemplate!=-1) {
+		if (($idtemplate!=-1) && (!empty($idtemplate))) {
 			$tmpl_calendar = new Agefoddcalendrier($db);
 			$result=$tmpl_calendar->fetch($idtemplate);
 			$tmpldate = dol_mktime(0,0,0,GETPOST('datetmplmonth','int'),GETPOST('datetmplday','int'),GETPOST('datetmplyear','int'));
