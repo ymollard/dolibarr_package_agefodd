@@ -722,7 +722,9 @@ if (!empty($id))
 				$agf_trainnee=new Agsession($db);
 				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
 				foreach($agf_trainnee->line as $line) {
-					$withto[$line->stagerowid] 			= $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMenuActStagiaire').')';
+					if (!empty($line->email)) {
+						$withto[$line->stagerowid] 			= $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMenuActStagiaire').')';
+					}
 				}
 			
 				// Contact commanditaire
