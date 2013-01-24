@@ -244,12 +244,16 @@ class Agefodd_session_admlevel extends CommonObject
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				$this->line[$i]->rowid = $obj->rowid;
-				$this->line[$i]->level_rank = $obj->level_rank;
-				$this->line[$i]->fk_parent_level = $obj->fk_parent_level;
-				$this->line[$i]->indice = $obj->indice;
-				$this->line[$i]->intitule = $obj->intitule;
-				$this->line[$i]->alerte = $obj->delais_alerte;
+				$line=new AgfSessionAdmlvlLine();
+				
+				$line->rowid = $obj->rowid;
+				$line->level_rank = $obj->level_rank;
+				$line->fk_parent_level = $obj->fk_parent_level;
+				$line->indice = $obj->indice;
+				$line->intitule = $obj->intitule;
+				$line->alerte = $obj->delais_alerte;
+				
+				$this->line[$i]=$line;
 				$i++;
 			}
 			$this->db->free($resql);
@@ -618,4 +622,21 @@ class Agefodd_session_admlevel extends CommonObject
 
 	}
 }
-?>
+
+/**
+ *	line Class
+ */
+class AgfSessionAdmlvlLine
+{
+	var $rowid;
+	var $level_rank ;
+	var $fk_parent_level;
+	var $indice;
+	var $intitule;
+	var $alerte;
+
+	function __construct()
+	{
+		return 1;
+	}
+}

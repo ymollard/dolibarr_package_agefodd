@@ -42,11 +42,29 @@ if (!$user->admin) accessforbidden();
 
 $action = GETPOST('action','alpha');
 
-if ($action == 'updateMask')
+if ($action == 'updateMaskType')
 {
 	$masktype=GETPOST('value');
 
 	if ($masktype)  $res = dolibarr_set_const($db,'AGF_ADDON',$masktype,'chaine',0,'',$conf->entity);
+
+	if (! $res > 0) $error++;
+
+	if (! $error)
+	{
+		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+	}
+	else
+	{
+		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+	}
+}
+
+if ($action == 'updateMask')
+{
+	$mask=GETPOST('maskagefodd');
+
+	if ($mask)  $res = dolibarr_set_const($db,'AGF_UNIVERSAL_MASK',$mask,'chaine',0,'',$conf->entity);
 
 	if (! $res > 0) $error++;
 
@@ -514,7 +532,7 @@ foreach ($dirmodels as $reldir)
 						}
 						else
 						{
-							print '<a href="'.$_SERVER["PHP_SELF"].'?action=updateMask&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
+							print '<a href="'.$_SERVER["PHP_SELF"].'?action=updateMaskType&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
 						}
 						print '</td>';
 

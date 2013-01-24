@@ -51,7 +51,7 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 		$texte.= '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		$texte.= '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 		$texte.= '<input type="hidden" name="action" value="updateMask">';
-		$texte.= '<input type="hidden" name="maskconstproject" value="AGF_UNIVERSAL_MASK">';
+		$texte.= '<input type="hidden" name="maskconstagefodd" value="AGF_UNIVERSAL_MASK">';
 		$texte.= '<table class="nobordernopadding" width="100%">';
 
 		$tooltip=$langs->trans("GenericMaskCodes",$langs->transnoentities("AgfTraining"),$langs->transnoentities("AgfTraining"));
@@ -62,7 +62,7 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 
 		// Parametrage du prefix
 		$texte.= '<tr><td>'.$langs->trans("Mask").':</td>';
-		$texte.= '<td align="right">'.$form->textwithpicto('<input type="text" class="flat" size="24" name="maskproject" value="'.$conf->global->AGF_UNIVERSAL_MASK.'">',$tooltip,1,1).'</td>';
+		$texte.= '<td align="right">'.$form->textwithpicto('<input type="text" class="flat" size="24" name="maskagefodd" value="'.$conf->global->AGF_UNIVERSAL_MASK.'">',$tooltip,1,1).'</td>';
 
 		$texte.= '<td align="left" rowspan="2">&nbsp; <input type="submit" class="button" value="'.$langs->trans("Modify").'" name="Button"></td>';
 
@@ -117,8 +117,7 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 			return 0;
 		}
 
-		$date=empty($agf->date_c)?dol_now():$agf->date_c;
-		$numFinal=get_next_value($db,$mask,'agefodd_formation_catalogue','ref','',$objsoc->code_client,$date);
+		$numFinal=get_next_value($db,$mask,'agefodd_formation_catalogue','ref','',$objsoc->code_client,dol_now());
 
 		return  $numFinal;
 	}
@@ -131,7 +130,7 @@ class mod_agefodd_universal extends ModeleNumRefAgefodd
 	 *  @param  Project		$project	Object project
 	 *  @return string      			Next not used reference
 	 */
-	function project_get_num($objsoc=0,$agf='')
+	function agefodd_get_num($objsoc=0,$agf='')
 	{
 		return $this->getNextValue($objsoc,$agf);
 	}
