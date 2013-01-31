@@ -273,3 +273,7 @@ For All :
 	- tasks_agefodd #687 - Send convocation 
 For Dev :
 	- Update licence version from GPL v2 to GPL v3
+	
+	***** ChangeLog for 2.0.24 compared to 2.0.23 *****
+For All :
+	- Fix logo size and localization on PDF

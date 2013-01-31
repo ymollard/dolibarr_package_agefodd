@@ -175,8 +175,7 @@ class pdf_demo extends ModelePDFAgefodd
 						{
 							$widthLogo = $tmp['width'];
 						}
-						$marge_logo =  (($widthLogo*25.4)/300);
-						$pdf->Image($logo, $this->marge_gauche + $marge_logo, $this->marge_haute, 0, $heightLogo);	// width=0 (auto)
+						$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true);	// width=0 (auto)
 					}
 					else
 					{

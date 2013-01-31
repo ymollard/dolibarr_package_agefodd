@@ -999,6 +999,19 @@ print '</td></tr>';
 print '</table>';
 print '</form>';
 
+
+$logo=$conf->mycompany->dir_output.'/logos/'.$mysoc->logo;
+print 'logo:'.$logo;
+$aryy = getimagesize($logo);
+if ($aryy!==false) {
+foreach ($aryy as $key => $val) {
+	
+		echo "<br />$key:$val\n";
+	
+}
+}else {print 'caca';}
+
+
 $db->close();
 
 llxFooter('$Date: 2010-03-21 21:28:31 +0100 (dim. 21 mars 2010) $ - $Revision: 46 $');
