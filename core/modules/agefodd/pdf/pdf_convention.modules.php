@@ -485,18 +485,17 @@ class pdf_convention extends ModelePDFAgefodd
 				{
 					$pdf->SetXY($posX, $posY);
 					$hauteur=$posY;
-					$pdf->writeHTMLCell($w[0], 4, $posX, $posY,$outputlangs->transnoentities($agf_comdetails->line[$i]->description));
+					$pdf->writeHTMLCell($w[0], 4, $posX, $posY,$outputlangs->transnoentities($agf_comdetails->line[$i]->description),0,1);
 					$posY = $pdf->GetY();
-					$posYlast = $posY;
-					$hauteur=($hauteur-$posY);
-					$pdf->SetXY( $posX + $w[0], $posY);
+					$hauteur=($hauteur-$posy);
+					$pdf->SetXY( $posX + $w[0], $posY-$hauteur);
 					$pdf->Cell($w[1],$hauteur,vatrate($agf_comdetails->line[$i]->tva_tx,1),0,0,'C',$fill);
 					$pdf->Cell($w[2],$hauteur,price($agf_comdetails->line[$i]->price),0,0,'R',$fill);
 					$pdf->Cell($w[3],$hauteur,$agf_comdetails->line[$i]->qty,0,0,'C',$fill);
 					$pdf->Cell($w[4],$hauteur,price($agf_comdetails->line[$i]->total_ht),0,0,'R',$fill);
 					$pdf->Cell($w[5],$hauteur,price($agf_comdetails->line[$i]->total_ttc),0,0,'R',$fill);
 
-					$pdf->SetXY( $posX, $posY);
+					$pdf->SetXY( $posX, $posy);
 					$pdf->Cell($w[0],$hauteur,'','LRT',0,'R',$fill);
 					$pdf->Cell($w[1],$hauteur,'','LRT',0,'R',$fill);
 					$pdf->Cell($w[2],$hauteur,'','LRT',0,'R',$fill);
