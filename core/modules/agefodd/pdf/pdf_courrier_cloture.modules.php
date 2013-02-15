@@ -74,7 +74,7 @@ $num = count($agf_stag->line);
 $this->str.= "\n";
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture4')."\n";
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str));
+$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,'L');
 $posY += 36;
 
 

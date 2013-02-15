@@ -701,6 +701,8 @@ class FormAgefodd extends Form
 	 *	@param	string	$showfunction   Add function into label
 	 *	@param	string	$moreclass		Add more class to class style
 	 *	@param	bool	$options_only	Return options only (for ajax treatment)
+	 * 	@param	int		$forcecombo		Force to use combo box
+     *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
 	 *	@return	int						<0 if KO, Nb of contact in list if OK
 	 */
 	function select_contacts_combobox($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto='',$showfunction=0, $moreclass='', $options_only=false,$forcecombo=0,$event=array())

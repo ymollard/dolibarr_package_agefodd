@@ -332,7 +332,7 @@ if (!empty($id))
 				
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
-				document_line($langs->trans("AdfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
+				document_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
 
 				$text_fac = $langs->trans("AgfFacture");
 				if($agf->line[$i]->type_session) { // session inter

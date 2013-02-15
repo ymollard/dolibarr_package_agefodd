@@ -580,7 +580,8 @@ class Agsession extends CommonObject
 		$sql.= " sa.nom, sa.prenom,";
 		$sql.= " civ.code as civilite, civ.civilite as civilitel,";
 		$sql.= " so.nom as socname, so.rowid as socid,";
-		$sql.= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail";
+		$sql.= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail,";
+		$sql.= " sa.fk_socpeople";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
@@ -623,6 +624,7 @@ class Agsession extends CommonObject
 				$line->socid = $obj->socid;
 				$line->typeid = $obj->typeid;
 				$line->type = $obj->type;
+				$line->fk_socpeople=$obj->fk_socpeople;
 				if (empty($obj->stamail)) {
 					$line->email = $obj->socpemail;
 				} else {
@@ -1943,7 +1945,9 @@ class Agsession extends CommonObject
 
 		print '<tr><td width="20%">'.$langs->trans("Customer").'</td>';
 		print '	<td>';
-		print $this->getElementUrl($this->fk_soc, 'societe',1);
+		if ((!empty($this->fk_soc)) && ($this->fk_soc > 0)) {
+			print $this->getElementUrl($this->fk_soc, 'societe',1);
+		}
 		print '</td></tr>';
 
 
@@ -2319,6 +2323,7 @@ class AgfTraineeLine
 	var $typeid;
 	var $type;
 	var $email;
+	var $fk_socpeople;
 
 	function __construct()
 	{

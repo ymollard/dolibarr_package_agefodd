@@ -64,7 +64,7 @@ $this->str = $outputlangs->transnoentities('AgfPDFConvocation')."\n";
 $this->str.= $outputlangs->transnoentities('AgfProgramme')."\n";
 $this->str.= $outputlangs->transnoentities('AgfFichePedagogique')."\n";
 $this->str.= $outputlangs->transnoentities('AgfConseilsPratique');
-$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str));
+$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,'L');
 $posY += 36;
 
 

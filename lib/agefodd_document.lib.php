@@ -313,6 +313,18 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 		else print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>'."\n";
 	}
+	elseif ( $mdle == 'accueil')
+	{
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		$filename = 'courrier-accueil_'.$id.'_'.$socid.'.pdf';
+		$file = $conf->agefodd->dir_output . '/' .$filename;
+		if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=presend_accueil&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		}
+		else print $langs->trans('AgfDocNotDefined');
+		print '</td></tr>'."\n";
+	}
 	elseif ( $mdle == 'convocation')
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
@@ -325,7 +337,19 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 		else print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>'."\n";
 	}
-	else
+	elseif ($mdle == 'conseils')
+	{
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		$filename = 'conseils_'.$idform.'.pdf';
+		$file = $conf->agefodd->dir_output . '/' .$filename;
+		if(file_exists($file)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_conseils&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
+		}
+		else print $langs->trans('AgfDocNotDefined');
+		print '</td></tr>'."\n";
+	}
+	elseif ($mdle == 'fiche_pedago')
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
@@ -335,6 +359,13 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_pedago&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
 		}
 		else print $langs->trans('AgfDocNotDefined');
+		print '</td></tr>'."\n";
+	}
+	else
+	{
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		 print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>'."\n";
 	}
 }

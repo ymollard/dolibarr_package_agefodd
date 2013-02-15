@@ -240,7 +240,70 @@ class InterfaceAgefodd
 		
 				$ok=1;
 			}
+		}elseif ($action == 'CONVOCATION_SENTBYMAIL') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		
+		
+			if ($object->actiontypecode == 'AC_AGF_CONVO') {
+		
+				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+				$langs->load("agefodd@agefodd");
+				$langs->load("agenda");
+		
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfConvocationByEmail",$object->ref);
+				if (empty($object->actionmsg))
+				{
+					$object->actionmsg=$langs->transnoentities("AgfConvocationByEmail",$object->ref);
+					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
+				}
+		
+				$ok=1;
+			}
 		}
+		elseif ($action == 'CONSEILS_SENTBYMAIL') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		
+		
+			if ($object->actiontypecode == 'AC_AGF_CONSE') {
+		
+				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+				$langs->load("agefodd@agefodd");
+				$langs->load("agenda");
+		
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfConseilsPratiqueByEmail",$object->ref);
+				if (empty($object->actionmsg))
+				{
+					$object->actionmsg=$langs->transnoentities("AgfConseilsPratiqueByEmail",$object->ref);
+					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
+				}
+		
+				$ok=1;
+			}
+		}
+		elseif ($action == 'ACCUEIL_SENTBYMAIL') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		
+		
+			if ($object->actiontypecode == 'AC_AGF_ACCUE') {
+		
+				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+				$langs->load("agefodd@agefodd");
+				$langs->load("agenda");
+		
+				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfCourrierAcceuilByEmail",$object->ref);
+				if (empty($object->actionmsg))
+				{
+					$object->actionmsg=$langs->transnoentities("AgfCourrierAcceuilByEmail",$object->ref);
+					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
+				}
+		
+				$ok=1;
+			}
+		}
+		
+		
+		
+		
 		
 
 

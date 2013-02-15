@@ -274,7 +274,11 @@ For All :
 For Dev :
 	- Update licence version from GPL v2 to GPL v3
 	
-	***** ChangeLog for 2.0.24 compared to 2.0.23 *****
+***** ChangeLog for 2.0.24 compared to 2.0.23 *****
 For All :
 	- Fix logo size and localization on PDF
 	- Add Dutch language file
+	- Fix Bug 716 (Now in Session->Send docs : only trainee from contact email will be available in list box)
+	- Fix Bug on "courrier" PDF
+	- Add Send Doc "Conseil pratique"
+	- Fix bug in Send Docuemnts screen (document not attached, event not triggred...)
