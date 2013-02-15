@@ -84,6 +84,11 @@ function session_prepare_head($object,$showconv=0)
 	$head[$h][1] = $langs->trans("AgfParticipant");
 	$head[$h][2] = 'subscribers';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfCertificate");
+	$head[$h][2] = 'certificate';
+	$h++;
 
 	$head[$h][0] = dol_buildpath('/agefodd/session/trainer.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfFormateur");
@@ -144,6 +149,11 @@ function trainee_prepare_head($object)
 	$head[$h][0] = dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfCertificate");
+	$head[$h][2] = 'certificate';
 	$h++;
 
 	$head[$h][0] = dol_buildpath('/agefodd/trainee/info.php',1).'?id='.$object->id;

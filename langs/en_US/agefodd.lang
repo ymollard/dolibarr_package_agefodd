@@ -605,3 +605,4 @@ AgfCourrierAccueil=Welcome letter
 AgfSendCourrierAcceuil=Welcome letter of training %s
 AgfSendCourrierAcceuilBody=Hello,\n\nPlease find the Welcome letter for training « %s ».
 AgfCourrierAcceuilByEmail= Welcome letter send by mail
+AgfCertificate=Certificate

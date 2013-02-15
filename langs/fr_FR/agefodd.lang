@@ -619,3 +619,5 @@ AgfCourrierAccueil=Courrier d'accueil
 AgfSendCourrierAcceuil=Courrier d'accueil formation %s
 AgfSendCourrierAcceuilBody=Bonjour,\n\nVeuillez trouver ci-joint le courrier d'accueil relatif à la formation « %s ».
 AgfCourrierAcceuilByEmail= Courrier d'acceuil envoyé par email
+AgfCertificate=Certificat
+AgfModifyCertificate=Modifier les certificats

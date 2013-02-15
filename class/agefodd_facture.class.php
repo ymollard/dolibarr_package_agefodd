@@ -358,6 +358,3 @@ class Agefodd_facture
 	}
 
 }
-
-# $Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $
-?>
