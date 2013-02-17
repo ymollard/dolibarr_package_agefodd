@@ -24,9 +24,6 @@
 * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -38,41 +35,93 @@ dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
-
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $action=GETPOST('action','alpha');
 $id=GETPOST('id','int');
 $confirm=GETPOST('confirm','alpha');
-$stag_update_x=GETPOST('certif_update_x','alpha');
-$stag_add_x=GETPOST('certif_add_x','alpha');
+$certif_save_x=GETPOST('certif_save_x','alpha');
 
 $mesg = '';
+
 if ($action=='edit' && $user->rights->agefodd->creer) {
 
+	$certif_sta_id=GETPOST('modstaid','int');
+	$certif_session_sta_id=GETPOST('sessionstarowid','int');
 
+	$certif_code=GETPOST('certif_code','alpha');
+	$certif_label=GETPOST('certif_label','alpha');
+	$certif_dt_start=dol_mktime(0,0,0,GETPOST('dt_startmonth','int'),GETPOST('dt_startday','int'),GETPOST('dt_startyear','int'));
+	$certif_dt_end=dol_mktime(0,0,0,GETPOST('dt_endmonth','int'),GETPOST('dt_endday','int'),GETPOST('dt_endyear','int'));
+
+	if (!empty($certif_save_x)) {
+		$agf_certif = new Agefodd_stagiaire_certif($db);
+		$result=$agf_certif->fetch(0,$certif_sta_id,$id,$certif_session_sta_id);
+		if ($result<0) {
+			dol_syslog("agefodd:session:subscribers error=".$agf_certif->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+		}else {
+
+			$agf_certif->certif_code=$certif_code;
+			$agf_certif->certif_label=$certif_label;
+			$agf_certif->certif_dt_start=$certif_dt_start;
+			$agf_certif->certif_dt_end=$certif_dt_end;
+
+			//Existing certification
+			if (!empty($agf_certif->id)) {
+				$result=$agf_certif->update($user);
+				if ($result<0) {
+					dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
+					$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+				}else {
+					Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+					exit;
+				}
+			}else {
+				//New cerficiation
+				$agf_certif->fk_session_agefodd=$id;
+				$agf_certif->fk_session_stagiaire=$certif_session_sta_id;
+				$agf_certif->fk_stagiaire=$certif_sta_id;
+
+				$result=$agf_certif->create($user);
+				if ($result<0) {
+					dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
+					$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+				}else {
+					Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+					exit;
+				}
+			}
+		}
+	}
 }
 
 
 /*
- * Actions delete stagiaire
+ * Actions delete certif
 */
 
 if ($action == 'confirm_delete_certif' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
-	
-}
+	$certifrowid = GETPOST('certifrowid','int');
 
-/*
- * Action update info OPCA
-*/
-if ($action == 'update_certif' && $user->rights->agefodd->creer)
-{
-	if (! $_POST["cancel"])
-	{
-		$error=0;
-
+	$agf_certif = new Agefodd_stagiaire_certif($db);
+	$result=$agf_certif->fetch($certifrowid);
+	if ($result<0) {
+		dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
+		$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+	}else {
+		if (!empty($agf_certif->id)) {
+			$result=$agf_certif->delete($user);
+			if ($result<0) {
+				dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
+				$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+			}else {
+				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
+				exit;
+			}
+		}
 	}
 }
 
@@ -97,212 +146,170 @@ if (!empty($id))
 
 	dol_fiche_head($head, 'certificate', $langs->trans("AgfCertificate"), 0, 'group');
 
-	if ($action == 'edit')
+
+
+	/*
+	 * Confirmation de la suppression
+	*/
+	if ($_POST["certif_remove_x"])
 	{
+		// Param url = id de la ligne stagiaire dans session - id session
+		$ret=$form->form_confirm($_SERVER['PHP_SELF']."?certifrowid=".$_POST["certifrowid"].'&id='.$id,$langs->trans("AgfDeleteCertif"),$langs->trans("AgfConfirmDeleteCertif"),"confirm_delete_certif",'','',1);
+		if ($ret == 'html') print '<br>';
+	}
 
-		/*
-		 * Confirmation de la suppression
-		*/
-		if ($_POST["certif_remove_x"])
+	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
+	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
+	print '</div>';
+
+	// Print session card
+	$agf->printSessionInfo();
+
+	print '&nbsp';
+
+	print '<div class="tabBar">'."\n";
+	print '<table class="border" width="100%">';
+
+	/*
+	 *  Bloc d'affichage et de modification des infos sur les stagiaires
+	*
+	*/
+	$stagiaires = new Agsession($db);
+	$stagiaires->fetch_stagiaire_per_session($agf->id);
+	$nbstag = count($stagiaires->line);
+	if ($nbstag > 0)
+	{
+		for ($i=0; $i < $nbstag; $i++)
 		{
-			// Param url = id de la ligne stagiaire dans session - id session
-			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?stagerowid=".$_POST["stagerowid"].'&id='.$id,$langs->trans("AgfDeleteCertif"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_certif",'','',1);
-			if ($ret == 'html') print '<br>';
-		}
+			if ($stagiaires->line[$i]->id == $_POST["modstaid"] && $_POST["certif_remove_x"]  && ($action == 'edit')) print '<tr bgcolor="#d5baa8">'."\n";
+			else print '<tr>'."\n";
 
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>';
+			print '<td width="3%" align="center">'.($i+1).'</td>'."\n";
 
-		// Print session card
-		$agf->printSessionInfo();
+			print '<td width="40%">'."\n";
+			if (strtolower($stagiaires->line[$i]->nom) == "undefined")
+			{
+				print $langs->trans("AgfUndefinedStagiaire");
+			}
+			else
+			{
+				$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
+				$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
+				$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
+				$contact_static= new Contact($db);
+				$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
+				$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
+					
+				print'<label for="'.$htmlname.'" style="width:45%; display: inline-block;margin-left:5px;">'.$trainee_info.'</label>';
+			}
 
-		print '&nbsp';
+				
+			print '</td>'."\n";
+			print '<td>';
+				
+			$agf_certif = new Agefodd_stagiaire_certif($db);
+			$agf_certif->fetch(0,$stagiaires->line[$i]->id,$stagiaires->line[$i]->sessid,$stagiaires->line[$i]->stagerowid);
+				
+			if ($stagiaires->line[$i]->id == $_POST["modstaid"] && ! $_POST["certif_remove_x"] && ($action == 'edit'))
+			{
 
-		print '<div class="tabBar">';
-		print '<table class="border" width="100%">';
-
-		/*
-		 *  Bloc d'affichage et de modification des infos sur les stagiaires
-		*
-		*/
-		$stagiaires = new Agsession($db);
-		$stagiaires->fetch_stagiaire_per_session($agf->id);
-		$nbstag = count($stagiaires->line);
-		if ($nbstag > 0)
-		{
-			for ($i=0; $i < $nbstag; $i++)
-			{				
-				if ($stagiaires->line[$i]->id == $_POST["modcertgid"] && $_POST["certif_remove_x"]) print '<tr bgcolor="#d5baa8">';
-				else print '<tr>';
 				print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-				print '<input type="hidden" name="sessid" value="'.$stagiaires->line[$i]->sessid.'">'."\n";
-				print '<input type="hidden" name="stagerowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-				print '<input type="hidden" name="modcertgid" value="'.$stagiaires->line[$i]->id.'">'."\n";
-				print '<td width="3%" align="center">'.($i+1).'</td>';
-
-				if ($stagiaires->line[$i]->id == $_POST["modcertgid"] && ! $_POST["certif_remove_x"])
-				{
-					print '<td>';
-					$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
-					$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
-					$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-					$contact_static= new Contact($db);
-					$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
-					$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
+				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
+				print '<input type="hidden" name="modstaid" value="'.$stagiaires->line[$i]->id.'">'."\n";
+				print '<table class="nobordernopadding">';
 					
-					print'<label for="'.$htmlname.'" style="width:45%; display: inline-block;margin-left:5px;">'.$trainee_info.'</label>';
+				print '<tr><td>'.$langs->trans('AgfCertifCode').'</td><td><input type="text" size="10" name="certif_code" value="'.$agf_certif->certif_code.'"></td></tr>'."\n";
+				print '<tr><td>'.$langs->trans('AgfCertifLabel').'</td><td><input type="text" size="10" name="certif_label"  value="'.$agf_certif->certif_label.'"></td></tr>'."\n";
+				print '<tr><td>'.$langs->trans('AgfCertifDateSt').'</td><td>';
+				print $form->select_date($agf_certif->certif_dt_start, 'dt_start','','',1,'obj_update_'.$i,1,1);
+				print '</td></tr>'."\n";
+				print '<tr><td>'.$langs->trans('AgfCertifDateEnd').'</td><td>';
+				print $form->select_date($agf_certif->certif_dt_end, 'dt_end','','',1,'obj_update_'.$i,1,1);
+				print '</td></tr>'."\n";
+				print '</table>'."\n";
+				print '</td>';
 
-					$agf_certif = new Agefodd_stagiaire_certif($db);
-					$agf_certif->fetch(0,0,0,$stagiaires->line[$i]->stagerowid);
-					print '</td>';
-					print '<td>';
-					print '<table class="nobordernopadding">';
-					print '<tr><td>'.$langs->trans('AgfCertifCode').':<input type="text" size="10" name="certif_code" value="'.$agf_certif->certif_code.'"></td></tr>';
-					print '<tr><td>'.$langs->trans('AgfCertifLabel').':<input type="text" size="10" name="certif_label"  value="'.$agf_certif->certif_label.'"></td></tr>';
-					print '<tr><td>'.$langs->trans('AgfCertifdebSt').':'.$form->select_date($agf_certif->certif_dt_start, 'dt_start','','',1,'obj_update_'.$i,1,1).'</td></tr>';
-					print '<tr><td>'.$langs->trans('AgfCertifdebEnd').':'.$form->select_date($agf_certif->certif_dt_end, 'dt_end','','',1,'obj_update_'.$i,1,1).'</td></tr>';
-					print '</table>';
-					print '</td>';
-
-					
-					if ($user->rights->agefodd->modifier)
-					{
-						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_update" alt="'.$langs->trans("AgfModSave").'" ">';
-					}
-					print '</td>';
-				}
-				else
+				print '</td>'."\n";
+				print '<td>'."\n";
+				if ($user->rights->agefodd->modifier)
 				{
-					print '<td width="40%">';
-					// info stagiaire
-					if (strtolower($stagiaires->line[$i]->nom) == "undefined")
-					{
-						print $langs->trans("AgfUndefinedStagiaire");
-					}
-					else
-					{
-						$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
-						$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
-						$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-						$contact_static= new Contact($db);
-						$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
-						$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
-
-						print $trainee_info;
-					}
-					print '</td>';
-					print '<td width="30%" style="border-left: 0px;">';
-					// Affichage de l'organisme auquel est rattaché le stagiaire
-					if ($stagiaires->line[$i]->socid)
-					{
-						print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
-						print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
-					}
-					else
-					{
-						print '&nbsp;';
-					}
-					print '</td><td>';
-
-
-					if ($user->rights->agefodd->modifier)
-					{
-						print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="certif_edit" alt="'.$langs->trans("AgfModSave").'">';
-					}
-					print '&nbsp;';
-					if ($user->rights->agefodd->creer)
-					{
-						print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="certif_remove" alt="'.$langs->trans("AgfModSave").'">';
-					}
-					print '</td>'."\n";
+					print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="certif_save" alt="'.$langs->trans("AgfModSave").'" ">';
 				}
-				print '</form>'."\n";
-				print '</tr>'."\n";
+				print '</td>';
+				print '</form>';
+
 			}
-		}
-
-		
-
-		//print '</table>';
-
-		print '</table>';
-		print '</div>';
-	}
-	else {
-		// Affichage en mode "consultation"
-
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>';
-
-		// Print session card
-		$agf->printSessionInfo();
-
-		print '&nbsp';
-
-		/*
-		 * Gestion des stagiaires
-		*/
-
-		print '&nbsp';
-		print '<table class="border" width="100%">';
-
-		$stagiaires = new Agsession($db);
-		$stagiaires->fetch_stagiaire_per_session($agf->id);
-		$nbstag = count($stagiaires->line);
-		print '<tr><td  width="20%" valign="top" ';
-		if ($nbstag < 1)
-		{
-			print '>'.$langs->trans("AgfParticipants").'</td>';
-			print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
-		}
-		else
-		{
-			print ' rowspan='.($nbstag).'>'.$langs->trans("AgfParticipants");
-			if ($nbstag > 1) print ' ('.$nbstag.')';
-			print '</td>';
-
-			for ($i=0; $i < $nbstag; $i++)
+			elseif ($action == 'edit')
 			{
-				print '<td witdth="20px" align="center">'.($i+1).'</td>';
-				print '<td width="400px"style="border-right: 0px;">';
-				// Infos stagiaires
-				if (strtolower($stagiaires->line[$i]->nom) == "undefined")	{
-					print $langs->trans("AgfUndefinedStagiaire");
+				print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
+				print '<input type="hidden" name="modstaid" value="'.$stagiaires->line[$i]->id.'">'."\n";
+				print '<input type="hidden" name="certifrowid" value="'.$agf_certif->id.'">'."\n";
+				if (!empty($agf_certif->id)) {
+					print '<table class="nobordernopadding" width="100%">'."\n";
+	
+					print '<tr class="pair"><td>'.$langs->trans('AgfCertifCode').':</td><td>'.$agf_certif->certif_code.'</td></tr>'."\n";
+					print '<tr class="impair"><td>'.$langs->trans('AgfCertifLabel').':</td><td>'.$agf_certif->certif_label.'</td></tr>'."\n";
+					print '<tr class="pair"><td>'.$langs->trans('AgfCertifDateSt').':</td><td>';
+					print dol_print_date($agf_certif->certif_dt_start,'daytext');
+					print '</td></tr>'."\n";
+					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateEnd').':</td><td>';
+					print dol_print_date($agf_certif->certif_dt_end,'daytext');
+					print '</td></tr>'."\n";
+						
+					print '</table>'."\n";
 				}
 				else {
-					$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
-					$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
-					$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
-					$contact_static= new Contact($db);
-					$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
-					$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
+					print $langs->trans('AgfNoCertif');
+				}
 
-					print $trainee_info;
+				print '</td>'."\n";
+				print '<td>';
+				if ($user->rights->agefodd->modifier)
+				{
+					print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="certif_edit" alt="'.$langs->trans("AgfModSave").'">';
+				}
+				print '&nbsp;';
+				if ($user->rights->agefodd->creer)
+				{
+					print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="certif_remove" alt="'.$langs->trans("AgfModSave").'">';
 				}
 				print '</td>';
-				print '<td style="border-left: 0px; border-right: 0px;">';
-				// Infos organisme de rattachement
-				if ($stagiaires->line[$i]->socid) {
-					print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
-					print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
+
+				print '</form>'."\n";
+			}
+			else {
+				if (!empty($agf_certif->id)) {
+					print '<table class="nobordernopadding" width="100%">'."\n";
+	
+					print '<tr class="pair"><td>'.$langs->trans('AgfCertifCode').':</td><td>'.$agf_certif->certif_code.'</td></tr>'."\n";
+					print '<tr class="impair"><td>'.$langs->trans('AgfCertifLabel').':</td><td>'.$agf_certif->certif_label.'</td></tr>'."\n";
+					print '<tr class="pair"><td>'.$langs->trans('AgfCertifDateSt').':</td><td>';
+					print dol_print_date($agf_certif->certif_dt_start,'daytext');
+					print '</td></tr>'."\n";
+					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateEnd').':</td><td>';
+					print dol_print_date($agf_certif->certif_dt_end,'daytext');
+					print '</td></tr>'."\n";
+						
+					print '</table>'."\n";
 				}
 				else {
-					print '&nbsp;';
+					print $langs->trans('AgfNoCertif');
 				}
-				print '</td>';
-				print '<td style="border-left: 0px;">';
-				
-				print '</td>';
-				print "</tr>\n";
+				print '</td>'."\n";
 			}
+			print '</tr>'."\n";
 		}
-		print "</table>";
-		print '</div>';
+
 	}
+
 }
+
+print '</table>';
+print '</div>';
+
 
 /*
  * Barre d'actions
@@ -326,5 +333,5 @@ if ($action != 'edit' && (!empty($agf->id)))
 
 print '</div>';
 
-llxFooter('');
-?>
+$db->close();
+llxFooter();

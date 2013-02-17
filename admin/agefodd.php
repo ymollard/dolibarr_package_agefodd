@@ -109,6 +109,10 @@ if ($action == 'setvar')
 	$use_typestag=GETPOST('AGF_USE_STAGIAIRE_TYPE','int');
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
+	
+	$use_managecertif=GETPOST('AGF_MANAGE_CERTIF','int');
+	$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif,'yesno',0,'',$conf->entity);
+	if (! $res > 0) $error++;
 
 	$def_typestag=GETPOST('AGF_DEFAULT_STAGIAIRE_TYPE','int');
 	if (!empty($def_typestag))
@@ -842,12 +846,16 @@ if (! $conf->use_javascript_ajax)
 	print '<td nowrap="nowrap" align="right" colspan="2">';
 	print $langs->trans("NotAvailableWhenAjaxDisabled");
 	print '</td>';
+	print '<td align="center">';
+	print '</td>';
 }
 else
 {
 	print '<td align="left">';
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
+	print '</td>';
+	print '<td align="center">';
 	print '</td>';
 }
 
@@ -873,7 +881,17 @@ print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'h
 print '</td>';
 print '</tr>';
 
-print '<tr class="pair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
+// Mise a jour de la variable AGF_MANAGE_CERTIF
+print '<tr class="pair"><td>'.$langs->trans("AgfManageCertification").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_MANAGE_CERTIF",$arrval,$conf->global->AGF_MANAGE_CERTIF);
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
 print '</tr>';
 
 print '</table><br>';

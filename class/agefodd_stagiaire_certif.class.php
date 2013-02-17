@@ -109,8 +109,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
         
 		$sql.= " ".$conf->entity.",";
 		$sql.= " '".$user->id."',";
+		$sql.= " '".$user->id."',";
 		$sql.= "'".$this->db->idate(dol_now())."',";
-		$sql.= " '".$user->id."'";
 		$sql.= " ".(! isset($this->fk_stagiaire)?'NULL':"'".$this->fk_stagiaire."'").",";
 		$sql.= " ".(! isset($this->fk_session_agefodd)?'NULL':"'".$this->fk_session_agefodd."'").",";
 		$sql.= " ".(! isset($this->fk_session_stagiaire)?'NULL':"'".$this->fk_session_stagiaire."'").",";
@@ -197,12 +197,22 @@ class Agefodd_stagiaire_certif  extends CommonObject
         $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
         if (!empty($id)) {
         	$sql.= " WHERE t.rowid = ".$id;
-        }elseif (!empty($id_trainee)) {
-        	$sql.= " WHERE t.fk_stagiaire = ".$id_trainee;
-        }elseif (!empty($id_session)) {
-        	$sql.= " WHERE t.fk_session_agefodd = ".$id_session;
-        }elseif (!empty($id_sess_trainee)) {
-        	$sql.= " WHERE t.fk_session_stagiaire = ".$id_sess_trainee;
+        }else {
+        	$sqlwhere = array();
+
+        	if (!empty($id_trainee)) {
+        		$sqlwhere[]= "  t.fk_stagiaire = ".$id_trainee;
+        	}
+       		if (!empty($id_session)) {
+        		$sqlwhere[]= " t.fk_session_agefodd = ".$id_session;
+       		}
+       		if (!empty($id_sess_trainee)) {
+        		$sqlwhere[]= " t.fk_session_stagiaire = ".$id_sess_trainee;
+       		}
+
+       		if (count($sqlwhere>0)) {
+       			$sql.= " WHERE ".implode(' AND ',$sqlwhere);
+       		}
         }
         
 
