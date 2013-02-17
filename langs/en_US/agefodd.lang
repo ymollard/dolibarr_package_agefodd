@@ -614,3 +614,5 @@ AgfDeleteCertif=Delete certification
 AgfConfirmDeleteCertif=Do you confrim the certificate deletion ?
 AgfNoCertif = No exiting cerfication
 AgfManageCertification=Manage certification
+AgfStagiaireDetailCertificate=Certificate
+AgfIndexCertif=Certificate expirate in 1 month

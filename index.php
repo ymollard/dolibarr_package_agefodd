@@ -99,7 +99,7 @@ for ($i=0; $i < $num; $i++)
 	print '<a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$agf->line[$i]->id.'">';
 	print img_object($langs->trans("AgfShowDetails"),"generic").' '.$agf->line[$i]->id.'</a></td>';
 	print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">';
-	$ilya = (num_between_day($db->jdate($agf->line[$i]->datef), dol_now(),0));
+	$ilya = (num_between_day($agf->line[$i]->datef, dol_now(),0));
 	print "il y a ".$ilya." j.";
 	print '</td></tr>';
 }
@@ -192,9 +192,43 @@ else
 	//dol_print_error($db);
 }
 
+print '</table>';
+
+print '&nbsp;';
+
+if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+	// tableau de bord travail
+	print '<table class="noborder" width="500px" align="left">';
+	print '<tr class="liste_titre"><th>'.$langs->trans("AgfIndexCertif").' </th></tr>';
+	
+	//List de stagaire concerné
+	$result = $agf->fetch_certif_expire();
+	if ($result && (count($agf->lines)>0)) {
+		
+		$style='impair';
+		foreach($agf->lines as $line) {
+			if ($style=='pair') {$style='impair';}
+			else {$style='pair';}			
+			
+			print '<tr class="'.$style.'"><td>';
+			print '<a href="'.dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$line->trainee_id.'">'.$line->trainee_name.' '.$line->trainee_firstname.'</a>';
+			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$line->id_session.'">'.$line->fromintitule.'</a>';
+			print '&nbsp;-&nbsp;'.dol_print_date($line->certif_dt_end,'daytext');
+			print '</td></tr>';
+			
+		}
+	}
+	else
+	{
+		print '<tr class="pair"><td>'.$langs->trans('AgfNoCertif').'</td></tr>';
+	}
+	
+	print '</table>';
+}
+
 // fin colonne droite
 print '</td></tr></table>';
-$db->close();
 
-llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
-?>
+
+$db->close();
+llxFooter();

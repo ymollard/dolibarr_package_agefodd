@@ -51,6 +51,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 	var $certif_label;
 	var $certif_dt_start='';
 	var $certif_dt_end='';
+	
+	var $lines;
 
 
     /**
@@ -262,7 +264,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
      *  @param	int $offset    	offset limit
      *  @return int          	<0 if KO, >0 if OK
      */
-    function fetch_all($sortorder, $sortfield, $limit, $offset)
+    function fetch_all_by_trainee($idtrainee)
     {
     	global $langs;
     
@@ -284,14 +286,15 @@ class Agefodd_stagiaire_certif  extends CommonObject
     	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
     	
     	$sql.= " WHERE t.entity IN (".getEntity('agsession').")";
+    	$sql.= " AND t.fk_stagiaire='".$idtrainee."'";
     
-    	$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+    	$sql.= " ORDER BY t.datec desc";
     
     	dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
     	$resql=$this->db->query($sql);
     	if ($resql)
     	{
-    		$this->line = array();
+    		$this->lines = array();
     		$num = $this->db->num_rows($resql);
     
     		$i = 0;
@@ -316,7 +319,85 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
 				
-				$this->line[$i]=$line;
+				$this->lines[$i]=$line;
+    
+    			$i++;
+    		}
+    		$this->db->free($resql);
+    		return $num;
+    	}
+    	else
+    	{
+    		$this->error="Error ".$this->db->lasterror();
+    		dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
+    		return -1;
+    	}
+    }
+    
+    /**
+     *  Load object in memory from database
+     *
+     *  @param	string $sortorder    Sort Order
+     *  @param	string $sortfield    Sort field
+     *  @param	int $limit    	offset limit
+     *  @param	int $offset    	offset limit
+     *  @return int          	<0 if KO, >0 if OK
+     */
+    function fetch_all($sortorder, $sortfield, $limit, $offset)
+    {
+    	global $langs;
+    
+    	$sql = "SELECT";
+    	$sql.= " t.rowid,";
+    
+    	$sql.= " t.entity,";
+    	$sql.= " t.fk_user_author,";
+    	$sql.= " t.fk_user_mod,";
+    	$sql.= " t.datec,";
+    	$sql.= " t.tms,";
+    	$sql.= " t.fk_stagiaire,";
+    	$sql.= " t.fk_session_agefodd,";
+    	$sql.= " t.fk_session_stagiaire,";
+    	$sql.= " t.certif_code,";
+    	$sql.= " t.certif_label,";
+    	$sql.= " t.certif_dt_start,";
+    	$sql.= " t.certif_dt_end";
+    	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
+    	 
+    	$sql.= " WHERE t.entity IN (".getEntity('agsession').")";
+    
+    	$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+    
+    	dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
+    	$resql=$this->db->query($sql);
+    	if ($resql)
+    	{
+    		$this->line = array();
+    		$num = $this->db->num_rows($resql);
+    
+    		$i = 0;
+    		while( $i < $num)
+    		{
+    			$obj = $this->db->fetch_object($resql);
+    			 
+    			$line = new AgfStagiaireCertifLine();
+    
+    			$line->id    = $obj->rowid;
+    
+    			$line->entity = $obj->entity;
+    			$line->fk_user_author = $obj->fk_user_author;
+    			$line->fk_user_mod = $obj->fk_user_mod;
+    			$line->datec = $this->db->jdate($obj->datec);
+    			$line->tms = $this->db->jdate($obj->tms);
+    			$line->fk_stagiaire = $obj->fk_stagiaire;
+    			$line->fk_session_agefodd = $obj->fk_session_agefodd;
+    			$line->fk_session_stagiaire = $obj->fk_session_stagiaire;
+    			$line->certif_code = $obj->certif_code;
+    			$line->certif_label = $obj->certif_label;
+    			$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
+    			$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+    
+    			$this->line[$i]=$line;
     
     			$i++;
     		}
