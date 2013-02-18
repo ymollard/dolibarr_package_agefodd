@@ -284,3 +284,7 @@ For All :
 	- Fix bug in Send Documents screen (document not attached, event not triggred...)
 	- Add ComboBox select in New trainer card
 	- Add behaviours "Certification" (task #616)
+	
+***** ChangeLog for 2.0.25 compared to 2.0.24 *****
+For All :
+	- Fix bugs_agefodd #721
