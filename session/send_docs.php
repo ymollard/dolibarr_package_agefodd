@@ -621,6 +621,8 @@ if (!empty($id))
 				$formmail->param['models']='convention';
 				$formmail->param['pre_action']='presend_convention';
 
+				$withto= array();
+				
 				// Convention peut être envoyé à l'opca ou au commanditaire
 				if (!empty($agf->fk_socpeople_OPCA)) {
 					$contactstatic = new Contact($db);
@@ -655,6 +657,8 @@ if (!empty($id))
 			}
 			elseif ($action == 'presend_attestation') {
 
+				$withto= array();
+				
 				$formmail->withtopic=$langs->trans('AgfSendAttestation','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AgfSendAttestationBody','__FORMINTITULE__');
 				$formmail->param['models']='attestation';
@@ -721,6 +725,7 @@ if (!empty($id))
 			}
 			elseif($action == "presend_cloture")
 			{
+				$withto= array();
 				
 				$formmail->withtopic=$langs->trans('AgfSendDossierCloture','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AgfSendDossierClotureBody','__FORMINTITULE__');
@@ -777,13 +782,15 @@ if (!empty($id))
 				}
 				$formmail->withtofree=1;
 			}
-			elseif($action == "presend_convocation")
-			{
+			elseif($action == "presend_convocation") {
+				
 				$formmail->withtopic=$langs->trans('AgfSendConvocation','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AgfSendConvocationBody','__FORMINTITULE__');
 				$formmail->param['models']='convocation';
 				$formmail->param['pre_action']='presend_convocation';
 			
+				$withto= array();
+				
 				// Envoi de fichier libre
 				$formmail->withfile=2;
 			
@@ -833,8 +840,10 @@ if (!empty($id))
 				}
 				$formmail->withtofree=1;
 			}
-			elseif($action == "presend_conseils")
-			{
+			elseif($action == "presend_conseils") {
+				
+				$withto= array();
+				
 				$formmail->withtopic=$langs->trans('AgfSendConseil','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AgfSendConseilBody','__FORMINTITULE__');
 				$formmail->param['models']='conseils';
@@ -849,7 +858,7 @@ if (!empty($id))
 				foreach($agf_trainnee->line as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
-							$withto[$line->fk_socpeople] 			= $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMailTypeContactTrainee').')';
+							$withto[$line->fk_socpeople] = $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMailTypeContactTrainee').')';
 						}
 					}
 				}
@@ -866,8 +875,10 @@ if (!empty($id))
 				}
 				$formmail->withtofree=1;
 			}
-			elseif($action == "presend_accueil")
-			{
+			elseif($action == "presend_accueil") {
+				
+				$withto= array();
+				
 				$formmail->withtopic=$langs->trans('AgfSendCourrierAcceuil','__FORMINTITULE__');
 				$formmail->withbody=$langs->trans('AgfSendCourrierAcceuilBody','__FORMINTITULE__');
 				$formmail->param['models']='courrier-accueil';
