@@ -19,4 +19,4 @@
 --
 -- Contraintes pour la table llx_agefodd_formation_catalogue
 
-ALTER TABLE llx_agefodd_facture ADD UNIQUE ref_form_cat (ref);
+ALTER TABLE llx_agefodd_formation_catalogue ADD UNIQUE ref_form_cat (ref);

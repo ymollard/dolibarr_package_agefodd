@@ -27,12 +27,12 @@ INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, ind
 
 DELETE FROM llx_c_actioncomm WHERE code LIKE 'AC_AGF%';
 
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030001, 'AC_AGF_SESS', 'agefodd', 'Link to Training', 'agefodd', 1, NULL, 10);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030002, 'AC_AGF_CONVE', 'agefodd', 'Send Convention by mail', 'agefodd', 1, NULL, 20);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030003, 'AC_AGF_CONVO', 'agefodd', 'Send Convocation by mail', 'agefodd', 1, NULL, 30);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030004, 'AC_AGF_PEDAG', 'agefodd', 'Send Fiche pédagogique by mail', 'agefodd', 1, NULL, 40);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030005, 'AC_AGF_PRES', 'agefodd', 'Send Fiche présence by mail', 'agefodd', 1, NULL, 50);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030006, 'AC_AGF_ATTES', 'agefodd', 'Send attestation by mail', 'agefodd', 1, NULL, 60);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030007, 'AC_AGF_CLOT', 'agefodd', 'Send dossier cloture by mail', 'agefodd', 1, NULL, 70);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030008, 'AC_AGF_CONSE', 'agefodd', 'Send Advise document by mail', 'agefodd', 1, NULL, 80);
-INSERT INTO llx_c_actioncomm (`id`, `code`, `type`, `libelle`, `module`, `active`, `todo`, `position`) VALUES (1030009, 'AC_AGF_ACCUE', 'agefodd', 'Send welcome document by mail', 'agefodd', 1, NULL, 90);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030001, 'AC_AGF_SESS', 'agefodd', 'Link to Training', 'agefodd', 1, NULL, 10);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030002, 'AC_AGF_CONVE', 'agefodd', 'Send Convention by mail', 'agefodd', 1, NULL, 20);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030003, 'AC_AGF_CONVO', 'agefodd', 'Send Convocation by mail', 'agefodd', 1, NULL, 30);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030004, 'AC_AGF_PEDAG', 'agefodd', 'Send Fiche pédagogique by mail', 'agefodd', 1, NULL, 40);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030005, 'AC_AGF_PRES', 'agefodd', 'Send Fiche présence by mail', 'agefodd', 1, NULL, 50);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030006, 'AC_AGF_ATTES', 'agefodd', 'Send attestation by mail', 'agefodd', 1, NULL, 60);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030007, 'AC_AGF_CLOT', 'agefodd', 'Send dossier cloture by mail', 'agefodd', 1, NULL, 70);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030008, 'AC_AGF_CONSE', 'agefodd', 'Send Advise document by mail', 'agefodd', 1, NULL, 80);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030009, 'AC_AGF_ACCUE', 'agefodd', 'Send welcome document by mail', 'agefodd', 1, NULL, 90);
