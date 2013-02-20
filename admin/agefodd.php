@@ -696,6 +696,17 @@ print $form->textwithpicto('',$langs->trans("AgfUseFacWhithoutOrderHelp"),1,'hel
 print '</td>';
 print '</tr>';
 
+//Utilisation du contact agefodd ou dolibarr a la creation de la session
+print '<tr class="impair"><td>'.$langs->trans("AgfUseSessionDolContact").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_CONTACT_DOL_SESSION",$arrval,$conf->global->AGF_CONTACT_DOL_SESSION);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseSessionDolContactHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
 //Utilisation d'un type de stagaire
 print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';
 print '<td align="left">';
@@ -704,17 +715,6 @@ print $form->selectarray("AGF_USE_STAGIAIRE_TYPE",$arrval,$conf->global->AGF_USE
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseStagTypeHelp"),1,'help');
-print '</td>';
-print '</tr>';
-
-//Utilisation du contact agefodd ou dolibarr a la creation de la session
-print '<tr class="pair"><td>'.$langs->trans("AgfUseSessionDolContact").'</td>';
-print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_CONTACT_DOL_SESSION",$arrval,$conf->global->AGF_CONTACT_DOL_SESSION);
-print '</td>';
-print '<td align="center">';
-print $form->textwithpicto('',$langs->trans("AgfUseSessionDolContactHelp"),1,'help');
 print '</td>';
 print '</tr>';
 

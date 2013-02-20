@@ -163,6 +163,9 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
+		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
+			$agf->sourcecontactid = $agf->contactid;
+		}		
 		$agf->notes = GETPOST('notes','alpha');
 
 		$agf->cost_trainer = GETPOST('costtrainer','alpha');
@@ -639,7 +642,10 @@ else
 
 				// Affichage en mode "édition"
 				if ($action == 'edit')
-				{
+				{		
+					
+					$newperiod=GETPOST('newperiod','int');
+					
 					print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 					print '<input type="hidden" name="action" value="update">';
@@ -669,25 +675,26 @@ else
 							$("#colorpicker").ColorPicker({
 							color: \'#'.$agf->color.'\',
 								onShow: function (colpkr) {
-								$(colpkr).fadeIn(500);
-								return false;
-				},
+									$(colpkr).fadeIn(500);
+									return false;
+								},
 								onHide: function (colpkr) {
-								$(colpkr).fadeOut(500);
-								return false;
-				},
+									$(colpkr).fadeOut(500);
+									return false;
+								},
 								onChange: function (hsb, hex, rgb) {
-								$("#colorpicker").css("backgroundColor", \'#\' + hex);
-				},
+									$("#colorpicker").css("backgroundColor", \'#\' + hex);
+									$("#colorpicker").val(hex);
+								},
 								onSubmit: function (hsb, hex, rgb) {
-								$("#colorpicker").val(hex);
-				}
-				});
-				})
+									$("#colorpicker").val(hex);
+								}
+							});
+						})
 								.bind(\'keyup\', function(){
 								$(this).ColorPickerSetColor(this.value);
-				});
-								</script>';
+						});
+							</script>';
 					print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 					print '<td>';
 					$form->select_users($agf->commercialid, 'commercial',1, array(1));
@@ -717,7 +724,7 @@ else
 					if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 						print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 						print '<td><table class="nobordernopadding"><tr><td>';
-						$form->select_contacts(0,$agf->sourcecontactid,'contact',1,'','',1);
+						$form->select_contacts($agf->fk_soc,$agf->sourcecontactid,'contact',1,'','',1);
 						print '</td>';
 						print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';
 						print '</td></tr>';
@@ -832,7 +839,7 @@ else
 					$calendrier = new Agefodd_sesscalendar($db);
 					$calendrier->fetch_all($agf->id);
 					$blocNumber = count($calendrier->line);
-					if ($blocNumber < 1 && !isset($_POST["newperiod"]))
+					if ($blocNumber < 1 && !(empty($newperiod)))
 					{
 						print '<tr>';
 						print '<td  colpsan=1 style="color:red; text-decoration: blink;">'.$langs->trans("AgfNoCalendar").'</td></tr>';
@@ -903,8 +910,8 @@ else
 					}
 
 					// Champs nouvelle periode
-
-					if (!isset($_POST["newperiod"]))
+					
+					if (!empty($newperiod))
 					{
 						print "</table></div>";
 						//print '&nbsp';

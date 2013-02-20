@@ -1029,11 +1029,13 @@ class Agsession extends CommonObject
 		}
 
 		//Create or update line in session contact table and get line number
-		if ($conf->global->AGF_CONTACT_DOL_SESSION) {
+		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 			$result = $this->setContactSession($this->sourcecontactid,$user);
 		} else {
 			$result = $this->setContactSession($this->contactid,$user);
 		}
+		
+		
 		if ($result <= 0){
 			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}

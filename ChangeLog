@@ -296,3 +296,6 @@ For All :
 	- Change PDF Fiche presence: remove double country displayed in header
 	- Fix bugs_agefodd #660
 	- Fix bugs_agefodd #684
+	- Session : Color picker reflect immediatly the color changes
+For Dev : 
+	- Change colorpicker lib js to avoid js bug (can be seen with firebug) 
