@@ -32,6 +32,8 @@ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
+require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
@@ -331,8 +333,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('but','alpha').'</textarea></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-	print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;">'.GETPOST('programme','alpha').'</textarea></td></tr>';
-
+	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'dolibarr_details', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 	print '</table>';
 	print '</div>';
 
@@ -417,8 +420,12 @@ else
 				print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->but).'</textarea></td></tr>';
 				print '</td></tr>';
 
+				
+				
 				print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-				print '<textarea name="programme" rows="6" cols="7" class="flat" style="width:560px;">'.stripslashes($agf->programme).'</textarea></td></tr>';
+				$doleditor = new DolEditor('programme', $agf->programme, '', 160, 'dolibarr_details', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
+				print "</td></tr>";
 
 				print '</table>';
 				print '</div>';

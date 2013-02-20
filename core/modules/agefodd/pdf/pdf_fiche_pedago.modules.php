@@ -253,12 +253,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$this->str = $agf->intitule;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
-
 				// cadre
 				$pdf->SetFillColor(255);
 				$pdf->Rect($posX, $posY-1, $this->espaceH_dispo, $hauteur+3);
 				// texte
 				$pdf->SetXY( $posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 				$posY+= $hauteur + 10;
 
@@ -350,12 +350,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
-				$this->str =$agf->programme;
-
+				$this->str = $agf->programme;
 				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$pdf->MultiCell(0, 5,$outputlangs->transnoentities($this->str),0,'L');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
+				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
 
+				$pdf->MultiCell(0, 5,$this->str,0,'L','','','','','','',$ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 				/***** Methode pedago *****/
