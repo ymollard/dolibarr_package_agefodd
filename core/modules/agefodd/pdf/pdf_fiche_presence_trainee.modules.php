@@ -255,7 +255,6 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->str = $mysoc->address."\n";
 		$this->str.= $mysoc->zip.' '.$mysoc->town;
 		$this->str.= ' - '.$mysoc->country."\n";
-		$this->str.= ' - '.$mysoc->country."\n";
 		if ($mysoc->phone) {$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";}
 		if ($mysoc->fax) {$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";}
 		if ($mysoc->email) {$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";}

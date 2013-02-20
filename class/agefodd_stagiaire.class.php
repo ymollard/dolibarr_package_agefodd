@@ -90,8 +90,8 @@ class Agefodd_stagiaire extends CommonObject
 
 		// Check parameters
 		// Put here code to add control on parameters value
-		$this->nom = strtoupper($this->nom);
-		$this->prenom = ucfirst(strtolower($this->prenom));
+        $this->nom = mb_strtoupper($this->nom, 'UTF-8');
+        $this->prenom = ucfirst(mb_strtolower($this->prenom, 'UTF-8'));
 
 		if (empty($this->civilite)){
 			$error++;

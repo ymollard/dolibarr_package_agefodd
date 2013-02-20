@@ -293,3 +293,6 @@ For All :
 	
 	***** ChangeLog for 2.0.26 compared to 2.0.25 *****
 For All :
+	- Change PDF Fiche presence: remove double country displayed in header
+	- Fix bugs_agefodd #660
+	- Fix bugs_agefodd #684

@@ -282,30 +282,30 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 
 	if ($result > 0)
 	{
-		$agf = new Agefodd_stagiaire($db);
+		$agf_sta = new Agefodd_stagiaire($db);
 
-		$agf->nom = $contact->name;
-		$agf->prenom = $contact->firstname;
-		$agf->civilite = $contact->civilite_id;
-		$agf->socid = $contact->socid;
-		$agf->fonction = $contact->poste;
-		$agf->tel1 = $contact->phone_pro;
-		$agf->tel2 = $contact->phone_mobile;
-		$agf->mail = $contact->email;
-		$agf->note = $contact->note;
-		$agf->fk_socpeople = $contact->id;
+		$agf_sta->nom = $contact->name;
+		$agf_sta->prenom = $contact->firstname;
+		$agf_sta->civilite = $contact->civilite_id;
+		$agf_sta->socid = $contact->socid;
+		$agf_sta->fonction = $contact->poste;
+		$agf_sta->tel1 = $contact->phone_pro;
+		$agf_sta->tel2 = $contact->phone_mobile;
+		$agf_sta->mail = $contact->email;
+		$agf_sta->note = $contact->note;
+		$agf_sta->fk_socpeople = $contact->id;
 
-		$result2 = $agf->create($user);
+		$result2 = $agf_sta->create($user);
 
 		if ($result2 > 0)
 		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf->id);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$agf_sta->id);
 			exit;
 		}
 		else
 		{
-			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			dol_syslog("agefodd::card error=".$agf_sta->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf_sta->error.'</div>';
 			$action='nfcontact';
 		}
 
@@ -754,6 +754,4 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 print '</div>';
 
 $db->close();
-
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
+llxFooter();
