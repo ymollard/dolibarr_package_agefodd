@@ -297,5 +297,6 @@ For All :
 	- Fix bugs_agefodd #660
 	- Fix bugs_agefodd #684
 	- Session : Color picker reflect immediatly the color changes
+	- WYSIWYG in trainning card (activated by option in configuration)
 For Dev : 
 	- Change colorpicker lib js to avoid js bug (can be seen with firebug) 
