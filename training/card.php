@@ -32,6 +32,8 @@ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 
+require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
@@ -99,13 +101,14 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
-		$agf->public = GETPOST('public','alpha');
-		$agf->methode = GETPOST('methode','alpha');
-		$agf->note1 = GETPOST('note1','alpha');
-		$agf->note2 = GETPOST('note2','alpha');
-		$agf->prerequis = GETPOST('prerequis','alpha');
-		$agf->but = GETPOST('but','alpha');
-		$agf->programme = GETPOST('programme');
+		$agf->public = dol_htmlcleanlastbr(GETPOST('public','alpha'));
+		$agf->methode = dol_htmlcleanlastbr(GETPOST('methode','alpha'));
+		$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1','alpha'));
+		$agf->note2 = dol_htmlcleanlastbr(GETPOST('note2','alpha'));
+		$agf->prerequis = dol_htmlcleanlastbr(GETPOST('prerequis','alpha'));
+		$agf->but = dol_htmlcleanlastbr(GETPOST('but','alpha'));
+		$agf->programme = dol_htmlcleanlastbr(GETPOST('programme'));
+
 		$result = $agf->update($user);
 
 		if ($result > 0)
@@ -313,26 +316,39 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr>';
 	print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
-	print '<textarea name="public" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('public','alpha').'</textarea></td></tr>';
+	$doleditor = new DolEditor('public', GETPOST('public'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
-	print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('methode','alpha').'</textarea></td></tr>';
+	$doleditor = new DolEditor('methode', GETPOST('methode'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
-	print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('note1','alpha').'</textarea></td></tr>';
+	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
-	print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('note2','alpha').'</textarea></td></tr>';
+	$doleditor = new DolEditor('note2', GETPOST('note2'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
-	print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('prerequis','alpha').'</textarea></td></tr>';
+	$doleditor = new DolEditor('prerequis', GETPOST('prerequis'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
-	print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;">'.GETPOST('but','alpha').'</textarea></td></tr>';
+	$doleditor = new DolEditor('but', GETPOST('but'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 
-	print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-	print '<textarea name="programme" rows="6" cols="0" class="flat" style="width:360px;">'.GETPOST('programme','alpha').'</textarea></td></tr>';
-
+	print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td>';
+	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 	print '</table>';
 	print '</div>';
 
@@ -394,31 +410,39 @@ else
 
 				print '<tr>';
 				print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
-				print '<textarea name="public" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->public).'</textarea></td></tr>';
+				$doleditor = new DolEditor('public', $agf->public, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
-				print '<textarea name="methode" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->methode).'</textarea></td></tr>';
+				$doleditor = new DolEditor('methode', $agf->methode, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
-				print '<textarea name="note1" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->note1).'</textarea></td></tr>';
+				$doleditor = new DolEditor('note1', $agf->note1, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
-				print '<textarea name="note2" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->note2).'</textarea></td></tr>';
+				$doleditor = new DolEditor('note2', $agf->note2, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
-				print '<textarea name="prerequis" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->prerequis).'</textarea></td></tr>';
+				$doleditor = new DolEditor('prerequis', $agf->prerequis, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
-				print '<textarea name="but" rows="2" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->but).'</textarea></td></tr>';
+				$doleditor = new DolEditor('but', $agf->but, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-				print '<textarea name="programme" rows="6" cols="7" class="flat" style="width:560px;">'.stripslashes($agf->programme).'</textarea></td></tr>';
+				$doleditor = new DolEditor('programme', $agf->programme, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor->Create();
+				print "</td></tr>";
 
 				print '</table>';
 				print '</div>';
@@ -558,23 +582,51 @@ else
 				print stripslashes(nl2br($agf->public)).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td colspan=2>';
-				print stripslashes(nl2br($agf->methode)).'</td></tr>';
+				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+					print $agf->methode;
+				}
+				else {
+					print stripslashes(nl2br($agf->methode));
+				}
+				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td colspan=2>';
-				print stripslashes(nl2br($agf->note1)).'</td></tr>';
+				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+					print $agf->note1;
+				}
+				else {
+					print stripslashes(nl2br($agf->note1));
+				}
+				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td colspan=2>';
-				print stripslashes(nl2br($agf->note2)).'</td></tr>';
+				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+					print $agf->note2;
+				}
+				else {
+					print stripslashes(nl2br($agf->note2));
+				}
+				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td colspan=2>';
-				if (!empty($agf->prerequis)) $prerequis = nl2br($agf->prerequis);
-				else $prerequis = $langs->trans("AgfUndefinedPrerequis");
+				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+					$prerequis = $agf->prerequis;
+				}
+				else {
+					$prerequis = stripslashes(nl2br($agf->prerequis));
+				}
+				if (empty($agf->prerequis)) $prerequis = $langs->trans("AgfUndefinedPrerequis");
 				print stripslashes($prerequis).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td colspan=2>';
-				if (!empty($agf->but)) $but = nl2br($agf->but);
-				else $but = $langs->trans("AgfUndefinedBut");
-				print stripslashes($but).'</td></tr>';
+				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+					$but = $agf->but;
+				}
+				else {
+					$but = stripslashes(nl2br($agf->but));
+				}
+				if (empty($agf->but)) $but = $langs->trans("AgfUndefinedBut");
+				print $but.'</td></tr>';
 
 				print '<script type="text/javascript">'."\n";
 				print 'function DivStatus( div_){'."\n";
@@ -591,9 +643,14 @@ else
 				print '<tr class="liste_titre"><td valign="top">'.$langs->trans("AgfProgramme").'</td>';
 				print '<td align="left" colspan=2>';
 				print '<a href="javascript:DivStatus(\'prog\');" title="afficher detail" style="font-size:14px;">+</a></td></tr>';
-				if (!empty($agf->programme)) $programme = nl2br($agf->programme);
-				else $programme = $langs->trans("AgfUndefinedProg");
-				print '<tr><td></td><td><div id="prog" style="display:none;">'.stripslashes($programme).'</div></td></tr>';
+				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+					$programme = $agf->programme;
+				}
+				else {
+					$programme = stripslashes(nl2br($agf->programme));
+				}
+				if (empty($agf->programme)) $programme = $langs->trans("AgfUndefinedProg");
+				print '<tr><td></td><td><div id="prog" style="display:none;">'.$programme.'</div></td></tr>';
 
 				print '</table>';
 				print '&nbsp';
