@@ -280,7 +280,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				if (empty($this->str)) $this->str = $outputlangs->transnoentities('AgfUndefinedBut');
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
+				
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 				/***** Objectifs pedagogique de la formation *****/
