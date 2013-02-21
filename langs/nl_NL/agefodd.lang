@@ -596,3 +596,4 @@ AgfNoCertif = Geen certificaten uitgegeven
 AgfManageCertification=Manage certificering
 AgfStagiaireDetailCertificaat=Certificaat
 AgfIndexCertif=Certificaat verlopen binnen 1 maand
+AgfUseWISIWYGTraining = Use WISIWYG on training information

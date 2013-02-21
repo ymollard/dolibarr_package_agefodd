@@ -101,13 +101,23 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
-		$agf->public = dol_htmlcleanlastbr(GETPOST('public','alpha'));
-		$agf->methode = dol_htmlcleanlastbr(GETPOST('methode','alpha'));
-		$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1','alpha'));
-		$agf->note2 = dol_htmlcleanlastbr(GETPOST('note2','alpha'));
-		$agf->prerequis = dol_htmlcleanlastbr(GETPOST('prerequis','alpha'));
-		$agf->but = dol_htmlcleanlastbr(GETPOST('but','alpha'));
-		$agf->programme = dol_htmlcleanlastbr(GETPOST('programme'));
+		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
+			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));
+			$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
+			$agf->note2 = dol_htmlcleanlastbr(GETPOST('note2'));
+			$agf->prerequis = dol_htmlcleanlastbr(GETPOST('prerequis'));
+			$agf->but = dol_htmlcleanlastbr(GETPOST('but'));
+			$agf->programme = dol_htmlcleanlastbr(GETPOST('programme'));
+		} else {
+			$agf->public = GETPOST('public','alpha');
+			$agf->methode = GETPOST('methode','alpha');
+			$agf->note1 = GETPOST('note1','alpha');
+			$agf->note2 = GETPOST('note2','alpha');
+			$agf->prerequis = GETPOST('prerequis','alpha');
+			$agf->but = GETPOST('but','alpha');
+			$agf->programme = GETPOST('programme','alpha');
+		}
 
 		$result = $agf->update($user);
 
@@ -143,14 +153,23 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
-		$agf->duree = GETPOST('duree','int');
-		$agf->public = GETPOST('public','alpha');
-		$agf->methode = GETPOST('methode','alpha');
-		$agf->note1 = GETPOST('note1','alpha');
-		$agf->note2 = GETPOST('note2','alpha');
-		$agf->prerequis = GETPOST('prerequis','alpha');
-		$agf->but = GETPOST('but','alpha');
-		$agf->programme = GETPOST('programme');
+		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
+			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));
+			$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
+			$agf->note2 = dol_htmlcleanlastbr(GETPOST('note2'));
+			$agf->prerequis = dol_htmlcleanlastbr(GETPOST('prerequis'));
+			$agf->but = dol_htmlcleanlastbr(GETPOST('but'));
+			$agf->programme = dol_htmlcleanlastbr(GETPOST('programme'));
+		} else {
+			$agf->public = GETPOST('public','alpha');
+			$agf->methode = GETPOST('methode','alpha');
+			$agf->note1 = GETPOST('note1','alpha');
+			$agf->note2 = GETPOST('note2','alpha');
+			$agf->prerequis = GETPOST('prerequis','alpha');
+			$agf->but = GETPOST('but','alpha');
+			$agf->programme = GETPOST('programme','alpha');
+		}
 		$result = $agf->create($user);
 
 		if ($result > 0)
@@ -316,37 +335,37 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr>';
 	print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
-	$doleditor = new DolEditor('public', GETPOST('public'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('public', GETPOST('public'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
-	$doleditor = new DolEditor('methode', GETPOST('methode'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('methode', GETPOST('methode'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
-	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
-	$doleditor = new DolEditor('note2', GETPOST('note2'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('note2', GETPOST('note2'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
-	$doleditor = new DolEditor('prerequis', GETPOST('prerequis'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('prerequis', GETPOST('prerequis'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
-	$doleditor = new DolEditor('but', GETPOST('but'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('but', GETPOST('but'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td>';
-	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 	print '</table>';
@@ -410,37 +429,37 @@ else
 
 				print '<tr>';
 				print '<td valign="top">'.$langs->trans("AgfPublic").'</td><td>';
-				$doleditor = new DolEditor('public', $agf->public, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('public', $agf->public, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td>';
-				$doleditor = new DolEditor('methode', $agf->methode, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('methode', $agf->methode, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td>';
-				$doleditor = new DolEditor('note1', $agf->note1, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('note1', $agf->note1, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td>';
-				$doleditor = new DolEditor('note2', $agf->note2, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('note2', $agf->note2, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td>';
-				$doleditor = new DolEditor('prerequis', $agf->prerequis, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('prerequis', $agf->prerequis, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td>';
-				$doleditor = new DolEditor('but', $agf->but, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('but', $agf->but, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfProgramme").'</td><td colspan=3>';
-				$doleditor = new DolEditor('programme', $agf->programme, '', 160, 'Basic', '', false, true, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+				$doleditor = new DolEditor('programme', $agf->programme, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print "</td></tr>";
 
@@ -582,7 +601,7 @@ else
 				print stripslashes(nl2br($agf->public)).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfMethode").'</td><td colspan=2>';
-				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+				if(!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					print $agf->methode;
 				}
 				else {
@@ -591,7 +610,7 @@ else
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfDocNeeded").'</td><td colspan=2>';
-				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+				if(!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					print $agf->note1;
 				}
 				else {
@@ -600,7 +619,7 @@ else
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfEquiNeeded").'</td><td colspan=2>';
-				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+				if(!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					print $agf->note2;
 				}
 				else {
@@ -609,7 +628,7 @@ else
 				print '</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfPrerequis").'</td><td colspan=2>';
-				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+				if(!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					$prerequis = $agf->prerequis;
 				}
 				else {
@@ -619,7 +638,7 @@ else
 				print stripslashes($prerequis).'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfBut").'</td><td colspan=2>';
-				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+				if(!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					$but = $agf->but;
 				}
 				else {
@@ -643,7 +662,7 @@ else
 				print '<tr class="liste_titre"><td valign="top">'.$langs->trans("AgfProgramme").'</td>';
 				print '<td align="left" colspan=2>';
 				print '<a href="javascript:DivStatus(\'prog\');" title="afficher detail" style="font-size:14px;">+</a></td></tr>';
-				if($conf->global->FCKEDITOR_ENABLE_SOCIETE) {
+				if(!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					$programme = $agf->programme;
 				}
 				else {
@@ -765,5 +784,5 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 
 print '</div>';
 
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
+$db->close();
+llxFooter();

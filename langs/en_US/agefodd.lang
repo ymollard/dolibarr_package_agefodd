@@ -616,3 +616,4 @@ AgfNoCertif = No exiting cerfication
 AgfManageCertification=Manage certification
 AgfStagiaireDetailCertificate=Certificate
 AgfIndexCertif=Certificate expirate in 1 month
+AgfUseWISIWYGTraining = Use WISIWYG on training information  

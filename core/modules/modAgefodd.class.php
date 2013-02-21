@@ -281,6 +281,15 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
+		$r++;
+		$this->const[$r][0] = "AGF_FCKEDITOR_ENABLE_TRAINING";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Use WISIWYG on training information';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = (object) array();
@@ -838,5 +847,3 @@ class modAgefodd extends DolibarrModules
 		return $ok;
 	}
 }
-
-?>

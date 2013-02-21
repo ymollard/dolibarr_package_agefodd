@@ -540,6 +540,9 @@ dol_htmloutput_mesg($mesg);
 */
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
+	
+	$fk_soc_crea = GETPOST('fk_soc','int');
+	
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
 	print '<form name="add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
@@ -572,16 +575,20 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 		$events=array();
 		$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'contact', 'params' => array('add-customer-contact' => 'disabled'));
-		print $form->select_company(GETPOST('fk_soc','int'),'fk_soc','',1,1,0,$events);
+		print $form->select_company($fk_soc_crea,'fk_soc','',1,1,0,$events);
 	} else {
-		print $form->select_company(GETPOST('fk_soc','int'),'fk_soc','',1,1);
+		print $form->select_company($fk_soc_crea,'fk_soc','',1,1);
 	}
 	print '</td></tr>';
 
 	if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 		print '<td><table class="nobordernopadding"><tr><td>';
-		$form->select_contacts(0,'','contact',1,'','',1);
+		if (!empty($fk_soc_crea)) {
+			$form->select_contacts($fk_soc_crea,'','contact',1,'','',1);
+		} else {
+			$form->select_contacts(0,'','contact',1,'','',1);
+		}
 		print '</td>';
 		print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';
 		print '</td></tr>';
@@ -724,7 +731,11 @@ else
 					if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 						print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 						print '<td><table class="nobordernopadding"><tr><td>';
-						$form->select_contacts($agf->fk_soc,$agf->sourcecontactid,'contact',1,'','',1);
+						if (!empty($agf->fk_soc)) {
+							$form->select_contacts($agf->fk_soc,$agf->sourcecontactid,'contact',1,'','',1);
+						} else {
+							$form->select_contacts(0,$agf->sourcecontactid,'contact',1,'','',1);
+						}
 						print '</td>';
 						print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';
 						print '</td></tr>';

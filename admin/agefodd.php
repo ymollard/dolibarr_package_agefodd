@@ -180,6 +180,10 @@ if ($action == 'setvar')
 	$add_OPCA_link_contact=GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
+	
+	$useWISIYGtraining=GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING','alpha');
+	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
 
 	if ($_FILES["imagesup"]["tmp_name"])
 	{
@@ -886,6 +890,16 @@ print '<tr class="pair"><td>'.$langs->trans("AgfManageCertification").'</td>';
 print '<td align="left">';
 $arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 print $form->selectarray("AGF_MANAGE_CERTIF",$arrval,$conf->global->AGF_MANAGE_CERTIF);
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Mise a jour de la variable AGF_MANAGE_CERTIF
+print '<tr class="impair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
+print '<td align="left">';
+$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+print $form->selectarray("AGF_FCKEDITOR_ENABLE_TRAINING",$arrval,$conf->global->AGF_FCKEDITOR_ENABLE_TRAINING);
 print '</td>';
 print '<td align="center">';
 print '</td>';

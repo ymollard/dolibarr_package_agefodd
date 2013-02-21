@@ -631,3 +631,4 @@ AgfNoCertif = Pas de certification
 AgfManageCertification=Gestion des certificats
 AgfStagiaireDetailCertificate=Certificats participants
 AgfIndexCertif=Certification expirant dans 1 mois
+AgfUseWISIWYGTraining = Utiliser un éditeur WISIWYG pour le catalogue de formation

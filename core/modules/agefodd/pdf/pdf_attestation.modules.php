@@ -257,23 +257,26 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 
-					// Bloc objectifs pedagogiques
 					$newY = $newY + 5;
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 12);
-					$hauteur = 0;
-					for ( $y = 0; $y < count($agf_op->line); $y++)
-					{
-						$newY = $newY + $hauteur;
-						$pdf->SetXY ($this->marge_gauche + 62, $newY);
-						$width = 160;
-						$StringWidth = $pdf->GetStringWidth($agf_op->line[$y]->intitule);
-						if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
-						else $nblines = 1;
-						$hauteur = $nblines * 5;
-						$pdf->Cell(10, 5, $agf_op->line[$y]->priorite.'. ', 0, 0, 'R', 0);
-						$pdf->MultiCell($width,0,
-							$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
-
+					// Bloc objectifs pedagogiques
+					if (count($agf_op->line)>0) {
+						
+						$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 12);
+						$hauteur = 0;
+						for ( $y = 0; $y < count($agf_op->line); $y++)
+						{
+							$newY = $newY + $hauteur;
+							$pdf->SetXY ($this->marge_gauche + 62, $newY);
+							$width = 160;
+							$StringWidth = $pdf->GetStringWidth($agf_op->line[$y]->intitule);
+							if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
+							else $nblines = 1;
+							$hauteur = $nblines * 5;
+							$pdf->Cell(10, 5, $agf_op->line[$y]->priorite.'. ', 0, 0, 'R', 0);
+							$pdf->MultiCell($width,0,
+								$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
+	
+						}
 					}
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
