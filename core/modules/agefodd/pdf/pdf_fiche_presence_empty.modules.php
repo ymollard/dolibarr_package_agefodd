@@ -152,12 +152,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 			if ($result)
 			{
 				$resql = $agf->fetch_stagiaire_per_session($agf->id);
-				$nbsta=count($agf->line);
-
-				//$blocsta=0;
-				for ($blocsta=0; $blocsta <= (intval($nbsta/10)); $blocsta++)	{
-					$this->_pagebody($pdf, $agf, 1, $outputlangs,$blocsta);
-				}
+				$this->_pagebody($pdf, $agf, 1, $outputlangs);
 			}
 
 			$pdf->Close();
@@ -182,9 +177,8 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 	 *      \param      object          	Object invoice
 	 *      \param      showaddress     	0=no, 1=yes
 	 *      \param      outputlangs		Object lang for output
-	 *      \param      $blocsta		Number of stagiaire bloc to display
 	 */
-	function _pagebody(&$pdf, $agf, $showaddress=1, $outputlangs, $blocsta=0)
+	function _pagebody(&$pdf, $agf, $showaddress=1, $outputlangs)
 	{
 		global $user,$langs,$conf, $mysoc;
 
@@ -319,8 +313,8 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 		$posY+= 2;
 
 		$larg_col1 = 20;
-		$larg_col2 = 90;
-		$larg_col3 = 30;
+		$larg_col2 = 80;
+		$larg_col3 = 27;
 		$larg_col4 = 82;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
@@ -490,14 +484,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 		$h_ligne = 7;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 
-		$nbsta=count($agf->line);
-		if (intval($blocsta+10)<$nbsta){
-			$limitsta=intval($blocsta+10);
-		}else{
-			$limitsta=$nbsta;
-		}
-
-		for ($y = intval($blocsta*10); $y <= $limitsta+15; $y++)
+		for ($y = 0; $y <= 17; $y++)
 		{
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
@@ -505,18 +492,18 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),R,2,"L",0);
+			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset(''),R,2,"L",0);
 
 			// Société
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"C",0);
+			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset(''),0,2,"C",0);
 
 			for ($i = 0; $i < 5; $i++)
 			{
 				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 			}
-			$posY += $h_ligne;
+			$posY= $pdf->GetY();
 		}
 		
 		// Incrustation image tampon

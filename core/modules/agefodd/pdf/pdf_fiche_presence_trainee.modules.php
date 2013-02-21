@@ -321,8 +321,8 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$posY+= 2;
 
 		$larg_col1 = 20;
-		$larg_col2 = 90;
-		$larg_col3 = 30;
+		$larg_col2 = 80;
+		$larg_col3 = 27;
 		$larg_col4 = 82;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
@@ -451,7 +451,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres24');
 		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
-		// Horarie
+		// Horaire
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres25');
@@ -476,8 +476,6 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$pdf->Cell(0, 7, $outputlangs->convToOutputCharset($this->str),BR,2,"C",0);
 		$posY= $pdf->GetY();
 		
-		
-
 		// ligne
 		$h_ligne = 9;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
@@ -497,7 +495,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			$this->str = $date;
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
+			$pdf->MultiCell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"C",false,1,'','',true,0,false,false,$h_ligne,'M');
 		
 			// horaires
 			if ($linedate->heured && $linedate->heuref)	{
@@ -508,14 +506,19 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			}
 			$pdf->SetXY($posX+$larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
-			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
+			$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"C",false,1,'','',true,0,false,false,$h_ligne,'M');
 			
 			// Cadre pour signature
 			$pdf->Rect($posX+$larg_col1+$larg_col2, $posY, 128, $h_ligne);
 			
 			$posY= $pdf->GetY();
+			if ($posY > $this->page_hauteur-20) {
+				$pdf->AddPage();
+				$pagenb++;
+				$posY=$this->marge_haute;
+			}
 		}
-		$posY += 8;
+		$posY = $pdf->GetY() + 8;
 
 		
 		// Incrustation image tampon
@@ -611,6 +614,3 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 	}
 }
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
