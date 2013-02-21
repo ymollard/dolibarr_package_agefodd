@@ -233,6 +233,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
 				$pdf->SetXY($baseline_x, $baseline_y);
+				
+				$pdf->SetAutoPageBreak(true, $this->marge_basse);
 
 				/*
 				 * Corps de page
@@ -315,10 +317,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$this->str = $agf->prerequis;
+				
 				if (empty($this->str)) $this->str = $outputlangs->transnoentities('AgfUndefinedPrerequis');
 
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
+				
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 
@@ -336,8 +341,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = ucfirst($agf->public);
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
+				
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 
@@ -355,35 +361,40 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
 
-				$pdf->MultiCell(0, 5,$this->str,0,'L','','','','','','',$ishtml);
-				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
+				$pdf->MultiCell(0, 5,$this->str,0,'L','','2','','','','',$ishtml);
+				$posY = $pdf->GetY() + $this->espace_apres_corps_text;						
+
 
 				/***** Methode pedago *****/
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+
+				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfMethode');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$this->str = $agf->methode;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
+				
+				$pdf->MultiCell(0, 5,$this->str,0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 
 
 				/***** Duree *****/
 
 				// Durée
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->espace_apres_titre;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				// calcul de la duree en nbre de jours
 				$jour = $agf->duree / 7;
 				if ($jour < 1) $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
@@ -394,6 +405,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str.=').';
 				}
 				$pdf->SetXY($posX, $posY);
+				
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 
 				// Pied de page
