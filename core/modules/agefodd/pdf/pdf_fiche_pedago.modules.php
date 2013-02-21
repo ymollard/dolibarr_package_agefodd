@@ -266,12 +266,15 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** But *****/
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfBut');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
-
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre + 2;
+				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 				$this->str = $agf->but;
 				if (empty($this->str)) $this->str = $outputlangs->transnoentities('AgfUndefinedBut');
@@ -285,12 +288,15 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// Récuperation
 				$result2 = $agf->fetch_objpeda_per_formation($agf->id);
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);//$pdf->SetFont('Arial','B',9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfObjPeda');
 
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre +2 ;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 				$hauteur = 0;
@@ -309,11 +315,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Pré requis *****/
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPrerequis');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre + 2;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$this->str = $agf->prerequis;
@@ -330,11 +339,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Public *****/
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',10);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPublic');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre + 2;
 
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
@@ -350,11 +362,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Programme *****/
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfProgramme');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre + 2;
 
 				$this->str = $agf->programme;
 				$pdf->SetXY($posX, $posY);
@@ -367,13 +382,16 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				/***** Methode pedago *****/
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');
 
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfMethode');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre + 2;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				$this->str = $agf->methode;
@@ -388,11 +406,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				/***** Duree *****/
 
 				// Durée
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','10');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','12');
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
-				$posY = $pdf->GetY() + $this->espace_apres_titre;
+				$posY = $pdf->GetY();
+				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$pdf->Line ($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $pdf->GetY() + $this->espace_apres_titre + 2;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','9');
 				// calcul de la duree en nbre de jours
@@ -405,7 +426,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str.=').';
 				}
 				$pdf->SetXY($posX, $posY);
-				
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L');
 
 				// Pied de page
