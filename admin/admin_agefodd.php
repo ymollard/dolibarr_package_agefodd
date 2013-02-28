@@ -110,20 +110,12 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
-	$use_managecertif=GETPOST('AGF_MANAGE_CERTIF','int');
-	$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif,'yesno',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
 	$def_typestag=GETPOST('AGF_DEFAULT_STAGIAIRE_TYPE','int');
 	if (!empty($def_typestag))
 	{
 		$res = dolibarr_set_const($db, 'AGF_DEFAULT_STAGIAIRE_TYPE', $def_typestag,'chaine',0,'',$conf->entity);
 		if (! $res > 0) $error++;
 	}
-
-	$use_fac_without_order=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
-	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
 	
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
@@ -137,52 +129,8 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_REPRESENTANT', $org_rep,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
-	$usesearch_training=GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$usesearch_trainer=GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$usesearch_trainee=GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$usesearch_site=GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$usesearch_stagstype=GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$usesearch_contact=GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
 	$nb_num_list=GETPOST('AGF_NUM_LIST','int');
 	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
-	$logo_client=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-	
-	$use_dol_company_name=GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT','alpha');
-	$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name,'chaine',1,'',$conf->entity);
-	if (! $res > 0) $error++;
-	
-	$add_OPCA_link_contact=GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT','alpha');
-	$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-	
-	$useWISIYGtraining=GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING','alpha');
-	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
 	if ($_FILES["imagesup"]["tmp_name"])
@@ -226,6 +174,20 @@ if ($action == 'setvar')
 		}
 	}
 
+	
+
+	if (! $error)
+	{
+		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+	}
+	else
+	{
+		$mesg = "<font class=\"error\">".$langs->trans("Error")." ".$msg."</font>";
+	}
+}
+
+if ($action == 'setvarother')
+{
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
 	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
 		$msg=$langs->trans("AgfAgendaModuleNedeed");
@@ -234,9 +196,62 @@ if ($action == 'setvar')
 	else {
 		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda,'chaine',0,'',$conf->entity);
 	}
-
+	
 	if (! $res > 0) $error++;
 
+	$logo_client=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
+	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$use_managecertif=GETPOST('AGF_MANAGE_CERTIF','int');
+	$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif,'yesno',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$use_fac_without_order=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
+	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_training=GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_trainer=GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_trainee=GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_site=GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_stagstype=GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$usesearch_contact=GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$use_dol_company_name=GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT','alpha');
+	$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name,'chaine',1,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$add_OPCA_link_contact=GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT','alpha');
+	$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	$useWISIYGtraining=GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING','alpha');
+	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
+	
 	if (! $error)
 	{
 		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
@@ -653,20 +668,32 @@ print '</td>';
 print '<td></td>';
 print "</tr>";
 
-// Affichage du logo commanditaire
-print '<tr class="pair"><td>'.$langs->trans("AgfUseCustomerLogo").'</td>';
+
+//Utilisation d'un type de stagaire
+print '<tr class="impair"><td>'.$langs->trans("AgfUseStagType").'</td>';
 print '<td align="left">';
 $arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_USE_LOGO_CLIENT",$arrval,$conf->global->AGF_USE_LOGO_CLIENT);
+print $form->selectarray("AGF_USE_STAGIAIRE_TYPE",$arrval,$conf->global->AGF_USE_STAGIAIRE_TYPE);
 print '</td>';
 print '<td align="center">';
-print $form->textwithpicto('',$langs->trans("AgfUseCustomerLogoHelp"),1,'help');
+print $form->textwithpicto('',$langs->trans("AgfUseStagTypeHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
+if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
+{
+	//Type de stagaire par defaut
+	print '<tr class="impair"><td>'.$langs->trans("AgfUseStagTypeDefault").'</td>';
+	print '<td align="left">';
+	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE');
+	print '</td>';
+	print '<td align="center">';
+	print '</td>';
+	print '</tr>';
+}
+
 // Image supplémentaire (tampon / signature)
-$var=!$var;
-print '<tr '.$bc[$var].'><td>'.$langs->trans("AgfImageSupp").' (png,jpg)</td><td>';
+print '<tr class="pair"><td>'.$langs->trans("AgfImageSupp").' (png,jpg)</td><td>';
 print '<table width="100%" class="nocellnopadd"><tr class="nocellnopadd"><td valign="middle" class="nocellnopadd">';
 print '<input type="file" class="flat" name="imagesup" size="40">';
 print '</td><td valign="middle" align="right">';
@@ -689,11 +716,44 @@ print $form->textwithpicto('',$langs->trans("AgfInfoTamponHelp"),1,'help');
 
 print '</td></tr>';
 
-// Forcer la liaison d'une facture sans nécessiter de bon de commande
-print '<tr class="pair"><td>'.$langs->trans("AgfUseFacWhithoutOrder").'</td>';
+print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
+print '</tr>';
+
+print '</table><br>';
+print '</form>';
+
+print '<table class="noborder" width="100%">';
+
+if (!$conf->use_javascript_ajax){
+	print '<form method="post" action="'.$_SERVER['PHP_SELF'].'" enctype="multipart/form-data" >';
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="action" value="setvarother">';
+}
+
+// Affichage du logo commanditaire
+print '<tr class="pair"><td>'.$langs->trans("AgfUseCustomerLogo").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_USE_FAC_WITHOUT_ORDER",$arrval,$conf->global->AGF_USE_FAC_WITHOUT_ORDER);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_USE_LOGO_CLIENT');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_USE_LOGO_CLIENT",$arrval,$conf->global->AGF_USE_LOGO_CLIENT);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('',$langs->trans("AgfUseCustomerLogoHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+// Forcer la liaison d'une facture sans nécessiter de bon de commande
+print '<tr class="impair"><td>'.$langs->trans("AgfUseFacWhithoutOrder").'</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_USE_FAC_WITHOUT_ORDER');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_USE_FAC_WITHOUT_ORDER",$arrval,$conf->global->AGF_USE_FAC_WITHOUT_ORDER);
+}
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseFacWhithoutOrderHelp"),1,'help');
@@ -701,38 +761,20 @@ print '</td>';
 print '</tr>';
 
 //Utilisation du contact agefodd ou dolibarr a la creation de la session
-print '<tr class="impair"><td>'.$langs->trans("AgfUseSessionDolContact").'</td>';
+print '<tr class="pair"><td>'.$langs->trans("AgfUseSessionDolContact").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_CONTACT_DOL_SESSION",$arrval,$conf->global->AGF_CONTACT_DOL_SESSION);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_CONTACT_DOL_SESSION');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_CONTACT_DOL_SESSION",$arrval,$conf->global->AGF_CONTACT_DOL_SESSION);
+}
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseSessionDolContactHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
-//Utilisation d'un type de stagaire
-print '<tr class="pair"><td>'.$langs->trans("AgfUseStagType").'</td>';
-print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_USE_STAGIAIRE_TYPE",$arrval,$conf->global->AGF_USE_STAGIAIRE_TYPE);
-print '</td>';
-print '<td align="center">';
-print $form->textwithpicto('',$langs->trans("AgfUseStagTypeHelp"),1,'help');
-print '</td>';
-print '</tr>';
-
-if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
-{
-	//Type de stagaire par defaut
-	print '<tr class="pair"><td>'.$langs->trans("AgfUseStagTypeDefault").'</td>';
-	print '<td align="left">';
-	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE');
-	print '</td>';
-	print '<td align="center">';
-	print '</td>';
-	print '</tr>';
-}
 
 // utilisation formulaire Ajax sur choix training
 print '<tr class="impair">';
@@ -746,8 +788,12 @@ if (! $conf->use_javascript_ajax)
 else
 {
 	print '<td align="left">';
-	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-	print $form->selectarray("AGF_TRAINING_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT);
+	if ($conf->use_javascript_ajax){
+		print ajax_constantonoff('AGF_TRAINING_USE_SEARCH_TO_SELECT');
+	}else {
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_TRAINING_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT);
+	}
 	print '</td>';
 }
 print '<td>&nbsp;</td>';
@@ -765,8 +811,12 @@ if (! $conf->use_javascript_ajax)
 else
 {
 	print '<td align="left">';
-	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	if ($conf->use_javascript_ajax){
+		print ajax_constantonoff('AGF_TRAINER_USE_SEARCH_TO_SELECT');
+	}else {
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
+	}
 	print '</td>';
 }
 print '<td>&nbsp;</td>';
@@ -784,8 +834,12 @@ if (! $conf->use_javascript_ajax)
 else
 {
 	print '<td  align="left">';
-	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-	print $form->selectarray("AGF_TRAINEE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT);
+	if ($conf->use_javascript_ajax){
+		print ajax_constantonoff('AGF_TRAINEE_USE_SEARCH_TO_SELECT');
+	}else {
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_TRAINEE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT);
+	}
 	print '</td>';
 }
 print '<td>&nbsp;</td>';
@@ -803,8 +857,12 @@ if (! $conf->use_javascript_ajax)
 else
 {
 	print '<td align="left">';
-	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-	print $form->selectarray("AGF_SITE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_SITE_USE_SEARCH_TO_SELECT);
+	if ($conf->use_javascript_ajax){
+		print ajax_constantonoff('AGF_SITE_USE_SEARCH_TO_SELECT');
+	}else {
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_SITE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_SITE_USE_SEARCH_TO_SELECT);
+	}
 	print '</td>';
 }
 print '<td>&nbsp;</td>';
@@ -824,8 +882,12 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
 	else
 	{
 		print '<td align="left">';
-		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-		print $form->selectarray("AGF_STAGTYPE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_STAGTYPE_USE_SEARCH_TO_SELECT);
+		if ($conf->use_javascript_ajax){
+			print ajax_constantonoff('AGF_STAGTYPE_USE_SEARCH_TO_SELECT');
+		}else {
+			$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+			print $form->selectarray("AGF_STAGTYPE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_STAGTYPE_USE_SEARCH_TO_SELECT);
+		}
 		print '</td>';
 	}
 	print '<td>&nbsp;</td>';
@@ -835,8 +897,12 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
 //Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
 print '<tr class="pair"><td>'.$langs->trans("AgfAgendaModuleUse").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_DOL_AGENDA",$arrval,$conf->global->AGF_DOL_AGENDA);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_DOL_AGENDA');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_DOL_AGENDA",$arrval,$conf->global->AGF_DOL_AGENDA);
+}
 print '</td>';
 print '<td align="center">';
 print '</td>';
@@ -856,8 +922,12 @@ if (! $conf->use_javascript_ajax)
 else
 {
 	print '<td align="left">';
-	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-	print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
+	if ($conf->use_javascript_ajax){
+		print ajax_constantonoff('AGF_CONTACT_USE_SEARCH_TO_SELECT');
+	}else {
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
+	}
 	print '</td>';
 	print '<td align="center">';
 	print '</td>';
@@ -866,8 +936,12 @@ else
 // Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
 print '<tr class="pair"><td>'.$langs->trans("AgfUseMainNameOfContact").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("MAIN_USE_COMPANY_NAME_OF_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('MAIN_USE_COMPANY_NAME_OF_CONTACT');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("MAIN_USE_COMPANY_NAME_OF_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+}
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfUseMainNameOfContactHelp"),1,'help');
@@ -877,8 +951,12 @@ print '</tr>';
 // Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
 print '<tr class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_LINK_OPCA_ADRR_TO_CONTACT');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+}
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'help');
@@ -888,25 +966,35 @@ print '</tr>';
 // Mise a jour de la variable AGF_MANAGE_CERTIF
 print '<tr class="pair"><td>'.$langs->trans("AgfManageCertification").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_MANAGE_CERTIF",$arrval,$conf->global->AGF_MANAGE_CERTIF);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_MANAGE_CERTIF');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_MANAGE_CERTIF",$arrval,$conf->global->AGF_MANAGE_CERTIF);
+}
 print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-// Mise a jour de la variable AGF_MANAGE_CERTIF
+// Mise a jour de la variable AGF_FCKEDITOR_ENABLE_TRAINING
 print '<tr class="impair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
 print '<td align="left">';
-$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-print $form->selectarray("AGF_FCKEDITOR_ENABLE_TRAINING",$arrval,$conf->global->AGF_FCKEDITOR_ENABLE_TRAINING);
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_FCKEDITOR_ENABLE_TRAINING');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_FCKEDITOR_ENABLE_TRAINING",$arrval,$conf->global->AGF_FCKEDITOR_ENABLE_TRAINING);
+}
 print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
-print '</tr>';
+if (!$conf->use_javascript_ajax){
+	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
+	print '</tr>';
+}
 
 print '</table><br>';
 print '</form>';

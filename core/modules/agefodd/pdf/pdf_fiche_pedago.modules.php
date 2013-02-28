@@ -234,7 +234,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$baseline_width = $this->width;
 				$pdf->SetXY($baseline_x, $baseline_y);
 				
-				$pdf->SetAutoPageBreak(true, $this->marge_basse);
+				$pdf->SetAutoPageBreak(true, 0);
 
 				/*
 				 * Corps de page
@@ -478,19 +478,20 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	 *      \param		outputlang		Object lang for output
 	 * 	\remarks	Need this->emetteur object
 	 */
-	function _pagefoot(&$pdf,$object,$outputlangs)
+	/*function _pagefoot(&$pdf,$object,$outputlangs)
 	{
 		global $conf,$langs,$mysoc;
 
 		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
-		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
+		$pdf->Line ($this->marge_gauche, $this->page_hauteur - $this->marge_basse - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse - 20);
 
 		$this->str = $mysoc->name;
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
-		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
+		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - $this->marge_basse - 20);
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
+		$posy=$pdf->GetY()+5;
 
 		$this->str = $mysoc->address." ";
 		$this->str.= $mysoc->zip.' '.$mysoc->town;
@@ -510,9 +511,46 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
 		
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
-		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
+		//$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
+		$pdf->SetXY( $this->marge_gauche, $posy);
 		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');
 
+	}*/
+	function _pagefoot(&$pdf,$object,$outputlangs)
+	{
+		global $conf,$langs,$mysoc;
+	
+		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
+	
+		$this->str = $mysoc->name;
+	
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
+	
+		$this->str = $mysoc->address." ";
+		$this->str.= $mysoc->zip.' '.$mysoc->town;
+		$this->str.= ' - '.$mysoc->country;
+		$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot1').' '.$mysoc->phone;
+		$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot2').' '.$mysoc->email."\n";
+	
+		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
+		$this->str.= $statut;
+		if (!empty($mysoc->capital)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);}
+		if (!empty($mysoc->idprof2)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;}
+		if (!empty($mysoc->idprof4)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;}
+		if (!empty($mysoc->idprof3)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;}
+		$this->str.="\n";
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;}
+		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
+	
+		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
+		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);
+		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str),0,'C');
+	
 	}
 
 	/**

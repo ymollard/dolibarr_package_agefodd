@@ -234,8 +234,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$staticsoc->fetch($agf->socid);
 			$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
 			$logo_client=$dir.$staticsoc->logo;
-			if (file_exists($logo_client))
-				$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 90, $this->marge_haute + 10, 40);
+			if (file_exists($logo_client)) {
+				$heightImg=pdf_getHeightForLogo($logo_client);
+				$pdf->Image($logo_client, $this->page_largeur/2, $this->marge_haute, 0, $heightImg, '', '', '', true, 300, '', false, false, 0, false, false, true);// width=0 (auto)
+			}
 		}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);

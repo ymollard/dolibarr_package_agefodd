@@ -60,7 +60,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.0.26';
+		$this->version = '2.0.27';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -80,7 +80,7 @@ class modAgefodd extends DolibarrModules
 		$this->style_sheet = '/agefodd/css/agefodd.css';
 
 		// Config pages. Put here list of php page names stored in admin directory used to setup module.
-		$this->config_page_url = array("agefodd.php@agefodd");
+		$this->config_page_url = array("admin_agefodd.php@agefodd");
 
 		//define triggers
 		$this->module_parts = array('triggers' => 1);
@@ -636,6 +636,31 @@ class modAgefodd extends DolibarrModules
 		'titre'=>'AgfMenuSAdmBilanDRTEFP',
 		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/not_implemented.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>502,
+		'enabled'=>1,
+		'perms'=>'$user->rights->agefodd->lire',
+		'target'=>'',
+		'user'=>0);
+
+		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		 'type'=>'left',
+		'titre'=>'AgfMenuDemoAdmin',
+		'mainmenu'=>'agefodd',
+		'url'=>'/agefodd/admin_agefodd.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>501,
+		'enabled'=>1,
+		'perms'=>'$user->rights->agefodd->lire',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'r=18',
+		'type'=>'left',
+		'titre'=>'AgfMenuDemoAdminDetail',
+		'mainmenu'=>'agefodd',
+		'url'=>'/agefodd/admin/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>502,
 		'enabled'=>1,

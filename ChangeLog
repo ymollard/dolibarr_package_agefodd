@@ -291,7 +291,7 @@ For All :
 	- Fix bugs_agefodd #723
 	- Fix bugs_agefodd #724
 	
-	***** ChangeLog for 2.0.26 compared to 2.0.25 *****
+***** ChangeLog for 2.0.26 compared to 2.0.25 *****
 For All :
 	- Change PDF Fiche presence: remove double country displayed in header
 	- Fix bugs_agefodd #660
@@ -300,4 +300,12 @@ For All :
 	- WYSIWYG in trainning card (activated by option in configuration)
 	- Fix oversize problem for Timecard by trainee (Fiche de présence, Fiche de présence vide, Fiche de présence (format paysage), Fiche de présence par stagaire)
 For Dev : 
-	- Change colorpicker lib js to avoid js bug (can be seen with firebug) 
+	- Change colorpicker lib js to avoid js bug (can be seen with firebug)
+	
+***** ChangeLog for 2.0.27 compared to 2.0.26 *****
+For All :
+	- PDF : Fix Fiche pedago problem (footer on two pages...)
+	- PDF : Fix Customer image into certification (attestation) and timecard (feuille présence)
+	- Admin page with on/off button
+For dev : 
+	-Change admin page from agefodd.php to admin_agefodd.php
