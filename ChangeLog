@@ -307,5 +307,6 @@ For All :
 	- PDF : Fix Fiche pedago problem (footer on two pages...)
 	- PDF : Fix Customer image into certification (attestation) and timecard (feuille présence)
 	- Admin page with on/off button
+	- Add more Dutch translation and English also.
 For dev : 
 	-Change admin page from agefodd.php to admin_agefodd.php

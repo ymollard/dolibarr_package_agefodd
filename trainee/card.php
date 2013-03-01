@@ -421,7 +421,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	
 	// Infos participant
-	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("Participant").'</strong></td>';
+	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("AgfMailTypeContactTrainee").'</strong></td>';
 	
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
 	print '<td colspan="3">'.$formcompany->select_civility().'</td>';
@@ -484,7 +484,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	}
 		
 	print '<tr class="agelfoddline">';
-	print '<td>'.$langs->trans('SelectAgefoddSession').'</td>';
+	print '<td>'.$langs->trans('AgfSelectAgefoddSession').'</td>';
 	print '<td colspan="3">';
 	print $form->selectarray('session_id',$sessions,GETPOST('session_id'),1);
 	print '</td>';

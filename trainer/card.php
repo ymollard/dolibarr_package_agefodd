@@ -176,8 +176,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm_contact">'."\n";
 
-	print '<div class="warning">La fiche formateur peut être créée à partir d\'un contact déjà existant dans Dolibarr.';
-	print '<br>Si ce contact n\'existe pas, vous devez le créer à partir de la fiche de création d\'un <a href="'.DOL_URL_ROOT.'/contact/fiche.php?action=create">nouveau contact</a>. Sinon, selectionnez le contact dans la liste déroulante ci dessous.</div>';
+	print '<div class="warning">'.$langs->trans("AgfFormateurAddContactHelp");
+	print '<br>'.$langs->trans("AgfFormateurAddContactHelp1").' <a href="'.DOL_URL_ROOT.'/contact/fiche.php?action=create">'.$langs->trans("AgfFormateurAddContactHelp2").'</a>. '.$langs->trans("AgfFormateurAddContactHelp3").'</div>';
 
 	print '<table class="border" width="100%">'."\n";
 
@@ -213,6 +213,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="create_confirm_user">'."\n";
 
+	print '<div class="warning">'.$langs->trans("AgfFormateurAddUserHelp");
+	print '<br>'.$langs->trans("AgfFormateurAddUserHelp1").' <a href="'.DOL_URL_ROOT.'/user/fiche.php?action=create">'.$langs->trans("AgfFormateurAddUserHelp2").'</a>. '.$langs->trans("AgfFormateurAddUserHelp3").'</div>';
+	
 	print '<div class="warning">La fiche formateur peut être créée à partir d\'un utilisateur de Dolibarr.';
 	print '<br>Si ce contact n\'existe pas, vous devez le créer à partir de la fiche de création d\'un <a href="'.DOL_URL_ROOT.'user/fiche.php?action=create">nouvelle utilisateur</a>. Sinon, selectionnez l\'utilisateur dans la liste déroulante ci dessous.</div>';
 

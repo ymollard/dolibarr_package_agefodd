@@ -697,7 +697,7 @@ else
 					print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfLinkedDocuments").'</td></tr>';
 					// afficher
 					$legende = $langs->trans("AgfDocOpen");
-					print '<tr><td width="200" align="center">Fiche pedagogique : </td><td> ';
+					print '<tr><td width="200" align="center">'.$langs->trans("AgfFichePedagogique").'</td><td> ';
 					print '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file=fiche_pedago_'.$id.'.pdf" alt="'.$legende.'" title="'.$legende.'">';
 					print '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					print '</td></tr></table>';
