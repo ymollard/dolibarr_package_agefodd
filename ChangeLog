@@ -310,3 +310,7 @@ For All :
 	- Add more Dutch translation and English also.
 For dev : 
 	-Change admin page from agefodd.php to admin_agefodd.php
+	
+***** ChangeLog for 2.0.28 compared to 2.0.27 *****
+For All :
+	- Fix Bug bugs_agefodd #760
