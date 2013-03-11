@@ -313,4 +313,5 @@ For dev :
 	
 ***** ChangeLog for 2.0.28 compared to 2.0.27 *****
 For All :
-	- Fix Bug bugs_agefodd #760
+	- Fix bugs_agefodd #760
+	- Fix bugs_agefodd #761
