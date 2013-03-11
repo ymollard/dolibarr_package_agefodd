@@ -19,7 +19,7 @@
 */
 
 /**
- * 	\file       /agefodd/admin/agefodd.php
+ * 	\file       /agefodd/admin/admin_agefodd.php
  *	\ingroup    agefodd
  *	\brief      agefood module setup page
 */

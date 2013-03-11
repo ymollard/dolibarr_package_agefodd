@@ -278,7 +278,7 @@ function agefodd_admin_prepare_head()
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/agefodd/admin/agefodd.php",1);
+	$head[$h][0] = dol_buildpath("/agefodd/admin/admin_agefodd.php",1);
 	$head[$h][1] = $langs->trans("Settings");
 	$head[$h][2] = 'settings';
 	$h++;
