@@ -34,7 +34,7 @@ class Agefodd_reg_interieur extends CommonObject
 	var $error;							//!< To return error code (or message)
 	var $errors=array();				//!< To return several error codes (or messages)
 	var $element='agefodd';			//!< Id that identify managed objects
-	var $table_element='llx_agefodd_reg_interieur';	//!< Name of table without prefix where object is stored
+	var $table_element='agefodd_reg_interieur';	//!< Name of table without prefix where object is stored
 
 	
     var $id;

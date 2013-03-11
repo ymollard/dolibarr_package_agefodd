@@ -61,7 +61,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		if (strpos($agf->error,'llx_agefodd_session_stagiaire_ibfk_2')) {
+		if (strpos($agf->error,'agefodd_session_stagiaire_ibfk_2')) {
 			$agf->error=$langs->trans("AgfErrorTraineeInSession");
 		}
 		else {

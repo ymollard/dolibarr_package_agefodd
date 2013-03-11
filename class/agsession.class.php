@@ -780,7 +780,7 @@ class Agsession extends CommonObject
 		$sql.= " ON sa.rowid = ss.fk_stagiaire";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON so.rowid = sa.fk_soc";
-		$sql.= " LEFT JOIN llx_agefodd_opca AS soOPCA ON soOPCA.fk_soc_trainee = so.rowid ";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_opca AS soOPCA ON soOPCA.fk_soc_trainee = so.rowid ";
 		$sql.= " AND soOPCA.fk_session_agefodd = s.rowid ";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soOPCATrainee";
 		$sql.= " ON soOPCATrainee.rowid = soOPCA.fk_soc_OPCA";
@@ -1727,7 +1727,7 @@ class Agsession extends CommonObject
 			$sql.= " WHERE s.archive = 0";
 			$sql.= " AND sa.indice=";
 			$sql.= "(";
-			$sql.= " SELECT MAX(indice) FROM llx_agefodd_session_adminsitu WHERE level_rank=0";
+			$sql.= " SELECT MAX(indice) FROM ".MAIN_DB_PREFIX."agefodd_session_adminsitu WHERE level_rank=0";
 			$sql.= ")";
 			$sql.= " AND sa.archive = 1";
 		}
