@@ -21,7 +21,6 @@
 /**
  \file		agefodd/core/modules/agefodd/pdf/pdf_fiche_evaluation.modules.php
  \brief		Page permettant la création de la fiche d'évaluation propre à une formation au format pdf
-\version	$Id$
 */
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
@@ -255,8 +254,8 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval1')." ";
-				if ($agf->dated == $agf->dated) $this->str .= dol_print_date($agf->dated);
-				else $this->str .= dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
+				if ($agf->dated == $agf->datef) $this->str .= dol_print_date($agf->dated);
+				else $this->str .= ' '.dol_print_date($agf->dated).' au '.dol_print_date($agf->datef);
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 4;
 
@@ -271,12 +270,21 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				}
 
 				$pdf->SetXY($posX, $posY);
-				//$this->str = "formateur: ".$agf->teachername;
 				($nbform > 1) ? $this->str = $outputlangs->transnoentities('AgfPDFFicheEval2')." " : $this->str = $outputlangs->transnoentities('AgfPDFFicheEval3')." ";
 				$this->str .= $forma_str;
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
-				$posY+= 10;
-
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'C',0);
+				$posY = $pdf->GetY() + 5;
+				
+				/***** Trainee Information *************/
+				
+				$pdf->SetXY($posX, $posY);
+				$this->str=$outputlangs->transnoentities('AgfPDFFicheEvalNameTrainee').' : .....................';
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L',0);
+				$this->str=$outputlangs->transnoentities('AgfPDFFicheEvalCompany').' : .....................';
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L',0);
+				$this->str=$outputlangs->transnoentities('AgfPDFFicheEvalEmailTrainee').' : .....................';
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L',0);
+				$posY = $pdf->GetY() + 5;
 
 				/***** Objectifs pedagogique de la formation *****/
 
@@ -284,36 +292,39 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$agf_op = new Agefodd($this->db,"",$id);
 				$result2 = $agf_op->fetch_objpeda_per_formation($agf->formid);
 
+				$width = 160;
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',10);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval4');
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
-				$posY+= 5 + 1;
+				$pdf->MultiCell($width, 5, $outputlangs->convToOutputCharset($this->str),0,'L',0);
+				$posY = $pdf->GetY() + 1;
 
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',10);
+				
 				for ( $y = 0; $y < count($agf_op->line); $y++)
 				{
 					// Intitulé
-					if ($y > 0) $posY+= $hauteur;
-					$pdf->SetXY ($posX, $posY);
-					$width = 160;
-					$hauteur = dol_nboflines_bis($this->str,50)*4;
-					$pdf->MultiCell(160, 4, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1,'L',0);
+					$posY = $pdf->GetY();
+					$pdf->SetXY($posX, $posY);
+					$pdf->MultiCell($width, 5, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1,'L',0);
+					$posY_after = $pdf->GetY();
+					$hauteur=($posY_after-$posY);
 
 					// Oui
-					$pdf->SetXY ($posX + 160, $posY);
-					$pdf->Cell(10, 5, $outputlangs->convToOutputCharset("oui"),0,0,'C');
-					$pdf->Rect($posX + 160, $posY, 10, $hauteur);
+					$pdf->SetXY ($posX + $width, $posY);
+					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
+					$pdf->MultiCell(10, 5, $outputlangs->convToOutputCharset($this->str),0,'C',0);
+					$pdf->Rect($posX + $width, $posY, 10, $hauteur);
 
 					// Non
-					$pdf->SetXY ($posX + 160 + 10, $posY);
-					$pdf->Cell(10, 5, $outputlangs->convToOutputCharset("non"),0,0,'C');
-					$pdf->Rect($posX + 160 + 10, $posY, 10, $hauteur);
-
+					$pdf->SetXY ($posX + $width + 10, $posY);
+					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
+					$pdf->MultiCell(10, 5, $outputlangs->convToOutputCharset($this->str),0,'C',0);
+					$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
 
 				}
-				$posY+= 15;
+				$posY = $pdf->GetY() + 5;
 
 
 				/***** présentation echelle de notation *****/
@@ -322,8 +333,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval5');
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0,'C',0);
-				$hauteur = dol_nboflines_bis($this->str,50)*4;
-				$posY+= $hauteur + 1;
+				$posY = $pdf->GetY() + 1;
 
 
 				$col_larg = $this->espaceH_dispo / 5;
