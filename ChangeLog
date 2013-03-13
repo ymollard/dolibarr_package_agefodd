@@ -315,3 +315,5 @@ For dev :
 For All :
 	- Fix bugs_agefodd #760
 	- Fix bugs_agefodd #761
+	- PDF : Fiche eval : Little update
+	- Session/Send Documents : Fix historique problem with dolibarr 3.3 

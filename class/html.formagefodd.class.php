@@ -650,41 +650,79 @@ class FormAgefodd extends Form
 		global $bc;
 
 		require_once(DOL_DOCUMENT_ROOT."/comm/action/class/actioncomm.class.php");
-
-		$actioncomm = new ActionComm($this->db);
-		$actioncomm->getActions($socid, $object->id, $typeelement);
-
-		$num = count($actioncomm->actions);
-		if ($num)
+		
+		$currentsubversion=explode('.',$conf->global->MAIN_VERSION_LAST_UPGRADE);
+		if ($currentsubversion[1]==2)
 		{
-			if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
-			//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
-			else $title=$langs->trans("Actions");
-
-			print_titre($title);
-
-			$total = 0;	$var=true;
-			print '<table class="noborder" width="100%">';
-			print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
-			print "\n";
-
-			foreach($actioncomm->actions as $action)
+			$actioncomm = new ActionComm($this->db);
+			$actioncomm->getActions($socid, $object->id, $typeelement);
+			$num = count($actioncomm->actions);
+			if ($num)
 			{
-				$var=!$var;
-				print '<tr '.$bc[$var].'>';
-				print '<td>'.$action->getNomUrl(1).'</td>';
-				print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
-				print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
-				$userstatic = new User($this->db);
-				$userstatic->id = $action->author->id;
-				$userstatic->firstname = $action->author->firstname;
-				$userstatic->lastname = $action->author->lastname;
-				print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
-				print '<td>'.$userstatic->getNomUrl(1).'</td>';
-				print '</tr>';
+				if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
+				//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
+				else $title=$langs->trans("Actions");
+			
+				print_titre($title);
+			
+				$total = 0;	$var=true;
+				print '<table class="noborder" width="100%">';
+				print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
+				print "\n";
+			
+				foreach($actioncomm->actions as $action)
+				{
+					$var=!$var;
+					print '<tr '.$bc[$var].'>';
+					print '<td>'.$action->getNomUrl(1).'</td>';
+					print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
+					print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
+					$userstatic = new User($this->db);
+					$userstatic->id = $action->author->id;
+					$userstatic->firstname = $action->author->firstname;
+					$userstatic->lastname = $action->author->lastname;
+					print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
+					print '<td>'.$userstatic->getNomUrl(1).'</td>';
+					print '</tr>';
+				}
+				print '</table>';
 			}
-			print '</table>';
 		}
+		if ($currentsubversion[1]==3) {
+			$action_arr=ActionComm::getActions($this->db,$socid, $object->id, $typeelement);
+			$num = count($action_arr);
+			if ($num)
+			{
+				if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
+				//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
+				else $title=$langs->trans("Actions");
+					
+				print_titre($title);
+					
+				$total = 0;	$var=true;
+				print '<table class="noborder" width="100%">';
+				print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
+				print "\n";
+					
+				foreach($action_arr as $action)
+				{
+					$var=!$var;
+					print '<tr '.$bc[$var].'>';
+					print '<td>'.$action->getNomUrl(1).'</td>';
+					print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
+					print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
+					$userstatic = new User($this->db);
+					$userstatic->id = $action->author->id;
+					$userstatic->firstname = $action->author->firstname;
+					$userstatic->lastname = $action->author->lastname;
+					print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
+					print '<td>'.$userstatic->getNomUrl(1).'</td>';
+					print '</tr>';
+				}
+				print '</table>';
+			}
+		}
+
 
 		return $num;
 	}
