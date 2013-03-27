@@ -252,8 +252,10 @@ class Agefodd_convention
 
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
-		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc";
+		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc,";
+		$sql.= " p.ref as productref , p.label as productlabel";
 		$sql.= " FROM ".MAIN_DB_PREFIX."commandedet as c";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."product as p ON p.rowid=c.fk_product";
 		$sql.= " WHERE c.fk_commande = ".$comid;
 
 		dol_syslog(get_class($this)."::fetch_commande_lines sql=".$sql, LOG_DEBUG);
@@ -270,7 +272,12 @@ class Agefodd_convention
 				$obj = $this->db->fetch_object($resql);
 				$this->line[$i]->rowid = $obj->rowid;
 				$this->line[$i]->fk_product = $obj->fk_product;
-				$this->line[$i]->description = $obj->description;
+				if (empty($obj->description)) {
+					$this->line[$i]->description = $obj->productref.' - '.$obj->productlabel;
+				}else {
+					$this->line[$i]->description = $obj->description;
+				}
+				
 				$this->line[$i]->tva_tx = $obj->tva_tx;
 				$this->line[$i]->remise_percent = $obj->remise_percent;
 				$this->line[$i]->fk_remise_except = $obj->fk_remise_except;
