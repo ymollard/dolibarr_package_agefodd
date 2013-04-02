@@ -307,20 +307,20 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 					// Intitulé
 					$posY = $pdf->GetY();
 					$pdf->SetXY($posX, $posY);
-					$pdf->MultiCell($width, 5, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1,'L',0);
+					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1,'L',0);
 					$posY_after = $pdf->GetY();
 					$hauteur=($posY_after-$posY);
 
 					// Oui
 					$pdf->SetXY ($posX + $width, $posY);
 					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
-					$pdf->MultiCell(10, 5, $outputlangs->convToOutputCharset($this->str),0,'C',0);
+					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str),0,'C',0);
 					$pdf->Rect($posX + $width, $posY, 10, $hauteur);
 
 					// Non
 					$pdf->SetXY ($posX + $width + 10, $posY);
 					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
-					$pdf->MultiCell(10, 5, $outputlangs->convToOutputCharset($this->str),0,'C',0);
+					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str),0,'C',0);
 					$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
 
 				}
