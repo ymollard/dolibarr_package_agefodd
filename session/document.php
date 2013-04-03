@@ -213,7 +213,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	// creation de la liste de choix
 	$agf_liste = new Agefodd_facture($db);
 	$result = $agf_liste->fetch_fac_per_soc($_GET["socid"], $_GET["type"]);
-	$num = count($agf_liste->line);
+	$num = count($agf_liste->lines);
 	if ($num > 0)
 	{
 		print '<form name="fact_link" action="document.php?action=link_confirm&id='.$id.'"  method="post">'."\n";
@@ -225,7 +225,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 		$options = '<option value=""></option>'."\n";;
 		for ($i = 0; $i < $num; $i++)
 		{
-			$options .= '<option value="'.$agf_liste->line[$i]->id.'">'.$agf_liste->line[$i]->ref.'</option>'."\n";
+			$options .= '<option value="'.$agf_liste->lines[$i]->id.'">'.$agf_liste->lines[$i]->ref.'</option>'."\n";
 		}
 		$select = '<select class="flat" name="select">'."\n".$options."\n".'</select>'."\n";
 

@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
+ * Copyright (C) 2013	Florian Henry		<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -36,6 +37,8 @@ class Agefodd_facture
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
+	
+	var $lines;
 
 	/**
 	 *  Constructor
@@ -195,19 +198,23 @@ class Agefodd_facture
 		}
 		$sql.= " WHERE fk_soc = ".$socid;
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_fac_per_soc sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 			for ($i=0; $i < $num; $i++)
 			{
+				$line = new Agefodd_facture_line();
+				
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->socid = $obj->fk_soc;
-				($type == 'bc') ? $this->line[$i]->ref = $obj->ref : $this->line[$i]->ref = $obj->facnumber;
+				$line->id = $obj->rowid;
+				$line->socid = $obj->fk_soc;
+				($type == 'bc') ? $line->ref = $obj->ref : $line->ref = $obj->facnumber;
+				
+				$this->lines[$i]=$line;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -357,4 +364,16 @@ class Agefodd_facture
 		}
 	}
 
+}
+
+Class Agefodd_facture_line {
+	
+	var $id;
+	var $socid;
+	var $ref;
+	
+	function __construct()
+	{
+		return 1;
+	}
 }

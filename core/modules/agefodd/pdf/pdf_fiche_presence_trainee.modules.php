@@ -485,7 +485,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		// Date
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($agf->id);
-		foreach ($agf_date->line as $linedate)	{
+		foreach ($agf_date->lines as $linedate)	{
 			// Jour
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
 			if ($linedate->date_session) {

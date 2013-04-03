@@ -37,6 +37,8 @@ class Agefodd_sesscalendar
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
+	
+	var $lines;
 
 	/**
 	 *  Constructor
@@ -239,17 +241,23 @@ class Agefodd_sesscalendar
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 			for ($i=0; $i < $num; $i++)
 			{
+				$line = new Agefodd_sesscalendar_line();
+				
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->date_session = $this->db->jdate($obj->date_session);
-				$this->line[$i]->heured = $this->db->jdate($obj->heured);
-				$this->line[$i]->heuref = $this->db->jdate($obj->heuref);
-				$this->line[$i]->sessid = $obj->sessid;
+				
+				$line->id = $obj->rowid;
+				$line->date_session = $this->db->jdate($obj->date_session);
+				$line->heured = $this->db->jdate($obj->heured);
+				$line->heuref = $this->db->jdate($obj->heuref);
+				$line->sessid = $obj->sessid;
+				
+				$this->lines[$i]=$line;
+				
 			}
 			$this->db->free($resql);
 			return 1;
@@ -526,5 +534,16 @@ class Agefodd_sesscalendar
 
 }
 
-# $Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $
-?>
+Class Agefodd_sesscalendar_line
+{
+	var $id;
+	var $date_session;
+	var $heured;
+	var $heuref;
+	var $sessid;
+	
+	function __construct()
+	{
+		return 1;
+	}
+}

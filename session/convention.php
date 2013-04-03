@@ -342,23 +342,23 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	$calendrier = new Agefodd_sesscalendar($db);
 	$resql = $calendrier->fetch_all($sessid);
-	$blocNumber = count($calendrier->line);
+	$blocNumber = count($calendrier->lines);
 	$old_date = 0;
 	$duree = 0;
 	for ($i = 0; $i < $blocNumber; $i++)
 	{
-		if ($calendrier->line[$i]->date_session != $old_date)
+		if ($calendrier->lines[$i]->date_session != $old_date)
 		{
 			if ($i > 0 ) $art1.= "), ";
-			$art1.= dol_print_date($calendrier->line[$i]->date_session,'daytext').' (';
+			$art1.= dol_print_date($calendrier->lines[$i]->date_session,'daytext').' (';
 		}
 		else $art1.= '/';
-		$art1.= dol_print_date($calendrier->line[$i]->heured,'hour');
+		$art1.= dol_print_date($calendrier->lines[$i]->heured,'hour');
 		$art1.= ' - ';
-		$art1.= dol_print_date($calendrier->line[$i]->heuref,'hour');
+		$art1.= dol_print_date($calendrier->lines[$i]->heuref,'hour');
 		if ($i == $blocNumber - 1) $art1.=').'."\n";
 
-		$old_date = $calendrier->line[$i]->date_session;
+		$old_date = $calendrier->lines[$i]->date_session;
 	}
 
 	$art1.= $langs->trans('AgfConvArt1_13')."\n";

@@ -319,3 +319,4 @@ For All :
 	- Session/Send Documents : Fix history event view problem with dolibarr 3.3
 	- PDF : Convention : On order summary the product description are display.
 	- Review English and Dutch translation
+	- Remove PHP warining from agefodd_facture and agefodd_session_calendrier

@@ -291,7 +291,7 @@ class pdf_convocation extends ModelePDFAgefodd
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 3;
 
-					foreach ($agf_calendrier->line as $line) {
+					foreach ($agf_calendrier->lines as $line) {
 						$pdf->SetXY( $posX + 10, $posY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
 						$this->str = dol_print_date($line->date_session,'daytext').' '.$outputlangs->transnoentities('AgfPDFConvocation4').' '.dol_print_date($line->heured,'hour').' '.$outputlangs->transnoentities('AgfPDFConvocation5').' '.dol_print_date($line->heuref,'hour');

@@ -495,7 +495,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 					$calendrierstat = new Agefodd_sesscalendar($db);
 					$calendrier = new Agefodd_sesscalendar($db);
 					$calendrier->fetch_all($id);
-					$blocNumber = count($calendrier->line);
+					$blocNumber = count($calendrier->lines);
 					if ($blocNumber > 0)
 					{
 						$old_date = 0;
@@ -503,9 +503,9 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 						for ($i = 0; $i < $blocNumber; $i++)
 						{
 							$calendrierstat->sessid = $result;
-							$calendrierstat->date_session = $calendrier->line[$i]->date_session;
-							$calendrierstat->heured = $calendrier->line[$i]->heured;
-							$calendrierstat->heuref = $calendrier->line[$i]->heuref;
+							$calendrierstat->date_session = $calendrier->lines[$i]->date_session;
+							$calendrierstat->heured = $calendrier->lines[$i]->heured;
+							$calendrierstat->heuref = $calendrier->lines[$i]->heuref;
 
 							$result1 = $calendrierstat->create($user);
 						}
@@ -849,7 +849,7 @@ else
 
 					$calendrier = new Agefodd_sesscalendar($db);
 					$calendrier->fetch_all($agf->id);
-					$blocNumber = count($calendrier->line);
+					$blocNumber = count($calendrier->lines);
 					if ($blocNumber < 1 && !(empty($newperiod)))
 					{
 						print '<tr>';
@@ -865,18 +865,18 @@ else
 							print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 							print '<input type="hidden" name="action" value="edit">'."\n";
-							print '<input type="hidden" name="sessid" value="'.$calendrier->line[$i]->sessid.'">'."\n";
-							print '<input type="hidden" name="modperiod" value="'.$calendrier->line[$i]->id.'">'."\n";
+							print '<input type="hidden" name="sessid" value="'.$calendrier->lines[$i]->sessid.'">'."\n";
+							print '<input type="hidden" name="modperiod" value="'.$calendrier->lines[$i]->id.'">'."\n";
 
-							if ($calendrier->line[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
+							if ($calendrier->lines[$i]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
 							{
 								print '<td  width="20%">'.$langs->trans("AgfPeriodDate").' ';
-								$form->select_date($calendrier->line[$i]->date_session, 'date','','','','obj_update_'.$i);
+								$form->select_date($calendrier->lines[$i]->date_session, 'date','','','','obj_update_'.$i);
 								print '</td>';
 								print '<td width="150px" nowrap>'.$langs->trans("AgfPeriodTimeB").' ';
-								print $formAgefodd->select_time(dol_print_date($calendrier->line[$i]->heured,'hour'),'dated');
+								print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heured,'hour'),'dated');
 								print ' - '.$langs->trans("AgfPeriodTimeE").' ';
-								print $formAgefodd->select_time(dol_print_date($calendrier->line[$i]->heuref,'hour'),'datef');
+								print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heuref,'hour'),'datef');
 								print '</td>';
 
 								if ($user->rights->agefodd->modifier)
@@ -886,8 +886,8 @@ else
 							}
 							else
 							{
-								print '<td width="20%">'.dol_print_date($calendrier->line[$i]->date_session,'daytext').'</td>';
-								print '<td  width="150px">'.dol_print_date($calendrier->line[$i]->heured,'hour').' - '.dol_print_date($calendrier->line[$i]->heuref,'hour');
+								print '<td width="20%">'.dol_print_date($calendrier->lines[$i]->date_session,'daytext').'</td>';
+								print '<td  width="150px">'.dol_print_date($calendrier->lines[$i]->heured,'hour').' - '.dol_print_date($calendrier->lines[$i]->heuref,'hour');
 								if ($user->rights->agefodd->modifier)
 								{
 									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="period_edit" alt="'.$langs->trans("AgfModSave").'">';
@@ -901,7 +901,7 @@ else
 							print '</td>' ;
 
 							// On calcule la duree totale du calendrier
-							$duree += ($calendrier->line[$i]->heuref - $calendrier->line[$i]->heured);
+							$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 
 							print '</form>'."\n";
 							print '</tr>'."\n";
@@ -1152,7 +1152,7 @@ else
 
 					$calendrier = new Agefodd_sesscalendar($db);
 					$calendrier->fetch_all($agf->id);
-					$blocNumber = count($calendrier->line);
+					$blocNumber = count($calendrier->lines);
 					if ($blocNumber < 1)
 					{
 						print '<td  width="20%" valign="top" >'.$langs->trans("AgfCalendrier").'</td>';
@@ -1165,21 +1165,21 @@ else
 						$duree = 0;
 						for ($i = 0; $i < $blocNumber; $i++)
 						{
-							if ($calendrier->line[$i]->date_session != $old_date)
+							if ($calendrier->lines[$i]->date_session != $old_date)
 							{
 								if ($i > 0 )print '</tr><tr><td width="150px" style="border:0px;">&nbsp;</td>';
 								print '<td width="150px">';
-								print dol_print_date($calendrier->line[$i]->date_session,'daytext').'</td><td>';
+								print dol_print_date($calendrier->lines[$i]->date_session,'daytext').'</td><td>';
 							}
 							else print ', ';
-							print dol_print_date($calendrier->line[$i]->heured,'hour').' - '.dol_print_date($calendrier->line[$i]->heuref,'hour');
+							print dol_print_date($calendrier->lines[$i]->heured,'hour').' - '.dol_print_date($calendrier->lines[$i]->heuref,'hour');
 							if ($i == $blocNumber -1 ) print '</td></tr>';
 
-							$old_date = $calendrier->line[$i]->date_session;
+							$old_date = $calendrier->lines[$i]->date_session;
 
 							// On calcule la duree totale du calendrier
 							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
-							$duree += ($calendrier->line[$i]->heuref - $calendrier->line[$i]->heured);
+							$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 						}
 						if (($agf->duree * 3600) != $duree)
 						{
