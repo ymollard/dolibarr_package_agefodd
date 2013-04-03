@@ -36,6 +36,9 @@ dol_include_once('/core/class/html.formcompany.class.php');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
+$langs->load('agefodd@agefodd');
+$langs->load('companies');
+
 $mesg = '';
 
 $action=GETPOST('action','alpha');
@@ -239,7 +242,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td width="20%"><span class="fieldrequired">'.$langs->trans("AgfSessPlaceCode").'</span></td>';
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td><span class="fieldrequired">'.$langs->trans("Societe").'</span></td>';
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("Company").'</span></td>';
 	print '<td>'.$form->select_company('','societe','((s.client IN (1,2)) OR (s.fournisseur=1))',1,1,0).'</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -294,19 +297,19 @@ else
 				print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
 				print '<td><input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
-				print '<tr><td>'.$langs->trans("Societe").'</td>';
+				print '<tr><td>'.$langs->trans("Company").'</td>';
 				print '<td>'.$form->select_company($agf->socid,'societe','((s.client IN (1,2)) OR (s.fournisseur=1))',0,1).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Address").'</td>';
 				print '<td><input name="adresse" class="flat" size="50" value="'.$agf->adresse.'"></td></tr>';
 
 
-				print '<tr><td>'.$langs->trans('CP').'</td><td>';
+				print '<tr><td>'.$langs->trans('Zip').'</td><td>';
 				print $formcompany->select_ziptown($agf->cp,'zipcode',array('town','selectcountry_id'),6).'</tr>';
-				print '<tr></td><td>'.$langs->trans('Ville').'</td><td>';
+				print '<tr></td><td>'.$langs->trans('Town').'</td><td>';
 				print $formcompany->select_ziptown($agf->ville,'town',array('zipcode','selectcountry_id')).'</tr>';
 
-				print '<tr><td>'.$langs->trans("Pays").'</td>';
+				print '<tr><td>'.$langs->trans("Country").'</td>';
 				print '<td>'.$form->select_country($agf->country,'country_id').'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Phone").'</td>';

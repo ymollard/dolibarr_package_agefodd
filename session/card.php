@@ -708,7 +708,7 @@ else
 					print '</td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
-					print '<td>'.$agf->duree.' heure(s)</td></tr>';
+					print '<td>'.$agf->duree.'</td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
 					$form->select_date($agf->dated, 'dad','','','','update');

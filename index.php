@@ -100,7 +100,7 @@ for ($i=0; $i < $num; $i++)
 	print img_object($langs->trans("AgfShowDetails"),"generic").' '.$agf->line[$i]->id.'</a></td>';
 	print '<td colspan=2>'.dol_trunc($agf->line[$i]->intitule, 50).'</td><td align="right">';
 	$ilya = (num_between_day($agf->line[$i]->datef, dol_now(),0));
-	print "il y a ".$ilya." j.";
+	print $langs->trans("AgfThereIsDay",$ilya);//"il y a ".$ilya." j.";
 	print '</td></tr>';
 }
 
@@ -129,7 +129,7 @@ print '</td><td width="auto" valign="top">';
 // tableau de bord travail
 print '<table class="noborder" width="500px" align="left">';
 print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfIndexBoard").' </td>';
-print '<td width="50px" align="right">Nombre</td></tr>';
+print '<td width="50px" align="right">'.$langs->trans("AgfNumber").'</td></tr>';
 
 // sessions en cours
 print '<tr class="liste"><td width="10px">'.img_object($langs->trans("AgfShowDetails"),"generic").'</td>';

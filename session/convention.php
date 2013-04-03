@@ -451,7 +451,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<table class="border" width="100%">'."\n";
 
-	print '<tr><td valign="top" width="200px">'.$langs->trans("Societe").'</td>';
+	print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 	print '<td>'.$agf_soc->nom.'</td></tr>';
 
 	print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';

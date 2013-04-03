@@ -298,7 +298,7 @@ class modAgefodd extends DolibarrModules
 		$this->dictionnaries=array(
 		'langs'=>'agefodd@agefodd',
 		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type"),		// List of tables we want to see into dictonnary editor
-		'tablib'=>array("Type stagiaire"),								// Label of tables
+		'tablib'=>array("AgfTraineeType"),								// Label of tables
 		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f'),	// Request to select fields
 		'tabsqlsort'=>array('sort ASC'),								// Sort order
 		'tabfield'=>array("intitule,sort"),								// List of fields (result of select to show dictionnary)

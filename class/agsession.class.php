@@ -1941,7 +1941,7 @@ class Agsession extends CommonObject
 		print '<td><a href="'.dol_buildpath('/user/fiche.php',1).'?id='.$this->commercialid.'">'.$this->commercialname.'</a></td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
-		print '<td>'.$this->duree.' heure(s)</td></tr>';
+		print '<td>'.$this->duree.'</td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfDateDebut").'</td>';
 		print '<td>'.dol_print_date($this->dated,'daytext').'</td></tr>';
