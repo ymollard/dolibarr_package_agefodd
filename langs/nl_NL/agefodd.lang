@@ -617,7 +617,6 @@ AgfPDFFicheEvalCompany=Company
 AgfPDFFicheEvalEmailTrainee=trainee e-Mail
 AgfPDFFicheEvalYes=Yes
 AgfPDFFicheEvalNo=No
-
 AgfUseFacWhithoutOrder=Possibilité de lier une facture sans nécessiter de bon de commande
 AgfUseFacWhithoutOrderHelp=Si sélectionné, le bon de commande n'est pas nécessaire pour lier une facture à un participant.
 AgfSendDossierCloture=Dossier de clôture formation %s
