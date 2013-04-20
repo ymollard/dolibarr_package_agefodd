@@ -447,6 +447,11 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 				// Si la création de la session s'est bien passée,
 				// on crée automatiquement toutes les tâches administratives associées...
 				$result = $agf->createAdmLevelForSession($user);
+				if ($result>0) {
+					dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
+					$mesg .= $agf->error;
+					$error++;
+				}
 			}
 			else
 			{

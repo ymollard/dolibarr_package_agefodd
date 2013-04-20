@@ -324,4 +324,5 @@ For All :
 ***** ChangeLog for 2.0.29 compared to 2.0.28 *****
 For All :
 	- Fix french translation (spelling)
+	- Fix Bug #829 - Can't clone a session (with pgsql)
 	

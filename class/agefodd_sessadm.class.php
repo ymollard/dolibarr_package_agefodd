@@ -461,8 +461,9 @@ class Agefodd_sessadm extends CommonObject
 
 		// Update request
 
-		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ori,'.MAIN_DB_PREFIX.'agefodd_session_adminsitu as upd ';
-		$sql.= ' SET upd.fk_parent_level=ori.rowid ';
+		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as upd';
+		$sql.= ' SET fk_parent_level=ori.rowid ';
+		$sql.= ' FROM  '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ori';
 		$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session';
 		$sql.= ' AND upd.fk_agefodd_session='.$session_id;
 
