@@ -73,7 +73,7 @@ class Agefodd_sessadm extends CommonObject
 	{
 		global $conf, $langs;
 		$error=0;
-		 
+			
 		// Clean parameters
 		$this->fk_agefodd_session_admlevel = trim($this->fk_agefodd_session_admlevel);
 		$this->fk_agefodd_session = trim($this->fk_agefodd_session);
@@ -121,7 +121,7 @@ class Agefodd_sessadm extends CommonObject
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				 
+					
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -302,13 +302,13 @@ class Agefodd_sessadm extends CommonObject
 			$this->line = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-				
+
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$line = new AgfSessAdm();
-				
+
 				$line->id = $obj->rowid;
 				$line->level = $obj->fk_agefodd_session_admlevel;
 				$line->sessid = $obj->fk_agefodd_session;
@@ -322,7 +322,7 @@ class Agefodd_sessadm extends CommonObject
 				$line->datea = $this->db->jdate($obj->datea);
 				$line->notes = $obj->notes;
 				$line->archive = $obj->archive;
-				
+
 				$this->line[$i]=$line;
 
 				$i++;
@@ -460,12 +460,18 @@ class Agefodd_sessadm extends CommonObject
 		$error = 0;
 
 		// Update request
-
-		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as upd';
-		$sql.= ' SET fk_parent_level=ori.rowid ';
-		$sql.= ' FROM  '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ori';
-		$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session';
-		$sql.= ' AND upd.fk_agefodd_session='.$session_id;
+		if ($this->db->type=='pgsql') {
+			$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as upd';
+			$sql.= ' SET fk_parent_level=ori.rowid ';
+			$sql.= ' FROM  '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ori';
+			$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session';
+			$sql.= ' AND upd.fk_agefodd_session='.$session_id;
+		}else {
+			$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ori, '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as upd ';
+			$sql.= ' SET upd.fk_parent_level=ori.rowid ';
+			$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session';
+			$sql.= ' AND upd.fk_agefodd_session='.$session_id;
+		}
 
 		//print $sql;
 		//exit;
@@ -514,7 +520,7 @@ Class AgfSessAdm {
 	var $datea;
 	var $notes;
 	var $archive;
-	
+
 	function __construct()
 	{
 		return 1;

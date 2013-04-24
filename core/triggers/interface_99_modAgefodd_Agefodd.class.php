@@ -301,12 +301,6 @@ class InterfaceAgefodd
 			}
 		}
 		
-		
-		
-		
-		
-
-
 		// Add entry in event table
 		if ($ok)
 		{
@@ -389,6 +383,56 @@ class InterfaceAgefodd
 				}
 			}
 				
+		}elseif($action == 'CONTACT_MODIFY') {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+			
+			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+			
+			//Find trainee link with this contact
+			$sql = "SELECT";
+			$sql.= " s.rowid,  s.fk_socpeople";
+			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
+			$sql.= " WHERE s.fk_socpeople=".$object->id;
+			
+			dol_syslog('interface_modAgefodd_Agefodd.class.php: $sql'.$sql, LOG_DEBUG);
+			$resql=$this->db->query($sql);
+			if ($resql)
+			{
+				if ($this->db->num_rows($resql))
+				{
+					$sta=new Agefodd_stagiaire($this->db);
+					
+					$obj = $this->db->fetch_object($resql);
+
+					$sta->id=$obj->rowid;
+					$sta->nom=$object->name;
+					$sta->prenom=$object->firstname;
+					$sta->civilite=$object->civilite_id;
+					$sta->socid=$object->socid;
+					$sta->fonction = $object->poste;
+					$sta->tel1=$object->phone_pro;
+					$sta->tel2=$object->phone_mobile;
+					$sta->mail=$object->email;
+					$sta->fk_socpeople=$object->id;
+					
+					$result=$sta->update($user);
+					if ($result < 0)
+					{
+						$error ="Failed to update trainee : ".$sta->error." ";
+						$this->error=$error;
+					
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
+						return -1;
+					}
+				}
+			}else {
+				$error ="Failed to update find link to contact : ".$this->db->lasterror()." ";
+				$this->error=$error;
+				
+				dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
+				return -1;
+			}
+			$this->db->free($resql);
 		}
 		
 		return 0;

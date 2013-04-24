@@ -468,9 +468,9 @@ class Agefodd_stagiaire extends CommonObject
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire SET";
-		$sql.= " nom=".(isset($this->ref)?"'".$this->nom."'":"null").",";
-		$sql.= " prenom=".(isset($this->ref)?"'".$this->prenom."'":"null").",";
-		$sql.= " civilite=".(isset($this->ref)?"'".$this->civilite."'":"null").",";
+		$sql.= " nom=".(isset($this->nom)?"'".$this->nom."'":"null").",";
+		$sql.= " prenom=".(isset($this->prenom)?"'".$this->prenom."'":"null").",";
+		$sql.= " civilite=".(isset($this->civilite)?"'".$this->civilite."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id.",";
 		$sql.= " fk_soc=".(isset($this->socid)?$this->socid:"null").",";
 		$sql.= " fonction=".(isset($this->fonction)?"'".$this->fonction."'":"null").",";
