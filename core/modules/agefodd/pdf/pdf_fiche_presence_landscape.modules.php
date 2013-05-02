@@ -154,7 +154,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 				$resql = $agf->fetch_stagiaire_per_session($agf->id);
 
 				$this->_pagebody($pdf, $agf, 1, $outputlangs);
-				
+
 			}
 
 			$pdf->Close();
@@ -227,17 +227,17 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 			$text=$this->emetteur->name;
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
-		
+
 		// Affichage du logo commanditaire (optionnel)
 		if($conf->global->AGF_USE_LOGO_CLIENT)
 		{
 			$staticsoc = new Societe($this->db);
 			$staticsoc->fetch($agf->socid);
 			$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
-			$logo_client=$dir.$staticsoc->logo;
-			if (file_exists($logo_client)) {
-				$heightImg=pdf_getHeightForLogo($logo_client);
-				$pdf->Image($logo_client, $this->page_largeur/2, $this->marge_haute, 0, $heightImg, '', '', '', true, 300, '', false, false, 0, false, false, true);// width=0 (auto)
+			if (!empty($staticsoc->logo)) {
+				$logo_client=$dir.$staticsoc->logo;
+				if (file_exists($logo_client) && is_readable($logo_client))
+					$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
 			}
 		}
 
@@ -251,10 +251,18 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 		$this->str = $mysoc->address."\n";
 		$this->str.= $mysoc->zip.' '.$mysoc->town;
 		$this->str.= ' - '.$mysoc->country."\n";
-		if ($mysoc->phone) {$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";}
-		if ($mysoc->fax) {$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";}
-		if ($mysoc->email) {$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";}
-		if ($mysoc->url) {$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";}
+		if ($mysoc->phone) {
+			$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
+		}
+		if ($mysoc->fax) {
+			$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";
+		}
+		if ($mysoc->email) {
+			$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";
+		}
+		if ($mysoc->url) {
+			$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";
+		}
 
 		$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
@@ -364,7 +372,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
 		$posY += $hauteur;
 		$haut_col4 += $hauteur + 2;
-		
+
 
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
@@ -399,7 +407,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			$this->str = "Nom :";
 			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-				
+
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			//$this->str = $agf->teachername;
@@ -440,7 +448,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 		$cadre_tableau=array($posX -2 , $posY );
 
 			
-	
+
 		$larg_col1 = 50;
 		$larg_col2 = 45;
 		$larg_col3 = 50;
@@ -502,7 +510,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 				$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY);
 				$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str),1,2,"C",0);
 			}
-				
+
 			// horaires
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 +( $largeur_date * $y), $posY + 4);
 			if ($agf_date->lines[$y]->heured && $agf_date->lines[$y]->heuref)	{
@@ -537,12 +545,12 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			$this->str = dol_trunc($line->socname, 27);
 			$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"C",false,1,'','',true,0,false,false,$h_ligne,'M');
-	
+
 			for ($i = 0; $i < 10; $i++)
 			{
 				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 			}
-			
+				
 			$posY= $pdf->GetY();
 			if ($posY > $this->page_hauteur-20) {
 				$pdf->AddPage();
@@ -550,7 +558,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 				$posY=$this->marge_haute;
 			}
 		}
-		
+
 		// Incrustation image tampon
 		if($conf->global->AGF_INFO_TAMPON)
 		{
@@ -627,14 +635,28 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 
 		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
 		$this->str.= $statut;
-		if (!empty($mysoc->capital)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);}
-		if (!empty($mysoc->idprof2)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;}
-		if (!empty($mysoc->idprof4)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;}
-		if (!empty($mysoc->idprof3)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;}
+		if (!empty($mysoc->capital)) {
+			$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
+		}
+		if (!empty($mysoc->idprof2)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;
+		}
+		if (!empty($mysoc->idprof4)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;
+		}
+		if (!empty($mysoc->idprof3)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;
+		}
 		$this->str.="\n";
-		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;}
-		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;}
-		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;
+		}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;
+		}
+		if (!empty($mysoc->tva_intra)) {
+			$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;
+		}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);

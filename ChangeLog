@@ -325,4 +325,5 @@ For All :
 For All :
 	- Fix french translation (spelling)
 	- Fix Bug #829 - Can't clone a session (with pgsql)
-	
+	- Fix bug PDF : If use customer logo and the logo do not exists PDF do not print at all
+	- Fix bug bugs_agefodd #868 - bugs envoi mail attestation

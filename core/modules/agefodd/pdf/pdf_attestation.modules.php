@@ -68,11 +68,11 @@ class pdf_attestation extends ModelePDFAgefodd
 		$this->oriantation='l';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
-		
+
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -200,9 +200,11 @@ class pdf_attestation extends ModelePDFAgefodd
 						$staticsoc = new Societe($this->db);
 						$staticsoc->fetch($agf->socid);
 						$dir=$conf->societe->multidir_output[$staticsoc->entity].'/'.$staticsoc->id.'/logos/';
-						$logo_client=$dir.$staticsoc->logo;
-						if (file_exists($logo_client))
+						if (!empty($staticsoc->logo)) {
+							$logo_client=$dir.$staticsoc->logo;
+							if (file_exists($logo_client) && is_readable($logo_client))
 							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
+						}
 					}
 
 					$newY = $this->marge_haute + 30;
@@ -210,7 +212,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 20);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('AgfPDFAttestation1'), 0, 0,'C', 0);
-					
+						
 
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
@@ -242,7 +244,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
-					
+						
 					$this->str = $outputlangs->transnoentities('AgfPDFAttestation4')." ";
 					if ($agf->dated == $agf->datef) $this->str.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
 					else $this->str.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);
@@ -260,7 +262,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$newY = $newY + 5;
 					// Bloc objectifs pedagogiques
 					if (count($agf_op->line)>0) {
-						
+
 						$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 12);
 						$hauteur = 0;
 						for ( $y = 0; $y < count($agf_op->line); $y++)
@@ -275,7 +277,7 @@ class pdf_attestation extends ModelePDFAgefodd
 							$pdf->Cell(10, 5, $agf_op->line[$y]->priorite.'. ', 0, 0, 'R', 0);
 							$pdf->MultiCell($width,0,
 								$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
-	
+
 						}
 					}
 
@@ -372,9 +374,13 @@ class pdf_attestation extends ModelePDFAgefodd
 
 		$this->str = $mysoc->name;
 		$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot12').' ';
-		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot10').' '.$conf->global->AGF_ORGANISME_PREF;}
-		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot11').' '.$conf->global->AGF_ORGANISME_NUM;}
-		
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot10').' '.$conf->global->AGF_ORGANISME_PREF;
+		}
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot11').' '.$conf->global->AGF_ORGANISME_NUM;
+		}
+
 		$pdf->SetXY ($this->marge_gauche +1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 8);
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
