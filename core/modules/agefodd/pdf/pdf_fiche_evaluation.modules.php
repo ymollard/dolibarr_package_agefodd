@@ -171,7 +171,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 					else
 					{
 						$pdf->SetTextColor(200,0,0);
-						$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 8);
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'R');
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 					}
@@ -237,7 +237,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'C');
 				$posY+= 10;
 
-				$pdf->SetFont('','',12);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$this->str = $agf->formintitule;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;

@@ -176,9 +176,9 @@ class Agefodd_sessadm extends CommonObject
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_adminsitu SET";
 		$sql.= " delais_alerte='".$this->delais_alerte."',";
-		$sql.= " dated=".$this->db->idate($this->dated).",";
-		$sql.= " datef=".$this->db->idate($this->datef).",";
-		$sql.= " datea=".$this->db->idate($this->datea).",";
+		$sql.= " dated='".$this->db->idate($this->dated)."',";
+		$sql.= " datef='".$this->db->idate($this->datef)."',";
+		$sql.= " datea='".$this->db->idate($this->datea)."',";
 		$sql.= " fk_user_mod=".$user->id.",";
 		$sql.= " notes='".$this->notes."',";
 		$sql.= " archive=".$this->archive.",";

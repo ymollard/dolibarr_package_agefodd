@@ -330,3 +330,6 @@ For All :
 	
 ***** ChangeLog for 2.0.30 compared to 2.0.29 *****
 For All :
+	- Fix bugs_agefodd #897 - PDF Conseil Pratique do not result proper data with 3.3
+	- Fix bugs_agefodd #896 - PDF header ugly if no logo on company
+	- Fix bugs_agefodd #898 - "Suivie admnistratif" this screen simply do not provide relevent information 

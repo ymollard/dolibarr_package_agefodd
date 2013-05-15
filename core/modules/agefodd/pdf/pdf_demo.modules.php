@@ -180,7 +180,7 @@ class pdf_demo extends ModelePDFAgefodd
 					else
 					{
 						$pdf->SetTextColor(200,0,0);
-						$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 8);
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'R');
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 					}
@@ -264,13 +264,13 @@ class pdf_demo extends ModelePDFAgefodd
 				/***** Public *****/
 
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfPDFDemoDemo");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($langs->transnoentities('AgfPDFDemoText'));
 
 				$hauteur = dol_nboflines_bis($this->str,50)*4;

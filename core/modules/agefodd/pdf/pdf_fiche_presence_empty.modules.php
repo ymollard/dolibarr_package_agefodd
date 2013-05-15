@@ -215,7 +215,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 			else
 			{
 				$pdf->SetTextColor(200,0,0);
-				$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 8);
 				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'R');
 				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 			}

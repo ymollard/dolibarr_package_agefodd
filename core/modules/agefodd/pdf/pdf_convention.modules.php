@@ -84,6 +84,8 @@ class pdf_convention extends ModelePDFAgefodd
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
 
+		$this->defaultFontSize = 9;
+		
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -201,7 +203,7 @@ class pdf_convention extends ModelePDFAgefodd
 					else
 					{
 						$pdf->SetTextColor(200,0,0);
-						$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 8);
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'R');
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 					}
@@ -571,7 +573,7 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->AddPage();
 				$pagenb++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				$this->defaultFontSize = 9;
+				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);

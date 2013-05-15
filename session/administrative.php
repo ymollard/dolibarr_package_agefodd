@@ -114,7 +114,7 @@ if ($action == 'update_archive' && $user->rights->agefodd->creer)
 	$result = $agf->fetch($actid);
 	if ($agf->archive==1) {$agf->archive=0;}
 	else  {$agf->archive=1;}
-	$agf->datef = dol_mktime(0,0,0,idate('m',dol_now()),idate('d',dol_now()),idate('y',dol_now()));
+	$agf->datef = dol_mktime(0,0,0,dol_print_date(dol_now(),'%m'),dol_print_date(dol_now(),'%d'),dol_print_date(dol_now(),'%Y'));
 	$result = $agf->update($user);
 
 	if ($result > 0)
@@ -383,8 +383,10 @@ if ($user->rights->agefodd->creer)
 					// if alert date is past then RED
 					if (dol_now() > $line->datea) $bgcolor = 'red';
 						
+					//if end date is in the past adn task is mark as done , the task is done
+					if ((dol_now() > $line->datef) && (!empty($line->archive))) $bgcolor='green';
 					//if end date is in the past, the task is done
-					if (dol_now() > $line->datef) $bgcolor='green';
+					if ((dol_now() > $line->datef) && (empty($line->archive))) $bgcolor='red';
 						
 						
 					print '<td width="10px" bgcolor="'.$bgcolor.'">&nbsp;</td>';

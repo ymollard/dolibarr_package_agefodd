@@ -191,8 +191,7 @@ class pdf_conseils extends ModelePDFAgefodd
 					else
 					{
 						$pdf->SetTextColor(200,0,0);
-						
-						$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 8);
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'R');
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 					}
@@ -275,13 +274,12 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfDocNeeded");
+				$this->str = $langs->transnoentities("AgfDocNeeded");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf->note1);
-
 				$pdf->SetXY( $posX, $posY);
 				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
@@ -290,11 +288,11 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfEquiNeeded");
+				$this->str = $langs->transnoentities("AgfEquiNeeded");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf->note2);
 
 				$pdf->SetXY( $posX, $posY);
@@ -307,11 +305,11 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);//$pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->trans("AgfLieu");
+				$this->str = $langs->transnoentities("AgfLieu");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf_session->placecode);
 
 				$pdf->SetXY( $posX, $posY);
@@ -319,7 +317,7 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				$posY = $pdf->GetY() + 2;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = $agf_place->adresse.' - '.$agf_place->cp.' '.$agf_place->ville;
 
 				$pdf->SetXY( $posX, $posY);
@@ -334,7 +332,7 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf_place->acces_site);
 
 				$pdf->SetXY( $posX, $posY);
@@ -349,7 +347,7 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str),0,0,'L');
 				$posY+= 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs),'','');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf_place->note1);
 
 				$pdf->SetXY( $posX, $posY);
