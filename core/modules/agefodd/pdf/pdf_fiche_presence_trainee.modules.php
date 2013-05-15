@@ -224,14 +224,16 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			{
 				$pdf->SetTextColor(200,0,0);
 				$pdf->SetFont('','B', pdf_getPDFFontSize($outputlangs) - 2);
-				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'L');
-				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'R');
+				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 			}
 		}
 		else
 		{
 			$text=$this->emetteur->name;
-			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
+			$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 11);
+			$pdf->MultiCell(150, 3, $outputlangs->convToOutputCharset($text), 0, 'R');
 		}
 
 		// Affichage du logo commanditaire (optionnel)
