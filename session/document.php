@@ -323,7 +323,7 @@ if (!empty($id))
 				print '</tr>'."\n";
 
 				// Avant la formation
-				print '<tr><td colspan=3 style="background-color:#d5baa8;">Avant la formation</td></tr>'."\n";
+				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
 				document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->line[$i]->socid);
 				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
 				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->line[$i]->socid);
@@ -331,7 +331,7 @@ if (!empty($id))
 				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');				
 				
 				// Après la formation
-				print '<tr><td colspan=3 style="background-color:#d5baa8;">Après la formation</td></tr>'."\n";
+				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfAfterTraining").'</td></tr>'."\n";
 				document_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
 
 				$text_fac = $langs->trans("AgfFacture");

@@ -1712,6 +1712,8 @@ class Agsession extends CommonObject
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql.= " c.intitule, c.ref,";
 		$sql.= " p.ref_interne";
+		$sql.= " ,so.nom as socname";
+        $sql.= " ,f.rowid as trainerrowid";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
@@ -1721,6 +1723,12 @@ class Agsession extends CommonObject
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_adminsitu as sa";
 		$sql.= " ON s.rowid = sa.fk_agefodd_session";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = s.fk_soc";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
+		$sql.= " ON sf.fk_session = s.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
+		$sql.= " ON f.rowid = sf.fk_agefodd_formateur";
 
 		if ($arch == 2)
 		{
@@ -1741,7 +1749,7 @@ class Agsession extends CommonObject
 				if (strpos($key,'date')) {
 					$sql.= ' AND '.$key.' = \''.$this->db->idate($value).'\'';
 				}
-				elseif ($key=='s.fk_session_place')
+				elseif (($key=='s.fk_session_place') || ($key=='f.rowid'))
 				{
 					$sql.= ' AND '.$key.' = '.$value;
 				}
@@ -1750,7 +1758,8 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql.= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
+		$sql.= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql.= " p.ref_interne, c.intitule, c.ref, so.nom, f.rowid";
 		$sql.= " ORDER BY $sortfield $sortorder " . $this->db->plimit( $limit + 1 ,$offset);
 
 		$resql = $this->db->query($sql);
@@ -1773,6 +1782,8 @@ class Agsession extends CommonObject
 					
 					$line->rowid = $obj->rowid;
 					$line->socid = $obj->fk_soc;
+					$line->socname = $obj->socname;
+                                        $line->trainerrowid = $obj->trainerrowid;
 					$line->type_session = $obj->type_session;
 					$line->is_date_res_site = $obj->is_date_res_site;
 					$line->is_date_res_trainer = $obj->is_date_res_trainer;
@@ -1835,6 +1846,7 @@ class Agsession extends CommonObject
 		$sql.= " ON s.rowid = sa.fk_agefodd_session";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_facture as ord_inv";
 		$sql.= " ON s.rowid = ord_inv.fk_session";
+
 	
 		if (!empty($invoiceid)) {
 			$sql.= " INNER JOIN ".MAIN_DB_PREFIX."facture as invoice ";
@@ -1941,7 +1953,7 @@ class Agsession extends CommonObject
 		print '<td><a href="'.dol_buildpath('/user/fiche.php',1).'?id='.$this->commercialid.'">'.$this->commercialname.'</a></td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
-		print '<td>'.$this->duree.'</td></tr>';
+		print '<td>'.$this->duree.' heure(s)</td></tr>';
 
 		print '<tr><td>'.$langs->trans("AgfDateDebut").'</td>';
 		print '<td>'.dol_print_date($this->dated,'daytext').'</td></tr>';
@@ -2374,6 +2386,8 @@ class AgfSessionLine
 {
 	var $rowid;
 	var $socid ;
+	var $socname;
+        var $trainerrowid;
 	var $type_session;
 	var $is_date_res_site;
 	var $is_date_res_trainer;
