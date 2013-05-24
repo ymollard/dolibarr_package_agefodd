@@ -227,7 +227,7 @@ class pdf_courrier extends ModelePDFAgefodd
 
 				$posX = 100;
 				$posY = 42;
-				
+
 				// Destinataire
 
 				// Show recipient name
@@ -248,7 +248,7 @@ class pdf_courrier extends ModelePDFAgefodd
 				if (!(empty($agf->contactname))) {
 					$this->str= ucfirst(strtolower($agf->contactcivilite)).' '.$agf->contactname."\n";
 					$this->madame_monsieur = $langs->transnoentities("Civility".$agf->contactcivilite);
-				} 
+				}
 				if (($agf_contact->name) && (empty($this->str)))
 				{
 					$this->str= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->name.' '.$agf_contact->firstname."\n";
@@ -260,9 +260,9 @@ class pdf_courrier extends ModelePDFAgefodd
 				}
 				else
 				{
-					$this->str = $agf_soc->adresse_full;
+					$this->str = $agf_soc->address."\n".$agf_soc->zip.' '.$agf_contact->town;
 				}
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);
 				$posY = $pdf->GetY()-9; //Auto Y coord readjust for multiline name
 				$pdf->SetXY($posX+20,$posY+10);
@@ -272,7 +272,7 @@ class pdf_courrier extends ModelePDFAgefodd
 				$posY = $posY + 50;
 				$this->str = ucfirst(strtolower($mysoc->town)).', '.$outputlangs->transnoentities('AgfPDFFichePres8').' '.dol_print_date(dol_now(),'daytext');
 				$pdf->SetXY($this->marge_gauche,$posY+6);
-				$pdf->Cell(0,0,$outputlangs->convToOutputCharset($this->str),0,0,"L",0);
+				$pdf->Cell(0,0,$outputlangs->convToOutputCharset($this->str),0,0,"R",0);
 
 				// Corps du courrier
 				$posY = $this->_body($pdf, $agf, $outputlangs, $courrier, $id, $socid);
