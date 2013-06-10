@@ -227,23 +227,25 @@ function document_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
 	print '<tr style="height:14px">'."\n";
 	if ($level == 2)
 	{
-		print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
+	//print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
+	if ( $mdle == 'bc' || $mdle == 'fac')
+	{
+			print '<td style="width="90px;border-left:0px;" align="left">'.show_fac($mdle, $socid, $mdle).'</td>'."\n";
+	}
+	elseif ( $mdle == 'convention')
+	{
+			print '<td style="border-left:0px; width:90px" align="left">'.show_conv($mdle, $socid,$nom_courrier).'</td>'."\n";
+	}
+	else
+	{
+			print '<td style="border-left:0px; width:90px"  align="left">'.show_doc($mdle, $socid, $nom_courrier).'</td>'."\n";
+		}
 		print '<td style="border-right:0px;">';
 	}
 	else print '<td colspan="2" style="border-right:0px;">';
 	print $intitule.'</td>'."\n";
-	if ( $mdle == 'bc' || $mdle == 'fac')
-	{
-		print '<td style="border-left:0px;" align="right">'.show_fac($mdle, $socid, $mdle).'</td></tr>'."\n";
-	}
-	elseif ( $mdle == 'convention')
-	{
-		print '<td style="border-left:0px; width:200px" align="right">'.show_conv($mdle, $socid,$nom_courrier).'</td></tr>'."\n";
-	}
-	else
-	{
-		print '<td style="border-left:0px; width:200px"  align="right">'.show_doc($mdle, $socid, $nom_courrier).'</td></tr>'."\n";
-	}
+	
+	print '</tr>';
 }
 
 function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')

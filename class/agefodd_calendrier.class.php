@@ -216,7 +216,7 @@ class Agefoddcalendrier extends CommonObject
     		while ( $i < $num)
     		{
     			$obj = $this->db->fetch_object($resql);
-        			
+    			$this->lines[$i] = new AgefoddcalendrierLines();
     			$this->lines[$i]->id    = $obj->rowid;
     
     			$this->lines[$i]->day_session = $obj->day_session;

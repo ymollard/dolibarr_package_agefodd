@@ -1746,8 +1746,9 @@ class Agsession extends CommonObject
 		//Manage filter
 		if (!empty($filter)){
 			foreach($filter as $key => $value) {
-				if (strpos($key,'date')) {
-					$sql.= ' AND '.$key.' = \''.$this->db->idate($value).'\'';
+				if (strpos($key,'date')) // To allow $filter['YEAR(s.dated)']=>$year
+				{
+					$sql.= ' AND '.$key.' = \''.$value.'\'';
 				}
 				elseif (($key=='s.fk_session_place') || ($key=='f.rowid'))
 				{
@@ -2304,6 +2305,69 @@ class Agsession extends CommonObject
 		}
 	}
 
+	/**
+	 *  Set archive flag to 1 to session according to selected year
+	 *
+	 *  @param  int		$year	 	 Selected year
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 <0 if KO, >0 if OK
+	 */
+	function updateArchiveByYear($year,$user, $notrigger=0)
+	{
+		global $conf, $langs;
+		$error=0;
+	
+		// Check parameters
+		if (!isset($year)) {
+			$error++; $this->errors[]="Error ".$langs->trans('ErrorParameterMustBeProvided','year');
+		}
+	
+		// Update request
+		if(!$error) {
+			$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session SET";
+			$sql.= " archive='1',";
+			$sql.= " fk_user_mod=".$user->id." ";
+			$sql.= " WHERE YEAR(dated)='".$year."'";
+		
+			$this->db->begin();
+		
+			dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error++; $this->errors[]="Error ".$this->db->lasterror();
+			}
+			if (! $error)
+			{
+				if (! $notrigger)
+				{		
+					//// Call triggers
+					//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+					//$interface=new Interfaces($this->db);
+					//$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
+					//if ($result < 0) { $error++; $this->errors=$interface->errors; }
+					//// End call triggers
+				}
+			}
+		}
+	
+		// Commit or rollback
+		if ($error)
+		{
+			foreach($this->errors as $errmsg)
+			{
+				dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+				$this->error.=($this->error?', '.$errmsg:$errmsg);
+			}
+			$this->db->rollback();
+			return -1*$error;
+		}
+		else
+		{
+			$this->db->commit();
+			return 1;
+		}
+	}
 }
 
 /**

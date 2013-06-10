@@ -465,7 +465,7 @@ class FormAgefodd extends Form
 			}
 
 			$out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
-			if ($showempty) $out.= '<option value="-1"></option>';
+			if ($showempty) $out.= '<option value=""></option>';
 			$num = $this->db->num_rows($result);
 			$i = 0;
 			if ($num)

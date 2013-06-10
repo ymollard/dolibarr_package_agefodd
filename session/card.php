@@ -556,6 +556,15 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<table class="border" width="100%">';
 
+
+	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
+	print '<td><table class="nobordernopadding"><tr><td>';
+	print $formAgefodd->select_site_forma("",'place',1);
+	print '</td>';
+	print '<td> <a href="'.dol_buildpath('/agefodd/site/card.php',1).'?action=create&url_return='.urlencode($_SERVER['PHP_SELF'].'?action=create').'" title="'.$langs->trans('AgfCreateNewSite').'">'.$langs->trans('AgfCreateNewSite').'</a>';
+	print '</td><td>'.$form->textwithpicto('',$langs->trans("AgfCreateNewSiteHelp"),1,'help').'</td></tr></table>';;
+	print '</td></tr>';
+
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
 	print '<td>'.$formAgefodd->select_formation("", 'formation','intitule',1).'</a></td></tr>';
 
@@ -606,14 +615,6 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddContactHelp"),1,'help').'</td></tr></table>';
 		print '</td></tr>';
 	}
-
-	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
-	print '<td><table class="nobordernopadding"><tr><td>';
-	print $formAgefodd->select_site_forma("",'place',1);
-	print '</td>';
-	print '<td> <a href="'.dol_buildpath('/agefodd/site/card.php',1).'?action=create&url_return='.urlencode($_SERVER['PHP_SELF'].'?action=create').'" title="'.$langs->trans('AgfCreateNewSite').'">'.$langs->trans('AgfCreateNewSite').'</a>';
-	print '</td><td>'.$form->textwithpicto('',$langs->trans("AgfCreateNewSiteHelp"),1,'help').'</td></tr></table>';;
-	print '</td></tr>';
 
 	print '<tr><td>'.$langs->trans("AgfNumberPlaceAvailable").'</td>';
 	print '<td>';
@@ -1097,19 +1098,32 @@ else
 					/*
 					 * Gestion des cout
 					*/
+					$spend_cost = 0;
+					$cashed_cost = 0;
+					
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormateur").'</td>';
 					print '<td>'.price($agf->cost_trainer).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					$spend_cost+=$agf->cost_trainer;
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
 					print '<td>'.price($agf->cost_site).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					$spend_cost+=$agf->cost_site;
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
 					print '<td>'.price($agf->cost_trip).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					$spend_cost+=$agf->cost_trip;
+
+					print '<tr><td width="20%"><strong>'.$langs->trans("AgfCoutTotal").'</strong></td>';
+					print '<td><strong>'.price($spend_cost).' '.$langs->trans('Currency'.$conf->currency).'</strong></td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
 					print '<td>'.price($agf->sell_price).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					$cashed_cost+=$agf->sell_price;
+					
+					print '<tr><td width="20%"><strong>'.$langs->trans("AgfCoutRevient").'</strong></td>';
+					print '<td><strong>'.price($cashed_cost-$spend_cost).' '.$langs->trans('Currency'.$conf->currency).'</strong></td></tr>';
 
 					print '</table>';
 

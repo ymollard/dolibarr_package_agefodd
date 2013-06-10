@@ -85,10 +85,10 @@ if (!empty($search_training_ref)) {
 	$filter['c.ref']=$search_training_ref;
 }
 if (!empty($search_start_date)) {
-	$filter['s.dated']=$search_start_date;
+	$filter['s.dated']=$db->idate($search_start_date);
 }
 if (!empty($search_end_date)) {
-	$filter['s.datef']=$search_end_date;
+	$filter['s.datef']=$db->idate($search_end_date);
 }
 if (!empty($search_site) && $search_site!=-1) {
 	$filter['s.fk_session_place']=$search_site;
@@ -98,7 +98,7 @@ if (!empty($search_order) && $search_order!=-1) {
 }
 
 if (empty($sortorder)) $sortorder="DESC";
-if (empty($sortfield)) $sortfield="s.rowid";
+if (empty($sortfield)) $sortfield="s.dated";
 if (empty($arch)) $arch = 0;
 
 if ($page == -1) {
@@ -276,7 +276,9 @@ if ($resql != -1)
 		print '</td>';
 		print '<td>';
 		$trainer = new Agefodd_teacher($db);
-		$trainer->fetch($line->trainerrowid);
+		if (!empty($line->trainerrowid)) {
+			$trainer->fetch($line->trainerrowid);
+		}
 		if (!empty($trainer->id)) {
 			print ucfirst(strtolower($trainer->civilite)).' '.strtoupper($trainer->name).' '.ucfirst(strtolower($trainer->firstname));
 		}else {

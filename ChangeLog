@@ -336,4 +336,6 @@ For All :
 	
 ***** ChangeLog for 2.0.30 compared to 2.0.29 *****
 For All :
-	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture
+	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	- tasks_agefodd #932 : Add calculation of the cost of a session
+	- tasks_agefodd #932 : Add calculation of the cost of a session
+	- New Screen : Mass Archive sessions per year 
