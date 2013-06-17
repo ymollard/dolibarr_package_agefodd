@@ -66,7 +66,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 		if ($_POST["type"] == 'bc')
 		{
 			$agf->comid=$_POST["select"];
-			$agf->facid="";
+			$agf->facid="-1";
 		}
 		$agf->sessid = $id;
 		$agf->socid = $socid;
