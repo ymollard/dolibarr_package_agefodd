@@ -446,7 +446,7 @@ class Agsession extends CommonObject
 		$sql.= " t.is_OPCA as is_opca,";
 		$sql.= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql.= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
-		$sql.= " concactOPCA.name as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
+		$sql.= " concactOPCA.lastname as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
 		$sql.= " t.num_OPCA_soc as num_opca_soc,";
 		$sql.= " t.num_OPCA_file as num_opca_file,";
 		$sql.= " t.fk_user_author,";
@@ -455,14 +455,14 @@ class Agsession extends CommonObject
 		$sql.= " t.tms,";
 		$sql.= " t.archive,";
 		$sql.= " p.rowid as placeid, p.ref_interne as placecode,";
-		$sql.= " us.name as commercialname, us.firstname as commercialfirstname, ";
+		$sql.= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
 		$sql.= " com.fk_user_com as commercialid, ";
-		$sql.= " socp.name as contactname, socp.firstname as contactfirstname, ";
+		$sql.= " socp.lastname as contactname, socp.firstname as contactfirstname, ";
 		$sql.= " agecont.fk_socpeople as sourcecontactid, ";
 		$sql.= " agecont.rowid as contactid, ";
-		$sql.= " socOPCA.address as opca_adress, socOPCA.cp as opca_cp, socOPCA.ville as opca_ville, ";
+		$sql.= " socOPCA.address as opca_adress, socOPCA.zip as opca_cp, socOPCA.town as opca_ville, ";
 		$sql.= " socOPCA.nom as soc_opca_name, ";
-		$sql.= " concactOPCA.address as opca_contact_adress, concactOPCA.cp as opca_contact_cp, concactOPCA.ville as opca_contact_ville ";
+		$sql.= " concactOPCA.address as opca_contact_adress, concactOPCA.zip as opca_contact_cp, concactOPCA.town as opca_contact_ville ";
 
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as t";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";

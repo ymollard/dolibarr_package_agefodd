@@ -153,6 +153,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
+		$agf->duree = GETPOST('duree','int');
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
 			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));

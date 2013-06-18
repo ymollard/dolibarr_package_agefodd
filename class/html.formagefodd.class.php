@@ -440,10 +440,12 @@ class FormAgefodd extends Form
 	{
 		global $conf,$langs;
 
+		
+		
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_socpeople, s.fk_user,";
-		$sql.= " s.rowid, CONCAT(sp.name,' ',sp.firstname) as fullname_contact,";
-		$sql.= " CONCAT(u.name,' ',u.firstname) as fullname_user";
+		$sql.= " s.rowid, CONCAT(sp.lastname,' ',sp.firstname) as fullname_contact,";
+		$sql.= " CONCAT(u.lastname,' ',u.firstname) as fullname_user";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp";
 		$sql.= " ON sp.rowid = s.fk_socpeople";
