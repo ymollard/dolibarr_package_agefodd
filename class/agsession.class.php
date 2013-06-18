@@ -645,6 +645,86 @@ class Agsession extends CommonObject
 			return -1;
 		}
 	}
+	
+	/**
+	 *  Load object (all trainee for one session) in memory from database
+	 *
+	 *  @param	int		$id    Id object
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_session_per_trainee($id)
+	{
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " s.rowid as sessid,";
+		$sql.= " so.rowid as socid,";
+		$sql.= " so.nom as socname,";
+		$sql.= " s.type_session,";
+		$sql.= " s.fk_session_place,";
+		$sql.= " s.dated,";
+		$sql.= " s.datef,";
+		$sql.= " c.intitule,";
+		$sql.= " c.ref,";
+		$sql.= " c.ref_interne,";
+		$sql.= " s.color";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
+		$sql.= " ON s.rowid = ss.fk_session_agefodd";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
+		$sql.= " ON c.rowid = s.fk_formation_catalogue";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
+		$sql.= " ON sa.rowid = ss.fk_stagiaire";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
+		$sql.= " ON civ.code = sa.civilite";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON so.rowid = s.fk_soc";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sope";
+		$sql.= " ON sope.rowid = sa.fk_socpeople";
+		$sql.= " WHERE sa.rowid = ".$id;
+		if (!empty($socid)) $sql.= " AND so.rowid = ".$socid;
+		$sql.= " ORDER BY sa.nom";
+	
+		dol_syslog(get_class($this)."::fetch_session_per_trainee sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+	
+			$i = 0;
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+	
+				$line = new AgfSessionLine();
+	
+				$line->rowid = $obj->sessid;
+				$line->socid = $obj->socid;
+				$line->socname = $obj->socname;
+				$line->type_session = $obj->type_session;
+				$line->fk_session_place = $obj->fk_session_place;
+				$line->dated = $this->db->jdate($obj->dated);
+				$line->datef =$this->db->jdate($obj->datef);
+				$line->intitule = $obj->intitule;
+				$line->ref = $obj->ref;
+				$line->ref_interne = $obj->ref_interne;
+				$line->color = $obj->color;
+
+				$this->line[$i]=$line;
+	
+				$i++;
+			}
+			$this->db->free($resql);
+			return $num;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_session_per_trainee ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 
 	/**
@@ -1784,7 +1864,7 @@ class Agsession extends CommonObject
 					$line->rowid = $obj->rowid;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
-                                        $line->trainerrowid = $obj->trainerrowid;
+                    $line->trainerrowid = $obj->trainerrowid;
 					$line->type_session = $obj->type_session;
 					$line->is_date_res_site = $obj->is_date_res_site;
 					$line->is_date_res_trainer = $obj->is_date_res_trainer;
@@ -2451,7 +2531,7 @@ class AgfSessionLine
 	var $rowid;
 	var $socid ;
 	var $socname;
-        var $trainerrowid;
+    var $trainerrowid;
 	var $type_session;
 	var $is_date_res_site;
 	var $is_date_res_trainer;

@@ -19,8 +19,8 @@
 */
 
 /**
- *  \file       	/agefodd/trainee/certificate.php
- *  \brief      	Certificate page of a trainee
+ *  \file       	/agefodd/trainee/session.php
+ *  \brief      	Session list of a trainee
 */
 
 $res=@include("../../main.inc.php");				// For root directory
@@ -28,7 +28,6 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
 dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/functions2.lib.php');
 dol_include_once('/agefodd/class/agsession.class.php');
@@ -56,18 +55,18 @@ if ($id)
 
 	if ($result)
 	{
-		$agf_certif = new Agefodd_stagiaire_certif($db);
-		$result=$agf_certif->fetch_all_by_trainee($id);
+		$agf_session = new Agsession($db);
+		$agf_session->fetch_session_per_trainee($id);
 		if ($result<0) {
-			dol_syslog("agefodd:session:subscribers error=".$agf_certif->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+			dol_syslog("agefodd:trainee:session error=".$agf_session->error, LOG_ERR);
+			$mesg = '<div class="error">'.$agf_session->error.'</div>';
 		}
 
 		$form = new Form($db);
 
 		$head = trainee_prepare_head($agf);
 
-		dol_fiche_head($head, 'certificate', $langs->trans("AgfStagiaireDetailCertificate"), 0, 'user');
+		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfSessionDetail"), 0, 'user');
 
 
 		dol_htmloutput_mesg($mesg);
@@ -130,35 +129,28 @@ if ($id)
 		print "</table>";
 		print '</div>';
 			
-		print_fiche_titre($langs->trans("AgfCertificate"));
+		print_fiche_titre($langs->trans("AgfSessionDetail"));
 			
-		if (count($agf_certif->lines)>0) {
+		if (count($agf_session->line)>0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
 			print '<th class="liste_titre" width="10%">'.$langs->trans('AgfMenuSess').'</th>';
 			print '<th class="liste_titre" width="10%">'.$langs->trans('AgfIntitule').'</th>';
 			print '<th class="liste_titre" width="20%">'.$langs->trans('AgfDebutSession').'</th>';
-			print '<th class="liste_titre">'.$langs->trans('AgfCertifCode').'</th>';
-			print '<th class="liste_titre">'.$langs->trans('AgfCertifLabel').'</th>';
-			print '<th class="liste_titre">'.$langs->trans('AgfCertifDateSt').'</th>';
-			print '<th class="liste_titre">'.$langs->trans('AgfCertifDateEnd').'</th>';
+			print '<th class="liste_titre" width="20%">'.$langs->trans('AgfFinSession').'</th>';
 			print '</tr>';
 
 			$style='impair';				
-			foreach($agf_certif->lines as $line){
+			foreach($agf_session->line as $line){
 				if ($style=='pair') {$style='impair';}
 				else {$style='pair';}
 				
 				print '<tr class="'.$style.'">';
-				$agf_session = new Agsession($db);
-				$agf_session->fetch($line->fk_session_agefodd);
-				print '<td><a href="'.dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$line->fk_session_agefodd.'">'.$line->fk_session_agefodd.'</a></td>';
-				print '<td><a href="'.dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$line->fk_session_agefodd.'">'.$agf_session->formintitule.'</a></td>';
-				print '<td>'.dol_print_date($agf_session->dated,'daytext').'</td>';
-				print '<td>'.$line->certif_code.'</td>';
-				print '<td>'.$line->certif_label.'</td>';
-				print '<td>'.dol_print_date($line->certif_dt_start,'daytext').'</td>';
-				print '<td>'.dol_print_date($line->certif_dt_end,'daytext').'</td>';
+			
+				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->rowid.'</a></td>';
+				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->intitule.'</a></td>';
+				print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
+				print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
 				print '</tr>';
 			}
 			print '</table>';

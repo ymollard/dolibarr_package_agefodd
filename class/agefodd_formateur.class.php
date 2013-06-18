@@ -159,9 +159,9 @@ class Agefodd_teacher extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
-		$sql.= " s.rowid as spid , s.name as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, ";
+		$sql.= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, ";
 		$sql.= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
-		$sql.= " u.name as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
+		$sql.= " u.lastname as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
 		$sql.= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";
@@ -230,9 +230,9 @@ class Agefodd_teacher extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
-		$sql.= " s.rowid as spid , s.name as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, ";
+		$sql.= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, ";
 		$sql.= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
-		$sql.= " u.name as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
+		$sql.= " u.lastname as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
 		$sql.= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON f.fk_socpeople = s.rowid";

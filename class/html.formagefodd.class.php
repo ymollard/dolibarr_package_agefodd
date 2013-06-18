@@ -440,8 +440,8 @@ class FormAgefodd extends Form
 	{
 		global $conf,$langs;
 
-		
-		
+
+
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_socpeople, s.fk_user,";
 		$sql.= " s.rowid, CONCAT(sp.lastname,' ',sp.firstname) as fullname_contact,";
@@ -652,83 +652,44 @@ class FormAgefodd extends Form
 		global $bc;
 
 		require_once(DOL_DOCUMENT_ROOT."/comm/action/class/actioncomm.class.php");
-		
-		$currentsubversion=explode('.',$conf->global->MAIN_VERSION_LAST_UPGRADE);
-		if ($currentsubversion[1]==2)
+
+		$action_arr=ActionComm::getActions($this->db,$socid, $object->id, $typeelement);
+		$num = count($action_arr);
+		if ($num)
 		{
-			$actioncomm = new ActionComm($this->db);
-			$actioncomm->getActions($socid, $object->id, $typeelement);
-			$num = count($actioncomm->actions);
-			if ($num)
+			if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
+			//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
+			else $title=$langs->trans("Actions");
+				
+			print_titre($title);
+				
+			$total = 0;	$var=true;
+			print '<table class="noborder" width="100%">';
+			print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
+			print "\n";
+				
+			foreach($action_arr as $action)
 			{
-				if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
-				//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
-				else $title=$langs->trans("Actions");
-			
-				print_titre($title);
-			
-				$total = 0;	$var=true;
-				print '<table class="noborder" width="100%">';
-				print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
-				print "\n";
-			
-				foreach($actioncomm->actions as $action)
-				{
-					$var=!$var;
-					print '<tr '.$bc[$var].'>';
-					print '<td>'.$action->getNomUrl(1).'</td>';
-					print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
-					print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
-					$userstatic = new User($this->db);
-					$userstatic->id = $action->author->id;
-					$userstatic->firstname = $action->author->firstname;
-					$userstatic->lastname = $action->author->lastname;
-					print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
-					print '<td>'.$userstatic->getNomUrl(1).'</td>';
-					print '</tr>';
-				}
-				print '</table>';
+				$var=!$var;
+				print '<tr '.$bc[$var].'>';
+				print '<td>'.$action->getNomUrl(1).'</td>';
+				print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
+				print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
+				$userstatic = new User($this->db);
+				$userstatic->id = $action->author->id;
+				$userstatic->firstname = $action->author->firstname;
+				$userstatic->lastname = $action->author->lastname;
+				print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
+				print '<td>'.$userstatic->getNomUrl(1).'</td>';
+				print '</tr>';
 			}
-		}
-		if ($currentsubversion[1]==3) {
-			$action_arr=ActionComm::getActions($this->db,$socid, $object->id, $typeelement);
-			$num = count($action_arr);
-			if ($num)
-			{
-				if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
-				//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
-				else $title=$langs->trans("Actions");
-					
-				print_titre($title);
-					
-				$total = 0;	$var=true;
-				print '<table class="noborder" width="100%">';
-				print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
-				print "\n";
-					
-				foreach($action_arr as $action)
-				{
-					$var=!$var;
-					print '<tr '.$bc[$var].'>';
-					print '<td>'.$action->getNomUrl(1).'</td>';
-					print '<td>'.dol_print_date($action->datep,'dayhour').'</td>';
-					print '<td title="'.dol_escape_htmltag($action->label).'">'.dol_trunc($action->label,50).'</td>';
-					$userstatic = new User($this->db);
-					$userstatic->id = $action->author->id;
-					$userstatic->firstname = $action->author->firstname;
-					$userstatic->lastname = $action->author->lastname;
-					print '<td>'.$userstatic->getElementUrl($action->socid, 'societe',1).'</td>';
-					print '<td>'.$userstatic->getNomUrl(1).'</td>';
-					print '</tr>';
-				}
-				print '</table>';
-			}
+			print '</table>';
 		}
 
 
 		return $num;
 	}
-	
+
 	/**
 	 *	Return list of all contacts (for a third party or all)
 	 *
@@ -742,35 +703,35 @@ class FormAgefodd extends Form
 	 *	@param	string	$moreclass		Add more class to class style
 	 *	@param	bool	$options_only	Return options only (for ajax treatment)
 	 * 	@param	int		$forcecombo		Force to use combo box
-     *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
 	 *	@return	int						<0 if KO, Nb of contact in list if OK
 	 */
 	function select_contacts_combobox($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto='',$showfunction=0, $moreclass='', $options_only=false,$forcecombo=0,$event=array())
 	{
 		global $conf,$langs;
-	
+
 		$langs->load('companies');
-	
+
 		$out='';
-	
+
 		// On recherche les societes
 		$sql = "SELECT sp.rowid, sp.name as name, sp.firstname, sp.poste";
 		$sql.= " FROM ".MAIN_DB_PREFIX ."socpeople as sp";
 		$sql.= " WHERE sp.entity IN (".getEntity('societe', 1).")";
 		if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
 		$sql.= " ORDER BY sp.name ASC";
-	
+
 		dol_syslog(get_class($this)."::select_contacts_combobox sql=".$sql);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
 			$num=$this->db->num_rows($resql);
-			
+				
 			if ($conf->use_javascript_ajax && $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo)
-			{			
+			{
 				$out.= ajax_combobox($htmlname, $event);
 			}
-	
+
 			if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
 			if ($showempty) $out.= '<option value="0"></option>';
 			$num = $this->db->num_rows($resql);
@@ -779,16 +740,16 @@ class FormAgefodd extends Form
 			{
 				include_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 				$contactstatic=new Contact($this->db);
-	
+
 				while ($i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-	
+
 					$contactstatic->id=$obj->rowid;
 					$contactstatic->name=$obj->name;
 					$contactstatic->lastname=$obj->name;
 					$contactstatic->firstname=$obj->firstname;
-	
+
 					if ($htmlname != 'none')
 					{
 						$disabled=0;
@@ -832,7 +793,7 @@ class FormAgefodd extends Form
 			{
 				$out.= '</select>';
 			}
-	
+
 			$this->num = $num;
 			return $out;
 		}
@@ -858,31 +819,31 @@ class FormAgefodd extends Form
 			$(document).ready(function() {
 			$("#'.$htmlname.'").css("backgroundColor", \'#'.$set_color.'\');
 				$("#'.$htmlname.'").ColorPicker({
-				color: \'#'.$set_color.'\',
-					onShow: function (colpkr) {
+					color: \'#'.$set_color.'\',
+						onShow: function (colpkr) {
 						$(colpkr).fadeIn(500);
 						return false;
-					},
-					onHide: function (colpkr) {
+	},
+						onHide: function (colpkr) {
 						$(colpkr).fadeOut(500);
 						return false;
-					},
-					onChange: function (hsb, hex, rgb) {
+	},
+						onChange: function (hsb, hex, rgb) {
 						$("#'.$htmlname.'").css("backgroundColor", \'#\' + hex);
-						$("#'.$htmlname.'").val(hex);
-					},
-					onSubmit: function (hsb, hex, rgb) {
-					$("#'.$htmlname.'").val(hex);
-					}
-				});
-			})
-					.bind(\'keyup\', function(){
-					$(this).ColorPickerSetColor(this.value);
-		});
-					</script>';
-		
+							$("#'.$htmlname.'").val(hex);
+	},
+								onSubmit: function (hsb, hex, rgb) {
+								$("#'.$htmlname.'").val(hex);
+	}
+	});
+	})
+									.bind(\'keyup\', function(){
+									$(this).ColorPickerSetColor(this.value);
+	});
+									</script>';
+
 		return $out;
 	}
-	
-	
+
+
 }

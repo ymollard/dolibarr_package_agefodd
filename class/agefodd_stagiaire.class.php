@@ -208,7 +208,7 @@ class Agefodd_stagiaire extends CommonObject
 						$this->id = $obj->rowid;
 						$this->ref = $obj->rowid; // use for next prev refs
 
-						$this->nom = $contact->name;
+						$this->nom = $contact->lastname;
 						$this->prenom = $contact->firstname;
 						$this->civilite = $contact->civilite_id;
 						$this->socid = $contact->socid;

@@ -199,7 +199,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				$contact=new Contact($db);
 					
 				$contact->civilite_id		= $civilite_id;
-				$contact->name				= $name;
+				$contact->lastname			= $name;
 				$contact->firstname			= $firstname;
 				$contact->address			= $address;
 				$contact->zip				= $zip;
@@ -371,6 +371,30 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfMenuActStagiaireNew"));
+	
+	print "\n".'<script type="text/javascript">
+					$(document).ready(function () {
+						$("input[type=radio][name=create_thirdparty]").change(function() {
+								
+							if($(this).val()==1) {
+								$(".create_thirdparty_block").show();
+								$(".select_thirdparty_block").hide();
+							}else {
+								$(".create_thirdparty_block").hide();
+								$(".select_thirdparty_block").show();
+							}			
+						
+					    });
+		
+						if($("input[type=radio][name=create_thirdparty]:checked").val()==1) {
+								$(".create_thirdparty_block").show();
+								$(".select_thirdparty_block").hide();
+							}else {
+								$(".create_thirdparty_block").hide();
+								$(".select_thirdparty_block").show();
+							}		
+					});';
+	print "\n"."</script>\n";
 
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -379,18 +403,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print '<input type="hidden" name="url_back" value="'.$url_back.'">'."\n";
 
 	print '<table class="border" width="100%">';
-
+	
 	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("ThirdParty").'</strong></td>';
 	
-	print '<tr><td valign="top">'.$langs->trans("Company").'</td><td colspan="3">';
-	print $form->select_company('','societe','(s.client IN (1,2))',1,1);
-	print '</td></tr>';
-	
-	
-	print '<tr><td colspan="">'.$langs->trans('CreateANewThirPartyFromTraineeForm');
-	print img_picto($langs->trans("CreateANewThirPartyFromTraineeFormInfo"),'help');
-	print '</td>';
-	print '<td colspan="3">';
 	if (GETPOST('create_thirdparty','int')>0) {
 		$checkedYes='checked="checked"';
 		$checkedNo='';
@@ -398,22 +413,31 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$checkedYes='';
 		$checkedNo='checked="checked"';
 	}
-		
+	
+	print '<tr><td>'.$langs->trans('CreateANewThirPartyFromTraineeForm');
+	print img_picto($langs->trans("CreateANewThirPartyFromTraineeFormInfo"),'help');
+	print '</td>';
+	print '<td colspan="3">';
 	print '<input type="radio" id="create_thirdparty_confirm" name="create_thirdparty" value="1" '.$checkedYes.'/> <label for="create_thirdparty_confirm">'.$langs->trans('Yes').'</label>';
 	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" '.$checkedNo.' value="-1"/> <label for="create_thirdparty_cancel">'.$langs->trans('no').'</label>';
 	print '</td>';
 	print '	</tr>';
 	
-	print '<tr><td>'.$langs->trans("ThirdPartyName").'</td>';
+	print '<tr class="select_thirdparty_block"><td>'.$langs->trans("Company").'</td><td colspan="3">';
+	print $form->select_company('','societe','(s.client IN (1,2))',1,1);
+	print '</td></tr>';
+	
+	
+	print '<tr class="create_thirdparty_block"><td>'.$langs->trans("ThirdPartyName").'</td>';
 	print '<td colspan="3"><input name="societe_name" class="flat" size="50" value=""></td></tr>';
 	
 	// Address
-	print '<tr><td valign="top">'.$langs->trans('Address').'</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
+	print '<tr class="create_thirdparty_block"><td valign="top">'.$langs->trans('Address').'</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
 	print $object->address;
 	print '</textarea></td></tr>';
 	
 	// Zip / Town
-	print '<tr><td>'.$langs->trans('Zip').'</td><td>';
+	print '<tr class="create_thirdparty_block"><td>'.$langs->trans('Zip').'</td><td>';
 	print $formcompany->select_ziptown($object->zip,'zipcode',array('town','selectcountry_id','departement_id'),6);
 	print '</td><td>'.$langs->trans('Town').'</td><td>';
 	print $formcompany->select_ziptown($object->town,'town',array('zipcode','selectcountry_id','departement_id'));
@@ -433,7 +457,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Firstname").'</span></td>';
 	print '<td colspan="3"><input name="prenom" class="flat" size="50" value=""></td></tr>';
 	
-	print '<tr><td colspan="">'.$langs->trans('CreateANewContactFromTraineeForm');
+	print '<tr><td>'.$langs->trans('CreateANewContactFromTraineeForm');
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"),'help');
 	print '</td>';
 	print '<td colspan="3">';

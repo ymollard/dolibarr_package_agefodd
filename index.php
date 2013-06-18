@@ -85,7 +85,7 @@ $total_heures = $agf->total;
 $resql = $agf->fetch_heures_stagiaires_nb();
 print '<tr class="liste"><td>'.$langs->trans("AgfIndexHourTrainneDo").'  </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 
-print '<table>';
+print '<table></table>';
 print '&nbsp;';
 print '<table class="noborder" width="400px">';
 
@@ -104,7 +104,7 @@ for ($i=0; $i < $num; $i++)
 	print '</td></tr>';
 }
 
-print '<table>';
+print '<table></table>';
 print '&nbsp;';
 print '<table class="noborder" width="400px">';
 
@@ -193,7 +193,7 @@ else
 }
 
 print '</table>';
-
+print '<table></table>';
 print '&nbsp;';
 
 if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
