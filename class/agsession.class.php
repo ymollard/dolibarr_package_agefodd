@@ -2129,7 +2129,7 @@ class Agsession extends CommonObject
 		$sql.= " t.is_OPCA as is_opca,";
 		$sql.= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql.= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
-		$sql.= " concactOPCA.name as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
+		$sql.= " concactOPCA.lastname as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
 		$sql.= " t.num_OPCA_soc as num_opca_soc,";
 		$sql.= " t.num_OPCA_file as num_opca_file,";
 		$sql.= " t.fk_user_author,";

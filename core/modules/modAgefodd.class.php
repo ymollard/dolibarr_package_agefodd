@@ -289,6 +289,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
+		$r++;
+		$this->const[$r][0] = "AGF_MANAGE_OPCA";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Manage Opca';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {

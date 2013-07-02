@@ -1048,7 +1048,7 @@ else
 					/*
 					 * Gestion de la subrogation (affiché si la session est de type inter-entreprise)
 					*/
-					if(!$agf->type_session > 0)
+					if(!$agf->type_session > 0 && !empty($conf->global->AGF_MANAGE_OPCA))
 					{
 						print '&nbsp';
 						print '<table class="border" width="100%">';

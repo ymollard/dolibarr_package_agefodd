@@ -461,7 +461,7 @@ if (!empty($id))
 						$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
 						$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
 
-						if ($agf->type_session == 1)
+						if ($agf->type_session == 1  && !empty($conf->global->AGF_MANAGE_OPCA))
 						{
 							print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
 							print $trainee_info;
@@ -616,7 +616,7 @@ if (!empty($id))
 		*/
 		if(!$agf->type_session > 0)
 		{
-			if ($action == "edit_subrogation" && $agf->type_session==0)
+			if ($action == "edit_subrogation" && $agf->type_session==0 && !empty($conf->global->AGF_MANAGE_OPCA))
 			{
 				print '</div>';
 
@@ -681,7 +681,7 @@ if (!empty($id))
 
 				print '</table></div>';
 			}
-			else
+			elseif (!empty($conf->global->AGF_MANAGE_OPCA))
 			{
 				/*
 				 * Gestion de la subrogation (affichage infos)
@@ -771,7 +771,7 @@ if (!empty($id))
 					$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
 					$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
 
-					if ($agf->type_session == 1)
+					if ($agf->type_session == 1 && !empty($conf->global->AGF_MANAGE_OPCA))
 					{
 						print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
 						print $trainee_info;

@@ -211,6 +211,10 @@ if ($action == 'setvarother')
 	$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 	
+	$use_manageopca=GETPOST('AGF_MANAGE_OPCA','int');
+	$res = dolibarr_set_const($db, 'AGF_MANAGE_OPCA', $use_manageopca,'yesno',0,'',$conf->entity);
+	if (! $res > 0) $error++;
+	
 	$use_fac_without_order=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
 	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -976,6 +980,21 @@ print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
+
+// Mise a jour de la variable AGF_MANAGE_CERTIF
+print '<tr class="pair"><td>'.$langs->trans("AgfManageOPCA").'</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_MANAGE_OPCA');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_MANAGE_OPCA",$arrval,$conf->global->AGF_MANAGE_OPCA);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
 
 // Mise a jour de la variable AGF_FCKEDITOR_ENABLE_TRAINING
 print '<tr class="impair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
