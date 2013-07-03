@@ -89,7 +89,7 @@ class modAgefodd extends DolibarrModules
 		$this->depends = array('modSociete', 'modPropale', 'modCommande', 'modComptabilite', 'modFacture', 'modBanque', 'modFournisseur', 'modService', 'modAgenda');		// List of modules id that must be enabled if this module is enabled
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->phpmin = array(4,3);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(3,4);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(3,3);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array('agefodd@agefodd');
 
 		// Constants
@@ -316,6 +316,26 @@ class modAgefodd extends DolibarrModules
 		'tabcond'=>array('$conf->agefodd->enabled')						// Condition to show each dictionnary
 		);
 
+
+		// Import list of trainee
+		$r=0;
+		$r++;
+		$this->import_code[$r]=$this->rights_class.'_'.$r;
+		$this->import_label[$r]='ImportDataset_trainee';
+		$this->import_icon[$r]='contact';
+		$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
+		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_stagiaire');	// List of tables to insert into (insert done in same order)
+		$this->import_fields_array[$r]=array('s.fk_soc'=>'ThirdPartyName*','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
+			's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
+			's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
+		$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'fetchidfromref','file'=>'/societe/class/societe.class.php','class'=>'Societe','method'=>'fetch','element'=>'ThirdParty'));
+		$this->import_regex_array[$r]=array('s.date_birth'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$','s.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
+		$this->import_examplevalues_array[$r]=array('s.fk_soc'=>'MyBigCompany','s.nom'=>'Huppelepup','s.prenom'=>'Jantje','s.civilite'=>'MR',
+			's.tel1'=>'1234567890','s.tel2'=>'0987654321','s.mail'=>'Jantje@tks.nl',
+			's.date_birth'=>'2013-11-12','s.place_birth'=>'Almelo','s.datec'=>'1998-11-06');
+		
+	
 
 
 		// Array to add new pages in new tabs

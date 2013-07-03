@@ -38,6 +38,9 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   tel1 varchar(30) default NULL,
   tel2 varchar(30) default NULL,
   mail varchar(100) default NULL,
-  note text
+  date_birth datetime default NULL,
+  place_birth varchar(100) default NULL,
+  note text,
+  import_key varchar(14)
 ) ENGINE=InnoDB;
 
