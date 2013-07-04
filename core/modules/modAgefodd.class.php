@@ -305,15 +305,17 @@ class modAgefodd extends DolibarrModules
 		}
 		$this->dictionnaries=array(
 		'langs'=>'agefodd@agefodd',
-		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type"),		// List of tables we want to see into dictonnary editor
-		'tablib'=>array("AgfTraineeType"),								// Label of tables
-		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f'),	// Request to select fields
-		'tabsqlsort'=>array('sort ASC'),								// Sort order
-		'tabfield'=>array("intitule,sort"),								// List of fields (result of select to show dictionnary)
-		'tabfieldvalue'=>array("intitule,sort"),						// List of fields (list of fields to edit a record)
-		'tabfieldinsert'=>array("intitule,sort"),						// List of fields (list of fields for insert)
-		'tabrowid'=>array("rowid"),										// Name of columns with primary key (try to always name it 'rowid')
-		'tabcond'=>array('$conf->agefodd->enabled')						// Condition to show each dictionnary
+		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type", MAIN_DB_PREFIX."agefodd_certificate_type"),		// List of tables we want to see into dictonnary editor
+		'tablib'=>array("AgfTraineeType","AgfCertificateType"),								// Label of tables
+		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f',
+						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f'
+						),	// Request to select fields
+		'tabsqlsort'=>array('sort ASC','sort ASC'),								// Sort order
+		'tabfield'=>array("intitule,sort","intitule,sort"),						// List of fields (result of select to show dictionnary)
+		'tabfieldvalue'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields to edit a record)
+		'tabfieldinsert'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields for insert)
+		'tabrowid'=>array("rowid","rowid"),										// Name of columns with primary key (try to always name it 'rowid')
+		'tabcond'=>array('$conf->agefodd->enabled','$conf->agefodd->enabled')	// Condition to show each dictionnary
 		);
 
 
