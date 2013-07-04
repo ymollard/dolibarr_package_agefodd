@@ -1,7 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
--- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+-- Copyright (C) 2012-2013	Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,12 +17,12 @@
 --
 -- ============================================================================
 --
--- Structure de la table llx_agefodd_session_admlevel
+-- Structure de la table llx_agefodd_training_admlevel
 --
 CREATE TABLE IF NOT EXISTS llx_agefodd_training_admlevel (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
-  level_rank integer NOT NULL default 0,
   fk_training integer,
+  level_rank integer NOT NULL default 0,
   fk_parent_level integer default 0,
   indice integer NOT NULL,
   intitule varchar(150) NOT NULL,
@@ -32,5 +30,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_training_admlevel (
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP
+  tms timestamp NOT NULL
 ) ENGINE=InnoDB;
