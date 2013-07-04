@@ -26,3 +26,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_certif_state (
 ) ENGINE=InnoDB;
 
 ALTER TABLE llx_agefodd_stagiaire_type MODIFY datec datetime;
+
+ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN note_private text AFTER fk_user_mod;
+ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN note_public  text AFTER note_private;

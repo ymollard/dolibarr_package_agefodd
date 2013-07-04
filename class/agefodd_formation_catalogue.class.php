@@ -152,6 +152,7 @@ class Agefodd extends CommonObject
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
 		$sql.= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
+		$sql.= " ,c.note_private, c.note_public ";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		if($id && !$ref)
 			$sql.= " WHERE c.rowid = ".$id;
@@ -180,6 +181,8 @@ class Agefodd extends CommonObject
 				$this->note1 = stripslashes($obj->note1);
 				$this->note2 = stripslashes($obj->note2);
 				$this->archive = $obj->archive;
+				$this->note_private = $obj->note_private;
+				$this->note_public = $obj->note_public;
 			}
 			$this->db->free($resql);
 
