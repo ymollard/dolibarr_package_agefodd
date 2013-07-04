@@ -162,9 +162,9 @@ if ($resql != -1)
 	print '<tr class="liste_titre">';
 	$arg_url='&page='.$page.'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_soc='.$search_soc.'&search_teacher_name='.$search_teacher_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site;
 	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"so.nom","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfTeacher"),$_SERVER['PHP_SELF'],"","", "&arch=".$arch,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"),$_SERVEUR['PHP_SELF'],"s.dated","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","",$arg_url,'',$sortfield,$sortorder);
@@ -212,15 +212,15 @@ if ($resql != -1)
 	print '<td>&nbsp;</td>';
 
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_trainning_name" value="'.$search_trainning_name.'" size="20">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_soc" value="'.$search_soc.'" size="20">';
 	print '</td>';
 
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_formateur($search_teacher_id,'search_teacher_id','',1);
+	print '</td>';
+	
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_trainning_name" value="'.$search_trainning_name.'" size="20">';
 	print '</td>';
 
 	print '<td class="liste_titre">';
@@ -263,7 +263,6 @@ if ($resql != -1)
 			$color_a = ' style="color: #FFFFFF;"';
 
 		print '<td  style="background: #'.$line->color.'"><a'.$color_a.' href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
-		print '<td>'.stripslashes(dol_trunc($line->intitule, 60)).'</td>';
 		print '<td>';
 		if ($line->socid) {
 			$soc=new Societe($db);
@@ -285,6 +284,7 @@ if ($resql != -1)
 			print '&nbsp;';
 		}
 		print '</td>';
+		print '<td>'.stripslashes(dol_trunc($line->intitule, 60)).'</td>';
 		print '<td>'.$line->ref.'</td>';
 		print '</td>';
 		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
