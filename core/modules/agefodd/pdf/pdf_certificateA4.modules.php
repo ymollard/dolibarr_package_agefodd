@@ -206,8 +206,6 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 4);
-					$this->str = $agf_training->note_public;
-					//$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
 					$pdf->writeHTMLCell(190, 3, $posX-1, $posY, dol_htmlentitiesbr($agf_training->note_public), 0, 1);
 					$posY = $pdf->GetY() + 8;
 
