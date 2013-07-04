@@ -501,7 +501,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print $form->select_date('', 'datebirth','','','','update');
 	print '</td></tr>';
 	
-	print '<tr><td>'.$langs->trans("PlaceOfBirth").'</td>';
+	print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
 	print '<td colspan="3"><input name="place_birth" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -673,7 +673,7 @@ else
 
 				}
 
-				print '<tr><td>'.$langs->trans("PlaceOfBirth").'</td>';
+				print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
 				print '<td><input name="place_birth" class="flat" size="50" value="'.$agf->place_birth.'"></td></tr>';
 				
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
@@ -700,7 +700,7 @@ else
 			}
 			else
 			{
-				// Disay in "view" mode
+				// Display in "view" mode
 				/*
 				* Confirmation de la suppression
 				*/
@@ -763,10 +763,10 @@ else
 				print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 				print '<td>'.dol_print_date($agf->date_birth,"day").'</td></tr>';
 				
-				print '<tr><td>'.$langs->trans("PlaceOfBirth").'</td>';
+				print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
 				print '<td>'.$agf->place_birth.'</td></tr>';
 
-				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
+				print '<tr><td>'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
 				print '<td>'.stripslashes($notes).'</td></tr>';
