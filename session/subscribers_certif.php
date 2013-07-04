@@ -30,6 +30,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
 dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
@@ -255,8 +256,24 @@ if (!empty($id))
 				print '<input type="hidden" name="modstaid" value="'.$stagiaires->line[$i]->id.'">'."\n";
 				print '<input type="hidden" name="certifid" value="'.$agf_certif->id.'">'."\n";
 				print '<table class="nobordernopadding">';
-					
-				print '<tr><td>'.$langs->trans('AgfCertifCode').'</td><td><input type="text" size="10" name="certif_code" value="'.$agf_certif->certif_code.'"></td></tr>'."\n";
+				
+				
+				$defaultref='';
+				$obj = empty($conf->global->AGF_CERTIF_ADDON)?'mod_agefoddcertif_simple':$conf->global->AGF_CERTIF_ADDON;
+				$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+				if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel))
+				{
+					$agf_training = new Agefodd($db);
+					$agf_training->fetch($agf->formid);
+					dol_include_once('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+					$modAgefodd = new $obj;
+					$agf_certif->certif_code = $modAgefodd->getNextValue($agf_training,$agf);
+				}
+				
+				if (is_numeric($agf_certif->certif_code) && $agf_certif->certif_code <= 0) $agf_certif->certif_code='';
+				
+				
+				print '<tr><td>'.$langs->trans('AgfCertifCode').'</td><td><input type="hidden" name="certif_code" value="'.$agf_certif->certif_code.'">'.$agf_certif->certif_code.'</td></tr>'."\n";
 				print '<tr><td>'.$langs->trans('AgfCertifLabel').'</td><td><input type="text" size="10" name="certif_label"  value="'.$agf_certif->certif_label.'"></td></tr>'."\n";
 				print '<tr><td>'.$langs->trans('AgfCertifDateSt').'</td><td>';
 				print $form->select_date($agf_certif->certif_dt_start, 'dt_start','','',1,'obj_update_'.$i,1,1);

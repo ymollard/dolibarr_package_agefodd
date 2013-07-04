@@ -297,6 +297,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
+		$r++;
+		$this->const[$r][0] = "AGF_CERTIF_ADDON";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'mod_agefoddcertif_simple';
+		$this->const[$r][3] = 'Use simple mask for certif ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_CERTIF_UNIVERSAL_MASK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Mask of certificate code';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {

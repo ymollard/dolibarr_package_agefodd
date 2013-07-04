@@ -18,11 +18,17 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 /**
  * 	\file       /agefodd/admin/admin_agefodd.php
  *	\ingroup    agefodd
  *	\brief      agefood module setup page
 */
+
+
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -78,10 +84,46 @@ if ($action == 'updateMask')
 	}
 }
 
+if ($action == 'updateMaskCertifType')
+{
+$masktype=GETPOST('value');
+
+	if ($masktype)  $res = dolibarr_set_const($db,'AGF_CERTIF_ADDON',$masktype,'chaine',0,'',$conf->entity);
+
+	if (! $res > 0) $error++;
+
+	if (! $error)
+	{
+		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+	}
+	else
+	{
+		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+	}
+}
+
+if ($action == 'updateMaskCertif')
+{
+	$mask=GETPOST('maskagefoddcertif');
+
+	if ($mask)  $res = dolibarr_set_const($db,'AGF_CERTIF_UNIVERSAL_MASK',$mask,'chaine',0,'',$conf->entity);
+
+	if (! $res > 0) $error++;
+
+	if (! $error)
+	{
+		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+	}
+	else
+	{
+		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+	}
+}
+
 if ($action == 'setvar')
 {
 	require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
-	
+
 	$text_color=GETPOST('AGF_TEXT_COLOR','alpha');
 	if (!empty($text_color)) {
 		$res = dolibarr_set_const($db, 'AGF_TEXT_COLOR', $text_color,'chaine',0,'',$conf->entity);
@@ -89,7 +131,7 @@ if ($action == 'setvar')
 		$res = dolibarr_set_const($db, 'AGF_TEXT_COLOR', '000000','chaine',0,'',$conf->entity);
 	}
 	if (! $res > 0) $error++;
-	
+
 	$head_color=GETPOST('AGF_HEAD_COLOR','alpha');
 	if (!empty($head_color)) {
 		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', $head_color,'chaine',0,'',$conf->entity);
@@ -97,7 +139,7 @@ if ($action == 'setvar')
 		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', 'CB4619','chaine',0,'',$conf->entity);
 	}
 	if (! $res > 0) $error++;
-	
+
 	$foot_color=GETPOST('AGF_FOOT_COLOR','alpha');
 	if (!empty($foot_color)) {
 		$res = dolibarr_set_const($db, 'AGF_FOOT_COLOR', $foot_color,'chaine',0,'',$conf->entity);
@@ -109,14 +151,14 @@ if ($action == 'setvar')
 	$use_typestag=GETPOST('AGF_USE_STAGIAIRE_TYPE','int');
 	$res = dolibarr_set_const($db, 'AGF_USE_STAGIAIRE_TYPE', $use_typestag,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$def_typestag=GETPOST('AGF_DEFAULT_STAGIAIRE_TYPE','int');
 	if (!empty($def_typestag))
 	{
 		$res = dolibarr_set_const($db, 'AGF_DEFAULT_STAGIAIRE_TYPE', $def_typestag,'chaine',0,'',$conf->entity);
 		if (! $res > 0) $error++;
 	}
-	
+
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -174,7 +216,7 @@ if ($action == 'setvar')
 		}
 	}
 
-	
+
 
 	if (! $error)
 	{
@@ -196,66 +238,66 @@ if ($action == 'setvarother')
 	else {
 		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda,'chaine',0,'',$conf->entity);
 	}
-	
+
 	if (! $res > 0) $error++;
 
 	$logo_client=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$use_dol_contact=GETPOST('AGF_CONTACT_DOL_SESSION','alpha');
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$use_managecertif=GETPOST('AGF_MANAGE_CERTIF','int');
 	$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$use_manageopca=GETPOST('AGF_MANAGE_OPCA','int');
 	$res = dolibarr_set_const($db, 'AGF_MANAGE_OPCA', $use_manageopca,'yesno',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$use_fac_without_order=GETPOST('AGF_USE_FAC_WITHOUT_ORDER','alpha');
 	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_training=GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_trainer=GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_trainee=GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_site=GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_stagstype=GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesearch_contact=GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$use_dol_company_name=GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT','alpha');
 	$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name,'chaine',1,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$add_OPCA_link_contact=GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT','alpha');
 	$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$useWISIYGtraining=GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING','alpha');
 	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
-	
+
+
 	if (! $error)
 	{
 		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
@@ -376,7 +418,7 @@ if ($action == 'sessionlevel_update')
 		{
 			$agf->intitule = GETPOST('intitule','alpha');
 			$agf->delais_alerte = GETPOST('delai','int');
-				
+
 			if (!empty($parent_level))
 			{
 				if ($parent_level!=$agf->fk_parent_level)
@@ -413,7 +455,7 @@ if ($action == 'sessionlevel_update')
 				$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
 				$agf->level_rank = 0;
 			}
-				
+
 			if ($agf->level_rank>3)
 			{
 				$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
@@ -432,7 +474,7 @@ if ($action == 'sessionlevel_update')
 		//Delete action
 		if (GETPOST('sesslevel_remove_x'))
 		{
-				
+
 			$result = $agf->delete($user);
 			if ($result!=1)
 			{
@@ -447,12 +489,12 @@ if ($action == 'sessionlevel_update')
 	}
 }
 
-if ($action=='sessioncalendar_create'){	
+if ($action=='sessioncalendar_create'){
 	$tmpl_calendar = new Agefoddcalendrier($db);
 	$tmpl_calendar->day_session=GETPOST('newday','int');
 	$tmpl_calendar->heured=GETPOST('periodstart','alpha');
 	$tmpl_calendar->heuref=GETPOST('periodend','alpha');
-	
+
 	$result = $tmpl_calendar->create($user);
 	if ($result!=1)
 	{
@@ -519,7 +561,7 @@ foreach ($dirmodels as $reldir)
 		if (is_resource($handle))
 		{
 			$var=true;
-				
+
 			while (($file = readdir($handle))!==false)
 			{
 				if (preg_match('/^(mod_.*)\.php$/i',$file,$reg))
@@ -530,7 +572,7 @@ foreach ($dirmodels as $reldir)
 					require_once($dir.$file.".php");
 
 					$module = new $file;
-						
+
 					// Show modules according to features level
 					if ($module->version == 'development'  && $conf->global->MAIN_FEATURES_LEVEL < 2) continue;
 					if ($module->version == 'experimental' && $conf->global->MAIN_FEATURES_LEVEL < 1) continue;
@@ -597,6 +639,115 @@ foreach ($dirmodels as $reldir)
 }
 
 print '</table><br>';
+
+if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+
+	// Agefodd Certification numbering module
+	print_titre($langs->trans("AgfAdminCertifNumber"));
+	print '<br>';
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<td width="100px">'.$langs->trans("Name").'</td>';
+	print '<td>'.$langs->trans("Description").'</td>';
+	print '<td>'.$langs->trans("Example").'</td>';
+	print '<td align="center" width="60px">'.$langs->trans("Activated").'</td>';
+	print '<td align="center" width="80px">'.$langs->trans("Infos").'</td>';
+	print "</tr>\n";
+
+	clearstatcache();
+
+	$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
+
+	foreach ($dirmodels as $reldir)
+	{
+		$dir = dol_buildpath("/agefodd/core/modules/agefodd/certificate/");
+
+		if (is_dir($dir))
+		{
+			$handle = opendir($dir);
+			if (is_resource($handle))
+			{
+				$var=true;
+
+				while (($file = readdir($handle))!==false)
+				{
+					if (preg_match('/^(mod_.*)\.php$/i',$file,$reg))
+					{
+						$file = $reg[1];
+						$classname = substr($file,4);
+
+						require_once($dir.$file.".php");
+
+						$module = new $file;
+
+						// Show modules according to features level
+						if ($module->version == 'development'  && $conf->global->MAIN_FEATURES_LEVEL < 2) continue;
+						if ($module->version == 'experimental' && $conf->global->MAIN_FEATURES_LEVEL < 1) continue;
+
+						if ($module->isEnabled())
+						{
+							$var=!$var;
+							print '<tr '.$bc[$var].'><td>'.$module->nom."</td><td>\n";
+							print $module->info();
+							print '</td>';
+
+							// Show example of numbering module
+							print '<td nowrap="nowrap">';
+							$tmp=$module->getExample();
+							if (preg_match('/^Error/',$tmp)) {
+								$langs->load("errors"); print '<div class="error">'.$langs->trans($tmp).'</div>';
+							}
+							elseif ($tmp=='NotConfigured') print $langs->trans($tmp);
+							else print $tmp;
+							print '</td>'."\n";
+
+							print '<td align="center">';
+							if ($conf->global->AGF_CERTIF_ADDON == 'mod_'.$classname)
+							{
+								print img_picto($langs->trans("Activated"),'switch_on');
+							}
+							else
+							{
+								print '<a href="'.$_SERVER["PHP_SELF"].'?action=updateMaskCertifType&amp;value=mod_'.$classname.'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"),'switch_off').'</a>';
+							}
+							print '</td>';
+
+							$agf=new Agefodd($db);
+							$agf->initAsSpecimen();
+
+							// Info
+							$htmltooltip='';
+							$htmltooltip.=''.$langs->trans("Version").': <b>'.$module->getVersion().'</b><br>';
+							$nextval=$module->getNextValue($mysoc,$agf);
+							if ("$nextval" != $langs->trans("AgfNotAvailable"))	// Keep " on nextval
+							{
+								$htmltooltip.=''.$langs->trans("NextValue").': ';
+								if ($nextval)
+								{
+									$htmltooltip.=$nextval.'<br>';
+								}
+								else
+								{
+									$htmltooltip.=$langs->trans($module->error).'<br>';
+								}
+							}
+
+							print '<td align="center">';
+							print $form->textwithpicto('',$htmltooltip,1,0);
+							print '</td>';
+
+							print '</tr>';
+						}
+					}
+				}
+				closedir($handle);
+			}
+		}
+	}
+
+	print '</table><br>';
+}
+
 
 
 // Admin var of module
@@ -819,7 +970,7 @@ else
 		print ajax_constantonoff('AGF_TRAINER_USE_SEARCH_TO_SELECT');
 	}else {
 		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-	print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
+		print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
 	}
 	print '</td>';
 }
@@ -1106,7 +1257,7 @@ print '</tr>';
 $tmpl_calendar = new Agefoddcalendrier($db);
 $tmpl_calendar->fetch_all();
 foreach($tmpl_calendar->lines as $line) {
-	
+
 	print '<form name="SessionCalendar_'.$line->id.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 	print '<input type="hidden" name="action" value="sessioncalendar_delete">'."\n";
