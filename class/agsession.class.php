@@ -581,7 +581,11 @@ class Agsession extends CommonObject
 		$sql.= " civ.code as civilite, civ.civilite as civilitel,";
 		$sql.= " so.nom as socname, so.rowid as socid,";
 		$sql.= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail,";
-		$sql.= " sa.fk_socpeople";
+		$sql.= " sa.fk_socpeople, ";
+		$sql.= " sa.date_birth,";
+		$sql.= " sa.place_birth,";
+		$sql.= " sope.birthday,";
+		$sql.= " sa.rowid as traineeid";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
@@ -630,6 +634,13 @@ class Agsession extends CommonObject
 				} else {
 					$line->email = $obj->mail;
 				}
+				$line->place_birth=$obj->place_birth;
+				if (empty($obj->fk_socpeople)) {
+					$line->date_birth=$this->db->jdate($obj->date_birth);
+				}else {
+					$line->date_birth=$this->db->jdate($obj->birthday);
+				}
+				$line->traineeid=$obj->traineeid;
 				
 				$this->line[$i]=$line;
 				
@@ -2486,6 +2497,9 @@ class AgfTraineeLine
 	var $type;
 	var $email;
 	var $fk_socpeople;
+	var $date_birth;
+	var $place_birth;
+	var $traineeid;
 
 	function __construct()
 	{

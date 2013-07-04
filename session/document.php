@@ -359,6 +359,10 @@ if (!empty($id))
 				document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
 
 				document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->line[$i]->socid, 'cloture');
+				if ($conf->global->AGF_MANAGE_CERTIF) {
+					document_line($langs->trans("AgfCertificateA4"), 2, "certificateA4", $agf->line[$i]->socid);
+					document_line($langs->trans("AgfCertificateCard"), 2, "certificatecard", $agf->line[$i]->socid);
+				}
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
 			}

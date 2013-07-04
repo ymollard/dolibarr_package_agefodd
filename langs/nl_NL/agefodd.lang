@@ -667,3 +667,7 @@ AgfTelephone1= Telefoon 1
 AgfTelephone2= Telefoon 2
 AgfDateBirth= Geboortedatum
 AgfPlaceBirth= Geboorteplaats
+AgfPDFCertificate1=Geboren op
+AgfPDFCertificate2=te
+AgfPDFCertificate3=CERTIFICAAT NUMMER
+AgfPDFCertificate4=Certificaat geldig tot:
