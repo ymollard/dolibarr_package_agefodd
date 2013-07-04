@@ -339,3 +339,5 @@ For All :
 	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	- tasks_agefodd #932 : Add calculation of the cost of a session
 	- tasks_agefodd #932 : Add calculation of the cost of a session
 	- New Screen : Mass Archive sessions per year 
+	- Import/Eport trainee 
+	- Import export Certificate
