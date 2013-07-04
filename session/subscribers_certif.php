@@ -309,7 +309,8 @@ if (!empty($id))
 					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
 					{
 						foreach ($agf_certif->lines_state as $line) {
-							print '<tr class="pair"><td>'.$langs->trans('AgfCertifType').':</td><td>';
+							$var=!$var;
+							print '<tr '.$bc[$var].'><td>'.$langs->trans('AgfCertifType').':</td><td>';
 							print $line->certif_type.':'.yn($line->certif_state,0,1);
 							print '</td></tr>'."\n";
 						}
@@ -352,7 +353,8 @@ if (!empty($id))
 					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
 					{
 						foreach ($agf_certif->lines_state as $line) {
-							print '<tr class="pair"><td>'.$langs->trans('AgfCertifType').':</td><td>';
+							$var=!$var;
+							print '<tr '.$bc[$var].'><td>'.$langs->trans('AgfCertifType').':</td><td>';
 							print $line->certif_type.':'.yn($line->certif_state,0,1);
 							print '</td></tr>'."\n";
 						}
