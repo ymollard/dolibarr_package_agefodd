@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_certif_state (
   fk_user_author integer default NULL,
   fk_user_mod integer NOT NULL,
   datec datetime NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  tms timestamp NOT NULL,
   fk_certif integer NOT NULL,
   fk_certif_type integer NOT NULL,
   certif_state integer default NULL,
