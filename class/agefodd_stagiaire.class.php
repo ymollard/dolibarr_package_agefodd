@@ -49,6 +49,7 @@ class Agefodd_stagiaire extends CommonObject
 	var $mail;
 	var $note;
 	var $date_birth;
+	var $place_birth;
 	
 	var $socid;
 	var $socname;
@@ -88,6 +89,7 @@ class Agefodd_stagiaire extends CommonObject
 		if (isset($this->tel2)) $this->tel2 = $this->db->escape(trim($this->tel2));
 		if (isset($this->mail)) $this->mail = $this->db->escape(trim($this->mail));
 		if (isset($this->note)) $this->note = $this->db->escape(trim($this->note));
+		if (isset($this->place_birth)) $this->place_birth = $this->db->escape(trim($this->place_birth));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -106,6 +108,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= "fk_soc, fonction, tel1, tel2, mail, note,fk_socpeople";
 		$sql.= ",entity";
 		$sql.= ",date_birth";
+		$sql.= ",place_birth";
 		$sql.= ") VALUES (";
 
 		$sql.= " ".(isset($this->nom)?"'".$this->nom."'":"null").", ";
@@ -122,7 +125,8 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " ".(isset($this->note)?"'".$this->note."'":"null").", ";
 		$sql.= " ".(isset($this->fk_socpeople)?$this->db->escape($this->fk_socpeople):"null").", ";
 		$sql.= " ".$conf->entity.",";
-		$sql.= " ".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':$this->db->idate($this->date_birth));
+		$sql.= " ".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':$this->db->idate($this->date_birth)).", ";
+		$sql.= " ".(isset($this->place_birth)?"'".$this->place_birth."'":"null").", ";
 		$sql.= ")";
 
 		if (! $error)
@@ -183,7 +187,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilite,";
 		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON s.fk_soc = so.rowid";
@@ -223,6 +227,8 @@ class Agefodd_stagiaire extends CommonObject
 						$this->note = $obj->note;
 						$this->fk_socpeople = $obj->fk_socpeople;
 						$this->date_birth = $contact->birthday;
+						$this->place_birth = $obj->place_birth;
+						
 					}
 				}
 				else
@@ -239,6 +245,7 @@ class Agefodd_stagiaire extends CommonObject
 					$this->tel2 = $obj->tel2;
 					$this->mail = $obj->mail;
 					$this->note = $obj->note;
+					$this->place_birth = $obj->place_birth;
 					$this->fk_socpeople = 0;
 					$this->date_birth = $this->db->jdate($obj->date_birth);
 				}
@@ -276,7 +283,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " so.rowid as socid, so.nom as socname,";
 		$sql.= " civ.code as civilitecode,";
 		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth";
+		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 		$sql.= " ON s.fk_soc = so.rowid";
@@ -349,6 +356,7 @@ class Agefodd_stagiaire extends CommonObject
 									$this->line[$i]->tel2 = $obj->tel2;
 									$this->line[$i]->mail = $obj->mail;
 									$this->line[$i]->note = $obj->note;
+									$this->line[$i]->place_birth = $obj->place_birth;
 									$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
 									$this->line[$i]->date_birth = $this->db->jdate($obj->date_birth);
 								}
@@ -371,6 +379,7 @@ class Agefodd_stagiaire extends CommonObject
 							$this->line[$i]->note = $obj->note;
 							$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
 							$this->line[$i]->date_birth = $this->db->jdate($obj->date_birth);
+							$this->line[$i]->place_birth = $obj->place_birth;
 						}
 					}
 					else
@@ -390,6 +399,7 @@ class Agefodd_stagiaire extends CommonObject
 						$this->line[$i]->note = $obj->note;
 						$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
 						$this->line[$i]->date_birth = $this->db->jdate($obj->date_birth);
+						$this->line[$i]->place_birth = $obj->place_birth;
 					}
 					$i++;
 				}
@@ -469,6 +479,7 @@ class Agefodd_stagiaire extends CommonObject
 		if (isset($this->tel2)) $this->tel2 = $this->db->escape(trim($this->tel2));
 		if (isset($this->mail)) $this->mail = $this->db->escape(trim($this->mail));
 		if (isset($this->note)) $this->note = $this->db->escape(trim($this->note));
+		if (isset($this->place_birth)) $this->place_birth = $this->db->escape(trim($this->place_birth));
 		
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -487,7 +498,8 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " mail=".(isset($this->mail)?"'".$this->mail."'":"null").",";
 		$sql.= " note=".(isset($this->note)?"'".$this->note."'":"null").",";
 		$sql.= " fk_socpeople=".(isset($this->fk_socpeople)?$this->fk_socpeople:"null").", ";
-		$sql.= " date_birth=".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':$this->db->idate($this->date_birth))." ";
+		$sql.= " date_birth=".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':$this->db->idate($this->date_birth)).", ";
+		$sql.= " place_birth=".(isset($this->place_birth)?"'".$this->place_birth."'":"null");
 		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();

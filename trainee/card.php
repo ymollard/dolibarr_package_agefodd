@@ -99,7 +99,9 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->note = GETPOST('note','alpha');
 		$agf->date_birth = dol_mktime(0,0,0,GETPOST('datebirthmonth','int'),GETPOST('datebirthday','int'),GETPOST('datebirthyear','int'));
 		if (!empty($fk_socpeople)) $agf->fk_socpeople =$fk_socpeople;
+		$agf->place_birth = GETPOST('place_birth','alpha');
 		$result = $agf->update($user);
+		
 
 		if ($result > 0)
 		{
@@ -162,6 +164,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$stagiaire_type = GETPOST('stagiaire_type','int');
 			$session_id = GETPOST('session_id','int');
 			$date_birth = dol_mktime(0,0,0,GETPOST('datebirthmonth','int'),GETPOST('datebirthday','int'),GETPOST('datebirthyear','int'));
+			$place_birth = GETPOST('place_birth','alpha');
 			
 			$agf->nom = $name;
 			$agf->prenom = $firstname;
@@ -173,6 +176,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf->mail = $mail;
 			$agf->note = $note;
 			$agf->date_birth = $date_birth;
+			$agf->place_birth = $place_birth;
 			
 			
 			// Création tiers demandé
@@ -496,6 +500,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td>';
 	print $form->select_date('', 'datebirth','','','','update');
 	print '</td></tr>';
+	
+	print '<tr><td>'.$langs->trans("PlaceOfBirth").'</td>';
+	print '<td colspan="3"><input name="place_birth" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -666,6 +673,9 @@ else
 
 				}
 
+				print '<tr><td>'.$langs->trans("PlaceOfBirth").'</td>';
+				print '<td><input name="place_birth" class="flat" size="50" value="'.$agf->place_birth.'"></td></tr>';
+				
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
@@ -752,6 +762,9 @@ else
 				
 				print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 				print '<td>'.dol_print_date($agf->date_birth,"day").'</td></tr>';
+				
+				print '<tr><td>'.$langs->trans("PlaceOfBirth").'</td>';
+				print '<td>'.$agf->place_birth.'</td></tr>';
 
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
