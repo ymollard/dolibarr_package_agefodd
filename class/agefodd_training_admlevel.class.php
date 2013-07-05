@@ -234,9 +234,10 @@ class Agefodd_training_admlevel extends CommonObject
     /**
      *  Load object in memory from database
      *
+     *  @param	int		$training_id    Id object
      *  @return array          	array of object
      */
-    function fetch_all()
+    function fetch_all($training_id)
     {
     	global $langs;
     
@@ -254,6 +255,7 @@ class Agefodd_training_admlevel extends CommonObject
     	$sql.= " t.tms,";
     	$sql.= " t.fk_agefodd_training_admlevel";
     	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as t";
+    	$sql.= " WHERE t.fk_training=".$training_id;
     	$sql.= " ORDER BY t.indice";
     		
     	dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);

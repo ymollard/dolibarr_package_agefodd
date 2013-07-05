@@ -235,7 +235,7 @@ $head = training_prepare_head($agf);
 dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
 $admlevel = new Agefodd_training_admlevel($db);
-$result0 = $admlevel->fetch_all();
+$result0 = $admlevel->fetch_all($trainingid);
 
 
 print_titre($langs->trans("AgfAdminTrainingLevel"));
