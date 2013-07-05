@@ -19,7 +19,7 @@
 --
 -- ============================================================================
 --
--- Contraintes pour la table llx_agefodd_session_adminsitu
+-- Contraintes pour la table llx_agefodd_training_admlevel
 --
-ALTER TABLE llx_agefodd_session_adminsitu ADD CONSTRAINT llx_agefodd_session_adminsitu_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
-ALTER TABLE llx_agefodd_session_adminsitu ADD INDEX fk_agefodd_session_adminsitu (fk_agefodd_session);
+ALTER TABLE llx_agefodd_training_admlevel ADD CONSTRAINT llx_agefodd_training_admlevel_ibfk_1 FOREIGN KEY (fk_training) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_training_admlevel ADD INDEX fk_agefodd_training_admlevel (fk_training);

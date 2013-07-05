@@ -1177,7 +1177,6 @@ $result0 = $admlevel->fetch_all();
 
 print_titre($langs->trans("AgfAdminSessionLevel"));
 
-// Agefodd numbering module
 if ($result0>0)
 {
 	print '<table class="noborder" width="100%">';
