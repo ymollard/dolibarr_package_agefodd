@@ -35,6 +35,8 @@ dol_include_once('/core/class/html.formcompany.class.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/contact/class/contact.class.php');
 
+$langs->load("other");
+
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
@@ -95,8 +97,11 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->tel2 = GETPOST('tel2','alpha');
 		$agf->mail = GETPOST('mail','alpha');
 		$agf->note = GETPOST('note','alpha');
+		$agf->date_birth = dol_mktime(0,0,0,GETPOST('datebirthmonth','int'),GETPOST('datebirthday','int'),GETPOST('datebirthyear','int'));
 		if (!empty($fk_socpeople)) $agf->fk_socpeople =$fk_socpeople;
+		$agf->place_birth = GETPOST('place_birth','alpha');
 		$result = $agf->update($user);
+		
 
 		if ($result > 0)
 		{
@@ -158,6 +163,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			
 			$stagiaire_type = GETPOST('stagiaire_type','int');
 			$session_id = GETPOST('session_id','int');
+			$date_birth = dol_mktime(0,0,0,GETPOST('datebirthmonth','int'),GETPOST('datebirthday','int'),GETPOST('datebirthyear','int'));
+			$place_birth = GETPOST('place_birth','alpha');
 			
 			$agf->nom = $name;
 			$agf->prenom = $firstname;
@@ -168,6 +175,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf->tel2 = $tel2;
 			$agf->mail = $mail;
 			$agf->note = $note;
+			$agf->date_birth = $date_birth;
+			$agf->place_birth = $place_birth;
 			
 			
 			// Création tiers demandé
@@ -213,6 +222,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				$contact->phone_mobile		= $tel2;
 				$contact->poste				= $fonction;
 				$contact->priv				= 0;
+				$contact->birthday			= $date_birth;
 					
 				$result=$contact->create($user);
 				if (! $result >= 0)
@@ -294,6 +304,7 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 		$agf_sta->mail = $contact->email;
 		$agf_sta->note = $contact->note;
 		$agf_sta->fk_socpeople = $contact->id;
+		$agf_sta->date_birth = $contact->birthday;
 
 		$result2 = $agf_sta->create($user);
 
@@ -484,6 +495,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td>'.$langs->trans("Mail").'</td>';
 	print '<td colspan="3"><input name="mail" class="flat" size="50" value=""></td></tr>';
+	
+	print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
+	print '<td>';
+	print $form->select_date('', 'datebirth','','','','update');
+	print '</td></tr>';
+	
+	print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
+	print '<td colspan="3"><input name="place_birth" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -593,6 +612,11 @@ else
 
 					print '<tr><td>'.$langs->trans("Mail").'</td>';
 					print '<td><input name="mail" class="flat" size="50" value="'.$agf->mail.'"></td></tr>';
+					
+					print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
+					print '<td>';
+					print $form->select_date($agf->date_birth, 'datebirth','','','','update');
+					print '</td></tr>';
 				}
 				else
 				{
@@ -642,9 +666,16 @@ else
 					print '<tr><td>'.$langs->trans("Mail").'</td>';
 					print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
 					print '<input type="hidden" name="mail" value="'.$agf->mail.'">';
+					
+					print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
+					print '<td>'.dol_print_date($agf->date_birth,"day");
+					print '</td></tr>';
 
 				}
 
+				print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
+				print '<td><input name="place_birth" class="flat" size="50" value="'.$agf->place_birth.'"></td></tr>';
+				
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
@@ -669,7 +700,7 @@ else
 			}
 			else
 			{
-				// Affichage en mode "consultation"
+				// Display in "view" mode
 				/*
 				* Confirmation de la suppression
 				*/
@@ -728,8 +759,14 @@ else
 
 				print '<tr><td>'.$langs->trans("Mail").'</td>';
 				print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
+				
+				print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
+				print '<td>'.dol_print_date($agf->date_birth,"day").'</td></tr>';
+				
+				print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
+				print '<td>'.$agf->place_birth.'</td></tr>';
 
-				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
+				print '<tr><td>'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
 				print '<td>'.stripslashes($notes).'</td></tr>';

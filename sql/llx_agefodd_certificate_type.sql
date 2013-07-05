@@ -2,6 +2,7 @@
 -- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
 -- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 -- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+-- Copyright (C) 2013		Niek Meinema	<info@skyline-it.nl>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,29 +19,15 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
+
 --
--- Structure de la table llx_agefodd_stagiaire
+-- Structure de la table llx_agefodd_certificate_type
 --
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
+CREATE TABLE IF NOT EXISTS llx_agefodd_certificate_type (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
-  entity integer NOT NULL DEFAULT 1,
-  nom varchar(50) NOT NULL,
-  prenom varchar(50) NOT NULL,
-  civilite varchar(6) NOT NULL,
-  fk_user_author integer default NULL,
-  fk_user_mod integer NOT NULL,
-  datec datetime NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
-  fk_soc integer NOT NULL,
-  fk_socpeople integer default NULL,
-  fonction varchar(60) default NULL,
-  tel1 varchar(30) default NULL,
-  tel2 varchar(30) default NULL,
-  mail varchar(100) default NULL,
-  date_birth datetime default NULL,
-  place_birth varchar(100) default NULL,
-  note text,
-  import_key varchar(14)
+  intitule varchar(80) NOT NULL,
+  sort smallint NOT NULL,
+  active integer NULL,
+  tms timestamp NOT NULL
 ) ENGINE=InnoDB;
-

@@ -297,6 +297,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
+		$r++;
+		$this->const[$r][0] = "AGF_CERTIF_ADDON";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'mod_agefoddcertif_simple';
+		$this->const[$r][3] = 'Use simple mask for certif ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_CERTIF_UNIVERSAL_MASK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Mask of certificate code';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {
@@ -305,18 +321,107 @@ class modAgefodd extends DolibarrModules
 		}
 		$this->dictionnaries=array(
 		'langs'=>'agefodd@agefodd',
-		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type"),		// List of tables we want to see into dictonnary editor
-		'tablib'=>array("AgfTraineeType"),								// Label of tables
-		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f'),	// Request to select fields
-		'tabsqlsort'=>array('sort ASC'),								// Sort order
-		'tabfield'=>array("intitule,sort"),								// List of fields (result of select to show dictionnary)
-		'tabfieldvalue'=>array("intitule,sort"),						// List of fields (list of fields to edit a record)
-		'tabfieldinsert'=>array("intitule,sort"),						// List of fields (list of fields for insert)
-		'tabrowid'=>array("rowid"),										// Name of columns with primary key (try to always name it 'rowid')
-		'tabcond'=>array('$conf->agefodd->enabled')						// Condition to show each dictionnary
+		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type", MAIN_DB_PREFIX."agefodd_certificate_type"),		// List of tables we want to see into dictonnary editor
+		'tablib'=>array("AgfTraineeType","AgfCertificateType"),								// Label of tables
+		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f',
+						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f'
+						),	// Request to select fields
+		'tabsqlsort'=>array('sort ASC','sort ASC'),								// Sort order
+		'tabfield'=>array("intitule,sort","intitule,sort"),						// List of fields (result of select to show dictionnary)
+		'tabfieldvalue'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields to edit a record)
+		'tabfieldinsert'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields for insert)
+		'tabrowid'=>array("rowid","rowid"),										// Name of columns with primary key (try to always name it 'rowid')
+		'tabcond'=>array('$conf->agefodd->enabled','$conf->agefodd->enabled')	// Condition to show each dictionnary
 		);
 
 
+		// Import list of trainee
+		$r=0;
+		$r++;
+		$this->import_code[$r]=$this->rights_class.'_'.$r;
+		$this->import_label[$r]='ImportDataset_trainee';
+		$this->import_icon[$r]='contact';
+		$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
+		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_stagiaire');	// List of tables to insert into (insert done in same order)
+		$this->import_fields_array[$r]=array('s.fk_soc'=>'ThirdPartyName*','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
+			's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
+			's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
+		$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'fetchidfromref','file'=>'/societe/class/societe.class.php','class'=>'Societe','method'=>'fetch','element'=>'ThirdParty'));
+		$this->import_regex_array[$r]=array('s.date_birth'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$','s.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
+		$this->import_examplevalues_array[$r]=array('s.fk_soc'=>'MyBigCompany','s.nom'=>'Huppelepup','s.prenom'=>'Jantje','s.civilite'=>'MR',
+			's.tel1'=>'1234567890','s.tel2'=>'0987654321','s.mail'=>'Jantje@tks.nl',
+			's.date_birth'=>'2013-11-12','s.place_birth'=>'Almelo','s.datec'=>'1998-11-06');
+		
+		// Import certificqte
+		$r++;
+		$this->import_code[$r]=$this->rights_class.'_'.$r;
+		$this->import_label[$r]='ImportDataset_agefoddcertificate';
+		$this->import_icon[$r]='contact';
+		//$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
+		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_session_stagiaire','certif'=>MAIN_DB_PREFIX.'agefodd_stagiaire_certif');	// List of tables to insert into (insert done in same order)
+		$this->import_fields_array[$r]=array('s.fk_session_agefodd'=>'SessionId*','s.fk_stagiaire'=>'TraineeId*','s.fk_agefodd_stagiaire_type'=>"TraineeType",
+			's.datec'=>'DateCreation',
+			'certif.fk_stagiaire'=>'TraineeId*','certif.fk_session_agefodd'=>'SessionId*',
+		    'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'CertifDateStart','certif.certif_dt_end'=>'CertifDateEnd',
+			'certif.datec'=>"DateCreation");
+		
+		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id',
+													'certif.fk_user_author'=>'user->id','certif.fk_user_mod'=>'user->id',
+													'certif.fk_session_stagiaire'=>'lastrowid-'.MAIN_DB_PREFIX.'agefodd_session_stagiaire');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
+		$this->import_convertvalue_array[$r]=array();
+		//$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'lastrowid',table='t');
+		$this->import_regex_array[$r]=array('certif.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+								's.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+								'certif.certif_dt_start'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+								'certif.certif_dt_end'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
+		
+		$this->import_examplevalues_array[$r]=array(
+		's.fk_session_agefodd'=>'999999','s.fk_stagiaire'=>'1','s.fk_agefodd_stagiaire_type'=>$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
+			's.datec'=>'2013-11-12','çertif.fk_stagiaire'=>'1','certif.fk_session_agefodd'=>'999999',
+		    'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'2013-11-12','certif.certif_dt_end'=>'2013-11-12',
+			'certif.datec'=>"2013-11-12"
+		);
+		
+		//Trainee export
+		$r=0;
+		$r++;
+		$this->export_code[$r]=$this->rights_class.'_'.$r;
+		$this->export_label[$r]='ExportDataset_trainee';
+		$this->export_icon[$r]='contact';
+		$this->export_permission[$r]=array(array("agefodd","export"));
+		$this->export_fields_array[$r]=array('s.rowid'=>'Idtrainee','c.nom'=>'ThirdPartyName','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName',
+			's.civilite'=>'AgfTitle',
+			's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
+			's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
+		$this->export_entities_array[$r]=array('c.nom'=>"company");	// We define here only fields that use another picto
+		
+		$this->export_sql_start[$r]='SELECT DISTINCT ';
+		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
+		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'societe as c ON s.fk_soc = c.rowid';
+		$this->export_sql_end[$r] .=' WHERE c.entity IN ('.getEntity("societe", 1).')';
+		
+		
+		//certificate export
+		$r=0;
+		$r++;
+		$this->export_code[$r]=$this->rights_class.'_'.$r;
+		$this->export_label[$r]='ExportDataset_certificate';
+		$this->export_icon[$r]='contact';
+		$this->export_permission[$r]=array(array("agefodd","export"));
+		$this->export_fields_array[$r]=array('s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
+		's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth',
+		'certif.fk_stagiaire'=>'TraineeId*','certif.fk_session_agefodd'=>'SessionId*',
+		'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'CertifDateStart','certif.certif_dt_end'=>'CertifDateEnd',
+		's.datec'=>'AgfDateC');
+		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
+		$this->export_entities_array[$r]=array('c.nom'=>"company");	// We define here only fields that use another picto
+		
+		$this->export_sql_start[$r]='SELECT DISTINCT ';
+		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
+		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
+		
 
 		// Array to add new pages in new tabs
 		//$this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');
@@ -381,6 +486,12 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][1] = 'Voir stats';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'viewstats';
+		$r++;
+		
+		$this->rights[$r][0] = 103006;
+		$this->rights[$r][1] = 'export';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'export';
 		$r++;
 
 		// Main menu entries

@@ -30,6 +30,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
 dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
@@ -49,6 +50,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	$certif_sta_id=GETPOST('modstaid','int');
 	$certif_session_sta_id=GETPOST('sessionstarowid','int');
+	$certif_id=GETPOST('certifid','int');
 
 	$certif_code=GETPOST('certif_code','alpha');
 	$certif_label=GETPOST('certif_label','alpha');
@@ -75,6 +77,22 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 					dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
 					$mesg = '<div class="error">'.$agf_certif->error.'</div>';
 				}else {
+					
+					$certif_type_array = $agf_certif->get_certif_type();
+					
+					if (is_array($certif_type_array) && count($certif_type_array)>0)
+					{
+						foreach($certif_type_array as $certif_type_id=>$certif_type_label)
+						{
+							$certif_state = GETPOST('certifstate_'.$certif_type_id);
+							$result=$agf_certif->set_certif_state($user,$certif_id, $certif_type_id, $certif_state);
+							if ($result<0) {
+								dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
+								$mesg .= '<div class="error">'.$agf_certif->error.'</div>';
+							}
+						}
+					}
+
 					Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 					exit;
 				}
@@ -89,6 +107,25 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 					dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
 					$mesg = '<div class="error">'.$agf_certif->error.'</div>';
 				}else {
+					
+					$certif_type_array = $agf_certif->get_certif_type();
+						
+					if (is_array($certif_type_array) && count($certif_type_array)>0)
+					{
+						foreach($certif_type_array as $certif_type_id=>$certif_type_label)
+						{
+							//Case state didn't exists yet
+							$certif_state = GETPOST('certifstate_'.$certif_type_id);
+							$result=$agf_certif->set_certif_state($user,$certif_id, $certif_type_id, $certif_state);
+							if ($result<0) {
+								dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
+								$mesg .= '<div class="error">'.$agf_certif->error.'</div>';
+							}
+						}
+					}
+						
+					
+					
 					Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 					exit;
 				}
@@ -217,9 +254,26 @@ if (!empty($id))
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
 				print '<input type="hidden" name="modstaid" value="'.$stagiaires->line[$i]->id.'">'."\n";
+				print '<input type="hidden" name="certifid" value="'.$agf_certif->id.'">'."\n";
 				print '<table class="nobordernopadding">';
-					
-				print '<tr><td>'.$langs->trans('AgfCertifCode').'</td><td><input type="text" size="10" name="certif_code" value="'.$agf_certif->certif_code.'"></td></tr>'."\n";
+				
+				
+				$defaultref='';
+				$obj = empty($conf->global->AGF_CERTIF_ADDON)?'mod_agefoddcertif_simple':$conf->global->AGF_CERTIF_ADDON;
+				$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+				if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel))
+				{
+					$agf_training = new Agefodd($db);
+					$agf_training->fetch($agf->formid);
+					dol_include_once('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+					$modAgefodd = new $obj;
+					$agf_certif->certif_code = $modAgefodd->getNextValue($agf_training,$agf);
+				}
+				
+				if (is_numeric($agf_certif->certif_code) && $agf_certif->certif_code <= 0) $agf_certif->certif_code='';
+				
+				
+				print '<tr><td>'.$langs->trans('AgfCertifCode').'</td><td><input type="hidden" name="certif_code" value="'.$agf_certif->certif_code.'">'.$agf_certif->certif_code.'</td></tr>'."\n";
 				print '<tr><td>'.$langs->trans('AgfCertifLabel').'</td><td><input type="text" size="10" name="certif_label"  value="'.$agf_certif->certif_label.'"></td></tr>'."\n";
 				print '<tr><td>'.$langs->trans('AgfCertifDateSt').'</td><td>';
 				print $form->select_date($agf_certif->certif_dt_start, 'dt_start','','',1,'obj_update_'.$i,1,1);
@@ -227,6 +281,16 @@ if (!empty($id))
 				print '<tr><td>'.$langs->trans('AgfCertifDateEnd').'</td><td>';
 				print $form->select_date($agf_certif->certif_dt_end, 'dt_end','','',1,'obj_update_'.$i,1,1);
 				print '</td></tr>'."\n";
+				
+				if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
+				{
+					foreach ($agf_certif->lines_state as $line) {
+						print '<tr><td>'.$langs->trans('AgfCertifType').':</td><td>';
+						print $line->certif_type.':'.$form->selectyesno('certifstate_'.$line->fk_certif_type,$line->certif_state,1);
+						print '</td></tr>'."\n";
+					}
+				}
+				
 				print '</table>'."\n";
 				print '</td>';
 
@@ -258,6 +322,16 @@ if (!empty($id))
 					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateEnd').':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_end,'daytext');
 					print '</td></tr>'."\n";
+					
+					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
+					{
+						foreach ($agf_certif->lines_state as $line) {
+							$var=!$var;
+							print '<tr '.$bc[$var].'><td>'.$langs->trans('AgfCertifType').':</td><td>';
+							print $line->certif_type.':'.yn($line->certif_state,0,1);
+							print '</td></tr>'."\n";
+						}
+					}
 						
 					print '</table>'."\n";
 				}
@@ -292,7 +366,16 @@ if (!empty($id))
 					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateEnd').':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_end,'daytext');
 					print '</td></tr>'."\n";
-						
+					
+					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
+					{
+						foreach ($agf_certif->lines_state as $line) {
+							$var=!$var;
+							print '<tr '.$bc[$var].'><td>'.$langs->trans('AgfCertifType').':</td><td>';
+							print $line->certif_type.':'.yn($line->certif_state,0,1);
+							print '</td></tr>'."\n";
+						}
+					}
 					print '</table>'."\n";
 				}
 				else {

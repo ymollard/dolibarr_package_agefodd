@@ -212,3 +212,73 @@ if ($action == 'sessionlevel_update')
 		$mesg = '<div class="error">This action do not exists</div>';
 	}
 }
+
+
+
+
+
+$admlevel = new Agefodd_session_admlevel($db);
+$result0 = $admlevel->fetch_all();
+
+
+print_titre($langs->trans("AgfAdminSessionLevel"));
+
+if ($result0>0)
+{
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<td width="10px"></td>';
+	print '<td>'.$langs->trans("AgfIntitule").'</td>';
+	print '<td>'.$langs->trans("AgfParentLevel").'</td>';
+	print '<td>'.$langs->trans("AgfDelaiSessionLevel").'</td>';
+	print '<td></td>';
+	print "</tr>\n";
+
+	$var=true;
+	foreach ($admlevel->line as $line)
+	{
+		$var=!$var;
+		$toplevel='';
+		print '<form name="SessionLevel_update_'.$line->rowid.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+		print '<input type="hidden" name="id" value="'.$line->rowid.'">'."\n";
+		print '<input type="hidden" name="action" value="sessionlevel_update">'."\n";
+		print '<tr '.$bc[$var].'>';
+
+		print '<td>';
+		if ($line->indice!=ebi_get_adm_indice_per_rank($line->level_rank,$line->fk_parent_level,'MIN'))
+		{
+			print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/1uparrow.png" border="0" name="sesslevel_up" alt="'.$langs->trans("Save").'">';
+		}
+		if ($line->indice!=ebi_get_adm_indice_per_rank($line->level_rank,$line->fk_parent_level,'MAX'))
+		{
+			print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/1downarrow.png" border="0" name="sesslevel_down" alt="'.$langs->trans("Save").'">';
+		}
+		print '</td>';
+
+		print '<td>'.str_repeat('&nbsp;&nbsp;&nbsp;',$line->level_rank).'<input type="text" name="intitule" value="'.$line->intitule.'" size="30"/></td>';
+		print '<td>'.$formAgefodd->select_action_session_adm($line->fk_parent_level,'parent_level',$line->rowid).'</td>';
+		print '<td><input type="text" name="delai" value="'.$line->alerte.'"/></td>';
+		print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'">';
+		print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="sesslevel_remove" alt="'.$langs->trans("Delete").'"></td>';
+		print '</tr>';
+		print '</form>';
+	}
+	print '<form name="SessionLevel_create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+	print '<input type="hidden" name="action" value="sessionlevel_create">'."\n";
+	print '<tr>';
+	print '<td></td>';
+	print '<td><input type="text" name="intitule" value="" size="30"/></td>';
+	print '<td>'.$formAgefodd->select_action_session_adm('','parent_level').'</td>';
+	print '<td><input type="text" name="delai" value=""/></td>';
+	print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'"></td>';
+	print '</tr>';
+	print '</form>';
+
+}
+else
+{
+	print '<div class="error">'.$admlevel->error.'</div>';
+}
+print '</table><br>';

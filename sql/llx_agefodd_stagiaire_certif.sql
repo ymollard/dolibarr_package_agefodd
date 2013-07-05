@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_certif (
   certif_code varchar(200) NOT NULL,
   certif_label varchar(200) NOT NULL,
   certif_dt_start datetime NOT NULL,
-  certif_dt_end datetime NOT NULL
+  certif_dt_end datetime NOT NULL,
+  import_key		varchar(14)
 ) ENGINE=InnoDB;
 
