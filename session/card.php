@@ -1252,7 +1252,7 @@ else
 								$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
 								$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
 
-								if ($agf->type_session == 1)
+								if ($agf->type_session == 1 && !empty($conf->global->AGF_MANAGE_OPCA))
 								{
 									print '<table class="nobordernopadding" width="100%"><tr><td colspan="2">';
 									print $trainee_info;

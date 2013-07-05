@@ -335,6 +335,31 @@ function ebi_get_adm_level_number()
 }
 
 /**
+ *  Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
+ *
+ *  @return int      		   	 nbre de niveaux
+ */
+function ebi_get_adm_training_level_number()
+{
+	global $db;
+
+	$sql = "SELECT l.rowid, l.level_rank";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as l";
+	$sql.= " WHERE l.level_rank = 0";
+
+	$result = $db->query($sql);
+	if ($result) {
+		$num = $db->num_rows($result);
+		$db->free($result);
+		return $num;
+	}
+	else {
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
+/**
  *  Calcule le nombre de regroupement par premier niveau des tâches par session
  *
  *  @param	int	$session        id de la session
@@ -360,6 +385,8 @@ function ebi_get_level_number($session)
 		return -1;
 	}
 }
+
+
 
 /**
  *  Calcule le nombre de regroupement par premier niveau terminés pour une session donnée
@@ -448,6 +475,51 @@ function ebi_get_adm_indice_per_rank($lvl_rank,$parent_level='',$type='MIN')
 	}
 	$sql.= " as indice";
 	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as s";
+	$sql.= " WHERE s.level_rank=".$lvl_rank;
+	if ($parent_level!='')
+	{
+		$sql.= " AND s.fk_parent_level=".$parent_level;
+	}
+
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$obj = $db->fetch_object($result);
+
+		$db->free($result);
+		return $obj->indice;
+	}
+	else
+	{
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
+/**
+ *  Calcule l'indice min ou max d'un niveau
+ *
+ *  @param	int	$lvl_rank  Rang des actions a tester
+ *  @param	int	$parent_level        niveau parent
+ *  @param	int	$type        type MIN ou MAX
+ *  @return int      		   	 indice
+ */
+function ebi_get_adm_training_indice_per_rank($lvl_rank,$parent_level='',$type='MIN')
+{
+	global $db;
+
+	$sql = "SELECT ";
+	if ($type=='MIN')
+	{
+		$sql.= ' MIN(s.indice) ';
+	}
+	else
+	{
+		$sql.= ' MAX(s.indice) ';
+	}
+	$sql.= " as indice";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as s";
 	$sql.= " WHERE s.level_rank=".$lvl_rank;
 	if ($parent_level!='')
 	{
@@ -589,6 +661,64 @@ function ebi_get_adm_get_next_indice_action($id)
 		return -1;
 	}
 }
+
+/**
+ *  Calcule le next number d'indice pour une action (ecran conf module)
+ *
+ *  @param	int	$id  rowid du niveaux
+ *  @return int      		 action next number
+ */
+function ebi_get_adm_training_get_next_indice_action($id)
+{
+	global $db;
+
+	$sql = "SELECT MAX(s.indice) as nb_action";
+	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as s";
+	$sql.= " WHERE fk_parent_level=".$id;
+
+	dol_syslog("ebi_get_adm_training_get_next_indice_action sql=".$sql, LOG_DEBUG);
+	$result = $db->query($sql);
+	if ($result)
+	{
+		$num = $db->num_rows($result);
+		$obj = $db->fetch_object($result);
+		$db->free($result);
+		if (!empty($obj->nb_action))
+		{
+			return intval(intval($obj->nb_action) + 1);
+		}
+		else
+		{
+			$sql = "SELECT MAX(s.indice) as nb_action";
+			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as s";
+			$sql.= " WHERE fk_parent_level=(SELECT fk_parent_level FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel WHERE rowid=".$id.")";
+
+			dol_syslog("ebi_get_adm_training_get_next_indice_action sql=".$sql, LOG_DEBUG);
+			$result = $db->query($sql);
+			if ($result)
+			{
+				$num = $db->num_rows($result);
+				$obj = $db->fetch_object($result);
+
+				$db->free($result);
+				return intval(intval($obj->nb_action) + 1);
+			}
+			else
+			{
+
+				$error="Error ".$db->lasterror();
+				return -1;
+			}
+		}
+	}
+	else
+	{
+
+		$error="Error ".$db->lasterror();
+		return -1;
+	}
+}
+
 
 
 /**

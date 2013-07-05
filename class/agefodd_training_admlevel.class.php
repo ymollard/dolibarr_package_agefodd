@@ -30,7 +30,7 @@ require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 /**
  *	Put here description of your class
  */
-class Agefoddtrainingadmlevel extends CommonObject
+class Agefodd_training_admlevel extends CommonObject
 {
 	var $db;							//!< To store db handler
 	var $error;							//!< To return error code (or message)
@@ -50,6 +50,7 @@ class Agefoddtrainingadmlevel extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
+	var $fk_agefodd_training_admlevel;
 
     
 
@@ -97,6 +98,7 @@ class Agefoddtrainingadmlevel extends CommonObject
         // Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_training_admlevel(";
 		
+		$sql.= "fk_agefodd_training_admlevel,";
 		$sql.= "fk_training,";
 		$sql.= "level_rank,";
 		$sql.= "fk_parent_level,";
@@ -105,19 +107,20 @@ class Agefoddtrainingadmlevel extends CommonObject
 		$sql.= "delais_alerte,";
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
-		$sql.= "fk_user_mod,";
+		$sql.= "fk_user_mod";
 
 		
         $sql.= ") VALUES (";
         
+        $sql.= " ".(empty($this->fk_agefodd_training_admlevel)?'0':"'".$this->fk_agefodd_training_admlevel."'").",";
 		$sql.= " ".(! isset($this->fk_training)?'NULL':"'".$this->fk_training."'").",";
 		$sql.= " ".(! isset($this->level_rank)?'NULL':"'".$this->level_rank."'").",";
 		$sql.= " ".(! isset($this->fk_parent_level)?'NULL':"'".$this->fk_parent_level."'").",";
-		$sql.= " ".(! isset($this->indice)?'NULL':"'".$this->indice."'").",";
+		$sql.= " ".(empty($this->indice)?'0':"'".$this->indice."'").",";
 		$sql.= " ".(! isset($this->intitule)?'NULL':"'".$this->db->escape($this->intitule)."'").",";
-		$sql.= " ".(! isset($this->delais_alerte)?'NULL':"'".$this->delais_alerte."'").",";
+		$sql.= " ".(empty($this->delais_alerte)?'0':$this->delais_alerte).",";
 		$sql.= " ".$user->id.",";
-		$sql.= " ".$this->db->idate(dol_now()).",";
+		$sql.= " '".$this->db->idate(dol_now())."',";
 		$sql.= " ".$user->id;
 		$sql.= ")";
 
@@ -185,7 +188,8 @@ class Agefoddtrainingadmlevel extends CommonObject
 		$sql.= " t.fk_user_author,";
 		$sql.= " t.datec,";
 		$sql.= " t.fk_user_mod,";
-		$sql.= " t.tms";
+		$sql.= " t.tms,";
+		$sql.= " t.fk_agefodd_training_admlevel";
 
 		
         $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as t";
@@ -211,6 +215,7 @@ class Agefoddtrainingadmlevel extends CommonObject
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
+				$this->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
 
                 
             }
@@ -224,6 +229,70 @@ class Agefoddtrainingadmlevel extends CommonObject
             dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
             return -1;
         }
+    }
+    
+    /**
+     *  Load object in memory from database
+     *
+     *  @return array          	array of object
+     */
+    function fetch_all()
+    {
+    	global $langs;
+    
+    	$sql = "SELECT";
+    	$sql.= " t.rowid,";
+    	$sql.= " t.fk_training,";
+    	$sql.= " t.level_rank,";
+    	$sql.= " t.fk_parent_level,";
+    	$sql.= " t.indice,";
+    	$sql.= " t.intitule,";
+    	$sql.= " t.delais_alerte,";
+    	$sql.= " t.fk_user_author,";
+    	$sql.= " t.datec,";
+    	$sql.= " t.fk_user_mod,";
+    	$sql.= " t.tms,";
+    	$sql.= " t.fk_agefodd_training_admlevel";
+    	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as t";
+    	$sql.= " ORDER BY t.indice";
+    		
+    	dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
+    	$resql=$this->db->query($sql);
+    
+    	if ($resql)
+    	{
+    		$this->line = array();
+    		$num = $this->db->num_rows($resql);
+    		$i = 0;
+    
+    		while( $i < $num)
+    		{
+    			$obj = $this->db->fetch_object($resql);
+    
+    			$line=new AgfTrainingAdmlvlLine();
+    
+    			$line->rowid = $obj->rowid;
+    			$line->fk_training = $obj->fk_training;
+    			$line->level_rank = $obj->level_rank;
+    			$line->fk_parent_level = $obj->fk_parent_level;
+    			$line->indice = $obj->indice;
+    			$line->intitule = $obj->intitule;
+    			$line->alerte = $obj->delais_alerte;
+    			$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
+    			
+    			$this->line[$i]=$line;
+    			$i++;
+    		}
+    		$this->db->free($resql);
+    		return $num;
+    		//return 1;
+    	}
+    	else
+    	{
+    		$this->error="Error ".$this->db->lasterror();
+    		dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+    		return -1;
+    	}
     }
 
 
@@ -258,6 +327,7 @@ class Agefoddtrainingadmlevel extends CommonObject
         $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_training_admlevel SET";
         
 		$sql.= " fk_training=".(isset($this->fk_training)?$this->fk_training:"null").",";
+		$sql.= " fk_agefodd_training_admlevel=".(isset($this->fk_agefodd_training_admlevel)?$this->fk_agefodd_training_admlevel:"null").",";
 		$sql.= " level_rank=".(isset($this->level_rank)?$this->level_rank:"null").",";
 		$sql.= " fk_parent_level=".(isset($this->fk_parent_level)?$this->fk_parent_level:"null").",";
 		$sql.= " indice=".(isset($this->indice)?$this->indice:"null").",";
@@ -655,6 +725,81 @@ class Agefoddtrainingadmlevel extends CommonObject
 		}
 	
 	}
+	
+	/**
+	 *  After a creation set the good parent id for action session
+	 *
+	 *  @param	$user	int	       		 User id that modify
+	 *  @param $training_id	int			 Training to update
+	 *  @param  $notrigger int			 0=launch triggers after, 1=disable triggers
+	 *  @return int     		   	 	 <0 if KO, >0 if OK
+	 */
+	function setParentActionId($user, $training_id)
+	{
+		global $conf, $langs;
+		$error = 0;
+	
+		// Update request
+		if ($this->db->type=='pgsql') {
+			$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_training_admlevel as upd';
+			$sql.= ' SET fk_parent_level=ori.rowid ';
+			$sql.= ' FROM  '.MAIN_DB_PREFIX.'agefodd_training_admlevel as ori';
+			$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training';
+			$sql.= ' AND upd.fk_training='.$training_id;
+		}else {
+			$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_training_admlevel as ori, '.MAIN_DB_PREFIX.'agefodd_training_admlevel as upd ';
+			$sql.= ' SET upd.fk_parent_level=ori.rowid ';
+			$sql.= ' WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training';
+			$sql.= ' AND upd.fk_training='.$training_id;
+		}
+	
+		//print $sql;
+		//exit;
+		$this->db->begin();
+	
+		dol_syslog(get_class($this)."::setParentActionId sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
+		}
+	
+		// Commit or rollback
+		if ($error)
+		{
+			foreach($this->errors as $errmsg)
+			{
+				dol_syslog(get_class($this)."::setParentActionId ".$errmsg, LOG_ERR);
+				$this->error.=($this->error?', '.$errmsg:$errmsg);
+			}
+			$this->db->rollback();
+			return -1*$error;
+		}
+		else
+		{
+			$this->db->commit();
+			return 1;
+		}
+	}
 
 }
-?>
+
+
+/**
+*	line Class
+*/
+class AgfTrainingAdmlvlLine
+{
+	var $rowid;
+	var $fk_training;
+	var $level_rank ;
+	var $fk_parent_level;
+	var $indice;
+	var $intitule;
+	var $alerte;
+	var $fk_agefodd_training_admlevel;
+
+	function __construct()
+	{
+		return 1;
+	}
+}

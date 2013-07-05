@@ -171,11 +171,22 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf->but = GETPOST('but','alpha');
 			$agf->programme = GETPOST('programme','alpha');
 		}
-		$result = $agf->create($user);
+		$newid = $agf->create($user);
 
-		if ($result > 0)
+		if ($newid > 0)
 		{
-			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$result);
+			
+			$result = $agf->createAdmLevelForTraining($user);
+			if ($result>0) {
+				dol_syslog("agefodd:training:card error=".$agf->error, LOG_ERR);
+				$mesg .= $agf->error;
+				$error++;
+			}
+		}
+		
+		if (!$error) {
+			
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$newid);
 			exit;
 		}
 		else

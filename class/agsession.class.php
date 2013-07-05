@@ -348,6 +348,7 @@ class Agsession extends CommonObject
 		$error='';
 
 		require_once('agefodd_sessadm.class.php');
+		require_once(DOL_DOCUMENT_ROOT ."/core/lib/date.lib.php");
 		require_once('agefodd_session_admlevel.class.php');
 		$admlevel = new Agefodd_session_admlevel($this->db);
 		$result2 = $admlevel->fetch_all();
