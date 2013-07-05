@@ -667,3 +667,6 @@ AgfPDFCertificate2=in
 AgfPDFCertificate3=Done at
 AgfPDFCertificate3=REF. CERTIFICATE
 AgfPDFCertificate4=Valid until the :
+AgfPDFCertificateCard1=Name:
+AgfPDFCertificateCard2=Certif#:
+AgfPDFCertificateCard3=Valid until:

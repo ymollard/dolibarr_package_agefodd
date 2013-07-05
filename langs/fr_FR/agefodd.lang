@@ -666,3 +666,6 @@ AgfPDFCertificate1=Née le
 AgfPDFCertificate2=à
 AgfPDFCertificate3=Reference du certificat
 AgfPDFCertificate4=Expire le
+AgfPDFCertificateCard1=Nom:
+AgfPDFCertificateCard2=Num; Certif:
+AgfPDFCertificateCard3=Expire le:
