@@ -667,5 +667,15 @@ AgfTelephone1= Telefoon 1
 AgfTelephone2= Telefoon 2
 AgfDateBirth= Geboortedatum
 AgfPlaceBirth= Geboorteplaats
+<<<<<<< HEAD
 AgfCertifType= Geslaagd voor
 AgfAfterTraining= Na de training
+=======
+AgfPDFCertificate1=Geboren op
+AgfPDFCertificate2=te
+AgfPDFCertificate3=CERTIFICAAT NUMMER
+AgfPDFCertificate4=Certificaat geldig tot:
+AgfPDFCertificateCard1=Naam:
+AgfPDFCertificateCard2=Certificaatnr:
+AgfPDFCertificateCard3=Geldig tot:
+>>>>>>> refs/remotes/fhenry_remote/develop
