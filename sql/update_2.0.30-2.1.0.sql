@@ -1,3 +1,22 @@
+--new admnlevel training table
+CREATE TABLE IF NOT EXISTS llx_agefodd_training_admlevel (
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  fk_agefodd_training_admlevel integer NOT NULL default '0',
+  fk_training integer  NOT NULL,
+  level_rank integer NOT NULL default 0,
+  fk_parent_level integer default 0,
+  indice integer NOT NULL,
+  intitule varchar(150) NOT NULL,
+  delais_alerte integer NOT NULL,
+  fk_user_author integer NOT NULL,
+  datec datetime NOT NULL,
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL
+) ENGINE=InnoDB;
+
+ALTER TABLE llx_agefodd_training_admlevel ADD CONSTRAINT llx_agefodd_training_admlevel_ibfk_1 FOREIGN KEY (fk_training) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_training_admlevel ADD INDEX fk_agefodd_training_admlevel (fk_training);
+
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN import_key	varchar(14);
 ALTER TABLE llx_agefodd_stagiaire_certif ADD COLUMN import_key	varchar(14);
 ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN import_key	varchar(14);

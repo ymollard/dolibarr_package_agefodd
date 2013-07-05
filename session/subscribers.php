@@ -286,7 +286,7 @@ if (!empty($id))
 		/*
 		 * Gestion de la subrogation (affiché uniquement si sessions de type inter-entreprise
 		 	*/
-		if(!$agf->type_session > 0)
+		if(!$agf->type_session > 0 && !empty($conf->global->AGF_MANAGE_OPCA))
 		{
 			print '&nbsp';
 			print '<table class="border" width="100%">';
@@ -376,7 +376,7 @@ if (!empty($id))
 					* Affiché seulement si c'est le premier tiers de la liste
 					*
 					*/
-					if ($agf->type_session == 1 && !$_POST['cancel'] && $show_subrogation)
+					if ($agf->type_session == 1 && !$_POST['cancel'] && $show_subrogation && !empty($conf->global->AGF_MANAGE_OPCA))
 					{
 						$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
 						print '<table class="noborder noshadow" width="100%" id="form_subrogation">';
@@ -431,7 +431,7 @@ if (!empty($id))
 
 						print '</table>';
 					}
-					if (! $show_subrogation)
+					if (! $show_subrogation && !empty($conf->global->AGF_MANAGE_OPCA))
 						print '<div class="info">'.$langs->trans('AgfInfoEditSubrogation').'</div>';
 
 					if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))

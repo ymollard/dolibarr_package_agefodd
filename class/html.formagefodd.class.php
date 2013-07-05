@@ -164,6 +164,58 @@ class FormAgefodd extends Form
 			return -1;
 		}
 	}
+	
+	/**
+	 * Display select list with training action administrative task
+	 *
+	 * @param   int 	$selectid		Valeur à preselectionner
+	 * @param   string	$htmlname		Name of select field
+	 * @param   string	$excludeid		Si il est necessaire d'exclure une valeur de sortie
+	 * @return	 string					HTML select field
+	 */
+	function select_action_training_adm($selectid='', $htmlname='action_level', $excludeid='')
+	{
+		global $conf,$langs;
+	
+		$sql = "SELECT";
+		$sql.= " t.rowid,";
+		$sql.= " t.level_rank,";
+		$sql.= " t.intitule";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_training_admlevel as t";
+		if ($excludeid!='') {
+			$sql.= ' WHERE t.rowid<>\''.$excludeid.'\'';
+		}
+		$sql.= " ORDER BY t.indice";
+	
+		dol_syslog(get_class($this)."::select_action_training_adm sql=".$sql, LOG_DEBUG);
+		$result = $this->db->query($sql);
+		if ($result)
+		{
+			$var=True;
+			$num = $this->db->num_rows($result);
+			$i = 0;
+			$options = '<option value=""></option>'."\n";
+	
+			while ($i < $num)
+			{
+				$obj = $this->db->fetch_object($result);
+				if ($obj->rowid == $selectid) $selected = ' selected="true"';
+				else $selected = '';
+				$strRank=str_repeat('-',$obj->level_rank);
+				$options .= '<option value="'.$obj->rowid.'"'.$selected.'>';
+				$options .= $strRank.' '.stripslashes($obj->intitule).'</option>'."\n";
+				$i++;
+			}
+			$this->db->free($result);
+			return '<select class="flat" style="width:300px" name="'.$htmlname.'">'."\n".$options."\n".'</select>'."\n";
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::select_action_training_adm ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 	/**
 	 *  affiche un champs select contenant la liste des action des session disponibles par session.

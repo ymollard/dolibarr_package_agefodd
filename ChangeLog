@@ -334,8 +334,9 @@ For All :
 	- Fix bugs_agefodd #896 - PDF header ugly if no logo on company
 	- Fix bugs_agefodd #898 - "Suivie admnistratif" this screen simply do not provide relevent information 
 	
-***** ChangeLog for 2.0.30 compared to 2.0.29 *****
+***** ChangeLog for 2.1 compared to 2.0.29 *****
 For All :
+	- Compatibility with Dolibarr 3.4
 	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	- tasks_agefodd #932 : Add calculation of the cost of a session
 	- tasks_agefodd #932 : Add calculation of the cost of a session
 	- New Screen : Mass Archive sessions per year 
@@ -344,3 +345,7 @@ For All :
 	- Certificate indicator (pass or failed)
 	- Certificate type dictionnary
 	- Certificate numbering rules
+	- Fix dashboard bugs
+	- Add administrative task per training (base on admin administrative task)
+	- Fix Admin administrative task (when all are deleted you can create new ones)
+	- Admin : Switch to turn off OPCA feature

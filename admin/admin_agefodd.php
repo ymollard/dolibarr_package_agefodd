@@ -1177,7 +1177,6 @@ $result0 = $admlevel->fetch_all();
 
 print_titre($langs->trans("AgfAdminSessionLevel"));
 
-// Agefodd numbering module
 if ($result0>0)
 {
 	print '<table class="noborder" width="100%">';
@@ -1219,23 +1218,20 @@ if ($result0>0)
 		print '</tr>';
 		print '</form>';
 	}
-	print '<form name="SessionLevel_create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-	print '<input type="hidden" name="action" value="sessionlevel_create">'."\n";
-	print '<tr>';
-	print '<td></td>';
-	print '<td><input type="text" name="intitule" value="" size="30"/></td>';
-	print '<td>'.$formAgefodd->select_action_session_adm('','parent_level').'</td>';
-	print '<td><input type="text" name="delai" value=""/></td>';
-	print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'"></td>';
-	print '</tr>';
-	print '</form>';
+	
 
 }
-else
-{
-	print '<div class="error">'.$admlevel->error.'</div>';
-}
+print '<form name="SessionLevel_create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+print '<input type="hidden" name="action" value="sessionlevel_create">'."\n";
+print '<tr>';
+print '<td></td>';
+print '<td><input type="text" name="intitule" value="" size="30"/></td>';
+print '<td>'.$formAgefodd->select_action_session_adm('','parent_level').'</td>';
+print '<td><input type="text" name="delai" value=""/></td>';
+print '<td><input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit_add.png" border="0" name="sesslevel_update" alt="'.$langs->trans("Save").'"></td>';
+print '</tr>';
+print '</form>';
 print '</table><br>';
 
 print_titre($langs->trans("AgfAdminCalendarTemplate"));

@@ -142,7 +142,9 @@ print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="red">'.img_obj
 $resql = $agf->fetch_tache_en_retard(0);
 $nbre = count($agf->line);
 print '<td>'.$langs->trans("AgfAlertLevel0").'</td><td align="right">';
-print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;</td></tr>' ;
+if ($nbre!=0) print '<a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?id='.$agf->line[0]->sessid.'">'.$nbre.'</a>&nbsp;';
+else print '0&nbsp;';
+print '</td></tr>' ;
 
 // Taches urgentes (3 jours avant limite)
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="orange">'.img_object($langs->trans("AgfShowDetails"),"task").'</td>';

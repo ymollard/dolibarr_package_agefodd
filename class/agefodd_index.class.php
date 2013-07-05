@@ -444,9 +444,9 @@ class Agefodd_index
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
+			$this->line = array();
 			if ($this->db->num_rows($resql))
 			{
-				$this->line = array();
 				$num = $this->db->num_rows($resql);
 				$i = 0;
 
