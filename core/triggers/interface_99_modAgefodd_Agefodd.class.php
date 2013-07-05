@@ -405,7 +405,7 @@ class InterfaceAgefodd
 					$obj = $this->db->fetch_object($resql);
 
 					$sta->id=$obj->rowid;
-					$sta->nom=$object->name;
+					$sta->nom=$object->lastname;
 					$sta->prenom=$object->firstname;
 					$sta->civilite=$object->civilite_id;
 					$sta->socid=$object->socid;
@@ -414,6 +414,7 @@ class InterfaceAgefodd
 					$sta->tel2=$object->phone_mobile;
 					$sta->mail=$object->email;
 					$sta->fk_socpeople=$object->id;
+					$sta->date_birth=$object->birthday;
 					
 					$result=$sta->update($user);
 					if ($result < 0)

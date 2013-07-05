@@ -64,8 +64,8 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 		$this->page_largeur = $formatarray['width'];
 		$this->page_hauteur = $formatarray['height'];
 		$this->format = array($this->page_largeur,$this->page_hauteur);
-		$this->marge_gauche=15;
-		$this->marge_droite=15;
+		$this->marge_gauche=30;
+		$this->marge_droite=50;
 		$this->marge_haute=10;
 		$this->marge_basse=10;
 		$this->defaultFontSize=13;
@@ -181,10 +181,10 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					
 
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 6);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 10);
 					$this->str = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'C');
-					$posY = $pdf->GetY() + 20;
+					$posY = $pdf->GetY() + 30;
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 3);
@@ -202,16 +202,16 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					$pdf->SetXY($posX, $posY);
 					$this->str = $outputlangs->transnoentities($agf2->line[$i]->place_birth);
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
-					$posY = $pdf->GetY() + 10;
+					$posY = $pdf->GetY() + 20;
 
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 4);
-					$pdf->writeHTMLCell(190, 3, $posX-1, $posY, dol_htmlentitiesbr($agf_training->note_public), 0, 1);
-					$posY = $pdf->GetY() + 8;
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 10);
+					$pdf->writeHTMLCell(130, 100, $posX-1, $posY, dol_htmlentitiesbr($agf_training->note_public), 0, 1);
+					$posY = $pdf->GetY() + 5;
 
 					
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);
 					$this->str = $this->emetteur->town.', '.dol_print_date($agf->dated,'daytext');
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 4;
@@ -221,13 +221,13 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					$agf_certif->fetch(0,$agf2->line[$i]->traineeid,$agf2->line[$i]->$id,$agf2->line[$i]->stagerowid);
 					
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate3').' '.$agf_certif->certif_code;
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 4;
 					
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate4').' '.dol_print_date($agf_certif->certif_dt_end,'daytext');
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 8;

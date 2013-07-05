@@ -65,7 +65,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 		$this->format = array($this->page_largeur,$this->page_hauteur);
 		$this->marge_gauche=3;
 		$this->marge_droite=10;
-		$this->marge_haute=10;
+		$this->marge_haute=3;
 		$this->marge_basse=10;
 		$this->defaultFontSize=10;
 		$this->unit='mm';
@@ -179,59 +179,59 @@ class pdf_certificatecard extends ModelePDFAgefodd
 					/***** Text Certificate *****/
 					//Training name
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 4);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 2);
 					$this->str = $agf_training->note_private;
-					$pdf->writeHTMLCell(190, 3, $posX-1, $posY, dol_htmlentitiesbr($agf_training->note_private), 0, 1);
+					$pdf->writeHTMLCell(190, 3, $posX, $posY, dol_htmlentitiesbr($agf_training->note_private), 0, 1);
 					$posY = $pdf->GetY() + 1;
 					
 					//Trainne Name
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificateCard1');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 
-					$pdf->SetXY($posX+6, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 6);
+					$pdf->SetXY($posX+30, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 1;
 					
 					//Certificate number
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificateCard2');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					
 					$agf_certif=new Agefodd_stagiaire_certif($this->db);
 					$agf_certif->fetch(0,$agf2->line[$i]->traineeid,$agf2->line[$i]->$id,$agf2->line[$i]->stagerowid);
 						
-					$pdf->SetXY($posX+6, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetXY($posX+30, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $agf_certif->certif_code;
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 1;
 					
 					//Date of birth
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-					$this->str = $outputlangs->transnoentities('AgfDateBirth');
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
+					$this->str = $outputlangs->transnoentities('AgfDateBirth').":";
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					
 					$date_birth=dol_print_date($agf2->line[$i]->date_birth,'daytext');
-					$pdf->SetXY($posX+6, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 6);
+					$pdf->SetXY($posX+30, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $outputlangs->transnoentities($date_birth);
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 1;
 					
 					//Valid until
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificateCard3');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					
-					$pdf->SetXY($posX+6, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 6);
+					$pdf->SetXY($posX+30, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = dol_print_date($agf_certif->certif_dt_end,'daytext');
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 1;

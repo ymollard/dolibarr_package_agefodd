@@ -498,8 +498,8 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " mail=".(isset($this->mail)?"'".$this->mail."'":"null").",";
 		$sql.= " note=".(isset($this->note)?"'".$this->note."'":"null").",";
 		$sql.= " fk_socpeople=".(isset($this->fk_socpeople)?$this->fk_socpeople:"null").", ";
-		$sql.= " date_birth=".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':$this->db->idate($this->date_birth)).", ";
-		$sql.= " place_birth=".(isset($this->place_birth)?"'".$this->place_birth."'":"null");
+		$sql.= " date_birth=".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':"'".$this->db->idate($this->date_birth))."'";
+		$sql.= " ,place_birth=".(isset($this->place_birth)?"'".$this->place_birth."'":"null");
 		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
