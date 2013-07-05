@@ -361,7 +361,7 @@ if (!empty($id))
 				document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->line[$i]->socid, 'cloture');
 				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 					document_line($langs->trans("AgfPDFCertificateA4"), 2, "certificateA4", $agf->line[$i]->socid);
-					document_line($langs->trans("AgfCourrierCloture"), 2, "certificatecard", $agf->line[$i]->socid);
+					document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->line[$i]->socid);
 				}
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
