@@ -349,8 +349,8 @@ class Agsession extends CommonObject
 
 		require_once('agefodd_sessadm.class.php');
 		require_once(DOL_DOCUMENT_ROOT ."/core/lib/date.lib.php");
-		require_once('agefodd_session_admlevel.class.php');
-		$admlevel = new Agefodd_session_admlevel($this->db);
+		require_once('agefodd_training_admlevel.class.php');
+		$admlevel = new Agefodd_training_admlevel($this->db);
 		$result2 = $admlevel->fetch_all();
 
 		if ($result2 > 0)
