@@ -668,3 +668,5 @@ AgfPDFCertificate4=Expire le
 AgfPDFCertificateCard1=Nom:
 AgfPDFCertificateCard2=Num; Certif:
 AgfPDFCertificateCard3=Expire le:
+AgfPDFCertificateA4=Certificat (A4)
+AgfPDFCertificateCard=Certificat (Carte de crédit)

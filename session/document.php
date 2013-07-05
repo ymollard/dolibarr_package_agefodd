@@ -66,7 +66,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 		if ($_POST["type"] == 'bc')
 		{
 			$agf->comid=$_POST["select"];
-			$agf->facid="-1";
+			$agf->facid="";
 		}
 		$agf->sessid = $id;
 		$agf->socid = $socid;
@@ -359,6 +359,10 @@ if (!empty($id))
 				document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
 
 				document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->line[$i]->socid, 'cloture');
+				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+					document_line($langs->trans("AgfPDFCertificateA4"), 2, "certificateA4", $agf->line[$i]->socid);
+					document_line($langs->trans("AgfCourrierCloture"), 2, "certificatecard", $agf->line[$i]->socid);
+				}
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
 			}

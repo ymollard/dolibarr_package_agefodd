@@ -670,3 +670,5 @@ AgfPDFCertificate4=Valid until the :
 AgfPDFCertificateCard1=Name:
 AgfPDFCertificateCard2=Certif#:
 AgfPDFCertificateCard3=Valid until:
+AgfPDFCertificateA4=Certificaat (A4)
+AgfPDFCertificateCard=Certificaat (Credit Card)
