@@ -211,8 +211,9 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 			else {$style='pair';}			
 			
 			print '<tr class="'.$style.'"><td>';
-			print '<a href="'.dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$line->trainee_id.'">'.$line->trainee_name.' '.$line->trainee_firstname.'</a>';
+			print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$line->customer_id.'">'.$line->customer_name.'</a>';
 			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$line->id_session.'">'.$line->fromintitule.'</a>';
+			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$line->trainee_id.'">'.$line->trainee_name.' '.$line->trainee_firstname.'</a>';
 			print '&nbsp;-&nbsp;'.dol_print_date($line->certif_dt_end,'daytext');
 			print '</td></tr>';
 			

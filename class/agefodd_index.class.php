@@ -49,6 +49,8 @@ Class Agefodd_CertifExpire_line {
 	var $certif_dt_end;
 	var $certif_code;
 	var $certif_label;
+	var $customer_name;
+	var $customer_id;
 }
 /**
  *	Index pages
@@ -655,12 +657,15 @@ class Agefodd_index
 		$sql.= "c.ref as fromref,";
 		$sql.= "sta.nom as trainee_name,";
 		$sql.= "sta.prenom as trainee_firstname,";
-		$sql.= "sta.civilite";
+		$sql.= "sta.civilite,";
+		$sql.= "soc.nom as customer_name,";
+		$sql.= "soc.rowid as customer_id";
 		
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as certif";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session as s ON certif.fk_session_agefodd=s.rowid";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sta ON sta.rowid = certif.fk_stagiaire";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sta.fk_soc";
 		
 		$sql.= " WHERE s.entity IN (".getEntity('agsession').")";
 		
@@ -695,6 +700,8 @@ class Agefodd_index
 				$line->certif_code=$obj->certif_code;
 				$line->certif_label=$obj->certif_label;
 				$line->certif_dt_end=$this->db->jdate($obj->certif_dt_end);
+				$line->customer_name=$obj->customer_name;
+				$line->customer_id=$obj->customer_id;
 				
 				$this->lines[$i]=$line;
 
