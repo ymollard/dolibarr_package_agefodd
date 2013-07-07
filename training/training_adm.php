@@ -179,7 +179,6 @@ if ($action == 'sessionlevel_update')
 			{
 				//no parent
 				$agf->fk_parent_level = 0;
-				$agf->indice = (ebi_get_adm_training_level_number() + 1) . '00';
 				$agf->level_rank = 0;
 			}
 
