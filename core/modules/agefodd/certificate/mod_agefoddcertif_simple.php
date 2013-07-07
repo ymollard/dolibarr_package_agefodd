@@ -110,7 +110,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd
 	{
 		global $db,$conf;
 		
-		
+		$prefix='';
 		
 		$sql = "SELECT";
 		$sql.= " t.ref_interne";
@@ -123,12 +123,29 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd
 		if ($resql)
 		{
 			$obj = $db->fetch_object($resql);
-			$this->prefix=$obj->ref_interne;
+			$prefix=$obj->ref_interne;
+			
+			//Format the two first certificate caracters
+			if (strlen($prefix)>0) {
+				$prefix=str_replace(' ', '', $prefix);
+				$prefix=strtoupper($prefix);
+				
+				if (strlen($prefix)>=2) {
+					$prefix=substr($prefix,0,2);
+				} else {
+					$prefix=$prefix.'X';
+				}
+			}
 		}
 		else
 		{
 			dol_syslog("mod_agefoddcertif_simple::getNextValue sql=".$sql, LOG_ERR);
 			return -1;
+		}
+		if (empty($prefix)) {
+			$this->prefix='CT';
+		}else {
+			$this->prefix=$prefix;
 		}
 		
 

@@ -521,7 +521,7 @@ if ($action=='sessioncalendar_delete') {
 *
 */
 
-llxHeader('','','','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
+llxHeader('',$langs->trans('AgefoddSetupDesc'),'','','','',array('/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js'), array('/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'));
 
 $form=new Form($db);
 $formAgefodd=new FormAgefodd($db);
@@ -1063,13 +1063,13 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-// utilisation formulaire Ajax sur choix site
+// use ajax combo box for contact
 print '<tr class="impair">';
 print '<td>'.$langs->trans("AgfUseSearchToSelectContact").'</td>';
-if (! $conf->use_javascript_ajax)
+if (! $conf->use_javascript_ajax || ! $conf->global->CONTACT_USE_SEARCH_TO_SELECT)
 {
 	print '<td nowrap="nowrap" align="right" colspan="2">';
-	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print $langs->trans("NotAvailableWhenAjaxDisabledOrContactComboBox");
 	print '</td>';
 	print '<td align="center">';
 	print '</td>';
@@ -1087,8 +1087,9 @@ else
 	print '<td align="center">';
 	print '</td>';
 }
+print '</tr>';
 
-// Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
+// Update global variable MAIN_USE_COMPANY_NAME_OF_CONTACT
 print '<tr class="pair"><td>'.$langs->trans("AgfUseMainNameOfContact").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
@@ -1103,8 +1104,8 @@ print $form->textwithpicto('',$langs->trans("AgfUseMainNameOfContactHelp"),1,'he
 print '</td>';
 print '</tr>';
 
-// Mise a jour de la variable AGF_MANAGE_CERTIF
-print '<tr class="pair"><td>'.$langs->trans("AgfManageCertification").'</td>';
+// Update global variable AGF_MANAGE_CERTIF
+print '<tr class="impair"><td>'.$langs->trans("AgfManageCertification").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
 	print ajax_constantonoff('AGF_MANAGE_CERTIF');
@@ -1117,7 +1118,7 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-// Mise a jour de la variable AGF_MANAGE_CERTIF
+// Update global variable AGF_MANAGE_CERTIF
 print '<tr class="pair"><td>'.$langs->trans("AgfManageOPCA").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
@@ -1133,7 +1134,7 @@ print '</tr>';
 
 if (!empty($conf->global->AGF_MANAGE_OPCA))
 {
-	// Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
+	// Update global variable MAIN_USE_COMPANY_NAME_OF_CONTACT
 	print '<tr class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
 	print '<td align="left">';
 	if ($conf->use_javascript_ajax){
@@ -1150,8 +1151,8 @@ if (!empty($conf->global->AGF_MANAGE_OPCA))
 }
 
 
-// Mise a jour de la variable AGF_FCKEDITOR_ENABLE_TRAINING
-print '<tr class="impair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
+// Update global variable AGF_FCKEDITOR_ENABLE_TRAINING
+print '<tr class="pair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
 	print ajax_constantonoff('AGF_FCKEDITOR_ENABLE_TRAINING');
@@ -1172,7 +1173,7 @@ if (!$conf->use_javascript_ajax){
 print '</table><br>';
 print '</form>';
 
-//Admin Session level administation
+//Admin Training level administation
 
 $admlevel = new Agefodd_session_admlevel($db);
 $result0 = $admlevel->fetch_all();

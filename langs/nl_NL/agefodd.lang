@@ -681,3 +681,6 @@ AgfPlaceBirth=Geboorteplaats
 AgfCertifType=Geslaagd voor
 AgfCacherContactsArchives=Hide archive contacts
 AgfAfficherContactsArchives=Display archive contacts
+NotAvailableWhenAjaxDisabledOrContactComboBox=Not available if Ajax is disabled or contact combobox is off in Trhirdparty admin modules
+AgfAdminCertifNumber=Numbering rule for certificate
+AgfSimpleNumRefModelCertifDesc=Returns the number in the form XXyyyy-nnnnn where XX is the training internal ref (uppercase of the two first letters), yyyy is yearand a sequencer nnnnn seamlessly and without reset to 0

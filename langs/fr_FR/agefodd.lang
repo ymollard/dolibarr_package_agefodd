@@ -681,3 +681,6 @@ AgfPlaceBirth=Lieux de naissance
 AgfCertifType=Type de certificat
 AgfCacherContactsArchives=Caché les correspondants archivés
 AgfAfficherContactsArchives=Affiché les correspondants archivés
+NotAvailableWhenAjaxDisabledOrContactComboBox=Non disponble si Ajax est désactivé ou si la recherche contact par auto-complétion est désactivé dans l'administration du module Tiers
+AgfAdminCertifNumber=Numérotation des certificats
+AgfSimpleNumRefModelCertifDesc=Renvoie le numéro sous la forme XXyyyy-nnnnn où XX est la référence interne de la foramtion (majuscule des deux premiéres lettres), yyyy l'année et nnnnn un compteur séquentiel sans rupture et sans remise à 0
