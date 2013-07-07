@@ -835,7 +835,7 @@ print $form->textwithpicto('',$langs->trans("AgfUseStagTypeHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
-if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
+if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 {
 	//Type de stagaire par defaut
 	print '<tr class="impair"><td>'.$langs->trans("AgfUseStagTypeDefault").'</td>';
@@ -1103,21 +1103,6 @@ print $form->textwithpicto('',$langs->trans("AgfUseMainNameOfContactHelp"),1,'he
 print '</td>';
 print '</tr>';
 
-// Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
-print '<tr class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
-print '<td align="left">';
-if ($conf->use_javascript_ajax){
-	print ajax_constantonoff('AGF_LINK_OPCA_ADRR_TO_CONTACT');
-}else {
-	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-	print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
-}
-print '</td>';
-print '<td align="center">';
-print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'help');
-print '</td>';
-print '</tr>';
-
 // Mise a jour de la variable AGF_MANAGE_CERTIF
 print '<tr class="pair"><td>'.$langs->trans("AgfManageCertification").'</td>';
 print '<td align="left">';
@@ -1145,6 +1130,24 @@ print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
+
+if (!empty($conf->global->AGF_MANAGE_OPCA))
+{
+	// Mise a jour de la variable MAIN_USE_COMPANY_NAME_OF_CONTACT
+	print '<tr class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
+	print '<td align="left">';
+	if ($conf->use_javascript_ajax){
+		print ajax_constantonoff('AGF_LINK_OPCA_ADRR_TO_CONTACT');
+	}else {
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
+	}
+	print '</td>';
+	print '<td align="center">';
+	print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'help');
+	print '</td>';
+	print '</tr>';
+}
 
 
 // Mise a jour de la variable AGF_FCKEDITOR_ENABLE_TRAINING

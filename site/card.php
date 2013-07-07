@@ -19,10 +19,10 @@
 */
 
 /**
- *  \file       	/agefodd/site/card.php $
- *  \brief      	Page fiche site de formation
-*  \version		$Id$
-*/
+ *	\file       agefodd/site/card.php
+ *	\ingroup    agefodd
+ *	\brief      card of location
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory

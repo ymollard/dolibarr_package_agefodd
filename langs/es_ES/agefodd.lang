@@ -679,3 +679,5 @@ AgfTelephone2=Téléphono 2
 AgfDateBirth=Lecha de nacimiento
 AgfPlaceBirth=Lugar de nacimiento
 AgfCertifType=Typo de certificat
+AgfCacherContactsArchives=Hide Contact archive
+AgfAfficherContactsArchives=Display active contact

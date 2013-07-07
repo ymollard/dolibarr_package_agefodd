@@ -679,3 +679,5 @@ AgfTelephone2=Téléphone 2
 AgfDateBirth=Date de naissance
 AgfPlaceBirth=Lieux de naissance
 AgfCertifType=Type de certificat
+AgfCacherContactsArchives=Caché les correspondants archivés
+AgfAfficherContactsArchives=Affiché les correspondants archivés

@@ -679,3 +679,5 @@ AgfTelephone2=Telefoon 2
 AgfDateBirth=Geboortedatum
 AgfPlaceBirth=Geboorteplaats
 AgfCertifType=Geslaagd voor
+AgfCacherContactsArchives=Hide archive contacts
+AgfAfficherContactsArchives=Display archive contacts

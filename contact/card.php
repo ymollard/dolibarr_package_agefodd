@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013	       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,21 @@
 */
 
 /**
- *  \file       	/agefodd/contact/card.php
- *  \brief      	Page fiche site de formation
-*  \version		$Id$
-*/
+ *	\file       agefodd/contact/card.php
+ *	\ingroup    agefodd
+ *	\brief      card of contact
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_contact.class.php');
+require_once('../lib/agefodd.lib.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
-
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -58,9 +56,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		$db->rollback();
-		dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
-		$mesg='<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
+		setEventMessage($langs->trans("AgfDeleteErr"),'errors');
 	}
 }
 
@@ -85,8 +81,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -118,8 +113,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd:contact:card error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -141,7 +135,6 @@ llxHeader('',$title);
 
 $form = new Form($db);
 
-dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
@@ -198,7 +191,7 @@ else
 		$agf = new Agefodd_contact($db);
 		$result = $agf->fetch($id, 'peopleid');
 
-		if ($result)
+		if ($result>0)
 		{
 			$head = contact_prepare_head($agf);
 
@@ -233,7 +226,7 @@ else
 			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id').'</td></tr>';
 
 			print '<tr><td>'.$langs->trans("Name").'</td>';
-			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->name).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
+			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->lastname).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
 
 
 			print "</table>";
@@ -242,7 +235,7 @@ else
 		}
 		else
 		{
-			dol_print_error($db);
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }

@@ -38,7 +38,7 @@ class Agefodd_contact extends CommonObject
 	
 	var $id;
 	var $spid;
-	var $line=array();
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -134,7 +134,7 @@ class Agefodd_contact extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " c.rowid,";
-		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.address, s.cp, s.ville, c.archive";
+		$sql.= " s.rowid as spid , s.lastname, s.firstname, s.civilite, s.address, s.zip, s.town, c.archive";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
 		if ($type == 'socid') {
@@ -155,12 +155,12 @@ class Agefodd_contact extends CommonObject
 				$this->id = $obj->rowid;
 				$this->ref = $obj->rowid; // Use for next prev ref
 				$this->spid = $obj->spid;
-				$this->name = $obj->name;
+				$this->lastname = $obj->lastname;
 				$this->firstname = $obj->firstname;
 				$this->civilite = $obj->civilite;
 				$this->address = $obj->address;
-				$this->cp = $obj->cp;
-				$this->ville = $obj->ville;
+				$this->zip = $obj->zip;
+				$this->town = $obj->town;
 				$this->archive = $obj->archive;
 			}
 			$this->db->free($resql);
@@ -190,7 +190,7 @@ class Agefodd_contact extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_socpeople,";
-		$sql.= " s.rowid as spid , s.name, s.firstname, s.civilite, s.phone, s.email, s.phone_mobile,";
+		$sql.= " s.rowid as spid , s.lastname, s.firstname, s.civilite, s.phone, s.email, s.phone_mobile,";
 		$sql.= " soc.nom as socname, soc.rowid as socid, c.archive";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_contact as c";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as s ON c.fk_socpeople = s.rowid";
@@ -206,7 +206,7 @@ class Agefodd_contact extends CommonObject
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -215,19 +215,25 @@ class Agefodd_contact extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					$this->line[$i]->id = $obj->rowid;
-					$this->line[$i]->ref = $obj->rowid; // Use for next prev ref
-					$this->line[$i]->spid = $obj->spid;
-					$this->line[$i]->socid = $obj->socid;
-					$this->line[$i]->socname = $obj->socname;
-					$this->line[$i]->name = $obj->name;
-					$this->line[$i]->firstname = $obj->firstname;
-					$this->line[$i]->civilite = $obj->civilite;
-					$this->line[$i]->phone = $obj->phone;
-					$this->line[$i]->email = $obj->email;
-					$this->line[$i]->phone_mobile = $obj->phone_mobile;
-					$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
-					$this->line[$i]->archive = $obj->archive;
+					
+					$line= new AgfContactLine();
+					
+					$line->id = $obj->rowid;
+					$line->ref = $obj->rowid; // Use for next prev ref
+					$line->spid = $obj->spid;
+					$line->socid = $obj->socid;
+					$line->socname = $obj->socname;
+					$line->lastname = $obj->lastname;
+					$line->firstname = $obj->firstname;
+					$line->civilite = $obj->civilite;
+					$line->phone = $obj->phone;
+					$line->email = $obj->email;
+					$line->phone_mobile = $obj->phone_mobile;
+					$line->fk_socpeople = $obj->fk_socpeople;
+					$line->archive = $obj->archive;
+					
+					$this->lines[$i]=$line;
+					
 					$i++;
 				}
 			}
@@ -363,17 +369,47 @@ class Agefodd_contact extends CommonObject
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_contact";
 		$sql .= " WHERE rowid = ".$id;
 
+		$this->db->begin();
+		
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
 
 		if ($resql)
 		{
+			$this->db->commit();
 			return 1;
 		}
 		else
 		{
 			$this->error=$this->db->lasterror();
+			dol_syslog(get_class($this)."::remove ".$this->error, LOG_ERR);
+			$this->db->rollback();
 			return -1;
 		}
+	}
+}
+
+/**
+ *	Contact line Class
+ */
+class AgfContactLine
+{
+	var $id;
+	var $ref;
+	var $spid;
+	var $socid;
+	var $socname;
+	var $lastname;
+	var $firstname;
+	var $civilite;
+	var $phone;
+	var $email;
+	var $phone_mobile;
+	var $fk_socpeople;
+	var $archive;
+	
+	function __construct()
+	{
+		return 1;
 	}
 }
