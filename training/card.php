@@ -19,25 +19,23 @@
 */
 
 /**
- *  \file       	/agefodd/training/card.php
- *  \brief      	Page fiche d'une operation sur CCA
-*  \version		$Id$
+ *	\file       agefodd/training/card.php
+ *	\ingroup    agefodd
+ *	\brief      info of traineer
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../core/modules/agefodd/modules_agefodd.php');
+require_once('../agefodd/lib/agefodd.lib.php');
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
-
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -59,8 +57,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 
 }
@@ -81,8 +78,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 	}
 	else
 	{
-		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -128,8 +124,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -175,11 +170,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		if ($newid > 0)
 		{
-				
 			$result = $agf->createAdmLevelForTraining($user);
 			if ($result>0) {
-				dol_syslog("agefodd:training:card error=".$agf->error, LOG_ERR);
-				$mesg .= $agf->error;
+				setEventMessage($agf->error,'errors');
 				$error++;
 			}
 		}
@@ -191,8 +184,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -214,7 +206,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 
 	$idforma = GETPOST('idforma','int');
 
-	// MAJ d'un objectif pedagogique
+	// Uate objectif pedagogique
 	if (GETPOST('obj_update_x'))
 	{
 		$result = $agf->fetch_objpeda($id);
@@ -234,8 +226,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 
 		if ($result < 0)
 		{
-			dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -256,8 +247,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -287,8 +277,7 @@ if ($action == 'fichepeda' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		dol_syslog("Agefodd:training:card error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -303,7 +292,6 @@ llxHeader('',$title);
 
 $form = new Form($db);
 
-dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
@@ -394,7 +382,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 }
 else
 {
-	// Affichage de la fiche "formation"
+	// View training card
 	if (!empty($id))
 	{
 		if (empty($arch)) $arch = 0;
@@ -509,7 +497,7 @@ else
 				print '</tr>';
 
 				$i = 0;
-				foreach ($agf_peda->line as $line)
+				foreach ($agf_peda->lines as $line)
 				{
 					print '<form name="obj_update_'.$line->id.'" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
@@ -570,17 +558,17 @@ else
 			else
 			{
 				/*
-				 * Affichage
+				 * Display
 				*/
 
-				//Confirmation de la suppression
+				// confirm delete
 				if ($action == 'delete')
 				{
 					$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
 					if ($ret == 'html') print '<br>';
 				}
 
-				//Confirmation Archivage!
+				// confirm archive
 				if ($action == 'archive' || $action == 'active')
 				{
 					if ($action == 'archive') $value=1;
@@ -721,14 +709,14 @@ else
 		}
 		else
 		{
-			dol_print_error($db);
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
 
 
 /*
- * Barre d'actions
+ * Action tabs
 *
 */
 

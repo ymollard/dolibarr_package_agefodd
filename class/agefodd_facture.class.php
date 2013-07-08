@@ -36,9 +36,17 @@ class Agefodd_facture
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
+	
 	var $id;
+	
+	var $sessid;
+	var $socid;
+	var $facid;
+	var $facnumber;
+	var $comid;
+	var $comref;
 
-	var $lines;
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -79,7 +87,7 @@ class Agefodd_facture
 		$sql.= " ".$this->socid.", ";
 		$sql.= " ".$user->id.', ';
 		$sql.= " ".$user->id.', ';
-		$sql.= $this->db->idate(dol_now());
+		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ")";
 
 		$this->db->begin();

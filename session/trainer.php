@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013		Florian Henry	<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,19 +19,20 @@
 */
 
 /**
- * 	\file		/agefodd/session/subscribers.php
- * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
+ *	\file       agefodd/session/trainer.php
+ *	\ingroup    agefodd
+ *	\brief      card of trainer session
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../class/agefodd_session_formateur.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
 
 
 // Security check
@@ -42,8 +43,6 @@ $id=GETPOST('id','int');
 $confirm=GETPOST('confirm','alpha');
 $form_update_x=GETPOST('form_update_x','alpha');
 $form_add_x=GETPOST('form_add_x','alpha');
-
-$mesg = '';
 
 
 /*
@@ -64,8 +63,7 @@ if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agef
 	}
 	else
 	{
-		dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -87,8 +85,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -107,8 +104,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		}
 		else
 		{
-			dol_syslog("agefodd:session:trainer error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
@@ -123,7 +119,6 @@ llxHeader('',$langs->trans("AgfSessionDetail"));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
@@ -148,7 +143,7 @@ if (!empty($id))
 		print_barre_liste($langs->trans("AgfFormateur"),"", "","","","",'',0);
 
 		/*
-		 * Confirmation de la suppression
+		 * Confrim Delete 
 		*/
 		if ($_POST["form_remove_x"]){
 			// Param url = id de la ligne formateur dans session - id session
@@ -159,7 +154,7 @@ if (!empty($id))
 		print '<div class="tabBar">';
 		print '<table class="border" width="100%">';
 
-		// Bloc d'affichage et de modification des formateurs
+		// Display edit and update trainer
 		$formateurs = new Agefodd_session_formateur($db);
 		$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 		if ($nbform > 0) {
@@ -187,14 +182,14 @@ if (!empty($id))
 				else
 				{
 					print '<td width="300px"style="border-right: 0px;">';
-					// info formateur
-					if (strtolower($formateurs->lines[$i]->name) == "undefined")	{
+					// trainer info
+					if (strtolower($formateurs->lines[$i]->lastname) == "undefined")	{
 						print $langs->trans("AgfUndefinedStagiaire");
 					}
 					else {
 						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 						print img_object($langs->trans("ShowContact"),"contact").' ';
-						print strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
+						print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 					}
 					print '</td>';
 					print '<td>';
@@ -216,7 +211,7 @@ if (!empty($id))
 			}
 		}
 			
-		// Champs nouveau formateur
+		// New trainers
 		if (isset($_POST["newform"])) {
 			print '<tr>';
 			print '<form name="form_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -237,7 +232,6 @@ if (!empty($id))
 		print '</table>';
 		if (!isset($_POST["newform"]))	{
 			print '</div>';
-			//print '&nbsp';
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
 			print '<form name="newform" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -252,7 +246,7 @@ if (!empty($id))
 		print '</div>';
 	}
 	else {
-		// Affichage en mode "consultation"
+		// Display view mode
 		print '&nbsp';
 		print '<table class="border" width="100%">';
 			
@@ -270,10 +264,10 @@ if (!empty($id))
 		{
 			print '<td>';
 			for ($i=0; $i < $nbform; $i++) {
-				// Infos formateurs
+				// Trainers info
 				print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 				print img_object($langs->trans("ShowContact"),"contact").' ';
-				print strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
+				print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 				if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 			}
 			print '</td>';
@@ -285,7 +279,7 @@ if (!empty($id))
 }
 
 /*
- * Barre d'actions
+ * Action tabs
 *
 */
 
@@ -305,5 +299,5 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 
 print '</div>';
 
-llxFooter('');
-?>
+$db->close();
+llxFooter();

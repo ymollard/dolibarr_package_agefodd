@@ -19,21 +19,22 @@
 */
 
 /**
- * 	\file		/agefodd/training/list.php
- * 	\brief		Page présentant la liste des formation enregistrées (passées, actuelles et à venir
- 	*/
+ *	\file       agefodd/training/list.php
+ *	\ingroup    agefodd
+ *	\brief      list of training
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $langs->load('agefodd@agefodd');
-llxHeader('',$langs->trans('AgfMenuCat'));
+
 
 $sortorder=GETPOST('sortorder','alpha');
 $sortfield=GETPOST('sortfield','alpha');
@@ -54,6 +55,8 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 if (empty($arch)) $arch = 0;
+
+llxHeader('',$langs->trans('AgfMenuCat'));
 
 $agf = new Agefodd($db);
 
@@ -77,7 +80,7 @@ print "</tr>\n";
 $var=true;
 if ($resql)
 {
-	foreach ($agf->line as $line)
+	foreach ($agf->lines as $line)
 	{
 
 		// Affichage tableau des formations
@@ -98,10 +101,10 @@ if ($resql)
 }
 else
 {
-	dol_syslog("agefodd::trainer::list ".$agf->error, LOG_ERR);
+	setEventMessage($agf->error,'errors');
 }
 
 print "</table>";
 
-llxFooter('$Date: 2010-03-30 07:39:02 +0200 (mar. 30 mars 2010) $ - $Revision: 53 $');
-?>
+$db->close();
+llxFooter();

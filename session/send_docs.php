@@ -573,7 +573,7 @@ if (!empty($id))
 				if($num > 0) {
 					foreach ($agftrainersess->lines as $formateur) {
 						if($formateur->email != '')
-							$withto[$formateur->socpeopleid] = $formateur->name.' '.$formateur->firstname .' - '.$formateur->email.' ('.$langs->trans('AgfFormateur').')';
+							$withto[$formateur->socpeopleid] = $formateur->lastname.' '.$formateur->firstname .' - '.$formateur->email.' ('.$langs->trans('AgfFormateur').')';
 					}
 				}
 

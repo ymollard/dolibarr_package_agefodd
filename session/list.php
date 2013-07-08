@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,24 @@
 */
 
 /**
- * 	\file		/agefodd/session/list.php
- * 	\brief		Page présentant la liste des formation enregistrées (passées, actuelles et à venir
- 	* 	\version	$Id$
- 	*/
+ *	\file       agefodd/session/list.php
+ *	\ingroup    agefodd
+ *	\brief      list of session
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
-
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/core/class/html.formcompany.class.php');
-dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_place.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once('../class/html.formagefodd.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
+require_once('../class/agefodd_formateur.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -248,7 +247,7 @@ if ($resql != -1)
 	print '</form>';
 
 	$var=true;
-	foreach ($agf->line as $line)
+	foreach ($agf->lines as $line)
 	{
 
 		// Affichage tableau des sessions
@@ -302,11 +301,8 @@ if ($resql != -1)
 }
 else
 {
-	dol_print_error($db);
-	dol_syslog("agefodd::session:list::query: ".$errmsg, LOG_ERR);
+	setEventMessage($agf->error,'errors');
 }
 
-
+$db->close();
 llxFooter();
-$db->close;
-?>

@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
-* Copyright (C) 2012	Florian Henry		<florian.henry@open-concept.pro>
+* Copyright (C) 2012-213	Florian Henry		<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,11 @@ class Agefodd_session_formateur
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
+	
+	var $sessid;
+	var $formid;
+	var $lastname;
+	var $firstname;
 	
 	var $lines=array();
 
@@ -79,7 +84,7 @@ class Agefodd_session_formateur
 		$sql.= " ".$this->formid.', ';
 		$sql.= " ".$user->id.', ';
 		$sql.= " ".$user->id.', ';
-		$sql.= $this->db->idate(dol_now());
+		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ")";
 
 		$this->db->begin();
@@ -138,7 +143,7 @@ class Agefodd_session_formateur
 		$sql = "SELECT";
 		$sql.= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql.= " f.fk_socpeople,";
-		$sql.= " sp.name, sp.firstname";
+		$sql.= " sp.lastname, sp.firstname";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -156,7 +161,7 @@ class Agefodd_session_formateur
 				$this->id = $obj->rowid;
 				$this->sessid = $obj->fk_session;
 				$this->formid = $obj->fk_agefodd_formateur;
-				$this->name = $obj->name;
+				$this->lastname = $obj->lastname;
 				$this->firstname = $obj->firstname;
 			}
 			$this->db->free($resql);
@@ -185,8 +190,8 @@ class Agefodd_session_formateur
 		$sql = "SELECT";
 		$sql.= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql.= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
-		$sql.= " sp.name as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
-		$sql.= " u.name as name_user, u.firstname as firstname_user, u.email as email_user";
+		$sql.= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
+		$sql.= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -215,12 +220,12 @@ class Agefodd_session_formateur
 						
 					$line->opsid = $obj->rowid;
 					if (!empty($obj->fk_socpeople)) {
-						$line->name = $obj->name_socp;
+						$line->lastname = $obj->name_socp;
 						$line->firstname = $obj->firstname_socp;
 						$line->email = $obj->email_socp;
 					}
 					if (!empty($obj->fk_user)) {
-						$line->name = $obj->name_user;
+						$line->lastname = $obj->name_user;
 						$line->firstname = $obj->firstname_user;
 						$line->email = $obj->email_user;
 					}
@@ -348,7 +353,7 @@ class Agefodd_session_formateur
 Class AgfSessionTrainer {
 
 	var $opsid;
-	var $name;
+	var $lastname;
 	var $firstname;
 	var $email;
 	var $socpeopleid;

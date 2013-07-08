@@ -119,8 +119,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " ".(! isset($this->fk_session_stagiaire)?'NULL':"'".$this->fk_session_stagiaire."'").",";
 		$sql.= " ".(! isset($this->certif_code)?'NULL':"'".$this->db->escape($this->certif_code)."'").",";
 		$sql.= " ".(! isset($this->certif_label)?'NULL':"'".$this->db->escape($this->certif_label)."'").",";
-		$sql.= " ".(! isset($this->certif_dt_start) || dol_strlen($this->certif_dt_start)==0?'NULL':$this->db->idate($this->certif_dt_start)).",";
-		$sql.= " ".(! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end)==0?'NULL':$this->db->idate($this->certif_dt_end))."";
+		$sql.= " ".(! isset($this->certif_dt_start) || dol_strlen($this->certif_dt_start)==0?'NULL':"'".$this->db->idate($this->certif_dt_start)."'").",";
+		$sql.= " ".(! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end)==0?'NULL':"'".$this->db->idate($this->certif_dt_end)."'")."";
 
 
 		$sql.= ")";
@@ -380,6 +380,10 @@ class Agefodd_stagiaire_certif  extends CommonObject
 	 */
 	function set_certif_state($user,$certif_id, $certif_type_id, $certif_state) {
 
+		if (empty($certif_state)) {
+			$certif_state= 0;
+		}
+		
 		$sql = "SELECT";
 		$sql.= " t.rowid";
 

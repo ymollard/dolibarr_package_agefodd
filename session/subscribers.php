@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013		Florian Henry	<florian.henry@open-concept.pro>
 * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
 *
 * This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,19 @@
 */
 
 /**
- * 	\file		/agefodd/session/subscribers.php
-* 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
+ *	\file       agefodd/session/subscribers.php
+ *	\ingroup    agefodd
+ *	\brief      trainees of session
 */
-
-/*error_reporting(E_ALL);
- ini_set('display_errors', true);
-ini_set('html_errors', false);*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
 
 
 // Security check
@@ -47,7 +44,6 @@ $confirm=GETPOST('confirm','alpha');
 $stag_update_x=GETPOST('stag_update_x','alpha');
 $stag_add_x=GETPOST('stag_add_x','alpha');
 
-$mesg = '';
 if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	if($stag_update_x  > 0) {
@@ -86,19 +82,19 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 					if ($agf->id_opca_trainee > 0)
 					{
 						if ($agf->updateInfosOpca($user)) {
-							$mesg = '<div class="confirm">'.$langs->trans('Saved').'</div>';
+							setEventMessage($langs->trans('Save'),'mesgs');
 						}
 						else {
-							$mesg = '<div class="error">'.$agf->error.'</div>';
+							setEventMessage($agf->error,'errors');
 							$redirect=false;
 						}
 					}
 					else {
 						if ($agf->saveInfosOpca($user)) {
-							$mesg = '<div class="confirm">'.$langs->trans('Saved').'</div>';
+							setEventMessage($langs->trans('Save'),'mesgs');
 						}
 						else {
-							$mesg = '<div class="error">'.$agf->error.'</div>';
+							setEventMessage($agf->error,'errors');
 							$redirect=false;
 						}
 					}
@@ -106,7 +102,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 			}
 			else
 			{
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 			if ($redirect)
 			{
@@ -116,8 +112,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		}
 		else
 		{
-			dol_syslog("agefodd:session:subscribers error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -137,8 +132,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		}
 		else
 		{
-			dol_syslog("agefodd:session:subscribers error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
@@ -163,8 +157,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 	}
 	else
 	{
-		dol_syslog("agefodd:session:subscribers error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -202,7 +195,8 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
 			$agf->date_ask_OPCA = dol_mktime(0,0,0,GETPOST('ask_OPCAmonth','int'),GETPOST('ask_OPCAday','int'),GETPOST('ask_OPCAyear','int'));
 			if ($agf->date_ask_OPCA=='') {
 				$isdateaskOPCA=0;
-			} else {$isdateressite=GETPOST('isdateaskOPCA','int');
+			} else {
+				$isdateressite=GETPOST('isdateaskOPCA','int');
 			}
 			$agf->is_date_ask_OPCA=$isdateressite;
 
@@ -211,7 +205,9 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
 				$result = $agf->update($user);
 				if ($result > 0)
 				{
+					setEventMessage($langs->trans('Save'),'mesgs');
 					if ($_POST['saveandclose']!='') {
+						
 						Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 					}
 					else
@@ -222,8 +218,7 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
 				}
 				else
 				{
-					dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-					$mesg = '<div class="error">'.$agf->error.'</div>';
+					setEventMessage($agf->error,'errors');
 				}
 			}
 			else
@@ -250,7 +245,6 @@ llxHeader($head, $langs->trans("AgfSessionDetail"),'','','','','',$arrayofcss,''
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
 
 if (!empty($id))
 {
@@ -265,7 +259,7 @@ if (!empty($id))
 	{
 
 		/*
-		 * Confirmation de la suppression
+		 * Confirm delete
 		*/
 		if ($_POST["stag_remove_x"])
 		{
@@ -284,8 +278,8 @@ if (!empty($id))
 		print '&nbsp';
 
 		/*
-		 * Gestion de la subrogation (affiché uniquement si sessions de type inter-entreprise
-		 	*/
+		 * Manage funding
+		 */
 		if(!$agf->type_session > 0 && !empty($conf->global->AGF_MANAGE_OPCA))
 		{
 			print '&nbsp';
@@ -337,7 +331,7 @@ if (!empty($id))
 		print '<table class="border" width="100%">';
 
 		/*
-		 *  Bloc d'affichage et de modification des infos sur les stagiaires
+		 *  Block update trainne info
 		*
 		*/
 		$stagiaires = new Agsession($db);
@@ -372,8 +366,8 @@ if (!empty($id))
 					print $formAgefodd->select_stagiaire($stagiaires->lines[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd='.$id.')) OR (s.rowid='.$stagiaires->lines[$i]->id.')');
 
 					/*
-					 * Gestion OPCA pour le stagiaire si session inter-entreprise
-					* Affiché seulement si c'est le premier tiers de la liste
+					 * Manage trainee Funding for inter-enterprise
+					* Display only if first of the thridparty list
 					*
 					*/
 					if ($agf->type_session == 1 && !$_POST['cancel'] && $show_subrogation && !empty($conf->global->AGF_MANAGE_OPCA))
@@ -447,7 +441,7 @@ if (!empty($id))
 				else
 				{
 					print '<td width="40%">';
-					// info stagiaire
+					// info trainee
 					if (strtolower($stagiaires->lines[$i]->nom) == "undefined")
 					{
 						print $langs->trans("AgfUndefinedStagiaire");
@@ -514,7 +508,7 @@ if (!empty($id))
 					}
 					print '</td>';
 					print '<td width="30%" style="border-left: 0px;">';
-					// Affichage de l'organisme auquel est rattaché le stagiaire
+					// Display thridparty link with trainee
 					if ($stagiaires->lines[$i]->socid)
 					{
 						print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->lines[$i]->socid.'">';
@@ -547,7 +541,7 @@ if (!empty($id))
 			}
 		}
 
-		// Champs nouveau stagiaire
+		// New trainee
 		if (isset($_POST["newstag"]))
 		{
 			print '<tr>';
@@ -576,7 +570,6 @@ if (!empty($id))
 		if (!isset($_POST["newstag"]))
 		{
 			print '</div>';
-			//print '&nbsp';
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
 			print '<form name="newstag" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -600,7 +593,7 @@ if (!empty($id))
 		print '</div>';
 	}
 	else {
-		// Affichage en mode "consultation"
+		// Display View mode
 
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
@@ -612,7 +605,7 @@ if (!empty($id))
 		print '&nbsp';
 
 		/*
-		 * Gestion de la subrogation (formulaire d'édition) uniquement pour une session de type intra
+		 * Manage funding for intra-enterprise session
 		*/
 		if(!$agf->type_session > 0)
 		{
@@ -684,7 +677,7 @@ if (!empty($id))
 			elseif (!empty($conf->global->AGF_MANAGE_OPCA))
 			{
 				/*
-				 * Gestion de la subrogation (affichage infos)
+				 * Display funding information
 				*/
 
 				print '&nbsp';
@@ -734,7 +727,7 @@ if (!empty($id))
 		}
 
 		/*
-		 * Gestion des stagiaires
+		 * Manage trainee
 		*/
 
 		print '&nbsp';
@@ -742,7 +735,7 @@ if (!empty($id))
 
 		$stagiaires = new Agsession($db);
 		$stagiaires->fetch_stagiaire_per_session($agf->id);
-		$nbstag = count($stagiaires->line);
+		$nbstag = count($stagiaires->lines);
 		print '<tr><td  width="20%" valign="top" ';
 		if ($nbstag < 1)
 		{
@@ -849,7 +842,7 @@ if (!empty($id))
 }
 
 /*
- * Barre d'actions
+ * Action tabs
 *
 */
 
@@ -880,5 +873,5 @@ if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" &&
 
 print '</div>';
 
-llxFooter('');
-?>
+$db->close();
+llxFooter();

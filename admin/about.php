@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2012		Florian Henry			<florian.henry@open-concept.pro>
+/* Copyright (C) 2012-2013		Florian Henry			<florian.henry@open-concept.pro>
  *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,18 @@
 */
 
 /**
- * 	\file		admin/about.php
- * 	\ingroup	agefodd
- */
+ * 	\file       /agefodd/admin/about.php
+ *	\ingroup    agefodd
+ *	\brief      about agefood module page
+*/
 // Dolibarr environment
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/includes/PHP Markdown 1.0.1/markdown.php');
+require_once '../lib/agefodd.lib.php';
+require_once '../includes/PHP Markdown 1.0.1/markdown.php';
 
 // Translations
 $langs->load("agefodd@agefodd");

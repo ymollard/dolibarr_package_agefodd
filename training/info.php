@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
 */
 
 /**
- *  \file       	/agefodd/training/info.php
- *  \brief      	Page fiche d'une operation sur CCA
-*  \version		$Id$
+ *	\file       agefodd/training/info.php
+ *	\ingroup    agefodd
+ *	\brief      info of traineer
 */
 
 $res=@include("../../main.inc.php");				// For root directory
@@ -38,8 +38,6 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $id=GETPOST('id','int');
 
-$mesg = '';
-
 /*
  * View
 */
@@ -47,7 +45,6 @@ $mesg = '';
 llxHeader('',$langs->trans("AgfCatalogDetail"));
 
 $agf = new Agefodd($db);
-$agf->fetch($id);
 $agf->info($id);
 
 $head = training_prepare_head($agf);
@@ -59,8 +56,5 @@ dol_print_object_info($agf);
 print '</td></tr></table>';
 print '</div>';
 
-
 $db->close();
-
-llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
-?>
+llxFooter();

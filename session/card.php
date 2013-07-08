@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013	Florian Henry	<florian.henry@open-concept.pro>
 * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
 *
 * This program is free software; you can redistribute it and/or modify
@@ -20,30 +20,29 @@
 */
 
 /**
- *  \file       	/agefodd/session/card.php
-*  \brief      	Page fiche session de formation
-*  \version		$Id$
+ *	\file       agefodd/session/card.php
+ *	\ingroup    agefodd
+ *	\brief      card of session
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
-dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-dol_include_once('/agefodd/class/agefodd_calendrier.class.php');
-dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/date.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_sessadm.class.php');
+require_once('../class/agefodd_session_admlevel.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../class/agefodd_session_calendrier.class.php');
+require_once('../class/agefodd_calendrier.class.php');
+require_once('../class/agefodd_session_formateur.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -66,8 +65,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("agefodd:session:card error=".$error, LOG_ERR);
-		$mesg = '<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
+		setEventMessage($langs->trans("AgfDeleteErr").':'.$agf->error,'errors');
 	}
 }
 
@@ -90,8 +88,7 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 	}
 	else
 	{
-		dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -111,9 +108,8 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 
 		if ($result > 0)
 		{
-			// Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
+			// If update are OK we delete related files
 			foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
-				//echo "$filename effacé <br>";
 				if(is_file($filename)) unlink("$filename");
 			}
 
@@ -122,8 +118,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -149,8 +144,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$fk_session_place = GETPOST('place','int');
 		if (($fk_session_place==-1) || (empty($fk_session_place)))
 		{
+			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
 			$error++;
-			$mesg = '<div class="error">'.$langs->trans('AgfPlaceMandatory').'</div>';
 		}
 
 		$result = $agf->fetch($id);
@@ -228,14 +223,14 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 				}
 				else
 				{
+					setEventMessage($langs->trans('Save'),'mesgs');
 					Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 				}
 				exit;
 			}
 			else
 			{
-				dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 		else
@@ -259,8 +254,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 /*
  * Action update
-* - changement ou ajout periode dans fiche session
-* - changement ou ajout formateur dans fiche session
+* - Calendar update
+* - trainer update
 */
 if ($action == 'edit' && $user->rights->agefodd->creer)
 {
@@ -302,8 +297,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -358,8 +352,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -379,8 +372,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -399,15 +391,14 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
 }
 
 /*
- * Action create (nouvelle session de formation)
+ * Action create (new training session)
 */
 
 if ($action == 'add_confirm' && $user->rights->agefodd->creer)
@@ -421,7 +412,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		if (($fk_session_place==-1) || (empty($fk_session_place)))
 		{
 			$error++;
-			$mesg = '<div class="error">'.$langs->trans('AgfPlaceMandatory').'</div>';
+			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
 		}
 
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
@@ -444,19 +435,17 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 			if ($result > 0)
 			{
-				// Si la création de la session s'est bien passée,
-				// on crée automatiquement toutes les tâches administratives associées...
+				// If session creation are ok
+				// We create admnistrative task associated
 				$result = $agf->createAdmLevelForSession($user);
 				if ($result>0) {
-					dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-					$mesg .= $agf->error;
+					setEventMessage($agf->error,'errors');
 					$error++;
 				}
 			}
 			else
 			{
-				dol_syslog("agefodd:session:card error=".$agf->error, LOG_ERR);
-				$mesg .= $agf->error;
+				setEventMessage($agf->error,'errors');
 				$error++;
 			}
 		}
@@ -468,7 +457,6 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		else
 		{
-			$mesg='<div class="error">'.$mesg.'</div>';
 			$action='create';
 		}
 	}
@@ -482,7 +470,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 // Action clone object
 if ($action == 'confirm_clone' && $confirm == 'yes')
 {
-	if (1==0 &&  ! GETPOST('clone_content') /*&& ! GETPOST('clone_receivers')*/ )
+	if (1==0 &&  ! GETPOST('clone_content'))
 	{
 		$mesg='<div class="error">'.$langs->trans("NoCloneOptionsSpecified").'</div>';
 	}
@@ -521,7 +509,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 			}
 			else
 			{
-				$mesg=$agf->error;
+				setEventMessage($agf->error,'errors');
 				$action='';
 			}
 		}
@@ -538,7 +526,6 @@ llxHeader('',$langs->trans("AgfSessionDetail"),'','','','',array('/agefodd/inclu
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
@@ -639,13 +626,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 }
 else
 {
-	// Affichage de la fiche "session"
+	// Display session card
 	if ($id)
 	{
 		$agf = new Agsession($db);
 		$result = $agf->fetch($id);
 
-		if ($result)
+		if ($result>0)
 		{
 			if (!(empty($agf->id)))
 			{
@@ -653,7 +640,7 @@ else
 
 				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 
-				// Affichage en mode "édition"
+				// Display edit mode
 				if ($action == 'edit')
 				{
 						
@@ -770,7 +757,7 @@ else
 						$disabled = '';
 						$checked = 'checked="checked"';
 					}
-					// Si non forcé on doit pouvoir saisir une valeur
+					// if not force we must input values
 					print '<tr><td width="20%">'.$langs->trans("AgfNbreParticipants").'</td>';
 					print '<td><input size="4" type="text" class="flat" id="nb_stagiaire" name="nb_stagiaire" '.$disabled.' value="'.($agf->nb_stagiaire>0?$agf->nb_stagiaire:'0').'" />'.'</td></tr>';
 
@@ -809,7 +796,7 @@ else
 					print '</div>';
 
 					/*
-					 * Gestion des cout
+					 * Cost management
 					*/
 					print_barre_liste($langs->trans("AgfCost"),"", "","","","",'',0);
 					print '<div class="tabBar">';
@@ -837,12 +824,12 @@ else
 					print '</form>';
 
 					/*
-					 * Gestion Calendrier
+					 * Calendar management
 					*/
 					print_barre_liste($langs->trans("AgfCalendrier"),"", "","","","",'',0);
 
 					/*
-					 * Confirmation de la suppression
+					 * Confirm delete calendar
 					*/
 					if ($_POST["period_remove_x"])
 					{
@@ -906,7 +893,7 @@ else
 							}
 							print '</td>' ;
 
-							// On calcule la duree totale du calendrier
+							// We calculated the total session duration time
 							$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 
 							print '</form>'."\n";
@@ -926,12 +913,11 @@ else
 						}
 					}
 
-					// Champs nouvelle periode
+					// Fiels for new periodes
 						
 					if (!empty($newperiod))
 					{
 						print "</table></div>";
-						//print '&nbsp';
 						print '<table style="border:0;" width="100%">';
 						print '<tr><td align="right">';
 						print '<form name="newperiod" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -1005,9 +991,9 @@ else
 				}
 				else
 				{
-					// Affichage en mode "consultation"
+					// Display view mode
 					/*
-					* Confirmation de la suppression
+					* Confirm delete
 					*/
 					if ($action == 'delete')
 					{
@@ -1016,7 +1002,7 @@ else
 					}
 
 					/*
-					 * Confirmation de l'archivage/activation suppression
+					 * confirm archive update status
 					*/
 					if (isset($_GET["arch"]))
 					{
@@ -1024,7 +1010,7 @@ else
 						if ($ret == 'html') print '<br>';
 					}
 
-					// Confirm delete
+					// Confirm clone
 					if ($action == 'clone')
 					{
 						$formquestion=array(
@@ -1032,7 +1018,6 @@ else
 						array('type' => 'checkbox', 'name' => 'clone_calendar','label' => $langs->trans("AgfCloneSessionCalendar"),   'value' => 1)
 						);
 						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("CloneSession"),$langs->trans("ConfirmCloneSession"),"confirm_clone",$formquestion,'',1);
-						//$ret=$form->formconfirm($_SERVER["PHP_SELF"].'?id='.$id, $langs->trans('CloneSession'), $langs->trans('ConfirmCloneSession',$agf->ref), 'confirm_clone','','',1);
 						if ($ret == 'html') print '<br>';
 					}
 
@@ -1046,7 +1031,7 @@ else
 					print '&nbsp';
 
 					/*
-					 * Gestion de la subrogation (affiché si la session est de type inter-entreprise)
+					 * Manage founding ressources depend type inter-enterprise or extra-enterprise
 					*/
 					if(!$agf->type_session > 0 && !empty($conf->global->AGF_MANAGE_OPCA))
 					{
@@ -1096,8 +1081,8 @@ else
 					}
 
 					/*
-					 * Gestion des cout
-					*/
+					 * Cost management
+					 */
 					$spend_cost = 0;
 					$cashed_cost = 0;
 						
@@ -1129,7 +1114,7 @@ else
 
 
 					/*
-					 * Gestion des formateurs
+					 * Manage trainers
 					*/
 					print '&nbsp';
 					print '<table class="border" width="100%">';
@@ -1149,10 +1134,10 @@ else
 						print '<td>';
 						for ($i=0; $i < $nbform; $i++)
 						{
-							// Infos formateurs
+							// Infos trainers
 							print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 							print img_object($langs->trans("ShowContact"),"contact").' ';
-							print strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
+							print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 
 						}
@@ -1162,7 +1147,7 @@ else
 					print "</table>";
 
 					/*
-					 * Gestion du calendrier
+					 * Manage calendars
 					*/
 
 					print '&nbsp';
@@ -1196,8 +1181,8 @@ else
 
 							$old_date = $calendrier->lines[$i]->date_session;
 
-							// On calcule la duree totale du calendrier
-							// pour mémoire: mktime(heures, minutes, secondes, mois, jour, année);
+							// We calculate the total duration times
+							// reminders: mktime(hours, minutes, secondes, month, day, year);
 							$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 						}
 						if (($agf->duree * 3600) != $duree)
@@ -1217,7 +1202,7 @@ else
 					print "</table>";
 
 					/*
-					 * Gestion des stagiaires
+					 * Manage trainees
 					*/
 
 					print '&nbsp';
@@ -1240,7 +1225,7 @@ else
 						for ($i=0; $i < $nbstag; $i++)	{
 							print '<td witdth="20px" align="center">'.($i+1).'</td>';
 							print '<td width="400px"style="border-right: 0px;">';
-							// Infos stagiaires
+							// Infos trainee
 							if (strtolower($stagiaires->lines[$i]->nom) == "undefined")	{
 								print $langs->trans("AgfUndefinedStagiaire");
 							}
@@ -1301,7 +1286,7 @@ else
 							}
 							print '</td>';
 							print '<td style="border-left: 0px; border-right: 0px;">';
-							// Infos organisme de rattachement
+							// Info funding company
 							if ($stagiaires->lines[$i]->socid) {
 								print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->lines[$i]->socid.'">';
 								print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->lines[$i]->socname,20).'</a>';
@@ -1311,7 +1296,7 @@ else
 							}
 							print '</td>';
 							print '<td style="border-left: 0px;">';
-							// Infos mode de financement
+							// Info funding type
 							if ($stagiaires->lines[$i]->type && (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 								print '<div class=adminaction>';
 								print $langs->trans("AgfStagiaireModeFinancement");
@@ -1335,14 +1320,14 @@ else
 		}
 		else
 		{
-			dol_print_error($db);
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
 
 
 /*
- * Barre d'actions
+ * Action tabs
 *
 */
 
@@ -1409,6 +1394,5 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 
 print '</div>';
 
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
-
+$db->close();
+llxFooter();

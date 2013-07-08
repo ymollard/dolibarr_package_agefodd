@@ -349,3 +349,11 @@ For All :
 	- Add administrative task per training (base on admin administrative task)
 	- Fix Admin administrative task (when all are deleted you can create new ones)
 	- Admin : Switch to turn off OPCA feature
+For Dev:
+	- Rewrite $line to $lines in most of classes
+	- Implement $lines object in most of classes for fetch_all (or similar) in classes
+	- No more use of dol_htmloutput_mesg, uses setEventMessage instead
+	- reformat (auto-indent) all module code
+	- Remove dol_include_once when possible replace by require_once
+	- Comment in code should be in english
+	- Try to remove all PgSQL warning regarding date update or insert (date must be quoted)

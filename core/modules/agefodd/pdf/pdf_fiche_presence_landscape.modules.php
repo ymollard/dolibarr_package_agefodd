@@ -413,7 +413,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			//$this->str = $agf->teachername;
-			$this->str = strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname);
+			$this->str = strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);

@@ -36,3 +36,7 @@ CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_session FOR 
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_stagiaire_type FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_stagiaire FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_stagiaire_certif FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_certif_state FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_certificate_type FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_training_admlevel FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+

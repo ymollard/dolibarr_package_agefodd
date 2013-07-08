@@ -47,7 +47,7 @@ class Agefodd_sessadm extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
-	var $line;
+	var $lines=array();
 
 
 	/**
@@ -323,7 +323,7 @@ class Agefodd_sessadm extends CommonObject
 				$line->notes = $obj->notes;
 				$line->archive = $obj->archive;
 
-				$this->line[$i]=$line;
+				$this->lines[$i]=$line;
 
 				$i++;
 			}

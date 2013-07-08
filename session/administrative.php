@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,9 @@
 */
 
 /**
- *  \file       	/agefodd/session/administrative.php
- *  \brief      	Page de gestion des tâches administratives (session de formation)
+ *	\file       agefodd/session/administrative.php
+ *	\ingroup    agefodd
+ *	\brief      administrative task of session
 */
 
 
@@ -28,18 +29,15 @@ $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
-dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/date.lib.php');
-
+require_once('../class/agefodd_sessadm.class.php');
+require_once('../class/agefodd_session_admlevel.class.php');
+require_once('../class/agsession.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
-
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -61,8 +59,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -91,8 +88,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 	elseif ($_POST["delete"])
@@ -127,8 +123,7 @@ if ($action == 'update_archive' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 
 }
@@ -178,8 +173,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			}
 			else
 			{
-				dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
-				$mesg .= '<div class="error">'.$result_stat->error.'</div>';
+				setEventMessage($result_stat->error,'errors');
 			}
 		}
 		else
@@ -194,18 +188,17 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		if ($result < 0)
 		{
-			dol_syslog("Agefodd:administrative:agefodd error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 		else
 		{
-			Header ( "Location: administrative.php?id=".$id);
+			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			exit;
 		}
 	}
 	else
 	{
-		Header ( "Location: administrative.php?id=".$id);
+		Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 		exit;
 	}
 }
@@ -220,14 +213,12 @@ llxHeader('',$langs->trans("AgfSessionDetail"));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
-
 if ($user->rights->agefodd->creer)
 {
-	// Affichage de la fiche "session"
+	// Display administrative task
 	if ($id)
 	{
-		// Affichage en mode "consultation"
+		// View mode
 		$agf_session = new Agsession($db);
 		$res = $agf_session->fetch($id);
 
@@ -238,7 +229,7 @@ if ($user->rights->agefodd->creer)
 		$agf = new Agefodd_sessadm($db);
 
 
-		// Affichage en mode "creation"
+		// Creation card
 		if ($action == 'create')
 		{
 			print '<form name="create_confirm" action="administrative.php" method="post">'."\n";
@@ -281,15 +272,15 @@ if ($user->rights->agefodd->creer)
 			print '</table>';
 			print '</form>';
 		}
-		// Affichage en mode "édition"
+		// Display edit mode
 		elseif ($action == 'edit')
 		{
 			$result = $agf->fetch($actid);
 
 			/*
-			 * Confirmation de la suppression
+			 * Delete confirm
 			*/
-			if ($_GET["delete"] == '1')
+			if (GETPOST('delete','int') == '1')
 			{
 				$ret = $form->form_confirm("administrative.php?id=".$id."&actid=".$actid, $langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteAction"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
@@ -338,7 +329,7 @@ if ($user->rights->agefodd->creer)
 		}
 		else
 		{
-			// Affichage en mode "consultation"
+			// Display view mode
 			$sess_adm = new Agefodd_sessadm($db);
 			$result = $sess_adm->fetch_all($id);
 
@@ -352,7 +343,7 @@ if ($user->rights->agefodd->creer)
 			{
 
 				$i=0;
-				foreach ($sess_adm->line as $line)
+				foreach ($sess_adm->lines as $line)
 				{
 
 					if ($line->level_rank == '0' && $i!=0)
@@ -453,7 +444,7 @@ if ($user->rights->agefodd->creer)
 
 
 /*
- * Barre d'actions
+ * Action tabs
 *
 */
 
@@ -475,6 +466,5 @@ if ($action != 'create' && $action != 'edit' && $action != 'update')
 
 print '</div>';
 
-
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
+$db->close();
+llxFooter();

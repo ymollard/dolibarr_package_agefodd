@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,24 @@
 */
 
 /**
- * 	\file		/agefodd/session/document.php
- * 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
+ *	\file       agefodd/session/document.php
+ *	\ingroup    agefodd
+ *	\brief      list of document
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
-dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/commande/class/commande.class.php');
-dol_include_once('/agefodd/lib/agefodd_document.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_sessadm.class.php');
+require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_convention.class.php');
+require_once('../core/modules/agefodd/modules_agefodd.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
+require_once('../lib/agefodd_document.lib.php');
 
 
 // Security check
@@ -45,43 +46,38 @@ $action=GETPOST('action','alpha');
 $id=GETPOST('id','int');
 $socid=GETPOST('socid','int');
 
-$mesg = '';
+$type_link = GETPOST('type','alpha');
 
-// lie une facture ou un bon de commande à la session
+// Link invoice or order to session/customer
 if($action == 'link_confirm' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
 
+	if ($type_link == 'bc') $agf->comid=GETPOST('select','int');
+	if ($type_link == 'fac') $agf->facid=GETPOST('select','int');
+	
 	// si existe déjà, on met à jour
 	if ($agf->id)
 	{
-		if ($_POST["type"] == 'bc') $agf->comid=$_POST["select"];
-		if ($_POST["type"] == 'fac') $agf->facid=$_POST["select"];
 		$result2 = $agf->update($user);
 	}
 	// si nouveau, on créé
 	else
 	{
-		if ($_POST["type"] == 'bc')
-		{
-			$agf->comid=$_POST["select"];
-			$agf->facid="";
-		}
 		$agf->sessid = $id;
 		$agf->socid = $socid;
 		$result2 = $agf->create($user);
 	}
 
-	if ($result2)
+	if ($result2>0)
 	{
 		Header( 'Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
 		exit;
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
-		$mesg = "Document linked error" . $agf->error;
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -94,8 +90,8 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 	// si existe déjà, on met à jour
 	if ($agf->id)
 	{
-		if ($_GET["type"] == 'bc') $agf->comid="";
-		if ($_GET["type"] == 'fac') $agf->facid="";
+		if ($type_link == 'bc') $agf->comid="";
+		if ($type_link == 'fac') $agf->facid="";
 		$result2 = $agf->update($user);
 	}
 	if ($result2)
@@ -105,9 +101,7 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 	}
 	else
 	{
-		dol_syslog("CommonObject::agefodd error=".$agf->error, LOG_ERR);
-		$mesg = "Document unlink error".$agf->error;
-
+		setEventMessage($agf->error,'errors');
 	}
 
 }
@@ -169,7 +163,7 @@ if ($action == 'del' && $user->rights->agefodd->creer)
 	else
 	{
 		$error = $file.' : '.$langs->trans("AgfDocDelError");
-		dol_syslog("Agefodd::document::del error=".$error, LOG_ERR);
+		setEventMessage($error,'errors');
 	}
 }
 
@@ -178,8 +172,6 @@ llxHeader('',$langs->trans("AgfSessionDetail"));
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
-
-dol_htmloutput_mesg($mesg);
 
 
 // Selection du bon de commande ou de la facture à lier
@@ -212,14 +204,14 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 
 	// creation de la liste de choix
 	$agf_liste = new Agefodd_facture($db);
-	$result = $agf_liste->fetch_fac_per_soc($_GET["socid"], $_GET["type"]);
+	$result = $agf_liste->fetch_fac_per_soc($socid, $type_link);
 	$num = count($agf_liste->lines);
 	if ($num > 0)
 	{
 		print '<form name="fact_link" action="document.php?action=link_confirm&id='.$id.'"  method="post">'."\n";
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-		print '<input type="hidden" name="socid" value="'.$_GET["socid"].'">'."\n";
-		print '<input type="hidden" name="type" value="'.$_GET["type"].'">'."\n";
+		print '<input type="hidden" name="socid" value="'.$socid.'">'."\n";
+		print '<input type="hidden" name="type" value="'.$type_link.'">'."\n";
 
 		$var=True;
 		$options = '<option value=""></option>'."\n";;
@@ -230,7 +222,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 		$select = '<select class="flat" name="select">'."\n".$options."\n".'</select>'."\n";
 
 		print '<td width="250px">';
-		($_GET["type"] == 'bc') ? print $langs->trans("AgfFactureBcSelectList") : print $langs->trans("AgfFactureFacSelectList");
+		($type_link == 'bc') ? print $langs->trans("AgfFactureBcSelectList") : print $langs->trans("AgfFactureFacSelectList");
 		print '</td>'."\n";
 		print '<td>'.$select.'</td>'."\n";
 		if ($user->rights->agefodd->modifier)
@@ -242,7 +234,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	else
 	{
 		print '<td colspan=3>';
-		($_GET["type"] == 'bc') ? print $langs->trans("AgfFactureBcNoResult") : print $langs->trans("AgfFactureFacNoResult");
+		($type_link == 'bc') ? print $langs->trans("AgfFactureBcNoResult") : print $langs->trans("AgfFactureFacNoResult");
 		print '</td>';
 	}
 	print '</tr>'."\n";
@@ -262,14 +254,14 @@ if (!empty($id))
 	{
 		$idform = $agf->formid;
 
-		// Affichage en mode "consultation"
+		// Display View mode
 		$head = session_prepare_head($agf);
 
 		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
 
 		/*
-		 * Confirmation de la suppression
+		 * Confirm delete
 		*/
 		if ($action == 'delete')
 		{
@@ -298,7 +290,7 @@ if (!empty($id))
 		document_line($langs->trans("AgfFichePedagogique"), 2, 'fiche_pedago');
 		document_line($langs->trans("AgfConseilsPratique"), 2, 'conseils');
 
-		// Pendant la formation
+		// During training
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfDuringTraining").'</td></tr>'."\n";
 		document_line($langs->trans("AgfFichePresence"), 2, "fiche_presence");
 		document_line($langs->trans("AgfFichePresenceEmpty"), 2, "fiche_presence_empty");
@@ -309,59 +301,59 @@ if (!empty($id))
 		print '</table>'."\n";
 		print '&nbsp;'."\n";
 
-		$linecount = count($agf->line);
+		$linecount = count($agf->lines);
 
 		for ($i=0; $i < $linecount ; $i++)
 		{
-			if (!empty($agf->line[$i]->socid))
+			if (!empty($agf->lines[$i]->socid))
 			{
 				print '<table class="border" width="100%">'."\n";
 
 				print '<tr class="liste_titre">'."\n";
 				print '<td colspan=3>';
-				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->lines[$i]->socid.'">'.$agf->lines[$i]->socname.'</a></td>'."\n";
 				print '</tr>'."\n";
 
-				// Avant la formation
+				// Before training session
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
-				document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->line[$i]->socid);
-				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
-				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->line[$i]->socid);
-				document_line($langs->trans("AgfCourrierConv"), 2, "courrier", $agf->line[$i]->socid,'convention');
-				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');
+				document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->lines[$i]->socid);
+				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->lines[$i]->socid);
+				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->lines[$i]->socid);
+				document_line($langs->trans("AgfCourrierConv"), 2, "courrier", $agf->lines[$i]->socid,'convention');
+				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->lines[$i]->socid, 'accueil');
 
-				// Après la formation
+				// After training session
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfAfterTraining").'</td></tr>'."\n";
-				document_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
+				document_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->lines[$i]->socid);
 
 				$text_fac = $langs->trans("AgfFacture");
-				if($agf->line[$i]->type_session) { // session inter
+				if($agf->lines[$i]->type_session && (!empty($conf->global->AGF_MANAGE_OPCA))) { // session inter
 					$agfstat = new Agsession($db);
 					// load les infos OPCA pour la session
-					$agfstat->getOpcaForTraineeInSession($agf->line[$i]->socid,$agf->line[$i]->sessid);
-					// Facture à l'OPCA si subrogation
-					$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->line[$i]->socid);
+					$agfstat->getOpcaForTraineeInSession($agf->lines[$i]->socid,$agf->lines[$i]->sessid);
+					// invocie to OPCA if funding thridparty
+					$soc_to_select = ($agfstat->is_OPCA?$agfstat->fk_soc_OPCA:$agf->lines[$i]->socid);
 
-					// Si subrogation et info renseigné
+					// If funding is fill
 					if ($soc_to_select > 0 && $agfstat->is_OPCA)
 					{
 						$text_fac.=' '.$langs->trans("AgfOPCASub1");
 					}
-					elseif(!$agfstat->is_OPCA) // Pas de subrogation
+					elseif(!$agfstat->is_OPCA) // No funding
 					{
 						$text_fac.=' '.$langs->trans("AgfOPCASub2");
 					}
-					else // OPCA non renseignée
+					else // No funding trhirdparty filled
 					{
 						$text_fac.= ' <span class="error">'.$langs->trans("AgfOPCASubErr").' <a href="'.dol_buildpath("/agefodd/session/subscribers.php",1).'?action=edit&id='.$id.'">'.$langs->trans('AgfModifySubscribersAndSubrogation').'</a></span>';
 					}
 				}
-				document_line($text_fac, 2, "fac",$agf->line[$i]->socid);
+				document_line($text_fac, 2, "fac",$agf->lines[$i]->socid);
 
-				document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->line[$i]->socid, 'cloture');
+				document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->lines[$i]->socid, 'cloture');
 				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
-					document_line($langs->trans("AgfPDFCertificateA4"), 2, "certificateA4", $agf->line[$i]->socid);
-					document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->line[$i]->socid);
+					document_line($langs->trans("AgfPDFCertificateA4"), 2, "certificateA4", $agf->lines[$i]->socid);
+					document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines[$i]->socid);
 				}
 				print '</table>';
 				if ($i < $linecount) print '&nbsp;'."\n";
@@ -371,5 +363,6 @@ if (!empty($id))
 	}
 
 }
+
+$db->close();
 llxFooter();
-?>

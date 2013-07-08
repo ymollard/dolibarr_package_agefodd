@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013	Florian Henry	<florian.henry@open-concept.pro>
 * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
 *
 * This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 */
 
 /**
- * 	\file		/agefodd/session/subscribers.php
-* 	\brief		Page présentant la liste des documents administratif disponibles dans Agefodd
+ *	\file       agefodd/session/subscribers_certif.php
+ *	\ingroup    agefodd
+ *	\brief      subscribers session certificate pages
 */
-
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_stagiaire_certif.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -43,8 +43,6 @@ $action=GETPOST('action','alpha');
 $id=GETPOST('id','int');
 $confirm=GETPOST('confirm','alpha');
 $certif_save_x=GETPOST('certif_save_x','alpha');
-
-$mesg = '';
 
 if ($action=='edit' && $user->rights->agefodd->creer) {
 
@@ -61,8 +59,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agf_certif = new Agefodd_stagiaire_certif($db);
 		$result=$agf_certif->fetch(0,$certif_sta_id,$id,$certif_session_sta_id);
 		if ($result<0) {
-			dol_syslog("agefodd:session:subscribers error=".$agf_certif->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+			setEventMessage($agf_certif->error,'errors');
 		}else {
 
 			$agf_certif->certif_code=$certif_code;
@@ -87,8 +84,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 							$certif_state = GETPOST('certifstate_'.$certif_type_id);
 							$result=$agf_certif->set_certif_state($user,$certif_id, $certif_type_id, $certif_state);
 							if ($result<0) {
-								dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
-								$mesg .= '<div class="error">'.$agf_certif->error.'</div>';
+								setEventMessage($agf_certif->error,'errors');
 							}
 						}
 					}
@@ -102,10 +98,9 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 				$agf_certif->fk_session_stagiaire=$certif_session_sta_id;
 				$agf_certif->fk_stagiaire=$certif_sta_id;
 
-				$result=$agf_certif->create($user);
-				if ($result<0) {
-					dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
-					$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+				$resultcertif=$agf_certif->create($user);
+				if ($resultcertif<0) {
+					setEventMessage($agf_certif->error,'errors');
 				}else {
 						
 					$certif_type_array = $agf_certif->get_certif_type();
@@ -116,10 +111,9 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 						{
 							//Case state didn't exists yet
 							$certif_state = GETPOST('certifstate_'.$certif_type_id);
-							$result=$agf_certif->set_certif_state($user,$certif_id, $certif_type_id, $certif_state);
+							$result=$agf_certif->set_certif_state($user,$resultcertif, $certif_type_id, $certif_state);
 							if ($result<0) {
-								dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
-								$mesg .= '<div class="error">'.$agf_certif->error.'</div>';
+								setEventMessage($agf_certif->error,'errors');
 							}
 						}
 					}
@@ -152,8 +146,7 @@ if ($action == 'confirm_delete_certif' && $confirm == "yes" && $user->rights->ag
 		if (!empty($agf_certif->id)) {
 			$result=$agf_certif->delete($user);
 			if ($result<0) {
-				dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+				setEventMessage($agf_certif->error,'errors');
 			}else {
 				Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 				exit;
@@ -172,8 +165,6 @@ llxHeader($head, $langs->trans("AgfCertificate"),'','','','','',$arrayofcss,'');
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
-
 if (!empty($id))
 {
 	$agf = new Agsession($db);
@@ -182,8 +173,6 @@ if (!empty($id))
 	$head = session_prepare_head($agf);
 
 	dol_fiche_head($head, 'certificate', $langs->trans("AgfCertificate"), 0, 'group');
-
-
 
 	/*
 	 * Confirmation de la suppression
@@ -395,7 +384,7 @@ print '</div>';
 
 
 /*
- * Barre d'actions
+ * Actions tabs
 *
 */
 
@@ -411,7 +400,6 @@ if ($action != 'edit' && (!empty($agf->id)))
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfModifyCertificate').'</a>';
 	}
-
 }
 
 print '</div>';

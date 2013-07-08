@@ -785,7 +785,7 @@ class Agsession extends CommonObject
 					$newline->is_OPCA = $obj->is_opca;
 					$newline->fk_soc_OPCA = $obj->fk_soc_opca;
 						
-					$this->line[]=$newline;
+					$this->lines[]=$newline;
 					$i++;
 				}
 			}
@@ -832,6 +832,7 @@ class Agsession extends CommonObject
 						}
 						if ($insert) {
 							$newline = new AgfSocLine();
+							
 							$newline->sessid=$obj->rowid;
 							$newline->socname = $obj->socname;
 							$newline->socid = $obj->socid;
@@ -839,7 +840,7 @@ class Agsession extends CommonObject
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
 								
-							$this->line[]=$newline;
+							$this->lines[]=$newline;
 								
 							$add_soc++;
 						}
@@ -910,7 +911,7 @@ class Agsession extends CommonObject
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
 								
-							$this->line[]=$newline;
+							$this->lines[]=$newline;
 							$add_soc++;
 						}
 					}
@@ -970,7 +971,7 @@ class Agsession extends CommonObject
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
 								
-							$this->line[]=$newline;
+							$this->lines[]=$newline;
 							$add_soc++;
 						}
 					}
@@ -1891,7 +1892,7 @@ class Agsession extends CommonObject
 					$line->force_nb_stagiaire = $obj->force_nb_stagiaire;
 					$line->notes = $obj->notes;
 						
-					$this->line[$i]=$line;
+					$this->lines[$i]=$line;
 					$i++;
 				}
 			}
@@ -2011,7 +2012,7 @@ class Agsession extends CommonObject
 						$line->orderref = $obj->orderref;
 					}
 						
-					$this->line[$i] = $line;
+					$this->lines[$i] = $line;
 						
 					$i++;
 				}
@@ -2263,7 +2264,7 @@ class Agsession extends CommonObject
 
 		$sql.= " ".(! isset($this->fk_soc_trainee)?'NULL':"'".$this->fk_soc_trainee."'").",";
 		$sql.= " ".(! isset($this->fk_session_agefodd)?'NULL':"'".$this->fk_session_agefodd."'").",";
-		$sql.= " ".(! isset($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA)==0?'NULL':$this->db->idate($this->date_ask_OPCA)).",";
+		$sql.= " ".(! isset($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA)==0?'NULL':"'".$this->db->idate($this->date_ask_OPCA)."'").",";
 		$sql.= " ".(! isset($this->is_date_ask_OPCA)?'NULL':"'".$this->is_date_ask_OPCA."'").",";
 		$sql.= " ".(! isset($this->is_OPCA)?'NULL':"'".$this->is_OPCA."'").",";
 		$sql.= " ".(! isset($this->fk_soc_OPCA)?'NULL':"'".$this->fk_soc_OPCA."'").",";
@@ -2271,7 +2272,7 @@ class Agsession extends CommonObject
 		$sql.= " ".(! isset($this->num_OPCA_soc)?'NULL':"'".$this->db->escape($this->num_OPCA_soc)."'").",";
 		$sql.= " ".(! isset($this->num_OPCA_file)?'NULL':"'".$this->db->escape($this->num_OPCA_file)."'").",";
 		$sql.= " ".$user->id.",";
-		$sql.= " ".$this->db->idate(dol_now()).",";
+		$sql.= " '".$this->db->idate(dol_now())."',";
 		$sql.= " ".$user->id."";
 
 		$sql.= ")";

@@ -19,29 +19,28 @@
 */
 
 /**
- *  \file       	/agefodd/session/convention.php
- *  \brief      	Page fiche convention de formation
-*  \version		$Id$
+ *	\file       agefodd/session/convention.php
+ *	\ingroup    agefodd
+ *	\brief      Manage convention template
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/core/lib/company.lib.php');
+require_once('../lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_session_calendrier.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_convention.class.php');
+require_once('../class/agefodd_contact.class.php');
+require_once('../class/agefodd_place.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -68,8 +67,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -95,8 +93,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -159,8 +156,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -173,7 +169,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 
 /*
- * Action create (convention de formation)
+ * Action create (training contract)
 */
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
@@ -220,8 +216,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog('Agefodd:convention:card error='.$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -247,8 +242,6 @@ llxHeader('',$langs->trans("AgfConvention"));
 
 $form = new Form($db);
 
-dol_htmloutput_mesg($mesg);
-
 /*
  * Affichage de la fiche convention en mode création
 */
@@ -258,9 +251,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$agf = new Agsession($db);
 	$resql = $agf->fetch($sessid);
 
-	// On cherche si une convention de formation a déjà été faite pour ce client.
-	// Si c'est le cas, on récupére les valeurs de cette convention pour en faire les valeurs par defaut.
-	// Sinon on prends les valeurs par défault du script...
+	//We try to find is a convetion have already been done for this customers
+	//If yes we retrieve the old value
+	//else we use default
 	$agf_last = new Agefodd_convention($db);
 	$result = $agf_last->fetch_last_conv_per_socity($socid);
 	if ($result > 0)
@@ -296,7 +289,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 
 	//intro2
-	// On recupere les infos societe
+	// Get trhidparty info
 	$agf_soc = new Societe($db);
 	$result = $agf_soc->fetch($socid);
 
@@ -305,10 +298,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$resql2 = $agf_contact->fetch($socid,'socid');
 
 	// intro2
-	$intro2 = $langs->trans('AgfConvIntro2_1').' '.$agf_soc->nom.$langs->trans('AgfConvIntro2_2').' '.$agf_soc->adresse." ".$agf_soc->cp." ".$agf_soc->ville.",";
-	$intro2.= ' '.$langs->trans('AgfConvIntro2_3').' '. $agf_soc->siret.", ";
+	$intro2 = $langs->trans('AgfConvIntro2_1').' '.$agf_soc->name.$langs->trans('AgfConvIntro2_2').' '.$agf_soc->address." ".$agf_soc->zip." ".$agf_soc->town.",";
+	$intro2.= ' '.$langs->trans('AgfConvIntro2_3').' '. $agf_soc->idprof2.", ";
 	$intro2.= ' '.$langs->trans('AgfConvIntro2_4').' ';
-	$intro2.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name;
+	$intro2.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->lastname;
 	$intro2.= ' '.$langs->trans('AgfConvIntro2_5');
 
 	//article 1
@@ -324,7 +317,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
-	for ( $i = 0; $i < count($obj_peda->line); $i++)
+	for ( $i = 0; $i < count($obj_peda->lines); $i++)
 	{
 		$art1.= "## ".$obj_peda->line[$i]->intitule."\n";
 	}

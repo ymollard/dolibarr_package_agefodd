@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
-* Copyright (C) 2012       Florian Henry       <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry       <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 */
 
 /**
- *  \file       agefodd/class/agefodd_foramtion_catalogue.class.php
+ *  \file      agefodd/class/agefodd_foramtion_catalogue.class.php
 *  \ingroup    agefodd
 *  \brief      Manage training object
 */
@@ -38,6 +38,29 @@ class Agefodd extends CommonObject
 	var $element='agefodd';
 	var $table_element='agefodd_formation_catalogue';
 	var $id;
+	var $entity;
+
+	var $ref;
+	var $ref_obj;
+	var $ref_interne;
+	var $intitule;
+	var $duree;
+	var $public;
+	var $methode;
+	var $prerequis;
+	var $but;
+	var $programme;
+	var $note1;
+	var $note2;
+	var $archive;
+	var $note_private;
+	var $note_public;
+	
+	var $fk_formation_catalogue;
+	var $intitule;
+	var $priorite;
+	
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -494,9 +517,13 @@ class Agefodd extends CommonObject
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->intitule = stripslashes($obj->intitule);
-				$this->line[$i]->priorite = $obj->priorite;
+				$line = new AgfObjPedaLine();
+				
+				$line->id = $obj->rowid;
+				$line->intitule = stripslashes($obj->intitule);
+				$line->priorite = $obj->priorite;
+				
+				$this->lines[$i]=$line;
 
 				$i++;
 			}
@@ -688,14 +715,19 @@ class Agefodd extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					$this->line[$i]->rowid = $obj->rowid;
-					$this->line[$i]->intitule = $obj->intitule;
-					$this->line[$i]->ref = $obj->ref;
-					$this->line[$i]->datec = $this->db->jdate($obj->datec);
-					$this->line[$i]->duree = $obj->duree;
-					$this->line[$i]->lastsession = $obj->lastsession;
-					$this->line[$i]->nbsession = $obj->nbsession;
+					
+					$line= new AgfTrainingLine ();
+					
+					$line->rowid = $obj->rowid;
+					$line->intitule = $obj->intitule;
+					$line->ref = $obj->ref;
+					$line->datec = $this->db->jdate($obj->datec);
+					$line->duree = $obj->duree;
+					$line->lastsession = $obj->lastsession;
+					$line->nbsession = $obj->nbsession;
 
+					$this->lines[$i]=$line;
+					
 					$i++;
 				}
 			}
@@ -791,4 +823,32 @@ class Agefodd extends CommonObject
 		return $error;
 	}
 }
-?>
+
+class AgfObjPedaLine {
+	
+	var $id;
+	var $fk_formation_catalogue;
+	var $intitule;
+	var $priorite;
+	
+	function __construct()
+	{
+		return 1;
+	}
+}
+
+class AgfTrainingLine {
+
+	var $rowid;
+	var $intitule;
+	var $ref;
+	var $datec;
+	var $duree;
+	var $lastsession;
+	var $nbsession;
+
+	function __construct()
+	{
+		return 1;
+	}
+}
