@@ -75,7 +75,7 @@ class Agsession extends CommonObject
 	var $fk_user_mod;
 	var $tms='';
 	var $archive;
-	var $line=array();
+	var $lines=array();
 	var $commercialid;
 	var $commercialname;
 	var $contactid;
@@ -351,7 +351,7 @@ class Agsession extends CommonObject
 		require_once(DOL_DOCUMENT_ROOT ."/core/lib/date.lib.php");
 		require_once('agefodd_training_admlevel.class.php');
 		$admlevel = new Agefodd_training_admlevel($this->db);
-		$result2 = $admlevel->fetch_all($agf->fk_formation_catalogue);
+		$result2 = $admlevel->fetch_all($this->fk_formation_catalogue);
 
 		if ($result2 > 0)
 		{
@@ -607,7 +607,7 @@ class Agsession extends CommonObject
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 
 			$i = 0;
@@ -642,7 +642,7 @@ class Agsession extends CommonObject
 					$line->email = $obj->mail;
 				}
 
-				$this->line[$i]=$line;
+				$this->lines[$i]=$line;
 
 				$i++;
 			}
@@ -722,7 +722,7 @@ class Agsession extends CommonObject
 				$line->ref_interne = $obj->ref_interne;
 				$line->color = $obj->color;
 
-				$this->line[$i]=$line;
+				$this->lines[$i]=$line;
 
 				$i++;
 			}
@@ -1133,7 +1133,7 @@ class Agsession extends CommonObject
 
 		if ($this->force_nb_stagiaire==0) {
 			$this->fetch_stagiaire_per_session($this->id);
-			$this->nb_stagiaire=count($this->line);
+			$this->nb_stagiaire=count($this->lines);
 		}
 
 		if ($error==0)

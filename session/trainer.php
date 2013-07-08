@@ -164,20 +164,20 @@ if (!empty($id))
 		$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 		if ($nbform > 0) {
 			for ($i=0; $i < $nbform; $i++)	{
-				if ($formateurs->line[$i]->opsid == $_POST["opsid"] && $_POST["form_remove_x"]) print '<tr bgcolor="#d5baa8">';
+				if ($formateurs->lines[$i]->opsid == $_POST["opsid"] && $_POST["form_remove_x"]) print '<tr bgcolor="#d5baa8">';
 				else print '<tr>';
 				print '<form name="form_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 				print '<input type="hidden" name="action" value="edit">'."\n";
-				print '<input type="hidden" name="sessid" value="'.$formateurs->line[$i]->sessid.'">'."\n";
-				print '<input type="hidden" name="opsid" value="'.$formateurs->line[$i]->opsid.'">'."\n";
+				print '<input type="hidden" name="sessid" value="'.$formateurs->lines[$i]->sessid.'">'."\n";
+				print '<input type="hidden" name="opsid" value="'.$formateurs->lines[$i]->opsid.'">'."\n";
 					
 				print '<td width="20px" align="center">'.($i+1).'</td>';
 					
-				if ($formateurs->line[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
+				if ($formateurs->lines[$i]->opsid == $_POST["opsid"] && ! $_POST["form_remove_x"])
 				{
 					print '<td width="300px" style="border-right: 0px">';
-					print $formAgefodd->select_formateur($formateurs->line[$i]->formid, "formid");
+					print $formAgefodd->select_formateur($formateurs->lines[$i]->formid, "formid");
 					if ($user->rights->agefodd->modifier)
 					{
 						print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_update" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -188,13 +188,13 @@ if (!empty($id))
 				{
 					print '<td width="300px"style="border-right: 0px;">';
 					// info formateur
-					if (strtolower($formateurs->line[$i]->name) == "undefined")	{
+					if (strtolower($formateurs->lines[$i]->name) == "undefined")	{
 						print $langs->trans("AgfUndefinedStagiaire");
 					}
 					else {
-						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
+						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 						print img_object($langs->trans("ShowContact"),"contact").' ';
-						print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
+						print strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 					}
 					print '</td>';
 					print '<td>';
@@ -225,7 +225,7 @@ if (!empty($id))
 			print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 			print '<td width="20px" align="center">'.($i+1).'</td>';
 			print '<td>';
-			print $formAgefodd->select_formateur($formateurs->line[$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_session='.$id.')',1);
+			print $formAgefodd->select_formateur($formateurs->lines[$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_session='.$id.')',1);
 			if ($user->rights->agefodd->modifier) {
 				print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="form_add" alt="'.$langs->trans("AgfModSave").'">';
 			}
@@ -271,9 +271,9 @@ if (!empty($id))
 			print '<td>';
 			for ($i=0; $i < $nbform; $i++) {
 				// Infos formateurs
-				print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
+				print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 				print img_object($langs->trans("ShowContact"),"contact").' ';
-				print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
+				print strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 				if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 			}
 			print '</td>';

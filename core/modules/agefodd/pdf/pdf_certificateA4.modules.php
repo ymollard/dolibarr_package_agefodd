@@ -155,7 +155,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 				
 			if (($result && $ret))
 			{
-				for ($i = 0; $i < count($agf2->line); $i++ )
+				for ($i = 0; $i < count($agf2->lines); $i++ )
 				{
 					// New page
 					$pdf->AddPage();
@@ -182,13 +182,13 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 10);
-					$this->str = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
+					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.$agf2->lines[$i]->nom);
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'C');
 					$posY = $pdf->GetY() + 30;
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 3);
-					$date_birth=dol_print_date($agf2->line[$i]->date_birth,'daytext');
+					$date_birth=dol_print_date($agf2->lines[$i]->date_birth,'daytext');
 						
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate1').' '.$outputlangs->transnoentities($date_birth);
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
@@ -200,7 +200,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					$posY = $pdf->GetY() + 2;
 						
 					$pdf->SetXY($posX, $posY);
-					$this->str = $outputlangs->transnoentities($agf2->line[$i]->place_birth);
+					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->place_birth);
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
 					$posY = $pdf->GetY() + 20;
 
@@ -218,7 +218,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 						
 					$agf_certif=new Agefodd_stagiaire_certif($this->db);
 						
-					$agf_certif->fetch(0,$agf2->line[$i]->traineeid,$agf2->line[$i]->$id,$agf2->line[$i]->stagerowid);
+					$agf_certif->fetch(0,$agf2->lines[$i]->traineeid,$agf2->lines[$i]->$id,$agf2->lines[$i]->stagerowid);
 						
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);

@@ -948,7 +948,7 @@ else
 						print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 						print '<input type="hidden" name="action" value="edit">'."\n";
 						print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-						print '<input type="hidden" name="periodid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
+						print '<input type="hidden" name="periodid" value="'.$stagiaires->lines[$i]->stagerowid.'">'."\n";
 						print '<input type="hidden" id="datetmplday"   name="datetmplday"   value="'.dol_print_date($agf->dated, "%d").'">'."\n";
 						print '<input type="hidden" id="datetmplmonth" name="datetmplmonth" value="'.dol_print_date($agf->dated, "%m").'">'."\n";
 						print '<input type="hidden" id="datetmplyear"  name="datetmplyear"  value="'.dol_print_date($agf->dated, "%Y").'">'."\n";
@@ -1150,9 +1150,9 @@ else
 						for ($i=0; $i < $nbform; $i++)
 						{
 							// Infos formateurs
-							print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->line[$i]->socpeopleid.'">';
+							print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 							print img_object($langs->trans("ShowContact"),"contact").' ';
-							print strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname).'</a>';
+							print strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 
 						}
@@ -1225,7 +1225,7 @@ else
 
 					$stagiaires = new Agsession($db);
 					$stagiaires->fetch_stagiaire_per_session($agf->id);
-					$nbstag = count($stagiaires->line);
+					$nbstag = count($stagiaires->lines);
 					print '<tr><td  width="20%" valign="top" ';
 					if ($nbstag < 1) {
 						print '>'.$langs->trans("AgfParticipants").'</td>';
@@ -1241,15 +1241,15 @@ else
 							print '<td witdth="20px" align="center">'.($i+1).'</td>';
 							print '<td width="400px"style="border-right: 0px;">';
 							// Infos stagiaires
-							if (strtolower($stagiaires->line[$i]->nom) == "undefined")	{
+							if (strtolower($stagiaires->lines[$i]->nom) == "undefined")	{
 								print $langs->trans("AgfUndefinedStagiaire");
 							}
 							else {
-								$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
+								$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->lines[$i]->id.'">';
 								$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
-								$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
+								$trainee_info .= strtoupper($stagiaires->lines[$i]->nom).' '.ucfirst($stagiaires->lines[$i]->prenom).'</a>';
 								$contact_static= new Contact($db);
-								$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
+								$contact_static->civilite_id = $stagiaires->lines[$i]->civilite;
 								$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
 
 								if ($agf->type_session == 1 && !empty($conf->global->AGF_MANAGE_OPCA))
@@ -1258,7 +1258,7 @@ else
 									print $trainee_info;
 									print '</td></tr>';
 
-									$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
+									$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid,$agf->id);
 									print '<tr><td width="45%">'.$langs->trans("AgfSubrocation").'</td>';
 									if ($agf->is_OPCA==1) {
 										$chckisOPCA='checked="checked"';
@@ -1302,9 +1302,9 @@ else
 							print '</td>';
 							print '<td style="border-left: 0px; border-right: 0px;">';
 							// Infos organisme de rattachement
-							if ($stagiaires->line[$i]->socid) {
-								print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->line[$i]->socid.'">';
-								print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->line[$i]->socname,20).'</a>';
+							if ($stagiaires->lines[$i]->socid) {
+								print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->lines[$i]->socid.'">';
+								print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->lines[$i]->socname,20).'</a>';
 							}
 							else {
 								print '&nbsp;';
@@ -1312,10 +1312,10 @@ else
 							print '</td>';
 							print '<td style="border-left: 0px;">';
 							// Infos mode de financement
-							if ($stagiaires->line[$i]->type && (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
+							if ($stagiaires->lines[$i]->type && (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 								print '<div class=adminaction>';
 								print $langs->trans("AgfStagiaireModeFinancement");
-								print '-<span>'.stripslashes($stagiaires->line[$i]->type).'</span></div>';
+								print '-<span>'.stripslashes($stagiaires->lines[$i]->type).'</span></div>';
 							}
 							else {
 								print '&nbsp;';

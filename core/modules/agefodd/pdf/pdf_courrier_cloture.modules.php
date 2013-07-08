@@ -68,7 +68,7 @@ $this->str = $outputlangs->transnoentities('AgfPDFCourrierCloture1').' '.$facnum
 $agf_stag = new Agsession($this->db);
 $result = $agf_stag->fetch_stagiaire_per_session($id, $socid);
 $stagiaires = "";
-$num = count($agf_stag->line);
+$num = count($agf_stag->lines);
 
 ($num > 1) ? $this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture2').$num.")" : $this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture3');
 $this->str.= "\n";
@@ -92,7 +92,7 @@ else
 	{
 		if ($i < ($num - 1) && $i > 0 )  $stagiaires.= ', ';
 		if ($i == ($num - 1) && $i > 0) $stagiaires.= ' '.$outputlangs->transnoentities('AgfPDFCourrierCloture6').' ';
-		$stagiaires.= ucfirst(strtolower($agf_stag->line[$i]->civilitel)).' '.$agf_stag->line[$i]->prenom.' '.$agf_stag->line[$i]->nom;
+		$stagiaires.= ucfirst(strtolower($agf_stag->lines[$i]->civilitel)).' '.$agf_stag->lines[$i]->prenom.' '.$agf_stag->lines[$i]->nom;
 		if ($i == ($num - 1)) $stagiaires.= '.';
 	}
 }

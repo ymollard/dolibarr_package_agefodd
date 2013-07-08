@@ -76,7 +76,7 @@ $posY += 36;
 $agf_stag = new Agsession($this->db);
 $result = $agf_stag->fetch_stagiaire_per_session($id, $socid);
 $stagiaires = "";
-$num = count($agf_stag->line);
+$num = count($agf_stag->lines);
 if ($num > 6)
 {
 	$stagiaires.= $num.' '.$outputlangs->transnoentities('AgfPDFCourrierAcceuil12')." ";
@@ -87,7 +87,7 @@ else
 	{
 		if ($i < ($num - 1) && $i > 0 )  $stagiaires.= ', ';
 		if ($i == ($num - 1) && $i > 0) $stagiaires.= ' et ';
-		$stagiaires.= ucfirst(strtolower($agf_stag->line[$i]->civilitel)).' '.$agf_stag->line[$i]->prenom.' '.$agf_stag->line[$i]->nom;
+		$stagiaires.= ucfirst(strtolower($agf_stag->lines[$i]->civilitel)).' '.$agf_stag->lines[$i]->prenom.' '.$agf_stag->lines[$i]->nom;
 		if ($i == ($num - 1)) $stagiaires.= '.';
 	}
 	$stagiaires.="\n\n";

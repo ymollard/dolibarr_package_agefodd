@@ -387,7 +387,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	for ($i= 0; $i < $nbstag; $i++)
 	{
-		$art3.= $stagiaires->line[$i]->nom.' '.$stagiaires->line[$i]->prenom;
+		$art3.= $stagiaires->lines[$i]->nom.' '.$stagiaires->lines[$i]->prenom;
 		if ($i == $nbstag - 1) $art3.= '.';
 		else
 		{

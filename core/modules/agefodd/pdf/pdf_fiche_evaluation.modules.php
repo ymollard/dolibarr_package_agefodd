@@ -275,7 +275,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				for ($i=0; $i < $nbform; $i++)
 				{
 					// Infos formateurs
-					$forma_str .= strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);
+					$forma_str .= strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname);
 					if ($i < ($nbform - 1)) $forma_str .= ', ';
 				}
 

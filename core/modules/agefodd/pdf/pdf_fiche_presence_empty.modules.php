@@ -404,7 +404,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
-			$this->str = strtoupper($formateurs->line[$i]->name).' '.ucfirst($formateurs->line[$i]->firstname);
+			$this->str = strtoupper($formateurs->lines[$i]->name).' '.ucfirst($formateurs->lines[$i]->firstname);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
@@ -430,8 +430,6 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 
 
 		/***** Bloc stagiaire *****/
-
-		//$resql = $agf->fetch_stagiaire_per_session($agf->id);
 
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);

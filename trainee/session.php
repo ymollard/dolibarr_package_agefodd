@@ -126,7 +126,7 @@ if ($id)
 			
 		print_fiche_titre($langs->trans("AgfSessionDetail"));
 			
-		if (count($agf_session->line)>0) {
+		if (count($agf_session->lines)>0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
 			print '<th class="liste_titre" width="10%">'.$langs->trans('AgfMenuSess').'</th>';
@@ -136,7 +136,7 @@ if ($id)
 			print '</tr>';
 
 			$style='impair';
-			foreach($agf_session->line as $line){
+			foreach($agf_session->lines as $line){
 				if ($style=='pair') {
 					$style='impair';
 				}

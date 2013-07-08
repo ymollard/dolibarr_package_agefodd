@@ -158,7 +158,7 @@ class pdf_convocation extends ModelePDFAgefodd
 
 			if (($result && $ret))
 			{
-				for ($i = 0; $i < count($agf2->line); $i++ )
+				for ($i = 0; $i < count($agf2->lines); $i++ )
 				{
 					// New page
 					$pdf->AddPage();
@@ -277,7 +277,7 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize);
-					$this->str = ucfirst(strtolower($agf2->line[$i]->civilitel))." ".$outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
+					$this->str = ucfirst(strtolower($agf2->lines[$i]->civilitel))." ".$outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.$agf2->lines[$i]->nom);
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 8;
 

@@ -154,7 +154,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 				
 			if (($result && $ret))
 			{
-				for ($i = 0; $i < count($agf2->line); $i++ )
+				for ($i = 0; $i < count($agf2->lines); $i++ )
 				{
 					// New page
 					$pdf->AddPage();
@@ -192,7 +192,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX+30, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
-					$this->str = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
+					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.$agf2->lines[$i]->nom);
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 1;
 						
@@ -203,7 +203,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 						
 					$agf_certif=new Agefodd_stagiaire_certif($this->db);
-					$agf_certif->fetch(0,$agf2->line[$i]->traineeid,$agf2->line[$i]->$id,$agf2->line[$i]->stagerowid);
+					$agf_certif->fetch(0,$agf2->lines[$i]->traineeid,$agf2->lines[$i]->$id,$agf2->lines[$i]->stagerowid);
 
 					$pdf->SetXY($posX+30, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
@@ -217,7 +217,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfDateBirth').":";
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 						
-					$date_birth=dol_print_date($agf2->line[$i]->date_birth,'daytext');
+					$date_birth=dol_print_date($agf2->lines[$i]->date_birth,'daytext');
 					$pdf->SetXY($posX+30, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
 					$this->str = $outputlangs->transnoentities($date_birth);

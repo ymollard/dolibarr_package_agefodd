@@ -151,7 +151,7 @@ class pdf_attestation extends ModelePDFAgefodd
 
 			if ($result)
 			{
-				for ($i = 0; $i < count($agf2->line); $i++ )
+				for ($i = 0; $i < count($agf2->lines); $i++ )
 				{
 					// New page
 					$pdf->AddPage();
@@ -218,11 +218,11 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
-					$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2')." " .ucfirst(strtolower($agf2->line[$i]->civilitel)).' ';
+					$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2')." " .ucfirst(strtolower($agf2->lines[$i]->civilitel)).' ';
 					$this->width1 = $pdf->GetStringWidth($this->str1);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 16);
-					$this->str2 = $outputlangs->transnoentities($agf2->line[$i]->prenom.' '.$agf2->line[$i]->nom);
+					$this->str2 = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.$agf2->lines[$i]->nom);
 					$this->width2 = $pdf->GetStringWidth($this->str2);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);

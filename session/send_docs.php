@@ -571,7 +571,7 @@ if (!empty($id))
 				$num = $agftrainersess->fetch_formateur_per_session($id);
 				$withto= array();
 				if($num > 0) {
-					foreach ($agftrainersess->line as $formateur) {
+					foreach ($agftrainersess->lines as $formateur) {
 						if($formateur->email != '')
 							$withto[$formateur->socpeopleid] = $formateur->name.' '.$formateur->firstname .' - '.$formateur->email.' ('.$langs->trans('AgfFormateur').')';
 					}
@@ -702,7 +702,7 @@ if (!empty($id))
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
 				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
-				foreach($agf_trainnee->line as $line) {
+				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
 							$withto[$line->fk_socpeople] = $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMailTypeContactCommanditaire').')';
@@ -820,7 +820,7 @@ if (!empty($id))
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
 				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
-				foreach($agf_trainnee->line as $line) {
+				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
 							$withto[$line->fk_socpeople] 			= $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMailTypeContactTrainee').')';
@@ -855,7 +855,7 @@ if (!empty($id))
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
 				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
-				foreach($agf_trainnee->line as $line) {
+				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
 							$withto[$line->fk_socpeople] = $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMailTypeContactTrainee').')';
@@ -890,7 +890,7 @@ if (!empty($id))
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
 				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
-				foreach($agf_trainnee->line as $line) {
+				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
 							$withto[$line->fk_socpeople] 			= $line->nom.' '.$line->prenom.' - '.$line->email.' ('.$langs->trans('AgfMailTypeContactTrainee').')';

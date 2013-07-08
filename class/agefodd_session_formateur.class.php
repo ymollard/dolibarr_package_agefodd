@@ -37,6 +37,8 @@ class Agefodd_session_formateur
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
+	
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -199,7 +201,7 @@ class Agefodd_session_formateur
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -228,7 +230,7 @@ class Agefodd_session_formateur
 					$line->formid = $obj->formid;
 					$line->sessid = $obj->fk_session;
 						
-					$this->line[$i]=$line;
+					$this->lines[$i]=$line;
 						
 					$i++;
 				}

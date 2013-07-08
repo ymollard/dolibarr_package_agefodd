@@ -213,28 +213,28 @@ if (!empty($id))
 	*/
 	$stagiaires = new Agsession($db);
 	$stagiaires->fetch_stagiaire_per_session($agf->id);
-	$nbstag = count($stagiaires->line);
+	$nbstag = count($stagiaires->lines);
 	if ($nbstag > 0)
 	{
 		for ($i=0; $i < $nbstag; $i++)
 		{
-			if ($stagiaires->line[$i]->id == $_POST["modstaid"] && $_POST["certif_remove_x"]  && ($action == 'edit')) print '<tr bgcolor="#d5baa8">'."\n";
+			if ($stagiaires->lines[$i]->id == $_POST["modstaid"] && $_POST["certif_remove_x"]  && ($action == 'edit')) print '<tr bgcolor="#d5baa8">'."\n";
 			else print '<tr>'."\n";
 
 			print '<td width="3%" align="center">'.($i+1).'</td>'."\n";
 
 			print '<td width="40%">'."\n";
-			if (strtolower($stagiaires->line[$i]->nom) == "undefined")
+			if (strtolower($stagiaires->lines[$i]->nom) == "undefined")
 			{
 				print $langs->trans("AgfUndefinedStagiaire");
 			}
 			else
 			{
-				$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->line[$i]->id.'">';
+				$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->lines[$i]->id.'">';
 				$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
-				$trainee_info .= strtoupper($stagiaires->line[$i]->nom).' '.ucfirst($stagiaires->line[$i]->prenom).'</a>';
+				$trainee_info .= strtoupper($stagiaires->lines[$i]->nom).' '.ucfirst($stagiaires->lines[$i]->prenom).'</a>';
 				$contact_static= new Contact($db);
-				$contact_static->civilite_id = $stagiaires->line[$i]->civilite;
+				$contact_static->civilite_id = $stagiaires->lines[$i]->civilite;
 				$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
 					
 				print'<label for="'.$htmlname.'" style="width:45%; display: inline-block;margin-left:5px;">'.$trainee_info.'</label>';
@@ -245,15 +245,15 @@ if (!empty($id))
 			print '<td>';
 
 			$agf_certif = new Agefodd_stagiaire_certif($db);
-			$agf_certif->fetch(0,$stagiaires->line[$i]->id,$stagiaires->line[$i]->sessid,$stagiaires->line[$i]->stagerowid);
+			$agf_certif->fetch(0,$stagiaires->lines[$i]->id,$stagiaires->lines[$i]->sessid,$stagiaires->lines[$i]->stagerowid);
 
-			if ($stagiaires->line[$i]->id == $_POST["modstaid"] && ! $_POST["certif_remove_x"] && ($action == 'edit'))
+			if ($stagiaires->lines[$i]->id == $_POST["modstaid"] && ! $_POST["certif_remove_x"] && ($action == 'edit'))
 			{
 
 				print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-				print '<input type="hidden" name="modstaid" value="'.$stagiaires->line[$i]->id.'">'."\n";
+				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->lines[$i]->stagerowid.'">'."\n";
+				print '<input type="hidden" name="modstaid" value="'.$stagiaires->lines[$i]->id.'">'."\n";
 				print '<input type="hidden" name="certifid" value="'.$agf_certif->id.'">'."\n";
 				print '<table class="nobordernopadding">';
 
@@ -308,8 +308,8 @@ if (!empty($id))
 			{
 				print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->line[$i]->stagerowid.'">'."\n";
-				print '<input type="hidden" name="modstaid" value="'.$stagiaires->line[$i]->id.'">'."\n";
+				print '<input type="hidden" name="sessionstarowid" value="'.$stagiaires->lines[$i]->stagerowid.'">'."\n";
+				print '<input type="hidden" name="modstaid" value="'.$stagiaires->lines[$i]->id.'">'."\n";
 				print '<input type="hidden" name="certifrowid" value="'.$agf_certif->id.'">'."\n";
 				if (!empty($agf_certif->id)) {
 					print '<table class="nobordernopadding" width="100%">'."\n";
