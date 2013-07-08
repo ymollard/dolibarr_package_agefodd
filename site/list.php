@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,17 @@
 */
 
 /**
- * 	\file		/agefodd/site/list.php
- * 	\brief		Page présentant la liste des sites sur lesquels sont effectuées les formations
-* 	\version	$Id$
+ *	\file       agefodd/site/list.php
+ *	\ingroup    agefodd
+ *	\brief      list of place
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_place.class.php');
+require_once('../lib/agefodd.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -56,9 +56,9 @@ $pagenext = $page + 1;
 
 $agf = new Agefodd_place($db);
 
-$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
-$linenum = count($agf->line);
+$linenum = count($agf->lines);
 
 print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER['PHP_SELF'],"&arch=".$arch, $sortfield, $sortorder, "", $linenum);
 
@@ -81,7 +81,7 @@ print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"s.nom",''
 print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel","","&arch=".$arch,'',$sortfield,$sortorder);
 print "</tr>\n";
 
-if ($resql)
+if ($result)
 {
 	$var=true;
 	$i = 0;
@@ -89,12 +89,12 @@ if ($resql)
 	{
 		// Affichage liste des sites de formation
 		$var=!$var;
-		( $agf->line[$i]->archive == 1 ) ? $style = ' style="color:gray;"' : $style = '';
+		( $agf->lines[$i]->archive == 1 ) ? $style = ' style="color:gray;"' : $style = '';
 		print "<tr $bc[$var]>";
-		print '<td><span style="background-color:'.$bgcolor.';"><a href="card.php?id='.$agf->line[$i]->id.'"'.$style.'>'.img_object($langs->trans("AgfEditerFichePlace"),"company").' '.$agf->line[$i]->id.'</a></span></td>'."\n";
-		print '<td'.$style.'>'.$agf->line[$i]->ref_interne.'</td>'."\n";
-		print '<td><a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'"  alt="'.$langs->trans("AgfEditerFicheCompany").'" title="'.$langs->trans("AgfEditerFicheCompany").'"'.$style.'>'.$agf->line[$i]->socname.'</td>'."\n";
-		print '<td'.$style.'>'.dol_print_phone($agf->line[$i]->tel).'</td>'."\n";
+		print '<td><span style="background-color:'.$bgcolor.';"><a href="card.php?id='.$agf->lines[$i]->id.'"'.$style.'>'.img_object($langs->trans("AgfEditerFichePlace"),"company").' '.$agf->lines[$i]->id.'</a></span></td>'."\n";
+		print '<td'.$style.'>'.$agf->lines[$i]->ref_interne.'</td>'."\n";
+		print '<td><a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->lines[$i]->socid.'"  alt="'.$langs->trans("AgfEditerFicheCompany").'" title="'.$langs->trans("AgfEditerFicheCompany").'"'.$style.'>'.$agf->lines[$i]->socname.'</td>'."\n";
+		print '<td'.$style.'>'.dol_print_phone($agf->lines[$i]->tel).'</td>'."\n";
 		print '</tr>'."\n";
 
 		$i++;
@@ -102,7 +102,7 @@ if ($resql)
 }
 else
 {
-	dol_syslog("agefodd::site/list.php::query::fetch ".$errmsg, LOG_ERR);
+	setEventMessage($agf->error,'errors');
 }
 print "</table>";
 
@@ -122,6 +122,4 @@ if ($action != 'create' && $action != 'edit')
 print '</div>';
 
 $db->close();
-
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
+llxFooter();

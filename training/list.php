@@ -21,7 +21,7 @@
 /**
  * 	\file		/agefodd/training/list.php
  * 	\brief		Page présentant la liste des formation enregistrées (passées, actuelles et à venir
- */
+ 	*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory

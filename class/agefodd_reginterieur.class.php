@@ -36,9 +36,9 @@ class Agefodd_reg_interieur extends CommonObject
 	var $element='agefodd';			//!< Id that identify managed objects
 	var $table_element='agefodd_reg_interieur';	//!< Name of table without prefix where object is stored
 
-	
-    var $id;
-    
+
+	var $id;
+
 	var $reg_int;
 	var $notes;
 	var $fk_user_author;
@@ -46,7 +46,7 @@ class Agefodd_reg_interieur extends CommonObject
 	var $fk_user_mod;
 	var $placeid;
 	var $placecode;
-	
+
 	/**
 	 *  Constructor
 	 *

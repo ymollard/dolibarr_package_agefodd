@@ -25,7 +25,7 @@
 */
 
 /*error_reporting(E_ALL);
-ini_set('display_errors', true);
+ ini_set('display_errors', true);
 ini_set('html_errors', false);*/
 
 $res=@include("../../main.inc.php");				// For root directory
@@ -466,7 +466,7 @@ if (!empty($id))
 							print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
 							print $trainee_info;
 							print '</td></tr>';
-								
+
 							$agf->getOpcaForTraineeInSession($stagiaires->line[$i]->socid,$agf->id);
 							print '<tr class="noborder"><td  class="noborder" width="45%">'.$langs->trans("AgfSubrocation").'</td>';
 							if ($agf->is_OPCA==1) {
@@ -686,7 +686,7 @@ if (!empty($id))
 				/*
 				 * Gestion de la subrogation (affichage infos)
 				*/
-				
+
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr><td>'.$langs->trans("AgfSubrocation").'</td>';
@@ -728,7 +728,7 @@ if (!empty($id))
 				print '<td>';
 				print $agf->num_OPCA_file;
 				print '</td></tr>';
-				
+
 				print '</table>';
 			}
 		}

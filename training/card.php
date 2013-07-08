@@ -149,7 +149,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd($db);
-		
+
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
@@ -175,7 +175,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		if ($newid > 0)
 		{
-			
+				
 			$result = $agf->createAdmLevelForTraining($user);
 			if ($result>0) {
 				dol_syslog("agefodd:training:card error=".$agf->error, LOG_ERR);
@@ -183,9 +183,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				$error++;
 			}
 		}
-		
+
 		if (!$error) {
-			
+				
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$newid);
 			exit;
 		}

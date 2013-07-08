@@ -107,7 +107,7 @@ $resql = $agf->fetch_all_by_order_invoice($sortorder, $sortfield, $limit, $offse
 
 if ($resql != -1)
 {
-	
+
 	$num = $resql;
 
 	$menu = $langs->trans("AgfMenuSessAct");
@@ -156,20 +156,20 @@ if ($resql != -1)
 		}
 		$addcriteria=true;
 	}
-	
+
 	print '<form method="get" action="'.$url_form.'" name="search_form">'."\n";
 	print '<tr class="liste_titre">';
 
 	print '<td>&nbsp;</td>';
 
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
 	if (!(empty($search_orderref))) {
 		print '<td class="liste_titre">';

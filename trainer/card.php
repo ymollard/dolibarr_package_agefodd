@@ -22,7 +22,7 @@
  *	\file       agefodd/traineer/card.php
  *	\ingroup    agefodd
  *	\brief      card of traineer
- */
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -214,7 +214,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<div class="warning">'.$langs->trans("AgfFormateurAddUserHelp");
 	print '<br>'.$langs->trans("AgfFormateurAddUserHelp1").' <a href="'.DOL_URL_ROOT.'/user/fiche.php?action=create">'.$langs->trans("AgfFormateurAddUserHelp2").'</a>. '.$langs->trans("AgfFormateurAddUserHelp3").'</div>';
-	
+
 	print '<table class="border" width="100%">'."\n";
 
 	print '<tr><td>'.$langs->trans("AgfUser").'</td>';
@@ -260,22 +260,22 @@ else
 		if ($result)
 		{
 			if ($mesg) print $mesg."<br>";
-				
+
 			// View mode
-				
+
 			$head = trainer_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfTeacher"), 0, 'user');
 
 			/*
-			* Delete confirm
+			 * Delete confirm
 			*/
 			if ($action == 'delete')
 			{
 				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteTeacher"),$langs->trans("AgfConfirmDeleteTeacher"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
-				
+
 			/*
 			 * Confirm archive status change
 			*/
@@ -292,7 +292,7 @@ else
 
 			print '<tr><td width="20%">'.$langs->trans("Ref").'</td>';
 			print '<td>'.$form->showrefnav($agf,'id','',1,'rowid','id').'</td></tr>';
-				
+
 			print '<tr><td>'.$langs->trans("Name").'</td>';
 			print '<td>'.ucfirst(strtolower($agf->civilite)).' '.strtoupper($agf->name).' '.ucfirst(strtolower($agf->firstname)).'</td></tr>';
 

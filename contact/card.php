@@ -22,7 +22,7 @@
  *	\file       agefodd/contact/card.php
  *	\ingroup    agefodd
  *	\brief      card of contact
- */
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -196,9 +196,9 @@ else
 			$head = contact_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfContactFiche"), 0, 'user');
-				
+
 			// Affichage en mode "consultation"
-				
+
 			/*
 			 * Confirmation de la suppression
 			*/
@@ -207,7 +207,7 @@ else
 				$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteContact"),$langs->trans("AgfConfirmDeleteContact"),"confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
-				
+
 			/*
 			 * Confirmation de l'archivage/activation suppression
 			*/

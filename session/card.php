@@ -165,7 +165,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->contactid = GETPOST('contact','int');
 		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 			$agf->sourcecontactid = $agf->contactid;
-		}		
+		}
 		$agf->notes = GETPOST('notes','alpha');
 
 		$agf->cost_trainer = GETPOST('costtrainer','alpha');
@@ -323,25 +323,25 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 			if ($tmpl_calendar->day_session!=1) {
 				$tmpldate = dol_time_plus_duree($tmpldate, (($tmpl_calendar->day_session)-1), 'd');
 			}
-			
+				
 			$agf->date_session = $tmpldate;
-			
+				
 			$heure_tmp_arr = explode(':',$tmpl_calendar->heured);
 			$agf->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
-			
+				
 			$heure_tmp_arr = explode(':',$tmpl_calendar->heuref);
 			$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
-		
+
 		}else {
 			//From calendar selection
 			$heure_tmp_arr = array();
-	
+
 			$heured_tmp = GETPOST('dated','alpha');
 			if (!empty($heured_tmp)){
 				$heure_tmp_arr = explode(':',$heured_tmp);
 				$agf->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 			}
-	
+
 			$heuref_tmp = GETPOST('datef','alpha');
 			if (!empty($heuref_tmp)){
 				$heure_tmp_arr = explode(':',$heuref_tmp);
@@ -545,9 +545,9 @@ dol_htmloutput_mesg($mesg);
 */
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
-	
+
 	$fk_soc_crea = GETPOST('fk_soc','int');
-	
+
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
 	print '<form name="add" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
@@ -655,10 +655,10 @@ else
 
 				// Affichage en mode "édition"
 				if ($action == 'edit')
-				{		
-					
+				{
+						
 					$newperiod=GETPOST('newperiod','int');
-					
+						
 					print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 					print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 					print '<input type="hidden" name="action" value="update">';
@@ -688,26 +688,26 @@ else
 							$("#colorpicker").ColorPicker({
 							color: \'#'.$agf->color.'\',
 								onShow: function (colpkr) {
-									$(colpkr).fadeIn(500);
-									return false;
-								},
+								$(colpkr).fadeIn(500);
+								return false;
+				},
 								onHide: function (colpkr) {
-									$(colpkr).fadeOut(500);
-									return false;
-								},
+								$(colpkr).fadeOut(500);
+								return false;
+				},
 								onChange: function (hsb, hex, rgb) {
-									$("#colorpicker").css("backgroundColor", \'#\' + hex);
-									$("#colorpicker").val(hex);
-								},
+								$("#colorpicker").css("backgroundColor", \'#\' + hex);
+								$("#colorpicker").val(hex);
+				},
 								onSubmit: function (hsb, hex, rgb) {
-									$("#colorpicker").val(hex);
-								}
-							});
-						})
+								$("#colorpicker").val(hex);
+				}
+				});
+				})
 								.bind(\'keyup\', function(){
 								$(this).ColorPickerSetColor(this.value);
-						});
-							</script>';
+				});
+								</script>';
 					print '<tr><td>'.$langs->trans("AgfSessionCommercial").'</td>';
 					print '<td>';
 					$form->select_users($agf->commercialid, 'commercial',1, array(1));
@@ -927,7 +927,7 @@ else
 					}
 
 					// Champs nouvelle periode
-					
+						
 					if (!empty($newperiod))
 					{
 						print "</table></div>";
@@ -952,7 +952,7 @@ else
 						print '<input type="hidden" id="datetmplday"   name="datetmplday"   value="'.dol_print_date($agf->dated, "%d").'">'."\n";
 						print '<input type="hidden" id="datetmplmonth" name="datetmplmonth" value="'.dol_print_date($agf->dated, "%m").'">'."\n";
 						print '<input type="hidden" id="datetmplyear"  name="datetmplyear"  value="'.dol_print_date($agf->dated, "%Y").'">'."\n";
-						
+
 						//Add new line from template
 						$tmpl_calendar = new Agefoddcalendrier($db);
 						$result=$tmpl_calendar->fetch_all();
@@ -964,7 +964,7 @@ else
 							print '<option value="-1"></option>';
 							foreach($tmpl_calendar->lines as $line) {
 								if ($line->day_session!=1) {
-								$tmpldate = dol_time_plus_duree($agf->dated, (($line->day_session)-1), 'd');
+									$tmpldate = dol_time_plus_duree($agf->dated, (($line->day_session)-1), 'd');
 								} else {
 									$tmpldate= $agf->dated;
 								}
@@ -979,7 +979,7 @@ else
 							print '</tr>'."\n";
 						}
 						print '<tr>';
-	
+
 						print '<td  width="300px">'.$langs->trans("AgfPeriodDate").' ';
 						$form->select_date($agf->dated, 'date','','','','newperiod');
 						print '</td>';
@@ -993,7 +993,7 @@ else
 						{
 							print '<td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" "></td>';
 						}
-						
+
 						print '</tr>'."\n";
 						print '</form>';
 					}
@@ -1100,7 +1100,7 @@ else
 					*/
 					$spend_cost = 0;
 					$cashed_cost = 0;
-					
+						
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormateur").'</td>';
@@ -1121,7 +1121,7 @@ else
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
 					print '<td>'.price($agf->sell_price).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 					$cashed_cost+=$agf->sell_price;
-					
+						
 					print '<tr><td width="20%"><strong>'.$langs->trans("AgfCoutRevient").'</strong></td>';
 					print '<td><strong>'.price($cashed_cost-$spend_cost).' '.$langs->trans('Currency'.$conf->currency).'</strong></td></tr>';
 

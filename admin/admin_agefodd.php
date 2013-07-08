@@ -86,7 +86,7 @@ if ($action == 'updateMask')
 
 if ($action == 'updateMaskCertifType')
 {
-$masktype=GETPOST('value');
+	$masktype=GETPOST('value');
 
 	if ($masktype)  $res = dolibarr_set_const($db,'AGF_CERTIF_ADDON',$masktype,'chaine',0,'',$conf->entity);
 
@@ -1221,7 +1221,7 @@ if ($result0>0)
 		print '</tr>';
 		print '</form>';
 	}
-	
+
 
 }
 print '<form name="SessionLevel_create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";

@@ -320,8 +320,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	// '### ', une puce de troisième niveau est mis en place
 	$art1 = $langs->trans('AgfConvArt1_1')."\n";
 	$art1.= $langs->trans('AgfConvArt1_2').' '.$agf->formintitule.' '.$langs->trans('AgfConvArt1_3')." \n";
-	$art1.= $langs->trans('AgfConvArt1_4')."\n";	
-	
+	$art1.= $langs->trans('AgfConvArt1_4')."\n";
+
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
 	for ( $i = 0; $i < count($obj_peda->line); $i++)
@@ -331,15 +331,15 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$art1.= $langs->trans('AgfConvArt1_5')."\n";
 	$art1.= $langs->trans('AgfConvArt1_6')."\n";
 	$art1.= $langs->trans('AgfConvArt1_7');
-	
+
 	if ($agf->dated == $agf->datef) $art1.= $langs->trans('AgfConvArt1_8').' '.dol_print_date($agf->datef);
 	else $art1.= $langs->trans('AgfConvArt1_9').' '.dol_print_date($agf->dated).' '.$langs->trans('AgfConvArt1_10').' '.dol_print_date($agf->datef);
-		
+
 	$art1.= "\n";
 
 	// Durée de formation
 	$art1.= $langs->trans('AgfConvArt1_11').' '.$agf->duree.$langs->trans('AgfConvArt1_12').' '."\n";
-	
+
 	$calendrier = new Agefodd_sesscalendar($db);
 	$resql = $calendrier->fetch_all($sessid);
 	$blocNumber = count($calendrier->lines);
@@ -384,7 +384,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	// texte3
 	$art3 = $langs->trans('AgfConvArt3_1');
 	($nbstag > 1) ? $art3.=$langs->trans('AgfConvArt3_2').' ' : $art3.=' '.$langs->trans('AgfConvArt3_3').' ';
-	
+
 	for ($i= 0; $i < $nbstag; $i++)
 	{
 		$art3.= $stagiaires->line[$i]->nom.' '.$stagiaires->line[$i]->prenom;
@@ -413,7 +413,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	}
 
 	//article 6
-	if ($agf_conv->art6) { $art6 = $agf_conv->art6; }
+	if ($agf_conv->art6) {
+		$art6 = $agf_conv->art6;
+	}
 	else {
 		$art6 = $langs->trans('AgfConvArt6_1')."\n";
 		$art6.= $langs->trans('AgfConvArt6_2')."\n";
@@ -530,8 +532,8 @@ else
 
 			print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 			print '<td>'.$agf->socname.'</td></tr>';
-				
-				
+
+
 			print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 			print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->intro1.'</textarea></td></tr>';
 
@@ -596,18 +598,18 @@ else
 				$ret=$form->form_confirm("convention.php?arch=".$_GET["arch"]."&id=".$id,$langs->trans("AgfFormationArchiveChange"),$langs->trans("AgfConfirmArchiveChange"),"arch_confirm_delete",'','',1);
 				if ($ret == 'html') print '<br>';
 			}
-				
+
 			//Create a list of customer for each convention
 			//$agf_sess= new Agsession($db);
 			//$result_sess_soc = $agf_sess->fetch_societe_per_session($sessid);
 			//	$result = $agf->fetch($sessid, $agf_sess->line[0]->socid, 0);
 
 			print '<table class="border" width="100%">'."\n";
-				
+
 			print '<tr><td valign="top" width="200px">'.$langs->trans("Company").'</td>';
 			print '<td>';
 			print $agf->socname;
-				
+
 			/*if ($result_sess_soc >= 1)
 			 {
 			print '<form name="update" action="convention_fiche.php?id='.$id.'" method="GET">'."\n";
@@ -624,7 +626,7 @@ else
 			print '</form>';
 			}*/
 			print '</td></tr>';
-				
+
 
 			print '<tr><td valign="top" width="200px">'.$langs->trans("AgfConventionIntro1").'</td>';
 			print '<td>'.nl2br($agf->intro1).'</td></tr>';

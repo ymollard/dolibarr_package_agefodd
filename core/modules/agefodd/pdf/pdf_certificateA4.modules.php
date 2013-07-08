@@ -21,7 +21,7 @@
 /**
  \file		agefodd/core/modules/agefodd/pdf/pdf_convocation.modules.php
  \brief		Page permettant la création du fichier pdf convocation.
-\version	$Id$
+ \version	$Id$
 */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 dol_include_once('/agefodd/class/agsession.class.php');
@@ -152,7 +152,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 			// Recuperation des stagiaires participant à la formation
 			$agf2 = new Agsession($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
-			
+				
 			if (($result && $ret))
 			{
 				for ($i = 0; $i < count($agf2->line); $i++ )
@@ -160,7 +160,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					// New page
 					$pdf->AddPage();
 					$pagenb++;
-					
+						
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 					$pdf->MultiCell(0, 3, '', 0, 'J');
 					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
@@ -171,14 +171,14 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 
 					/*
 					 * Corps de page
-					 */
+					*/
 
 					$posX = $this->marge_gauche;
 					$posY = $posY + 50;
-				
+
 
 					/***** Text Certificate *****/
-					
+						
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 10);
@@ -189,16 +189,16 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 3);
 					$date_birth=dol_print_date($agf2->line[$i]->date_birth,'daytext');
-					
+						
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate1').' '.$outputlangs->transnoentities($date_birth);
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
 					$posY = $pdf->GetY() + 2;
-					
+						
 					$pdf->SetXY($posX, $posY);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate2');
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
 					$posY = $pdf->GetY() + 2;
-					
+						
 					$pdf->SetXY($posX, $posY);
 					$this->str = $outputlangs->transnoentities($agf2->line[$i]->place_birth);
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'C');
@@ -209,30 +209,30 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 					$pdf->writeHTMLCell(130, 100, $posX-1, $posY, dol_htmlentitiesbr($agf_training->note_public), 0, 1);
 					$posY = $pdf->GetY() + 5;
 
-					
+						
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);
 					$this->str = $this->emetteur->town.', '.dol_print_date($agf->dated,'daytext');
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 4;
-					
+						
 					$agf_certif=new Agefodd_stagiaire_certif($this->db);
-					
+						
 					$agf_certif->fetch(0,$agf2->line[$i]->traineeid,$agf2->line[$i]->$id,$agf2->line[$i]->stagerowid);
-					
+						
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate3').' '.$agf_certif->certif_code;
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 4;
-					
+						
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 2);
 					$this->str = $outputlangs->transnoentities('AgfPDFCertificate4').' '.dol_print_date($agf_certif->certif_dt_end,'daytext');
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 8;
 
-					
+						
 					// Pied de page
 					$pdf->AliasNbPages();
 

@@ -195,10 +195,10 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 	print '</div>'."\n";
-	
+
 	// Print session card
 	$agf->printSessionInfo();
-	
+
 	print '&nbsp';
 
 	print '<table class="border" width="100%">'."\n";
@@ -280,10 +280,10 @@ if (!empty($id))
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">'."\n";
 		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 		print '</div>'."\n";
-		
+
 		// Print session card
 		$agf->printSessionInfo();
-		
+
 		print '&nbsp';
 
 		print '<table class="border" width="100%">'."\n";
@@ -328,8 +328,8 @@ if (!empty($id))
 				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
 				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->line[$i]->socid);
 				document_line($langs->trans("AgfCourrierConv"), 2, "courrier", $agf->line[$i]->socid,'convention');
-				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');				
-				
+				document_line($langs->trans("AgfCourrierAcceuil"), 2, "courrier", $agf->line[$i]->socid, 'accueil');
+
 				// Après la formation
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfAfterTraining").'</td></tr>'."\n";
 				document_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);

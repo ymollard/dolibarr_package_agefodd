@@ -60,7 +60,7 @@ class Agefodd_convention
 	{
 		global $conf, $langs;
 		$error=0;
-		 
+			
 		// Clean parameters
 		if (isset($this->intro1)) $this->intro1 = $this->db->escape(trim($this->intro1));
 		if (isset($this->intro2)) $this->intro2 = $this->db->escape(trim($this->intro2));
@@ -116,7 +116,7 @@ class Agefodd_convention
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				 
+					
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -277,7 +277,7 @@ class Agefodd_convention
 				}else {
 					$this->line[$i]->description = $obj->description;
 				}
-				
+
 				$this->line[$i]->tva_tx = $obj->tva_tx;
 				$this->line[$i]->remise_percent = $obj->remise_percent;
 				$this->line[$i]->fk_remise_except = $obj->fk_remise_except;
@@ -298,7 +298,7 @@ class Agefodd_convention
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Load Invoice lines object in memory from database
 	 *
@@ -308,22 +308,22 @@ class Agefodd_convention
 	function fetch_facture_lines($factid)
 	{
 		global $langs;
-	
+
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
 		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql.= " FROM ".MAIN_DB_PREFIX."facturedet as c";
 		$sql.= " WHERE c.fk_facture = ".$factid;
-	
+
 		dol_syslog(get_class($this)."::fetch_facture_lines sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
-	
+
 		if ($resql)
 		{
 			$this->line = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-	
+
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);

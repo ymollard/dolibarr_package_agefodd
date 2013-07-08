@@ -1,21 +1,21 @@
 <?php
 /* Copyright (C) 2003-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (c) 2004-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2012      Marcos García        <marcosgdf@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2012      Marcos García        <marcosgdf@gmail.com>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 /**
  *  \file       htdocs/compta/facture/stats/index.php
@@ -43,8 +43,8 @@ $training_id=GETPOST('training_id','int'); if ($training_id < 0) $training_id=0;
 // Security check
 if ($user->societe_id > 0)
 {
-    $action = '';
-    $socid = $user->societe_id;
+	$action = '';
+	$socid = $user->societe_id;
 }
 
 $nowyear=strftime("%Y", dol_now());
@@ -56,7 +56,7 @@ $endyear=$year;
 
 /*
  * View
- */
+*/
 
 $langs->load("agefodd@agefodd");
 
@@ -153,26 +153,26 @@ $px3 = new DolGraph();
 $mesg = $px3->isGraphKo();
 if (! $mesg)
 {
-    $px3->SetData($data);
-    $i = $startyear;$legend=array();
-    while ($i <= $endyear)
-    {
-        $legend[]=$i;
-        $i++;
-    }
-    $px3->SetLegend($legend);
-    $px3->SetYLabel($langs->trans("AmountAverage"));
-    $px3->SetMaxValue($px3->GetCeilMaxValue());
-    $px3->SetMinValue($px3->GetFloorMinValue());
-    $px3->SetWidth($WIDTH);
-    $px3->SetHeight($HEIGHT);
-    $px3->SetShading(3);
-    $px3->SetHorizTickIncrement(1);
-    $px3->SetPrecisionY(0);
-    $px3->mode='depth';
-    $px3->SetTitle($langs->trans("AmountAverage"));
+	$px3->SetData($data);
+	$i = $startyear;$legend=array();
+	while ($i <= $endyear)
+	{
+		$legend[]=$i;
+		$i++;
+	}
+	$px3->SetLegend($legend);
+	$px3->SetYLabel($langs->trans("AmountAverage"));
+	$px3->SetMaxValue($px3->GetCeilMaxValue());
+	$px3->SetMinValue($px3->GetFloorMinValue());
+	$px3->SetWidth($WIDTH);
+	$px3->SetHeight($HEIGHT);
+	$px3->SetShading(3);
+	$px3->SetHorizTickIncrement(1);
+	$px3->SetPrecisionY(0);
+	$px3->mode='depth';
+	$px3->SetTitle($langs->trans("AmountAverage"));
 
-    $px3->draw($filename_avg,$fileurl_avg);
+	$px3->draw($filename_avg,$fileurl_avg);
 }
 
 
@@ -180,7 +180,7 @@ if (! $mesg)
 $data = $stats->getAllByYear();
 $arrayyears=array();
 foreach($data as $val) {
-    $arrayyears[$val['year']]=$val['year'];
+	$arrayyears[$val['year']]=$val['year'];
 }
 if (! count($arrayyears)) $arrayyears[$nowyear]=$nowyear;
 
@@ -217,12 +217,12 @@ if (empty($socid))
 	print '<tr><td>'.$langs->trans("User").'/'.$langs->trans("SalesRepresentative").'</td><td>';
 	print $form->select_users($userid,'userid',1);
 	print '</td></tr>';
-	
+
 	// Formation$
 	print '<tr><td>'.$langs->trans("AgfTraining").'</td><td>';
 	print $formagf->select_formation($training_id,'training_id',1);
 	print '</td></tr>';
-	
+
 	// Year
 	print '<tr><td>'.$langs->trans("Year").'</td><td>';
 	if (! in_array($year,$arrayyears)) $arrayyears[$year]=$year;
@@ -274,13 +274,15 @@ print '<td align="center" valign="top">';
 
 // Show graphs
 print '<table class="border" width="100%"><tr valign="top"><td align="center">';
-if ($mesg) { print $mesg; }
+if ($mesg) {
+	print $mesg;
+}
 else {
 	print $px1->show();
 	print "<br>\n";
 	print $px2->show();
-    print "<br>\n";
-    print $px3->show();
+	print "<br>\n";
+	print $px3->show();
 }
 print '</td></tr></table>';
 

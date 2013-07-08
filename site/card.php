@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,24 +22,25 @@
  *	\file       agefodd/site/card.php
  *	\ingroup    agefodd
  *	\brief      card of location
- */
+*/
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/function.lib.php');
-dol_include_once('/core/class/html.formcompany.class.php');
+require_once('../class/agefodd_place.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $langs->load('agefodd@agefodd');
 $langs->load('companies');
-
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -64,8 +65,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
-		$mesg='<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -91,8 +91,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -104,7 +103,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 }
 
 /*
- * Action update (fiche site de formation)
+ * Action update (Location)
 */
 if ($action == 'update' && $user->rights->agefodd->creer)
 {
@@ -113,7 +112,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_place($db);
 
 		$result = $agf->fetch($id);
-		if($result > 0) 
+		if($result > 0)
 		{
 			$agf->ref_interne = GETPOST('ref_interne','alpha');
 			$agf->adresse = GETPOST('adresse','alpha');
@@ -126,7 +125,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			$agf->acces_site = GETPOST('acces_site','alpha');
 			$agf->note1 = GETPOST('note1','alpha');
 			$result = $agf->update($user);
-	
+
 			if ($result > 0)
 			{
 				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
@@ -134,15 +133,13 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			}
 			else
 			{
-				dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
-				$mesg='<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 				$action = 'edit';
 			}
 		}
 		else
 		{
-			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -160,8 +157,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}else {
@@ -172,7 +168,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 
 /*
- * Action create (fiche site de formation)
+ * Action create (Location)
 */
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
@@ -198,8 +194,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd::site::card error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -220,8 +215,6 @@ $title = ($action == 'create' ? $langs->trans("AgfCreatePlace") : $langs->trans(
 llxHeader('',$title);
 
 $form = new Form($db);
-
-dol_htmloutput_mesg($mesg);
 
 /*
  * Action create
@@ -268,19 +261,19 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 }
 else
 {
-	// Affichage de la fiche "site de formation"
+	// Card
 	if ($id)
 	{
 		$agf = new Agefodd_place($db);
 		$result = $agf->fetch($id);
 
-		if ($result)
+		if ($result>0)
 		{
 			$head = site_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfSessPlace"), 0, 'address');
 
-			// Affichage en mode "édition"
+			// Card in edit mode
 			if ($action == 'edit')
 			{
 				$formcompany = new FormCompany($db);
@@ -339,10 +332,10 @@ else
 			}
 			else
 			{
-				// Affichage en mode "consultation"
+				// Display View mode
 
 				/*
-				 * Confirmation de la suppression
+				 * Confirm delete
 				*/
 				if ($action == 'delete')
 				{
@@ -350,7 +343,7 @@ else
 					if ($ret == 'html') print '<br>';
 				}
 				/*
-				 * Confirmation de l'archivage/activation suppression
+				 * Confirm archive
 				*/
 				if ($action=='archive' || $action=='active')
 				{
@@ -416,14 +409,14 @@ else
 		}
 		else
 		{
-			dol_print_error($db);
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
 
 
 /*
- * Barre d'actions
+ * Actions tabs
 *
 */
 
@@ -468,5 +461,5 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 
 print '</div>';
 
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
+$db->close();
+llxFooter();

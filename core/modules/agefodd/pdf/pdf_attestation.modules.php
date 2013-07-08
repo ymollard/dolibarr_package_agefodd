@@ -203,7 +203,7 @@ class pdf_attestation extends ModelePDFAgefodd
 						if (!empty($staticsoc->logo)) {
 							$logo_client=$dir.$staticsoc->logo;
 							if (file_exists($logo_client) && is_readable($logo_client))
-							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
+								$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
 						}
 					}
 
@@ -212,7 +212,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', 20);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('AgfPDFAttestation1'), 0, 0,'C', 0);
-						
+
 
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
@@ -244,7 +244,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
-						
+
 					$this->str = $outputlangs->transnoentities('AgfPDFAttestation4')." ";
 					if ($agf->dated == $agf->datef) $this->str.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);
 					else $this->str.= $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef);

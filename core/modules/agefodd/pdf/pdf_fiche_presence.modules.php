@@ -523,23 +523,23 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		foreach ($agf->line as $line){
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
-				
+
 			// Nom
 			$pdf->SetXY($posX - 2, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			$this->str = $line->nom.' '.$line->prenom;
 			$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"L",false,1,'','',true,0,false,false,$h_ligne,'M');
-				
+
 			// Société
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 			$this->str = dol_trunc($line->socname, 27);
 			$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"C",false,1,'','',true,0,false,false,$h_ligne,'M');
-				
+
 			for ($i = 0; $i < 5; $i++) {
 				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 			}
-				
+
 			$posY= $pdf->GetY();
 			if ($posY > $this->page_hauteur-20) {
 				$pdf->AddPage();

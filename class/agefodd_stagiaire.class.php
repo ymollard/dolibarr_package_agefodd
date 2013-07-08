@@ -21,8 +21,8 @@
 /**
  *  \file       agefodd/class/agefodd_stagiaire.class.php
  *  \ingroup    agefodd
- *  \brief      Manage trainee object
- */
+*  \brief      Manage trainee object
+*/
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 require_once(DOL_DOCUMENT_ROOT."/contact/class/contact.class.php");
@@ -40,7 +40,7 @@ class Agefodd_stagiaire extends CommonObject
 	var $element='agefodd';
 	var $table_element='agefodd_stagiaire';
 	var $id;
-	
+
 	var $nom;
 	var $prenom;
 	var $fonction;
@@ -50,18 +50,18 @@ class Agefodd_stagiaire extends CommonObject
 	var $note;
 	var $date_birth;
 	var $place_birth;
-	
+
 	var $socid;
 	var $socname;
 	var $fk_socpeople;
-	
+
 	var $lines=array();
 
 	/**
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
-	 */
+	*/
 	function __construct($DB)
 	{
 		$this->db = $DB;
@@ -93,8 +93,8 @@ class Agefodd_stagiaire extends CommonObject
 
 		// Check parameters
 		// Put here code to add control on parameters value
-        $this->nom = mb_strtoupper($this->nom, 'UTF-8');
-        $this->prenom = ucfirst(mb_strtolower($this->prenom, 'UTF-8'));
+		$this->nom = mb_strtoupper($this->nom, 'UTF-8');
+		$this->prenom = ucfirst(mb_strtolower($this->prenom, 'UTF-8'));
 
 		if (empty($this->civilite)){
 			$error++;
@@ -228,7 +228,7 @@ class Agefodd_stagiaire extends CommonObject
 						$this->fk_socpeople = $obj->fk_socpeople;
 						$this->date_birth = $contact->birthday;
 						$this->place_birth = $obj->place_birth;
-						
+
 					}
 				}
 				else
@@ -335,7 +335,7 @@ class Agefodd_stagiaire extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					
+						
 					$line = new AgfTraineeLine();
 
 					//Manage filter for telephone to remove all space from result to filter correctly
@@ -403,9 +403,9 @@ class Agefodd_stagiaire extends CommonObject
 						$line->date_birth = $this->db->jdate($obj->date_birth);
 						$line->place_birth = $obj->place_birth;
 					}
-					
+						
 					$this->lines[$i]=$line;
-					
+						
 					$i++;
 				}
 			}
@@ -485,7 +485,7 @@ class Agefodd_stagiaire extends CommonObject
 		if (isset($this->mail)) $this->mail = $this->db->escape(trim($this->mail));
 		if (isset($this->note)) $this->note = $this->db->escape(trim($this->note));
 		if (isset($this->place_birth)) $this->place_birth = $this->db->escape(trim($this->place_birth));
-		
+
 		// Check parameters
 		// Put here code to add control on parameters values
 
@@ -562,7 +562,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql .= " WHERE rowid = ".$id;
 
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
 
@@ -582,7 +582,7 @@ class Agefodd_stagiaire extends CommonObject
 }
 
 class AgfTraineeLine {
-	
+
 	var $socid;
 	var $socname;
 	var $civilitecode;
@@ -599,7 +599,7 @@ class AgfTraineeLine {
 	var $fk_socpeople;
 	var $date_birth;
 	var $place_birth;
-	
+
 	function __construct()
 	{
 		return 1;

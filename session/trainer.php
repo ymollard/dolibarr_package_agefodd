@@ -198,8 +198,8 @@ if (!empty($id))
 					}
 					print '</td>';
 					print '<td>';
-						
-						
+
+
 					if ($user->rights->agefodd->modifier)
 					{
 						print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="form_edit" alt="'.$langs->trans("AgfModSave").'">';

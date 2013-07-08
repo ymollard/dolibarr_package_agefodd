@@ -1,8 +1,8 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier			<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin			<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   		<florian.henry@open-concept.pro>
- * Copyright (C) 2012       Jean-François FERRY		<jfefe@aternatik.fr>
+* Copyright (C) 2012       Florian Henry   		<florian.henry@open-concept.pro>
+* Copyright (C) 2012       Jean-François FERRY		<jfefe@aternatik.fr>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,9 @@
 
 /**
  *  \file       	/agefodd/session/archive_year.php
- *  \brief      	Page to archive training session by year
- *  \version		$Id$
- */
+*  \brief      	Page to archive training session by year
+*  \version		$Id$
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -51,18 +51,18 @@ $mesg = '';
 
 if ($action == 'confirm_archive' && $user->rights->agefodd->creer)
 {
-	
+
 	$agf = new Agsession($db);
 
 	$result = $agf->updateArchiveByYear($year,$user);
 
 	if ($result > 0)
 	{
-		
+
 		/* Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
-		foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
-			//echo "$filename effacé <br>";
-			if(is_file($filename)) unlink("$filename");
+		 foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
+		//echo "$filename effacé <br>";
+		if(is_file($filename)) unlink("$filename");
 		}
 		*/
 		setEventMessage($langs->trans('AgfArchiveByYearComplete'),'mesgs');
@@ -117,47 +117,47 @@ if($action == 'search_year')
 	if (empty($sortorder)) $sortorder="ASC";
 	if (empty($sortfield)) $sortfield="s.dated";
 	if (empty($arch)) $arch = 0;
-	
+
 	if ($page == -1) {
 		$page = 0 ;
 	}
-	
+
 	$filter['YEAR(s.dated)']=$year;
-	
+
 	$limit = $conf->global->AGF_NUM_LIST;
 	$limit = 0;
 	$offset = $limit * $page ;
-	
+
 	$agf = new Agsession($db);
 	$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
-	
+
 	print_fiche_titre($langs->trans('AgfSearchResults'));
-	
+
 	if ($resql != -1)
 	{
 		$num = $resql;
 		if($num > 0)
 		{
-			
+				
 			print $langs->trans('AgfNumSessionToArchiveForSelectedYear', $num);
-			
+				
 			print '<ul>';
 			foreach($agf->line as $session) {
 				print '<li>'.$session->ref.' '.$session->intitule.' '.dol_print_date($session->dated,'day').'</li>';
 			}
 			print '</ul>';
-			
+				
 			print '<div class="tabsAction">';
 			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=confirm_archive&year='.$year.'">'.$langs->trans('AgfArchiveConfirm').'</a>';
 			print '</div>';
 		}
-		else 
+		else
 		{
 			print $langs->trans('AgfNoSessionToArchive', $num);'Aucune session à archiver pour l\'année sélectionnée';
 		}
 	}
-		
-	
+
+
 }
 
 print '</div>';

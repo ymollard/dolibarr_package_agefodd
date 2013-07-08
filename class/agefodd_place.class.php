@@ -21,8 +21,8 @@
 /**
  *  \file       agefodd/class/agefodd_place.class.php
  *  \ingroup    agefodd
- *  \brief      Manage location object
- */
+*  \brief      Manage location object
+*/
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
@@ -39,7 +39,7 @@ class Agefodd_place extends CommonObject
 	var $table_element='agefodd_place';
 
 	var $id;
-    
+
 	var $entity;
 	var $ref_interne;
 	var $adresse;
@@ -57,13 +57,13 @@ class Agefodd_place extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
-	var $line=array();
+	var $lines=array();
 
 	/**
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
-	 */
+	*/
 	function __construct($DB)
 	{
 		$this->db = $DB;
@@ -84,7 +84,7 @@ class Agefodd_place extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		
+
 		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
 		if (isset($this->adresse)) $this->adresse=trim($this->adresse);
 		if (isset($this->cp)) $this->cp=trim($this->cp);
@@ -97,14 +97,14 @@ class Agefodd_place extends CommonObject
 		if (isset($this->note1)) $this->note1=trim($this->note1);
 		if (isset($this->archive)) $this->archive=trim($this->archive);
 		if (isset($this->fk_reg_interieur)) $this->fk_reg_interieur=trim($this->fk_reg_interieur);
-		
+
 		// Check parameters
 		// Put here code to add control on parameters value
-	
-		
+
+
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_place(";
-		
+
 		$sql.= "entity,";
 		$sql.= "ref_interne,";
 		$sql.= "adresse,";
@@ -120,7 +120,7 @@ class Agefodd_place extends CommonObject
 		$sql.= "fk_user_mod,";
 		$sql.= "datec";
 		$sql.= ") VALUES (";
-		
+
 		$sql.= " ".$conf->entity.",";
 		$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->db->escape($this->ref_interne)."'").",";
 		$sql.= " ".(! isset($this->adresse)?'NULL':"'".$this->db->escape($this->adresse)."'").",";
@@ -137,20 +137,22 @@ class Agefodd_place extends CommonObject
 		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ")";
 
-		// Insert request		
+		// Insert request
 		dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
-		if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-		
+		if (! $resql) {
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
+		}
+
 		if (! $error)
 		{
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_place");
-		
+
 			if (! $notrigger)
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-		
+
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -159,7 +161,7 @@ class Agefodd_place extends CommonObject
 				//// End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error)
 		{
@@ -274,22 +276,26 @@ class Agefodd_place extends CommonObject
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				$this->line[$i]->id = $obj->rowid;
-				$this->line[$i]->ref_interne =  stripslashes($obj->ref_interne);
-				$this->line[$i]->adresse = stripslashes($obj->adresse);
-				$this->line[$i]->cp = $obj->cp;
-				$this->line[$i]->ville = stripslashes($obj->ville);
-				$this->line[$i]->pays_id = $obj->fk_pays;
-				$this->line[$i]->country = $obj->country;
-				$this->line[$i]->country_code = $obj->country_code;
-				$this->line[$i]->tel = stripslashes($obj->tel);
-				$this->line[$i]->fk_societe = $obj->fk_societe;
-				$this->line[$i]->notes = stripslashes($obj->notes);
-				$this->line[$i]->socid = $obj->socid;
-				$this->line[$i]->socname = stripslashes($obj->socname);
-				$this->line[$i]->archive = $obj->archive;
-				$this->line[$i]->acces_site = $obj->acces_site;
-				$this->line[$i]->note1 = $obj->note1;
+				$line = new AgfPlaceLine();
+
+				$line->id = $obj->rowid;
+				$line->ref_interne =  stripslashes($obj->ref_interne);
+				$line->adresse = stripslashes($obj->adresse);
+				$line->cp = $obj->cp;
+				$line->ville = stripslashes($obj->ville);
+				$line->pays_id = $obj->fk_pays;
+				$line->country = $obj->country;
+				$line->country_code = $obj->country_code;
+				$line->tel = stripslashes($obj->tel);
+				$line->fk_societe = $obj->fk_societe;
+				$line->notes = stripslashes($obj->notes);
+				$line->socid = $obj->socid;
+				$line->socname = stripslashes($obj->socname);
+				$line->archive = $obj->archive;
+				$line->acces_site = $obj->acces_site;
+				$line->note1 = $obj->note1;
+
+				$this->lines[$i]=$line;
 
 				$i++;
 			}
@@ -370,7 +376,7 @@ class Agefodd_place extends CommonObject
 		if (isset($this->note1)) $this->note1=trim($this->note1);
 		if (isset($this->archive)) $this->archive=trim($this->archive);
 		if (isset($this->fk_reg_interieur)) $this->fk_reg_interieur=trim($this->fk_reg_interieur);
-		
+
 		if (!isset($this->archive)) $this->archive = 0;
 
 		// Check parameters
@@ -469,20 +475,20 @@ class Agefodd_place extends CommonObject
 		if (! $error)
 		{
 			$fk_reg_interieur=0;
-				
+
 			$sql = "SELECT";
 			$sql.= " p.rowid, p.fk_reg_interieur";
 			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
 			$sql.= " WHERE p.rowid = ".$this->id;
-				
+
 			$this->db->begin();
-				
+
 			dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 			$resql=$this->db->query($sql);
 			if (! $resql) {
 				$error++; $this->errors[]="Error ".$this->db->lasterror();
 			}
-				
+
 			if (! $error)
 			{
 				if ($this->db->num_rows($resql))
@@ -505,7 +511,7 @@ class Agefodd_place extends CommonObject
 					$agf_regint = new Agefodd_reg_interieur($this->db);
 					$agf_regint->id=$fk_reg_interieur;
 					$result = $agf_regint->delete($user);
-						
+
 					if ($result < 0){
 						$error++; $this->errors[]="Error ".$agf_regint->errors;
 					}
@@ -559,7 +565,7 @@ class Agefodd_place extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-				dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this)."::remove_reg_int ".$errmsg, LOG_ERR);
 				$this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -584,7 +590,7 @@ class Agefodd_place extends CommonObject
 		$error=0;
 
 		$sql = "SELECT";
-		$sql.= " s.address, s.cp, s.tel, s.ville, s.fk_departement, s.fk_pays";
+		$sql.= " s.address, s.zip, s.phone, s.town, s.fk_departement, s.fk_pays";
 		$sql.= " FROM ".MAIN_DB_PREFIX."societe as s";
 		$sql.= " WHERE s.rowid = ".$this->fk_societe;
 
@@ -596,10 +602,10 @@ class Agefodd_place extends CommonObject
 			{
 				$obj = $this->db->fetch_object($resql);
 				$this->adresse = $obj->address;
-				$this->cp = $obj->cp;
+				$this->cp = $obj->zip;
 				$this->fk_pays = $obj->fk_pays;
-				$this->ville = $obj->ville;
-				$this->tel = $obj->tel;
+				$this->ville = $obj->town;
+				$this->tel = $obj->phone;
 				$result=$this->update($user);
 				if ($result > 0) {
 					$this->db->free($resql);
@@ -626,7 +632,7 @@ class Agefodd_place extends CommonObject
 	 *  @return void
 	 */
 	function printPlaceInfo() {
-		
+
 		global $langs, $form;
 
 		print '<table class="border" width="100%">';
@@ -648,5 +654,30 @@ class Agefodd_place extends CommonObject
 		print '</tr>';
 		print '</table>';
 
+	}
+}
+
+class AgfPlaceLine {
+
+	var $id;
+	var $ref_interne;
+	var $adresse;
+	var $cp;
+	var $ville;
+	var $pays_id;
+	var $country;
+	var $country_code;
+	var $tel;
+	var $fk_societe;
+	var $notes;
+	var $socid;
+	var $socname;
+	var $archive;
+	var $acces_site;
+	var $note1;
+
+	function __construct()
+	{
+		return 1;
 	}
 }

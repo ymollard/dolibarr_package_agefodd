@@ -223,84 +223,84 @@ class InterfaceAgefodd
 		}
 		elseif ($action == 'CLOTURE_SENTBYMAIL') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-		
-		
+
+
 			if ($object->actiontypecode == 'AC_AGF_CLOT') {
-		
+
 				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
-		
+
 				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfClotureSentByEmail",$object->ref);
 				if (empty($object->actionmsg))
 				{
 					$object->actionmsg=$langs->transnoentities("AgfClotureSentByEmail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
-		
+
 				$ok=1;
 			}
 		}elseif ($action == 'CONVOCATION_SENTBYMAIL') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-		
-		
+
+
 			if ($object->actiontypecode == 'AC_AGF_CONVO') {
-		
+
 				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
-		
+
 				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfConvocationByEmail",$object->ref);
 				if (empty($object->actionmsg))
 				{
 					$object->actionmsg=$langs->transnoentities("AgfConvocationByEmail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
-		
+
 				$ok=1;
 			}
 		}
 		elseif ($action == 'CONSEILS_SENTBYMAIL') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-		
-		
+
+
 			if ($object->actiontypecode == 'AC_AGF_CONSE') {
-		
+
 				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
-		
+
 				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfConseilsPratiqueByEmail",$object->ref);
 				if (empty($object->actionmsg))
 				{
 					$object->actionmsg=$langs->transnoentities("AgfConseilsPratiqueByEmail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
-		
+
 				$ok=1;
 			}
 		}
 		elseif ($action == 'ACCUEIL_SENTBYMAIL') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-		
-		
+
+
 			if ($object->actiontypecode == 'AC_AGF_ACCUE') {
-		
+
 				dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 				$langs->load("agefodd@agefodd");
 				$langs->load("agenda");
-		
+
 				if (empty($object->actionmsg2)) $object->actionmsg2=$langs->transnoentities("AgfCourrierAcceuilByEmail",$object->ref);
 				if (empty($object->actionmsg))
 				{
 					$object->actionmsg=$langs->transnoentities("AgfCourrierAcceuilByEmail",$object->ref);
 					$object->actionmsg.="\n".$langs->transnoentities("Author").': '.$user->login;
 				}
-		
+
 				$ok=1;
 			}
 		}
-		
+
 		// Add entry in event table
 		if ($ok)
 		{
@@ -347,21 +347,21 @@ class InterfaceAgefodd
 				return -1;
 			}
 		}
-		
+
 		//Update action label if training is change on a session
 		if ($action == 'AGSESSION_UPDATE') {
 			// Change Trainning session actino if needed
 			require_once(DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php');
-			
+				
 			$actioncomm = new ActionComm($this->db);
 			$actioncomm->getActions(0, $object->id, 'agefodd_agsession');
-			
+				
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-			
+				
 			$agftraincat= new Agefodd($this->db);
 			$agftraincat->fetch($object->fk_formation_catalogue);
-			
-			
+				
+				
 			$num = count($actioncomm->actions);
 			if ($num)
 			{
@@ -370,30 +370,30 @@ class InterfaceAgefodd
 					if (strpos($action->label,$agftraincat->intitule)===false) {
 						$action->label=$agftraincat->intitule.'('.$agftraincat->ref_obj.')';
 						$ret = $action->update($user);
-						
+
 						if ($ret < 0)
 						{
 							$error ="Failed to update : ".$action->error." ";
 							$this->error=$error;
-						
+
 							dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
 							return -1;
 						}
 					}
 				}
 			}
-				
+
 		}elseif($action == 'CONTACT_MODIFY') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-			
+				
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-			
+				
 			//Find trainee link with this contact
 			$sql = "SELECT";
 			$sql.= " s.rowid,  s.fk_socpeople";
 			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 			$sql.= " WHERE s.fk_socpeople=".$object->id;
-			
+				
 			dol_syslog('interface_modAgefodd_Agefodd.class.php: $sql='.$sql, LOG_DEBUG);
 			$resql=$this->db->query($sql);
 			if ($resql)
@@ -401,7 +401,7 @@ class InterfaceAgefodd
 				if ($this->db->num_rows($resql))
 				{
 					$sta=new Agefodd_stagiaire($this->db);
-					
+						
 					$obj = $this->db->fetch_object($resql);
 
 					$sta->id=$obj->rowid;
@@ -415,13 +415,13 @@ class InterfaceAgefodd
 					$sta->mail=$object->email;
 					$sta->fk_socpeople=$object->id;
 					$sta->date_birth=$object->birthday;
-					
+						
 					$result=$sta->update($user);
 					if ($result < 0)
 					{
 						$error ="Failed to update trainee : ".$sta->error." ";
 						$this->error=$error;
-					
+							
 						dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
 						return -1;
 					}
@@ -429,13 +429,13 @@ class InterfaceAgefodd
 			}else {
 				$error ="Failed to update find link to contact : ".$this->db->lasterror()." ";
 				$this->error=$error;
-				
+
 				dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
 				return -1;
 			}
 			$this->db->free($resql);
 		}
-		
+
 		return 0;
 	}
 

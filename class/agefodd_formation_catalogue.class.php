@@ -20,9 +20,9 @@
 
 /**
  *  \file       agefodd/class/agefodd_foramtion_catalogue.class.php
- *  \ingroup    agefodd
- *  \brief      Manage training object
- */
+*  \ingroup    agefodd
+*  \brief      Manage training object
+*/
 
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
@@ -72,7 +72,7 @@ class Agefodd extends CommonObject
 		if (isset($this->note1)) $this->note1 = $this->db->escape(trim($this->note1));
 		if (isset($this->note2)) $this->note2 = $this->db->escape(trim($this->note2));
 		if (isset($this->note2)) $this->programme = $this->db->escape(trim($this->programme));
-		
+
 		if (empty($this->duree)) $this->duree = 0;
 
 		// Insert request
@@ -265,7 +265,7 @@ class Agefodd extends CommonObject
 		// Check parameters
 		// Put here code to add control on parameters values
 		if (empty($this->duree)) $this->duree = 0;
-		
+
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_catalogue SET";
@@ -734,27 +734,27 @@ class Agefodd extends CommonObject
 		print '</table>';
 
 	}
-	
-	
+
+
 	/**
 	 * Create admin level for a session
 	 */
 	function createAdmLevelForTraining($user) {
 		$error='';
-	
+
 		require_once('agefodd_sessadm.class.php');
 		require_once('agefodd_session_admlevel.class.php');
 		require_once('agefodd_training_admlevel.class.php');
 		require_once(DOL_DOCUMENT_ROOT ."/core/lib/date.lib.php");
 		$admlevel = new Agefodd_session_admlevel($this->db);
 		$result2 = $admlevel->fetch_all();
-	
+
 		if ($result2 > 0)
 		{
 			foreach ($admlevel->line as $line)
 			{
 				$actions = new Agefodd_training_admlevel($this->db);
-	
+
 				$actions->fk_agefodd_training_admlevel = $line->rowid;
 				$actions->fk_training = $this->id;
 				$actions->delais_alerte = $line->alerte;
@@ -764,14 +764,14 @@ class Agefodd extends CommonObject
 				$actions->level_rank = $line->level_rank;
 				$actions->fk_parent_level = $line->fk_parent_level;  //Treatement to calculate the new parent level is after
 				$result3 = $actions->create($user);
-	
+
 				if ($result3 < 0) {
 					dol_syslog(get_class($this)."::createAdmLevelForTraining error=".$actions->error, LOG_ERR);
 					$this->error = $actions->error;
 					$error++;
 				}
 			}
-	
+
 			//Caculate the new parent level
 			$action_static = new Agefodd_training_admlevel($this->db);
 			$result4 = $action_static->setParentActionId($user,$this->id);
@@ -787,7 +787,7 @@ class Agefodd extends CommonObject
 			$this->error = $admlevel->error;
 			$error++;
 		}
-	
+
 		return $error;
 	}
 }

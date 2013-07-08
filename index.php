@@ -202,30 +202,33 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 	// tableau de bord travail
 	print '<table class="noborder" width="500px" align="left">';
 	print '<tr class="liste_titre"><th>'.$langs->trans("AgfIndexCertif").' </th></tr>';
-	
+
 	//List de stagaire concerné
 	$result = $agf->fetch_certif_expire();
 	if ($result && (count($agf->lines)>0)) {
-		
+
 		$style='impair';
 		foreach($agf->lines as $line) {
-			if ($style=='pair') {$style='impair';}
-			else {$style='pair';}			
-			
+			if ($style=='pair') {
+				$style='impair';
+			}
+			else {$style='pair';
+			}
+				
 			print '<tr class="'.$style.'"><td>';
 			print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$line->customer_id.'">'.$line->customer_name.'</a>';
 			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$line->id_session.'">'.$line->fromintitule.'</a>';
 			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$line->trainee_id.'">'.$line->trainee_name.' '.$line->trainee_firstname.'</a>';
 			print '&nbsp;-&nbsp;'.dol_print_date($line->certif_dt_end,'daytext');
 			print '</td></tr>';
-			
+				
 		}
 	}
 	else
 	{
 		print '<tr class="pair"><td>'.$langs->trans('AgfNoCertif').'</td></tr>';
 	}
-	
+
 	print '</table>';
 }
 

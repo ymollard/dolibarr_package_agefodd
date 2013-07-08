@@ -109,27 +109,27 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd
 	function getNextValue($objtraining,$agf)
 	{
 		global $db,$conf;
-		
+
 		$prefix='';
-		
+
 		$sql = "SELECT";
 		$sql.= " t.ref_interne";
-		
+
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as t";
 		$sql.= " WHERE t.rowid=".$objtraining->id;
-		
+
 		dol_syslog("mod_agefoddcertif_simple::getNextValue sql=".$sql,LOG_DEBUG);
 		$resql=$db->query($sql);
 		if ($resql)
 		{
 			$obj = $db->fetch_object($resql);
 			$prefix=$obj->ref_interne;
-			
+				
 			//Format the two first certificate caracters
 			if (strlen($prefix)>0) {
 				$prefix=str_replace(' ', '', $prefix);
 				$prefix=strtoupper($prefix);
-				
+
 				if (strlen($prefix)>=2) {
 					$prefix=substr($prefix,0,2);
 				} else {
@@ -147,7 +147,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd
 		}else {
 			$this->prefix=$prefix;
 		}
-		
+
 
 		// D'abord on recupere la valeur max
 		$posindice=8;

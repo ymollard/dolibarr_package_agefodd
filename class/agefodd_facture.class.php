@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2013	Florian Henry		<florian.henry@open-concept.pro>
+* Copyright (C) 2013	Florian Henry		<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 /**
  *  \file       agefodd/class/agefodd_facture.class.php
  *  \ingroup    agefodd
- *  \brief      Manage Invoice object
- */
+*  \brief      Manage Invoice object
+*/
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
@@ -37,7 +37,7 @@ class Agefodd_facture
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
-	
+
 	var $lines;
 
 	/**
@@ -63,7 +63,7 @@ class Agefodd_facture
 	{
 		global $conf, $langs;
 		$error=0;
-		 
+			
 		// Clean parameters
 
 		// Check parameters
@@ -96,7 +96,7 @@ class Agefodd_facture
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				 
+					
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -208,12 +208,12 @@ class Agefodd_facture
 			for ($i=0; $i < $num; $i++)
 			{
 				$line = new Agefodd_facture_line();
-				
+
 				$obj = $this->db->fetch_object($resql);
 				$line->id = $obj->rowid;
 				$line->socid = $obj->fk_soc;
 				($type == 'bc') ? $line->ref = $obj->ref : $line->ref = $obj->facnumber;
-				
+
 				$this->lines[$i]=$line;
 			}
 			$this->db->free($resql);
@@ -367,11 +367,11 @@ class Agefodd_facture
 }
 
 Class Agefodd_facture_line {
-	
+
 	var $id;
 	var $socid;
 	var $ref;
-	
+
 	function __construct()
 	{
 		return 1;

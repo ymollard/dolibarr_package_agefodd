@@ -21,8 +21,8 @@
 /**
  *  \file       agefodd/class/agefodd_formateur.class.php
  *  \ingroup    agefodd
- *  \brief      Manage trainer
- */
+*  \brief      Manage trainer
+*/
 
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 
@@ -38,7 +38,7 @@ class Agefodd_teacher extends CommonObject
 	var $table_element='agefodd_formateur';
 	var $id;
 	var $type_trainer_def=array();
-	
+
 	var $entity;
 	var $fk_socpeople;
 	var $fk_user;
@@ -47,14 +47,14 @@ class Agefodd_teacher extends CommonObject
 	var $fk_user_author;
 	var $datec='';
 	var $fk_user_mod;
-	
+
 	var $lines=array();
-	
+
 	/**
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
-	 */
+	*/
 	function __construct($DB)
 	{
 		$this->db = $DB;
@@ -82,7 +82,7 @@ class Agefodd_teacher extends CommonObject
 		if (isset($this->archive)) $this->archive=trim($this->archive);
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
-		
+
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formateur(";
@@ -260,9 +260,9 @@ class Agefodd_teacher extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					
+						
 					$line = new AgfTrainerLine();
-					
+						
 					$line->id = $obj->rowid;
 					$line->type_trainer = $obj->type_trainer;
 					$line->archive = $obj->archive;
@@ -288,7 +288,7 @@ class Agefodd_teacher extends CommonObject
 						$line->phone_mobile = $obj->sp_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
 					}
-					
+						
 					$this->lines[$i]=$line;
 					$i++;
 				}
@@ -443,7 +443,7 @@ class Agefodd_teacher extends CommonObject
 }
 
 class AgfTrainerLine {
-	
+
 	var $id;
 	var $type_trainer;
 	var $archive;
@@ -455,7 +455,7 @@ class AgfTrainerLine {
 	var $email;
 	var $phone_mobile;
 	var $fk_socpeople;
-	
+
 	function __construct()
 	{
 		return 1;

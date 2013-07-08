@@ -112,8 +112,11 @@ if ($action == 'update_archive' && $user->rights->agefodd->creer)
 	$agf = new Agefodd_sessadm($db);
 
 	$result = $agf->fetch($actid);
-	if ($agf->archive==1) {$agf->archive=0;}
-	else  {$agf->archive=1;}
+	if ($agf->archive==1) {
+		$agf->archive=0;
+	}
+	else  {$agf->archive=1;
+	}
 	$agf->datef = dol_mktime(0,0,0,dol_print_date(dol_now(),'%m'),dol_print_date(dol_now(),'%d'),dol_print_date(dol_now(),'%Y'));
 	$result = $agf->update($user);
 
@@ -242,15 +245,15 @@ if ($user->rights->agefodd->creer)
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 			print '<input type="hidden" name="action" value="create_confirm">'."\n";
 			print '<input type="hidden" name="id" value="'.$id.'">'."\n";
-				
+
 			print '<table class="border" width="100%">';
 
 			print '<tr><td>'.$langs->trans("AgfSessAdmIntitule").'</td>';
 			print '<td><input name="intitule" class="flat" size="50" value=""/></td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfParentLevel").'</td>';
 			print '<td>'.$formAgefodd->select_action_session($id).'</td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
 			$form->select_date('','datea','','','','create_confirm');
 			print '</td></tr>';
@@ -258,14 +261,14 @@ if ($user->rights->agefodd->creer)
 			print '<tr><td valign="top">'.$langs->trans("AgfSessDateDebut").'</td><td>';
 			$form->select_date('', 'dad','','','','create_confirm');
 			print '</td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfSessDateFin").'</td><td>';
 			$form->select_date('', 'daf','','','','create_confirm');
 			print '</td></tr>';
 
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-				
+
 			print '</table>';
 			print '</div>';
 
@@ -282,7 +285,7 @@ if ($user->rights->agefodd->creer)
 		elseif ($action == 'edit')
 		{
 			$result = $agf->fetch($actid);
-				
+
 			/*
 			 * Confirmation de la suppression
 			*/
@@ -301,44 +304,44 @@ if ($user->rights->agefodd->creer)
 
 			print "<tr>";
 			print '<td td width="300px">'.$langs->trans("Ref").'</td><td>'.$agf->id.'</td></tr>';
-				
+
 			print '<tr><td>'.$langs->trans("AgfSessAdmIntitule").'</td>';
 			print '<td>'.$agf->intitule.'</td></tr>';
 
 			print '<tr><td valign="top">'.$langs->trans("AgfSessAdmDateLimit").'</td><td>';
 			$form->select_date($agf->datea,'datea','','','','update');
 			print '</td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfSessDateDebut").'</td><td>';
 			$form->select_date($agf->dated, 'dad','','','','update');
 			print '</td></tr>';
 			print '<tr><td valign="top">'.$langs->trans("AgfSessDateFin").'</td><td>';
 			$form->select_date($agf->datef, 'daf','','','','update');
 			print '</td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->notes.'</textarea></td></tr>';
-				
+
 			print '</table>';
 			print '</div>';
-				
+
 			print '<table style=noborder align="right">';
 			print '<tr><td align="center" colspan=2>';
 			print '<input type="submit" class="butAction" value="'.$langs->trans("Save").'"> &nbsp; ';
 			print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'"> &nbsp; ';
 			print '<input type="submit" name="delete" class="butActionDelete" value="'.$langs->trans("Delete").'">';
 			print '</td></tr>';
-				
+
 			print '</table>';
 			print '</form>';
-				
+
 		}
 		else
 		{
 			// Affichage en mode "consultation"
 			$sess_adm = new Agefodd_sessadm($db);
 			$result = $sess_adm->fetch_all($id);
-				
+
 			print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 			print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 			print '</div>';
@@ -370,30 +373,30 @@ if ($user->rights->agefodd->creer)
 							
 					}
 					print '<tr style="color:#000000;border:1px;border-style:solid">';
-						
+
 					$bgcolor = '#d5baa8'; //Default color
-						
-						
+
+
 					//8 day before alert date
 					if (dol_now() > dol_time_plus_duree($line->datea,-8,'d')) $bgcolor = '#ffe27d';
-						
+
 					//3 day before alert day
 					if (dol_now() > dol_time_plus_duree($line->datea,-3,'d')) $bgcolor = 'orange';
-						
+
 					// if alert date is past then RED
 					if (dol_now() > $line->datea) $bgcolor = 'red';
-						
+
 					//if end date is in the past adn task is mark as done , the task is done
 					if ((dol_now() > $line->datef) && (!empty($line->archive))) $bgcolor='green';
 					//if end date is in the past, the task is done
 					if ((dol_now() > $line->datef) && (empty($line->archive))) $bgcolor='red';
-						
-						
+
+
 					print '<td width="10px" bgcolor="'.$bgcolor.'">&nbsp;</td>';
-						
+
 					print '<td style="border-right-style: none;"><a href="'.dol_buildpath('/agefodd/session/administrative.php',1).'?action=edit&id='.$id.'&actid='.$line->id.'">';
 					print str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;',$line->level_rank).$line->intitule.'</a></td>';
-						
+
 					// Affichage éventuelle des notes
 					if (!empty($line->notes))
 					{
@@ -402,7 +405,7 @@ if ($user->rights->agefodd->creer)
 						print '<span>'.wordwrap(stripslashes($line->notes),50,"<br />",1).'</span></td>';
 					}
 					else print '<td style="border-left: 0px; width:auto;">&nbsp;</td>';
-						
+
 					// Affichage des différentes dates
 					print '<td width="150px" align="center" valign="top">';
 					if ($bgcolor == 'red') print '<font style="color:'.$bgcolor.'">';
@@ -411,7 +414,7 @@ if ($user->rights->agefodd->creer)
 					print '</td>';
 					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->dated,'daytext').'</td>';
 					print '<td width="150px" align="center" valign="top">'.dol_print_date($line->datef,'daytext').'</td>';
-						
+
 					//Status Line
 					if ($line->archive)
 					{
@@ -423,19 +426,19 @@ if ($user->rights->agefodd->creer)
 						$txtalt=$langs->trans("AgfTerminatedPoint");
 						$src_state=dol_buildpath('/agefodd/img/ok.png',1);
 					}
-						
+
 					print '<td align="center" valign="top"><a href="'.$_SERVER['PHP_SELF'].'?action=update_archive&id='.$id.'&actid='.$line->id.'"><img alt="'.$txtalt.'" src="'.$src_state.'"/></a></td>';
-						
+
 					print '</tr>';
-						
+
 					$i++;
 				}
 			}
 
-				
+
 			print '</table>';
 			print '&nbsp;';
-				
+
 			print '<table align="center" noborder><tr>';
 			print '<td width="10px" bgcolor="green"><td>'.$langs->trans("AgfTerminatedPoint").'&nbsp</td>';
 			print '<td width="10px" bgcolor="#ffe27d"><td>'.$langs->trans("AgfXDaysBeforeAlert").'&nbsp;</td>';

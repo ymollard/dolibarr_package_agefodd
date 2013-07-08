@@ -22,7 +22,7 @@
  *	\file       agefodd/trainee/session.php
  *	\ingroup    agefodd
  *	\brief      session of trainee
- */
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -135,13 +135,16 @@ if ($id)
 			print '<th class="liste_titre" width="20%">'.$langs->trans('AgfFinSession').'</th>';
 			print '</tr>';
 
-			$style='impair';				
+			$style='impair';
 			foreach($agf_session->line as $line){
-				if ($style=='pair') {$style='impair';}
-				else {$style='pair';}
-				
+				if ($style=='pair') {
+					$style='impair';
+				}
+				else {$style='pair';
+				}
+
 				print '<tr class="'.$style.'">';
-			
+					
 				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->rowid.'</a></td>';
 				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->intitule.'</a></td>';
 				print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
@@ -153,10 +156,10 @@ if ($id)
 		else {
 			$langs->trans('AgfNoCertif');
 		}
-	} 
+	}
 	else {
 		setEventMessage($agf->error,'errors');
-	} 		
+	}
 }
 
 $db->close();

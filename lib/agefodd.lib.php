@@ -49,7 +49,7 @@ function training_prepare_head($object)
 	$head[$h][2] = 'sessions';
 	$hselected = $h;
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath('/agefodd/training/training_adm.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgftrainingAdmTask");
 	$head[$h][2] = 'trainingadmtask';
@@ -61,7 +61,7 @@ function training_prepare_head($object)
 	$head[$h][2] = 'notes';
 	$hselected = $h;
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath('/agefodd/training/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");
 	$head[$h][2] = 'info';
@@ -96,7 +96,7 @@ function session_prepare_head($object,$showconv=0)
 	$head[$h][1] = $langs->trans("AgfParticipant");
 	$head[$h][2] = 'subscribers';
 	$h++;
-	
+
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head[$h][0] = dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans("AgfCertificate");
@@ -164,14 +164,14 @@ function trainee_prepare_head($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
-	
+
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head[$h][0] = dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans("AgfCertificate");
 		$head[$h][2] = 'certificate';
-		$h++;	
+		$h++;
 	}
-	
+
 	$head[$h][0] = dol_buildpath('/agefodd/trainee/session.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfSessionDetail");
 	$head[$h][2] = 'sessionlist';

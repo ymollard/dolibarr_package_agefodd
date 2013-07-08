@@ -91,7 +91,7 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= "fk_user_author,";
 		$sql.= "fk_user_mod,";
 		$sql.= "datec";
-		
+
 		$sql.= ") VALUES (";
 
 		$sql.= " ".(! isset($this->level_rank)?'NULL':"'".$this->level_rank."'").",";
@@ -102,7 +102,7 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= " ".$user->id.",";
 		$sql.= " ".$user->id.",";
 		$sql.= " ".$this->db->idate(dol_now());
-		
+
 		$sql.= ")";
 
 		$this->db->begin();
@@ -230,7 +230,7 @@ class Agefodd_session_admlevel extends CommonObject
 		$sql.= " t.tms";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel as t";
 		$sql.= " ORDER BY t.indice";
-		 
+			
 		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 
@@ -245,14 +245,14 @@ class Agefodd_session_admlevel extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 
 				$line=new AgfSessionAdmlvlLine();
-				
+
 				$line->rowid = $obj->rowid;
 				$line->level_rank = $obj->level_rank;
 				$line->fk_parent_level = $obj->fk_parent_level;
 				$line->indice = $obj->indice;
 				$line->intitule = $obj->intitule;
 				$line->alerte = $obj->delais_alerte;
-				
+
 				$this->line[$i]=$line;
 				$i++;
 			}
@@ -371,10 +371,10 @@ class Agefodd_session_admlevel extends CommonObject
 			if (! $resql) {
 				$error++; $this->errors[]="Error ".$this->db->lasterror();
 			}
-			 
+
 			$sql = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_session_admlevel";
 			$sql.= " WHERE fk_parent_level=".$this->id;
-			 
+
 			dol_syslog(get_class($this)."::delete sql=".$sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {

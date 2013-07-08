@@ -271,25 +271,25 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		global $langs;
 
 		$certif_type_array=$this->get_certif_type();
-		
+
 		if (is_array($certif_type_array) && count($certif_type_array)>0)
 		{
 			foreach($certif_type_array as $certif_type_id=>$certif_type_label)
 			{
 				$line = new AgfStagiaireCertifLineState();
-				
+
 				$line->certif_type=$certif_type_label;
 				$line->fk_certif_type=$certif_type_id;
 				$line->fk_certif=$id;
-				
+
 				$sqlinner = "SELECT";
 				$sqlinner.= " t.rowid,";
 				$sqlinner.= " t.certif_state";
-				
+
 				$sqlinner.= " FROM ".MAIN_DB_PREFIX."agefodd_certif_state as t";
 				$sqlinner.= " WHERE t.fk_certif_type=".$line->fk_certif_type;
 				$sqlinner.= " AND  t.fk_certif =".$line->fk_certif;
-				
+
 				dol_syslog(get_class($this)."::fetch_certif_state sqlinner=".$sqlinner, LOG_DEBUG);
 				$resqlinner=$this->db->query($sqlinner);
 				if ($resqlinner)
@@ -298,10 +298,10 @@ class Agefodd_stagiaire_certif  extends CommonObject
 					if (!empty($numinner)) {
 						$objinner = $this->db->fetch_object($resqlinner);
 						$line->certif_state=$objinner->certif_state;
-						
+
 						dol_syslog(get_class($this)."::fetch_certif_state objinner->certif_state=".$objinner->certif_state, LOG_DEBUG);
-						
-						
+
+
 						$line->id=$objinner->rowid;
 					}
 				}
@@ -311,14 +311,14 @@ class Agefodd_stagiaire_certif  extends CommonObject
 					dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
 					return -1;
 				}
-				
+
 				$this->lines_state[$i]=$line;
-				
+
 				$i++;
 			}
 
 			$this->db->free($resql);
-				
+
 			return 1;
 		}
 		elseif ($certif_type_array==-1)
@@ -327,28 +327,28 @@ class Agefodd_stagiaire_certif  extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Load object Certificate type
 	 *
 	 * @return array          	Array of certificate type
-	 * 
+	 *
 	 */
 	function get_certif_type() {
 		global $langs;
-	
-	
+
+
 		$return_array=array();
 		$sql = "SELECT";
 		$sql.= " t.rowid,";
-	
+
 		$sql.= " t.intitule,";
 		$sql.= " t.active";
-	
+
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_certificate_type as t";
 		$sql.= " WHERE t.active=1";
 		$sql.= " ORDER BY t.sort";
-	
+
 		dol_syslog(get_class($this)."::get_certif_type sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -356,7 +356,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 			while($obj = $this->db->fetch_object($resql)) {
 				$return_array[$obj->rowid]=$obj->intitule;
 			}
-	
+
 			return $return_array;
 		}
 		else
@@ -366,8 +366,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 			return -1;
 		}
 	}
-	
-	
+
+
 	/**
 	 *  Set Certificate State
 	 *
@@ -379,29 +379,29 @@ class Agefodd_stagiaire_certif  extends CommonObject
 	 *
 	 */
 	function set_certif_state($user,$certif_id, $certif_type_id, $certif_state) {
-		
+
 		$sql = "SELECT";
 		$sql.= " t.rowid";
-		
+
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_certif_state as t";
 		$sql.= " WHERE t.fk_certif_type=".$certif_type_id;
 		$sql.= " AND  t.fk_certif =".$certif_id;
-		
+
 		dol_syslog(get_class($this)."::set_certif_state sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
 			$num = $this->db->num_rows($resql);
-			
+				
 			//Certificate state exists = > We update
 			if (!empty($num)) {
 				$sqlop = "UPDATE ".MAIN_DB_PREFIX."agefodd_certif_state SET ";
 				$sqlop.= " certif_state=".$certif_state;
 				$sqlop.= ", fk_user_mod=".$user->id;
-				
+
 				$sqlop.= " WHERE fk_certif_type=".$certif_type_id;
 				$sqlop.= " AND  fk_certif =".$certif_id;
-				
+
 				dol_syslog(get_class($this)."::set_certif_state sql=".$sqlop, LOG_DEBUG);
 				$resql=$this->db->query($sqlop);
 				if ( ! $resql)
@@ -421,7 +421,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$sqlop.= $certif_id.",";
 				$sqlop.= $certif_type_id.",";
 				$sqlop.= $certif_state.")";
-				
+
 				dol_syslog(get_class($this)."::set_certif_state sql=".$sqlop, LOG_DEBUG);
 				$resql=$this->db->query($sqlop);
 				if ( ! $resql)
@@ -430,7 +430,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 					dol_syslog(get_class($this)."::set_certif_state ".$this->error, LOG_ERR);
 					return -1;
 				}
-				
+
 			}
 		}
 		else
@@ -441,7 +441,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		}
 			
 	}
-	
+
 
 
 	/**
@@ -522,7 +522,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Load object in memory from database
 	 *
@@ -722,10 +722,10 @@ class Agefodd_stagiaire_certif  extends CommonObject
 			if (! $resql) {
 				$error++; $this->errors[]="Error ".$this->db->lasterror();
 			}
-			
+				
 			$sql = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_certif_state";
 			$sql.= " WHERE fk_certif=".$this->id;
-			
+				
 			dol_syslog(get_class($this)."::delete sql=".$sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {

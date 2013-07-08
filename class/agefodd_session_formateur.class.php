@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012	Florian Henry		<florian.henry@open-concept.pro>
+* Copyright (C) 2012	Florian Henry		<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 /**
  *  \file       agefodd/class/agefodd_session_formateur.class.php
  *  \ingroup    agefodd
- *  \brief      Manage traner session object
- */
+*  \brief      Manage traner session object
+*/
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
@@ -208,9 +208,9 @@ class Agefodd_session_formateur
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					
+						
 					$line = new AgfSessionTrainer();
-					
+						
 					$line->opsid = $obj->rowid;
 					if (!empty($obj->fk_socpeople)) {
 						$line->name = $obj->name_socp;
@@ -222,14 +222,14 @@ class Agefodd_session_formateur
 						$line->firstname = $obj->firstname_user;
 						$line->email = $obj->email_user;
 					}
-					
+						
 					$line->socpeopleid = $obj->fk_socpeople;
 					$line->userid = $obj->fk_user;
 					$line->formid = $obj->formid;
 					$line->sessid = $obj->fk_session;
-					
+						
 					$this->line[$i]=$line;
-					
+						
 					$i++;
 				}
 			}
@@ -344,7 +344,7 @@ class Agefodd_session_formateur
  *	Session trainer line Class
  */
 Class AgfSessionTrainer {
-	
+
 	var $opsid;
 	var $name;
 	var $firstname;
@@ -353,7 +353,7 @@ Class AgfSessionTrainer {
 	var $userid;
 	var $formid;
 	var $sessid;
-	
+
 	function __construct()
 	{
 		return 1;

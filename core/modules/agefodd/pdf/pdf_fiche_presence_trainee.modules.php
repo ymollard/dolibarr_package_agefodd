@@ -519,10 +519,10 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			$pdf->SetXY($posX+$larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 			$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"C",false,1,'','',true,0,false,false,$h_ligne,'M');
-				
+
 			// Cadre pour signature
 			$pdf->Rect($posX+$larg_col1+$larg_col2, $posY, 128, $h_ligne);
-				
+
 			$posY= $pdf->GetY();
 			if ($posY > $this->page_hauteur-20) {
 				$pdf->AddPage();

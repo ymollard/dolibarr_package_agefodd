@@ -1,6 +1,6 @@
 <?php
-/* 
-* Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
+/*
+ * Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * 	\file       /agefodd/training/training_adm.php
  *	\ingroup    agefodd
  *	\brief      agefood agefodd admin training task by trainig
-*/
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory

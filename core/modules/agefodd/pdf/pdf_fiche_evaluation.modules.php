@@ -196,10 +196,18 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$this->str = $mysoc->address."\n";
 				$this->str.= $mysoc->zip.' '.$mysoc->town;
 				$this->str.= ' - '.$mysoc->country."\n";
-				if ($mysoc->phone) {$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";}
-				if ($mysoc->fax) {$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";}
-				if ($mysoc->email) {$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";}
-				if ($mysoc->url) {$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";}
+				if ($mysoc->phone) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
+				}
+				if ($mysoc->fax) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";
+				}
+				if ($mysoc->email) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";
+				}
+				if ($mysoc->url) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";
+				}
 
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
@@ -276,9 +284,9 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				$this->str .= $forma_str;
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'C',0);
 				$posY = $pdf->GetY() + 5;
-				
+
 				/***** Trainee Information *************/
-				
+
 				$pdf->SetXY($posX, $posY);
 				$this->str=$outputlangs->transnoentities('AgfPDFFicheEvalNameTrainee').' : .....................';
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str),0,'L',0);
@@ -303,7 +311,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',10);
-				
+
 				for ( $y = 0; $y < count($agf_op->line); $y++)
 				{
 					// Intitulé
@@ -444,7 +452,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
 				$pdf->AliasNbPages();
-				
+
 			}
 			$pdf->Close();
 			$pdf->Output($file,'F');
@@ -509,14 +517,28 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd
 
 		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
 		$this->str.= $statut;
-		if (!empty($mysoc->capital)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);}
-		if (!empty($mysoc->idprof2)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;}
-		if (!empty($mysoc->idprof4)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;}
-		if (!empty($mysoc->idprof3)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;}
+		if (!empty($mysoc->capital)) {
+			$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
+		}
+		if (!empty($mysoc->idprof2)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;
+		}
+		if (!empty($mysoc->idprof4)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;
+		}
+		if (!empty($mysoc->idprof3)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;
+		}
 		$this->str.="\n";
-		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;}
-		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;}
-		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;
+		}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;
+		}
+		if (!empty($mysoc->tva_intra)) {
+			$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;
+		}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);

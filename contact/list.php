@@ -22,7 +22,7 @@
  *	\file       agefodd/contact/card.php
  *	\ingroup    agefodd
  *	\brief      list of contact
- */
+*/
 
 
 $res=@include("../../main.inc.php");				// For root directory

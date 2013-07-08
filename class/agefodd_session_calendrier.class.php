@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- *  Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
+*  Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@
 
 /**
  *  \file       agefodd/class/agefodd_session_calendrier.class.php
- *  \ingroup    agefodd
- *  \brief      Manage location object
- */
+*  \ingroup    agefodd
+*  \brief      Manage location object
+*/
 
 require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
 
@@ -37,7 +37,7 @@ class Agefodd_sesscalendar
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
-	
+
 	var $lines;
 
 	/**
@@ -223,7 +223,7 @@ class Agefodd_sesscalendar
 	/**
 	 *  Load object in memory from database
 	 *
-	 *  @param	int		$id    Id of session 
+	 *  @param	int		$id    Id of session
 	 *  @return int          	<0 if KO, >0 if OK
 	 */
 	function fetch_all($id)
@@ -247,17 +247,17 @@ class Agefodd_sesscalendar
 			for ($i=0; $i < $num; $i++)
 			{
 				$line = new Agefodd_sesscalendar_line();
-				
+
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$line->id = $obj->rowid;
 				$line->date_session = $this->db->jdate($obj->date_session);
 				$line->heured = $this->db->jdate($obj->heured);
 				$line->heuref = $this->db->jdate($obj->heuref);
 				$line->sessid = $obj->sessid;
-				
+
 				$this->lines[$i]=$line;
-				
+
 			}
 			$this->db->free($resql);
 			return 1;
@@ -399,7 +399,7 @@ class Agefodd_sesscalendar
 		$result = $this->fetch($id);
 		if (!empty($this->fk_actioncomm)) {
 			dol_include_once('/comm/action/class/actioncomm.class.php');
-				
+
 			$action = new ActionComm($this->db);
 			$action->id=$this->fk_actioncomm;
 			$action->delete();
@@ -421,7 +421,7 @@ class Agefodd_sesscalendar
 			return -1;
 		}
 	}
-	 
+
 	/**
 	 *  Create Action in Dolibarr Agenda
 	 *
@@ -541,7 +541,7 @@ Class Agefodd_sesscalendar_line
 	var $heured;
 	var $heuref;
 	var $sessid;
-	
+
 	function __construct()
 	{
 		return 1;

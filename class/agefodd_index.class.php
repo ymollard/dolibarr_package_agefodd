@@ -54,7 +54,7 @@ Class Agefodd_CertifExpire_line {
 }
 /**
  *	Index pages
-*/
+ */
 class Agefodd_index
 {
 	var $db;
@@ -79,7 +79,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_student_nb()
@@ -107,7 +107,7 @@ class Agefodd_index
 				$num = 0;
 			}
 			$this->db->free($resql);
-			
+				
 			return $num;
 		}
 		else
@@ -121,7 +121,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_session_nb()
@@ -159,7 +159,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_formation_nb()
@@ -196,7 +196,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_heures_sessions_nb()
@@ -236,7 +236,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return 	int		<0 if KO, $num of student if OK
 	 */
 	function fetch_heures_stagiaires_nb()
@@ -277,7 +277,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @param	int 	$number 	number of sessions to display
 	 *  @return int					<0 if KO, $num of student if OK
 	 */
@@ -303,17 +303,17 @@ class Agefodd_index
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$line = new Agefodd_index_line();
-				
+
 				$line->intitule = $obj->intitule;
 				$line->dated = $this->db->jdate($obj->dated);
 				$line->datef = $this->db->jdate($obj->datef);
 				$line->idforma = $obj->fk_formation_catalogue;
 				$line->id = $obj->id;
-				
+
 				$this->line[$i]=$line;
-				
+
 				$i++;
 			}
 			$this->db->free($resql);
@@ -330,7 +330,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @param	int 	$number 	number of sessions to display
 	 *  @return int					<0 if KO, $num of student if OK
 	 */
@@ -358,15 +358,15 @@ class Agefodd_index
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$line = new Agefodd_index_line();
 				$line->intitule = $obj->intitule;
 				$line->num = $obj->num;
 				$line->duree = $obj->duree;
 				$line->idforma = $obj->fk_formation_catalogue;
-				
+
 				$this->line[$i]=$line;
-				
+
 				$i++;
 			}
 			$this->db->free($resql);
@@ -384,7 +384,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @param	int 	$archive 	Archive
 	 *  @return int					<0 if KO, $num of student if OK
 	 */
@@ -422,16 +422,16 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @param	int 	$jour 		Nb day to display
 	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_tache_en_retard($jour=0)
 	{
 		global $langs;
-		
+
 		$intervalday=$jour.' DAY';
-		
+
 		if ($this->db->type=='pgsql') {
 			$intervalday="'".$jour." DAYS'";
 		}
@@ -453,14 +453,14 @@ class Agefodd_index
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					
+						
 					$line = new Agefodd_index_line();
-					
+						
 					$line->rowid = $obj->rowid;
 					$line->sessid = $obj->fk_agefodd_session;
-					
+						
 					$this->line[$i]=$line;
-					
+						
 					$i++;
 				}
 			}
@@ -479,7 +479,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_tache_en_cours()
@@ -525,15 +525,15 @@ class Agefodd_index
 	function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf=0)
 	{
 		global $langs;
-		
+
 		$intervalday_sup=$delais_sup.' DAY';
 		$intervalday_inf=$delais_inf.' DAY';
-		
+
 		if ($this->db->type=='pgsql') {
 			$intervalday_sup="'".$delais_sup." DAYS'";
 			$intervalday_inf="'".$delais_inf." DAYS'";
 		}
-		
+
 
 		$sql = "SELECT";
 		$sql.= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
@@ -573,12 +573,12 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				
+
 				$line = new Agefodd_index_line();
-				
+
 				$line->rowid = $obj->rowid;
 				$line->sessid = $obj->fk_agefodd_session;
-				
+
 				$this->line[$i]=$line;
 
 				$i++;
@@ -597,7 +597,7 @@ class Agefodd_index
 
 	/**
 	 *  Load object in memory from database
-	 *  
+	 *
 	 *  @return int					<0 if KO, $num of student if OK
 	 */
 	function fetch_session_to_archive()
@@ -637,7 +637,7 @@ class Agefodd_index
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Load object in memory from database
 	 *
@@ -646,7 +646,7 @@ class Agefodd_index
 	function fetch_certif_expire()
 	{
 		global $langs;
-	
+
 		$sql = "SELECT ";
 		$sql.= "certif.fk_stagiaire,";
 		$sql.= "certif.fk_session_agefodd,";
@@ -660,22 +660,22 @@ class Agefodd_index
 		$sql.= "sta.civilite,";
 		$sql.= "soc.nom as customer_name,";
 		$sql.= "soc.rowid as customer_id";
-		
+
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as certif";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session as s ON certif.fk_session_agefodd=s.rowid";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sta ON sta.rowid = certif.fk_stagiaire";
 		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sta.fk_soc";
-		
+
 		$sql.= " WHERE s.entity IN (".getEntity('agsession').")";
-		
+
 		if ($this->db->type=='pgsql') {
 			$sql.= " AND certif.certif_dt_end < ( NOW() + INTERVAL '30 DAYS') ";
 		}else {
 			$sql.= " AND certif.certif_dt_end < ( NOW() + INTERVAL 30 DAY) ";
 		}
-		
-	
+
+
 		dol_syslog(get_class($this)."::fetch_certif_expire sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
@@ -688,9 +688,9 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 
-				
+
 				$line = new Agefodd_CertifExpire_line();
-				
+
 				$line->id_session = $obj->fk_session_agefodd;
 				$line->fromintitule=$obj->fromintitule;
 				$line->fromref=$obj->fromref;
@@ -702,7 +702,7 @@ class Agefodd_index
 				$line->certif_dt_end=$this->db->jdate($obj->certif_dt_end);
 				$line->customer_name=$obj->customer_name;
 				$line->customer_id=$obj->customer_id;
-				
+
 				$this->lines[$i]=$line;
 
 				$i++;

@@ -35,7 +35,7 @@ class Agefodd_contact extends CommonObject
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd_contact';
-	
+
 	var $id;
 	var $spid;
 	var $lines=array();
@@ -44,7 +44,7 @@ class Agefodd_contact extends CommonObject
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
-	 */
+	*/
 	function __construct($DB)
 	{
 		$this->db = $DB;
@@ -173,7 +173,7 @@ class Agefodd_contact extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Load object in memory from database
 	 *
@@ -215,9 +215,9 @@ class Agefodd_contact extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					
+						
 					$line= new AgfContactLine();
-					
+						
 					$line->id = $obj->rowid;
 					$line->ref = $obj->rowid; // Use for next prev ref
 					$line->spid = $obj->spid;
@@ -231,9 +231,9 @@ class Agefodd_contact extends CommonObject
 					$line->phone_mobile = $obj->phone_mobile;
 					$line->fk_socpeople = $obj->fk_socpeople;
 					$line->archive = $obj->archive;
-					
+						
 					$this->lines[$i]=$line;
-					
+						
 					$i++;
 				}
 			}
@@ -370,7 +370,7 @@ class Agefodd_contact extends CommonObject
 		$sql .= " WHERE rowid = ".$id;
 
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
 
@@ -407,7 +407,7 @@ class AgfContactLine
 	var $phone_mobile;
 	var $fk_socpeople;
 	var $archive;
-	
+
 	function __construct()
 	{
 		return 1;

@@ -22,7 +22,7 @@
  *	\file       agefodd/trainee/card.php
  *	\ingroup    agefodd
  *	\brief      card of trainee
- */
+*/
 
 
 $res=@include("../../main.inc.php");				// For root directory
@@ -85,7 +85,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		if ($result>0)	{
 			setEventMessage($agf->error,'errors');
 		}
-		
+
 		$fk_socpeople= GETPOST('fk_socpeople','int');
 
 		$agf->nom = GETPOST('nom','alpha');
@@ -101,7 +101,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		if (!empty($fk_socpeople)) $agf->fk_socpeople =$fk_socpeople;
 		$agf->place_birth = GETPOST('place_birth','alpha');
 		$result = $agf->update($user);
-		
+
 
 		if ($result > 0)
 		{
@@ -131,7 +131,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	{
 		$error=0;
 		$agf = new Agefodd_stagiaire($db);
-		
+
 		$name = GETPOST('nom','alpha');
 		$firstname = GETPOST('prenom','alpha');
 		$civilite_id = GETPOST('civilite_id','alpha');
@@ -145,10 +145,10 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$error++;
 		}
 		if(!$error) {
-			
+				
 			$create_thirdparty = GETPOST('create_thirdparty','int');
 			$create_contact = GETPOST('create_contact','int');
-			
+				
 			$socid = GETPOST('societe','int');
 			$fonction = GETPOST('fonction','alpha');
 			$tel1 = GETPOST('tel1','alpha');
@@ -159,12 +159,12 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$address = GETPOST('adresse','alpha');
 			$zip = GETPOST('zipcode','alpha');
 			$town = GETPOST('town','alpha');
-			
+				
 			$stagiaire_type = GETPOST('stagiaire_type','int');
 			$session_id = GETPOST('session_id','int');
 			$date_birth = dol_mktime(0,0,0,GETPOST('datebirthmonth','int'),GETPOST('datebirthday','int'),GETPOST('datebirthyear','int'));
 			$place_birth = GETPOST('place_birth','alpha');
-			
+				
 			$agf->nom = $name;
 			$agf->prenom = $firstname;
 			$agf->civilite = $civilite_id;
@@ -176,12 +176,12 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf->note = $note;
 			$agf->date_birth = $date_birth;
 			$agf->place_birth = $place_birth;
-			
-			
+				
+				
 			// Création tiers demandé
 			if($create_thirdparty > 0) {
 				$socstatic = new Societe($db);
-				
+
 				$socstatic->name = $societe_name;
 				$socstatic->tel = $tel1;
 				$socstatic->email = $mail;
@@ -189,18 +189,18 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				$socstatic->zip=$zip;
 				$socstatic->town=$town;
 				$socstatic->client=1;
-				
+
 				$result = $socstatic->create($user);
-				
+
 				if (! $result >= 0)
 				{
 					$error=$socstatic->error; $errors=$socstatic->errors;
 				}
-								
+
 				$agf->socid=$socstatic->id;
 
 			}
-			
+				
 			// Création du contact si demandé
 			if($create_contact > 0) {
 					
@@ -230,21 +230,21 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				}
 				$agf->fk_socpeople=$contact->id;
 			}
-			
+				
 			$result = $agf->create($user);
-			
+				
 			if ($result > 0)
 			{
-				
+
 				// Inscrire dans la session
-				if($session_id > 0) 
+				if($session_id > 0)
 				{
 					$sessionstat = new Agsession($db);
 					$sessionstat->sessid = GETPOST('session_id','int');
 					$sessionstat->stagiaire = $agf->id;
 					$sessionstat->stagiaire_type = GETPOST('stagiaire_type','int');
 					$result = $sessionstat->create_stag_in_session($user);
-					
+						
 					if ($result > 0)
 					{
 						setEventMessage($langs->trans('SuccessCreateStagInSession'),'mesgs');
@@ -255,7 +255,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 						setEventMessage($agf->error,'errors');
 					}
 				}
-		
+
 				if(strlen($url_back) > 0) {
 					Header ( "Location: ".$url_back);
 				}
@@ -377,29 +377,29 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 if ($action == 'create' && $user->rights->agefodd->creer)
 {
 	print_fiche_titre($langs->trans("AgfMenuActStagiaireNew"));
-	
+
 	print "\n".'<script type="text/javascript">
-					$(document).ready(function () {
-						$("input[type=radio][name=create_thirdparty]").change(function() {
-								
-							if($(this).val()==1) {
-								$(".create_thirdparty_block").show();
-								$(".select_thirdparty_block").hide();
-							}else {
-								$(".create_thirdparty_block").hide();
-								$(".select_thirdparty_block").show();
-							}			
-						
-					    });
-		
-						if($("input[type=radio][name=create_thirdparty]:checked").val()==1) {
-								$(".create_thirdparty_block").show();
-								$(".select_thirdparty_block").hide();
-							}else {
-								$(".create_thirdparty_block").hide();
-								$(".select_thirdparty_block").show();
-							}		
-					});';
+		$(document).ready(function () {
+		$("input[type=radio][name=create_thirdparty]").change(function() {
+
+		if($(this).val()==1) {
+		$(".create_thirdparty_block").show();
+		$(".select_thirdparty_block").hide();
+}else {
+		$(".create_thirdparty_block").hide();
+		$(".select_thirdparty_block").show();
+}
+
+});
+
+		if($("input[type=radio][name=create_thirdparty]:checked").val()==1) {
+		$(".create_thirdparty_block").show();
+		$(".select_thirdparty_block").hide();
+}else {
+		$(".create_thirdparty_block").hide();
+		$(".select_thirdparty_block").show();
+}
+});';
 	print "\n"."</script>\n";
 
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
@@ -409,9 +409,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print '<input type="hidden" name="url_back" value="'.$url_back.'">'."\n";
 
 	print '<table class="border" width="100%">';
-	
+
 	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("ThirdParty").'</strong></td>';
-	
+
 	if (GETPOST('create_thirdparty','int')>0) {
 		$checkedYes='checked="checked"';
 		$checkedNo='';
@@ -419,7 +419,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$checkedYes='';
 		$checkedNo='checked="checked"';
 	}
-	
+
 	print '<tr><td>'.$langs->trans('CreateANewThirPartyFromTraineeForm');
 	print img_picto($langs->trans("CreateANewThirPartyFromTraineeFormInfo"),'help');
 	print '</td>';
@@ -428,41 +428,41 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" '.$checkedNo.' value="-1"/> <label for="create_thirdparty_cancel">'.$langs->trans('no').'</label>';
 	print '</td>';
 	print '	</tr>';
-	
+
 	print '<tr class="select_thirdparty_block"><td>'.$langs->trans("Company").'</td><td colspan="3">';
 	print $form->select_company('','societe','(s.client IN (1,2))',1,1);
 	print '</td></tr>';
-	
-	
+
+
 	print '<tr class="create_thirdparty_block"><td>'.$langs->trans("ThirdPartyName").'</td>';
 	print '<td colspan="3"><input name="societe_name" class="flat" size="50" value=""></td></tr>';
-	
+
 	// Address
 	print '<tr class="create_thirdparty_block"><td valign="top">'.$langs->trans('Address').'</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
 	print $object->address;
 	print '</textarea></td></tr>';
-	
+
 	// Zip / Town
 	print '<tr class="create_thirdparty_block"><td>'.$langs->trans('Zip').'</td><td>';
 	print $formcompany->select_ziptown($object->zip,'zipcode',array('town','selectcountry_id','departement_id'),6);
 	print '</td><td>'.$langs->trans('Town').'</td><td>';
 	print $formcompany->select_ziptown($object->town,'town',array('zipcode','selectcountry_id','departement_id'));
 	print '</td></tr>';
-	
-	
+
+
 	// Infos participant
 	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("AgfMailTypeContactTrainee").'</strong></td>';
-	
+
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
 	print '<td colspan="3">'.$formcompany->select_civility().'</td>';
 	print '</tr>';
-	
+
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Lastname").'</span></td>';
 	print '<td colspan="3"><input name="nom" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Firstname").'</span></td>';
 	print '<td colspan="3"><input name="prenom" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans('CreateANewContactFromTraineeForm');
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"),'help');
 	print '</td>';
@@ -490,44 +490,46 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td>'.$langs->trans("Mail").'</td>';
 	print '<td colspan="3"><input name="mail" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 	print '<td>';
 	print $form->select_date('', 'datebirth','','',1,'update');
 	print '</td></tr>';
-	
+
 	print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
 	print '<td colspan="3"><input name="place_birth" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	
+
 	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("AgfSessionToRegister").'</strong></td>';
-	
+
 	// Session
 	if (empty($sortorder)) $sortorder="ASC";
 	if (empty($sortfield)) $sortfield="s.dated";
 	if (empty($arch)) $arch = 0;
-		
-	if ($page == -1) { $page = 0 ; }
-		
+
+	if ($page == -1) {
+		$page = 0 ;
+	}
+
 	$limit = $conf->global->AGF_NUM_LIST;
 	$agf = new Agsession($db);
-		
+
 	$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
 	$sessions = array();
 	foreach ($agf->line as $line)
 	{
 		$sessions[$line->rowid] = $line->ref_interne.' - '.$line->intitule.' - '.dol_print_date($line->dated,'daytext');
 	}
-		
+
 	print '<tr class="agelfoddline">';
 	print '<td>'.$langs->trans('AgfSelectAgefoddSession').'</td>';
 	print '<td colspan="3">';
 	print $form->selectarray('session_id',$sessions,GETPOST('session_id'),1);
 	print '</td>';
 	print '</tr>';
-		
+
 	if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 	{
 		// Public stagiaire
@@ -535,7 +537,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print $formAgefodd->select_type_stagiaire(GETPOST('stagiaire_type','int'),'stagiaire_type','',1);
 		print '</td></tr>';
 	}
-	
+
 
 	print '</table>';
 	print '</div>';
@@ -607,7 +609,7 @@ else
 
 					print '<tr><td>'.$langs->trans("Mail").'</td>';
 					print '<td><input name="mail" class="flat" size="50" value="'.$agf->mail.'"></td></tr>';
-					
+						
 					print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 					print '<td>';
 					print $form->select_date($agf->date_birth, 'datebirth','','','','update');
@@ -661,7 +663,7 @@ else
 					print '<tr><td>'.$langs->trans("Mail").'</td>';
 					print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
 					print '<input type="hidden" name="mail" value="'.$agf->mail.'">';
-					
+						
 					print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 					print '<td>'.dol_print_date($agf->date_birth,"day");
 					print '</td></tr>';
@@ -670,7 +672,7 @@ else
 
 				print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
 				print '<td><input name="place_birth" class="flat" size="50" value="'.$agf->place_birth.'"></td></tr>';
-				
+
 				print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 				if (!empty($agf->note)) $notes = nl2br($agf->note);
 				else $notes =  $langs->trans("AgfUndefinedNote");
@@ -754,10 +756,10 @@ else
 
 				print '<tr><td>'.$langs->trans("Mail").'</td>';
 				print '<td>'.dol_print_email($agf->mail, $agf->id, $agf->socid,'AC_EMAIL',25).'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 				print '<td>'.dol_print_date($agf->date_birth,"day").'</td></tr>';
-				
+
 				print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
 				print '<td>'.$agf->place_birth.'</td></tr>';
 

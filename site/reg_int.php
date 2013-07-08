@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,21 @@
 */
 
 /**
- *  \file       	/agefodd/site/reg_int.php $
- *  \brief      	Page fiche site de formation
-*  \version		$Id$
+ *	\file       agefodd/site/reg_int.php
+ *	\ingroup    agefodd
+ *	\brief      Internal rule pages for locations
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_place.class.php');
+require_once('../class/agefodd_reginterieur.class.php');
+require_once('../lib/agefodd.lib.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
-
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -63,19 +61,17 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 		}
 		else
 		{
-			dol_syslog("agefodd::site::reg_int error=".$agf_place->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf_place->error.'</div>';
+			setEventMessage($agf_place->error,'errors');
 		}
 	}
 	else
 	{
-		dol_syslog("agefodd::site::reg_int error=".$agf->error, LOG_ERR);
-		$mesg='<div class="error">'.$langs->trans("AgfDeleteErr").':'.$agf->error.'</div>';
+		setEventMessage($langs->trans("AgfDeleteErr").':'.$agf_place->error,'errors');
 	}
 }
 
 /*
- * Action update (fiche site de formation)
+ * Action update (Location internal rules)
 */
 if ($action == 'update' && $user->rights->agefodd->creer)
 {
@@ -97,14 +93,12 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			}
 			else
 			{
-				dol_syslog("agefodd::site::reg_int error=".$agf->error, LOG_ERR);
-				$mesg='<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 		else
 		{
-			dol_syslog("agefodd::site::reg_int error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 	else {
@@ -115,7 +109,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 
 
 /*
- * Action create (fiche site de formation)
+ * Action create (Location internal rules)
 */
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer)
@@ -131,27 +125,25 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 
 		if ($result > 0)
 		{
-				
+
 			$agf_place=new Agefodd_place($db);
 			$result_place = $agf_place->fetch($id);
 			$agf_place->fk_reg_interieur=$result;
 			$result = $agf_place->update($user);
-				
+
 			if ($result > 0) {
 				Header ( "Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 				exit;
 			}
 			else
 			{
-				dol_syslog("agefodd::site::reg_int error=".$agf_place->error, LOG_ERR);
-				$mesg='<div class="error">'.$agf_place->error.'</div>';
+				setEventMessage($agf_place->error,'errors');
 			}
-				
+
 		}
 		else
 		{
-			dol_syslog("agefodd::site::reg_int error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 
 	}
@@ -170,14 +162,18 @@ llxHeader('',$langs->trans("AgfRegInt"));
 
 $form = new Form($db);
 
-dol_htmloutput_mesg($mesg);
-
 $agf_place = new Agefodd_place($db);
 $result_place = $agf_place->fetch($id);
+if ($result_place<0) {
+	setEventMessage($agf_place->error,'errors');
+}
 
 if ($agf_place->fk_reg_interieur) {
 	$agf = new Agefodd_reg_interieur($db);
 	$result_regint = $agf->fetch($agf_place->fk_reg_interieur);
+	if ($result_regint<0) {
+		setEventMessage($agf->error,'errors');
+	}
 }
 else {
 	$action = 'create';
@@ -225,11 +221,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 }
 else
 {
-	// Affichage de la fiche "site de formation"
+	// Card location
 	if ($result_place > 0 && $result_regint > 0)
 	{
 			
-		// Affichage en mode "édition"
+		// Card location interal rules Edit mode
 		if ($action == 'edit')
 		{
 			print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="post">'."\n";
@@ -242,13 +238,13 @@ else
 
 			print '<tr><td width="20%">'.$langs->trans("Id").'</td>';
 			print '<td>'.$form->showrefnav($agf_place,'id	','',1,'rowid','id').'</td></tr>';
-				
+
 			print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
 			print '<td>'.$agf_place->ref_interne.'</td></tr>';
 
 			print '<tr><td valign="top">'.$langs->trans("AgfRegInt").'</td>';
 			print '<td><textarea name="reg_int" rows="10" cols="0" class="flat" style="width:560px;">'.$agf->reg_int.'</textarea></td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.$agf->notes.'</textarea></td></tr>';
 
@@ -260,17 +256,17 @@ else
 			print '<input type="submit" name="cancel" class="butActionDelete" value="'.$langs->trans("Cancel").'">';
 			print '</td></tr>';
 			print '</table>';
-				
+
 			print '</form>';
 
 			print '</div>'."\n";
 		}
 		else
 		{
-			// Affichage en mode "consultation"
-				
+			// Card location interal rules View mode
+
 			/*
-			 * Confirmation de la suppression
+			 * Delete confirm
 			*/
 			if ($action == 'delete')
 			{
@@ -282,13 +278,13 @@ else
 
 			print '<tr><td width="20%">'.$langs->trans("Id").'</td>';
 			print '<td>'.$form->showrefnav($agf_place,'id	','',1,'rowid','id').'</td></tr>';
-				
+
 			print '<tr><td>'.$langs->trans("AgfSessPlaceCode").'</td>';
 			print '<td>'.$agf_place->ref_interne.'</td></tr>';
 
 			print '<tr><td valign="top">'.$langs->trans("AgfRegInt").'</td>';
 			print '<td>'.$agf->reg_int.'</td></tr>';
-				
+
 			print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 			print '<td>'.$agf->notes.'</td></tr>';
 
@@ -298,15 +294,11 @@ else
 		}
 
 	}
-	else
-	{
-		dol_print_error($db);
-	}
 }
 
 
 /*
- * Barre d'actions
+ * Actions tabs
 *
 */
 
@@ -334,5 +326,5 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 
 print '</div>';
 
+$db->close();
 llxFooter();
-?>

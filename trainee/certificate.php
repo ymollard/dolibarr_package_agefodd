@@ -22,7 +22,7 @@
  *	\file       agefodd/trainee/certificate.php
  *	\ingroup    agefodd
  *	\brief      certificate of trainee
- */
+*/
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -141,11 +141,14 @@ if ($id)
 			print '<th class="liste_titre">'.$langs->trans('AgfCertifDateEnd').'</th>';
 			print '</tr>';
 
-			$style='impair';				
+			$style='impair';
 			foreach($agf_certif->lines as $line){
-				if ($style=='pair') {$style='impair';}
-				else {$style='pair';}
-				
+				if ($style=='pair') {
+					$style='impair';
+				}
+				else {$style='pair';
+				}
+
 				print '<tr class="'.$style.'">';
 				$agf_session = new Agsession($db);
 				$agf_session->fetch($line->fk_session_agefodd);
@@ -163,7 +166,7 @@ if ($id)
 		else {
 			$langs->trans('AgfNoCertif');
 		}
-	}		
+	}
 }
 
 $db->close();

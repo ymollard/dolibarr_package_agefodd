@@ -164,7 +164,7 @@ class FormAgefodd extends Form
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Display select list with training action administrative task
 	 *
@@ -176,7 +176,7 @@ class FormAgefodd extends Form
 	function select_action_training_adm($selectid='', $htmlname='action_level', $excludeid='')
 	{
 		global $conf,$langs;
-	
+
 		$sql = "SELECT";
 		$sql.= " t.rowid,";
 		$sql.= " t.level_rank,";
@@ -186,7 +186,7 @@ class FormAgefodd extends Form
 			$sql.= ' WHERE t.rowid<>\''.$excludeid.'\'';
 		}
 		$sql.= " ORDER BY t.indice";
-	
+
 		dol_syslog(get_class($this)."::select_action_training_adm sql=".$sql, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result)
@@ -195,7 +195,7 @@ class FormAgefodd extends Form
 			$num = $this->db->num_rows($result);
 			$i = 0;
 			$options = '<option value=""></option>'."\n";
-	
+
 			while ($i < $num)
 			{
 				$obj = $this->db->fetch_object($result);
@@ -712,14 +712,14 @@ class FormAgefodd extends Form
 			if ($typeelement == 'agefodd_agsession')   $title=$langs->trans('AgfActionsOnTraining');
 			//elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
 			else $title=$langs->trans("Actions");
-				
+
 			print_titre($title);
-				
+
 			$total = 0;	$var=true;
 			print '<table class="noborder" width="100%">';
 			print '<tr class="liste_titre"><th class="liste_titre">'.$langs->trans('Ref').'</th><th class="liste_titre">'.$langs->trans('Date').'</th><th class="liste_titre">'.$langs->trans('Action').'</th><th class="liste_titre">'.$langs->trans('ThirdParty').'</th><th class="liste_titre">'.$langs->trans('By').'</th></tr>';
 			print "\n";
-				
+
 			foreach($action_arr as $action)
 			{
 				$var=!$var;
@@ -742,7 +742,7 @@ class FormAgefodd extends Form
 		return $num;
 	}
 
-	
+
 	/**
 	 *		Output a HTML code to select a color
 	 *

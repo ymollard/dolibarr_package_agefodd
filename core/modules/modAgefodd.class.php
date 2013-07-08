@@ -1,40 +1,40 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2012	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /**
  *	\defgroup   	agefodd     Module AGeFoDD (Assistant de GEstion de la FOrmation Dans Dolibarr)
- *	\brief      	agefodd module descriptor.
- *	\file       	/core/modules/modAgefodd.class.php
- *	\ingroup    	agefodd
- *	\brief      	Description and activation file for module agefodd
- */
+*	\brief      	agefodd module descriptor.
+*	\file       	/core/modules/modAgefodd.class.php
+*	\ingroup    	agefodd
+*	\brief      	Description and activation file for module agefodd
+*/
 include_once(DOL_DOCUMENT_ROOT ."/core/modules/DolibarrModules.class.php");
 
 
 /**
  *	\class      modAgefodd
  *	\brief      Description and activation class for module agefodd
- */
+*/
 class modAgefodd extends DolibarrModules
 {
-	
+
 	var $error;
 	/**
 	 *	Constructor.
@@ -232,7 +232,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Number of element in the list';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_USE_FAC_WITHOUT_ORDER";
 		$this->const[$r][1] = "yesno";
@@ -240,7 +240,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Can link invocie without order to session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_LINK_OPCA_ADRR_TO_CONTACT";
 		$this->const[$r][1] = "yesno";
@@ -256,7 +256,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_HEAD_COLOR";
 		$this->const[$r][1] = "chaine";
@@ -264,7 +264,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Text color header in hexadecimal';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_FOOT_COLOR";
 		$this->const[$r][1] = "chaine";
@@ -272,7 +272,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Text color of PDF footer, in hexadccimal';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_MANAGE_CERTIF";
 		$this->const[$r][1] = "yesno";
@@ -280,7 +280,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Manage certification';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_FCKEDITOR_ENABLE_TRAINING";
 		$this->const[$r][1] = "yesno";
@@ -288,7 +288,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use WISIWYG on training information';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_MANAGE_OPCA";
 		$this->const[$r][1] = "yesno";
@@ -296,7 +296,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Manage Opca';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_CERTIF_ADDON";
 		$this->const[$r][1] = "chaine";
@@ -304,7 +304,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Use simple mask for certif ref';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r++;
 		$this->const[$r][0] = "AGF_CERTIF_UNIVERSAL_MASK";
 		$this->const[$r][1] = "chaine";
@@ -312,8 +312,8 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Mask of certificate code';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
-		
+
+
 		// Dictionnaries
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = (object) array();
@@ -324,8 +324,8 @@ class modAgefodd extends DolibarrModules
 		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type", MAIN_DB_PREFIX."agefodd_certificate_type"),		// List of tables we want to see into dictonnary editor
 		'tablib'=>array("AgfTraineeType","AgfCertificateType"),								// Label of tables
 		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f',
-						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f'
-						),	// Request to select fields
+		'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f'
+		),	// Request to select fields
 		'tabsqlsort'=>array('sort ASC','sort ASC'),								// Sort order
 		'tabfield'=>array("intitule,sort","intitule,sort"),						// List of fields (result of select to show dictionnary)
 		'tabfieldvalue'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields to edit a record)
@@ -344,15 +344,15 @@ class modAgefodd extends DolibarrModules
 		$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
 		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_stagiaire');	// List of tables to insert into (insert done in same order)
 		$this->import_fields_array[$r]=array('s.fk_soc'=>'ThirdPartyName*','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
-			's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
-			's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
+		's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
 		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
 		$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'fetchidfromref','file'=>'/societe/class/societe.class.php','class'=>'Societe','method'=>'fetch','element'=>'ThirdParty'));
 		$this->import_regex_array[$r]=array('s.date_birth'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$','s.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
 		$this->import_examplevalues_array[$r]=array('s.fk_soc'=>'MyBigCompany','s.nom'=>'Huppelepup','s.prenom'=>'Jantje','s.civilite'=>'MR',
-			's.tel1'=>'1234567890','s.tel2'=>'0987654321','s.mail'=>'Jantje@tks.nl',
-			's.date_birth'=>'2013-11-12','s.place_birth'=>'Almelo','s.datec'=>'1998-11-06');
-		
+		's.tel1'=>'1234567890','s.tel2'=>'0987654321','s.mail'=>'Jantje@tks.nl',
+		's.date_birth'=>'2013-11-12','s.place_birth'=>'Almelo','s.datec'=>'1998-11-06');
+
 		// Import certificqte
 		$r++;
 		$this->import_code[$r]=$this->rights_class.'_'.$r;
@@ -361,28 +361,28 @@ class modAgefodd extends DolibarrModules
 		//$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
 		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_session_stagiaire','certif'=>MAIN_DB_PREFIX.'agefodd_stagiaire_certif');	// List of tables to insert into (insert done in same order)
 		$this->import_fields_array[$r]=array('s.fk_session_agefodd'=>'SessionId*','s.fk_stagiaire'=>'TraineeId*','s.fk_agefodd_stagiaire_type'=>"TraineeType",
-			's.datec'=>'DateCreation',
-			'certif.fk_stagiaire'=>'TraineeId*','certif.fk_session_agefodd'=>'SessionId*',
-		    'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'CertifDateStart','certif.certif_dt_end'=>'CertifDateEnd',
-			'certif.datec'=>"DateCreation");
-		
+		's.datec'=>'DateCreation',
+		'certif.fk_stagiaire'=>'TraineeId*','certif.fk_session_agefodd'=>'SessionId*',
+		'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'CertifDateStart','certif.certif_dt_end'=>'CertifDateEnd',
+		'certif.datec'=>"DateCreation");
+
 		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id',
-													'certif.fk_user_author'=>'user->id','certif.fk_user_mod'=>'user->id',
-													'certif.fk_session_stagiaire'=>'lastrowid-'.MAIN_DB_PREFIX.'agefodd_session_stagiaire');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
+		'certif.fk_user_author'=>'user->id','certif.fk_user_mod'=>'user->id',
+		'certif.fk_session_stagiaire'=>'lastrowid-'.MAIN_DB_PREFIX.'agefodd_session_stagiaire');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
 		$this->import_convertvalue_array[$r]=array();
 		//$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'lastrowid',table='t');
 		$this->import_regex_array[$r]=array('certif.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
-								's.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
-								'certif.certif_dt_start'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
-								'certif.certif_dt_end'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
-		
+		's.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+		'certif.certif_dt_start'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+		'certif.certif_dt_end'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
+
 		$this->import_examplevalues_array[$r]=array(
 		's.fk_session_agefodd'=>'999999','s.fk_stagiaire'=>'1','s.fk_agefodd_stagiaire_type'=>$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
-			's.datec'=>'2013-11-12','çertif.fk_stagiaire'=>'1','certif.fk_session_agefodd'=>'999999',
-		    'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'2013-11-12','certif.certif_dt_end'=>'2013-11-12',
-			'certif.datec'=>"2013-11-12"
+		's.datec'=>'2013-11-12','çertif.fk_stagiaire'=>'1','certif.fk_session_agefodd'=>'999999',
+		'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'2013-11-12','certif.certif_dt_end'=>'2013-11-12',
+		'certif.datec'=>"2013-11-12"
 		);
-		
+
 		//Trainee export
 		$r=0;
 		$r++;
@@ -391,18 +391,18 @@ class modAgefodd extends DolibarrModules
 		$this->export_icon[$r]='contact';
 		$this->export_permission[$r]=array(array("agefodd","export"));
 		$this->export_fields_array[$r]=array('s.rowid'=>'Idtrainee','c.nom'=>'ThirdPartyName','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName',
-			's.civilite'=>'AgfTitle',
-			's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
-			's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		's.civilite'=>'AgfTitle',
+		's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
+		's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
 		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
 		$this->export_entities_array[$r]=array('c.nom'=>"company");	// We define here only fields that use another picto
-		
+
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
 		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
 		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'societe as c ON s.fk_soc = c.rowid';
 		$this->export_sql_end[$r] .=' WHERE c.entity IN ('.getEntity("societe", 1).')';
-		
-		
+
+
 		//certificate export
 		$r=0;
 		$r++;
@@ -417,11 +417,11 @@ class modAgefodd extends DolibarrModules
 		's.datec'=>'AgfDateC');
 		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
 		$this->export_entities_array[$r]=array('c.nom'=>"company");	// We define here only fields that use another picto
-		
+
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
 		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
 		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
-		
+
 
 		// Array to add new pages in new tabs
 		//$this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');
@@ -438,6 +438,42 @@ class modAgefodd extends DolibarrModules
 		// 'contract'         to add a tab in contract view
 		// Array to add new pages in new tabs
 		$this->tabs = array('order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_orderid=__ID__',
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__');
 
 
@@ -481,13 +517,13 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'supprimer';
 		$r++;
-		
+
 		$this->rights[$r][0] = 103005;
 		$this->rights[$r][1] = 'Voir stats';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'viewstats';
 		$r++;
-		
+
 		$this->rights[$r][0] = 103006;
 		$this->rights[$r][1] = 'export';
 		$this->rights[$r][3] = 0;
@@ -642,8 +678,8 @@ class modAgefodd extends DolibarrModules
 		'target'=>'',
 		'user'=>0);
 		$r++;
-		
-		
+
+
 		// 3
 		$this->menu[$r]=array(	'fk_menu'=>'r=0',
 		'type'=>'left',
@@ -776,7 +812,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 
 		$this->menu[$r]=array(	'fk_menu'=>'r=0',
-		 'type'=>'left',
+		'type'=>'left',
 		'titre'=>'AgfMenuDemoAdmin',
 		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/admin_agefodd.php',
@@ -787,7 +823,7 @@ class modAgefodd extends DolibarrModules
 		'target'=>'',
 		'user'=>0);
 		$r++;
-		
+
 		$this->menu[$r]=array(	'fk_menu'=>'r=18',
 		'type'=>'left',
 		'titre'=>'AgfMenuDemoAdminDetail',
@@ -812,7 +848,7 @@ class modAgefodd extends DolibarrModules
 	function init()
 	{
 		global $conf;
-		
+
 		$sql = array();
 
 		$result=$this->load_tables();
@@ -824,7 +860,7 @@ class modAgefodd extends DolibarrModules
 			foreach($conf->file->dol_document_root as $dirroot)
 			{
 				$dir = $dirroot.'/agefodd/lib/sql/';
-				
+
 				$handle=@opendir($dir);         // Dir may not exists
 				if (is_resource($handle))
 				{
@@ -832,8 +868,8 @@ class modAgefodd extends DolibarrModules
 				}
 			}
 		}
-		
-		return $this->_init($sql);		
+
+		return $this->_init($sql);
 	}
 
 	/**
@@ -945,10 +981,10 @@ class modAgefodd extends DolibarrModules
 						if (preg_match('/\.sql$/i',$file) && ! preg_match('/\.key\.sql$/i',$file) && substr($file,0,6) == 'update')
 						{
 							//dol_syslog(get_class($this)."::_load_tables_agefodd analyse file:".$file, LOG_DEBUG);
-							
+								
 							//Special test to know what kind of update script to run
 							$sql="SELECT value FROM ".MAIN_DB_PREFIX."const WHERE name='AGF_LAST_VERION_INSTALL'";
-							
+								
 							//dol_syslog(get_class($this)."::_load_tables_agefodd sql:".$sql, LOG_DEBUG);
 							$resql=$this->db->query($sql);
 							if ($resql) {
@@ -956,7 +992,7 @@ class modAgefodd extends DolibarrModules
 									$obj = $this->db->fetch_object($resql);
 									$last_version_install=$obj->value;
 									//dol_syslog(get_class($this)."::_load_tables_agefodd last_version_install:".$last_version_install, LOG_DEBUG);
-									
+										
 									$tmpversion=explode('_',$file);
 									$fileversion_array=explode('-',$tmpversion[1]);
 									$fileversion=str_replace('.sql','',$fileversion_array[1]);
@@ -965,7 +1001,7 @@ class modAgefodd extends DolibarrModules
 										$dorun = true;
 										//dol_syslog(get_class($this)."::_load_tables_agefodd run file:".$file, LOG_DEBUG);
 									}
-									
+										
 								}
 							}
 							else

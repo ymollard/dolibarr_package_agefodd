@@ -218,7 +218,7 @@ if ($resql != -1)
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_formateur($search_teacher_id,'search_teacher_id','',1);
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_name" value="'.$search_trainning_name.'" size="20">';
 	print '</td>';

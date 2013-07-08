@@ -22,7 +22,7 @@
  *	\file       agefodd/trainee/list.php
  *	\ingroup    agefodd
  *	\brief      list of trainee
- */
+*/
 
 
 $res=@include("../../main.inc.php");				// For root directory

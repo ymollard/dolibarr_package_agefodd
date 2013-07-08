@@ -85,7 +85,7 @@ class pdf_convention extends ModelePDFAgefodd
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
 
 		$this->defaultFontSize = 9;
-		
+
 		// Get source company
 		$this->emetteur=$mysoc;
 		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
@@ -228,11 +228,19 @@ class pdf_convention extends ModelePDFAgefodd
 				$this->str = $mysoc->address."\n";
 				$this->str.= $mysoc->zip.' '.$mysoc->town;
 				$this->str.= ' - '.$mysoc->country."\n";
-				if ($mysoc->phone) {$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";}
-				if ($mysoc->fax) {$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";}
-				if ($mysoc->email) {$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";}
-				if ($mysoc->url) {$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";}
-				
+				if ($mysoc->phone) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
+				}
+				if ($mysoc->fax) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead2').' '.$mysoc->fax."\n";
+				}
+				if ($mysoc->email) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead3').' '.$mysoc->email."\n";
+				}
+				if ($mysoc->url) {
+					$this->str.= $outputlangs->transnoentities('AgfPDFHead4').' '.$mysoc->url."\n";
+				}
+
 				$pdf->MultiCell(100,3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				$posY = $pdf->GetY() + 10;
@@ -256,7 +264,7 @@ class pdf_convention extends ModelePDFAgefodd
 				//TItre page de garde 1
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',25);
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 110);
-				
+
 				$customer=new Societe($this->db);
 				$customer->fetch($socid);
 				// If customer is personnal entity, the french low ask contrat and not convention
@@ -266,14 +274,14 @@ class pdf_convention extends ModelePDFAgefodd
 				else {
 					$titre = $outputlangs->transnoentities('AgfPDFConvention');
 				}
-				
-				$pdf->MultiCell(0, 5, $titre,0,'C');	
-				
+
+				$pdf->MultiCell(0, 5, $titre,0,'C');
+
 				//TItre page de garde 2
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',10);
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 130);
-				
+
 				// If customer is personnal entity, the french low ask contrat and not convention
 				if ($customer->typent_id==8) {
 					$titre = $outputlangs->transnoentities('AgfPDFConventionContratLawNum');
@@ -282,12 +290,12 @@ class pdf_convention extends ModelePDFAgefodd
 					$titre = $outputlangs->transnoentities('AgfPDFConventionLawNum');
 				}
 				$pdf->MultiCell(0, 5, $titre,0,'C');
-				
+
 				$this->str = $agf->formintitule;
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 180);
 				$pdf->MultiCell(0, 5, $this->str,0,'C');
-				
+
 				if ($agf->dated!=$agf->datef) {
 					$this->str = dol_print_date($agf->dated,'daytext').' - '.dol_print_date($agf->datef,'daytext');
 				}else {
@@ -295,7 +303,7 @@ class pdf_convention extends ModelePDFAgefodd
 				}
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 185);
 				$pdf->MultiCell(0, 5, $this->str,0,'C');
-				
+
 				// If customer is personnal entity, the french low ask contrat and not convention
 				if ($customer->typent_id==8) {
 					$this->str = 'trainee:'.$customer->name;//Trainer NAme;
@@ -305,7 +313,7 @@ class pdf_convention extends ModelePDFAgefodd
 				}
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 190);
 				$pdf->MultiCell(0, 5, $this->str,0,'C');
-				
+
 
 				//Determine the total number of page
 				$infile = $conf->agefodd->dir_output.'/fiche_pedago_'.$agf->fk_formation_catalogue.'.pdf';
@@ -538,7 +546,7 @@ class pdf_convention extends ModelePDFAgefodd
 				$this->str = $outputlangs->transnoentities('AgfPDFConv7').' '.++$art." - ".$outputlangs->transnoentities('AgfPDFConv15');
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY += $this->hApresTitreArticle;
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = $agf_conv->art5;
@@ -558,7 +566,7 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
-				
+
 
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
@@ -573,20 +581,20 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->AddPage();
 				$pagenb++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$posX = $this->marge_gauche;
 				$posY = $this->marge_haute;
-				
-				
+
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 3);
 				$this->str = $outputlangs->transnoentities('AgfPDFConv7').' '.++$art." - ".$outputlangs->transnoentities('AgfPDFConv17');
 				$pdf->Cell(0, 4, $outputlangs->transnoentities($this->str),0,0);
 				$posY += $this->hApresTitreArticle;
-				
+
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
 				$this->str = $agf_conv->art7;
@@ -755,14 +763,28 @@ class pdf_convention extends ModelePDFAgefodd
 
 		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
 		$this->str.= $statut;
-		if (!empty($mysoc->capital)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);}
-		if (!empty($mysoc->idprof2)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;}
-		if (!empty($mysoc->idprof4)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;}
-		if (!empty($mysoc->idprof3)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;}
+		if (!empty($mysoc->capital)) {
+			$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot3').' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
+		}
+		if (!empty($mysoc->idprof2)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot4').' '.$mysoc->idprof2;
+		}
+		if (!empty($mysoc->idprof4)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot5').' '.$mysoc->idprof4;
+		}
+		if (!empty($mysoc->idprof3)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot6').' '.$mysoc->idprof3;
+		}
 		$this->str.="\n";
-		if (!empty($conf->global->AGF_ORGANISME_NUM)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;}
-		if (!empty($conf->global->AGF_ORGANISME_PREF)) {$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;}
-		if (!empty($mysoc->tva_intra)) {$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;}
+		if (!empty($conf->global->AGF_ORGANISME_NUM)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot7').' '.$conf->global->AGF_ORGANISME_NUM;
+		}
+		if (!empty($conf->global->AGF_ORGANISME_PREF)) {
+			$this->str.= ' '.$outputlangs->transnoentities('AgfPDFFoot8').' '.$conf->global->AGF_ORGANISME_PREF;
+		}
+		if (!empty($mysoc->tva_intra)) {
+			$this->str.=' '.$outputlangs->transnoentities('AgfPDFFoot9').' '.$mysoc->tva_intra;
+		}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'I',7);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 16);

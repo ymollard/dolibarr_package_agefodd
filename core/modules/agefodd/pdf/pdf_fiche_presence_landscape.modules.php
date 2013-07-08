@@ -552,7 +552,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 			{
 				$pdf->Rect($posX  + $larg_col1  + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 			}
-				
+
 			$posY= $pdf->GetY();
 			if ($posY > $this->page_hauteur-20) {
 				$pdf->AddPage();
