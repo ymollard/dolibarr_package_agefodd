@@ -48,6 +48,8 @@ class Agefodd_teacher extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	
+	var $lines=array();
+	
 	/**
 	 *  Constructor
 	 *
@@ -258,30 +260,36 @@ class Agefodd_teacher extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-					$this->line[$i]->id = $obj->rowid;
-					$this->line[$i]->type_trainer = $obj->type_trainer;
-					$this->line[$i]->archive = $obj->archive;
+					
+					$line = new AgfTrainerLine();
+					
+					$line->id = $obj->rowid;
+					$line->type_trainer = $obj->type_trainer;
+					$line->archive = $obj->archive;
 					//trainer is user
-					if ($this->line[$i]->type_trainer==$this->type_trainer_def[0]) {
-						$this->line[$i]->fk_user = $obj->fk_user;
-						$this->line[$i]->name = $obj->u_name;
-						$this->line[$i]->firstname = $obj->u_firstname;
-						$this->line[$i]->civilite = $obj->u_civilite;
-						$this->line[$i]->phone = $obj->u_phone;
-						$this->line[$i]->email = $obj->u_email;
-						$this->line[$i]->phone_mobile = $obj->u_phone_mobile;
-						$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
+					if ($line->type_trainer==$this->type_trainer_def[0]) {
+						$line->fk_user = $obj->fk_user;
+						$line->name = $obj->u_name;
+						$line->firstname = $obj->u_firstname;
+						$line->civilite = $obj->u_civilite;
+						$line->phone = $obj->u_phone;
+						$line->email = $obj->u_email;
+						$line->phone_mobile = $obj->u_phone_mobile;
+						$line->fk_socpeople = $obj->fk_socpeople;
 					}
 					//trainer is Dolibarr contact
-					elseif ($this->line[$i]->type_trainer==$this->type_trainer_def[1]) {
-						$this->line[$i]->spid = $obj->spid;
-						$this->line[$i]->name = $obj->sp_name;
-						$this->line[$i]->firstname = $obj->sp_firstname;
-						$this->line[$i]->civilite = $obj->sp_civilite;
-						$this->line[$i]->phone = $obj->sp_phone;
-						$this->line[$i]->email = $obj->sp_email;
-						$this->line[$i]->phone_mobile = $obj->sp_phone_mobile;
+					elseif ($line->type_trainer==$this->type_trainer_def[1]) {
+						$line->spid = $obj->spid;
+						$line->name = $obj->sp_name;
+						$line->firstname = $obj->sp_firstname;
+						$line->civilite = $obj->sp_civilite;
+						$line->phone = $obj->sp_phone;
+						$line->email = $obj->sp_email;
+						$line->phone_mobile = $obj->sp_phone_mobile;
+						$line->fk_socpeople = $obj->fk_socpeople;
 					}
+					
+					$this->lines[$i]=$line;
 					$i++;
 				}
 			}
@@ -432,6 +440,24 @@ class Agefodd_teacher extends CommonObject
 			return -1;
 		}
 	}
+}
 
-
+class AgfTrainerLine {
+	
+	var $id;
+	var $type_trainer;
+	var $archive;
+	var $fk_user;
+	var $name;
+	var $firstname;
+	var $civilite;
+	var $phone;
+	var $email;
+	var $phone_mobile;
+	var $fk_socpeople;
+	
+	function __construct()
+	{
+		return 1;
+	}
 }

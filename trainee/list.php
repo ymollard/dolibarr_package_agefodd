@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   	<florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   	<florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,18 +19,19 @@
 */
 
 /**
- * 	\file		/agefodd/trainee/list.php
- * 	\brief		Page présentant la liste des stagiaires enregistrés
-* 	\version	$Id$
-*/
+ *	\file       agefodd/trainee/list.php
+ *	\ingroup    agefodd
+ *	\brief      list of trainee
+ */
+
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/core/class/html.formcompany.class.php');
+require_once('../class/agefodd_stagiaire.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 
 $langs->load('agefodd@agefodd');
 
@@ -101,7 +102,7 @@ $formcompagny = new FormCompany($db);
 $agf = new Agefodd_stagiaire($db);
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
-if ($result != -1)
+if ($result>0)
 {
 
 	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder,'', $result);
@@ -176,7 +177,7 @@ if ($result != -1)
 	print '</form>';
 
 	$var=true;
-	foreach ($agf->line as $line)
+	foreach ($agf->lines as $line)
 	{
 
 		// Affichage liste des stagiaires
@@ -211,8 +212,8 @@ if ($result != -1)
 }
 else
 {
-	dol_print_error($db);
+	setEventMessage($agf->error,'errors');
 }
 
-llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
-?>
+$db->close();
+llxFooter();

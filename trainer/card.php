@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,18 @@
 */
 
 /**
- *  \file       	/agefodd/trainer/card.php
- *  \brief      	Page fiche site de formation
-*/
+ *	\file       agefodd/traineer/card.php
+ *	\ingroup    agefodd
+ *	\brief      card of traineer
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_formateur.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_formateur.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
 
 
 $action=GETPOST('action','alpha');
@@ -40,8 +41,6 @@ $arch=GETPOST('arch','int');
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-
-$mesg = '';
 
 
 /*
@@ -59,8 +58,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	}
 	else
 	{
-		dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
-		$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
+		setEventMessage($langs->trans("AgfDeleteFormErr").':'.$agf->error,'errors');
 	}
 }
 
@@ -83,14 +81,13 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
 	}
 	else
 	{
-		dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
-		$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
 
 /*
- * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
+ * Action create from contact (card trainer : CARREFULL, Dolibarr contact must exists)
 */
 
 if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer)
@@ -99,7 +96,7 @@ if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_teacher($db);
 
-		$agf->spid = $_POST["spid"];
+		$agf->spid = GETPOST('spid');
 		$agf->type_trainer = $agf->type_trainer_def[1];
 		$result = $agf->create($user);
 
@@ -110,8 +107,7 @@ if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 	else
@@ -123,7 +119,7 @@ if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer)
 
 
 /*
- * Action create (fiche formateur: attention, le contact DLB doit déjà exister)
+ * Action create from users (card trainer : CARREFULL, Dolibarr users must exists)
 */
 
 if ($action == 'create_confirm_user' && $user->rights->agefodd->creer)
@@ -132,7 +128,7 @@ if ($action == 'create_confirm_user' && $user->rights->agefodd->creer)
 	{
 		$agf = new Agefodd_teacher($db);
 
-		$agf->fk_user = $_POST["fk_user"];
+		$agf->fk_user = GETPOST('fk_user','int');
 		$agf->type_trainer = $agf->type_trainer_def[0];
 		$result = $agf->create($user);
 
@@ -143,8 +139,7 @@ if ($action == 'create_confirm_user' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("/agefodd/trainer/card.php::agefodd error=".$agf->error, LOG_ERR);
-			$mesg='<div class="error">'.$langs->trans("AgfDeleteFormErr").':'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 	else
@@ -164,7 +159,6 @@ llxHeader('',$title);
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
 /*
  * Action create
 */
@@ -185,13 +179,18 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<td>';
 
 	$agf_static = new Agefodd_teacher($db);
-	$agf_static->fetch_all('ASC','s.name, s.firstname','',0);
+	$agf_static->fetch_all('ASC','s.lastname, s.firstname','',0);
 	$exclude_array = array();
-	foreach($agf_static->line as $line)
+	if (is_array($agf_static->lines) && count($agf_static->lines) > 0)
 	{
-		$exclude_array[]=$line->fk_socpeople;
+		foreach($agf_static->lines as $line)
+		{
+			if (!empty($line->fk_socpeople)) {
+				$exclude_array[]=$line->fk_socpeople;
+			}
+		}
 	}
-	print $formAgefodd->select_contacts_combobox(0,'','spid',1,$exclude_array);
+	$form->select_contacts(0,'','spid',1,$exclude_array);
 	print '</td></tr>';
 
 	print '</table>';
@@ -216,21 +215,21 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<div class="warning">'.$langs->trans("AgfFormateurAddUserHelp");
 	print '<br>'.$langs->trans("AgfFormateurAddUserHelp1").' <a href="'.DOL_URL_ROOT.'/user/fiche.php?action=create">'.$langs->trans("AgfFormateurAddUserHelp2").'</a>. '.$langs->trans("AgfFormateurAddUserHelp3").'</div>';
 	
-	print '<div class="warning">La fiche formateur peut être créée à partir d\'un utilisateur de Dolibarr.';
-	print '<br>Si ce contact n\'existe pas, vous devez le créer à partir de la fiche de création d\'un <a href="'.DOL_URL_ROOT.'user/fiche.php?action=create">nouvelle utilisateur</a>. Sinon, selectionnez l\'utilisateur dans la liste déroulante ci dessous.</div>';
-
 	print '<table class="border" width="100%">'."\n";
 
 	print '<tr><td>'.$langs->trans("AgfUser").'</td>';
 	print '<td>';
 
 	$agf_static = new Agefodd_teacher($db);
-	$agf_static->fetch_all('ASC','s.name, s.firstname','',0);
+	$agf_static->fetch_all('ASC','s.lastname, s.firstname','',0);
 	$exclude_array = array();
-	foreach($agf_static->line as $line)
+	if (is_array($agf_static->lines) && count($agf_static->lines) > 0)
 	{
-		if ((!empty($line->fk_user)) && (!in_array($line->fk_user,$exclude_array))){
-			$exclude_array[]=$line->fk_user;
+		foreach($agf_static->lines as $line)
+		{
+			if ((!empty($line->fk_user)) && (!in_array($line->fk_user,$exclude_array))){
+				$exclude_array[]=$line->fk_user;
+			}
 		}
 	}
 	$form->select_users('','fk_user',1,$exclude_array);
@@ -252,7 +251,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 }
 else
 {
-	// Affichage de la fiche "formateur"
+	// Display trainer card
 	if ($id)
 	{
 		$agf = new Agefodd_teacher($db);
@@ -262,14 +261,14 @@ else
 		{
 			if ($mesg) print $mesg."<br>";
 				
-			// Affichage en mode "consultation"
+			// View mode
 				
 			$head = trainer_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfTeacher"), 0, 'user');
 
 			/*
-				* Confirmation de la suppression
+			* Delete confirm
 			*/
 			if ($action == 'delete')
 			{
@@ -278,7 +277,7 @@ else
 			}
 				
 			/*
-			 * Confirmation de l'archivage/activation suppression
+			 * Confirm archive status change
 			*/
 			if ($action == 'archive' || $action == 'active')
 			{
@@ -304,14 +303,14 @@ else
 		}
 		else
 		{
-			dol_print_error($db);
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
 
 
 /*
- * Barre d'actions
+ * Actions tabs
 *
 */
 
@@ -370,6 +369,4 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 print '</div>';
 
 $db->close();
-
 llxFooter();
-?>

@@ -394,7 +394,7 @@ class InterfaceAgefodd
 			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 			$sql.= " WHERE s.fk_socpeople=".$object->id;
 			
-			dol_syslog('interface_modAgefodd_Agefodd.class.php: $sql'.$sql, LOG_DEBUG);
+			dol_syslog('interface_modAgefodd_Agefodd.class.php: $sql='.$sql, LOG_DEBUG);
 			$resql=$this->db->query($sql);
 			if ($resql)
 			{

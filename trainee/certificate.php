@@ -19,19 +19,20 @@
 */
 
 /**
- *  \file       	/agefodd/trainee/certificate.php
- *  \brief      	Certificate page of a trainee
-*/
+ *	\file       agefodd/trainee/certificate.php
+ *	\ingroup    agefodd
+ *	\brief      certificate of trainee
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/functions2.lib.php');
-dol_include_once('/agefodd/class/agsession.class.php');
+require_once('../class/agefodd_stagiaire.class.php');
+require_once('../class/agefodd_stagiaire_certif.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
 
 // Security check
@@ -39,7 +40,6 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 $id=GETPOST('id','int');
 
-$mesg = '';
 
 /*
  * View
@@ -68,9 +68,6 @@ if ($id)
 		$head = trainee_prepare_head($agf);
 
 		dol_fiche_head($head, 'certificate', $langs->trans("AgfStagiaireDetailCertificate"), 0, 'user');
-
-
-		dol_htmloutput_mesg($mesg);
 
 		print '<table class="border" width="100%">';
 

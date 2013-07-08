@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,25 @@
 */
 
 /**
- *  \file       	/agefodd/trainer/info.php
- *  \brief      	Page fiche d'info sur site de formation
-*  \version		$Id$
-*/
+ *	\file       agefodd/traineer/info.php
+ *	\ingroup    agefodd
+ *	\brief      info of traineer
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_formateur.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/functions2.lib.php');
+require_once('../class/agefodd_formateur.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-$mesg = '';
-
 $id=GETPOST('id','int');
 
-$db->begin();
 
 /*
  * View
@@ -49,7 +46,10 @@ $db->begin();
 llxHeader('',$langs->trans("AgfTeacherDetail"));
 
 $agf = new Agefodd_teacher($db);
-$agf->info($id);
+$result=$agf->info($id);
+if ($result<0) {
+	setEventMessage($agf->error,'errors');
+}
 
 $head = trainer_prepare_head($agf);
 
@@ -61,6 +61,4 @@ print '</td></tr></table>';
 print '</div>';
 
 $db->close();
-
-llxFooter('$Date: 2010-03-28 19:06:42 +0200 (dim. 28 mars 2010) $ - $Revision: 51 $');
-?>
+llxFooter();

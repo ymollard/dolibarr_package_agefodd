@@ -167,7 +167,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		}
 	}
 
-	$form->select_contacts(0,'','spid',1,$exclude_array,'',1,'',1,$cong->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
+	$form->select_contacts(0,'','spid',1,$exclude_array,'',1,'',1);
 	print '</td></tr>';
 
 	print '</table>';

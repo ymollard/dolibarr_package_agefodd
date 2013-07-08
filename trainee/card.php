@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013      Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,28 @@
 */
 
 /**
- *  \file       	/agefodd/trainee/card.php
- *  \brief      	Page fiche stagiaire
- *  \version		$Id$
-*/
+ *	\file       agefodd/trainee/card.php
+ *	\ingroup    agefodd
+ *	\brief      card of trainee
+ */
+
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/core/class/html.formcompany.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/contact/class/contact.class.php');
+require_once('../class/agefodd_stagiaire.class.php');
+require_once('../class/agsession.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 
 $langs->load("other");
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
-$mesg = '';
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -66,10 +66,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 		if (strpos($agf->error,'agefodd_session_stagiaire_ibfk_2')) {
 			$agf->error=$langs->trans("AgfErrorTraineeInSession");
 		}
-		else {
-			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
-		}
-		$mesg = '<div class="error">'.$agf->error.'</div>';
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -85,6 +82,9 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf = new Agefodd_stagiaire($db);
 
 		$result = $agf->fetch($id);
+		if ($result>0)	{
+			setEventMessage($agf->error,'errors');
+		}
 		
 		$fk_socpeople= GETPOST('fk_socpeople','int');
 
@@ -110,8 +110,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 	else
@@ -138,11 +137,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$civilite_id = GETPOST('civilite_id','alpha');
 
 		if(empty($name) || empty($firstname)) {
-			$mesg = '<div class="error">'.$langs->trans('AgfNameRequiredForParticipant').'</div>';
+			setEventMessage($langs->trans('AgfNameRequiredForParticipant'),'errors');
 			$error++;
 		}
 		if( empty($civilite_id)) {
-			$mesg = '<div class="error">'.$langs->trans('AgfCiviliteMandatory').'</div>';
+			setEventMessage($langs->trans('AgfCiviliteMandatory'),'errors');
 			$error++;
 		}
 		if(!$error) {
@@ -248,13 +247,12 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 					
 					if ($result > 0)
 					{
-						$mesg = '<div class="success">'.$langs->trans('SuccessCreateStagInSession').'</div>';
+						setEventMessage($langs->trans('SuccessCreateStagInSession'),'mesgs');
 						$url_back = dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$session_id;
 					}
 					else
 					{
-						dol_syslog("agefodd:trainee:card error=".$agf->error, LOG_ERR);
-						$mesg = '<div class="error">'.$agf->error.'</div>';
+						setEventMessage($agf->error,'errors');
 					}
 				}
 		
@@ -269,9 +267,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			}
 			else
 			{
-				dol_syslog("agefodd::card error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
-
+				setEventMessage($agf->error,'errors');
 			}
 		}
 		$action='create';
@@ -315,8 +311,7 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 		}
 		else
 		{
-			dol_syslog("agefodd::card error=".$agf_sta->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf_sta->error.'</div>';
+			setEventMessage($agf_sta->error,'errors');
 			$action='nfcontact';
 		}
 
@@ -334,7 +329,6 @@ $form = new Form($db);
 $formcompany = new FormCompany($db);
 $formAgefodd = new FormAgefodd($db);
 
-dol_htmloutput_mesg($mesg);
 
 if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->creer)
 {
@@ -354,15 +348,16 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 	$agf_static = new Agefodd_stagiaire($db);
 	$agf_static->fetch_all('DESC','s.rowid','',0);
 	$exclude_array = array();
-	if (is_array($agf_static->line) && count($agf_static) > 0)
+	if (is_array($agf_static->lines) && count($agf_static->lines) > 0)
 	{
-		foreach($agf_static->line as $line)
+		foreach($agf_static->lines as $line)
 		{
-			$exclude_array[]=$line->fk_socpeople;
+			if (!empty($line->fk_socpeople)) {
+				$exclude_array[]=$line->fk_socpeople;
+			}
 		}
 	}
-	//$form->select_contacts(0,'','contact',1,$exclude_array);
-	print $formAgefodd->select_contacts_combobox(0,'','contact',1,$exclude_array);
+	$form->select_contacts(0,'','contact',1,$exclude_array);
 	print '</td></tr>';
 
 	print '</table>';
@@ -498,7 +493,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	
 	print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 	print '<td>';
-	print $form->select_date('', 'datebirth','','','','update');
+	print $form->select_date('', 'datebirth','','',1,'update');
 	print '</td></tr>';
 	
 	print '<tr><td>'.$langs->trans("AgfPlaceBirth").'</td>';
@@ -779,7 +774,7 @@ else
 		}
 		else
 		{
-			dol_print_error($db);
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }

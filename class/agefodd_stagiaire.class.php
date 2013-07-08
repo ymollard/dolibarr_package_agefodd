@@ -55,7 +55,7 @@ class Agefodd_stagiaire extends CommonObject
 	var $socname;
 	var $fk_socpeople;
 	
-	var $line=array();
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -335,6 +335,8 @@ class Agefodd_stagiaire extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
+					
+					$line = new AgfTraineeLine();
 
 					//Manage filter for telephone to remove all space from result to filter correctly
 					if (!empty($filter)){
@@ -343,64 +345,67 @@ class Agefodd_stagiaire extends CommonObject
 							if (!empty($value)) {
 								if ($pos!==false)
 								{
-									$this->line[$i]->socid = $obj->socid;
-									$this->line[$i]->socname = $obj->socname;
-									$this->line[$i]->civilitecode = $obj->civilitecode;
-									$this->line[$i]->rowid = $obj->rowid;
-									$this->line[$i]->nom = $obj->nom;
-									$this->line[$i]->prenom = $obj->prenom;
-									$this->line[$i]->civilite = $obj->civilite;
-									$this->line[$i]->fk_soc = $obj->fk_soc;
-									$this->line[$i]->fonction = $obj->fonction;
-									$this->line[$i]->tel1 = $obj->tel1;
-									$this->line[$i]->tel2 = $obj->tel2;
-									$this->line[$i]->mail = $obj->mail;
-									$this->line[$i]->note = $obj->note;
-									$this->line[$i]->place_birth = $obj->place_birth;
-									$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
-									$this->line[$i]->date_birth = $this->db->jdate($obj->date_birth);
+									$line->socid = $obj->socid;
+									$line->socname = $obj->socname;
+									$line->civilitecode = $obj->civilitecode;
+									$line->rowid = $obj->rowid;
+									$line->nom = $obj->nom;
+									$line->prenom = $obj->prenom;
+									$line->civilite = $obj->civilite;
+									$line->fk_soc = $obj->fk_soc;
+									$line->fonction = $obj->fonction;
+									$line->tel1 = $obj->tel1;
+									$line->tel2 = $obj->tel2;
+									$line->mail = $obj->mail;
+									$line->note = $obj->note;
+									$line->place_birth = $obj->place_birth;
+									$line->fk_socpeople = $obj->fk_socpeople;
+									$line->date_birth = $this->db->jdate($obj->date_birth);
 								}
 							}
 						}
 						else
 						{
-							$this->line[$i]->socid = $obj->socid;
-							$this->line[$i]->socname = $obj->socname;
-							$this->line[$i]->civilitecode = $obj->civilitecode;
-							$this->line[$i]->rowid = $obj->rowid;
-							$this->line[$i]->nom = $obj->nom;
-							$this->line[$i]->prenom = $obj->prenom;
-							$this->line[$i]->civilite = $obj->civilite;
-							$this->line[$i]->fk_soc = $obj->fk_soc;
-							$this->line[$i]->fonction = $obj->fonction;
-							$this->line[$i]->tel1 = $obj->tel1;
-							$this->line[$i]->tel2 = $obj->tel2;
-							$this->line[$i]->mail = $obj->mail;
-							$this->line[$i]->note = $obj->note;
-							$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
-							$this->line[$i]->date_birth = $this->db->jdate($obj->date_birth);
-							$this->line[$i]->place_birth = $obj->place_birth;
+							$line->socid = $obj->socid;
+							$line->socname = $obj->socname;
+							$line->civilitecode = $obj->civilitecode;
+							$line->rowid = $obj->rowid;
+							$line->nom = $obj->nom;
+							$line->prenom = $obj->prenom;
+							$line->civilite = $obj->civilite;
+							$line->fk_soc = $obj->fk_soc;
+							$line->fonction = $obj->fonction;
+							$line->tel1 = $obj->tel1;
+							$line->tel2 = $obj->tel2;
+							$line->mail = $obj->mail;
+							$line->note = $obj->note;
+							$line->fk_socpeople = $obj->fk_socpeople;
+							$line->date_birth = $this->db->jdate($obj->date_birth);
+							$line->place_birth = $obj->place_birth;
 						}
 					}
 					else
 					{
-						$this->line[$i]->socid = $obj->socid;
-						$this->line[$i]->socname = $obj->socname;
-						$this->line[$i]->civilitecode = $obj->civilitecode;
-						$this->line[$i]->rowid = $obj->rowid;
-						$this->line[$i]->nom = $obj->nom;
-						$this->line[$i]->prenom = $obj->prenom;
-						$this->line[$i]->civilite = $obj->civilite;
-						$this->line[$i]->fk_soc = $obj->fk_soc;
-						$this->line[$i]->fonction = $obj->fonction;
-						$this->line[$i]->tel1 = $obj->tel1;
-						$this->line[$i]->tel2 = $obj->tel2;
-						$this->line[$i]->mail = $obj->mail;
-						$this->line[$i]->note = $obj->note;
-						$this->line[$i]->fk_socpeople = $obj->fk_socpeople;
-						$this->line[$i]->date_birth = $this->db->jdate($obj->date_birth);
-						$this->line[$i]->place_birth = $obj->place_birth;
+						$line->socid = $obj->socid;
+						$line->socname = $obj->socname;
+						$line->civilitecode = $obj->civilitecode;
+						$line->rowid = $obj->rowid;
+						$line->nom = $obj->nom;
+						$line->prenom = $obj->prenom;
+						$line->civilite = $obj->civilite;
+						$line->fk_soc = $obj->fk_soc;
+						$line->fonction = $obj->fonction;
+						$line->tel1 = $obj->tel1;
+						$line->tel2 = $obj->tel2;
+						$line->mail = $obj->mail;
+						$line->note = $obj->note;
+						$line->fk_socpeople = $obj->fk_socpeople;
+						$line->date_birth = $this->db->jdate($obj->date_birth);
+						$line->place_birth = $obj->place_birth;
 					}
+					
+					$this->lines[$i]=$line;
+					
 					$i++;
 				}
 			}
@@ -498,7 +503,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " mail=".(isset($this->mail)?"'".$this->mail."'":"null").",";
 		$sql.= " note=".(isset($this->note)?"'".$this->note."'":"null").",";
 		$sql.= " fk_socpeople=".(isset($this->fk_socpeople)?$this->fk_socpeople:"null").", ";
-		$sql.= " date_birth=".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?'NULL':"'".$this->db->idate($this->date_birth))."'";
+		$sql.= " date_birth=".(! isset($this->date_birth) || dol_strlen($this->date_birth)==0?"null":"'".$this->db->idate($this->date_birth)."'");
 		$sql.= " ,place_birth=".(isset($this->place_birth)?"'".$this->place_birth."'":"null");
 		$sql.= " WHERE rowid = ".$this->id;
 
@@ -556,18 +561,47 @@ class Agefodd_stagiaire extends CommonObject
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_stagiaire";
 		$sql .= " WHERE rowid = ".$id;
 
+		$this->db->begin();
+		
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
 
 		if ($resql)
 		{
+			$this->db->commit();
 			return 1;
 		}
 		else
 		{
 			$this->error=$this->db->lasterror();
+			dol_syslog(get_class($this)."::remove ".$this->error, LOG_ERR);
+			$this->db->rollback();
 			return -1;
 		}
 	}
+}
 
+class AgfTraineeLine {
+	
+	var $socid;
+	var $socname;
+	var $civilitecode;
+	var $rowid;
+	var $nom;
+	var $prenom;
+	var $civilite;
+	var $fk_soc;
+	var $fonction;
+	var $tel1;
+	var $tel2;
+	var $mail;
+	var $note;
+	var $fk_socpeople;
+	var $date_birth;
+	var $place_birth;
+	
+	function __construct()
+	{
+		return 1;
+	}
 }

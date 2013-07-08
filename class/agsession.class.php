@@ -615,7 +615,7 @@ class Agsession extends CommonObject
 			{
 				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfTraineeLine();
+				$line = new AgfTraineeSessionLine();
 				
 				$line->stagerowid = $obj->rowid;
 				$line->sessid = $obj->sessid;
@@ -2482,7 +2482,7 @@ class AgfSocLine
 /**
  *	Session Trainee Link Class
  */
-class AgfTraineeLine
+class AgfTraineeSessionLine
 {
 	var $stagerowid;
 	var $sessid;

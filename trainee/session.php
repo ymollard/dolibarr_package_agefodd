@@ -19,26 +19,25 @@
 */
 
 /**
- *  \file       	/agefodd/trainee/session.php
- *  \brief      	Session list of a trainee
-*/
+ *	\file       agefodd/trainee/session.php
+ *	\ingroup    agefodd
+ *	\brief      session of trainee
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/functions2.lib.php');
-dol_include_once('/agefodd/class/agsession.class.php');
+require_once('../class/agefodd_stagiaire.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
+require_once('../class/agsession.class.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $id=GETPOST('id','int');
-
-$mesg = '';
 
 /*
  * View
@@ -53,13 +52,12 @@ if ($id)
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->fetch($id);
 
-	if ($result)
+	if ($result>0)
 	{
 		$agf_session = new Agsession($db);
 		$agf_session->fetch_session_per_trainee($id);
 		if ($result<0) {
-			dol_syslog("agefodd:trainee:session error=".$agf_session->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf_session->error.'</div>';
+			setEventMessage($agf_session->error,'errors');
 		}
 
 		$form = new Form($db);
@@ -67,9 +65,6 @@ if ($id)
 		$head = trainee_prepare_head($agf);
 
 		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfSessionDetail"), 0, 'user');
-
-
-		dol_htmloutput_mesg($mesg);
 
 		print '<table class="border" width="100%">';
 
@@ -158,7 +153,10 @@ if ($id)
 		else {
 			$langs->trans('AgfNoCertif');
 		}
-	}		
+	} 
+	else {
+		setEventMessage($agf->error,'errors');
+	} 		
 }
 
 $db->close();

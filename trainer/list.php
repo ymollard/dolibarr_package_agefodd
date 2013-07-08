@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+* Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,18 +19,18 @@
 */
 
 /**
- * 	\file		/agefodd/trainer/list.php
- * 	\brief		Page présentant la liste des formateurs
-* 	\version	$Id$
-*/
+ *	\file       agefodd/traineer/list.php
+ *	\ingroup    agefodd
+ *	\brief      list of trainers
+ */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agefodd_formateur.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_formateur.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../lib/agefodd.lib.php');
 
 
 // Security check
@@ -44,7 +44,7 @@ $page=GETPOST('page','int');
 $arch=GETPOST('arch','int');
 
 if (empty($sortorder)) $sortorder="ASC";
-if (empty($sortfield)) $sortfield="s.name, s.firstname";
+if (empty($sortfield)) $sortfield="s.lastname, s.firstname";
 if (empty($arch)) $arch = 0;
 
 if ($page == -1) {
@@ -58,9 +58,9 @@ $pagenext = $page + 1;
 
 $agf = new Agefodd_teacher($db);
 
-$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
-$linenum = count($agf->line);
+$linenum = count($agf->lines);
 
 
 print_barre_liste($langs->trans("AgfTeacher"), $page, $_SERVER['PHP_SELF'],"&arch=".$arch, $sortfield, $sortorder, "", $linenum);
@@ -87,7 +87,7 @@ print_liste_field_titre($langs->trans("PhoneMobile"),$_SERVER['PHP_SELF'],"s.pho
 print_liste_field_titre($langs->trans("Mail"),$_SERVER['PHP_SELF'],"s.email","","&arch=".$arch,'',$sortfield,$sortorder);
 print "</tr>\n";
 
-if ($resql)
+if ($result>0)
 {
 	$var=true;
 	$i = 0;
@@ -95,19 +95,19 @@ if ($resql)
 	{
 		// Affichage liste des formateurs
 		$var=!$var;
-		( $agf->line[$i]->archive == 1 ) ? $style = ' style="color:gray;"' : $style = '';
+		( $agf->lines[$i]->archive == 1 ) ? $style = ' style="color:gray;"' : $style = '';
 		print "<tr $bc[$var]>";
-		print '<td><span style="background-color:'.$bgcolor.';"><a href="card.php?id='.$agf->line[$i]->id.'"'.$style.'>'.img_object($langs->trans("AgfEditerFicheFormateur"),"user").' '.$agf->line[$i]->id.'</a></span></td>';
-		print '<td'.$style.'>'.$agf->line[$i]->name.'</td>';
-		print '<td'.$style.'>'.$agf->line[$i]->firstname.'</td>';
+		print '<td><span style="background-color:'.$bgcolor.';"><a href="card.php?id='.$agf->lines[$i]->id.'"'.$style.'>'.img_object($langs->trans("AgfEditerFicheFormateur"),"user").' '.$agf->lines[$i]->id.'</a></span></td>';
+		print '<td'.$style.'>'.$agf->lines[$i]->name.'</td>';
+		print '<td'.$style.'>'.$agf->lines[$i]->firstname.'</td>';
 		$contact_static= new Contact($db);
-		$contact_static->civilite_id = $agf->line[$i]->civilite;
+		$contact_static->civilite_id = $agf->lines[$i]->civilite;
 		print '<td'.$style.'>'.$contact_static->getCivilityLabel().'</td>';
-		print '<td'.$style.'>'.dol_print_phone($agf->line[$i]->phone).'</td>';
-		print '<td'.$style.'>'.dol_print_phone($agf->line[$i]->phone_mobile).'</td>';
+		print '<td'.$style.'>'.dol_print_phone($agf->lines[$i]->phone).'</td>';
+		print '<td'.$style.'>'.dol_print_phone($agf->lines[$i]->phone_mobile).'</td>';
 		print '<td'.$style.'>';
-		if ($agf->line[$i]->archive == 0) print dol_print_email($agf->line[$i]->email, $agf->line[$i]->spid, "", 'AC_EMAIL', 25);
-		else print '<a href="mailto:'.$agf->line[$i]->email.'"'.$style.'>'.$agf->line[$i]->email.'</a>';
+		if ($agf->lines[$i]->archive == 0) print dol_print_email($agf->lines[$i]->email, $agf->lines[$i]->spid, "", 'AC_EMAIL', 25);
+		else print '<a href="mailto:'.$agf->lines[$i]->email.'"'.$style.'>'.$agf->lines[$i]->email.'</a>';
 		print '</td>';
 		print "</tr>\n";
 
@@ -116,7 +116,7 @@ if ($resql)
 }
 else
 {
-	dol_syslog("agefodd::trainer::list ".$agf->error, LOG_ERR);
+	setEventMessage($agf->error,'errors');
 }
 
 print "</table>";
@@ -137,5 +137,6 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 
 print '</div>';
 
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
+
+$db->close();
+llxFooter();
