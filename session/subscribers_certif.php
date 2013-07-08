@@ -404,5 +404,6 @@ if ($action != 'edit' && (!empty($agf->id)))
 
 print '</div>';
 
-$db->close();
+
 llxFooter();
+$db->close();

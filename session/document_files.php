@@ -21,12 +21,12 @@
 
 /**
  *  \file       /agefodd/session/document_files.php
-*  \brief      Tab for documents linked to session
-*  \ingroup    agefodd
+ *  \ingroup    agefodd
+*  \brief      files linked to session
 */
 
 require '../main.inc.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
@@ -56,13 +56,15 @@ $pagenext = $page + 1;
 if (! $sortorder) $sortorder="ASC";
 if (! $sortfield) $sortfield="name";
 
-$object = new Societe($db);
-if ($id > 0 || ! empty($ref))
-{
-	$result = $object->fetch($id, $ref);
 
+$object = new Agsession($db);
+$result = $object->fetch($id);
+
+if ($result<0)
+{
+	setEventMessage($agf->error,'errors');
+}else {
 	$upload_dir = $conf->agefodd->multidir_output[$object->entity] . "/" . $object->id ;
-	$courrier_dir = $conf->agefodd->multidir_output[$object->entity] . "/courrier/" . get_exdir($object->id);
 }
 
 
@@ -110,11 +112,11 @@ if ($object->id)
 	 * Affichage onglets
 	*/
 	if (! empty($conf->notification->enabled)) $langs->load("mails");
-	$head = societe_prepare_head($object);
+	$head = session_prepare_head($object);
 
 	$form=new Form($db);
-
-	dol_fiche_head($head, 'document', $langs->trans("ThirdParty"),0,'company');
+	
+	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 
 
 	// Construit liste des fichiers
@@ -126,46 +128,14 @@ if ($object->id)
 	}
 
 
-	print '<table class="border"width="100%">';
+	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
+	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
+	print '</div>';
 
-	// Ref
-	print '<tr><td width="25%">'.$langs->trans("ThirdPartyName").'</td>';
-	print '<td colspan="3">';
-	print $form->showrefnav($object,'socid','',($user->societe_id?0:1),'rowid','nom');
-	print '</td></tr>';
+	// Print session card
+	$agf->printSessionInfo();
 
-	// Prefix
-	if (! empty($conf->global->SOCIETE_USEPREFIX))  // Old not used prefix field
-	{
-		print '<tr><td>'.$langs->trans('Prefix').'</td><td colspan="3">'.$object->prefix_comm.'</td></tr>';
-	}
-
-	if ($object->client)
-	{
-		print '<tr><td>';
-		print $langs->trans('CustomerCode').'</td><td colspan="3">';
-		print $object->code_client;
-		if ($object->check_codeclient() <> 0) print ' <font class="error">('.$langs->trans("WrongCustomerCode").')</font>';
-		print '</td></tr>';
-	}
-
-	if ($object->fournisseur)
-	{
-		print '<tr><td>';
-		print $langs->trans('SupplierCode').'</td><td colspan="3">';
-		print $object->code_fournisseur;
-		if ($object->check_codefournisseur() <> 0) print ' <font class="error">('.$langs->trans("WrongSupplierCode").')</font>';
-		print '</td></tr>';
-	}
-
-	// Nbre fichiers
-	print '<tr><td>'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
-
-	//Total taille
-	print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';
-
-	print '</table>';
-
+	print '&nbsp';
 	print '</div>';
 
 	/*
@@ -195,4 +165,3 @@ else
 
 llxFooter();
 $db->close();
-?>

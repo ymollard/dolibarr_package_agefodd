@@ -21,29 +21,30 @@
 */
 
 /**
- * 	\file		/agefodd/session/send_docs.php
-* 	\brief		Page permettant d'envoyer les documents relatifs à la session de formation
+ *	\file       agefodd/session/send_docs.php
+ *	\ingroup    agefodd
+ *	\brief      Sending docuemnt screen
 */
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
-dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/class/html.formagefoddsenddocs.class.php');
-dol_include_once('/commande/class/commande.class.php');
-dol_include_once('/contact/class/contact.class.php');
-dol_include_once('/agefodd/lib/agefodd_document.lib.php');
-dol_include_once('/core/class/html.formmail.class.php');
-dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
-include(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_sessadm.class.php');
+require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_convention.class.php');
+require_once('../core/modules/agefodd/modules_agefodd.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../class/html.formagefoddsenddocs.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../lib/agefodd_document.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php');
+require_once('../class/agefodd_session_formateur.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
 
 
 // Security check
@@ -53,11 +54,6 @@ $action=GETPOST('action','alpha');
 $pre_action=GETPOST('pre_action','alpha');
 $id=GETPOST('id','int');
 $socid=GETPOST('socid','int');
-
-$mesg = '';
-$mesgs=array();
-
-if (GETPOST('mesg','int',1) && isset($_SESSION['message'])) $mesg=$_SESSION['message'];
 
 $form = new Form($db);
 $formmail = new FormAgefoddsenddocs($db);
@@ -69,6 +65,9 @@ $formAgefodd = new FormAgefodd($db);
 if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_POST['cancel'])
 {
 	$langs->load('mails');
+	
+	$send_to=GETPOST('sendto','alpha');
+	$receiver=GETPOST('receiver');
 
 	$action=$pre_action;
 
@@ -80,33 +79,33 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 		$result=$object->fetch_thirdparty();
 
 		$sendto = array();
-		if ($_POST['sendto'])
+		if (!empty($send_to))
 		{
 			// Le destinataire a ete fourni via le champ libre
-			$sendto = array(GETPOST('sendto','alpha'));
+			$sendto = array($send_to);
 			$sendtoid = 0;
 		}
-		elseif (is_array($_POST['receiver']))
+		elseif (is_array($receiver))
 		{
-			$receiver = $_POST['receiver'];
-			foreach($_POST['receiver'] as $socpeople_id) {
+			$receiver = $receiver;
+			foreach($receiver as $socpeople_id) {
 				// Initialisation donnees
 				$contactstatic = new Contact($db);
 				$contactstatic->fetch($socpeople_id);
 				if ($contactstatic->email !='')
 				{
-					$sendto[$socpeople_id] =  trim($contactstatic->firstname." ".$contactstatic->name)." <".$contactstatic->email.">";
+					$sendto[$socpeople_id] =  trim($contactstatic->firstname." ".$contactstatic->lastname)." <".$contactstatic->email.">";
 				}
 			}
 		}
 		if (is_array($sendto) && count($sendto) > 0) {
 			$langs->load("commercial");
 
-			$from = $_POST['fromname'] . ' <' . $_POST['frommail'] .'>';
-			$replyto = $_POST['replytoname']. ' <' . $_POST['replytomail'].'>';
-			$message = $_POST['message'];
-			$sendtocc = $_POST['sendtocc'];
-			$deliveryreceipt = $_POST['deliveryreceipt'];
+			$from = GETPOST('fromname') . ' <' . GETPOST('frommail') .'>';
+			$replyto = GETPOST('replytoname'). ' <' . GETPOST('replytomail').'>';
+			$message = GETPOST('message');
+			$sendtocc = GETPOST('sendtocc');
+			$deliveryreceipt = GETPOST('deliveryreceipt');
 
 			// Envoi du mail + trigger pour chaque contact
 			$i = 0;
@@ -114,14 +113,15 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 
 				$models = GETPOST('models','alpha');
 
+				$subject= GETPOST('subject');
 				// Initialisation donnees
 				$contactstatic = new Contact($db);
 				$contactstatic->fetch($send_contact_id);
 
+				
 				if ($models == 'fiche_pedago')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->transnoentities('AgfFichePedagogique').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfFichePedagogique').' '.$object->ref;
 					$actiontypecode='AC_AGF_PEDAG';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -135,8 +135,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'fiche_presence')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfFichePresence').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfFichePresence').' '.$object->ref;
 					$actiontypecode='AC_AGF_PRES';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -149,8 +148,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'convention')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfConvention').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfConvention').' '.$object->ref;
 					$actiontypecode='AC_AGF_CONVE';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -163,8 +161,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'attestation')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfAttestation').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfAttestation').' '.$object->ref;
 					$actiontypecode='AC_AGF_ATTES';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -177,8 +174,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'cloture')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfDossierCloture').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfDossierCloture').' '.$object->ref;
 					$actiontypecode='AC_AGF_CLOT';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -191,8 +187,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'conseils')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfConseilsPratique').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfConseilsPratique').' '.$object->ref;
 					$actiontypecode='AC_AGF_CONSE';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -205,8 +200,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'convocation')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfPDFConvocation').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfPDFConvocation').' '.$object->ref;
 					$actiontypecode='AC_AGF_CONVO';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -219,8 +213,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 				}
 				elseif ($models == 'courrier-accueil')
 				{
-					if (dol_strlen($_POST['subject'])) $subject = $_POST['subject'];
-					else $subject = $langs->trans('AgfCourrierAccueil').' '.$object->ref;
+					if (empty($subject)) $langs->transnoentities('AgfCourrierAccueil').' '.$object->ref;
 					$actiontypecode='AC_AGF_ACCUE';
 					$actionmsg = $langs->trans('MailSentBy').' '.$from.' '.$langs->trans('To').' '.$send_email.".\n";
 					if ($message)
@@ -245,17 +238,17 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 
 				// Envoi de la fiche
 				require_once(DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php');
-				$mailfile = new CMailFile($subject,$send_email,$from,$message,$filepath,$mimetype,$filename,$sendtocc,'',$deliveryreceipt);
+				$mailfile = new CMailFile($subject,$send_email,$from,$message,$filepath,$mimetype,$filename,$sendtocc,'',$deliveryreceipt,-1);
 				if ($mailfile->error)
 				{
-					$mesgs[]=$mailfile->error;
+					setEventMessage($mailfile->error,'errors');
 				}
 				else
 				{
 					$result=$mailfile->sendfile();
 					if ($result)
 					{
-						$mesgs[]=$langs->trans('MailSuccessfulySent',$mailfile->getValidAddress($from,2),$mailfile->getValidAddress($send_email,2));	// Must not contain "
+						setEventMessage($langs->trans('MailSuccessfulySent',$mailfile->getValidAddress($from,2),$mailfile->getValidAddress($send_email,2)),'mesgs');
 
 						$error=0;
 						$socid_action = ($contactstatic->socid > 0 ? $contactstatic->socid : ($socid > 0 ? $socid : $object->fk_soc));
@@ -310,7 +303,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 
 						if ($error)
 						{
-							dol_print_error($db);
+							setEventMessage($object->errors,'errors');
 						}
 						else
 						{
@@ -323,12 +316,12 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 						$langs->load("other");
 						if ($mailfile->error)
 						{
-							$mesgs[]='<div class="error">'.$langs->trans('ErrorFailedToSendMail',$from,$send_email).'</div>';
+							setEventMessage($langs->trans('ErrorFailedToSendMail',$from,$send_email),'errors');
 							dol_syslog($langs->trans('ErrorFailedToSendMail',$from,$send_email).' : '.$mailfile->error);
 						}
 						else
 						{
-							$mesgs[]='No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS';
+							setEventMessage('No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS','errors');
 						}
 					}
 				}
@@ -337,8 +330,8 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 		else
 		{
 			$langs->load("other");
-			$mesgs[]='<div class="error">'.$langs->trans('ErrorMailRecipientIsEmpty').'</div>';
-			dol_syslog('Recipient email is empty');
+			setEventMessage($langs->trans('ErrorMailRecipientIsEmpty'),'errors');
+			dol_syslog('Recipient email is empty',LOG_ERR);
 			$action = $pre_action;
 		}
 	}
@@ -414,14 +407,14 @@ if (!empty($id))
 	{
 		$idform = $agf->formid;
 
-		// Affichage en mode "consultation"
+		// Display consult
 		$head = session_prepare_head($agf);
 
 		dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
 
 		/*
-		 * Confirmation de la suppression
+		 * Confirm delete
 		*/
 		if ($action == 'delete')
 		{
@@ -669,8 +662,7 @@ if (!empty($id))
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
 					if (! $result_opca)
 					{
-						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
-						$style_mesg='warning';
+						setEventMessage($langs->trans('AgfSendWarningNoMailOpca'),'warnings');
 					}
 					elseif ($agf->is_OPCA)
 					{
@@ -740,8 +732,7 @@ if (!empty($id))
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
 					if (! $result_opca)
 					{
-						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
-						$style_mesg='warning';
+						setEventMessage($langs->trans('AgfSendWarningNoMailOpca'),'warnings');
 					}
 					elseif ($agf->is_OPCA)
 					{
@@ -799,8 +790,7 @@ if (!empty($id))
 					$result_opca = $agf->getOpcaForTraineeInSession($socid,$id);
 					if (! $result_opca)
 					{
-						$mesg = '<div class="warning">'.$langs->trans('AgfSendWarningNoMailOpca').'</div>';
-						$style_mesg='warning';
+						setEventMessage($langs->trans('AgfSendWarningNoMailOpca'),'warnings');
 					}
 					elseif ($agf->is_OPCA)
 					{
@@ -925,10 +915,6 @@ if (!empty($id))
 			$formmail->param['id']=$agf->id;
 			$formmail->param['returnurl']=$_SERVER["PHP_SELF"].'?id='.$agf->id;
 
-
-			dol_htmloutput_mesg($mesg,$mesgs,$style_mesg);
-
-
 			if ($action == 'presend_pedago') {
 				print_fiche_titre($langs->trans('AgfSendDocuments').' '.$langs->trans('AgfFichePedagogique'),'',dol_buildpath('/agefodd/img/mail_generic.png',1),1);
 			}
@@ -1028,5 +1014,6 @@ if (!empty($id))
 
 }
 
-llxFooter('');
-?>
+
+llxFooter();
+$db->close();

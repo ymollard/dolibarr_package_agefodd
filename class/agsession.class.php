@@ -355,7 +355,7 @@ class Agsession extends CommonObject
 
 		if ($result2 > 0)
 		{
-			foreach ($admlevel->line as $line)
+			foreach ($admlevel->lines as $line)
 			{
 				$actions = new Agefodd_sessadm($this->db);
 

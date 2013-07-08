@@ -63,7 +63,7 @@ class Agefodd_index
 	var $element='agefodd';
 	var $table_element='agefodd';
 	var $id;
-	var $lines;
+	var $lines=array();
 
 	/**
 	 *  Constructor

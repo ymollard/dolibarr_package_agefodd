@@ -52,8 +52,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 	var $certif_dt_start='';
 	var $certif_dt_end='';
 
-	var $lines;
-	var $lines_state;
+	var $lines=array();
+	var $lines_state=array();
 
 
 	/**

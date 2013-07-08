@@ -160,5 +160,5 @@ if($action == 'search_year')
 
 print '</div>';
 
-$db->close();
 llxFooter();
+$db->close();

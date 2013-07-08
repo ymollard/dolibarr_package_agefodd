@@ -51,6 +51,8 @@ class Agefodd_training_admlevel extends CommonObject
 	var $fk_user_mod;
 	var $tms='';
 	var $fk_agefodd_training_admlevel;
+	
+	var $lines=array();
 
 
 
@@ -284,7 +286,7 @@ class Agefodd_training_admlevel extends CommonObject
 				$line->alerte = $obj->delais_alerte;
 				$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
 				 
-				$this->line[$i]=$line;
+				$this->lines[$i]=$line;
 				$i++;
 			}
 			$this->db->free($resql);

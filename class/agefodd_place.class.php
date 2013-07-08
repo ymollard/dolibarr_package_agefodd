@@ -57,6 +57,7 @@ class Agefodd_place extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
+	
 	var $lines=array();
 
 	/**

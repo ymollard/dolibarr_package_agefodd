@@ -47,6 +47,7 @@ class Agefodd_sessadm extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
+	
 	var $lines=array();
 
 

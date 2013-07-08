@@ -1,6 +1,6 @@
 <?php
-/*
- * Copyright (C) 2012       Florian Henry  	<florian.henry@open-concept.pro>
+/* Copyright (C) 2013       Florian Henry  	<florian.henry@open-concept.pro>
+ *
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 
-dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
-dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/html.formagefodd.class.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agefodd_session_admlevel.class.php');
+require_once('../class/agefodd_training_admlevel.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/html.formagefodd.class.php');
+require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
 
 $langs->load("admin");
@@ -75,8 +75,7 @@ if ($action == 'sessionlevel_create')
 		}
 		else
 		{
-			dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
-			$mesg = '<div class="error">'.$result_stat->error.'</div>';
+			setEventMessage($agf_static->error,'errors');
 		}
 	}
 	else
@@ -93,7 +92,7 @@ if ($action == 'sessionlevel_create')
 
 	if ($agf->level_rank>3)
 	{
-		$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
+		setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"),'errors');
 	}
 	else
 	{
@@ -101,8 +100,7 @@ if ($action == 'sessionlevel_create')
 
 		if ($result1!=1)
 		{
-			dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -124,8 +122,7 @@ if ($action == 'sessionlevel_update')
 			$result2 = $agf->shift_indice($user,'less');
 			if ($result1!=1)
 			{
-				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 
@@ -135,8 +132,7 @@ if ($action == 'sessionlevel_update')
 			$result1 = $agf->shift_indice($user,'more');
 			if ($result1!=1)
 			{
-				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 
@@ -170,8 +166,7 @@ if ($action == 'sessionlevel_update')
 					}
 					else
 					{
-						dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
-						$mesg = '<div class="error">'.$result_stat->error.'</div>';
+						setEventMessage($agf_static->error,'errors');
 					}
 				}
 			}
@@ -184,15 +179,14 @@ if ($action == 'sessionlevel_update')
 
 			if ($agf->level_rank>3)
 			{
-				$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
+				setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"),'errors');
 			}
 			else
 			{
 				$result1 = $agf->update($user);
 				if ($result1!=1)
 				{
-					dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-					$mesg = '<div class="error">'.$agf->error.'</div>';
+					setEventMessage($agf_static->error,'errors');
 				}
 			}
 		}
@@ -204,14 +198,13 @@ if ($action == 'sessionlevel_update')
 			$result = $agf->delete($user);
 			if ($result!=1)
 			{
-				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf_static->error,'errors');
 			}
 		}
 	}
 	else
 	{
-		$mesg = '<div class="error">This action do not exists</div>';
+		setEventMessage('This action do not exists','errors');
 	}
 }
 
@@ -251,7 +244,7 @@ if ($result0>0)
 	print "</tr>\n";
 
 	$var=true;
-	foreach ($admlevel->line as $line)
+	foreach ($admlevel->lines as $line)
 	{
 		$var=!$var;
 		$toplevel='';
@@ -296,6 +289,5 @@ print '</tr>';
 print '</form>';
 print '</table><br>';
 
-
-$db->close();
 llxFooter();
+$db->close();

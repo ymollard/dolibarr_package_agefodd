@@ -57,7 +57,6 @@ class Agefodd extends CommonObject
 	var $note_public;
 	
 	var $fk_formation_catalogue;
-	var $intitule;
 	var $priorite;
 	
 	var $lines=array();
@@ -783,7 +782,7 @@ class Agefodd extends CommonObject
 
 		if ($result2 > 0)
 		{
-			foreach ($admlevel->line as $line)
+			foreach ($admlevel->lines as $line)
 			{
 				$actions = new Agefodd_training_admlevel($this->db);
 

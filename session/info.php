@@ -58,5 +58,5 @@ dol_print_object_info($agf);
 print '</td></tr></table>';
 print '</div>';
 
-$db->close();
 llxFooter();
+$db->close();

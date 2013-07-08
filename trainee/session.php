@@ -162,5 +162,5 @@ if ($id)
 	}
 }
 
-$db->close();
 llxFooter();
+$db->close();

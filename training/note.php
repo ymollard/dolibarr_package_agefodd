@@ -19,7 +19,7 @@
 */
 
 /**
- *  \file       /agefodd/training//note.php
+ *  \file       /agefodd/training/note.php
  *  \ingroup    agefodd
 *  \brief      Note on Agefodd training
 */
@@ -44,9 +44,10 @@ if (!$user->rights->agefodd->lire) accessforbidden();
 
 
 $object = new Agefodd($db);
-if (! $object->fetch($id, $ref) > 0)
+$result = $object->fetch($id, $ref);
+if ($result<0)
 {
-	dol_print_error($db);
+	setEventMessage($object->error,'errors');
 }
 
 
@@ -58,14 +59,14 @@ if ($action == 'setnote_public' && $user->rights->commande->creer)
 {
 	$object->fetch($id);
 	$result=$object->update_note(dol_html_entity_decode(GETPOST('note_public'), ENT_QUOTES),'_public');
-	if ($result < 0) dol_print_error($db,$object->error);
+	if ($result < 0) setEventMessage($object->error,'errors');
 }
 
 else if ($action == 'setnote_private' && $user->rights->commande->creer)
 {
 	$object->fetch($id);
 	$result=$object->update_note(dol_html_entity_decode(GETPOST('note_private'), ENT_QUOTES),'_private');
-	if ($result < 0) dol_print_error($db,$object->error);
+	if ($result < 0) setEventMessage($object->error,'errors');
 }
 
 /*
@@ -95,7 +96,5 @@ if ($id > 0 || ! empty($ref))
 	print '</div>';
 }
 
-
 llxFooter();
 $db->close();
-?>

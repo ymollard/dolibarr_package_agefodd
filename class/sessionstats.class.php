@@ -2,6 +2,7 @@
 /* Copyright (C) 2003      Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (c) 2005-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
 * Copyright (C) 2005-2009 Regis Houssin        <regis@dolibarr.fr>
+* Copyright (C) 2012      JF FERRY             <jfefe@aternatik.fr>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,8 +23,8 @@
  *       \ingroup    agefodd
  *       \brief      Fichier de la classe de gestion des stats des Formation
 */
-include_once DOL_DOCUMENT_ROOT . "/core/class/stats.class.php";
-include_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
+require_once DOL_DOCUMENT_ROOT . "/core/class/stats.class.php";
+require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
 
 dol_include_once("/agefodd/class/agsession.class.php");
 
@@ -169,5 +170,3 @@ class SessionStats extends Stats
 		return $this->_getAllByYear($sql);
 	}
 }
-
-?>

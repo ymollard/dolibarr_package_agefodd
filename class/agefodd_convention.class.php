@@ -37,6 +37,23 @@ class Agefodd_convention
 	var $table_element='agefodd';
 	var $id;
 
+
+	var $sessid;
+	var $socid;
+	var $socname;
+	var $intro1;
+	var $intro2;
+	var $art1;
+	var $art2;
+	var $art3;
+	var $art4;
+	var $art5;
+	var $art6;
+	var $art7;
+	var $art8;
+	var $sig;
+	var $notes;
+
 	/**
 	 *  Constructor
 	 *

@@ -72,6 +72,5 @@ print '<a href="'.dol_buildpath('/agefodd/COPYING',1).'">License GPL</a>';
 
 
 llxFooter();
-
 $db->close();
 ?>

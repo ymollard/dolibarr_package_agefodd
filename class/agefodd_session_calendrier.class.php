@@ -38,13 +38,20 @@ class Agefodd_sesscalendar
 	var $table_element='agefodd';
 	var $id;
 
-	var $lines;
+	var $id;
+	var $date_session;
+	var $heured;
+	var $heuref;
+	var $sessid;
+	var $fk_actioncomm;
+
+	var $lines=array();
 
 	/**
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
-	 */
+	*/
 	function __construct($DB)
 	{
 		$this->db = $DB;

@@ -173,7 +173,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			}
 			else
 			{
-				setEventMessage($result_stat->error,'errors');
+				setEventMessage($agf_static->error,'errors');
 			}
 		}
 		else
@@ -466,5 +466,5 @@ if ($action != 'create' && $action != 'edit' && $action != 'update')
 
 print '</div>';
 
-$db->close();
 llxFooter();
+$db->close();

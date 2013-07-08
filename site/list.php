@@ -121,5 +121,6 @@ if ($action != 'create' && $action != 'edit')
 
 print '</div>';
 
-$db->close();
+
 llxFooter();
+$db->close();

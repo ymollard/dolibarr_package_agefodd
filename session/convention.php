@@ -430,7 +430,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	{
 		$sig = $agf_soc->nom."\n";
 		$sig.= $langs->trans('AgfConvArtSig').' ';
-		$sig.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->name." (*)";
+		$sig.= ucfirst(strtolower($agf_contact->civilite)).' '.$agf_contact->firstname.' '.$agf_contact->lastname." (*)";
 	}
 
 	print_fiche_titre($langs->trans("AgfNewConv"));
@@ -664,7 +664,7 @@ else
 
 
 /*
- * Barre d'actions
+ * Action tabs
 *
 */
 
@@ -692,7 +692,5 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 
 print '</div>';
 
+llxFooter();
 $db->close();
-
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

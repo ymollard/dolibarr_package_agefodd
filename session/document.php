@@ -364,5 +364,5 @@ if (!empty($id))
 
 }
 
-$db->close();
 llxFooter();
+$db->close();

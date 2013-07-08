@@ -78,7 +78,7 @@ IV - CE QU'AGEFODD PEUT FAIRE
 - gérer le planning et simplifier l'organisation de sessions de formations
   (ces sessions peuvent être intra ou inter entreprise et multiformateurs),
 - permettre la gestion des tâches administratives liées à l'organisation
-  de ces session,
+  de ces session par formation,
 - automatiser la classification de ces tâches par ordre de priorités réelles,
 - produire de façon automatisée la quasie totalité de la documentation
   administrative,
@@ -99,4 +99,4 @@ VI - Contact developpeur
 Le projet est héberger sur Doliforge 
 	https://doliforge.org/projects/agefodd/
 	
-Pour toute questions contactez : florian.henry@open-concept.pro
+Pour toute questions contacter : florian.henry@open-concept.pro

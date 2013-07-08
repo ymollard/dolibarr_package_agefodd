@@ -42,7 +42,7 @@ class Agefoddcalendrier extends CommonObject
 	var $heured='';
 	var $heuref='';
 
-	var $lines;
+	var $lines=array();
 
 	/**
 	 *  Constructor

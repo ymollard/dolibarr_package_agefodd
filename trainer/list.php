@@ -137,6 +137,5 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 
 print '</div>';
 
-
-$db->close();
 llxFooter();
+$db->close();

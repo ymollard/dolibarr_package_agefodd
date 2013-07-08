@@ -235,6 +235,5 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 // fin colonne droite
 print '</td></tr></table>';
 
-
-$db->close();
 llxFooter();
+$db->close();

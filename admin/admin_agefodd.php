@@ -53,11 +53,11 @@ if ($action == 'updateMaskType')
 
 	if (! $error)
 	{
-		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+		setEventMessage($langs->trans("SetupSaved"),'mesgs');
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+		setEventMessage($langs->trans("Error"),'errors');
 	}
 }
 
@@ -71,11 +71,11 @@ if ($action == 'updateMask')
 
 	if (! $error)
 	{
-		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+		setEventMessage($langs->trans("SetupSaved"),'mesgs');
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+		setEventMessage($langs->trans("Error"),'errors');
 	}
 }
 
@@ -89,11 +89,11 @@ if ($action == 'updateMaskCertifType')
 
 	if (! $error)
 	{
-		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+		setEventMessage($langs->trans("SetupSaved"),'mesgs');
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+		setEventMessage($langs->trans("Error"),'errors');
 	}
 }
 
@@ -107,11 +107,11 @@ if ($action == 'updateMaskCertif')
 
 	if (! $error)
 	{
-		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+		setEventMessage($langs->trans("SetupSaved"),'mesgs');
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+		setEventMessage($langs->trans("Error"),'errors');
 	}
 }
 
@@ -194,32 +194,30 @@ if ($action == 'setvar')
 				{
 					$langs->load("errors");
 					$tmparray=explode(':',$result);
-					$msg = '<div class="error">'.$langs->trans('ErrorFileIsInfectedWithAVirus',$tmparray[1]).'</div>';
+					setEventMessage($langs->trans('ErrorFileIsInfectedWithAVirus',$tmparray[1]),'errors');
 					$error++;
 				}
 				else
 				{
-					$msg = '<div class="error">'.$langs->trans("ErrorFailedToSaveFile").'</div>';
+					setEventMessage($langs->trans("ErrorFailedToSaveFile"),'errors');
 					$error++;
 				}
 			}
 			else
 			{
-				$msg = '<div class="error">'.$langs->trans("ErrorOnlyPngJpgSupported").'</div>';
+				setEventMessage($langs->trans("ErrorOnlyPngJpgSupported"),'errors');
 				$error++;
 			}
 		}
 	}
 
-
-
 	if (! $error)
 	{
-		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+		setEventMessage($langs->trans("SetupSaved"),'mesgs');
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")." ".$msg."</font>";
+		setEventMessage($langs->trans("Error")." ".$msg,'errors');
 	}
 }
 
@@ -227,7 +225,7 @@ if ($action == 'setvarother')
 {
 	$usedolibarr_agenda=GETPOST('AGF_DOL_AGENDA','alpha');
 	if ($usedolibarr_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
-		$msg=$langs->trans("AgfAgendaModuleNedeed");
+		setEventMessage($langs->trans("AgfAgendaModuleNedeed"),'errors');
 		$error++;
 	}
 	else {
@@ -295,11 +293,11 @@ if ($action == 'setvarother')
 
 	if (! $error)
 	{
-		$mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+		setEventMessage($langs->trans("SetupSaved"),'mesgs');
 	}
 	else
 	{
-		$mesg = "<font class=\"error\">".$langs->trans("Error")." ".$msg."</font>";
+		setEventMessage($langs->trans("Error")." ".$msg,'errors');
 	}
 }
 
@@ -341,8 +339,7 @@ if ($action == 'sessionlevel_create')
 		}
 		else
 		{
-			dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
-			$mesg = '<div class="error">'.$result_stat->error.'</div>';
+			setEventMessage($agf_static->error,'errors');
 		}
 	}
 	else
@@ -358,7 +355,7 @@ if ($action == 'sessionlevel_create')
 
 	if ($agf->level_rank>3)
 	{
-		$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
+		setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"),'errors');
 	}
 	else
 	{
@@ -366,8 +363,7 @@ if ($action == 'sessionlevel_create')
 
 		if ($result1!=1)
 		{
-			dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-			$mesg = '<div class="error">'.$agf->error.'</div>';
+			setEventMessage($agf->error,'errors');
 		}
 	}
 
@@ -392,8 +388,7 @@ if ($action == 'sessionlevel_update')
 			$result2 = $agf->shift_indice($user,'less');
 			if ($result1!=1)
 			{
-				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 
@@ -403,8 +398,7 @@ if ($action == 'sessionlevel_update')
 			$result1 = $agf->shift_indice($user,'more');
 			if ($result1!=1)
 			{
-				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 
@@ -438,8 +432,7 @@ if ($action == 'sessionlevel_update')
 					}
 					else
 					{
-						dol_syslog("Agefodd::agefodd error=".$result_stat->error, LOG_ERR);
-						$mesg = '<div class="error">'.$result_stat->error.'</div>';
+						setEventMessage($agf_static->error,'errors');
 					}
 				}
 			}
@@ -452,15 +445,14 @@ if ($action == 'sessionlevel_update')
 
 			if ($agf->level_rank>3)
 			{
-				$mesg = '<div class="error">'.$langs->trans("AgfAdminNoMoreThan3Level").'</div>';
+				setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"),'errors');
 			}
 			else
 			{
 				$result1 = $agf->update($user);
 				if ($result1!=1)
 				{
-					dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-					$mesg = '<div class="error">'.$agf->error.'</div>';
+					setEventMessage($agf->error,'errors');
 				}
 			}
 		}
@@ -472,14 +464,13 @@ if ($action == 'sessionlevel_update')
 			$result = $agf->delete($user);
 			if ($result!=1)
 			{
-				dol_syslog("Agefodd::agefodd error=".$agf->error, LOG_ERR);
-				$mesg = '<div class="error">'.$agf->error.'</div>';
+				setEventMessage($agf->error,'errors');
 			}
 		}
 	}
 	else
 	{
-		$mesg = '<div class="error">This action do not exists</div>';
+		setEventMessage('This action do not exists','errors');
 	}
 }
 
@@ -492,8 +483,7 @@ if ($action=='sessioncalendar_create'){
 	$result = $tmpl_calendar->create($user);
 	if ($result!=1)
 	{
-		dol_syslog("Agefodd::agefodd error=".$tmpl_calendar->error, LOG_ERR);
-		$mesg = '<div class="error">'.$tmpl_calendar->error.'</div>';
+		setEventMessage($tmpl_calendar->error,'errors');
 	}
 }
 
@@ -505,8 +495,7 @@ if ($action=='sessioncalendar_delete') {
 	$result = $tmpl_calendar->delete($user);
 	if ($result!=1)
 	{
-		dol_syslog("Agefodd::agefodd error=".$tmpl_calendar->error, LOG_ERR);
-		$mesg = '<div class="error">'.$tmpl_calendar->error.'</div>';
+		setEventMessage($tmpl_calendar->error,'errors');
 	}
 }
 
@@ -1187,7 +1176,7 @@ if ($result0>0)
 	print "</tr>\n";
 
 	$var=true;
-	foreach ($admlevel->line as $line)
+	foreach ($admlevel->lines as $line)
 	{
 		$var=!$var;
 		$toplevel='';
@@ -1283,5 +1272,6 @@ print '</td></tr>';
 print '</table>';
 print '</form>';
 
-$db->close();
+
 llxFooter();
+$db->close();

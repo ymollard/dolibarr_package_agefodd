@@ -215,5 +215,5 @@ else
 	setEventMessage($agf->error,'errors');
 }
 
-$db->close();
 llxFooter();
+$db->close();

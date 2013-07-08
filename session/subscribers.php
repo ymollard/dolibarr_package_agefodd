@@ -873,5 +873,5 @@ if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" &&
 
 print '</div>';
 
-$db->close();
 llxFooter();
+$db->close();

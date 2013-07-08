@@ -326,5 +326,6 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 
 print '</div>';
 
-$db->close();
+
 llxFooter();
+$db->close();

@@ -46,7 +46,8 @@ class Agefodd_session_admlevel extends CommonObject
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
-	var $line;
+	
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -253,12 +254,11 @@ class Agefodd_session_admlevel extends CommonObject
 				$line->intitule = $obj->intitule;
 				$line->alerte = $obj->delais_alerte;
 
-				$this->line[$i]=$line;
+				$this->lines[$i]=$line;
 				$i++;
 			}
 			$this->db->free($resql);
 			return $num;
-			//return 1;
 		}
 		else
 		{
