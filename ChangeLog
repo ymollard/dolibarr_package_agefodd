@@ -337,7 +337,7 @@ For All :
 ***** ChangeLog for 2.1 compared to 2.0.29 *****
 For All :
 	- Compatibility with Dolibarr 3.4
-	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	- tasks_agefodd #932 : Add calculation of the cost of a session
+	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	
 	- tasks_agefodd #932 : Add calculation of the cost of a session
 	- New Screen : Mass Archive sessions per year 
 	- Import/Eport trainee 
@@ -349,9 +349,10 @@ For All :
 	- Add administrative task per training (base on admin administrative task)
 	- Fix Admin administrative task (when all are deleted you can create new ones)
 	- Admin : Switch to turn off OPCA feature
+	- Add session attached files tab (to attach all kind of document)
 For Dev:
-	- Rewrite $line to $lines in most of classes
-	- Implement $lines object in most of classes for fetch_all (or similar) in classes
+	- Rewrite $line to $lines in all classes
+	- Implement $lines object in all classes for fetch_all (or similar) methods
 	- No more use of dol_htmloutput_mesg, uses setEventMessage instead
 	- reformat (auto-indent) all module code
 	- Remove dol_include_once when possible replace by require_once

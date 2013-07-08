@@ -25,11 +25,20 @@
 *  \brief      files linked to session
 */
 
-require '../main.inc.php';
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
+$res=@include("../../main.inc.php");				// For root directory
+if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
+if (! $res) die("Include of main fails");
+
 require_once '../lib/agefodd.lib.php';
+require_once('../class/agsession.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
+require_once('../class/html.formagefodd.class.php');
 
 $langs->load("companies");
 $langs->load('other');
@@ -64,7 +73,7 @@ if ($result<0)
 {
 	setEventMessage($agf->error,'errors');
 }else {
-	$upload_dir = $conf->agefodd->multidir_output[$object->entity] . "/" . $object->id ;
+	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id ;
 }
 
 
@@ -102,9 +111,10 @@ if ($action == 'confirm_deletefile' && $confirm == 'yes')
 */
 
 $form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
-$help_url='EN:Module_Third_Parties|FR:Module_Tiers|ES:Empresas';
-llxHeader('',$langs->trans("ThirdParty").' - '.$langs->trans("Files"),$help_url);
+$help_url='';
+llxHeader('',$langs->trans("Agefodd").' - '.$langs->trans("Files"),$help_url);
 
 if ($object->id)
 {
@@ -116,7 +126,7 @@ if ($object->id)
 
 	$form=new Form($db);
 	
-	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDocuments"), 0, 'bill');
+	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 
 
 	// Construit liste des fichiers
@@ -133,7 +143,7 @@ if ($object->id)
 	print '</div>';
 
 	// Print session card
-	$agf->printSessionInfo();
+	$object->printSessionInfo();
 
 	print '&nbsp';
 	print '</div>';
@@ -150,10 +160,10 @@ if ($object->id)
 	$formfile=new FormFile($db);
 
 	// Show upload form
-	$formfile->form_attach_new_file($_SERVER["PHP_SELF"].'?id='.$object->id,'',0,0,$user->rights->societe->creer,50,$object);
+	$formfile->form_attach_new_file($_SERVER["PHP_SELF"].'?id='.$object->id,'',0,0,$user->rights->agefodd->creer,50,$object);
 
 	// List of document
-	$formfile->list_of_documents($filearray,$object,'societe');
+	$formfile->list_of_documents($filearray,$object,'agefodd');
 
 	print "<br><br>";
 }

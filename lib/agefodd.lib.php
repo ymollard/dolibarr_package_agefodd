@@ -128,6 +128,11 @@ function session_prepare_head($object,$showconv=0)
 	$head[$h][1] = $langs->trans("AgfSendDocuments");
 	$head[$h][2] = 'send_docs';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/session/document_files.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Documents");
+	$head[$h][2] = 'documentfiles';
+	$h++;
 
 	if ($showconv)
 	{
