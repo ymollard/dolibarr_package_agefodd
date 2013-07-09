@@ -691,3 +691,4 @@ AgfFactureGenererProp=Create proposal
 AgfFactureSelectProp=Select proposal
 AgfFacturePropBeforeSelectHelp=Before you can link a proposal for this session, you must have the have generated.<br /> You can do this easily by clicking on the icon of the first line ("generate the proposal").
 AgfFactureSeeFacMail=Send invoice %s by email
+AgfProductServiceLinked=Product or service linked

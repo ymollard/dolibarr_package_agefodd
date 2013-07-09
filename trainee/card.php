@@ -357,7 +357,7 @@ if ($action == 'nfcontact' && !isset($_GET["ph"])&& $user->rights->agefodd->cree
 			}
 		}
 	}
-	$form->select_contacts(0,'','contact',1,$exclude_array);
+	$form->select_contacts(0,'','contact',1,$exclude_array,'',1,'',1);
 	print '</td></tr>';
 
 	print '</table>';

@@ -586,9 +586,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 		print '<td><table class="nobordernopadding"><tr><td>';
 		if (!empty($fk_soc_crea)) {
-			$form->select_contacts($fk_soc_crea,'','contact',1,'','',1);
+			$form->select_contacts($fk_soc_crea,'','contact',1,'','',1,'',1);
 		} else {
-			$form->select_contacts(0,'','contact',1,'','',1);
+			$form->select_contacts(0,'','contact',1,'','',1,'',1);
 		}
 		print '</td>';
 		print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';
@@ -725,9 +725,9 @@ else
 						print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 						print '<td><table class="nobordernopadding"><tr><td>';
 						if (!empty($agf->fk_soc)) {
-							$form->select_contacts($agf->fk_soc,$agf->sourcecontactid,'contact',1,'','',1);
+							$form->select_contacts($agf->fk_soc,$agf->sourcecontactid,'contact',1,'','',1,'',1);
 						} else {
-							$form->select_contacts(0,$agf->sourcecontactid,'contact',1,'','',1);
+							$form->select_contacts(0,$agf->sourcecontactid,'contact',1,'','',1,'',1);
 						}
 						print '</td>';
 						print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';

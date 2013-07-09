@@ -350,6 +350,9 @@ For All :
 	- Fix Admin administrative task (when all are deleted you can create new ones)
 	- Admin : Switch to turn off OPCA feature
 	- Add session attached files tab (to attach all kind of document)
+	- Add product link to training
+	- Add proposal link to session
+	- On going : Document linked screen : On create proposal, order, invoice auto create the full proposal, order, invoice with product link to trainning line added and auto link to seesion/thridparty
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods

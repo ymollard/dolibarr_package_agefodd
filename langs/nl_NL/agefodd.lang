@@ -691,3 +691,4 @@ AgfFactureGenererProp=Créé la proposition commerciale
 AgfFactureSelectProp=Selectionné une proposition commerciale
 AgfFacturePropBeforeSelectHelp=Avant de selectioné une proposition commerciale pour cette session, vous devez la crée.<br /> Vous pouvez le faire facilement en cliquant le l'icone crée la proposition.
 AgfFactureSeeFacMail=Envoyer la facture %s par email
+AgfProductServiceLinked=Product or service linked

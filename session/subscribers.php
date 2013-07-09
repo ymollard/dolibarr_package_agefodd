@@ -392,7 +392,7 @@ if (!empty($id))
 						print '<tr><td>'.$langs->trans("AgfOPCAContact").'</td>';
 						print '	<td>';
 						if (!empty($agf->fk_soc_OPCA)) {
-							$form->select_contacts($agf->fk_soc_OPCA,$agf->fk_socpeople_OPCA,'fksocpeopleOPCA',1);
+							$form->select_contacts($agf->fk_soc_OPCA,$agf->fk_socpeople_OPCA,'fksocpeopleOPCA',1,'','',1,'',1);
 						}
 						else
 						{
@@ -637,7 +637,7 @@ if (!empty($id))
 				print '<tr><td width="20%">'.$langs->trans("AgfOPCAContact").'</td>';
 				print '	<td>';
 				if (!empty($agf->fk_soc_OPCA)) {
-					$form->select_contacts($agf->fk_soc_OPCA,$agf->fk_socpeople_OPCA,'fksocpeopleOPCA',1);
+					$form->select_contacts($agf->fk_soc_OPCA,$agf->fk_socpeople_OPCA,'fksocpeopleOPCA',1,'','',1,'',1);
 				}
 				else
 				{

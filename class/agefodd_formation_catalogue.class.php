@@ -696,7 +696,7 @@ class Agefodd extends CommonObject
 	{
 		global $langs;
 
-		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree, c.fk_product";
+		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree, c.fk_product, ";
 		$sql.= " (SELECT MAX(sess1.datef) FROM ".MAIN_DB_PREFIX."agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
 		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
