@@ -19,23 +19,22 @@
 
 
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_convention.modules.php
- \brief		Page permettant la création de la convention de formation au format pdf pour uen structure donnée.
-\version	$Id$
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_convention.modules.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for contract / convention
+ */
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_facture.class.php');
-dol_include_once('/agefodd/class/agefodd_contact.class.php');
-dol_include_once('/agefodd/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/core/lib/pdf.lib.php');
-dol_include_once('/core/lib/function.lib.php');
-dol_include_once('/core/lib/company.lib.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/societe/class/societe.class.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_contact.class.php');
+require_once('../class/agefodd_convention.class.php');
+require_once('../class/agefodd_place.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 
 
 class pdf_convention extends ModelePDFAgefodd
@@ -160,10 +159,13 @@ class pdf_convention extends ModelePDFAgefodd
 			$result = $agf_comid->fetch($id,$socid);
 
 			$agf_comdetails= new Agefodd_convention($this->db);
-			if (!empty($agf_comid->comid)) {
-				$result = $agf_comdetails->fetch_commande_lines($agf_comid->comid);
-			} elseif (!empty($agf_comid->facid)) {
-				$result = $agf_comdetails->fetch_facture_lines($agf_comid->facid);
+			if (!empty($agf_comid->facid)) {
+				$result = $agf_comdetails->fetch_invoice_lines($agf_comid->facid);
+			}
+			elseif (!empty($agf_comid->comid)) {
+				$result = $agf_comdetails->fetch_order_lines($agf_comid->comid);
+			}elseif (!empty($agf_comid->propalid)) {
+				$result = $agf_comdetails->fetch_propal_lines($agf_comid->propalid);
 			} else {
 				$result=false;
 			}
@@ -493,27 +495,27 @@ class pdf_convention extends ModelePDFAgefodd
 				$total_ht = 0;
 				$total_tva = 0;
 				$total_ttc = 0;
-				for ($i = 0; $i < count($agf_comdetails->line); $i++)
+				for ($i = 0; $i < count($agf_comdetails->lines); $i++)
 				{
 					$pdf->SetXY($posX, $posY);
 					$posY = $pdf->GetY();
-					$pdf->writeHTMLCell($w[0], 0, $posX, $posY,$outputlangs->transnoentities($agf_comdetails->line[$i]->description),1,1);
+					$pdf->writeHTMLCell($w[0], 0, $posX, $posY,$outputlangs->transnoentities($agf_comdetails->lines[$i]->description),1,1);
 					$posY_after = $pdf->GetY();
 					$hauteur=($posY_after-$posY);
 
 					$pdf->SetXY($posX + $w[0], $posY);
-					$pdf->Cell($w[1],$hauteur,vatrate($agf_comdetails->line[$i]->tva_tx,1),1,0,'C',$fill);
-					$pdf->Cell($w[2],$hauteur,price($agf_comdetails->line[$i]->price),1,0,'R',$fill);
-					$pdf->Cell($w[3],$hauteur,$agf_comdetails->line[$i]->qty,1,0,'C',$fill);
-					$pdf->Cell($w[4],$hauteur,price($agf_comdetails->line[$i]->total_ht),1,0,'R',$fill);
-					$pdf->Cell($w[5],$hauteur,price($agf_comdetails->line[$i]->total_ttc),1,0,'R',$fill);
+					$pdf->Cell($w[1],$hauteur,vatrate($agf_comdetails->lines[$i]->tva_tx,1),1,0,'C',$fill);
+					$pdf->Cell($w[2],$hauteur,price($agf_comdetails->lines[$i]->price,0,$outputlangs,1,-1,2),1,0,'R',$fill);
+					$pdf->Cell($w[3],$hauteur,$agf_comdetails->lines[$i]->qty,1,0,'C',$fill);
+					$pdf->Cell($w[4],$hauteur,price($agf_comdetails->lines[$i]->total_ht,0,$outputlangs),1,0,'R',$fill);
+					$pdf->Cell($w[5],$hauteur,price($agf_comdetails->lines[$i]->total_ttc,0,$outputlangs),1,0,'R',$fill);
 
 					$pdf->Ln();
 					$posY = $pdf->GetY();
 
-					$total_ht += $agf_comdetails->line[$i]->total_ht;
-					$total_tva += $agf_comdetails->line[$i]->total_tva;
-					$total_ttc += $agf_comdetails->line[$i]->total_ttc;
+					$total_ht += $agf_comdetails->lines[$i]->total_ht;
+					$total_tva += $agf_comdetails->lines[$i]->total_tva;
+					$total_ttc += $agf_comdetails->lines[$i]->total_ttc;
 				}
 
 				$pdf->SetXY( $posX, $posY);
@@ -523,17 +525,17 @@ class pdf_convention extends ModelePDFAgefodd
 				// total HT
 				$pdf->SetXY($posX + array_sum($w) - $w[4] -$w[5], $posY);
 				$pdf->Cell($w[4],5,$langs->transnoentities("TotalHT"),0,0,'R',1);
-				$pdf->Cell($w[5],5,price($total_ht),1,0,'R');
+				$pdf->Cell($w[5],5,price($total_ht,0,$outputlangs),1,0,'R');
 				$posY += 6;
 				// total TVA
 				$pdf->SetXY($posX + array_sum($w) - $w[4] - $w[5], $posY);
 				$pdf->Cell($w[4],5,$langs->transnoentities("TotalVAT"),0,0,'R',1);
-				$pdf->Cell($w[5],5,price($total_tva),1,0,'R');
+				$pdf->Cell($w[5],5,price($total_tva,0,$outputlangs),1,0,'R');
 				$posY += 6;
 				// total TTC
 				$pdf->SetXY($posX + array_sum($w) - $w[4] - $w[5], $posY);
 				$pdf->Cell($w[4],5,$langs->transnoentities("TotalTTC"),0,0,'R',1);
-				$pdf->Cell($w[5],5,price($total_ttc),1,0,'R');
+				$pdf->Cell($w[5],5,price($total_ttc,0,$outputlangs),1,0,'R');
 				$posY += 5;
 				// txt "montant euros"
 				$pdf->SetXY( $posX, $posY);
@@ -822,6 +824,3 @@ class pdf_convention extends ModelePDFAgefodd
 	}
 
 }
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

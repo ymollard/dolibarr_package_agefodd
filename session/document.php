@@ -24,9 +24,6 @@
  *	\brief      list of document
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -41,6 +38,7 @@ require_once('../class/html.formagefodd.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
 require_once('../lib/agefodd_document.lib.php');
+
 
 $langs->load('propal');
 
@@ -145,6 +143,19 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	}
 	else $file = $model.'_'.$id.'.pdf';
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
+}
+
+if (($action == 'createorder') && $user->rights->agefodd->creer)
+{
+	//Define new order
+	$order= new Commande($db);
+	$order->socid=$socid;
+	
+	/*$order->lines[0]=new OrderLine($db);
+	$order->lines[0]->*/
+	
+
+	
 }
 
 /*

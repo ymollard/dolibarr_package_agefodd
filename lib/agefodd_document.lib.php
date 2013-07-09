@@ -10,27 +10,29 @@ function show_conv($file, $socid,$nom_courrier)
 	$result = $agf->fetch($id, $socid);
 
 	$continue=true;
-	// On récupére le contenu du bon de commande
+	// Get proposal/order/invoice informations
 	$agf_comid= new Agefodd_facture($db);
 	$result = $agf_comid->fetch($id,$socid);
 
-	if (empty($agf_comid->comid) && empty($agf_comid->facid) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
-		$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
-		$continue=false;
-	} elseif (empty($agf_comid->comid) && empty($agf_comid->facid) && $conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
-		$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelpOpt"),1,'help');
-		$continue=false;
-	}  elseif (empty($agf_comid->comid) && !empty($agf_comid->facid) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
-		$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
-		$continue=false;
+	if (empty($agf_comid->propalid)) {
+		if (empty($agf_comid->comid) && empty($agf_comid->facid) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
+			$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
+			$continue=false;
+		} elseif (empty($agf_comid->comid) && empty($agf_comid->facid) && $conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
+			$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelpOpt"),1,'help');
+			$continue=false;
+		}  elseif (empty($agf_comid->comid) && !empty($agf_comid->facid) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
+			$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
+			$continue=false;
+		}
 	}
 
-	// Si la convention a déjà été complété (création d'un entrée dans la table)
+	// If convention contract have already been set (database records exists)
 	if ($agf->id && $continue)
 	{
 		if (is_file($conf->agefodd->dir_output.'/'.$file))
 		{
-			// afficher
+			// Display
 			$legende = $langs->trans("AgfDocOpen");
 			$mess = '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file='.$file.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
@@ -40,20 +42,20 @@ function show_conv($file, $socid,$nom_courrier)
 			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=refresh&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-			// Supprimer
+			// Delete
 			$legende = $langs->trans("AgfDocDel");
 			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$socid.'&action=del&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		}
 		else
 		{
-			// Création de la convention au format PDF
+			// Create PDF document
 			$legende = $langs->trans("AgfDocCreate");
 			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=create&socid='.$socid.'&model='.$model.'&cour='.$nom_courrier.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		}
 
-		// editer la convention pour modification
+		// Edit Convention
 		$legende = $langs->trans("AgfDocEdit");
 		$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=edit&id='.$agf->id.'" alt="'.$legende.'" title="'.$legende.'">';
 		$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
@@ -62,7 +64,7 @@ function show_conv($file, $socid,$nom_courrier)
 	}
 	elseif ($continue)
 	{
-		// Si la convention n'a pas encore été renseignée, il faut le faire maintenant
+		// If not exists you should do it now
 		$legende = $langs->trans("AgfDocEdit");
 		$mess.= '<a href="'.dol_buildpath('/agefodd/session/convention.php',1).'?action=create&sessid='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 		$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
@@ -129,9 +131,10 @@ function show_fac($file, $socid, $mdle)
 	{
 		if ($agf->comid)
 		{
-			// See Order card
+			// Create order
 			$legende = $langs->trans("AgfFactureSeeBon",$agf->comref);
-			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
+			
+			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=createorder&id='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Go to send mail card

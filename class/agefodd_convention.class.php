@@ -53,6 +53,8 @@ class Agefodd_convention
 	var $art8;
 	var $sig;
 	var $notes;
+	
+	var $lines=array();
 
 	/**
 	 *  Constructor
@@ -263,16 +265,16 @@ class Agefodd_convention
 	 *  @param	int		$comid    order id
 	 *  @return int          	<0 if KO, >0 if OK
 	 */
-	function fetch_commande_lines($comid)
+	function fetch_order_lines($comid)
 	{
+		require_once(DOL_DOCUMENT_ROOT ."/product/class/product.class.php");
+		
 		global $langs;
 
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
-		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc,";
-		$sql.= " p.ref as productref , p.label as productlabel";
+		$sql.= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql.= " FROM ".MAIN_DB_PREFIX."commandedet as c";
-		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."product as p ON p.rowid=c.fk_product";
 		$sql.= " WHERE c.fk_commande = ".$comid;
 
 		dol_syslog(get_class($this)."::fetch_commande_lines sql=".$sql, LOG_DEBUG);
@@ -287,22 +289,33 @@ class Agefodd_convention
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->rowid = $obj->rowid;
-				$this->line[$i]->fk_product = $obj->fk_product;
-				if (empty($obj->description)) {
-					$this->line[$i]->description = $obj->productref.' - '.$obj->productlabel;
-				}else {
-					$this->line[$i]->description = $obj->description;
-				}
 
-				$this->line[$i]->tva_tx = $obj->tva_tx;
-				$this->line[$i]->remise_percent = $obj->remise_percent;
-				$this->line[$i]->fk_remise_except = $obj->fk_remise_except;
-				$this->line[$i]->price = $obj->price;
-				$this->line[$i]->qty = $obj->qty;
-				$this->line[$i]->total_ht = $obj->total_ht;
-				$this->line[$i]->total_tva = $obj->total_tva;
-				$this->line[$i]->total_ttc = $obj->total_ttc;
+				$line=new AgfConventionLine();
+
+				$line->rowid = $obj->rowid;
+				$line->fk_product = $obj->fk_product;
+				if (!empty($line->fk_product)) {
+					$prod_static= new Product($this->db);
+					$result = $prod_static->fetch($line->fk_product);
+					if ($result < 0) {
+						dol_syslog(get_class($this)."::fetch_propal_lines ".$prod_static->error, LOG_ERR);
+					}
+					$line->description = $prod_static->ref . ' ' . $prod_static->description;
+					
+				} else {
+					$line->description = $obj->description;
+				}
+				$line->tva_tx = $obj->tva_tx;
+				$line->remise_percent = $obj->remise_percent;
+				$line->fk_remise_except = $obj->fk_remise_except;
+				$line->price = $obj->subprice;
+				$line->qty = $obj->qty;
+				$line->total_ht = $obj->total_ht;
+				$line->total_tva = $obj->total_tva;
+				$line->total_ttc = $obj->total_ttc;
+				
+				$this->lines[$i]=$line;
+				
 				$i++;
 			}
 			$this->db->free($resql);
@@ -322,17 +335,19 @@ class Agefodd_convention
 	 *  @param	int		$factid    invoice id
 	 *  @return int          	<0 if KO, >0 if OK
 	 */
-	function fetch_facture_lines($factid)
+	function fetch_invoice_lines($factid)
 	{
+		require_once(DOL_DOCUMENT_ROOT ."/product/class/product.class.php");
+		
 		global $langs;
 
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
-		$sql.= " c.fk_remise_except, c.price, c.qty, c.total_ht, c.total_tva, c.total_ttc";
+		$sql.= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql.= " FROM ".MAIN_DB_PREFIX."facturedet as c";
 		$sql.= " WHERE c.fk_facture = ".$factid;
 
-		dol_syslog(get_class($this)."::fetch_facture_lines sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_invoice_lines sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 
 		if ($resql)
@@ -344,17 +359,33 @@ class Agefodd_convention
 			while( $i < $num)
 			{
 				$obj = $this->db->fetch_object($resql);
-				$this->line[$i]->rowid = $obj->rowid;
-				$this->line[$i]->fk_product = $obj->fk_product;
-				$this->line[$i]->description = $obj->description;
-				$this->line[$i]->tva_tx = $obj->tva_tx;
-				$this->line[$i]->remise_percent = $obj->remise_percent;
-				$this->line[$i]->fk_remise_except = $obj->fk_remise_except;
-				$this->line[$i]->price = $obj->price;
-				$this->line[$i]->qty = $obj->qty;
-				$this->line[$i]->total_ht = $obj->total_ht;
-				$this->line[$i]->total_tva = $obj->total_tva;
-				$this->line[$i]->total_ttc = $obj->total_ttc;
+				
+				$line=new AgfConventionLine();
+				
+				$line->rowid = $obj->rowid;
+				$line->fk_product = $obj->fk_product;
+				if (!empty($line->fk_product)) {
+					$prod_static= new Product($this->db);
+					$result = $prod_static->fetch($line->fk_product);
+					if ($result < 0) {
+						dol_syslog(get_class($this)."::fetch_propal_lines ".$prod_static->error, LOG_ERR);
+					}
+					$line->description = $prod_static->ref . ' ' . $prod_static->description;
+					
+				} else {
+					$line->description = $obj->description;
+				}
+				$line->tva_tx = $obj->tva_tx;
+				$line->remise_percent = $obj->remise_percent;
+				$line->fk_remise_except = $obj->fk_remise_except;
+				$line->price = $obj->subprice;
+				$line->qty = $obj->qty;
+				$line->total_ht = $obj->total_ht;
+				$line->total_tva = $obj->total_tva;
+				$line->total_ttc = $obj->total_ttc;
+				
+				$this->lines[$i]=$line;
+				
 				$i++;
 			}
 			$this->db->free($resql);
@@ -363,7 +394,77 @@ class Agefodd_convention
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch_facture_lines ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_invoice_lines ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+	
+	/**
+	 *  Load Proposal lines object in memory from database
+	 *
+	 *  @param	int		$propalid    proposal id
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_propal_lines($propalid)
+	{
+		require_once(DOL_DOCUMENT_ROOT ."/product/class/product.class.php");
+		
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
+		$sql.= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
+		$sql.= " FROM ".MAIN_DB_PREFIX."propaldet as c";
+		$sql.= " WHERE c.fk_propal = ".$propalid;
+	
+		dol_syslog(get_class($this)."::fetch_propal_lines sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+	
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+	
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+	
+				$line=new AgfConventionLine();
+	
+				$line->rowid = $obj->rowid;
+				$line->fk_product = $obj->fk_product;
+				if (!empty($line->fk_product)) {
+					$prod_static= new Product($this->db);
+					$result = $prod_static->fetch($line->fk_product);
+					if ($result < 0) {
+						dol_syslog(get_class($this)."::fetch_propal_lines ".$prod_static->error, LOG_ERR);
+					}
+					$line->description = $prod_static->ref . ' ' . $prod_static->description;
+					
+				} else {
+					$line->description = $obj->description;
+				}
+				$line->tva_tx = $obj->tva_tx;
+				$line->remise_percent = $obj->remise_percent;
+				$line->fk_remise_except = $obj->fk_remise_except;
+				$line->price = $obj->subprice;
+				$line->qty = $obj->qty;
+				$line->total_ht = $obj->total_ht;
+				$line->total_tva = $obj->total_tva;
+				$line->total_ttc = $obj->total_ttc;
+	
+				$this->lines[$i]=$line;
+	
+				$i++;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_propal_lines ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -523,4 +624,23 @@ class Agefodd_convention
 	}
 
 }
-?>
+
+class AgfConventionLine {
+
+	var $rowid;
+	var $fk_product;
+	var $description;
+	var $tva_tx;
+	var $remise_percent;
+	var $fk_remise_except;
+	var $price;
+	var $qty;
+	var $total_ht;
+	var $total_tva;
+	var $total_ttc;
+
+	function __construct()
+	{
+		return 1;
+	}
+}
