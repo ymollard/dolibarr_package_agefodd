@@ -30,9 +30,9 @@ if (! $res) die("Include of main fails");
 
 require_once('../class/agefodd_formation_catalogue.class.php');
 require_once('../core/modules/agefodd/modules_agefodd.php');
-require_once('../agefodd/lib/agefodd.lib.php');
+require_once('../lib/agefodd.lib.php');
 
-require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+require_once(DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();

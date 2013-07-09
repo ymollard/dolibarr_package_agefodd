@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,19 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_attestation.modules.php
- \brief		Page permettant la création du fichier pdf contenant les attestations de formation
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_attestation.modules.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for certificate (attestation)
+ */
+
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/core/lib/company.lib.php');
-dol_include_once('/core/lib/pdf.lib.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
+require_once('../lib/agefodd.lib.php');
 
 
 class pdf_attestation extends ModelePDFAgefodd
@@ -261,22 +262,22 @@ class pdf_attestation extends ModelePDFAgefodd
 
 					$newY = $newY + 5;
 					// Bloc objectifs pedagogiques
-					if (count($agf_op->line)>0) {
+					if (count($agf_op->lines)>0) {
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs),'I', 12);
 						$hauteur = 0;
-						for ( $y = 0; $y < count($agf_op->line); $y++)
+						for ( $y = 0; $y < count($agf_op->lines); $y++)
 						{
 							$newY = $newY + $hauteur;
 							$pdf->SetXY ($this->marge_gauche + 62, $newY);
 							$width = 160;
-							$StringWidth = $pdf->GetStringWidth($agf_op->line[$y]->intitule);
+							$StringWidth = $pdf->GetStringWidth($agf_op->lines[$y]->intitule);
 							if ($StringWidth > $width) $nblines = ceil($StringWidth/$width);
 							else $nblines = 1;
 							$hauteur = $nblines * 5;
-							$pdf->Cell(10, 5, $agf_op->line[$y]->priorite.'. ', 0, 0, 'R', 0);
+							$pdf->Cell(10, 5, $agf_op->lines[$y]->priorite.'. ', 0, 0, 'R', 0);
 							$pdf->MultiCell($width,0,
-								$outputlangs->transnoentities($agf_op->line[$y]->intitule), 0,'L',0);
+								$outputlangs->transnoentities($agf_op->lines[$y]->intitule), 0,'L',0);
 
 						}
 					}
@@ -387,6 +388,3 @@ class pdf_attestation extends ModelePDFAgefodd
 		$pdf->Cell(0, 6, $outputlangs->transnoentities($this->str),0, 0, 'C', 0);
 	}
 }
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

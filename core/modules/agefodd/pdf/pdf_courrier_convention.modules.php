@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2013  Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,13 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_courrier_convention.modules.php
- \brief		Contenu du fichier pdf "courrier accompagnant l'envoi de la convention de formation"
-\version	$Id$
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_courrier_convention.module.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for convention/contract letter
+ */
+
 
 $posX = 100;
 $posY = 110;
@@ -83,6 +85,3 @@ $pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str));
 $hauteur = dol_nboflines_bis($this->str,50)*4;
 
 $posY += $hauteur + 6;
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

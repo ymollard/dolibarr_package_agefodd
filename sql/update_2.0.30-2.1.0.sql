@@ -65,6 +65,7 @@ ALTER TABLE llx_agefodd_stagiaire_type MODIFY datec datetime;
 
 ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN note_private text AFTER fk_user_mod;
 ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN note_public  text AFTER note_private;
+ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN fk_product integer AFTER note_public;
 
-
+ALTER TABLE llx_agefodd_facture ADD COLUMN fk_propal integer AFTER fk_facture;
 

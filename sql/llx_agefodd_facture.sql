@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_facture (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   fk_commande integer,
   fk_facture integer,
+  fk_propal integer,
   fk_session integer NOT NULL,
   fk_societe integer NOT NULL,
   fk_user_author integer NOT NULL,

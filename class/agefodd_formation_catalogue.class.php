@@ -55,6 +55,7 @@ class Agefodd extends CommonObject
 	var $archive;
 	var $note_private;
 	var $note_public;
+	var $fk_product;
 	
 	var $fk_formation_catalogue;
 	var $priorite;
@@ -99,7 +100,9 @@ class Agefodd extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_catalogue(";
-		$sql.= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but, programme, note1, note2, fk_user_author,fk_user_mod,entity";
+		$sql.= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,"; 
+		$sql.= "programme, note1, note2, fk_user_author,fk_user_mod,entity,";
+		$sql.= "fk_product";
 		$sql.= ") VALUES (";
 		$sql.= $this->db->idate(dol_now()).', ';
 		$sql.= " ".(! isset($this->ref_obj)?'NULL':"'".$this->ref_obj."'").",";
@@ -116,6 +119,7 @@ class Agefodd extends CommonObject
 		$sql.= " ".$user->id.',';
 		$sql.= " ".$user->id.',';
 		$sql.= " ".$conf->entity.' ';
+		$sql.= " ".(empty($this->fk_product)?'NULL':"'".$this->fk_product."'").' ';
 		$sql.= ")";
 
 		$this->db->begin();
@@ -174,7 +178,7 @@ class Agefodd extends CommonObject
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
 		$sql.= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
-		$sql.= " ,c.note_private, c.note_public ";
+		$sql.= " ,c.note_private, c.note_public, c.fk_product ";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		if($id && !$ref)
 			$sql.= " WHERE c.rowid = ".$id;
@@ -205,6 +209,7 @@ class Agefodd extends CommonObject
 				$this->archive = $obj->archive;
 				$this->note_private = $obj->note_private;
 				$this->note_public = $obj->note_public;
+				$this->fk_product = $obj->fk_product;
 			}
 			$this->db->free($resql);
 
@@ -303,7 +308,8 @@ class Agefodd extends CommonObject
 		$sql.= " note1=".(isset($this->note1)?"'".$this->note1."'":"null").",";
 		$sql.= " note2=".(isset($this->note2)?"'".$this->note2."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id.",";
-		$sql.= " archive=".$this->archive;
+		$sql.= " archive=".$this->archive.",";
+		$sql.= " fk_product=".(isset($this->fk_product)?$this->fk_product:"null");
 		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
@@ -690,7 +696,7 @@ class Agefodd extends CommonObject
 	{
 		global $langs;
 
-		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree,";
+		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree, c.fk_product";
 		$sql.= " (SELECT MAX(sess1.datef) FROM ".MAIN_DB_PREFIX."agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
 		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
@@ -724,6 +730,7 @@ class Agefodd extends CommonObject
 					$line->duree = $obj->duree;
 					$line->lastsession = $obj->lastsession;
 					$line->nbsession = $obj->nbsession;
+					$line->fk_product = $obj->fk_product;
 
 					$this->lines[$i]=$line;
 					
@@ -845,6 +852,7 @@ class AgfTrainingLine {
 	var $duree;
 	var $lastsession;
 	var $nbsession;
+	var $fk_product;
 
 	function __construct()
 	{

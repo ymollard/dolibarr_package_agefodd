@@ -124,22 +124,22 @@ function show_fac($file, $socid, $mdle)
 	$agf = new Agefodd_facture($db);
 	$result = $agf->fetch($id, $socid);
 
-	// Gestion des bons de commande (ou brouillon de facture)
+	// Manage order
 	if ($mdle == 'bc')
 	{
 		if ($agf->comid)
 		{
-			// Consulter la fiche Dolibarr du BC
+			// See Order card
 			$legende = $langs->trans("AgfFactureSeeBon",$agf->comref);
 			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-			// Aller au formulaire d'envoi de mail
+			// Go to send mail card
 			$legende = $langs->trans("AgfFactureSeeBonMail",$agf->comref);
 			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-			// Délier le bon de commande
+			// Unlink order
 			$legende = $langs->trans("AgfFactureUnselectBon");
 			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
@@ -148,35 +148,37 @@ function show_fac($file, $socid, $mdle)
 		{
 			$mess = '<table class="nobordernopadding"><tr>';
 
-			// Generer le bon de commande
+			// Create Order
 			$legende = $langs->trans("AgfFactureGenererBon");
 			$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 
-			// Lier un bon de commande existant
+			// Link existing order
 			$legende = $langs->trans("AgfFactureSelectBon");
-			$mess.= '<td><a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a></td>';
+			$mess.= '<td><a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a></td>';
 
 			$mess.= '<td>'.$form->textwithpicto('',$langs->trans("AgfFactureBonBeforeSelectHelp"),1,'help').'</td>';
 
 			$mess .= '</tr></table>';
 		}
 	}
-	// gestion des factures
+	// Manage Invoice
 	elseif ($mdle == 'fac')
 	{
 		if ($agf->facid)
 		{
+			// See Invoice card
 			$legende = $langs->trans("AgfFactureSeeFac").' '.$agf->facnumber;
 			$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-			// Aller au formulaire d'envoi de mail
+			// Go to send mail card
 			$legende = $langs->trans("AgfFactureSeeFacMail",$agf->facnumber);
-			$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?id='.$agf->comid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?id='.$agf->facid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-			// Délier la facture
+			// Unlink invoice
 			$legende = $langs->trans("AgfFactureUnselectFac");
 			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
@@ -187,32 +189,75 @@ function show_fac($file, $socid, $mdle)
 			if ($conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
 				$mess = '';
 
-				// Créer la facture
+				// Create invoice
 				$legende = $langs->trans("AgfFactureAddFac");
 				$commande_static= new Commande($db);
 				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
-				// lier une facture existante
+				// link existing invoice
 				$legende = $langs->trans("AgfFactureSelectFac");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			elseif (!empty($agf->comid)) {
 				$mess = '';
 					
-				// Créer la facture
+				// Create invocie
 				$legende = $langs->trans("AgfFactureAddFac");
 				$commande_static= new Commande($db);
 				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 					
-				// lier une facture existante
+				//link existing invoice
 				$legende = $langs->trans("AgfFactureSelectFac");
-				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
 			}else
 			{
 				$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
 			}
+		}
+	}
+	// Manage Invoice
+	elseif ($mdle == 'prop')
+	{
+		if ($agf->propalid)
+		{
+			// See Proposal card
+			$legende = $langs->trans("AgfFactureSeeProp").' '.$agf->propalref;
+			$mess = '<a href="'.DOL_URL_ROOT.'/comm/propal.php?id='.$agf->propalid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
+	
+			// Go to send mail card
+			$legende = $langs->trans("AgfFactureSeePropMail",$agf->propalref);
+			$mess.= '<a href="'.DOL_URL_ROOT.'/comm/propal.php?id='.$agf->propalid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+	
+			// Unlink invoice
+			$legende = $langs->trans("AgfFactureUnselectProp");
+			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&id='.$id.'&type=prop&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.dol_buildpath('/agefodd/img/unlink.png',1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+	
+		}
+		else
+		{
+			
+			$mess = '<table class="nobordernopadding"><tr>';
+
+			// Create Order
+			$legende = $langs->trans("AgfFactureGenererProp");
+			$mess .= '<td><a href="'.DOL_URL_ROOT.'/comm/propal.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
+
+			// Link existing order
+			$legende = $langs->trans("AgfFactureSelectProp");
+			$mess.= '<td><a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=prop&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<img src="'.dol_buildpath('/agefodd/img/link.png',1).'" border="0" align="absmiddle" hspace="2px" ></a></td>';
+
+			$mess.= '<td>'.$form->textwithpicto('',$langs->trans("AgfFacturePropBeforeSelectHelp"),1,'help').'</td>';
+
+			$mess .= '</tr></table>';
 		}
 	}
 	else
@@ -228,7 +273,7 @@ function document_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier='')
 	if ($level == 2)
 	{
 		//print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
-		if ( $mdle == 'bc' || $mdle == 'fac')
+		if ( $mdle == 'bc' || $mdle == 'fac' ||  $mdle == 'prop')
 		{
 			print '<td style="width="90px;border-left:0px;" align="left">'.show_fac($mdle, $socid, $mdle).'</td>'."\n";
 		}

@@ -36,7 +36,6 @@ class Agefodd_sesscalendar
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd';
-	var $id;
 
 	var $id;
 	var $date_session;

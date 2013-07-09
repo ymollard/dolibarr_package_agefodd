@@ -42,6 +42,7 @@ require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
 require_once('../lib/agefodd_document.lib.php');
 
+$langs->load('propal');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -60,6 +61,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 
 	if ($type_link == 'bc') $agf->comid=GETPOST('select','int');
 	if ($type_link == 'fac') $agf->facid=GETPOST('select','int');
+	if ($type_link == 'prop') $agf->propalid=GETPOST('select','int');
 	
 	// si existe déjà, on met à jour
 	if ($agf->id)
@@ -96,6 +98,7 @@ if($action == 'unlink' && $user->rights->agefodd->creer)
 	{
 		if ($type_link == 'bc') $agf->comid="";
 		if ($type_link == 'fac') $agf->facid="";
+		if ($type_link == 'prop') $agf->propalid="";
 		$result2 = $agf->update($user);
 	}
 	if ($result2)
@@ -263,7 +266,6 @@ if (!empty($id))
 
 		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
-
 		/*
 		 * Confirm delete
 		*/
@@ -320,6 +322,7 @@ if (!empty($id))
 
 				// Before training session
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
+				document_line($langs->trans("Proposal"), 2, "prop", $agf->lines[$i]->socid);
 				document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->lines[$i]->socid);
 				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->lines[$i]->socid);
 				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->lines[$i]->socid);

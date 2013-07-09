@@ -17,11 +17,12 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_acceuil_cloture.module.php
- \brief		Contenu du fichier pdf "courrier accompagnant l'envoi du dossier de clotûre"
-\version	$Id$
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_acceuil_cloture.module.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for close (end session) letter
+ */
 
 $posX = 100;
 $posY = 110;
@@ -113,5 +114,3 @@ $pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str));
 $hauteur = dol_nboflines_bis($this->str,50)*4;
 
 $posY += $hauteur + 6;
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

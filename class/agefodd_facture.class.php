@@ -45,6 +45,8 @@ class Agefodd_facture
 	var $facnumber;
 	var $comid;
 	var $comref;
+	var $propalid;
+	var $propalref;
 
 	var $lines=array();
 
@@ -79,10 +81,11 @@ class Agefodd_facture
 
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_facture(";
-		$sql.= "fk_commande, fk_facture, fk_session, fk_societe, fk_user_author,fk_user_mod, datec";
+		$sql.= "fk_commande, fk_facture, fk_propal, fk_session, fk_societe, fk_user_author,fk_user_mod, datec";
 		$sql.= ") VALUES (";
 		$sql.= " ".(empty($this->comid)?'NULL':$this->comid).", ";
 		$sql.= " ".(empty($this->facid)?'NULL':$this->facid).", ";
+		$sql.= " ".(empty($this->propalid)?'NULL':$this->propalid).", ";
 		$sql.= " ".$this->sessid.", ";
 		$sql.= " ".$this->socid.", ";
 		$sql.= " ".$user->id.', ';
@@ -146,12 +149,15 @@ class Agefodd_facture
 		$sql = "SELECT";
 		$sql.= " f.rowid, f.fk_session, f.fk_societe, f.fk_facture,";
 		$sql.= " fa.rowid as facid, fa.facnumber,";
-		$sql.= " co.rowid as comid, co.ref as comref";
+		$sql.= " co.rowid as comid, co.ref as comref,";
+		$sql.= " propal.rowid as propalid, propal.ref as propalref";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_facture as f";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as fa";
 		$sql.= " ON fa.rowid=f.fk_facture";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."commande as co";
 		$sql.= " ON co.rowid=f.fk_commande";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."propal as propal";
+		$sql.= " ON propal.rowid=f.fk_propal";
 		$sql.= " WHERE f.fk_session = ".$sessid;
 		$sql.= " AND f.fk_societe = ".$socid;
 
@@ -170,6 +176,8 @@ class Agefodd_facture
 				$this->facnumber = $obj->facnumber;
 				$this->comid = $obj->comid;
 				$this->comref = $obj->comref;
+				$this->propalid = $obj->propalid;
+				$this->propalref = $obj->propalref;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -204,6 +212,11 @@ class Agefodd_facture
 			$sql.= " f.rowid, f.fk_soc, f.facnumber";
 			$sql.= " FROM ".MAIN_DB_PREFIX."facture as f";
 		}
+		if ($type == 'prop')
+		{
+			$sql.= " f.rowid, f.fk_soc, f.ref";
+			$sql.= " FROM ".MAIN_DB_PREFIX."propal as f";
+		}
 		$sql.= " WHERE fk_soc = ".$socid;
 
 		dol_syslog(get_class($this)."::fetch_fac_per_soc sql=".$sql, LOG_DEBUG);
@@ -220,7 +233,11 @@ class Agefodd_facture
 				$obj = $this->db->fetch_object($resql);
 				$line->id = $obj->rowid;
 				$line->socid = $obj->fk_soc;
-				($type == 'bc') ? $line->ref = $obj->ref : $line->ref = $obj->facnumber;
+				if ($type == 'bc' || $type == 'prop') {
+					$line->ref = $obj->ref;
+				}else {
+					$line->ref = $obj->facnumber;
+				}
 
 				$this->lines[$i]=$line;
 			}
@@ -302,6 +319,7 @@ class Agefodd_facture
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_facture SET";
 		$sql.= " fk_commande=".(empty($this->comid)?'NULL':$this->comid).",";
 		$sql.= " fk_facture=".(empty($this->facid)?'NULL':$this->facid).",";
+		$sql.= " fk_propal=".(empty($this->propalid)?'NULL':$this->propalid).",";
 		$sql.= " fk_societe=".$this->socid.",";
 		$sql.= " fk_user_mod=".$user->id;
 		$sql.= " WHERE rowid = ".$this->id;

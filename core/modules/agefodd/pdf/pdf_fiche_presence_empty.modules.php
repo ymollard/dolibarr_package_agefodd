@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2013  Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,22 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_empty.modules.php
- \brief		Page permettant la création de la fiche de présence d'une format donnée au format pdf
-\version	$Id$
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_empty.module.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for empty training attendees session sheet
+ */
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_convention.class.php');
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/agefodd/trainer/class/agefodd_place.class.php');
-dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
-dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-dol_include_once('/core/lib/pdf.lib.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
-dol_include_once('/core/lib/company.lib.php');
-
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_convention.class.php');
+require_once('../class/agefodd_place.class.php');
+require_once('../class/agefodd_session_formateur.class.php');
+require_once('../class/agefodd_session_calendrier.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
+require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 
 
 class pdf_fiche_presence_empty extends ModelePDFAgefodd
@@ -403,17 +400,17 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 		{
 			// Nom
 			$pdf->SetXY($posX, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',5);
 			$this->str = strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname);
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',5);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres13');
 			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',5);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres14')." ";
 			$pdf->Cell($larg_col4, $h_ligne, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
@@ -623,6 +620,3 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 
 	}
 }
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2013  Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,19 +19,19 @@
 
 
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_courrier.modules.php
- \brief		Page permettant la création d'un courrier type au format pdf
- Le paramètre "courrier" transmis à la fonction "write_file" permet de préciser
-le contenu (body) à y inclure ( /agefodd/core/models/pdf/pdf_courrier-'.$courrier.'_modele.php').
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_courrier.module.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for core body for letters
+ */
+
 
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_contact.class.php');
-dol_include_once('/core/lib/company.lib.php');
-dol_include_once('/core/lib/pdf.lib.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_contact.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
+require_once('../lib/agefodd.lib.php');
 
 
 
@@ -405,6 +405,3 @@ class pdf_courrier extends ModelePDFAgefodd
 
 	}
 }
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>

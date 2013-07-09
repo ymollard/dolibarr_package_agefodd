@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2013  Florian Henry   <florian.henry@open-concept.pro>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,20 +17,20 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 /**
- \file		agefodd/core/modules/agefodd/pdf/pdf_convocation.modules.php
- \brief		Page permettant la création du fichier pdf convocation.
- \version	$Id$
-*/
+ *	\file       agefodd/core/modules/agefodd/pdf/pdf_convocation.modules.php
+ *	\ingroup    agefodd
+ *	\brief      PDF for convocation
+ */
+
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-dol_include_once('/agefodd/class/agefodd_place.class.php');
-dol_include_once('/core/lib/company.lib.php');
-dol_include_once('/core/lib/pdf.lib.php');
-dol_include_once('/agefodd/lib/agefodd.lib.php');
+require_once('../class/agsession.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/agefodd_session_calendrier.class.php');
+require_once('../class/agefodd_place.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
+require_once('../lib/agefodd.lib.php');
 
 
 class pdf_convocation extends ModelePDFAgefodd
@@ -452,6 +452,3 @@ class pdf_convocation extends ModelePDFAgefodd
 
 	}
 }
-
-# llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-?>
