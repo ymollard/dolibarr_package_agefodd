@@ -136,6 +136,8 @@ class InterfaceAgefodd
 					}
 				}
 			}
+			
+			return 1;
 		}
 		// Envoi fiche pédago par mail
 		elseif ($action == 'FICHEPEDAGO_SENTBYMAIL') {
@@ -383,6 +385,8 @@ class InterfaceAgefodd
 				}
 			}
 
+			return 1;
+			
 		}elseif($action == 'CONTACT_MODIFY') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 				
@@ -434,10 +438,42 @@ class InterfaceAgefodd
 				return -1;
 			}
 			$this->db->free($resql);
+			
+			return 1;
 		}
+		elseif($action == 'BILL_CREATE') {
+			
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+			
+			dol_include_once('/agefodd/class/agefodd_facture.class.php');
+			
+			$object->fetchObjectLinked();
+			
+			foreach($object->linkedObjects as $objecttype => $objectslinked)
+			{
 
+				if ($objectslinked[0]->element=='propal' || $objectslinked[0]->element=='commande') {
+					
+					$agf_fin=new Agefodd_facture($this->db);
+
+					$result= $agf_fin->update_invoice($user, $objectslinked[0]->id, $objectslinked[0]->element, $object->id);
+					
+					if ($result < 0)
+					{
+						$error ="Failed to update agefodd invoice link : ".$agf_fin->error." ";
+						$this->error=$error;
+							
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
+						return -1;
+					}
+				}
+				
+			}
+			
+			return 1;
+			
+		}
+		
 		return 0;
 	}
-
 }
-?>

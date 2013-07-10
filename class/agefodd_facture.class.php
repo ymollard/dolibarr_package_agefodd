@@ -189,6 +189,60 @@ class Agefodd_facture
 			return -1;
 		}
 	}
+	
+	/**
+	 *  Set invoice ref where propal or order is already linked
+	 *
+	 *  @param	int		$id    		Id to find
+	 *  @param	int		$type    	order or propal
+	 *  @param	int 	$invoiceid	Invoice to link
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function update_invoice($user,$id,$type,$invoiceid)
+	{
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " f.rowid, f.fk_facture, f.fk_commande, f.fk_propal, f.fk_societe ";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_facture as f";
+		if ($type=='propal') {
+			$sql.= " WHERE f.fk_propal = ".$id;
+		}
+		if ($type=='commande') {
+			$sql.= " WHERE f.fk_commande = ".$id;
+		}
+		$sql.= " AND fk_facture IS NULL";
+		
+	
+		dol_syslog(get_class($this)."::update_invoice sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+	
+		if ($resql)
+		{
+			if ($this->db->num_rows($resql))
+			{
+				$obj = $this->db->fetch_object($resql);
+				$this->id = $obj->rowid;
+				$this->socid = $obj->fk_societe;
+				$this->facid = $invoiceid;
+				$this->comid = $obj->fk_commande;
+				$this->propalid = $obj->fk_propal;
+			}
+			$this->db->free($resql);
+			
+			$result=$this->update($user);
+			if ($result < 0) {
+				return -1;
+			}
+			
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::update_invoice ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 	/**
 	 *  Load object in memory from database

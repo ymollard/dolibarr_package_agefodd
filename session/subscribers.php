@@ -289,7 +289,7 @@ if (!empty($id))
 				$isOPCA=' checked="checked" ';
 			}else {$isOPCA='';
 			}
-			print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
+			print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" '.$isOPCA.'/></td></tr>';
 
 			print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
 			print '	<td>';
@@ -315,7 +315,7 @@ if (!empty($id))
 			if ($agf->is_date_ask_OPCA==1) {
 				$chckisDtOPCA='checked="checked"';
 			}
-			print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
+			print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
 			print dol_print_date($agf->date_ask_OPCA,'daytext');
 			print '</td></tr>';
 
@@ -468,7 +468,7 @@ if (!empty($id))
 							}else {
 								$chckisOPCA='';
 							}
-							print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" readonly="readonly"/></td></tr>';
+							print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" disabled="disabled" readonly="readonly"/></td></tr>';
 
 							print '<tr><td>'.$langs->trans("AgfOPCAName").'</td>';
 							print '	<td>';
@@ -490,7 +490,7 @@ if (!empty($id))
 								$chckisDtOPCA='';
 							}
 							print '<td><table class="nobordernopadding"><tr><td>';
-							print '<input type="checkbox" class="flat" name="isdateaskOPCA" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';
+							print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';
 							print '<td>';
 							print dol_print_date($agf->date_ask_OPCA,'daytext');
 							print '</td><td>';
@@ -687,7 +687,7 @@ if (!empty($id))
 					$isOPCA=' checked="checked" ';
 				}else {$isOPCA='';
 				}
-				print '<td><input type="checkbox" class="flat" readonly="readonly" '.$isOPCA.'/></td></tr>';
+				print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" '.$isOPCA.'/></td></tr>';
 
 				print '<tr><td width="20%">'.$langs->trans("AgfOPCAName").'</td>';
 				print '	<td>';
@@ -713,7 +713,7 @@ if (!empty($id))
 				if ($agf->is_date_ask_OPCA==1) {
 					$chckisDtOPCA='checked="checked"';
 				}
-				print '<td><input type="checkbox" class="flat" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
+				print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" '.$chckisDtOPCA.' />';
 				print dol_print_date($agf->date_ask_OPCA,'daytext');
 				print '</td></tr>';
 
@@ -775,7 +775,7 @@ if (!empty($id))
 						if ($agf->is_OPCA==1) {
 							$chckisOPCA='checked="checked"';
 						}
-						print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" readonly="readonly"/></td></tr>';
+						print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" '.$chckisOPCA.'" disabled="disabled" readonly="readonly"/></td></tr>';
 							
 						print '<tr><td>'.$langs->trans("AgfOPCAName").'</td>';
 						print '	<td>';
@@ -795,7 +795,7 @@ if (!empty($id))
 							$chckisDtOPCA='checked="checked"';
 						}
 						print '<td><table class="nobordernopadding"><tr><td>';
-						print '<input type="checkbox" class="flat" name="isdateaskOPCA" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';
+						print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" '.$chckisDtOPCA.' /></td>';
 						print '<td>';
 						print dol_print_date($agf->date_ask_OPCA,'daytext');
 						print '</td><td>';
