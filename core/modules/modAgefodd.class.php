@@ -226,14 +226,6 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][5] = 0;
 
 		$r++;
-		$this->const[$r][0] = "AGF_NUM_LIST";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = 100;
-		$this->const[$r][3] = 'Number of element in the list';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-
-		$r++;
 		$this->const[$r][0] = "AGF_USE_FAC_WITHOUT_ORDER";
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';

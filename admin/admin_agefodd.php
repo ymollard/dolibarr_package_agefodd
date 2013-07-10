@@ -166,10 +166,6 @@ if ($action == 'setvar')
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_REPRESENTANT', $org_rep,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
 
-	$nb_num_list=GETPOST('AGF_NUM_LIST','int');
-	$res = dolibarr_set_const($db, 'AGF_NUM_LIST', $nb_num_list,'chaine',0,'',$conf->entity);
-	if (! $res > 0) $error++;
-
 	if ($_FILES["imagesup"]["tmp_name"])
 	{
 		if (preg_match('/([^\\/:]+)$/i',$_FILES["imagesup"]["name"],$reg))
@@ -772,15 +768,6 @@ print '<td align="left">';
 print '<input type="text" name="AGF_ORGANISME_REPRESENTANT" value="'.$conf->global->AGF_ORGANISME_REPRESENTANT.'" size="20" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfRepresantHelp"),1,'help');
-print '</td>';
-print '</tr>';
-
-//Nombre d'element dans les list
-print '<tr class="impair"><td>'.$langs->trans("AgfNbElemList").'</td>';
-print '<td align="left">';
-print '<input type="text" name="AGF_NUM_LIST" value="'.$conf->global->AGF_NUM_LIST.'" size="5" ></td>';
-print '<td align="center">';
-print $form->textwithpicto('',$langs->trans("AgfNbElemListHelp"),1,'help');
 print '</td>';
 print '</tr>';
 

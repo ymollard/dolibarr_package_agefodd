@@ -122,12 +122,8 @@ if($action == 'search_year')
 
 	$filter['YEAR(s.dated)']=$year;
 
-	$limit = $conf->global->AGF_NUM_LIST;
-	$limit = 0;
-	$offset = $limit * $page ;
-
 	$agf = new Agsession($db);
-	$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
+	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch, $filter);
 
 	print_fiche_titre($langs->trans('AgfSearchResults'));
 

@@ -24,10 +24,6 @@
  *	\brief      list of session
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -108,8 +104,8 @@ if ($page == -1) {
 	$page = 0 ;
 }
 
-$limit = $conf->global->AGF_NUM_LIST;
-$offset = $limit * $page ;
+
+$offset = $conf->liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -149,7 +145,14 @@ if($site_view ) {
 }
 
 $agf = new Agsession($db);
-$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
+
+// Count total nb of records
+$nbtotalofrecords = 0;
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
+{
+	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch, $filter);
+}
+$resql = $agf->fetch_all($sortorder, $sortfield, $conf->liste_limit, $offset, $arch, $filter);
 
 if ($resql != -1)
 {
@@ -158,7 +161,9 @@ if ($resql != -1)
 	if (empty($arch)) $menu = $langs->trans("AgfMenuSessAct");
 	elseif ($arch == 2 ) $menu = $langs->trans("AgfMenuSessArchReady");
 	else $menu = $langs->trans("AgfMenuSessArch");
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_soc='.$search_soc.'&search_teacher_name='.$search_teacher_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site, $sortfield, $sortorder,'', $num);
+	
+	$option='&arch='.$arch.'&search_trainning_name='.$search_trainning_name.'&search_soc='.$search_soc.'&search_teacher_name='.$search_teacher_name.'&search_training_ref='.$search_training_ref.'&search_start_date='.$search_start_date.'&search_start_end='.$search_start_end.'&search_site='.$search_site;
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],$option , $sortfield, $sortorder,'', $num, $nbtotalofrecords);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';

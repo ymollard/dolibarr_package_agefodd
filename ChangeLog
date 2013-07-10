@@ -355,6 +355,7 @@ For All :
 	- Document linked screen : On create proposal auto create and link the full proposal
 	- Document linked screen : On create order auto create from proposal linked or or from scratch
 	- Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
+	- remove number of lines per list from agefodd admin because this option can e set into general Dolibarr administration and do conflict
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods

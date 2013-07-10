@@ -147,7 +147,8 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 	$stagerowid=GETPOST('stagerowid','int');
 
 	$agf = new Agsession($db);
-	$result = $agf->remove_stagiaire($stagerowid);
+	$agf->id=$id;
+	$result = $agf->remove_stagiaire($user,$stagerowid);
 
 	if ($result > 0)
 	{
@@ -264,7 +265,7 @@ if (!empty($id))
 		if ($_POST["stag_remove_x"])
 		{
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?stagerowid=".$_POST["stagerowid"].'&id='.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag",'','',1);
+			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?stagerowid=".GETPOST('stagerowid','int').'&id='.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag",'','',1);
 			if ($ret == 'html') print '<br>';
 		}
 

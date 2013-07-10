@@ -513,7 +513,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		$page = 0 ;
 	}
 
-	$limit = $conf->global->AGF_NUM_LIST;
+	$limit = $conf->liste_limit;
 	$agf = new Agsession($db);
 
 	$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);

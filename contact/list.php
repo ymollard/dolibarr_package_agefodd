@@ -51,12 +51,19 @@ if ($page == -1) {
 	$page = 0 ;
 }
 
-$limit = $conf->global->AGF_NUM_LIST;
+$limit = $conf->liste_limit;
 $offset = $limit * $page ;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 $agf = new Agefodd_contact($db);
+
+// Count total nb of records
+$nbtotalofrecords = 0;
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
+{
+	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch, $filter);
+}
 
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 if ($result<0) {
@@ -65,7 +72,7 @@ if ($result<0) {
 
 $linenum = count($agf->lines);
 
-print_barre_liste($langs->trans("AgfContact"), $page, $_SERVER['PHP_SELF'],"&arch=".$arch, $sortfield, $sortorder, "", $linenum);
+print_barre_liste($langs->trans("AgfContact"), $page, $_SERVER['PHP_SELF'],"&arch=".$arch, $sortfield, $sortorder, "", $linenum,$nbtotalofrecords);
 
 print '<div width=100%" align="right">';
 if ($arch == 2)
