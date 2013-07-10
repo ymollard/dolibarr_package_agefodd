@@ -82,6 +82,7 @@ class Agsession extends CommonObject
 	var $contactname;
 	var $sourcecontactid;
 	var $fk_actioncomm;
+	var $fk_product;
 
 	/**
 	 *  Constructor
@@ -425,6 +426,7 @@ class Agsession extends CommonObject
 		$sql.= " c.rowid as formid,";
 		$sql.= " c.ref as formref,";
 		$sql.= " c.duree,";
+		$sql.= " c.fk_product, ";
 		$sql.= " t.fk_session_place,";
 		$sql.= " t.nb_place,";
 		$sql.= " t.nb_stagiaire,";
@@ -506,6 +508,7 @@ class Agsession extends CommonObject
 				$this->formid = $obj->formid;
 				$this->formref = $obj->formref;
 				$this->duree = $obj->duree;
+				$this->fk_product = $obj->fk_product;
 				$this->fk_session_place = $obj->fk_session_place;
 				$this->nb_place = $obj->nb_place;
 				$this->nb_stagiaire = $obj->nb_stagiaire;
@@ -2465,6 +2468,256 @@ class Agsession extends CommonObject
 		else
 		{
 			$this->db->commit();
+			return 1;
+		}
+	}
+	
+	
+	/**
+	 *  Create order from session
+	 *
+	 *	@param	User	$user        	User that modify
+	 *  @param  int		$socid	 	 	thirdparty id
+	 *  @param  int		$frompropalid	create order from proposal
+	 *  
+	 *  @return int     		   	 <0 if KO, >0 if OK
+	 */
+	function createOrder($user,$socid,$frompropalid=0) {
+		
+		require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
+		require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
+		require_once(DOL_DOCUMENT_ROOT.'/product/class/product.class.php');
+		require_once('agefodd_facture.class.php');
+		
+		global $langs,$mysoc,$conf;
+		
+		
+		$order= new Commande($this->db);
+		
+		//Create order from proposal
+		if (!empty($frompropalid)) {
+			require_once(DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php');
+			
+			//Find proposal
+			$propal= new Propal($this->db);
+			$result=$propal->fetch($frompropalid);
+			if ($result<0 || empty($propal->id)) {
+				$this->error=$propal->error;
+				return -1;
+			} elseif ($propal->statut!=2) {
+				$this->error=$langs->trans('AgfProposalMustBeSignToCreateOrderFrom');
+				return -1;
+			} else{
+				$neworderid=$order->createFromProposal($propal);
+				if ($neworderid<0) {
+					$this->error=$order->error;
+					return -1;
+				}
+			}
+			
+		} else {
+			//Define new order from scratch
+			$soc=new Societe($this->db);
+			$result=$soc->fetch($socid);
+			if ($result<0 || empty($soc->id)) {
+				$this->error=$soc->error;
+				return -1;
+			}
+			
+			$order->client = $soc;
+			
+			$order->socid=$socid;
+			$order->date_commande=dol_now();
+			$propal->modelpdf=$conf->global->COMMANDE_ADDON_PDF;
+			
+			if (!empty($this->fk_product)) {
+				
+				$product=new Product($this->db);
+				$result=$product->fetch($this->fk_product);
+				if ($result<0 || empty($product->id)) {
+					$this->error=$product->error;
+					return -1;
+				}
+				
+				
+				$order->lines[0]=new OrderLine($db);
+				$order->lines[0]->fk_product=$this->fk_product;
+				$order->lines[0]->qty=1;
+				
+				//Calculate price
+				$tva_tx = get_default_tva($mysoc,$order->client,$product->id);
+				
+				// multiprix
+				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($order->client->price_level))
+				{
+					$pu_ht = $prod->multiprices[$order->client->price_level];
+					$pu_ttc = $prod->multiprices_ttc[$order->client->price_level];
+					$price_min = $prod->multiprices_min[$order->client->price_level];
+					$price_base_type = $prod->multiprices_base_type[$order->client->price_level];
+				}
+				else
+				{
+					$pu_ht = $product->price;
+					$pu_ttc = $product->price_ttc;
+					$price_min = $product->price_min;
+					$price_base_type = $product->price_base_type;
+				}
+				
+				$order->lines[0]->subprice=$pu_ht;
+				$order->lines[0]->tva_tx=$tva_tx;
+				
+			}
+			
+			$neworderid = $order->create($user);
+			if ($neworderid<0) {
+				$this->error=$order->error;
+				return -1;
+			}
+		}
+		
+		if (!empty($neworderid)) {	
+			//Link new order to the session/thridparty
+			$agf = new Agefodd_facture($this->db);
+			$result = $agf->fetch($this->id, $socid);
+			
+			$agf->comid=$neworderid;
+			
+			// Already exists
+			if ($agf->id)
+			{
+				$result2 = $agf->update($user);
+			}
+			// else create
+			else
+			{
+				$agf->sessid = $this->id;
+				$agf->socid = $socid;
+				$result2 = $agf->create($user);
+				if ($result2<0) {
+					$this->error=$agf->error;
+					return -1;
+				}
+			}
+				
+			return 1;
+		}
+		else {
+			$this->error=$order->error;
+			return -1;
+		}
+	}
+	
+	/**
+	 *  Create order from session
+	 *
+	 *	@param	User	$user        User that modify
+	 *  @param  int		$socid	 	 trhirdparty id
+	 *
+	 *  @return int     		   	 <0 if KO, >0 if OK
+	 */
+	function createProposal($user,$socid) {
+	
+		require_once(DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php');
+		require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
+		require_once(DOL_DOCUMENT_ROOT.'/product/class/product.class.php');
+		require_once('agefodd_facture.class.php');
+	
+		global $langs,$mysoc,$conf;
+	
+		//Define new propal
+		$propal= new Propal($this->db);
+	
+		$soc=new Societe($this->db);
+		$result=$soc->fetch($socid);
+		if ($result<0 || empty($soc->id)) {
+			$this->error=$soc->error;
+			return -1;
+		}
+	
+		$propal->client = $soc;
+	
+		$propal->socid=$socid;
+		$propal->date=dol_now();
+		if (!empty($soc->cond_reglement_id)) {
+			$propal->cond_reglement_id=$soc->cond_reglement_id;
+		} else {
+			$propal->cond_reglement_id=1;
+		}
+		if (!empty($soc->mode_reglement_id)) {
+			$propal->mode_reglement_id=$soc->mode_reglement_id;
+		} else {
+			$propal->mode_reglement_id=1;
+		}
+		$propal->duree_validite=$conf->global->PROPALE_VALIDITY_DURATION;
+		$propal->modelpdf=$conf->global->PROPALE_ADDON_PDF;
+	
+		if (!empty($this->fk_product)) {
+				
+			$product=new Product($this->db);
+			$result=$product->fetch($this->fk_product);
+			if ($result<0 || empty($product->id)) {
+				$this->error=$product->error;
+				return -1;
+			}
+				
+				
+			$propal->lines[0]=new PropaleLigne($db);
+			$propal->lines[0]->fk_product=$this->fk_product;
+			$propal->lines[0]->qty=1;
+				
+			//Calculate price
+			$tva_tx = get_default_tva($mysoc,$propal->client,$product->id);
+				
+			// multiprix
+			if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($propal->client->price_level))
+			{
+				$pu_ht = $prod->multiprices[$propal->client->price_level];
+				$pu_ttc = $prod->multiprices_ttc[$propal->client->price_level];
+				$price_min = $prod->multiprices_min[$propal->client->price_level];
+				$price_base_type = $prod->multiprices_base_type[$propal->client->price_level];
+			}
+			else
+			{
+				$pu_ht = $product->price;
+				$pu_ttc = $product->price_ttc;
+				$price_min = $product->price_min;
+				$price_base_type = $product->price_base_type;
+			}
+				
+			$propal->lines[0]->subprice=$pu_ht;
+			$propal->lines[0]->tva_tx=$tva_tx;
+				
+		}
+	
+		$newpropalid = $propal->create($user);
+		if ($newpropalid<0) {
+			$this->error=$propal->error;
+			return -1;
+		}else {
+				
+			//Link new order to the session/thridparty
+			$agf = new Agefodd_facture($this->db);
+			$result = $agf->fetch($this->id, $socid);
+				
+			$agf->propalid=$newpropalid;
+				
+			// Already exists
+			if ($agf->id)
+			{
+				$result2 = $agf->update($user);
+			}
+			// else create
+			else
+			{
+				$agf->sessid = $this->id;
+				$agf->socid = $socid;
+				$result2 = $agf->create($user);
+				if ($result2<0) {
+					$this->error=$agf->error;
+					return -1;
+				}
+			}
+	
 			return 1;
 		}
 	}

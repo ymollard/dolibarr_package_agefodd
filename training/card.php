@@ -615,7 +615,7 @@ else
 					if ($result<0) {
 						setEventMessage($product->error,'errors');
 					}
-					print $product->getNomUrl(1);
+					print $product->getNomUrl(1).' - '.$product->label;
 				}
 				print "</td></tr>";
 

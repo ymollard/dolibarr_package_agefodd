@@ -133,8 +133,7 @@ function show_fac($file, $socid, $mdle)
 		{
 			// Create order
 			$legende = $langs->trans("AgfFactureSeeBon",$agf->comref);
-			
-			$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=createorder&id='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Go to send mail card
@@ -153,7 +152,7 @@ function show_fac($file, $socid, $mdle)
 
 			// Create Order
 			$legende = $langs->trans("AgfFactureGenererBon");
-			$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<td><a href="'.$_SERVER['PHP_SELF'].'?action=createorder&id='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 
 			// Link existing order
@@ -189,15 +188,27 @@ function show_fac($file, $socid, $mdle)
 		}
 		else
 		{
-			if ($conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
-				$mess = '';
-
-				// Create invoice
-				$legende = $langs->trans("AgfFactureAddFac");
-				$commande_static= new Commande($db);
-				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+			
+			$mess = '';
+			
+			//Create invoice from propal if exists
+			if (!empty($agf->propalid)) {
+				$legende = $langs->trans("AgfFactureAddFacFromPropal");
+				$propal_static= new Propal($db);
+				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$propal_static->element.'&originid='.$agf->propalid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			}
+			
+			if (!empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
+				
 
+				// Create invoice from order if exists
+				if (!empty($agf->comid)) {
+					$legende = $langs->trans("AgfFactureAddFacFromOrder");
+					$commande_static= new Commande($db);
+					$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				}
 				// link existing invoice
 				$legende = $langs->trans("AgfFactureSelectFac");
 				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';
@@ -206,12 +217,11 @@ function show_fac($file, $socid, $mdle)
 			elseif (!empty($agf->comid)) {
 				$mess = '';
 					
-				// Create invocie
-				$legende = $langs->trans("AgfFactureAddFac");
+				$legende = $langs->trans("AgfFactureAddFacFromOrder");
 				$commande_static= new Commande($db);
 				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
-					
+				
 				//link existing invoice
 				$legende = $langs->trans("AgfFactureSelectFac");
 				$mess.= '<a href="'.$_SERVER['PHP_SELF'].'?action=link&id='.$id.'&type=fac&socid='.$socid.'" alt="'.$legende.'" alt="'.$legende.'" title="'.$legende.'">';
@@ -250,7 +260,7 @@ function show_fac($file, $socid, $mdle)
 
 			// Create Order
 			$legende = $langs->trans("AgfFactureGenererProp");
-			$mess .= '<td><a href="'.DOL_URL_ROOT.'/comm/propal.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<td><a href="'.$_SERVER['PHP_SELF'].'?action=createproposal&id='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 
 			// Link existing order

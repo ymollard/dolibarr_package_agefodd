@@ -24,6 +24,9 @@
  *	\brief      list of document
 */
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -36,8 +39,9 @@ require_once('../class/agefodd_convention.class.php');
 require_once('../core/modules/agefodd/modules_agefodd.php');
 require_once('../class/html.formagefodd.class.php');
 require_once('../lib/agefodd.lib.php');
-require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
 require_once('../lib/agefodd_document.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php');
 
 
 $langs->load('propal');
@@ -145,17 +149,34 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
 }
 
-if (($action == 'createorder') && $user->rights->agefodd->creer)
+if (($action == 'createorder_confirm') && $user->rights->agefodd->creer)
 {
-	//Define new order
-	$order= new Commande($db);
-	$order->socid=$socid;
-	
-	/*$order->lines[0]=new OrderLine($db);
-	$order->lines[0]->*/
-	
+	$frompropalid=GETPOST('propalid','int');
+	$agf = new Agsession($db);
+	$result=$agf->fetch($id);
+	if ($result < 0){
+		setEventMessage($agf->error,'errors');
+	}else {
+		$result=$agf->createOrder($user,$socid,$frompropalid);
+		if ($result < 0){
+			setEventMessage($agf->error,'errors');
+		}
+	}
+}
 
-	
+if (($action == 'createproposal') && $user->rights->agefodd->creer)
+{
+
+	$agf = new Agsession($db);
+	$result=$agf->fetch($id);
+	if ($result < 0){
+		setEventMessage($agf->error,'errors');
+	}else {
+		$result=$agf->createProposal($user,$socid);
+		if ($result < 0){
+			setEventMessage($agf->error,'errors');
+		}
+	}
 }
 
 /*
@@ -282,7 +303,24 @@ if (!empty($id))
 		*/
 		if ($action == 'delete')
 		{
-			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete");
+			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("AgfDeleteOps"),$langs->trans("AgfConfirmDeleteOps"),"confirm_delete",'','',1);
+			if ($ret == 'html') print '<br>';
+		}
+		
+		/*
+		 * Confirm create order
+		*/
+		if ($action == 'createorder')
+		{
+
+			$agf_liste = new Agefodd_facture($db);
+			$result = $agf_liste->fetch($id, $socid);
+			if (!empty($agf_liste->propalid))
+			{
+				$form_question=array();
+				$form_question[]=array('label'=> $langs->trans("AgfCreateOrderFromPropal"),'type'=> 'radio','values'=>array('0'=>$langs->trans('AgfFromScratch'),$agf_liste->propalid=>$langs->trans('AgfFromObject').' '.$agf_liste->propalref),'name'=>'propalid');
+			}
+			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?socid=".$socid."&id=".$id,$langs->trans("AgfCreateOrderFromSession"),'',"createorder_confirm",$form_question,'',1);
 			if ($ret == 'html') print '<br>';
 		}
 
