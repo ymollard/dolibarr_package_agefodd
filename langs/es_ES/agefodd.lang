@@ -709,3 +709,4 @@ ImportDataset_agefoddcertificate=Agefodd - Import Certificate
 AgfConfirmUnlink=Do you confirm the unlink ?
 AgfDeleteObjectAlso=Do you want to delete (if status still draft) the %s link also ?
 AgfCloneSessionTrainee=Clone trainee subscription ?
+AgfNbMintarget=Minimum number of subscriber to confirm session

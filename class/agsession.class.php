@@ -87,6 +87,7 @@ class Agsession extends CommonObject
 	var $formid;
 	var $formref;
 	var $duree;
+	var $nb_min_target;
 
 	/**
 	 *  Constructor
@@ -109,6 +110,9 @@ class Agsession extends CommonObject
 	 */
 	function create($user, $notrigger=0)
 	{
+		
+		require_once('agefodd_formation_catalogue.class.php');
+		
 		global $conf, $langs;
 		$error=0;
 
@@ -123,7 +127,12 @@ class Agsession extends CommonObject
 		// Check parameters
 		// Put here code to add control on parameters values
 		if (empty($this->nb_place)) $this->nb_place=0;
-
+		
+		//find the nb_min_target of training to set it into session
+		$training=new Agefodd($this->db);
+		$training->fetch($this->fk_formation_catalogue);
+		$this->nb_min_target=$training->nb_min_target;
+		
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session(";
 		$sql.= "fk_soc,";
@@ -134,6 +143,7 @@ class Agsession extends CommonObject
 		$sql.= "dated,";
 		$sql.= "datef,";
 		$sql.= "notes,";
+		$sql.= "nb_min_target,";
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
 		$sql.= "fk_user_mod,";
@@ -147,6 +157,7 @@ class Agsession extends CommonObject
 		$sql.= " ".(! isset($this->dated) || dol_strlen($this->dated)==0?'NULL':"'".$this->db->idate($this->dated)."'").",";
 		$sql.= " ".(! isset($this->datef) || dol_strlen($this->datef)==0?'NULL':"'".$this->db->idate($this->datef)."'").",";
 		$sql.= " ".(! isset($this->notes)?'NULL':"'".$this->db->escape($this->notes)."'").",";
+		$sql.= " ".(! isset($this->nb_min_target)?'NULL':$this->nb_min_target).",";
 		$sql.= " ".$this->db->escape($user->id).",";
 		$sql.= " '".$this->db->idate(dol_now())."',";
 		$sql.= " ".$this->db->escape($user->id);
@@ -362,6 +373,7 @@ class Agsession extends CommonObject
 		$sql.= " t.dated,";
 		$sql.= " t.datef,";
 		$sql.= " t.notes,";
+		$sql.= " t.nb_min_target,";
 		$sql.= " t.color,";
 		$sql.= " t.cost_trainer,";
 		$sql.= " t.cost_site,";
@@ -446,6 +458,7 @@ class Agsession extends CommonObject
 				$this->dated = $this->db->jdate($obj->dated);
 				$this->datef = $this->db->jdate($obj->datef);
 				$this->notes = $obj->notes;
+				$this->nb_min_target = $obj->nb_min_target;
 				$this->color = $obj->color;
 				$this->cost_trainer = $obj->cost_trainer;
 				$this->cost_site = $obj->cost_site;
@@ -983,6 +996,7 @@ class Agsession extends CommonObject
 			$sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
 			$sql.= " fk_session_place=".(isset($this->fk_session_place)?$this->fk_session_place:"null").",";
 			$sql.= " nb_place=".(isset($this->nb_place)?$this->nb_place:"null").",";
+			$sql.= " nb_min_target=".(isset($this->nb_min_target)?$this->nb_min_target:"null").",";
 			$sql.= " nb_stagiaire=".(isset($this->nb_stagiaire)?$this->nb_stagiaire:"null").",";
 			$sql.= " force_nb_stagiaire=".(isset($this->force_nb_stagiaire)?$this->force_nb_stagiaire:"0").",";
 			$sql.= " type_session=".(isset($this->type_session)?$this->type_session:"null").",";
@@ -1521,7 +1535,7 @@ class Agsession extends CommonObject
 		global $langs;
 
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql.= " c.intitule, c.ref,";
+		$sql.= " c.intitule, c.ref,s.nb_min_target,";
 		$sql.= " p.ref_interne";
 		$sql.= " ,so.nom as socname";
 		$sql.= " ,f.rowid as trainerrowid";
@@ -1614,6 +1628,7 @@ class Agsession extends CommonObject
 					$line->nb_stagiaire = $obj->nb_stagiaire;
 					$line->force_nb_stagiaire = $obj->force_nb_stagiaire;
 					$line->notes = $obj->notes;
+					$line->nb_min_target = $obj->nb_min_target;
 						
 					$this->lines[$i]=$line;
 					$i++;
@@ -1820,6 +1835,9 @@ class Agsession extends CommonObject
 		else {
 			print '<td>'.$langs->trans("AgfNoDefined").'</td></tr>';
 		}
+		
+		print '<tr><td>'.$langs->trans("AgfNbMintarget").'</td><td>';
+		print $this->nb_min_target.'</td></tr>';
 
 		print '</table>';
 	}
@@ -2528,6 +2546,7 @@ class AgfSessionLine
 	var $nb_stagiaire;
 	var $force_nb_stagiaire;
 	var $notes;
+	var $nb_min_target;
 
 
 	function __construct()

@@ -67,5 +67,6 @@ ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN note_private text AFTER f
 ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN note_public  text AFTER note_private;
 ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN fk_product integer AFTER note_public;
 
-ALTER TABLE llx_agefodd_facture ADD COLUMN fk_propal integer AFTER fk_facture;
+ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN nb_min_target integer NULL AFTER fk_product;
+ALTER TABLE llx_agefodd_session ADD COLUMN nb_min_target integer NULL AFTER force_nb_stagiaire;
 

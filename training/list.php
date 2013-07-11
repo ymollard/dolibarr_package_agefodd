@@ -78,7 +78,7 @@ print_liste_field_titre($langs->trans("AgfNbreAction"),$_SERVER['PHP_SELF'],'' ,
 print "</tr>\n";
 
 $var=true;
-if ($resql)
+if ($resql>0)
 {
 	foreach ($agf->lines as $line)
 	{

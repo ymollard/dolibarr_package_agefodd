@@ -708,3 +708,4 @@ ImportDataset_agefoddcertificate=Agefodd - Import des certificats
 AgfConfirmUnlink=Etes vous sure de vouloir délier ?
 AgfDeleteObjectAlso=Voulez vous suprimer (si le status est brouillon) l'élément %s ?
 AgfCloneSessionTrainee=Cloner les inscription des participants ?
+AgfNbMintarget=Nombre minimum d'inscrit pour confirmer la session

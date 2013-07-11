@@ -25,6 +25,10 @@
  *	\brief      card of session
 */
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -159,6 +163,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
+		$agf->nb_min_target=GETPOST('nbmintarget','int');
 		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 			$agf->sourcecontactid = $agf->contactid;
 		}
@@ -855,6 +860,10 @@ else
 					print '</td><td>';
 					print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
 					print '</td></tr></table>';
+					
+					print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
+					print '<input name="nbmintarget" class="flat" size="50" value="'.$agf->nb_min_target.'"></td></tr>';
+					
 					print '</td></tr>';
 
 					print '</table>';

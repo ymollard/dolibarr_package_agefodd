@@ -81,7 +81,7 @@ print_liste_field_titre($langs->trans("Company"),$_SERVER['PHP_SELF'],"s.nom",''
 print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.tel","","&arch=".$arch,'',$sortfield,$sortorder);
 print "</tr>\n";
 
-if ($result)
+if ($result>0)
 {
 	$var=true;
 	$i = 0;
