@@ -484,8 +484,8 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->SetFillColor($this->color1[0],$this->color1[1],$this->color1[2]);
 				$pdf->SetFillColor(210,210,210);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize - 1 );
-				$header=array($outputlangs->transnoentities("Designation"), $outputlangs->transnoentities("VAT"), $outputlangs->transnoentities("PriceUHT"),$outputlangs->transnoentities('Qté'),$langs->transnoentities("TotalHT"),$langs->transnoentities("TotalTTC"));
-				$w=array(100,13,19,8,20,20);
+				$header=array($outputlangs->transnoentities("Designation"), $outputlangs->transnoentities("VAT"), $outputlangs->transnoentities("PriceUHT"),$outputlangs->transnoentities("ReductionShort"),$outputlangs->transnoentities('Qté'),$langs->transnoentities("TotalHT"),$langs->transnoentities("TotalTTC"));
+				$w=array(80,13,19,13,8,20,20);
 				for($i=0;$i<count($header);$i++)
 				{
 					$pdf->Cell($w[$i],6,$header[$i],1,0,'C',1);
@@ -506,9 +506,10 @@ class pdf_convention extends ModelePDFAgefodd
 					$pdf->SetXY($posX + $w[0], $posY);
 					$pdf->Cell($w[1],$hauteur,vatrate($agf_comdetails->lines[$i]->tva_tx,1),1,0,'C',$fill);
 					$pdf->Cell($w[2],$hauteur,price($agf_comdetails->lines[$i]->price,0,$outputlangs,1,-1,2),1,0,'R',$fill);
-					$pdf->Cell($w[3],$hauteur,$agf_comdetails->lines[$i]->qty,1,0,'C',$fill);
-					$pdf->Cell($w[4],$hauteur,price($agf_comdetails->lines[$i]->total_ht,0,$outputlangs),1,0,'R',$fill);
-					$pdf->Cell($w[5],$hauteur,price($agf_comdetails->lines[$i]->total_ttc,0,$outputlangs),1,0,'R',$fill);
+					$pdf->Cell($w[3],$hauteur,dol_print_reduction($agf_comdetails->lines[$i]->remise_percent,$outputlangs),1,0,'R',$fill);
+					$pdf->Cell($w[4],$hauteur,$agf_comdetails->lines[$i]->qty,1,0,'C',$fill);
+					$pdf->Cell($w[5],$hauteur,price($agf_comdetails->lines[$i]->total_ht,0,$outputlangs),1,0,'R',$fill);
+					$pdf->Cell($w[6],$hauteur,price($agf_comdetails->lines[$i]->total_ttc,0,$outputlangs),1,0,'R',$fill);
 
 					$pdf->Ln();
 					$posY = $pdf->GetY();
@@ -523,19 +524,19 @@ class pdf_convention extends ModelePDFAgefodd
 				$posY += 6;
 
 				// total HT
-				$pdf->SetXY($posX + array_sum($w) - $w[4] -$w[5], $posY);
-				$pdf->Cell($w[4],5,$langs->transnoentities("TotalHT"),0,0,'R',1);
-				$pdf->Cell($w[5],5,price($total_ht,0,$outputlangs),1,0,'R');
+				$pdf->SetXY($posX + array_sum($w) - $w[5] -$w[6], $posY);
+				$pdf->Cell($w[5],5,$langs->transnoentities("TotalHT"),0,0,'R',1);
+				$pdf->Cell($w[6],5,price($total_ht,0,$outputlangs),1,0,'R');
 				$posY += 6;
 				// total TVA
-				$pdf->SetXY($posX + array_sum($w) - $w[4] - $w[5], $posY);
-				$pdf->Cell($w[4],5,$langs->transnoentities("TotalVAT"),0,0,'R',1);
-				$pdf->Cell($w[5],5,price($total_tva,0,$outputlangs),1,0,'R');
+				$pdf->SetXY($posX + array_sum($w) - $w[5] - $w[6], $posY);
+				$pdf->Cell($w[5],5,$langs->transnoentities("TotalVAT"),0,0,'R',1);
+				$pdf->Cell($w[6],5,price($total_tva,0,$outputlangs),1,0,'R');
 				$posY += 6;
 				// total TTC
-				$pdf->SetXY($posX + array_sum($w) - $w[4] - $w[5], $posY);
-				$pdf->Cell($w[4],5,$langs->transnoentities("TotalTTC"),0,0,'R',1);
-				$pdf->Cell($w[5],5,price($total_ttc,0,$outputlangs),1,0,'R');
+				$pdf->SetXY($posX + array_sum($w) - $w[5] - $w[6], $posY);
+				$pdf->Cell($w[5],5,$langs->transnoentities("TotalTTC"),0,0,'R',1);
+				$pdf->Cell($w[6],5,price($total_ttc,0,$outputlangs),1,0,'R');
 				$posY += 5;
 				// txt "montant euros"
 				$pdf->SetXY( $posX, $posY);
