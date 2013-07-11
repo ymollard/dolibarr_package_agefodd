@@ -508,7 +508,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 			$result=$agf->createFromClone($id, $hookmanager);
 			if ($result > 0)
 			{
-				if(GETPOST('clone_calendar') )
+				if(GETPOST('clone_calendar'))
 				{
 					// clone calendar information
 					$calendrierstat = new Agefodd_sesscalendar($db);
@@ -530,7 +530,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 						}
 					}
 				}
-				if(GETPOST('clone_trainee') )
+				if(GETPOST('clone_trainee'))
 				{
 					// Clone trainee information
 					$traineestat = new Agefodd_session_stagiaire($db);
@@ -541,7 +541,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 					{
 						foreach ($session_trainee->lines as $line)
 						{
-							$traineestat->fk_session_agefodd=$id;
+							$traineestat->fk_session_agefodd=$result;
 							$traineestat->fk_stagiaire=$line->id;
 							$traineestat->fk_agefodd_stagiaire_type=$line->fk_agefodd_stagiaire_type;
 					
@@ -1082,7 +1082,8 @@ else
 					{
 						$formquestion=array(
 						'text' => $langs->trans("ConfirmClone"),
-						array('type' => 'checkbox', 'name' => 'clone_calendar','label' => $langs->trans("AgfCloneSessionCalendar"),   'value' => 1)
+						array('type' => 'checkbox', 'name' => 'clone_calendar','label' => $langs->trans("AgfCloneSessionCalendar"),   'value' => 1),
+						array('type' => 'checkbox', 'name' => 'clone_trainee','label' => $langs->trans("AgfCloneSessionTrainee"),   'value' => 1)
 						);
 						$ret=$form->form_confirm($_SERVER['PHP_SELF']."?id=".$id,$langs->trans("CloneSession"),$langs->trans("ConfirmCloneSession"),"confirm_clone",$formquestion,'',1);
 						if ($ret == 'html') print '<br>';

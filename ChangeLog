@@ -348,7 +348,7 @@ For All :
 	- Dashboard : Fix dashboard bugs
 	- Admin/Training/Session : Add administrative task per training (base on admin administrative task)
 	- Session : Administrative task : Fix Admin administrative task (when all are deleted you can create new ones)
-	- Admin : Switch to turn off OPCA feature
+	- Admin : Switch to turn off OPCA (funding) feature
 	- Session : Add session attached files tab (to attach all kind of document)
 	- Session : Add product link to training
 	- Session : Add proposal link to session
@@ -357,6 +357,7 @@ For All :
 	- Session : Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
 	- Admin : Remove number of lines per list from agefodd admin because this option can be set into general Dolibarr administration and do conflict
 	- Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
+	- Session : option to clone with trainee
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods

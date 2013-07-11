@@ -253,11 +253,12 @@ class Agefodd_session_stagiaire  extends CommonObject
 				//// End call triggers
 			}
 				
-			$this->fetch($this->sessid);
-			if (empty($this->force_nb_stagiaire)) {
-				$this->fetch_stagiaire_per_session($this->sessid);
-				$this->nb_stagiaire=count($this->lines);
-				$this->update($user);
+			$session = new Agsession($this->db);
+			$session->fetch($this->fk_session_agefodd);
+			if (empty($session->force_nb_stagiaire)) {
+				$this->fetch_stagiaire_per_session($this->fk_session_agefodd);
+				$session->nb_stagiaire=count($this->lines);
+				$session->update($user);
 			}
 		}
 	

@@ -144,11 +144,11 @@ class Agsession extends CommonObject
 		$sql.= " ".(! isset($this->fk_session_place)?'NULL':"'".$this->fk_session_place."'").",";
 		$sql.= " ".(! isset($this->nb_place)?'NULL':$this->nb_place).",";
 		$sql.= " ".(! isset($this->type_session)?'0':"'".$this->type_session."'").",";
-		$sql.= " ".(! isset($this->dated) || dol_strlen($this->dated)==0?'NULL':$this->db->idate($this->dated)).",";
-		$sql.= " ".(! isset($this->datef) || dol_strlen($this->datef)==0?'NULL':$this->db->idate($this->datef)).",";
+		$sql.= " ".(! isset($this->dated) || dol_strlen($this->dated)==0?'NULL':"'".$this->db->idate($this->dated)."'").",";
+		$sql.= " ".(! isset($this->datef) || dol_strlen($this->datef)==0?'NULL':"'".$this->db->idate($this->datef)."'").",";
 		$sql.= " ".(! isset($this->notes)?'NULL':"'".$this->db->escape($this->notes)."'").",";
 		$sql.= " ".$this->db->escape($user->id).",";
-		$sql.= " ".$this->db->idate(dol_now()).",";
+		$sql.= " '".$this->db->idate(dol_now())."',";
 		$sql.= " ".$this->db->escape($user->id);
 		$sql.= ", ".$conf->entity;
 		$sql.= ")";
@@ -1133,7 +1133,7 @@ class Agsession extends CommonObject
 			$sql.= $this->db->escape($userid).',';
 			$sql.= $this->db->escape($user->id).',';
 			$sql.= $this->db->escape($user->id).',';
-			$sql.= $this->db->idate(dol_now()).')';
+			$sql.= "'".$this->db->idate(dol_now())."')";
 
 			$this->db->begin();
 
@@ -1301,7 +1301,7 @@ class Agsession extends CommonObject
 			$sql.= $this->db->escape($contactid).',';
 			$sql.= $this->db->escape($user->id).',';
 			$sql.= $this->db->escape($user->id).',';
-			$sql.= $this->db->idate(dol_now()).')';
+			$sql.= "'".$this->db->idate(dol_now())."')";
 
 			$this->db->begin();
 
