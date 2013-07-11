@@ -35,6 +35,7 @@ require_once('../class/html.formagefodd.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 $langs->load("other");
 
@@ -239,11 +240,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 				// Inscrire dans la session
 				if($session_id > 0)
 				{
-					$sessionstat = new Agsession($db);
-					$sessionstat->sessid = GETPOST('session_id','int');
-					$sessionstat->stagiaire = $agf->id;
-					$sessionstat->stagiaire_type = GETPOST('stagiaire_type','int');
-					$result = $sessionstat->create_stag_in_session($user);
+					$sessionstat = new Agefodd_session_stagiaire($db);
+					$sessionstat->fk_session_agefodd = GETPOST('session_id','int');
+					$sessionstat->fk_stagiaire = $agf->id;
+					$sessionstat->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type','int');
+					$result = $sessionstat->create($user);
 						
 					if ($result > 0)
 					{

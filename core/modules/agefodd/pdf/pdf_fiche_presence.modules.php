@@ -35,6 +35,7 @@ require_once('../class/agefodd_session_calendrier.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 class pdf_fiche_presence extends ModelePDFAgefodd
@@ -150,8 +151,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 			if ($result)
 			{
-				$resql = $agf->fetch_stagiaire_per_session($agf->id);
-
 				$this->_pagebody($pdf, $agf, 1, $outputlangs);
 			}
 
@@ -430,8 +429,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 
 		/***** Bloc stagiaire *****/
-
-		$resql = $agf->fetch_stagiaire_per_session($agf->id);
+		$agfsta=new Agefodd_session_stagiaire($this->db);
+		$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
@@ -519,7 +518,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$h_ligne = 7;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 
-		foreach ($agf->lines as $line){
+		foreach ($agfsta->lines as $line){
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 

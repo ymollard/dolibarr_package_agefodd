@@ -45,6 +45,7 @@ require_once('../lib/agefodd_document.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php');
 require_once('../class/agefodd_session_formateur.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 // Security check
@@ -692,7 +693,7 @@ if (!empty($id))
 				}
 
 				// Trainee List
-				$agf_trainnee=new Agsession($db);
+				$agf_trainnee=new Agefodd_session_stagiaire($db);
 				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
 				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
@@ -809,7 +810,7 @@ if (!empty($id))
 
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
-				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
+				$agf_trainnee->Agefodd_session_stagiaire($agf->id,$socid);
 				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
@@ -844,7 +845,7 @@ if (!empty($id))
 
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
-				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
+				$agf_trainnee->Agefodd_session_stagiaire($agf->id,$socid);
 				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {
@@ -879,7 +880,7 @@ if (!empty($id))
 					
 				// Trainee List
 				$agf_trainnee=new Agsession($db);
-				$agf_trainnee->fetch_stagiaire_per_session($agf->id,$socid);
+				$agf_trainnee->Agefodd_session_stagiaire($agf->id,$socid);
 				foreach($agf_trainnee->lines as $line) {
 					if (!empty($line->email) && (!empty($line->fk_socpeople))) {
 						if (!array_key_exists($line->fk_socpeople,$withto)) {

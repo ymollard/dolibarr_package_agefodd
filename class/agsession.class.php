@@ -83,15 +83,19 @@ class Agsession extends CommonObject
 	var $sourcecontactid;
 	var $fk_actioncomm;
 	var $fk_product;
+	var $formintitule;
+	var $formid;
+	var $formref;
+	var $duree;
 
 	/**
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
 	 */
-	function __construct($DB)
+	function __construct($db)
 	{
-		$this->db = $DB;
+		$this->db = $db;
 		return 1;
 	}
 
@@ -262,90 +266,6 @@ class Agsession extends CommonObject
 		{
 			$this->db->rollback();
 			return -1;
-		}
-	}
-
-
-	/**
-	 *  Create object (trainee in session) into database
-	 *
-	 *  @param	User	$user        User that create
-	 *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
-	 *  @return int      		   	 <0 if KO, Id of created object if OK
-	 */
-	function create_stag_in_session($user, $notrigger=0)
-	{
-		global $conf, $langs;
-		$error=0;
-
-		// Clean parameters
-		$this->sessid = $this->db->escape(trim($this->sessid));
-
-		// Check parameters
-		// Put here code to add control on parameters value
-		if (!$conf->global->AGF_USE_STAGIAIRE_TYPE)
-		{
-			$this->stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
-		}
-
-		// Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_stagiaire (";
-		$sql.= "fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec";
-		$sql.= ") VALUES (";
-		$sql.= $this->sessid.', ';
-		$sql.= $this->stagiaire.', ';
-		$sql.= "'".$this->stagiaire_type."', ";
-		$sql.= $user->id.",";
-		$sql.= $user->id.",";
-		$sql.= $this->db->idate(dol_now());
-		$sql.= ")";
-
-		$this->db->begin();
-
-		dol_syslog(get_class($this)."::create_stag_in_session sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if (! $resql) {
-			$error++; $this->errors[]="Error ".$this->db->lasterror();
-		}
-		if (! $error)
-		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_session_stagiaire");
-			if (! $notrigger)
-			{
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				//// Call triggers
-				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				//$interface=new Interfaces($this->db);
-				//$result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				//// End call triggers
-			}
-			
-			$this->fetch($this->sessid);
-			if (empty($this->force_nb_stagiaire)) {
-				$this->fetch_stagiaire_per_session($this->sessid);
-				$this->nb_stagiaire=count($this->lines);
-				$this->update($user);
-			}
-		}
-
-		// Commit or rollback
-		if ($error)
-		{
-			foreach($this->errors as $errmsg)
-			{
-				dol_syslog(get_class($this)."::create_stag_in_session ".$errmsg, LOG_ERR);
-				$this->error.=($this->error?', '.$errmsg:$errmsg);
-			}
-			$this->db->rollback();
-			return -1*$error;
-		}
-		else
-		{
-			$this->db->commit();
-			return $this->id;
 		}
 	}
 
@@ -575,97 +495,7 @@ class Agsession extends CommonObject
 	}
 
 
-	/**
-	 *  Load object (all trainee for one session) in memory from database
-	 *
-	 *  @param	int		$id    Id object
-	 *  @return int          	<0 if KO, >0 if OK
-	 */
-	function fetch_stagiaire_per_session($id, $socid=NULL)
-	{
-		global $langs;
-
-		$sql = "SELECT";
-		$sql.= " s.rowid as sessid,";
-		$sql.= " ss.rowid, ss.fk_stagiaire, ss.fk_agefodd_stagiaire_type,";
-		$sql.= " sa.nom, sa.prenom,";
-		$sql.= " civ.code as civilite, civ.civilite as civilitel,";
-		$sql.= " so.nom as socname, so.rowid as socid,";
-		$sql.= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail,";
-		$sql.= " sa.date_birth,";
-		$sql.= " sa.place_birth,";
-		$sql.= " sa.fk_socpeople,";
-		$sql.= " sope.birthday";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
-		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
-		$sql.= " ON s.rowid = ss.fk_session_agefodd";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sa";
-		$sql.= " ON sa.rowid = ss.fk_stagiaire";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
-		$sql.= " ON civ.code = sa.civilite";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
-		$sql.= " ON so.rowid = sa.fk_soc";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sope";
-		$sql.= " ON sope.rowid = sa.fk_socpeople";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_type as st";
-		$sql.= " ON st.rowid = ss.fk_agefodd_stagiaire_type";
-		$sql.= " WHERE s.rowid = ".$id;
-		if (!empty($socid)) $sql.= " AND so.rowid = ".$socid;
-		$sql.= " ORDER BY sa.nom";
-
-		dol_syslog(get_class($this)."::fetch_stagiaire_per_session sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
-			$this->lines = array();
-			$num = $this->db->num_rows($resql);
-
-			$i = 0;
-			while( $i < $num)
-			{
-				$obj = $this->db->fetch_object($resql);
-
-				$line = new AgfTraineeSessionLine();
-
-				$line->stagerowid = $obj->rowid;
-				$line->sessid = $obj->sessid;
-				$line->id = $obj->fk_stagiaire;
-				$line->nom = $obj->nom;
-				$line->prenom = $obj->prenom;
-				$line->civilite = $obj->civilite;
-				$line->civilitel = $obj->civilitel;
-				$line->socname = $obj->socname;
-				$line->socid = $obj->socid;
-				$line->typeid = $obj->typeid;
-				$line->place_birth = $obj->place_birth;
-				if (empty($obj->date_birth)) {
-					$line->date_birth = $this->db->jdate($obj->birthday);
-				}else {
-					$line->date_birth = $this->db->jdate($obj->date_birth);
-				}
-
-				$line->type = $obj->type;
-				$line->fk_socpeople=$obj->fk_socpeople;
-				if (empty($obj->stamail)) {
-					$line->email = $obj->socpemail;
-				} else {
-					$line->email = $obj->mail;
-				}
-
-				$this->lines[$i]=$line;
-
-				$i++;
-			}
-			$this->db->free($resql);
-			return $num;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch_stagiaire_per_session ".$this->error, LOG_ERR);
-			return -1;
-		}
-	}
+	
 
 	/**
 	 *  Load object (all trainee for one session) in memory from database
@@ -1088,6 +918,8 @@ class Agsession extends CommonObject
 	 */
 	function update($user, $notrigger=0)
 	{
+		require_once('agefodd_session_stagiaire.class.php');
+		
 		global $conf, $langs;
 		$error=0;
 
@@ -1134,8 +966,9 @@ class Agsession extends CommonObject
 		}
 
 		if (empty($this->force_nb_stagiaire)) {
-			$this->fetch_stagiaire_per_session($this->id);
-			$this->nb_stagiaire=count($this->lines);
+			$session_sta=new Agefodd_session_stagiaire($this->db);
+			$session_sta->fetch_stagiaire_per_session($this->id);
+			$this->nb_stagiaire=count($session_sta->lines);
 		}
 
 		if ($error==0)
@@ -1517,82 +1350,6 @@ class Agsession extends CommonObject
 	}
 
 
-
-	/**
-	 *  Update object (trainee in session) into database
-	 *
-	 *  @param	User	$user        User that modify
-	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
-	 *  @return int     		   	 <0 if KO, >0 if OK
-	 */
-	function update_stag_in_session($user, $notrigger=0)
-	{
-		global $conf, $langs;
-		$error=0;
-
-		// Clean parameters
-		$this->sessid = addslashes(trim($this->sessid));
-		$this->stagiaire = addslashes(trim($this->stagiaire));
-		$this->type = addslashes(trim($this->type));
-
-		// Check parameters
-		// Put here code to add control on parameters values
-		// Check parameters
-		// Put here code to add control on parameters value
-		if (!$conf->global->AGF_USE_STAGIAIRE_TYPE)
-		{
-			$this->stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
-		}
-
-		// Update request
-		if (!isset($this->archive)) $this->archive = 0;
-		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET";
-		$sql.= " fk_session_agefodd=".$this->sessid.",";
-		$sql.= " fk_stagiaire=".$this->stagiaire.",";
-		$sql.= " fk_user_mod=".$user->id.",";
-		$sql.= " fk_agefodd_stagiaire_type='".$this->stagiaire_type."' ";
-		$sql.= " WHERE rowid = ".$this->id;
-
-		$this->db->begin();
-
-		dol_syslog(get_class($this)."::update_stag_in_session sql=".$sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if (! $resql) {
-			$error++; $this->errors[]="Error ".$this->db->lasterror();
-		}
-		if (! $error)
-		{
-			if (! $notrigger)
-			{
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				//// Call triggers
-				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				//$interface=new Interfaces($this->db);
-				//$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				//// End call triggers
-			}
-		}
-
-		// Commit or rollback
-		if ($error)
-		{
-			foreach($this->errors as $errmsg)
-			{
-				dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
-				$this->error.=($this->error?', '.$errmsg:$errmsg);
-			}
-			$this->db->rollback();
-			return -1*$error;
-		}
-		else
-		{
-			$this->db->commit();
-			return 1;
-		}
-	}
 	/**
 	 *  Update OPCA info for a trainee in a session (used if session type is 'inter')
 	 *
@@ -1706,39 +1463,6 @@ class Agsession extends CommonObject
 		if ($resql)
 		{
 			$this->db->commit();
-			return 1;
-		}
-		else
-		{
-			$this->error=$this->db->lasterror();
-			return -1;
-		}
-	}
-
-
-	/**
-	 *  Delete object (trainne in session) in database
-	 *
-	 *	@param  int		$id        Session to delete
-	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
-	 *  @return	 int					 <0 if KO, >0 if OK
-	 */
-	function remove_stagiaire($user,$id)
-	{
-		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire";
-		$sql .= " WHERE rowid = ".$id;
-
-		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query ($sql);
-
-		if ($resql)
-		{
-			$this->fetch($this->id);
-			if (empty($this->force_nb_stagiaire)) {
-				$this->fetch_stagiaire_per_session($this->id);
-				$this->nb_stagiaire=count($this->lines);
-				$this->update($user);
-			}
 			return 1;
 		}
 		else
@@ -2484,6 +2208,7 @@ class Agsession extends CommonObject
 		require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 		require_once(DOL_DOCUMENT_ROOT.'/product/class/product.class.php');
 		require_once('agefodd_facture.class.php');
+		require_once('agefodd_session_stagiaire.class.php');
 		
 		global $langs,$mysoc,$conf;
 		
@@ -2524,7 +2249,7 @@ class Agsession extends CommonObject
 			
 			$order->socid=$socid;
 			$order->date_commande=dol_now();
-			$propal->modelpdf=$conf->global->COMMANDE_ADDON_PDF;
+			$order->modelpdf=$conf->global->COMMANDE_ADDON_PDF;
 			
 			if (!empty($this->fk_product)) {
 				
@@ -2539,6 +2264,12 @@ class Agsession extends CommonObject
 				$order->lines[0]=new OrderLine($db);
 				$order->lines[0]->fk_product=$this->fk_product;
 				$order->lines[0]->qty=1;
+				
+				$desc=$this->formintitule."\n".dol_print_date($this->dated,'daytext').'-'.dol_print_date($this->datef,'daytext');
+				$session_trainee=new Agefodd_session_stagiaire($this->db);
+				$session_trainee->fetch_stagiaire_per_session($this->id,$socid);
+				$desc.="\n".count($session_trainee->lines).' '.$langs->trans('AgfParticipant').'/'.$langs->trans('AgfParticipants');
+				$order->lines[0]->desc=$desc;
 				
 				//Calculate price
 				$tva_tx = get_default_tva($mysoc,$order->client,$product->id);
@@ -2617,7 +2348,8 @@ class Agsession extends CommonObject
 		require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
 		require_once(DOL_DOCUMENT_ROOT.'/product/class/product.class.php');
 		require_once('agefodd_facture.class.php');
-	
+		require_once('agefodd_session_stagiaire.class.php');
+		
 		global $langs,$mysoc,$conf;
 	
 		//Define new propal
@@ -2656,10 +2388,16 @@ class Agsession extends CommonObject
 				return -1;
 			}
 				
-				
 			$propal->lines[0]=new PropaleLigne($db);
 			$propal->lines[0]->fk_product=$this->fk_product;
 			$propal->lines[0]->qty=1;
+			
+			
+			$desc=$this->formintitule."\n".dol_print_date($this->dated,'daytext').'-'.dol_print_date($this->datef,'daytext');
+			$session_trainee=new Agefodd_session_stagiaire($this->db);
+			$session_trainee->fetch_stagiaire_per_session($this->id,$socid);
+			$desc.="\n".count($session_trainee->lines).' '.$langs->trans('AgfParticipant').'/'.$langs->trans('AgfParticipants');
+			$propal->lines[0]->desc=$desc;
 				
 			//Calculate price
 			$tva_tx = get_default_tva($mysoc,$propal->client,$product->id);
@@ -2730,33 +2468,6 @@ class AgfSocLine
 	var $type_session;
 	var $is_OPCA;
 	var $fk_soc_OPCA;
-
-	function __construct()
-	{
-		return 1;
-	}
-}
-
-/**
- *	Session Trainee Link Class
- */
-class AgfTraineeSessionLine
-{
-	var $stagerowid;
-	var $sessid;
-	var $id;
-	var $nom;
-	var $prenom;
-	var $civilite;
-	var $civilitel;
-	var $socname;
-	var $socid;
-	var $typeid;
-	var $type;
-	var $email;
-	var $fk_socpeople;
-	var $date_birth;
-	var $place_birth;
 
 	function __construct()
 	{

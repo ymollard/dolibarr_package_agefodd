@@ -37,6 +37,7 @@ require_once('../class/agefodd_convention.class.php');
 require_once('../class/agefodd_contact.class.php');
 require_once('../class/agefodd_place.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -356,7 +357,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	$art1.= $langs->trans('AgfConvArt1_13')."\n";
 
-	$stagiaires = new Agsession($db);
+	$stagiaires = new Agefodd_session_stagiaire($db);
 	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid,$socid);
 	$art1.= $langs->trans('AgfConvArt1_14').' '.$nbstag.' '.$langs->trans('AgfConvArt1_15');
 	if ($nbstag > 1) $art1.= $langs->trans('AgfConvArt1_16');

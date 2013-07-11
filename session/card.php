@@ -36,6 +36,7 @@ require_once('../class/html.formagefodd.class.php');
 require_once('../class/agefodd_session_calendrier.class.php');
 require_once('../class/agefodd_calendrier.class.php');
 require_once('../class/agefodd_session_formateur.class.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
@@ -509,7 +510,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 			{
 				if(GETPOST('clone_calendar') )
 				{
-					// Reprendre les infos du calendrier
+					// clone calendar information
 					$calendrierstat = new Agefodd_sesscalendar($db);
 					$calendrier = new Agefodd_sesscalendar($db);
 					$calendrier->fetch_all($id);
@@ -529,6 +530,45 @@ if ($action == 'confirm_clone' && $confirm == 'yes')
 						}
 					}
 				}
+				if(GETPOST('clone_trainee') )
+				{
+					// Clone trainee information
+					$traineestat = new Agefodd_session_stagiaire($db);
+					$session_trainee = new Agefodd_session_stagiaire($db);
+					$session_trainee->fetch_stagiaire_per_session($id);
+					$blocNumber = count($session_trainee->lines);
+					if ($blocNumber > 0)
+					{
+						foreach ($session_trainee->lines as $line)
+						{
+							$traineestat->fk_session_agefodd=$id;
+							$traineestat->fk_stagiaire=$line->id;
+							$traineestat->fk_agefodd_stagiaire_type=$line->fk_agefodd_stagiaire_type;
+					
+							$result1 = $traineestat->create($user);
+						}
+					}
+				}
+				
+				/*if(GETPOST('clone_trainer') )
+				{
+					// Clone trainee information
+					$traineestat = new Agefodd_session_formateur($db);
+					$session_trainee = new Agefodd_session_formateur($db);
+					$session_trainee->fetch_formateur_per_session($id);
+					$blocNumber = count($session_trainee->lines);
+					if ($blocNumber > 0)
+					{
+						foreach ($session_trainee->lines as $line)
+						{
+							$traineestat->sessid=$id;
+							$traineestat->stagiaire=$line->id;
+							$traineestat->stagiaire_type=$line->fk_agefodd_stagiaire_type;
+								
+							$result1 = $traineestat->create($user);
+						}
+					}
+				}*/
 				header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
 				exit;
 			}
@@ -1235,7 +1275,7 @@ else
 					print '&nbsp';
 					print '<table class="border" width="100%">';
 
-					$stagiaires = new Agsession($db);
+					$stagiaires = new Agefodd_session_stagiaire($db);
 					$stagiaires->fetch_stagiaire_per_session($agf->id);
 					$nbstag = count($stagiaires->lines);
 					print '<tr><td  width="20%" valign="top" ';

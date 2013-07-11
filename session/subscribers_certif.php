@@ -35,6 +35,7 @@ require_once('../class/agefodd_stagiaire_certif.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../class/html.formagefodd.class.php');
 require_once('../lib/agefodd.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -200,7 +201,7 @@ if (!empty($id))
 	 *  Bloc d'affichage et de modification des infos sur les stagiaires
 	*
 	*/
-	$stagiaires = new Agsession($db);
+	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agf->id);
 	$nbstag = count($stagiaires->lines);
 	if ($nbstag > 0)

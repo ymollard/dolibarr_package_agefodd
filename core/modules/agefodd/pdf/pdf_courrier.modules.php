@@ -32,6 +32,7 @@ require_once('../class/agefodd_contact.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once('../lib/agefodd.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 

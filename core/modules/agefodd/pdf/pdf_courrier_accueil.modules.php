@@ -73,7 +73,7 @@ $posY += 36;
 */
 
 // Recuperation des stagiaires participant à la formation
-$agf_stag = new Agsession($this->db);
+$agf_stag = new Agefodd_session_stagiaire($this->db);
 $result = $agf_stag->fetch_stagiaire_per_session($id, $socid);
 $stagiaires = "";
 $num = count($agf_stag->lines);

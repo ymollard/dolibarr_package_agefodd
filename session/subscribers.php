@@ -33,6 +33,7 @@ require_once('../class/agsession.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../class/html.formagefodd.class.php');
 require_once('../lib/agefodd.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 // Security check
@@ -47,14 +48,16 @@ $stag_add_x=GETPOST('stag_add_x','alpha');
 if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	if($stag_update_x  > 0) {
-		$agf = new Agsession($db);
+		$agf=new Agsession($db);
+		
+		$agfsta = new Agefodd_session_stagiaire($db);
 
-		$agf->id = GETPOST('stagerowid','int');
-		$agf->sessid = GETPOST('sessid','int');
-		$agf->stagiaire = GETPOST('stagiaire','int');
-		$agf->stagiaire_type = GETPOST('stagiaire_type','int');
+		$agfsta->id = GETPOST('stagerowid','int');
+		$agfsta->fk_session_agefodd = GETPOST('sessid','int');
+		$agfsta->fk_stagiaire = GETPOST('stagiaire','int');
+		$agfsta->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type','int');
 
-		if ($agf->update_stag_in_session($user) > 0)
+		if ($agfsta->update($user) > 0)
 		{
 			$redirect=true;
 			if ($agf->fetch($agf->sessid)) {
@@ -118,12 +121,13 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 
 	if($stag_add_x > 0) {
 
-		$agf = new Agsession($db);
+		$agf = new Agefodd_session_stagiaire($db);
 
-		$agf->sessid = GETPOST('sessid','int');
-		$agf->stagiaire = GETPOST('stagiaire','int');
-		$agf->stagiaire_type = GETPOST('stagiaire_type','int');
-		$result = $agf->create_stag_in_session($user);
+		$agf->fk_session_agefodd = GETPOST('sessid','int');
+		$agf->fk_stagiaire = GETPOST('stagiaire','int');
+		$agf->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type','int');
+		 
+		$result = $agf->create($user);
 
 		if ($result > 0)
 		{
@@ -146,9 +150,9 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 {
 	$stagerowid=GETPOST('stagerowid','int');
 
-	$agf = new Agsession($db);
-	$agf->id=$id;
-	$result = $agf->remove_stagiaire($user,$stagerowid);
+	$agf = new Agefodd_session_stagiaire($db);
+	$agf->id=$stagerowid;
+	$result = $agf->delete($user);
 
 	if ($result > 0)
 	{
@@ -335,7 +339,7 @@ if (!empty($id))
 		 *  Block update trainne info
 		*
 		*/
-		$stagiaires = new Agsession($db);
+		$stagiaires = new Agefodd_session_stagiaire($db);
 		$stagiaires->fetch_stagiaire_per_session($agf->id);
 		$nbstag = count($stagiaires->lines);
 		if ($nbstag > 0)
@@ -734,7 +738,7 @@ if (!empty($id))
 		print '&nbsp';
 		print '<table class="border" width="100%">';
 
-		$stagiaires = new Agsession($db);
+		$stagiaires = new Agefodd_session_stagiaire($db);
 		$stagiaires->fetch_stagiaire_per_session($agf->id);
 		$nbstag = count($stagiaires->lines);
 		print '<tr><td  width="20%" valign="top" ';

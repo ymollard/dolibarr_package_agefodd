@@ -32,6 +32,7 @@ require_once('../class/agefodd_stagiaire_certif.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once('../lib/agefodd.lib.php');
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 class pdf_certificatecard extends ModelePDFAgefodd
@@ -150,7 +151,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 			$pdf->SetAutoPageBreak(1,0);
 
 			// Recuperation des stagiaires participant à la formation
-			$agf2 = new Agsession($this->db);
+			$agf2 = new Agefodd_session_stagiaire($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 				
 			if (($result && $ret))

@@ -33,7 +33,7 @@ require_once('../class/agefodd_session_calendrier.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 class pdf_fiche_presence_landscape extends ModelePDFAgefodd

@@ -353,10 +353,10 @@ For All :
 	- Session : Add product link to training
 	- Session : Add proposal link to session
 	- Session : Document linked screen : On create proposal auto create and link the full proposal
-	- Session : Document linked screen : On create order auto create from proposal linked or or from scratch
+	- Session : Document linked screen : On create order auto create from proposal linked or from scratch
 	- Session : Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
-	- All : Remove number of lines per list from agefodd admin because this option can e set into general Dolibarr administration and do conflict
-	- Session : Calendar : Better input method from template define in admnistration module
+	- Admin : Remove number of lines per list from agefodd admin because this option can be set into general Dolibarr administration and do conflict
+	- Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods
@@ -365,3 +365,4 @@ For Dev:
 	- Remove dol_include_once when possible replace by require_once
 	- Comment in code should be in english
 	- Try to remove all PgSQL warning regarding date update or insert (date must be quoted)
+	- Create class Agefodd_session_stagiaire and move all method concerning this class from Agsession class to Agefodd_session_stagiaire 

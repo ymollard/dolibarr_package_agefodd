@@ -706,3 +706,5 @@ ExportDataset_trainee=Agefood - Export Trainee
 ExportDataset_trainee=Agefood - Export Trainee
 ImportDataset_trainee=Agefodd - Import Trainee
 ImportDataset_agefoddcertificate=Agefodd - Import Certificate
+AgfConfirmUnlink=Do you confirm the unlink ?
+AgfDeleteObjectAlso=Do you want to delete (if status still draft) the %s link also ?

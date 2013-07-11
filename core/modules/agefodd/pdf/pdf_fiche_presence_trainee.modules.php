@@ -34,7 +34,7 @@ require_once('../class/agefodd_session_calendrier.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-
+require_once('../class/agefodd_session_stagiaire.class.php');
 
 
 class pdf_fiche_presence_trainee extends ModelePDFAgefodd
@@ -152,11 +152,12 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 			if ($result)
 			{
-				$resql = $agf->fetch_stagiaire_per_session($agf->id);
-				$nbsta=count($agf->lines);
+				$agfsta = new Agefodd_session_stagiaire($this->db);
+				$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
+				$nbsta=count($agfsta->lines);
 
 				//$blocsta=0;
-				foreach ($agf->lines as $line)	{
+				foreach ($agfsta->lines as $line)	{
 					$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
 				}
 			}
