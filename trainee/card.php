@@ -527,8 +527,12 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	if (!empty($conf->global->AGF_USE_STAGIAIRE_TYPE))
 	{
 		// Public stagiaire
+		$stagiaire_type=GETPOST('stagiaire_type','int');
+		if (empty($stagiaire_type)) {
+			$stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
+		}
 		print '<tr class="agelfoddline"><td>'.$langs->trans("AgfPublic").'</td><td colspan="3">';
-		print $formAgefodd->select_type_stagiaire(GETPOST('stagiaire_type','int'),'stagiaire_type','',1);
+		print $formAgefodd->select_type_stagiaire($stagiaire_type,'stagiaire_type','',1);
 		print '</td></tr>';
 	}
 
