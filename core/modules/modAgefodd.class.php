@@ -333,11 +333,13 @@ class modAgefodd extends DolibarrModules
 		$this->import_code[$r]=$this->rights_class.'_'.$r;
 		$this->import_label[$r]='ImportDataset_trainee';
 		$this->import_icon[$r]='contact';
-		$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
+		$this->import_entities_array[$r]=array('s.fk_soc'=>'company','s.nom'=>'AgfNbreParticipants','s.prenom'=>'AgfNbreParticipants','s.civilite'=>'AgfNbreParticipants',
+		's.tel1'=>'AgfNbreParticipants','s.tel2'=>'AgfNbreParticipants','s.mail'=>'AgfNbreParticipants',
+		's.date_birth'=>'AgfNbreParticipants','s.place_birth'=>'AgfNbreParticipants','s.datec'=>'AgfNbreParticipants');	// We define here only fields that use another icon that the one defined into import_icon
 		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_stagiaire');	// List of tables to insert into (insert done in same order)
 		$this->import_fields_array[$r]=array('s.fk_soc'=>'ThirdPartyName*','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
 		's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
-		's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		's.date_birth'=>'DateToBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
 		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id');    // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
 		$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'fetchidfromref','file'=>'/societe/class/societe.class.php','class'=>'Societe','method'=>'fetch','element'=>'ThirdParty'));
 		$this->import_regex_array[$r]=array('s.date_birth'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$','s.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
@@ -345,17 +347,21 @@ class modAgefodd extends DolibarrModules
 		's.tel1'=>'1234567890','s.tel2'=>'0987654321','s.mail'=>'Jantje@tks.nl',
 		's.date_birth'=>'2013-11-12','s.place_birth'=>'Almelo','s.datec'=>'1998-11-06');
 
-		// Import certificqte
+		// Import certificate
 		$r++;
 		$this->import_code[$r]=$this->rights_class.'_'.$r;
 		$this->import_label[$r]='ImportDataset_agefoddcertificate';
 		$this->import_icon[$r]='contact';
-		//$this->import_entities_array[$r]=array('s.fk_soc'=>'company');	// We define here only fields that use another icon that the one defined into import_icon
+		$this->import_entities_array[$r]=array('s.fk_session_agefodd'=>'AgefoddMenuAction','s.fk_stagiaire'=>'AgfNbreParticipants','s.fk_agefodd_stagiaire_type'=>'AgfNbreParticipants',
+		's.datec'=>'AgfNbreParticipants','certif.fk_stagiaire'=>'AgfNbreParticipants','certif.fk_session_agefodd'=>'AgefoddMenuAction',
+		'certif.certif_code'=>'AgfCertificate','certif.certif_label'=>'AgfCertificate','certif.certif_dt_start'=>'AgfCertificate','certif.certif_dt_end'=>'AgfCertificate',
+		'certif.datec'=>'AgfCertificate'
+		);	// We define here only fields that use another icon that the one defined into import_icon
 		$this->import_tables_array[$r]=array('s'=>MAIN_DB_PREFIX.'agefodd_session_stagiaire','certif'=>MAIN_DB_PREFIX.'agefodd_stagiaire_certif');	// List of tables to insert into (insert done in same order)
-		$this->import_fields_array[$r]=array('s.fk_session_agefodd'=>'SessionId*','s.fk_stagiaire'=>'TraineeId*','s.fk_agefodd_stagiaire_type'=>"TraineeType",
+		$this->import_fields_array[$r]=array('s.fk_session_agefodd'=>'Id*','s.fk_stagiaire'=>'Id*','s.fk_agefodd_stagiaire_type'=>"AgfTraineeType",
 		's.datec'=>'DateCreation',
-		'certif.fk_stagiaire'=>'TraineeId*','certif.fk_session_agefodd'=>'SessionId*',
-		'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'CertifDateStart','certif.certif_dt_end'=>'CertifDateEnd',
+		'certif.fk_stagiaire'=>'Id*','certif.fk_session_agefodd'=>'Id*',
+		'certif.certif_code'=>'AgfCertifCode','certif.certif_label'=>'AgfCertifLabel','certif.certif_dt_start'=>'AgfCertifDateSt','certif.certif_dt_end'=>'AgfCertifDateEnd',
 		'certif.datec'=>"DateCreation");
 
 		$this->import_fieldshidden_array[$r]=array('s.fk_user_author'=>'user->id','s.fk_user_mod'=>'user->id',
@@ -367,7 +373,6 @@ class modAgefodd extends DolibarrModules
 		's.datec'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 		'certif.certif_dt_start'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 		'certif.certif_dt_end'=>'^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$');
-
 		$this->import_examplevalues_array[$r]=array(
 		's.fk_session_agefodd'=>'999999','s.fk_stagiaire'=>'1','s.fk_agefodd_stagiaire_type'=>$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
 		's.datec'=>'2013-11-12','çertif.fk_stagiaire'=>'1','certif.fk_session_agefodd'=>'999999',
@@ -382,12 +387,16 @@ class modAgefodd extends DolibarrModules
 		$this->export_label[$r]='ExportDataset_trainee';
 		$this->export_icon[$r]='contact';
 		$this->export_permission[$r]=array(array("agefodd","export"));
-		$this->export_fields_array[$r]=array('s.rowid'=>'Idtrainee','c.nom'=>'ThirdPartyName','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName',
+		$this->export_fields_array[$r]=array('s.rowid'=>'Id','c.nom'=>'ThirdPartyName','s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName',
 		's.civilite'=>'AgfTitle',
 		's.tel1'=>'AgfTelephone1','s.tel2'=>'AgfTelephone2','s.mail'=>'AgfPDFFicheEvalEmailTrainee',
-		's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
+		's.date_birth'=>'DateToBirth','s.place_birth'=>'AgfPlaceBirth','s.datec'=>'AgfDateC');
 		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
-		$this->export_entities_array[$r]=array('c.nom'=>"company");	// We define here only fields that use another picto
+		$this->export_entities_array[$r]=array('c.nom'=>"company",'s.rowid'=>"AgfNbreParticipants",'s.nom'=>"AgfNbreParticipants",'s.prenom'=>"AgfNbreParticipants"
+			,'s.civilite'=>"AgfNbreParticipants",'s.tel1'=>"AgfNbreParticipants",'s.tel2'=>"AgfNbreParticipants",'s.mail'=>"AgfNbreParticipants",'s.date_birth'=>"AgfNbreParticipants",
+		's.place_birth'=>"AgfNbreParticipants"
+		,'s.datec'=>"AgfNbreParticipants"
+		);	// We define here only fields that use another picto
 
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
 		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
@@ -396,19 +405,23 @@ class modAgefodd extends DolibarrModules
 
 
 		//certificate export
-		$r=0;
 		$r++;
 		$this->export_code[$r]=$this->rights_class.'_'.$r;
 		$this->export_label[$r]='ExportDataset_certificate';
 		$this->export_icon[$r]='contact';
 		$this->export_permission[$r]=array(array("agefodd","export"));
 		$this->export_fields_array[$r]=array('s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
-		's.date_birth'=>'DateBirth','s.place_birth'=>'AgfPlaceBirth',
-		'certif.fk_stagiaire'=>'TraineeId*','certif.fk_session_agefodd'=>'SessionId*',
-		'certif.certif_code'=>'CertifCode','certif.certif_label'=>'CertifLabel','certif.certif_dt_start'=>'CertifDateStart','certif.certif_dt_end'=>'CertifDateEnd',
+		's.date_birth'=>'DateToBirth','s.place_birth'=>'AgfPlaceBirth',
+		'certif.fk_stagiaire'=>'Id','certif.fk_session_agefodd'=>'Id',
+		'certif.certif_code'=>'AgfCertifCode','certif.certif_label'=>'AgfCertifLabel','certif.certif_dt_start'=>'AgfCertifDateSt','certif.certif_dt_end'=>'AgfCertifDateEnd',
 		's.datec'=>'AgfDateC');
 		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
-		$this->export_entities_array[$r]=array('c.nom'=>"company");	// We define here only fields that use another picto
+		$this->export_entities_array[$r]=array('c.nom'=>"company",'s.nom'=>'AgfNbreParticipants','s.prenom'=>'AgfNbreParticipants','s.civilite'=>'AgfNbreParticipants',
+		's.date_birth'=>'AgfNbreParticipants','s.place_birth'=>'AgfNbreParticipants',
+		'certif.fk_stagiaire'=>'AgfNbreParticipants','certif.fk_session_agefodd'=>'AgefoddMenuAction',
+		'certif.certif_code'=>'AgfCertificate','certif.certif_label'=>'AgfCertificate','certif.certif_dt_start'=>'AgfCertificate','certif.certif_dt_end'=>'AgfCertificate',
+		's.datec'=>'AgfNbreParticipants'
+		 );	// We define here only fields that use another picto
 
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
 		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';

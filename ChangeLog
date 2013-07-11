@@ -340,22 +340,23 @@ For All :
 	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	
 	- tasks_agefodd #932 : Add calculation of the cost of a session
 	- New Screen : Mass Archive sessions per year 
-	- Import/Eport trainee 
-	- Import export Certificate
-	- Certificate indicator (pass or failed)
-	- Certificate type dictionnary
-	- Certificate numbering rules
-	- Fix dashboard bugs
-	- Add administrative task per training (base on admin administrative task)
-	- Fix Admin administrative task (when all are deleted you can create new ones)
+	- Import/Export Trainee 
+	- Import/Export Certificate
+	- Certificate : Certificate indicator (pass or failed)
+	- Certificate : Certificate type dictionnary
+	- Certificate : Certificate numbering rules
+	- Dashboard : Fix dashboard bugs
+	- Admin/Training/Session : Add administrative task per training (base on admin administrative task)
+	- Session : Administrative task : Fix Admin administrative task (when all are deleted you can create new ones)
 	- Admin : Switch to turn off OPCA feature
-	- Add session attached files tab (to attach all kind of document)
-	- Add product link to training
-	- Add proposal link to session
-	- Document linked screen : On create proposal auto create and link the full proposal
-	- Document linked screen : On create order auto create from proposal linked or or from scratch
-	- Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
-	- remove number of lines per list from agefodd admin because this option can e set into general Dolibarr administration and do conflict
+	- Session : Add session attached files tab (to attach all kind of document)
+	- Session : Add product link to training
+	- Session : Add proposal link to session
+	- Session : Document linked screen : On create proposal auto create and link the full proposal
+	- Session : Document linked screen : On create order auto create from proposal linked or or from scratch
+	- Session : Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
+	- All : Remove number of lines per list from agefodd admin because this option can e set into general Dolibarr administration and do conflict
+	- Session : Calendar : Better input method from template define in admnistration module
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods

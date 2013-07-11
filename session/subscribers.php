@@ -262,7 +262,7 @@ if (!empty($id))
 		/*
 		 * Confirm delete
 		*/
-		if ($_POST["stag_remove_x"])
+		if (GETPOST('stag_remove_x'))
 		{
 			// Param url = id de la ligne stagiaire dans session - id session
 			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?stagerowid=".GETPOST('stagerowid','int').'&id='.$id,$langs->trans("AgfDeleteStag"),$langs->trans("AgfConfirmDeleteStag"),"confirm_delete_stag",'','',1);

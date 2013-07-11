@@ -303,30 +303,48 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 
 	if($_POST["period_add_x"])
 	{
-		$agf = new Agefodd_sesscalendar($db);
-
-		$agf->sessid = GETPOST('sessid','int');
-		$agf->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-
+		$error=0;
+		$error_message='';
+	
 		//From template
-		$idtemplate=GETPOST('fromtemplate','int');
-		if (($idtemplate!=-1) && (!empty($idtemplate))) {
-			$tmpl_calendar = new Agefoddcalendrier($db);
-			$result=$tmpl_calendar->fetch($idtemplate);
-			$tmpldate = dol_mktime(0,0,0,GETPOST('datetmplmonth','int'),GETPOST('datetmplday','int'),GETPOST('datetmplyear','int'));
-			if ($tmpl_calendar->day_session!=1) {
-				$tmpldate = dol_time_plus_duree($tmpldate, (($tmpl_calendar->day_session)-1), 'd');
+		$idtemplate_array=GETPOST('fromtemplate');
+		if (is_array($idtemplate_array)) {
+			foreach ($idtemplate_array as $idtemplate) {
+				
+				$agf = new Agefodd_sesscalendar($db);
+				
+				$agf->sessid = GETPOST('sessid','int');
+				$agf->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+			
+				$tmpl_calendar = new Agefoddcalendrier($db);
+				$result=$tmpl_calendar->fetch($idtemplate);
+				$tmpldate = dol_mktime(0,0,0,GETPOST('datetmplmonth','int'),GETPOST('datetmplday','int'),GETPOST('datetmplyear','int'));
+				if ($tmpl_calendar->day_session!=1) {
+					$tmpldate = dol_time_plus_duree($tmpldate, (($tmpl_calendar->day_session)-1), 'd');
+				}
+					
+				$agf->date_session = $tmpldate;
+					
+				$heure_tmp_arr = explode(':',$tmpl_calendar->heured);
+				$agf->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
+					
+				$heure_tmp_arr = explode(':',$tmpl_calendar->heuref);
+				$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
+				
+				$result = $agf->create($user);
+				if ($result < 0)
+				{
+					$error++;
+					$error_message .=  $agf->error;
+				}
 			}
-				
-			$agf->date_session = $tmpldate;
-				
-			$heure_tmp_arr = explode(':',$tmpl_calendar->heured);
-			$agf->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
-				
-			$heure_tmp_arr = explode(':',$tmpl_calendar->heuref);
-			$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
-
 		}else {
+			
+			$agf = new Agefodd_sesscalendar($db);
+			
+			$agf->sessid = GETPOST('sessid','int');
+			$agf->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+				
 			//From calendar selection
 			$heure_tmp_arr = array();
 
@@ -341,18 +359,25 @@ if ($action == 'edit' && $user->rights->agefodd->creer)
 				$heure_tmp_arr = explode(':',$heuref_tmp);
 				$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 			}
+			
+			$result = $agf->create($user);
+			if ($result < 0)
+			{
+				$error++;
+				$error_message =  $agf->error;
+			}
 		}
 
-		$result = $agf->create($user);
+		
 
-		if ($result > 0)
+		if (!$error)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit&id=".$id);
 			exit;
 		}
 		else
 		{
-			setEventMessage($agf->error,'errors');
+			setEventMessage($error_message,'errors');
 		}
 	}
 
@@ -854,7 +879,8 @@ else
 						$duree = 0;
 						for ($i = 0; $i < $blocNumber; $i++)
 						{
-							print '<tr>'."\n";;
+							if ($calendrier->lines[$i]->id == $_POST["modperiod"] && $_POST["period_remove_x"]) print '<tr bgcolor="#d5baa8">'."\n";
+							else print '<tr>'."\n";
 							print '<form name="obj_update_'.$i.'" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
 							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 							print '<input type="hidden" name="action" value="edit">'."\n";
@@ -946,17 +972,18 @@ else
 							print '<tr>';
 							print '<td colspan="3">';
 							print $langs->trans('AgfCalendarFromTemplate').':';
-							print '<select id="fromtemplate" name="fromtemplate">';
-							print '<option value="-1"></option>';
+							print '<table class="noborder">';
 							foreach($tmpl_calendar->lines as $line) {
 								if ($line->day_session!=1) {
 									$tmpldate = dol_time_plus_duree($agf->dated, (($line->day_session)-1), 'd');
 								} else {
 									$tmpldate= $agf->dated;
 								}
-								print '<option value="'.$line->id.'">'.dol_print_date($tmpldate,'daytext').' '.$line->heured.' - '.$line->heuref.'</option>';
+								print '<tr><td>';
+								print '<input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="'.$line->id.'">'.dol_print_date($tmpldate,'daytext').' '.$line->heured.' - '.$line->heuref.'</input>';
+								print '</td></tr>';
 							}
-							print '</select>';
+							print '</table>';
 							print '</td>';
 							if ($user->rights->agefodd->modifier)
 							{
