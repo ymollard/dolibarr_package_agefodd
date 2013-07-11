@@ -699,3 +699,4 @@ AgfFromObject=Desde
 AgfProposalMustBeSignToCreateOrderFrom= The proposal selected is not at sign status. Order cannot be generate from non signed proposal
 AgfFactureAddFacFromOrder=Create invoice from order
 AgfFactureAddFacFromPropal=Create Invoice from proposal
+SuccessCreateStagInSession=Trainee correctly create and added to the session

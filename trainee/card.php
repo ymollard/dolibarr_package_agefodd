@@ -507,18 +507,12 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	// Session
 	if (empty($sortorder)) $sortorder="ASC";
 	if (empty($sortfield)) $sortfield="s.dated";
-	if (empty($arch)) $arch = 0;
 
-	if ($page == -1) {
-		$page = 0 ;
-	}
-
-	$limit = $conf->liste_limit;
 	$agf = new Agsession($db);
 
-	$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
+	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, 0, $filter);
 	$sessions = array();
-	foreach ($agf->line as $line)
+	foreach ($agf->lines as $line)
 	{
 		$sessions[$line->rowid] = $line->ref_interne.' - '.$line->intitule.' - '.dol_print_date($line->dated,'daytext');
 	}

@@ -641,6 +641,15 @@ class pdf_convention extends ModelePDFAgefodd
 				$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM."\n". $langs->transnoentities('AgfConvArtSig')." ".$conf->global->AGF_ORGANISME_REPRESENTANT." (*)";
 				$pdf->MultiCell($this->espaceH_dispo/2, 4, $outputlangs->transnoentities($this->str),0,'C');
 				$hauteurA = dol_nboflines_bis($this->str,50)*3;
+				
+				// Incrustation image tampon
+				if($conf->global->AGF_INFO_TAMPON)
+				{
+					$dir=$conf->agefodd->dir_output.'/images/';
+					$img_tampon=$dir.$conf->global->AGF_INFO_TAMPON;
+					if (file_exists($img_tampon))
+						$pdf->Image($img_tampon, $posX + $this->marge_gauche, $pdf->GetY() + 6, 50);
+				}
 
 				// signature du client
 				$pdf->SetXY( $this->milieu, $posY);
