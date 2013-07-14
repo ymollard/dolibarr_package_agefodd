@@ -243,6 +243,66 @@ class Agefodd_facture
 			return -1;
 		}
 	}
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    id ob object
+	 *  @param	string		$type    bc is default
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_fac_by_id($id, $type='bc')
+	{
+		global $langs;
+
+		$sql = "SELECT";
+		$sql.= " rowid, fk_session, fk_societe ";
+		
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_facture";
+		if ($type == 'bc')
+		{
+			$sql.= " WHERE fk_commande = ".$id;
+		}
+		if ($type == 'fac')
+		{
+			$sql.= " WHERE fk_facture = ".$id;
+		}
+		if ($type == 'prop')
+		{
+			$sql.= " WHERE fk_propal = ".$id;
+		}
+		
+
+		dol_syslog(get_class($this)."::fetch_fac_by_id sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->lines = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			for ($i=0; $i < $num; $i++)
+			{
+				$line = new Agefodd_facture_line();
+
+				$obj = $this->db->fetch_object($resql);
+				$line->id = $obj->rowid;
+				$line->socid = $obj->fk_societe;
+				$line->fk_session = $obj->fk_session;
+
+				$this->lines[$i]=$line;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_fac_by_id ".$this->error, LOG_ERR);
+			return -1;
+		}
+
+
+	}
 
 	/**
 	 *  Load object in memory from database
@@ -301,11 +361,9 @@ class Agefodd_facture
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_fac_per_soc ".$this->error, LOG_ERR);
 			return -1;
 		}
-
-
 	}
 
 	/**
@@ -451,6 +509,7 @@ Class Agefodd_facture_line {
 	var $id;
 	var $socid;
 	var $ref;
+	var $fk_session;
 
 	function __construct()
 	{

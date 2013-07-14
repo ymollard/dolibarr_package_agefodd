@@ -358,6 +358,7 @@ For All :
 	- Admin : Remove number of lines per list from agefodd admin because this option can be set into general Dolibarr administration and do conflict
 	- Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
 	- Session : option to clone with trainee
+	- Session : Subscribers have now a status (auto calculated or manually set) according administration options
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods

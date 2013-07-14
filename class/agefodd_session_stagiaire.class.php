@@ -423,6 +423,70 @@ class Agefodd_session_stagiaire  extends CommonObject
 	}
 	
 	/**
+	 *  Update status of trainee in session by soc
+	 *
+	 *  @param	User	$user        User that modify
+	 *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
+	 *  @param  int		$socid	 	 Thirdparty id
+	 *  @param  int		$status		 new status
+	 *  @return int     		   	 <0 if KO, >0 if OK
+	 */
+	function update_status_by_soc($user, $notrigger=0, $socid=0, $status=0)
+	{
+		global $conf, $langs;
+		$error=0;
+	
+		// Update request
+		if (!isset($this->archive)) $this->archive = 0;
+		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET";
+		$sql.= " status_in_session=".$status;
+		$sql.= " WHERE fk_session_agefodd = ".$this->fk_session_agefodd;
+		$sql.= ' AND fk_stagiaire IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE fk_soc='.$socid.')';
+	
+		$this->db->begin();
+	
+		dol_syslog(get_class($this)."::update_status_by_soc sql=".$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error++; $this->errors[]="Error ".$this->db->lasterror();
+		}
+		if (! $error)
+		{
+			if (! $notrigger)
+			{
+				// Uncomment this and change MYOBJECT to your own tag if you
+				// want this action call a trigger.
+	
+				//// Call triggers
+				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+				//$interface=new Interfaces($this->db);
+				//$result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
+				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				//// End call triggers
+			}
+		}
+	
+		// Commit or rollback
+		if ($error)
+		{
+			foreach($this->errors as $errmsg)
+			{
+				dol_syslog(get_class($this)."::update_status_by_soc ".$errmsg, LOG_ERR);
+				$this->error.=($this->error?', '.$errmsg:$errmsg);
+			}
+			$this->db->rollback();
+			return -1*$error;
+		}
+		else
+		{
+			$this->db->commit();
+			return 1;
+		}
+	}
+	
+	
+	
+	/**
 	 *    	Return label of status of trainee in session (on going, subcribe, confirm, present, patially present,not present,canceled)
 	 *
 	 *    	@param      int			$mode        0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
