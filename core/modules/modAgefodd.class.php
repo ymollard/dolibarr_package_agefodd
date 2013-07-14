@@ -304,6 +304,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Mask of certificate code';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_SESSION_TRAINEE_STATUS_AUTO";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Manage subcription status by propal/order status';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 
 		// Dictionnaries

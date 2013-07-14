@@ -661,7 +661,7 @@ class FormAgefodd extends Form
 		$time = 7;
 		$heuref = 21;
 		$min = 0;
-		$options = '<option value=""></option>'."\n";;
+		$options = '<option value=""></option>'."\n";
 		while ($time < $heuref)
 		{
 			if ( $min == 60)
@@ -740,6 +740,22 @@ class FormAgefodd extends Form
 
 
 		return $num;
+	}
+	
+	
+	/**
+	 *  Display select Trainee status in session
+	 *
+	 *  @param	string $selectval  	valeur a selectionner par defaut
+	 *  @param	string $htmlname    nom du control HTML
+	 *  @return string         		The HTML control
+	 */
+	function select_stagiaire_session_status($htmlname,$selectval) {
+		
+		require_once 'agefodd_session_stagiaire.class.php';
+		$sess_sta=new Agefodd_session_stagiaire($this->db);
+		
+		return $this->selectarray($htmlname,$sess_sta->labelstatut,$selectval,0);
 	}
 
 

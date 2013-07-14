@@ -1317,7 +1317,7 @@ else
 								if ($agf->type_session == 1 && !empty($conf->global->AGF_MANAGE_OPCA))
 								{
 									print '<table class="nobordernopadding" width="100%"><tr><td colspan="2">';
-									print $trainee_info;
+									print $trainee_info.' '.$stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
 									print '</td></tr>';
 
 									$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid,$agf->id);
@@ -1358,7 +1358,7 @@ else
 									print '</table>';
 								}
 								else {
-									print $trainee_info;
+									print $trainee_info.' '.$stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
 								}
 							}
 							print '</td>';

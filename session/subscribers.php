@@ -56,6 +56,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agfsta->fk_session_agefodd = GETPOST('sessid','int');
 		$agfsta->fk_stagiaire = GETPOST('stagiaire','int');
 		$agfsta->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type','int');
+		$agfsta->status_in_session = GETPOST('stagiaire_session_status','int');
 
 		if ($agfsta->update($user) > 0)
 		{
@@ -126,6 +127,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		$agf->fk_session_agefodd = GETPOST('sessid','int');
 		$agf->fk_stagiaire = GETPOST('stagiaire','int');
 		$agf->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type','int');
+		$agf->status_in_session = GETPOST('stagiaire_session_status','int');
 		 
 		$result = $agf->create($user);
 
@@ -370,6 +372,12 @@ if (!empty($id))
 
 					print $formAgefodd->select_stagiaire($stagiaires->lines[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd='.$id.')) OR (s.rowid='.$stagiaires->lines[$i]->id.')');
 
+					if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef<=dol_now())
+					{
+						print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status',$stagiaires->lines[$i]->status_in_session);
+					} else  {
+						print $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
+					}
 					/*
 					 * Manage trainee Funding for inter-enterprise
 					* Display only if first of the thridparty list
@@ -463,7 +471,7 @@ if (!empty($id))
 						if ($agf->type_session == 1  && !empty($conf->global->AGF_MANAGE_OPCA))
 						{
 							print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
-							print $trainee_info;
+							print $trainee_info.' '.$stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
 							print '</td></tr>';
 
 							$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid,$agf->id);
@@ -508,7 +516,7 @@ if (!empty($id))
 							print '</table>';
 						}
 						else {
-							print $trainee_info;
+							print $trainee_info.' '.$stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
 						}
 					}
 					print '</td>';
@@ -562,6 +570,11 @@ if (!empty($id))
 			{
 				print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,'stagiaire_type');
 			}
+			if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef<=dol_now())
+			{
+				print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status',0);
+			} 
+			
 			if ($user->rights->agefodd->modifier)
 			{
 				print '</td><td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="stag_add" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -772,7 +785,7 @@ if (!empty($id))
 					if ($agf->type_session == 1 && !empty($conf->global->AGF_MANAGE_OPCA))
 					{
 						print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
-						print $trainee_info;
+						print $trainee_info.' '.$stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
 						print '</td></tr>';
 
 						$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid,$agf->id);
@@ -813,7 +826,7 @@ if (!empty($id))
 						print '</table>';
 					}
 					else {
-						print $trainee_info;
+						print $trainee_info.' '.$stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
 					}
 				}
 				print '</td>';

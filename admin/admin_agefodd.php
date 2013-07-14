@@ -285,6 +285,10 @@ if ($action == 'setvarother')
 	$useWISIYGtraining=GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING','alpha');
 	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
+	
+	$usesessiontraineeauto=GETPOST('AGF_SESSION_TRAINEE_STATUS_AUTO','alpha');
+	$res = dolibarr_set_const($db, 'AGF_SESSION_TRAINEE_STATUS_AUTO', $usesessiontraineeauto,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
 
 
 	if (! $error)
@@ -1132,6 +1136,21 @@ if ($conf->use_javascript_ajax){
 }
 print '</td>';
 print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_SESSION_TRAINEE_STATUS_AUTO
+print '<tr class="pair"><td>'.$langs->trans("AgfUseSubscriptionStatusAuto").'</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_SESSION_TRAINEE_STATUS_AUTO');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_SESSION_TRAINEE_STATUS_AUTO",$arrval,$conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO);
+}
+print '</td>';
+print '<td align="center">';
+$form->textwithpicto('',$langs->trans("AgfUseSubscriptionStatusAutoHelp"),1,'help');
 print '</td>';
 print '</tr>';
 

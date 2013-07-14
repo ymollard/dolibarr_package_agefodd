@@ -26,6 +26,7 @@
  *	\brief      Sending docuemnt screen
 */
 
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -971,24 +972,24 @@ if (!empty($id))
 			print '</table>'."\n";
 			print '&nbsp;'."\n";
 
-			$linecount = count($agf->line);
+			$linecount = count($agf->lines);
 
 			for ($i=0; $i < $linecount ; $i++)
 			{
-				if (!empty($agf->line[$i]->socid))
+				if (!empty($agf->lines[$i]->socid))
 				{
 					print '<table class="border" width="100%">'."\n";
 
 					print '<tr class="liste_titre">'."\n";
 					print '<td colspan=3>';
-					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->line[$i]->socid.'">'.$agf->line[$i]->socname.'</a></td>'."\n";
+					print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->lines[$i]->socid.'">'.$agf->lines[$i]->socname.'</a></td>'."\n";
 					print '</tr>'."\n";
 
-					document_send_line($langs->trans("AgfPDFConvocation"), 2, "convocation", $agf->line[$i]->socid);
-					document_send_line($langs->trans("AgfConvention"), 2, "convention", $agf->line[$i]->socid);
-					document_send_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->line[$i]->socid);
-					document_send_line($langs->trans("AgfCourrierAcceuil"), 2, "accueil", $agf->line[$i]->socid);
-					document_send_line($langs->trans("AgfCourrierCloture"), 2, "cloture", $agf->line[$i]->socid);
+					document_send_line($langs->trans("AgfPDFConvocation"), 2, "convocation", $agf->lines[$i]->socid);
+					document_send_line($langs->trans("AgfConvention"), 2, "convention", $agf->lines[$i]->socid);
+					document_send_line($langs->trans("AgfSendAttestation"), 2, "attestation", $agf->lines[$i]->socid);
+					document_send_line($langs->trans("AgfCourrierAcceuil"), 2, "accueil", $agf->lines[$i]->socid);
+					document_send_line($langs->trans("AgfCourrierCloture"), 2, "cloture", $agf->lines[$i]->socid);
 
 					print '</table>';
 					if ($i < $linecount) print '&nbsp;'."\n";
@@ -1014,7 +1015,6 @@ if (!empty($id))
 	}
 
 }
-
 
 llxFooter();
 $db->close();

@@ -18,21 +18,13 @@ ALTER TABLE llx_agefodd_training_admlevel ADD CONSTRAINT llx_agefodd_training_ad
 ALTER TABLE llx_agefodd_training_admlevel ADD INDEX fk_agefodd_training_admlevel (fk_training);
 
 INSERT INTO llx_agefodd_training_admlevel(fk_agefodd_training_admlevel,fk_training,level_rank,fk_parent_level,indice,intitule,delais_alerte,fk_user_author,datec,fk_user_mod)
-SELECT DISTINCT seesadm.rowid,training.rowid, seesadm.level_rank, seesadm.fk_parent_level,seesadm.indice, seesadm.intitule,seesadm.delais_alerte,seesadm.fk_user_author,seesadm.datec,seesadm.fk_user_mod
-FROM llx_agefodd_session_admlevel as seesadm, llx_agefodd_formation_catalogue as training;
+SELECT DISTINCT seesadm.rowid,training.rowid, seesadm.level_rank, seesadm.fk_parent_level,seesadm.indice, seesadm.intitule,seesadm.delais_alerte,seesadm.fk_user_author,seesadm.datec,seesadm.fk_user_mod FROM llx_agefodd_session_admlevel as seesadm, llx_agefodd_formation_catalogue as training;
 
 --pgsql
-UPDATE llx_agefodd_training_admlevel as upd
-SET fk_parent_level=ori.rowid 
-FROM  llx_agefodd_training_admlevel as ori
-WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training
+UPDATE llx_agefodd_training_admlevel as upd SET fk_parent_level=ori.rowid FROM llx_agefodd_training_admlevel as ori WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training;
 
 --MySQL
-UPDATE llx_agefodd_training_admlevel as ori, llx_agefodd_training_admlevel as upd
-SET upd.fk_parent_level=ori.rowid
-WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training
-
-
+UPDATE llx_agefodd_training_admlevel as ori, llx_agefodd_training_admlevel as upd SET upd.fk_parent_level=ori.rowid WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training;
 
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN import_key	varchar(14);
 ALTER TABLE llx_agefodd_stagiaire_certif ADD COLUMN import_key	varchar(14);
@@ -70,3 +62,4 @@ ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN fk_product integer AFTER 
 ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN nb_min_target integer NULL AFTER fk_product;
 ALTER TABLE llx_agefodd_session ADD COLUMN nb_min_target integer NULL AFTER force_nb_stagiaire;
 
+ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN status_in_session integer NULL AFTER fk_agefodd_stagiaire_type;
