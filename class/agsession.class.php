@@ -958,7 +958,7 @@ class Agsession extends CommonObject
 		if (isset($this->num_OPCA_soc)) $this->num_OPCA_soc=trim($this->num_OPCA_soc);
 		if (isset($this->num_OPCA_file)) $this->num_OPCA_file=trim($this->num_OPCA_file);
 		if (isset($this->archive)) $this->archive=trim($this->archive);
-
+		
 
 		//Create or update line in session commercial table and get line number
 		$result = $this->setCommercialSession($this->commercialid,$user);
@@ -996,7 +996,7 @@ class Agsession extends CommonObject
 			$sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
 			$sql.= " fk_session_place=".(isset($this->fk_session_place)?$this->fk_session_place:"null").",";
 			$sql.= " nb_place=".(isset($this->nb_place)?$this->nb_place:"null").",";
-			$sql.= " nb_min_target=".(isset($this->nb_min_target)?$this->nb_min_target:"null").",";
+			$sql.= " nb_min_target=".(!empty($this->nb_min_target)?$this->nb_min_target:"null").",";
 			$sql.= " nb_stagiaire=".(isset($this->nb_stagiaire)?$this->nb_stagiaire:"null").",";
 			$sql.= " force_nb_stagiaire=".(isset($this->force_nb_stagiaire)?$this->force_nb_stagiaire:"0").",";
 			$sql.= " type_session=".(isset($this->type_session)?$this->type_session:"null").",";
