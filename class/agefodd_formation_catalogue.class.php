@@ -119,9 +119,9 @@ class Agefodd extends CommonObject
 		$sql.= " ".(! isset($this->note2)?'NULL':"'".$this->note2."'").",";
 		$sql.= " ".$user->id.',';
 		$sql.= " ".$user->id.',';
-		$sql.= " ".$conf->entity.' ';
-		$sql.= " ".(empty($this->fk_product)?'NULL':"'".$this->fk_product."'").', ';
-		$sql.= " ".(empty($this->nb_min_target)?'NULL':"'".$this->nb_min_target."'").' ';
+		$sql.= " ".$conf->entity.', ';
+		$sql.= " ".(empty($this->fk_product)?'null':$this->fk_product).', ';
+		$sql.= " ".(empty($this->nb_min_target)?"null":$this->nb_min_target);
 		$sql.= ")";
 
 		$this->db->begin();

@@ -339,7 +339,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','int').'"></td></tr>';
 	
 	print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
-	print '<input name="nbmintarget" class="flat" size="50" value="'.GETPOST('nbmintarget','int').'"></td></tr>';
+	print '<input name="nbmintarget" class="flat" size="5" value="'.GETPOST('nbmintarget','int').'"></td></tr>';
 
 	print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 	print $form->select_produits(GETPOST('productid'),'productid');
@@ -440,7 +440,7 @@ else
 				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
-				print '<input name="nbmintarget" class="flat" size="50" value="'.$agf->nb_min_target.'"></td></tr>';
+				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_min_target.'"></td></tr>';
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 				print $form->select_produits($agf->fk_product,'productid');

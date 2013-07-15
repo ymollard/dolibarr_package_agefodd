@@ -276,7 +276,8 @@ if ($resql != -1)
 
 		print '<td  style="background: #'.$line->color.'"><a'.$color_a.' href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
 		print '<td>';
-		if ($line->socid) {
+
+		if (!empty($line->socid) && $line->socid!=-1) {
 			$soc=new Societe($db);
 			$soc->fetch($line->socid);
 			print $soc->getNomURL(1);
