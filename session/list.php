@@ -178,6 +178,7 @@ if ($resql != -1)
 	print_liste_field_titre($langs->trans("AgfDateFin"),$_SERVEUR['PHP_SELF'],"s.datef","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfLieu"),$_SERVEUR['PHP_SELF'],"p.ref_interne","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"),$_SERVEUR['PHP_SELF'],"s.nb_stagiaire",'' ,$arg_url,'',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AgfListParticipantsStatus"),$_SERVEUR['PHP_SELF'],'','' ,$arg_url,'',$sortfield,$sortorder);
 	print "</tr>\n";
 
 
@@ -246,6 +247,9 @@ if ($resql != -1)
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_site_forma($search_site,'search_site',1);
 	print '</td>';
+	
+	print '<td class="liste_titre">';
+	print '</td>';
 
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/search.png" value="'.dol_escape_htmltag($langs->trans("Search")).'" title="'.dol_escape_htmltag($langs->trans("Search")).'">';
 	print '&nbsp; ';
@@ -298,9 +302,8 @@ if ($resql != -1)
 		print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
 		print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
 		print '<td>'.stripslashes($line->ref_interne).'</td>';
-		print '<td>';
-		print $line->nb_stagiaire;
-		print '</td>';
+		print '<td>'.$line->nb_stagiaire.'</td>';
+		print '<td>'.$line->nb_prospect.'/'.$line->nb_confirm.'/'.$line->nb_cancelled.'</td>';
 		print "</tr>\n";
 
 		$i++;

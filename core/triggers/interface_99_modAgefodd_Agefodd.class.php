@@ -513,8 +513,26 @@ class InterfaceAgefodd
 			return 1;
 		
 		}
+		elseif($action == 'PROPAL_REOPEN') {
 		
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 		
+			dol_include_once('/agefodd/class/agefodd_facture.class.php');
+			$agf_fin=new Agefodd_facture($this->db);
+			$agf_fin->fetch_fac_by_id($object->id,'prop');
+		
+				
+			if (count($agf_fin->lines)>0) {
+				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+		
+				$session_sta=new Agefodd_session_stagiaire($this->db);
+				$session_sta->fk_session_agefodd=$agf_fin->lines[0]->fk_session;
+				$session_sta->update_status_by_soc($user,0,$object->socid,0);
+			}
+				
+			return 1;
+		
+		}		
 		
 		return 0;
 	}

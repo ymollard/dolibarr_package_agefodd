@@ -359,6 +359,7 @@ For All :
 	- Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
 	- Session : option to clone with trainee
 	- Session : Subscribers have now a status (auto calculated or manually set) according administration options
+	- Session list : Display ratio Prospect/confirm/cancelled in session list
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods

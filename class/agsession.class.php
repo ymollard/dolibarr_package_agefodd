@@ -1538,7 +1538,10 @@ class Agsession extends CommonObject
 		$sql.= " c.intitule, c.ref,s.nb_min_target,";
 		$sql.= " p.ref_interne";
 		$sql.= " ,so.nom as socname";
-		$sql.= " ,f.rowid as trainerrowid";
+		$sql.= " ,f.rowid as trainerrowid,";
+		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE (status_in_session=0 OR status_in_session IS NULL) AND fk_session_agefodd=s.rowid) as nb_prospect,";
+		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1) AND fk_session_agefodd=s.rowid) as nb_confirm,";
+		$sql.= " (SELECT count(rowid) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE status_in_session=6 AND fk_session_agefodd=s.rowid) as nb_cancelled";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
@@ -1629,6 +1632,9 @@ class Agsession extends CommonObject
 					$line->force_nb_stagiaire = $obj->force_nb_stagiaire;
 					$line->notes = $obj->notes;
 					$line->nb_min_target = $obj->nb_min_target;
+					$line->nb_prospect = $obj->nb_prospect;
+					$line->nb_confirm = $obj->nb_confirm;
+					$line->nb_cancelled = $obj->nb_cancelled;
 						
 					$this->lines[$i]=$line;
 					$i++;
@@ -2547,6 +2553,9 @@ class AgfSessionLine
 	var $force_nb_stagiaire;
 	var $notes;
 	var $nb_min_target;
+	var $nb_prospect;
+	var $nb_confirm;
+	var $nb_cancelled;
 
 
 	function __construct()

@@ -725,3 +725,4 @@ TraineeSessionStatusPresentShort=Présent
 TraineeSessionStatusPartPresentShort=Partiellement présent
 TraineeSessionStatusNotPresentShort=Non présent
 TraineeSessionStatusCancelledShort=Annulé
+AgfListParticipantsStatus=Nb. Prospect/Confirmé/Annulé
