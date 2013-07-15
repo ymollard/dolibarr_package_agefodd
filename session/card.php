@@ -862,7 +862,7 @@ else
 					print '</td></tr></table>';
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
-					print '<input name="nbmintarget" class="flat" size="50" value="'.$agf->nb_min_target.'"></td></tr>';
+					print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_min_target.'"></td></tr>';
 					
 					print '</td></tr>';
 
