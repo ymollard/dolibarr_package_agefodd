@@ -17,8 +17,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_training_admlevel (
 ALTER TABLE llx_agefodd_training_admlevel ADD CONSTRAINT llx_agefodd_training_admlevel_ibfk_1 FOREIGN KEY (fk_training) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_training_admlevel ADD INDEX fk_agefodd_training_admlevel (fk_training);
 
-INSERT INTO llx_agefodd_training_admlevel(fk_agefodd_training_admlevel,fk_training,level_rank,fk_parent_level,indice,intitule,delais_alerte,fk_user_author,datec,fk_user_mod)
-SELECT DISTINCT seesadm.rowid,training.rowid, seesadm.level_rank, seesadm.fk_parent_level,seesadm.indice, seesadm.intitule,seesadm.delais_alerte,seesadm.fk_user_author,seesadm.datec,seesadm.fk_user_mod FROM llx_agefodd_session_admlevel as seesadm, llx_agefodd_formation_catalogue as training;
+INSERT INTO llx_agefodd_training_admlevel(fk_agefodd_training_admlevel,fk_training,level_rank,fk_parent_level,indice,intitule,delais_alerte,fk_user_author,datec,fk_user_mod) SELECT DISTINCT seesadm.rowid,training.rowid, seesadm.level_rank, seesadm.fk_parent_level,seesadm.indice, seesadm.intitule,seesadm.delais_alerte,seesadm.fk_user_author,seesadm.datec,seesadm.fk_user_mod FROM llx_agefodd_session_admlevel as seesadm, llx_agefodd_formation_catalogue as training;
 
 --pgsql
 UPDATE llx_agefodd_training_admlevel as upd SET fk_parent_level=ori.rowid FROM llx_agefodd_training_admlevel as ori WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training;
