@@ -62,3 +62,5 @@ ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN nb_min_target integer NUL
 ALTER TABLE llx_agefodd_session ADD COLUMN nb_min_target integer NULL AFTER force_nb_stagiaire;
 
 ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN status_in_session integer NULL AFTER fk_agefodd_stagiaire_type;
+
+UPDATE llx_agefodd_session SET fk_soc=NULL where fk_soc=-1;

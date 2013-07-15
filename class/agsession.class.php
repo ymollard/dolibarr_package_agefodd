@@ -121,6 +121,7 @@ class Agsession extends CommonObject
 		if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
 		if (isset($this->fk_session_place)) $this->fk_session_place=trim($this->fk_session_place);
 		if (isset($this->fk_soc)) $this->fk_soc=trim($this->fk_soc);
+		if ($this->fk_soc==-1) unset($this->fk_soc);
 		if (isset($this->nb_place)) $this->nb_place=trim($this->nb_place);
 		if (isset($this->notes)) $this->notes=trim($this->notes);
 
@@ -938,6 +939,7 @@ class Agsession extends CommonObject
 
 		// Clean parameters
 		if (isset($this->fk_soc)) $this->fk_soc=trim($this->fk_soc);
+		if ($this->fk_soc==-1) unset($this->fk_soc);
 		if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
 		if (isset($this->fk_session_place)) $this->fk_session_place=trim($this->fk_session_place);
 		if (isset($this->nb_place)) $this->nb_place=trim($this->nb_place);
