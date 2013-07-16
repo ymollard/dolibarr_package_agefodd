@@ -114,7 +114,7 @@ $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
 $help_url='';
-llxHeader('',$langs->trans("Agefodd").' - '.$langs->trans("Files"),$help_url);
+llxHeader('',$langs->trans("AgfSessionDocuments").' - '.$langs->trans("Files"),$help_url);
 
 if ($object->id)
 {
