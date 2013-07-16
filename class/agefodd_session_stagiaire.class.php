@@ -524,42 +524,42 @@ class Agefodd_session_stagiaire  extends CommonObject
 		if ($mode == 2)
 		{
 			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0').' '.$this->labelstatut_short[$statut];
-			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut1').' '.$this->labelstatut_short[$statut];
-			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut2').' '.$this->labelstatut_short[$statut];
-			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut3').' '.$this->labelstatut_short[$statut];
-			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut4').' '.$this->labelstatut_short[$statut];
-			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut5').' '.$this->labelstatut_short[$statut];
-			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut6').' '.$this->labelstatut_short[$statut];
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3').' '.$this->labelstatut_short[$statut];
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4').' '.$this->labelstatut_short[$statut];
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6').' '.$this->labelstatut_short[$statut];
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7').' '.$this->labelstatut_short[$statut];
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9').' '.$this->labelstatut_short[$statut];
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8').' '.$this->labelstatut_short[$statut];
 		}
 		if ($mode == 3)
 		{
 			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0');
-			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut1');
-			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut2');
-			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut3');
-			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut4');
-			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut5');
-			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut6');
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3');
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4');
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6');
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7');
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9');
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8');
 		}
 		if ($mode == 4)
 		{
 			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0').' '.$this->labelstatut[$statut];
-			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut1').' '.$this->labelstatut[$statut];
-			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut2').' '.$this->labelstatut[$statut];
-			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut3').' '.$this->labelstatut[$statut];
-			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut4').' '.$this->labelstatut[$statut];
-			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut5').' '.$this->labelstatut[$statut];
-			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut6').' '.$this->labelstatut[$statut];
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3').' '.$this->labelstatut[$statut];
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4').' '.$this->labelstatut[$statut];
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6').' '.$this->labelstatut[$statut];
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7').' '.$this->labelstatut[$statut];
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9').' '.$this->labelstatut[$statut];
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8').' '.$this->labelstatut[$statut];
 		}
 		if ($mode == 5)
 		{
 			if ($statut==0) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0');
-			if ($statut==1) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut1');
-			if ($statut==2) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut2');
-			if ($statut==3) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPresent'),'statut3');
-			if ($statut==4) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut4');
-			if ($statut==5) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut5');
-			if ($statut==6) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut6');
+			if ($statut==1) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3');
+			if ($statut==2) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4');
+			if ($statut==3) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6');
+			if ($statut==4) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7');
+			if ($statut==5) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9');
+			if ($statut==6) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8');
 		}
 	}
 
