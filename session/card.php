@@ -1023,14 +1023,18 @@ else
 							print $langs->trans('AgfCalendarFromTemplate').':';
 							print '<table class="noborder">';
 							foreach($tmpl_calendar->lines as $line) {
+								
 								if ($line->day_session!=1) {
 									$tmpldate = dol_time_plus_duree($agf->dated, (($line->day_session)-1), 'd');
 								} else {
 									$tmpldate= $agf->dated;
 								}
+								
+								if ($tmpldate<=$agf->datef) {
 								print '<tr><td>';
 								print '<input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="'.$line->id.'">'.dol_print_date($tmpldate,'daytext').' '.$line->heured.' - '.$line->heuref.'</input>';
 								print '</td></tr>';
+								}
 							}
 							print '</table>';
 							print '</td>';
