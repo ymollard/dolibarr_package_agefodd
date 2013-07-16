@@ -727,3 +727,5 @@ TraineeSessionStatusNotPresentShort=Non présent
 TraineeSessionStatusCancelledShort=Annulé
 AgfListParticipantsStatus=Nb. Prospect/Confirmé/Annulé
 AgfSessionDocuments = Fichiers joins a une session
+AgfFactureGenererBonAuto = Créé la commande compléte a partir de la proposition commerciale ou complementement (ajout d'une ligne avec le produit liée a la formation)
+AgfFactureGenererPropAuto = Créé la proposition commerciale compléte à partir avec ajout d'une ligne avec le produit liée a la formation

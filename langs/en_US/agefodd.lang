@@ -726,3 +726,5 @@ TraineeSessionStatusNotPresentShort=Not attend.
 TraineeSessionStatusCancelledShort=Cancel.
 AgfListParticipantsStatus=Nb. Prospect/Confirm/Canceled
 AgfSessionDocuments = Attached file to a session
+AgfFactureGenererBonAuto = Create the order with pre-filled line according propal or product linked to training.
+AgfFactureGenererPropAuto = Create the proposal with pre-filled line according product linked to training.

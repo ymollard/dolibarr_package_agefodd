@@ -151,10 +151,16 @@ function show_fac($file, $socid, $mdle)
 			$mess = '<table class="nobordernopadding"><tr>';
 
 			// Create Order
-			$legende = $langs->trans("AgfFactureGenererBon");
+			$legende = $langs->trans("AgfFactureGenererBonAuto");
 			$mess .= '<td><a href="'.$_SERVER['PHP_SELF'].'?action=createorder&id='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 
+			// Generer le bon de commande
+			$legende = $langs->trans("AgfFactureGenererBon");
+			$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
+				
+			
 			// Link existing order
 			$legende = $langs->trans("AgfFactureSelectBon");
 			$mess.= '<td><a href="'.dol_buildpath('/agefodd/session/document.php',1).'?action=link&id='.$id.'&type=bc&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
@@ -259,9 +265,15 @@ function show_fac($file, $socid, $mdle)
 			$mess = '<table class="nobordernopadding"><tr>';
 
 			// Create Order
-			$legende = $langs->trans("AgfFactureGenererProp");
+			$legende = $langs->trans("AgfFactureGenererPropAuto");
 			$mess .= '<td><a href="'.$_SERVER['PHP_SELF'].'?action=createproposal&id='.$id.'&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
+			
+			// Generer le bon de commande
+			$legende = $langs->trans("AgfFactureGenererProp");
+			$mess .= '<td><a href="'.DOL_URL_ROOT.'/comm/propal.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
+			
 
 			// Link existing order
 			$legende = $langs->trans("AgfFactureSelectProp");
