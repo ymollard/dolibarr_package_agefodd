@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2012-2013  Florian Henry   <florian.henry@open-concept.pro>
+/** Copyright (C) 2012-2013  Florian Henry   <florian.henry@open-concept.pro>
  * Copyright (C) 2012       JF FERRY        <jfefe@aternatik.fr>
 *
 *

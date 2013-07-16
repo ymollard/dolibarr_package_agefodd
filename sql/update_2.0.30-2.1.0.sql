@@ -64,3 +64,4 @@ ALTER TABLE llx_agefodd_session ADD COLUMN nb_min_target integer NULL AFTER forc
 ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN status_in_session integer NULL AFTER fk_agefodd_stagiaire_type;
 
 UPDATE llx_agefodd_session SET fk_soc=NULL where fk_soc=-1;
+UPDATE llx_agefodd_session SET nb_stagiaire=(SELECT count(rowid) FROM llx_agefodd_session_stagiaire WHERE fk_session_agefodd = rowid) WHERE (force_nb_stagiaire=0 OR force_nb_stagiaire IS NULL);

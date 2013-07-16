@@ -1,27 +1,27 @@
 <?php
-/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/** 
+ * Copyright (C) 2012 	   Florian Henry        <florian.henry@open-concept.pro>
+ * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /**
- *  \file       	$HeadURL: https://192.168.22.4/dolidev/trunk/agefodd/lib/agefodd.lib.php $
- *  \brief      	Page fiche d'une operation sur CCA
- *  \version		$Id$
-*/
+ *  \file       agefodd/lib/agefodd.lib.php
+ *  \ingroup    agefodd
+ *  \brief      Some display function
+ */
 
 $langs->load('agefodd@agefodd');
 

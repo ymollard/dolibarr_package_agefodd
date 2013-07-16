@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2007-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
+/** Copyright (C) 2007-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2012      Florian Henry       <florian.henry@open-concept.pro>
 * Copyright (C) 2012      JF FERRY            <jfefe@aternatik.fr>
 *

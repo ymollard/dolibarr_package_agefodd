@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2005-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
+/** Copyright (C) 2005-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2011 Regis Houssin        <regis@dolibarr.fr>
 * Copyright (C) 2012 	   Florian Henry        <florian.henry@open-concept.pro>
 * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
@@ -20,8 +20,8 @@
 
 /**
  *  \file       agefodd/core/triggers/interface_90_agefodd.class.php
- *  \ingroup    core
-*  \brief      Fichier qui permet de lancer un trigger avec la mise a jours d'une action
+ *  \ingroup    agefodd
+*  \brief      Trigger fired Dolibarr catch by agefodd
 */
 
 

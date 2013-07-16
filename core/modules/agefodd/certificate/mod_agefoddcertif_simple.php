@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2010-2012	Regis Houssin		<regis@dolibarr.fr>
+/** Copyright (C) 2010-2012	Regis Houssin		<regis@dolibarr.fr>
  * Copyright (C) 2010		Laurent Destailleur	<eldy@users.sourceforge.net>
 * Copyright (C) 2012-2013   Florian Henry  	<florian.henry@open-concept.pro>
 *
