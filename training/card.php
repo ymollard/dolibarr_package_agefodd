@@ -342,7 +342,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input name="nbmintarget" class="flat" size="5" value="'.GETPOST('nbmintarget','int').'"></td></tr>';
 
 	print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
-	print $form->select_produits(GETPOST('productid'),'productid');
+	print $form->select_produits(GETPOST('productid'),'productid','',10000);
 	print "</td></tr>";
 	
 	print '<tr>';
@@ -443,7 +443,7 @@ else
 				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_min_target.'"></td></tr>';
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
-				print $form->select_produits($agf->fk_product,'productid');
+				print $form->select_produits($agf->fk_product,'productid','',10000);
 				print "</td></tr>";
 
 				print '<tr>';
