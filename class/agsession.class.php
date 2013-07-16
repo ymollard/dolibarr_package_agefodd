@@ -1400,6 +1400,12 @@ class Agsession extends CommonObject {
 		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
+		//Delete event from agenda that are no more link to a session
+		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "actioncomm WHERE elementtype='agefodd_agsession' AND fk_element NOT IN (SELECT rowid FROM llx_agefodd_session)";
+		
+		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		
 		if ($resql) {
 			$this->db->commit ();
 			return 1;

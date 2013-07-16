@@ -65,3 +65,5 @@ ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN status_in_session integer N
 
 UPDATE llx_agefodd_session SET fk_soc=NULL where fk_soc=-1;
 UPDATE llx_agefodd_session SET nb_stagiaire=(SELECT count(rowid) FROM llx_agefodd_session_stagiaire WHERE fk_session_agefodd = rowid) WHERE (force_nb_stagiaire=0 OR force_nb_stagiaire IS NULL);
+
+DELETE FROM llx_actioncomm WHERE elementtype='agefodd_agsession' AND fk_element NOT IN (SELECT rowid FROM llx_agefodd_session);
