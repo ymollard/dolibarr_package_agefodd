@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   fk_user_author integer default NULL,
   fk_user_mod integer NOT NULL,
   datec datetime NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  tms timestamp NOT NULL,
   fk_soc integer NOT NULL,
   fk_socpeople integer default NULL,
   fonction varchar(60) default NULL,

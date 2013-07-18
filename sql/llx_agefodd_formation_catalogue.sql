@@ -41,5 +41,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   note_public	text,
   fk_product integer,
   nb_min_target integer NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP
+  tms timestamp NOT NULL
 ) ENGINE=InnoDB;

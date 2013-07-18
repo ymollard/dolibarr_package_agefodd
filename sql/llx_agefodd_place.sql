@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
-  tms timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  tms timestamp NOT NULL,
   entity integer NOT NULL DEFAULT 1
 ) ENGINE=InnoDB;
 

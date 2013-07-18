@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_certif (
   fk_user_author integer default NULL,
   fk_user_mod integer NOT NULL,
   datec datetime NOT NULL,
-  tms timestamp NOT NULL default CURRENT_TIMESTAMP,
+  tms timestamp NOT NULL,
   fk_stagiaire integer NOT NULL,
   fk_session_agefodd integer NOT NULL,
   fk_session_stagiaire integer NOT NULL,
