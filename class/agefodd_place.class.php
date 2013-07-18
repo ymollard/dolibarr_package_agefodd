@@ -327,7 +327,7 @@ class Agefodd_place extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_place as p";
 		$sql.= " WHERE p.rowid = ".$id;
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::info sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -346,7 +346,7 @@ class Agefodd_place extends CommonObject
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::info ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
