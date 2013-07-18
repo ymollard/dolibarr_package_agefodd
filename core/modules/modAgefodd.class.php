@@ -528,10 +528,10 @@ class modAgefodd extends DolibarrModules
 		);
 		$r++;
 		// 1
-		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
 		'type'=>'left',
 		'titre'=>'AgfMenuCat',
-		'mainmenu'=>'agefodd',
+		'leftmenu'=>'AgfMenuCat',
 		'url'=>'/agefodd/training/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>101,
@@ -541,7 +541,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=1',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 		'type'=>'left',
 		'titre'=>'AgfMenuCatListActivees',
 		'mainmenu'=>'agefodd',
@@ -554,7 +554,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=1',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 		'type'=>'left',
 		'titre'=>'AgfMenuCatListArchivees',
 		'mainmenu'=>'agefodd',
@@ -567,10 +567,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=1',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 		'type'=>'left',
 		'titre'=>'AgfMenuCatNew',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/training/card.php?action=create',
 		'langs'=>'agefodd@agefodd',
 		'position'=>104,
@@ -580,10 +579,10 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 		// 2
-		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
 		'type'=>'left',
 		'titre'=>'AgfMenuSess',
-		'mainmenu'=>'agefodd',
+		'leftmenu'=>'AgfMenuSess',
 		'url'=>'/agefodd/session/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>201,
@@ -593,10 +592,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=5',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessActList',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/session/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>202,
@@ -606,10 +604,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=5',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessArchList',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/session/list.php?arch=1',
 		'langs'=>'agefodd@agefodd',
 		'position'=>203,
@@ -619,10 +616,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=5',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessArchiveByYear',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/session/archive_year.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>204,
@@ -632,10 +628,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=5',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessNew',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/session/card.php?action=create',
 		'langs'=>'agefodd@agefodd',
 		'position'=>206,
@@ -645,10 +640,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=5',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessStats',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/session/stats/index.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>207,
@@ -660,10 +654,10 @@ class modAgefodd extends DolibarrModules
 
 
 		// 3
-		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaire',
-		'mainmenu'=>'agefodd',
+		'leftmenu'=>'AgfMenuActStagiaire',
 		'url'=>'/agefodd/trainee/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>301,
@@ -673,10 +667,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=11',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaireList',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/trainee/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>302,
@@ -686,10 +679,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=11',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaireNew',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/trainee/card.php?action=create',
 		'langs'=>'agefodd@agefodd',
 		'position'=>303,
@@ -699,10 +691,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=11',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
 		'type'=>'left',
 		'titre'=>'AgfMenuActStagiaireNewFromContact',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/trainee/card.php?action=nfcontact',
 		'langs'=>'agefodd@agefodd',
 		'position'=>304,
@@ -712,10 +703,10 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 		// 4
-		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
 		'type'=>'left',
 		'titre'=>'AgfMenuLogistique',
-		'mainmenu'=>'agefodd',
+		'leftmenu'=>'AgfMenuLogistique',
 		'url'=>'/agefodd/trainee/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>401,
@@ -725,10 +716,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=15',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuLogistique',
 		'type'=>'left',
 		'titre'=>'AgfMenuSite',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/site/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>402,
@@ -738,10 +728,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=15',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuLogistique',
 		'type'=>'left',
 		'titre'=>'AgfMenuFormateur',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/trainer/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>403,
@@ -751,10 +740,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=15',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuLogistique',
 		'type'=>'left',
 		'titre'=>'AgfMenuContact',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/contact/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>404,
@@ -763,37 +751,12 @@ class modAgefodd extends DolibarrModules
 		'target'=>'',
 		'user'=>0);
 		$r++;
-		// 5
-		//TODO : Create BPF
-		/*$this->menu[$r]=array(	'fk_menu'=>'r=0',
-		'type'=>'left',
-		'titre'=>'AgfMenuSAdm',
-		'mainmenu'=>'agefodd',
-		'url'=>'/agefodd/not_implemented.php',
-		'langs'=>'agefodd@agefodd',
-		'position'=>501,
-		'enabled'=>1,
-		'perms'=>'$user->rights->agefodd->lire',
-		'target'=>'',
-		'user'=>0);
-		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=17',
-		'type'=>'left',
-		'titre'=>'AgfMenuSAdmBilanDRTEFP',
-		'mainmenu'=>'agefodd',
-		'url'=>'/agefodd/not_implemented.php',
-		'langs'=>'agefodd@agefodd',
-		'position'=>502,
-		'enabled'=>1,
-		'perms'=>'$user->rights->agefodd->lire',
-		'target'=>'',
-		'user'=>0);
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=0',
+		/*$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
 		'type'=>'left',
 		'titre'=>'AgfMenuDemoAdmin',
-		'mainmenu'=>'agefodd',
+		'leftmenu'=>'AgfMenuDemoAdmin',
 		'url'=>'/agefodd/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>501,
@@ -803,10 +766,9 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'r=18',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuDemoAdmin',
 		'type'=>'left',
 		'titre'=>'AgfMenuDemoAdminDetail',
-		'mainmenu'=>'agefodd',
 		'url'=>'/agefodd/admin/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>502,
