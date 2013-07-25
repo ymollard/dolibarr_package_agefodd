@@ -65,7 +65,7 @@ if ($action == 'updateMask')
 {
 	$mask=GETPOST('maskagefodd');
 
-	if ($mask)  $res = dolibarr_set_const($db,'AGF_UNIVERSAL_MASK',$mask,'chaine',0,'',$conf->entity);
+	$res = dolibarr_set_const($db,'AGF_UNIVERSAL_MASK',$mask,'chaine',0,'',$conf->entity);
 
 	if (! $res > 0) $error++;
 
@@ -101,7 +101,7 @@ if ($action == 'updateMaskCertif')
 {
 	$mask=GETPOST('maskagefoddcertif');
 
-	if ($mask)  $res = dolibarr_set_const($db,'AGF_CERTIF_UNIVERSAL_MASK',$mask,'chaine',0,'',$conf->entity);
+	$res = dolibarr_set_const($db,'AGF_CERTIF_UNIVERSAL_MASK',$mask,'chaine',0,'',$conf->entity);
 
 	if (! $res > 0) $error++;
 
@@ -625,6 +625,8 @@ print '</table><br>';
 
 if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 
+	require_once('../class/agefodd_stagiaire_certif.class.php');
+	
 	// Agefodd Certification numbering module
 	print_titre($langs->trans("AgfAdminCertifNumber"));
 	print '<br>';
@@ -654,6 +656,7 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 
 				while (($file = readdir($handle))!==false)
 				{
+					print $file;
 					if (preg_match('/^(mod_.*)\.php$/i',$file,$reg))
 					{
 						$file = $reg[1];
@@ -695,7 +698,7 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 							}
 							print '</td>';
 
-							$agf=new Agefodd($db);
+							$agf=new Agefodd_stagiaire_certif($db);
 							$agf->initAsSpecimen();
 
 							// Info

@@ -109,7 +109,7 @@ class mod_agefoddcertif_universal extends ModeleNumRefAgefodd
 		require_once(DOL_DOCUMENT_ROOT ."/core/lib/functions2.lib.php");
 
 		// On defini critere recherche compteur
-		$mask=$conf->global->AGF_UNIVERSAL_MASK;
+		$mask=$conf->global->AGF_CERTIF_UNIVERSAL_MASK;
 
 		if (! $mask)
 		{
