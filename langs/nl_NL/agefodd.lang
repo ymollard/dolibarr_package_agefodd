@@ -729,3 +729,6 @@ AgfListParticipantsStatus=Nb. Prospect/Confirm/Cancelled
 AgfSessionDocuments = Attached file aan een sessie
 AgfFactureGenererBonAuto = Create the order with pre-filled line according propal or product linked to training.
 AgfFactureGenererPropAuto = Create the proposal with pre-filled line according product linked to training.
+AgfCatalogNote=Notes
+AgfCatalogAdminTask=Admnistrative training task
+AgfAdminTrainingLevel=Administratieve acties van training basis
