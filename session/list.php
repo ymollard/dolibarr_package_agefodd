@@ -1,5 +1,5 @@
 <?php
-/** Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 * Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
@@ -274,7 +274,8 @@ if ($resql != - 1) {
 			print "<tr $bc[$var]>";
 			// Calcul de la couleur du lien en fonction de la couleur définie sur la session
 			// http://www.w3.org/TR/AERT#color-contrast
-			// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS AFFICHER DU BLANC (#FFF)
+			// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS
+			// AFFICHER DU BLANC (#FFF)
 			$couleur_rgb = agf_hex2rgb ( $line->color );
 			$color_a = '';
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
@@ -308,9 +309,18 @@ if ($resql != - 1) {
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
 			print '<td>' . $line->nb_stagiaire . '</td>';
-			print '<td>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			if (! empty ( $line->nb_min_target )) {
+				if ($line->nb_confirm >= $line->nb_min_target) {
+					$style = 'style="background: green"';
+				} else {
+					$style = 'style="background: red"';
+				}
+			} else {
+				$style = '';
+			}
+			print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
 			print "</tr>\n";
-		}else {
+		} else {
 			print "<tr $bc[$var]>";
 			print '<td></td>';
 			print '<td></td>';

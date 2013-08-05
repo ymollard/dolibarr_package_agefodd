@@ -732,3 +732,7 @@ AgfFactureGenererPropAuto = Create the proposal with pre-filled line according p
 AgfCatalogNote=Notes
 AgfCatalogAdminTask=Admnistrative training task
 AgfAdminTrainingLevel=Administratieve acties van training basis
+AgfProposalAmountSigned=Amount prop signed :
+AgfOrderAmount=Amount order :
+AgfInvoiceAmountWaiting=Amount Inv. not payed :
+AgfInvoiceAmountPayed=Amount Inv. payed :

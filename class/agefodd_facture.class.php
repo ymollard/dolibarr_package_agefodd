@@ -47,6 +47,11 @@ class Agefodd_facture
 	var $comref;
 	var $propalid;
 	var $propalref;
+	
+	var $propal_sign_amount;
+	var $order_amount;
+	var $invoice_ongoing_amount;
+	var $invoice_payed_amount;
 
 	var $lines=array();
 
@@ -55,9 +60,9 @@ class Agefodd_facture
 	 *
 	 *  @param	DoliDb		$db      Database handler
 	 */
-	function __construct($DB)
+	function __construct($db)
 	{
-		$this->db = $DB;
+		$this->db = $db;
 		return 1;
 	}
 
@@ -300,9 +305,85 @@ class Agefodd_facture
 			dol_syslog(get_class($this)."::fetch_fac_by_id ".$this->error, LOG_ERR);
 			return -1;
 		}
-
-
 	}
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    id ob object
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_by_session($id)
+	{
+		require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+		require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+		require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+		
+		global $langs;
+		
+		$this->propal_sign_amount=0;
+		$this->order_amount=0;
+		$this->invoice_ongoing_amount=0;
+		$this->invoice_payed_amount=0;
+	
+		$sql = "SELECT";
+		$sql.= " rowid, fk_commande, fk_facture, fk_propal ,fk_session, fk_societe ";
+	
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_facture";
+		$sql.= " WHERE fk_session=".$id;
+	
+	
+		dol_syslog(get_class($this)."::fetch_by_session sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->lines = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			for ($i=0; $i < $num; $i++)
+			{
+				
+		
+				$obj = $this->db->fetch_object($resql);
+				
+				if (!empty($obj->fk_commande)) {
+					$order = new Commande($this->db);
+					$order->fetch($obj->fk_commande);
+					$this->order_amount+=$order->total_ttc;
+				}
+				
+				if (!empty($obj->fk_propal)) {
+					$proposal = new Propal($this->db);
+					$proposal->fetch($obj->fk_propal);
+					if ($proposal->statut==2) {
+						$this->propal_sign_amount+=$proposal->total_ttc;
+					}
+				}
+				
+				if (!empty($obj->fk_facture)) {
+					$facture = new Facture($this->db);
+					$facture->fetch($obj->fk_facture);
+					if ($facture->statut==2) {
+						$this->invoice_payed_amount+=$facture->total_ttc;
+					}
+					if ($facture->statut==1) {
+						$this->invoice_ongoing_amount+=$facture->total_ttc;
+					}
+				}
+
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+		$this->error="Error ".$this->db->lasterror();
+		dol_syslog(get_class($this)."::fetch_by_session ".$this->error, LOG_ERR);
+		return -1;
+		}
+	
+	
+		}
 
 	/**
 	 *  Load object in memory from database
@@ -510,6 +591,9 @@ Class Agefodd_facture_line {
 	var $socid;
 	var $ref;
 	var $fk_session;
+	var $facid;
+	var $comid;
+	var $propalid;
 
 	function __construct()
 	{

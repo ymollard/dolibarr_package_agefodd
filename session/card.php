@@ -25,10 +25,6 @@
  *	\brief      card of session
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -41,6 +37,7 @@ require_once('../class/agefodd_session_calendrier.class.php');
 require_once('../class/agefodd_calendrier.class.php');
 require_once('../class/agefodd_session_formateur.class.php');
 require_once('../class/agefodd_session_stagiaire.class.php');
+require_once('../class/agefodd_facture.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
@@ -701,7 +698,7 @@ else
 	{
 		$agf = new Agsession($db);
 		$result = $agf->fetch($id);
-
+		
 		if ($result>0)
 		{
 			if (!(empty($agf->id)))
@@ -710,6 +707,14 @@ else
 
 				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 
+				$agf_fact=new Agefodd_facture($db);
+				$agf_fact->fetch_by_session($agf->id);
+				$other_amount = '('. $langs->trans('AgfProposalAmountSigned').' '.$agf_fact->propal_sign_amount.' '.$langs->trans('Currency'.$conf->currency);
+				$other_amount .= '/'. $langs->trans('AgfOrderAmount').' '.$agf_fact->order_amount.' '.$langs->trans('Currency'.$conf->currency);
+				$other_amount .= '/'. $langs->trans('AgfInvoiceAmountWaiting').' '.$agf_fact->invoice_ongoing_amount.' '.$langs->trans('Currency'.$conf->currency);
+				$other_amount .= '/'. $langs->trans('AgfInvoiceAmountPayed').' '.$agf_fact->invoice_payed_amount.' '.$langs->trans('Currency'.$conf->currency).')';
+								
+				
 				// Display edit mode
 				if ($action == 'edit')
 				{
@@ -884,7 +889,7 @@ else
 					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
-					print '<td><input size="6" type="text" class="flat" name="sellprice" value="'.price($agf->sell_price).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="sellprice" value="'.price($agf->sell_price).'" />'.' '.$langs->trans('Currency'.$conf->currency).' '.$other_amount.'</td></tr>';
 					print '</table></div>';
 
 					print '<table style=noborder align="right">';
@@ -1183,9 +1188,9 @@ else
 
 					print '<tr><td width="20%"><strong>'.$langs->trans("AgfCoutTotal").'</strong></td>';
 					print '<td><strong>'.price($spend_cost).' '.$langs->trans('Currency'.$conf->currency).'</strong></td></tr>';
-
+					
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
-					print '<td>'.price($agf->sell_price).' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					print '<td>'.price($agf->sell_price).' '.$langs->trans('Currency'.$conf->currency).' '.$other_amount.'</td></tr>';
 					$cashed_cost+=$agf->sell_price;
 						
 					print '<tr><td width="20%"><strong>'.$langs->trans("AgfCoutRevient").'</strong></td>';

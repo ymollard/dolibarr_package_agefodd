@@ -732,3 +732,7 @@ AgfFactureGenererPropAuto = Créé la proposition commerciale compléte à parti
 AgfCatalogNote=Notes
 AgfCatalogAdminTask=Tâches admnistrative des formations
 AgfAdminTrainingLevel=Administration des actions de bases des formations
+AgfProposalAmountSigned=Tot. Prop. Signée(s) : 
+AgfOrderAmount=Tot. commande :
+AgfInvoiceAmountWaiting=Tot. facture non payée(s) :
+AgfInvoiceAmountPayed=Tot. facture payée(s) :

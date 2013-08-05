@@ -357,9 +357,11 @@ For All :
 	- Session : Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
 	- Admin : Remove number of lines per list from agefodd admin because this option can be set into general Dolibarr administration and do conflict
 	- Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
-	- Session : option to clone with trainee
+	- Session : Option to clone with trainee
 	- Session : Subscribers have now a status (auto calculated or manually set) according administration options
 	- Session list : Display ratio Prospect/confirm/cancelled in session list
+	- Session list : Display ration in green if trainee confirm is equal or greater than minimum subscribers session information or red if not 
+	- Session : Add proposal/order/invoice amount link to session
 For Dev:
 	- Rewrite $line to $lines in all classes
 	- Implement $lines object in all classes for fetch_all (or similar) methods
