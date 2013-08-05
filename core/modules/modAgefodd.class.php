@@ -508,6 +508,18 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'export';
 		$r++;
+		
+		$this->rights[$r][0] = 103007;
+		$this->rights[$r][1] = 'agenda';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'agenda';
+		$r++;
+		
+		$this->rights[$r][0] = 103008;
+		$this->rights[$r][1] = 'agendatrainer';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'agendatrainer';
+		$r++;
 
 		// Main menu entries
 		$this->menus = array();
@@ -646,7 +658,7 @@ class modAgefodd extends DolibarrModules
 		'url'=>'/agefodd/session/stats/index.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>207,
-		'enabled'=>1,
+		'enabled'=>'$user->rights->agefodd->viewstats',
 		'perms'=>'$user->rights->agefodd->viewstats',
 		'target'=>'',
 		'user'=>0);
@@ -751,6 +763,43 @@ class modAgefodd extends DolibarrModules
 		'target'=>'',
 		'user'=>0);
 		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
+		'type'=>'left',
+		'titre'=>'AgfMenuAgenda',
+		'leftmenu'=>'AgfMenuAgenda',
+		'url'=>'',
+		'langs'=>'agefodd@agefodd',
+		'position'=>501,
+		'enabled'=>1,
+		'perms'=>'$user->rights->agefodd->lire',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
+		'type'=>'left',
+		'titre'=>'AgfMenuAgenda',
+		'url'=>'/agefodd/agenda/index.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>502,
+		'enabled'=>'$user->rights->agefodd->agenda',
+		'perms'=>'$user->rights->agefodd->agenda',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
+		'type'=>'left',
+		'titre'=>'AgfMenuAgendaTrainer',
+		'url'=>'/agefodd/agenda/index.php?type=trainer',
+		'langs'=>'agefodd@agefodd',
+		'position'=>503,
+		'enabled'=>'$user->rights->agefodd->agendatrainer',
+		'perms'=>'$user->rights->agefodd->agendatrainer',
+		'target'=>'',
+		'user'=>0);
+		$r++;
 
 
 		/*$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
@@ -759,7 +808,7 @@ class modAgefodd extends DolibarrModules
 		'leftmenu'=>'AgfMenuDemoAdmin',
 		'url'=>'/agefodd/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
-		'position'=>501,
+		'position'=>601,
 		'enabled'=>1,
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
@@ -771,7 +820,7 @@ class modAgefodd extends DolibarrModules
 		'titre'=>'AgfMenuDemoAdminDetail',
 		'url'=>'/agefodd/admin/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
-		'position'=>502,
+		'position'=>602,
 		'enabled'=>1,
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',

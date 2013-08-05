@@ -35,6 +35,9 @@ class Agsession extends CommonObject {
 	var $errors = array ();
 	var $element = 'agefodd_agsession';
 	var $table_element = 'agefodd_session';
+	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	
+	
 	var $id;
 	var $fk_soc;
 	var $client;

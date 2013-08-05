@@ -38,6 +38,9 @@ class Agefodd_teacher extends CommonObject
 	var $table_element='agefodd_formateur';
 	var $id;
 	var $type_trainer_def=array();
+	
+	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	
 
 	var $entity;
 	var $fk_socpeople;

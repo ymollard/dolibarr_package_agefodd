@@ -37,6 +37,9 @@ class Agefodd_place extends CommonObject
 	var $errors=array();
 	var $element='agefodd';
 	var $table_element='agefodd_place';
+	
+	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	
 
 	var $id;
 

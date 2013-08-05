@@ -40,6 +40,8 @@ class Agefodd_stagiaire extends CommonObject
 	var $element='agefodd';
 	var $table_element='agefodd_stagiaire';
 	var $id;
+	
+	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 
 	var $nom;
 	var $prenom;

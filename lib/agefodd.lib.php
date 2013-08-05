@@ -315,6 +315,29 @@ function agefodd_admin_prepare_head()
 }
 
 /**
+ *  Define head array for tabs of agenda setup pages
+ *
+ *  @param	string	$param		Parameters to add to url
+ *  @return array			    Array of head
+ */
+function calendars_prepare_head($param)
+{
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php",1).($param?'?'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgenda");
+	$head[$h][2] = 'card';
+	$h++;
+
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda');
+
+	return $head;
+}
+
+/**
  *  Calcule le nombre de regroupement par premier niveau des tâches adminsitratives
  *
  *  @return int      		   	 nbre de niveaux
