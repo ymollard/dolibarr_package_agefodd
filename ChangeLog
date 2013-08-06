@@ -1,5 +1,46 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.0 compared to 2.0.29 *****
+For All :
+    - Compatibility with Dolibarr 3.4 only
+    - Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture   
+    - tasks_agefodd #932 : Add calculation of the cost of a session
+    - New Screen : Mass Archive sessions per year 
+    - Import/Export Trainee 
+    - Import/Export Certificate
+    - Certificate : Certificate indicator (pass or failed)
+    - Certificate : Certificate type dictionnary
+    - Certificate : Certificate numbering rules
+    - Dashboard : Fix dashboard bugs
+    - Admin/Training/Session : Add administrative task per training (base on admin administrative task)
+    - Session : Administrative task : Fix Admin administrative task (when all are deleted you can create new ones)
+    - Admin : Switch to turn off OPCA (funding) feature
+    - Session : Add session attached files tab (to attach all kind of document)
+    - Session : Add product link to training
+    - Session : Add proposal link to session
+    - Session : Document linked screen : On create proposal auto create and link the full proposal
+    - Session : Document linked screen : On create order auto create from proposal linked or from scratch
+    - Session : Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
+    - Admin : Remove number of lines per list from agefodd admin because this option can be set into general Dolibarr administration and do conflict
+    - Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
+    - Session : Option to clone with trainee
+    - Session : Subscribers have now a status (auto calculated or manually set) according administration options
+    - Session list : Display ratio Prospect/confirm/cancelled in session list
+    - Session list : Display ration in green if trainee confirm is equal or greater than minimum subscribers session information or red if not 
+    - Session : Add proposal/order/invoice amount link to session
+    - Agenda : Add custom agenda into Agefodd module to filter session by Salesman, thirdparty, contact, trainer
+    - Agenda : Add custom agenda dedicated to trainer (if trainer logged in see only his own training session) managable by right management
+For Dev:
+    - Rewrite $line to $lines in all classes
+    - Implement $lines object in all classes for fetch_all (or similar) methods
+    - No more use of dol_htmloutput_mesg, uses setEventMessage instead
+    - reformat (auto-indent) all module code
+    - Remove dol_include_once when possible replace by require_once
+    - Comment in code should be in english
+    - Try to remove all PgSQL warning regarding date update or insert (date must be quoted)
+    - Create class Agefodd_session_stagiaire and move all method concerning this class from Agsession class to Agefodd_session_stagiaire 
+
+
 ***** ChangeLog for 1.1 compared to 1.0 version *****
 For developers:
 - Fix: full Dolibarr 3.x compatibility
@@ -334,42 +375,3 @@ For All :
 	- Fix bugs_agefodd #896 - PDF header ugly if no logo on company
 	- Fix bugs_agefodd #898 - "Suivie admnistratif" this screen simply do not provide relevent information 
 	
-***** ChangeLog for 2.1 compared to 2.0.29 *****
-For All :
-	- Compatibility with Dolibarr 3.4
-	- Fix bugs_agefodd #906 - Courrier accompagnant l'envoi du dossier de cloture	
-	- tasks_agefodd #932 : Add calculation of the cost of a session
-	- New Screen : Mass Archive sessions per year 
-	- Import/Export Trainee 
-	- Import/Export Certificate
-	- Certificate : Certificate indicator (pass or failed)
-	- Certificate : Certificate type dictionnary
-	- Certificate : Certificate numbering rules
-	- Dashboard : Fix dashboard bugs
-	- Admin/Training/Session : Add administrative task per training (base on admin administrative task)
-	- Session : Administrative task : Fix Admin administrative task (when all are deleted you can create new ones)
-	- Admin : Switch to turn off OPCA (funding) feature
-	- Session : Add session attached files tab (to attach all kind of document)
-	- Session : Add product link to training
-	- Session : Add proposal link to session
-	- Session : Document linked screen : On create proposal auto create and link the full proposal
-	- Session : Document linked screen : On create order auto create from proposal linked or from scratch
-	- Session : Document linked screen : On create Invoice create and auto link to session/thridparty from order or proposal
-	- Admin : Remove number of lines per list from agefodd admin because this option can be set into general Dolibarr administration and do conflict
-	- Session : Calendar : Better input method in sessions from "templated date set" in admnistration screen
-	- Session : Option to clone with trainee
-	- Session : Subscribers have now a status (auto calculated or manually set) according administration options
-	- Session list : Display ratio Prospect/confirm/cancelled in session list
-	- Session list : Display ration in green if trainee confirm is equal or greater than minimum subscribers session information or red if not 
-	- Session : Add proposal/order/invoice amount link to session
-	- Agenda : Add custom agenda into Agefodd module to filter session by Salesman, thirdparty, contact, trainer
-	- Agenda : Add custom agenda dedicated to trainer (if trainer logged in see only his own training session) managable by right management
-For Dev:
-	- Rewrite $line to $lines in all classes
-	- Implement $lines object in all classes for fetch_all (or similar) methods
-	- No more use of dol_htmloutput_mesg, uses setEventMessage instead
-	- reformat (auto-indent) all module code
-	- Remove dol_include_once when possible replace by require_once
-	- Comment in code should be in english
-	- Try to remove all PgSQL warning regarding date update or insert (date must be quoted)
-	- Create class Agefodd_session_stagiaire and move all method concerning this class from Agsession class to Agefodd_session_stagiaire 
