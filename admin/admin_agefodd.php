@@ -656,7 +656,6 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 
 				while (($file = readdir($handle))!==false)
 				{
-					print $file;
 					if (preg_match('/^(mod_.*)\.php$/i',$file,$reg))
 					{
 						$file = $reg[1];
