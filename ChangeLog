@@ -1,5 +1,11 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.1 compared to 2.1.0 *****
+For All :
+    - Fix statistics pages (training list box can be empty)
+    - Session Send docs : In send certificate add certificate A4 and certicificate card attachement files if certificate is managed (admin)
+    - Fix : Doc timesheet presence (fiche de présence (format paysage)  
+
 ***** ChangeLog for 2.1.0 compared to 2.0.29 *****
 For All :
     - Compatibility with Dolibarr 3.4 only

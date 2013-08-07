@@ -53,7 +53,7 @@ class SessionStats extends Stats
 	 * 	@param	int			$userid    	Id user for filter
 	 * 	@return SessionStats
 	 */
-	function SessionStats($db, $socid, $mode='', $userid=0,$training_id=0)
+	function SessionStats($db, $socid=0, $mode='', $userid=0,$training_id=0)
 	{
 		global $conf;
 

@@ -24,6 +24,10 @@
  */
 
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 $res=@include("../../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -35,10 +39,11 @@ dol_include_once("/agefodd/class/html.formagefodd.class.php");
 $WIDTH=500;
 $HEIGHT=200;
 
-
 $userid=GETPOST('userid','int'); if ($userid < 0) $userid=0;
 $socid=GETPOST('socid','int'); if ($socid < 0) $socid=0;
 $training_id=GETPOST('training_id','int'); if ($training_id < 0) $training_id=0;
+
+if (empty($userid)) unset($userid);
 
 // Security check
 if ($user->societe_id > 0)
@@ -69,7 +74,6 @@ llxHeader('',$title);
 
 $dir=$conf->agefodd->dir_temp;
 
-
 print_fiche_titre($title, $mesg);
 
 dol_mkdir($dir);
@@ -80,7 +84,6 @@ $stats = new SessionStats($db, $socid, $mode, ($userid>0?$userid:0),($training_i
 // Build graphic number of object
 // $data = array(array('Lib',val1,val2,val3),...)
 $data = $stats->getNbByMonthWithPrevYear($endyear,$startyear);
-//var_dump($data);
 
 $filenamenb = $dir."/sessionsnbinyear-".$year.".png";
 
@@ -108,6 +111,8 @@ if (! $mesg)
 	$px1->SetTitle($langs->trans("AgfNumberOfSessionsByMonth"));
 
 	$px1->draw($filenamenb,$fileurlnb);
+}else {
+	setEventMessage($mesg,'errors');
 }
 
 // Build graphic amount of object
@@ -220,7 +225,7 @@ if (empty($socid))
 
 	// Formation$
 	print '<tr><td>'.$langs->trans("AgfTraining").'</td><td>';
-	print $formagf->select_formation($training_id,'training_id',1);
+	print $formagf->select_formation($training_id,'training_id','intitule',1);
 	print '</td></tr>';
 
 	// Year

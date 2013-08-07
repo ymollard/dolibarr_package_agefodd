@@ -147,12 +147,8 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
 
-			if ($result)
-			{
-				$resql = $agf->fetch_stagiaire_per_session($agf->id);
-
+			if ($result) {
 				$this->_pagebody($pdf, $agf, 1, $outputlangs);
-
 			}
 
 			$pdf->Close();
@@ -437,8 +433,6 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 
 		/***** Bloc stagiaire *****/
 
-		$resql = $agf->fetch_stagiaire_per_session($agf->id);
-
 		$pdf->SetXY($posX -2 , $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'BI',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres15');
@@ -446,8 +440,6 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 		$posY+= 4;
 
 		$cadre_tableau=array($posX -2 , $posY );
-
-			
 
 		$larg_col1 = 50;
 		$larg_col2 = 45;
@@ -530,7 +522,13 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 		$h_ligne = 7;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 
-		foreach ($agf->lines as $line){
+		$agfsta = new Agefodd_session_stagiaire($this->db);
+		$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
+		$nbsta=count($agfsta->lines);
+		
+		
+		
+		foreach ($agfsta->lines as $line){
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 
