@@ -442,8 +442,15 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 			$error++;
 			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
 		}
+		
+		$training_id = GETPOST('formation','int');
+		if (($training_id==-1) || (empty($training_id)))
+		{
+			$error++;
+			setEventMessage($langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv("AgfFormIntitule")), 'errors');
+		}
 
-		$agf->fk_formation_catalogue = GETPOST('formation','int');
+		$agf->fk_formation_catalogue = $training_id;
 		$agf->fk_session_place = $fk_session_place;
 		$agf->nb_place = GETPOST('nb_place','int');
 		$agf->type_session = GETPOST('type_session','int');
@@ -613,29 +620,29 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfLieu").'</span></td>';
 	print '<td><table class="nobordernopadding"><tr><td>';
-	print $formAgefodd->select_site_forma("",'place',1);
+	print $formAgefodd->select_site_forma(GETPOST('place','int'),'place',1);
 	print '</td>';
 	print '<td> <a href="'.dol_buildpath('/agefodd/site/card.php',1).'?action=create&url_return='.urlencode($_SERVER['PHP_SELF'].'?action=create').'" title="'.$langs->trans('AgfCreateNewSite').'">'.$langs->trans('AgfCreateNewSite').'</a>';
 	print '</td><td>'.$form->textwithpicto('',$langs->trans("AgfCreateNewSiteHelp"),1,'help').'</td></tr></table>';
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
-	print '<td>'.$formAgefodd->select_formation("", 'formation','intitule',1).'</a></td></tr>';
+	print '<td>'.$formAgefodd->select_formation(GETPOST('foration','int'), 'formation','intitule',1).'</a></td></tr>';
 
 	print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
 	print '<td>'.$formAgefodd->select_type_session('type_session',0).'</a></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfSessionCommercial").'</span></td>';
 	print '<td>';
-	$form->select_users('','commercial',1, array(1));
+	$form->select_users(GETPOST('commercial','int'),'commercial',1, array(1));
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfDateDebut").'</span></td><td>';
-	$form->select_date("", 'dad','','','','add');
+	$form->select_date(dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int')), 'dad','','','','add');
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfDateFin").'</span></td><td>';
-	$form->select_date("", 'daf','','','','add');
+	$form->select_date(dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int')), 'daf','','','','add');
 	print '</td></tr>';
 
 	print '<tr><td>'.$langs->trans("Customer").'</td>';
@@ -664,7 +671,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	else {
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 		print '<td><table class="nobordernopadding"><tr><td>';
-		print $formAgefodd->select_agefodd_contact('', 'contact','',1);
+		print $formAgefodd->select_agefodd_contact(GETPOST('contact','int'), 'contact','',1);
 		print '</td>';
 		print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddContactHelp"),1,'help').'</td></tr></table>';
 		print '</td></tr>';
@@ -676,7 +683,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
-	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.GETPOST('notes','aplha').'</textarea></td></tr>';
 
 	print '</table>';
 	print '</div>';
