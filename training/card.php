@@ -98,7 +98,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
-		$agf->nb_min_target=GETPOST('nbmintarget','int');
+		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
@@ -152,7 +152,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
-		$agf->nb_min_target=GETPOST('nbmintarget','int');
+		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
@@ -440,7 +440,7 @@ else
 				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
-				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_min_target.'"></td></tr>';
+				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 				print $form->select_produits($agf->fk_product,'productid','',10000);
@@ -617,7 +617,7 @@ else
 				print $agf->duree.'</td></tr>';
 				
 				print '<tr><td>'.$langs->trans("AgfNbMintarget").'</td><td colspan=2>';
-				print $agf->nb_min_target.'</td></tr>';
+				print $agf->nb_subscribe_min.'</td></tr>';
 				
 				print '<tr><td>'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 				if (!empty($agf->fk_product)) {

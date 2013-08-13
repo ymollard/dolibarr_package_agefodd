@@ -309,8 +309,8 @@ if ($resql != - 1) {
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
 			print '<td>' . $line->nb_stagiaire . '</td>';
-			if (! empty ( $line->nb_min_target )) {
-				if ($line->nb_confirm >= $line->nb_min_target) {
+			if (! empty ( $line->nb_subscribe_min )) {
+				if ($line->nb_confirm >= $line->nb_subscribe_min) {
 					$style = 'style="background: green"';
 				} else {
 					$style = 'style="background: red"';

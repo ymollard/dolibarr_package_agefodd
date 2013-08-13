@@ -139,7 +139,7 @@ $server->wsdl->addComplexType(
 'formid' => array('name'=>'formid','type'=>'xsd:string'),
 'formref' => array('name'=>'formref','type'=>'xsd:string'),
 'duree' => array('name'=>'duree','type'=>'xsd:string'),
-'nb_min_target' => array('name'=>'nb_min_target','type'=>'xsd:string'),
+'nb_subscribe_min' => array('name'=>'nb_subscribe_min','type'=>'xsd:string'),
 'canvas' => array('name'=>'canvas','type'=>'xsd:string'),
 'lastname' => array('name'=>'lastname','type'=>'xsd:string'),
 'firstname' => array('name'=>'firstname','type'=>'xsd:string'),
@@ -290,7 +290,7 @@ function getagsession($authentication,$id,$ref='',$ref_ext='')
 'formid' => $agsession->formid,
 'formref' => $agsession->formref,
 'duree' => $agsession->duree,
-'nb_min_target' => $agsession->nb_min_target,
+'nb_subscribe_min' => $agsession->nb_subscribe_min,
 'canvas' => $agsession->canvas,
 'lastname' => $agsession->lastname,
 'firstname' => $agsession->firstname,
@@ -407,7 +407,7 @@ function createagsession($authentication,$agsession)
 		$newobject->formid=$agsession->formid;
 		$newobject->formref=$agsession->formref;
 		$newobject->duree=$agsession->duree;
-		$newobject->nb_min_target=$agsession->nb_min_target;
+		$newobject->nb_subscribe_min=$agsession->nb_subscribe_min;
 		$newobject->canvas=$agsession->canvas;
 		$newobject->lastname=$agsession->lastname;
 		$newobject->firstname=$agsession->firstname;

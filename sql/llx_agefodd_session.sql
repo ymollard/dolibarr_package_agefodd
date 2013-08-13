@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   fk_socpeople_OPCA integer DEFAULT NULL,
   num_OPCA_soc varchar(100) DEFAULT NULL,
   num_OPCA_file varchar(100) DEFAULT NULL,
-  nb_min_target integer NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,

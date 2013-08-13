@@ -160,7 +160,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
-		$agf->nb_min_target=GETPOST('nbmintarget','int');
+		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 			$agf->sourcecontactid = $agf->contactid;
 		}
@@ -874,7 +874,7 @@ else
 					print '</td></tr></table>';
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
-					print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_min_target.'"></td></tr>';
+					print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';
 					
 					print '</td></tr>';
 

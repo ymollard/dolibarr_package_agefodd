@@ -107,7 +107,7 @@ $server->wsdl->addComplexType(
 'note_private' => array('name'=>'note_private','type'=>'xsd:string'),
 'note_public' => array('name'=>'note_public','type'=>'xsd:string'),
 'fk_product' => array('name'=>'fk_product','type'=>'xsd:string'),
-'nb_min_target' => array('name'=>'nb_min_target','type'=>'xsd:string'),
+'nb_subscribe_min' => array('name'=>'nb_subscribe_min','type'=>'xsd:string'),
 'fk_formation_catalogue' => array('name'=>'fk_formation_catalogue','type'=>'xsd:string'),
 'priorite' => array('name'=>'priorite','type'=>'xsd:string'),
 'lines' => array('name'=>'lines','type'=>'xsd:string'),
@@ -229,7 +229,7 @@ function getAgefodd($authentication,$id,$ref='',$ref_ext='')
 'note_private' => $agefodd->note_private,
 'note_public' => $agefodd->note_public,
 'fk_product' => $agefodd->fk_product,
-'nb_min_target' => $agefodd->nb_min_target,
+'nb_subscribe_min' => $agefodd->nb_subscribe_min,
 'fk_formation_catalogue' => $agefodd->fk_formation_catalogue,
 'priorite' => $agefodd->priorite,
 'lines' => $agefodd->lines,
@@ -317,7 +317,7 @@ function createAgefodd($authentication,$agefodd)
 		$newobject->note_private=$agefodd->note_private;
 		$newobject->note_public=$agefodd->note_public;
 		$newobject->fk_product=$agefodd->fk_product;
-		$newobject->nb_min_target=$agefodd->nb_min_target;
+		$newobject->nb_subscribe_min=$agefodd->nb_subscribe_min;
 		$newobject->fk_formation_catalogue=$agefodd->fk_formation_catalogue;
 		$newobject->priorite=$agefodd->priorite;
 		$newobject->lines=$agefodd->lines;

@@ -40,6 +40,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   note_private	text,
   note_public	text,
   fk_product integer,
-  nb_min_target integer NULL,
+  nb_subscribe_min integer NULL,
   tms timestamp NOT NULL
 ) ENGINE=InnoDB;
