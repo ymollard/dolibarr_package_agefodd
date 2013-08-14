@@ -56,5 +56,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL,
-  archive smallint NOT NULL DEFAULT 0
+  archive smallint NOT NULL DEFAULT 0,
+  import_key varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB;
