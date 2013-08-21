@@ -28,7 +28,6 @@ UPDATE llx_agefodd_training_admlevel as ori, llx_agefodd_training_admlevel as up
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN import_key	varchar(14);
 ALTER TABLE llx_agefodd_stagiaire_certif ADD COLUMN import_key	varchar(14);
 ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN import_key	varchar(14);
-ALTER TABLE llx_agefodd_stagiaire ADD COLUMN import_key	varchar(14);
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN date_birth datetime default NULL AFTER mail;
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN place_birth  varchar(100) default NULL AFTER date_birth;
 

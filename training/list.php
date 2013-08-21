@@ -62,7 +62,7 @@ $agf = new Agefodd($db);
 
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
-print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER['PHP_SELF'],'&arch='.$arch, $sortfield, $sortorder,'', $num);
+print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER['PHP_SELF'],'&arch='.$arch, $sortfield, $sortorder,'', $resql);
 
 $i = 0;
 print '<table class="noborder" width="100%">';
