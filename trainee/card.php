@@ -291,7 +291,7 @@ if ($action == 'nfcontact_confirm' && $user->rights->agefodd->creer)
 	{
 		$agf_sta = new Agefodd_stagiaire($db);
 
-		$agf_sta->nom = $contact->name;
+		$agf_sta->nom = $contact->lastname;
 		$agf_sta->prenom = $contact->firstname;
 		$agf_sta->civilite = $contact->civilite_id;
 		$agf_sta->socid = $contact->socid;

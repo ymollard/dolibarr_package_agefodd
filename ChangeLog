@@ -4,6 +4,8 @@ English Dolibarr ChangeLog
 For Dev:
     - Change column name nb_min_target to nb_subscribe_min
     - Fix : paging training list 
+    - Fix : bugs_agefodd #1038 - Inscription participant
+    - Fix : bugs_agefodd #1042 - Convention de formation
     
     
 ***** ChangeLog for 2.1.2 compared to 2.1.1 *****
