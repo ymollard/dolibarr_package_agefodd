@@ -428,8 +428,12 @@ if (!empty($id))
 
 				// Before training session
 				print '<tr><td colspan=3 style="background-color:#d5baa8;">'.$langs->trans("AgfBeforeTraining").'</td></tr>'."\n";
-				document_line($langs->trans("Proposal"), 2, "prop", $agf->lines[$i]->socid);
-				document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->lines[$i]->socid);
+				if (!empty($conf->global->MAIN_MODULE_PROPALE)) {
+					document_line($langs->trans("Proposal"), 2, "prop", $agf->lines[$i]->socid);
+				}
+				if (!empty($conf->global->MAIN_MODULE_COMMANDE)) {
+					document_line($langs->trans("AgfBonCommande"), 2, "bc", $agf->lines[$i]->socid);
+				}
 				document_line($langs->trans("AgfConvention"), 2, "convention", $agf->lines[$i]->socid);
 				document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation', $agf->lines[$i]->socid);
 				document_line($langs->trans("AgfCourrierConv"), 2, "courrier", $agf->lines[$i]->socid,'convention');

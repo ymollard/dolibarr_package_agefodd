@@ -19,28 +19,15 @@
 --
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
+--
+-- Structure de la table llx_agefodd_formation_catalogue_type
+--
+
+CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue_type (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
-  ref varchar(40) NOT NULL,
-  ref_interne varchar(80) NULL,
-  entity integer NOT NULL DEFAULT 1,
+  code varchar(30) NOT NULL,
   intitule varchar(80) NOT NULL,
-  duree integer NOT NULL,
-  public text NULL,
-  methode text NULL,
-  prerequis text NULL,
-  but text NULL,
-  programme text NULL,
-  note1 text NULL,
-  note2 text NULL,
-  archive smallint NOT NULL DEFAULT 0,
-  fk_user_author integer NOT NULL,
-  datec datetime NOT NULL,
-  fk_user_mod integer NOT NULL,
-  note_private	text,
-  note_public	text,
-  fk_product integer,
-  nb_subscribe_min integer NULL,
-  fk_c_category integer NULL,
+  sort smallint NOT NULL,
+  active integer NULL,
   tms timestamp NOT NULL
 ) ENGINE=InnoDB;

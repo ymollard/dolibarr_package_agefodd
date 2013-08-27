@@ -216,7 +216,18 @@ class Agsession extends CommonObject {
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
 			}
+			
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+			{
+				$result=$this->insertExtraFields();
+				if ($result < 0)
+				{
+					$error++;
+				}
+			}
 		}
+		
+		
 		
 		// Commit or rollback
 		if ($error) {
@@ -481,6 +492,13 @@ class Agsession extends CommonObject {
 				$this->archive = $obj->archive;
 			}
 			$this->db->free ( $resql );
+			
+			require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+			$extrafields=new ExtraFields($this->db);
+			$extralabels=$extrafields->fetch_name_optionals_label($this->table_element,true);
+			if (count($extralabels)>0) {
+				$this->fetch_optionals($this->id,$extralabels);
+			}
 			
 			return 1;
 		} else {
@@ -1012,6 +1030,17 @@ class Agsession extends CommonObject {
 			}
 		}
 		
+		if (! $error) {
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+			{
+				$result=$this->insertExtraFields();
+				if ($result < 0)
+				{
+					$error++;
+				}
+			}
+		}
+		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -1403,14 +1432,47 @@ class Agsession extends CommonObject {
 		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
-		//Delete event from agenda that are no more link to a session
-		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "actioncomm WHERE elementtype='agefodd_agsession' AND fk_element NOT IN (SELECT rowid FROM llx_agefodd_session)";
+		if (! $resql) {
+			$error ++;
+			$this->errors [] = "Error " . $this->db->lasterror ();
+		}
 		
-		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		if (! $error) {
+			// Removed extrafields
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+			{
+				$this->id=$id;
+				$result=$this->deleteExtraFields();
+				if ($result < 0)
+				{
+					$error++;
+					dol_syslog(get_class($this)."::delete erreur ".$error." ".$this->error, LOG_ERR);
+				}
+			}
+		}
 		
-		if ($resql) {
+		if (! $error)
+		{
+			//Delete event from agenda that are no more link to a session
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "actioncomm WHERE elementtype='agefodd_agsession' AND fk_element NOT IN (SELECT rowid FROM llx_agefodd_session)";
+			
+			dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
+			$resql = $this->db->query ( $sql );
+			
+			if (! $resql) {
+				$error ++;
+				$this->errors [] = "Error " . $this->db->lasterror ();
+			} 
+		}
+		if (! $error)
+		{
 			$this->db->commit ();
+		}
+		else {
+			$this->db->rollback ();
+		}
+		
+		if (!$error) {
 			return 1;
 		} else {
 			$this->error = $this->db->lasterror ();
@@ -1591,7 +1653,8 @@ class Agsession extends CommonObject {
 	 *        	num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_by_order_invoice($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '') {
+	function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '' , $propalid = '') 
+	{
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
@@ -1602,6 +1665,9 @@ class Agsession extends CommonObject {
 		}
 		if (! empty ( $orderid )) {
 			$sql .= " ,order_dol.ref as orderref";
+		}
+		if (! empty ( $propalid )) {
+			$sql .= " ,propal_dol.ref as propalref";
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
@@ -1626,6 +1692,12 @@ class Agsession extends CommonObject {
 			$sql .= " ON order_dol.rowid = ord_inv.fk_commande";
 			$sql .= ' AND order_dol.rowid=' . $orderid;
 		}
+		
+		if (! empty ( $propalid )) {
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "propal as propal_dol ";
+			$sql .= " ON propal_dol.rowid = ord_inv.fk_propal";
+			$sql .= ' AND propal_dol.rowid=' . $propalid;
+		}
 		$sql .= " WHERE s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
 		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
@@ -1638,10 +1710,14 @@ class Agsession extends CommonObject {
 			$sql .= " ,order_dol.ref ";
 		}
 		
+		if (! empty ( $propalid )) {
+			$sql .= " ,propal_dol.ref ";
+		}
+		
 		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit ( $limit + 1, $offset );
 		
 		$resql = $this->db->query ( $sql );
-		dol_syslog ( get_class ( $this ) . "::fetch_all_by_order_invoice sql=" . $sql, LOG_DEBUG );
+		dol_syslog ( get_class ( $this ) . "::fetch_all_by_order_invoice_propal sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
 		if ($resql) {
@@ -1677,6 +1753,9 @@ class Agsession extends CommonObject {
 					if (! empty ( $orderid )) {
 						$line->orderref = $obj->orderref;
 					}
+					if (! empty ( $propalid )) {
+						$line->propalref = $obj->propalref;
+					}
 					
 					$this->lines [$i] = $line;
 					
@@ -1697,6 +1776,12 @@ class Agsession extends CommonObject {
 	 */
 	function printSessionInfo() {
 		global $form, $langs;
+		
+		require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+		$extrafields = new ExtraFields($this->db);
+		$extralabels=$extrafields->fetch_name_optionals_label($this->table_element);
+		
+		
 		print '<table class="border" width="100%">';
 		
 		print '<tr><td width="20%">' . $langs->trans ( "Ref" ) . '</td>';
@@ -1760,6 +1845,11 @@ class Agsession extends CommonObject {
 		
 		print '<tr><td>' . $langs->trans ( "AgfNbMintarget" ) . '</td><td>';
 		print $this->nb_subscribe_min . '</td></tr>';
+		
+		if (! empty($extrafields->attribute_label))
+		{
+			print $this->showOptionals($extrafields);
+		}
 		
 		print '</table>';
 	}
@@ -2421,6 +2511,7 @@ class AgfInvoiceOrder {
 	var $notes;
 	var $invoiceref;
 	var $orderref;
+	var $propalref;
 	function __construct() {
 		return 1;
 	}

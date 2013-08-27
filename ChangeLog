@@ -3,9 +3,13 @@ English Dolibarr ChangeLog
 ***** ChangeLog for 2.1.3 compared to 2.1.2 *****
 For Dev:
     - Change column name nb_min_target to nb_subscribe_min
-    - Fix : paging training list 
+    - Fix : pagging training list 
     - Fix : bugs_agefodd #1038 - Inscription participant
     - Fix : bugs_agefodd #1042 - Convention de formation
+    - Fix : Objectif Pédagogique not display in trainning card and in Fiche pedago PDF.
+    - New : Add training category manage by dictionnary.
+    - New : Extrafield on training and session
+    - New : Add tab list session on proposal
     
     
 ***** ChangeLog for 2.1.2 compared to 2.1.1 *****

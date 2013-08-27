@@ -304,6 +304,17 @@ function agefodd_admin_prepare_head()
 	$head[$h][1] = $langs->trans("Settings");
 	$head[$h][2] = 'settings';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath("/agefodd/admin/formation_catalogue_extrafields.php",1);
+	$head[$h][1] = $langs->trans("ExtraFieldsTraining");
+	$head[$h][2] = 'attributetraining';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath("/agefodd/admin/session_extrafields.php",1);
+	$head[$h][1] = $langs->trans("ExtraFieldsSessions");
+	$head[$h][2] = 'attributesession';
+	$h++;
+	
 	$head[$h][0] = dol_buildpath("/agefodd/admin/about.php",1);
 	$head[$h][1] = $langs->trans("About");
 	$head[$h][2] = 'about';

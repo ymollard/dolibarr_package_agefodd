@@ -30,8 +30,10 @@ if (! $res) die("Include of main fails");
 
 require_once('../class/agefodd_formation_catalogue.class.php');
 require_once('../core/modules/agefodd/modules_agefodd.php');
+require_once('../class/html.formagefodd.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/product/class/product.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
 
 require_once(DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php');
 
@@ -43,12 +45,17 @@ $confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
 
+$agf = new Agefodd($db);
+$extrafields = new ExtraFields($db);
+$extralabels=$extrafields->fetch_name_optionals_label($agf->table_element);
+
 /*
  * Actions delete
 */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd($db);
+	$agf->id=$id;
 	$result = $agf->remove($id);
 
 	if ($result > 0)
@@ -100,6 +107,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->duree = GETPOST('duree','int');
 		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
+		$agf->fk_c_category =GETPOST('categid','int');
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
 			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));
@@ -118,6 +126,8 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			$agf->programme = GETPOST('programme','alpha');
 		}
 
+		$extrafields->setOptionalsFromPost($extralabels,$agf);
+		var_export($agf);
 		$result = $agf->update($user);
 
 		if ($result > 0)
@@ -147,13 +157,14 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 	if (! $_POST["cancel"])
 	{
 		$agf = new Agefodd($db);
-
+		
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
 		$agf->duree = GETPOST('duree','int');
 		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
+		$agf->fk_c_category =GETPOST('categid','int');
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
 			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));
@@ -171,6 +182,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$agf->but = GETPOST('but','alpha');
 			$agf->programme = GETPOST('programme','alpha');
 		}
+		
+		$extrafields->setOptionalsFromPost($extralabels,$agf);
+		
 		$newid = $agf->create($user);
 
 		if ($newid > 0)
@@ -296,6 +310,8 @@ $title = ($action == 'create' ? $langs->trans("AgfMenuCatNew") : $langs->trans("
 llxHeader('',$title);
 
 $form = new Form($db);
+$formagefodd = new FormAgefodd($db);
+
 
 
 /*
@@ -341,6 +357,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 	print '<input name="nbmintarget" class="flat" size="5" value="'.GETPOST('nbmintarget','int').'"></td></tr>';
 
+	print '<tr><td width="20%">'.$langs->trans("AgfTrainingCateg").'</td><td>';
+	print $formagefodd->select_training_categ(GETPOST('categid'),'categid','t.active=1');
+	if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionnarySetup"),1);
+	print "</td></tr>";
+	
 	print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 	print $form->select_produits(GETPOST('productid'),'productid','',10000);
 	print "</td></tr>";
@@ -380,6 +401,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
+	
+	
+	if (! empty($extrafields->attribute_label))
+	{
+		print $agf->showOptionals($extrafields,'edit');
+	}
+	
 	print '</table>';
 	print '</div>';
 
@@ -401,7 +429,7 @@ else
 
 		$agf = new Agefodd($db);
 		$result = $agf->fetch($id);
-
+	
 		$head = training_prepare_head($agf);
 
 		dol_fiche_head($head, 'card', $langs->trans("AgfCatalogDetail"), 0, 'label');
@@ -442,6 +470,11 @@ else
 				print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';
 				
+				print '<tr><td width="20%">'.$langs->trans("AgfTrainingCateg").'</td><td>';
+				print $formagefodd->select_training_categ($agf->fk_c_category,'categid','t.active=1');
+				if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionnarySetup"),1);
+				print "</td></tr>";
+				
 				print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 				print $form->select_produits($agf->fk_product,'productid','',10000);
 				print "</td></tr>";
@@ -481,6 +514,11 @@ else
 				$doleditor = new DolEditor('programme', $agf->programme, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print "</td></tr>";
+				
+				if (! empty($extrafields->attribute_label))
+				{
+					print $agf->showOptionals($extrafields,'edit');
+				}
 
 				print '</table>';
 				print '</div>';
@@ -619,7 +657,11 @@ else
 				print '<tr><td>'.$langs->trans("AgfNbMintarget").'</td><td colspan=2>';
 				print $agf->nb_subscribe_min.'</td></tr>';
 				
-				print '<tr><td>'.$langs->trans("AgfProductServiceLinked").'</td><td>';
+				print '<tr><td>'.$langs->trans("AgfTrainingCateg").'</td><td  colspan=2>';
+				print $agf->category_lib;
+				print "</td></tr>";
+				
+				print '<tr><td>'.$langs->trans("AgfProductServiceLinked").'</td><td colspan=2>';
 				if (!empty($agf->fk_product)) {
 					$product= new Product($db);
 					$result = $product->fetch($agf->fk_product);
@@ -679,6 +721,11 @@ else
 				}
 				if (empty($agf->but)) $but = $langs->trans("AgfUndefinedBut");
 				print $but.'</td></tr>';
+				
+				if (! empty($extrafields->attribute_label))
+				{
+					print $agf->showOptionals($extrafields);
+				}
 
 				print '<script type="text/javascript">'."\n";
 				print 'function DivStatus( div_){'."\n";
@@ -710,7 +757,7 @@ else
 				print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfObjPeda").'</td></tr>';
 
 				$i = 0;
-				foreach ($agf_peda->line as $line)
+				foreach ($agf_peda->lines as $line)
 				{
 
 					print '<tr>';

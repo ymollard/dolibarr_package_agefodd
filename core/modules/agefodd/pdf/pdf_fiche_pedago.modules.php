@@ -311,14 +311,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 				$hauteur = 0;
 				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
-				for ( $y = 0; $y < count($agf->line); $y++)
+				for ( $y = 0; $y < count($agf->lines); $y++)
 				{
 					if ($y > 0) $posY+= $hauteur;
 					$pdf->SetXY ($posX, $posY);
-					$hauteur = dol_nboflines_bis($agf->line[$y]->intitule,80)*4;
+					$hauteur = dol_nboflines_bis($agf->lines[$y]->intitule,80)*4;
 
-					$pdf->Cell(10, 4, $agf->line[$y]->priorite.'. ', 0, 0, 'L', 0);
-					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->line[$y]->intitule), 0,'L');
+					$pdf->Cell(10, 4, $agf->lines[$y]->priorite.'. ', 0, 0, 'L', 0);
+					$pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->lines[$y]->intitule), 0,'L');
 
 				}
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;

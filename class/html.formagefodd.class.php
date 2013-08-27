@@ -561,6 +561,60 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 * Display list of training category
+	 *
+	 * @param int $selectid Id de la session selectionner
+	 * @param string $htmlname Name of HTML control
+	 * @param string $filter SQL part for filter
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	function select_training_categ($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 1) {
+		global $conf, $langs;
+	
+		$sql = "SELECT t.rowid, t.code, t.intitule";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as t";
+		if (! empty ( $filter )) {
+			$sql .= ' WHERE ' . $filter;
+		}
+		$sql .= " ORDER BY t.sort";
+	
+		dol_syslog ( get_class ( $this ) . "::select_training_categ sql=" . $sql, LOG_DEBUG );
+		$result = $this->db->query ( $sql );
+		if ($result) {
+				
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value="-1"></option>';
+			$num = $this->db->num_rows ( $result );
+			$i = 0;
+			if ($num) {
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object ( $result );
+					$label = stripslashes ( $obj->code.' - '.$obj->intitule );
+						
+					if ($selectid > 0 && $selectid == $obj->rowid) {
+						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+			$this->db->free ( $result );
+			return $out;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::select_training_categ " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
+	
+	
+	/**
 	 * Formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
 	 *
 	 * @param int $actual_level valeur de l'état actuel

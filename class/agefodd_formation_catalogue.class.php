@@ -58,6 +58,8 @@ class Agefodd extends CommonObject {
 	var $nb_subscribe_min;
 	var $fk_formation_catalogue;
 	var $priorite;
+	var $fk_c_category;
+	var $category_lib;
 	var $lines = array ();
 	
 
@@ -110,7 +112,7 @@ class Agefodd extends CommonObject {
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formation_catalogue(";
 		$sql .= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,";
 		$sql .= "programme, note1, note2, fk_user_author,fk_user_mod,entity,";
-		$sql .= "fk_product,nb_subscribe_min";
+		$sql .= "fk_product,nb_subscribe_min,fk_c_category";
 		$sql .= ") VALUES (";
 		$sql .= $this->db->idate ( dol_now () ) . ', ';
 		$sql .= " " . (! isset ( $this->ref_obj ) ? 'NULL' : "'" . $this->ref_obj . "'") . ",";
@@ -128,7 +130,8 @@ class Agefodd extends CommonObject {
 		$sql .= " " . $user->id . ',';
 		$sql .= " " . $conf->entity . ', ';
 		$sql .= " " . (empty ( $this->fk_product ) ? 'null' : $this->fk_product) . ', ';
-		$sql .= " " . (empty ( $this->nb_subscribe_min ) ? "null" : $this->nb_subscribe_min);
+		$sql .= " " . (empty ( $this->nb_subscribe_min ) ? "null" : $this->nb_subscribe_min). ', ';
+		$sql .= " " . (empty ( $this->fk_c_category ) ? "null" : $this->fk_c_category);
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -151,6 +154,15 @@ class Agefodd extends CommonObject {
 				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
+			}
+		}
+		
+		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+		{
+			$result=$this->insertExtraFields();
+			if ($result < 0)
+			{
+				$error++;
 			}
 		}
 		
@@ -181,8 +193,9 @@ class Agefodd extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
 		$sql .= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
-		$sql .= " ,c.note_private, c.note_public, c.fk_product,c.nb_subscribe_min ";
+		$sql .= " ,c.note_private, c.note_public, c.fk_product,c.nb_subscribe_min,c.fk_c_category,dictcat.code as catcode ,dictcat.intitule as catlib ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat ON dictcat.rowid=c.fk_c_category";
 		if ($id && ! $ref)
 			$sql .= " WHERE c.rowid = " . $id;
 		if (! $id && $ref)
@@ -212,8 +225,20 @@ class Agefodd extends CommonObject {
 				$this->note_public = $obj->note_public;
 				$this->fk_product = $obj->fk_product;
 				$this->nb_subscribe_min = $obj->nb_subscribe_min;
+				$this->fk_c_category = $obj->fk_c_category;
+				if (!empty($obj->catcode) || !empty($obj->catlib)) {
+					$this->category_lib = $obj->catcode.' - '.$obj->catlib;
+				}
 			}
 			$this->db->free ( $resql );
+			
+			require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+			$extrafields=new ExtraFields($this->db);
+			$extralabels=$extrafields->fetch_name_optionals_label($this->table_element,true);
+			if (count($extralabels)>0) {
+				$this->fetch_optionals($this->id,$extralabels);
+			}
+			
 			
 			return 1;
 		} else {
@@ -283,6 +308,7 @@ class Agefodd extends CommonObject {
 		$this->programme = $this->db->escape ( trim ( $this->programme ) );
 		$this->note1 = $this->db->escape ( trim ( $this->note1 ) );
 		$this->note2 = $this->db->escape ( trim ( $this->note2 ) );
+		$this->fk_c_category = $this->db->escape ( trim ( $this->fk_c_category ) );
 		
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -307,7 +333,8 @@ class Agefodd extends CommonObject {
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " archive=" . $this->archive . ",";
 		$sql .= " fk_product=" . (isset ( $this->fk_product ) ? $this->fk_product : "null") . ",";
-		$sql .= " nb_subscribe_min=" . (!empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null");
+		$sql .= " nb_subscribe_min=" . (!empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null") . ",";
+		$sql .= " fk_c_category=" . (!empty ( $this->fk_c_category ) ? $this->fk_c_category : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
 		$this->db->begin ();
@@ -318,6 +345,17 @@ class Agefodd extends CommonObject {
 			$error ++;
 			$this->errors [] = "Error " . $this->db->lasterror ();
 		}
+		
+		
+		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+		{
+			$result=$this->insertExtraFields();
+			if ($result < 0)
+			{
+				$error++;
+			}
+		}
+		
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -354,13 +392,36 @@ class Agefodd extends CommonObject {
 	 * @return int if KO, >0 if OK
 	 */
 	function remove($id) {
+		
+		global $conf;
+		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE rowid = " . $id;
 		
 		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
-		if ($resql) {
+		if (! $resql) {
+			$error ++;
+			$this->errors [] = "Error " . $this->db->lasterror ();
+		}
+		
+		// Removed extrafields
+		if (! $error)
+		{
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+			{
+				$this->id=$id;
+				$result=$this->deleteExtraFields();
+				if ($result < 0)
+				{
+					$error++;
+					dol_syslog(get_class($this)."::delete erreur ".$error." ".$this->error, LOG_ERR);
+				}
+			}
+		}
+		
+		if (! $error) {
 			return 1;
 		} else {
 			$this->error = $this->db->lasterror ();
@@ -661,15 +722,17 @@ class Agefodd extends CommonObject {
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
 		global $langs;
 		
-		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, ";
+		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as a";
 		$sql .= " ON c.rowid = a.fk_formation_catalogue";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat";
+		$sql .= " ON dictcat.rowid = c.fk_c_category";
 		$sql .= " WHERE c.archive = " . $arch;
 		$sql .= " AND c.entity IN (" . getEntity ( 'agsession' ) . ")";
-		$sql .= " GROUP BY c.ref,c.rowid";
+		$sql .= " GROUP BY c.ref,c.rowid, dictcat.code, dictcat.intitule";
 		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit ( $limit + 1, $offset );
 		
 		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
@@ -694,6 +757,7 @@ class Agefodd extends CommonObject {
 					$line->nbsession = $obj->nbsession;
 					$line->fk_product = $obj->fk_product;
 					$line->nb_subscribe_min = $obj->nb_subscribe_min;
+					$line->category_lib=$obj->catcode.' - '.$obj->catlib;;
 					
 					$this->lines [$i] = $line;
 					
@@ -803,6 +867,7 @@ class AgfTrainingLine {
 	var $nbsession;
 	var $fk_product;
 	var $nb_subscribe_min;
+	var $category_lib;
 	function __construct() {
 		return 1;
 	}

@@ -321,17 +321,18 @@ class modAgefodd extends DolibarrModules
 		}
 		$this->dictionnaries=array(
 		'langs'=>'agefodd@agefodd',
-		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type", MAIN_DB_PREFIX."agefodd_certificate_type"),		// List of tables we want to see into dictonnary editor
-		'tablib'=>array("AgfTraineeType","AgfCertificateType"),								// Label of tables
+		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type", MAIN_DB_PREFIX."agefodd_certificate_type", MAIN_DB_PREFIX."agefodd_formation_catalogue_type"),		// List of tables we want to see into dictonnary editor
+		'tablib'=>array("AgfTraineeType","AgfCertificateType", "AgfTrainingCategTbl"),								// Label of tables
 		'tabsql'=>array('SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as f',
-		'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f'
+		'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f',
+		'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue_type as f',
 		),	// Request to select fields
-		'tabsqlsort'=>array('sort ASC','sort ASC'),								// Sort order
-		'tabfield'=>array("intitule,sort","intitule,sort"),						// List of fields (result of select to show dictionnary)
-		'tabfieldvalue'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields to edit a record)
-		'tabfieldinsert'=>array("intitule,sort","intitule,sort"),				// List of fields (list of fields for insert)
-		'tabrowid'=>array("rowid","rowid"),										// Name of columns with primary key (try to always name it 'rowid')
-		'tabcond'=>array('$conf->agefodd->enabled','$conf->agefodd->enabled')	// Condition to show each dictionnary
+		'tabsqlsort'=>array('sort ASC','sort ASC','sort ASC'),					// Sort order
+		'tabfield'=>array("intitule,sort","intitule,sort","code,intitule,sort"),						// List of fields (result of select to show dictionnary)
+		'tabfieldvalue'=>array("intitule,sort","intitule,sort","code,intitule,sort"),				// List of fields (list of fields to edit a record)
+		'tabfieldinsert'=>array("intitule,sort","intitule,sort","code,intitule,sort"),				// List of fields (list of fields for insert)
+		'tabrowid'=>array("rowid","rowid","rowid"),										// Name of columns with primary key (try to always name it 'rowid')
+		'tabcond'=>array('$conf->agefodd->enabled','$conf->agefodd->enabled','$conf->agefodd->enabled')	// Condition to show each dictionnary
 		);
 
 
@@ -434,6 +435,29 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
 		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
 		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
+		
+		//Session export
+		/*$r++;
+		$this->export_code[$r]=$this->rights_class.'_'.$r;
+		$this->export_label[$r]='ExportDataset_session';
+		$this->export_icon[$r]='bill';
+		$this->export_permission[$r]=array(array("agefodd","export"));
+		$this->export_fields_array[$r]=array('s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
+		's.date_birth'=>'DateToBirth','s.place_birth'=>'AgfPlaceBirth',
+		'certif.fk_stagiaire'=>'Id','certif.fk_session_agefodd'=>'Id',
+		'certif.certif_code'=>'AgfCertifCode','certif.certif_label'=>'AgfCertifLabel','certif.certif_dt_start'=>'AgfCertifDateSt','certif.certif_dt_end'=>'AgfCertifDateEnd',
+		's.datec'=>'AgfDateC');
+		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
+		$this->export_entities_array[$r]=array('c.nom'=>"company",'s.nom'=>'AgfNbreParticipants','s.prenom'=>'AgfNbreParticipants','s.civilite'=>'AgfNbreParticipants',
+		's.date_birth'=>'AgfNbreParticipants','s.place_birth'=>'AgfNbreParticipants',
+		'certif.fk_stagiaire'=>'AgfNbreParticipants','certif.fk_session_agefodd'=>'AgefoddMenuAction',
+		'certif.certif_code'=>'AgfCertificate','certif.certif_label'=>'AgfCertificate','certif.certif_dt_start'=>'AgfCertificate','certif.certif_dt_end'=>'AgfCertificate',
+		's.datec'=>'AgfNbreParticipants'
+		);	// We define here only fields that use another picto
+		
+		$this->export_sql_start[$r]='SELECT DISTINCT ';
+		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
+		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';*/
 
 
 		// Array to add new pages in new tabs
@@ -452,7 +476,8 @@ class modAgefodd extends DolibarrModules
 		// Array to add new pages in new tabs
 		$this->tabs = array(
 		'order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_orderid=__ID__',
-		'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__'
+		'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
+		'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_propalid=__ID__'
 			);
 
 

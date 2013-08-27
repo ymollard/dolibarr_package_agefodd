@@ -38,6 +38,7 @@ function show_conv($file, $socid,$nom_courrier)
 	$agf_comid= new Agefodd_facture($db);
 	$result = $agf_comid->fetch($id,$socid);
 
+	if (!empty($conf->global->MAIN_MODULE_COMMANDE)) {
 	if (empty($agf_comid->propalid)) {
 		if (empty($agf_comid->comid) && empty($agf_comid->facid) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
 			$mess = $form->textwithpicto('',$langs->trans("AgfFactureFacNoBonHelp"),1,'help');
@@ -50,6 +51,13 @@ function show_conv($file, $socid,$nom_courrier)
 			$continue=false;
 		}
 	}
+	} else {
+		if (empty($agf_comid->propalid)) {
+			$mess = $form->textwithpicto('',$langs->trans("AgfFacturePropalHelp"),1,'help');
+			$continue=false;
+		}
+	}
+	
 
 	// If convention contract have already been set (database records exists)
 	if ($agf->id && $continue)

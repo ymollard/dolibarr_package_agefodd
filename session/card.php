@@ -1,5 +1,5 @@
 <?php
-/** Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 * Copyright (C) 2012-2013	Florian Henry	<florian.henry@open-concept.pro>
 * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
@@ -41,6 +41,7 @@ require_once('../class/agefodd_facture.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -50,6 +51,10 @@ $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
+
+$agf = new Agsession($db);
+$extrafields = new ExtraFields($db);
+$extralabels=$extrafields->fetch_name_optionals_label($agf->table_element);
 
 /*
  * Actions delete session
@@ -218,6 +223,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 		if ($error==0)
 		{
+			$extrafields->setOptionalsFromPost($extralabels,$agf);
+			
 			$result = $agf->update($user);
 			if ($result > 0)
 			{
@@ -466,6 +473,9 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 
 		if ($error==0)
 		{
+			
+			$extrafields->setOptionalsFromPost($extralabels,$agf);
+			
 			$result = $agf->create($user);
 
 			if ($result > 0)
@@ -685,6 +695,12 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.GETPOST('notes','aplha').'</textarea></td></tr>';
 
+	if (! empty($extrafields->attribute_label))
+	{
+		print $agf->showOptionals($extrafields,'edit');
+	}
+	
+	
 	print '</table>';
 	print '</div>';
 
@@ -878,6 +894,11 @@ else
 					
 					print '</td></tr>';
 
+					if (! empty($extrafields->attribute_label))
+					{
+						print $agf->showOptionals($extrafields,'edit');
+					}
+					
 					print '</table>';
 					print '</div>';
 
