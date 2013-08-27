@@ -1,5 +1,7 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.4 compared to 2.1.3 *****
+
 ***** ChangeLog for 2.1.3 compared to 2.1.2 *****
 For Dev:
     - Change column name nb_min_target to nb_subscribe_min
