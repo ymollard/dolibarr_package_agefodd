@@ -377,7 +377,8 @@ if (! empty ( $id )) {
 		/*
 		 * Formulaire d'envoi des documents
 		*/
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention' || $action == 'presend_attestation' 
+				|| $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil') {
 			
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
@@ -418,13 +419,18 @@ if (! empty ( $id )) {
 						$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 				} elseif ($action == 'presend_accueil') {
 					$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
-					// Ajout fiche péda
+					// Ajout conseil pratique
 					$filename = 'conseils_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists ( $file ))
 						$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 					else
 						print '<div class="error">' . $langs->trans ( 'AgfConseilNotExists' ) . '</div>';
+					// Ajout fiche péda
+					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists ( $file ))
+						$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 				} elseif ($action == 'presend_attestation') {
 					
 					$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
@@ -741,7 +747,7 @@ if (! empty ( $id )) {
 				}
 				
 				// Trainee List
-				$agf_trainnee = new Agsession ( $db );
+				$agf_trainnee = new Agefodd_session_stagiaire ( $db );
 				$agf_trainnee->Agefodd_session_stagiaire ( $agf->id, $socid );
 				foreach ( $agf_trainnee->lines as $line ) {
 					if (! empty ( $line->email ) && (! empty ( $line->fk_socpeople ))) {
@@ -809,8 +815,8 @@ if (! empty ( $id )) {
 				$formmail->withfile = 2;
 				
 				// Trainee List
-				$agf_trainnee = new Agsession ( $db );
-				$agf_trainnee->Agefodd_session_stagiaire ( $agf->id, $socid );
+				$agf_trainnee = new Agefodd_session_stagiaire ( $db );
+				$agf_trainnee->fetch_stagiaire_per_session ( $agf->id, $socid );
 				foreach ( $agf_trainnee->lines as $line ) {
 					if (! empty ( $line->email ) && (! empty ( $line->fk_socpeople ))) {
 						if (! array_key_exists ( $line->fk_socpeople, $withto )) {

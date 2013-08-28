@@ -168,6 +168,8 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
+				
+				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE?1:0;
 
 				/*
 				 * Header société
@@ -290,7 +292,9 @@ class pdf_conseils extends ModelePDFAgefodd
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 				$this->str = ucfirst($agf->note1);
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
+		
 				$posY = $pdf->GetY() + 8;
 
 				/***** Equipement required *****/
@@ -305,7 +309,7 @@ class pdf_conseils extends ModelePDFAgefodd
 				$this->str = ucfirst($agf->note2);
 
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + 8;
 
 
@@ -345,7 +349,7 @@ class pdf_conseils extends ModelePDFAgefodd
 				$this->str = ucfirst($agf_place->acces_site);
 
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + 8;
 
 				/***** Divers *****/
@@ -360,16 +364,12 @@ class pdf_conseils extends ModelePDFAgefodd
 				$this->str = ucfirst($agf_place->note1);
 
 				$pdf->SetXY( $posX, $posY);
-				$pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0, 5,$outputlangs->convToOutputCharset($this->str),0,'L','','2','','','','',$ishtml);
 				$posY = $pdf->GetY() + 8;
 
 				// Pied de page
 				$this->_pagefoot($pdf,$agf,$outputlangs);
 				$pdf->AliasNbPages();
-
-				// Repere de pliage
-				$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
-				$pdf->Line(3,($this->page_hauteur)/3,6,($this->page_hauteur)/3);
 
 			}
 

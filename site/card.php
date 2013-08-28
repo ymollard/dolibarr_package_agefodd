@@ -117,9 +117,9 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 			$agf->fk_pays = GETPOST('country_id','int');
 			$agf->tel = GETPOST('phone','alpha');
 			$agf->fk_societe = GETPOST('societe','int');
-			$agf->notes = GETPOST('notes','alpha');
-			$agf->acces_site = GETPOST('acces_site','alpha');
-			$agf->note1 = GETPOST('note1','alpha');
+			$agf->notes = GETPOST('notes');
+			$agf->acces_site = GETPOST('acces_site');
+			$agf->note1 = GETPOST('note1');
 			$result = $agf->update($user);
 
 			if ($result > 0)
