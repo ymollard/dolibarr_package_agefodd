@@ -437,27 +437,37 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
 		
 		//Session export
-		/*$r++;
+		$r++;
 		$this->export_code[$r]=$this->rights_class.'_'.$r;
 		$this->export_label[$r]='ExportDataset_session';
 		$this->export_icon[$r]='bill';
 		$this->export_permission[$r]=array(array("agefodd","export"));
-		$this->export_fields_array[$r]=array('s.nom'=>'AgfFamilyName','s.prenom'=>'AgfFirstName','s.civilite'=>'AgfTitle',
-		's.date_birth'=>'DateToBirth','s.place_birth'=>'AgfPlaceBirth',
-		'certif.fk_stagiaire'=>'Id','certif.fk_session_agefodd'=>'Id',
-		'certif.certif_code'=>'AgfCertifCode','certif.certif_label'=>'AgfCertifLabel','certif.certif_dt_start'=>'AgfCertifDateSt','certif.certif_dt_end'=>'AgfCertifDateEnd',
-		's.datec'=>'AgfDateC');
-		$this->export_TypeFields_array[$r]=array('c.nom'=>"Text",'s.nom'=>"Text",'s.prenom'=>"Text",'s.civilite'=>"Text");
-		$this->export_entities_array[$r]=array('c.nom'=>"company",'s.nom'=>'AgfNbreParticipants','s.prenom'=>'AgfNbreParticipants','s.civilite'=>'AgfNbreParticipants',
-		's.date_birth'=>'AgfNbreParticipants','s.place_birth'=>'AgfNbreParticipants',
-		'certif.fk_stagiaire'=>'AgfNbreParticipants','certif.fk_session_agefodd'=>'AgefoddMenuAction',
-		'certif.certif_code'=>'AgfCertificate','certif.certif_label'=>'AgfCertificate','certif.certif_dt_start'=>'AgfCertificate','certif.certif_dt_end'=>'AgfCertificate',
-		's.datec'=>'AgfNbreParticipants'
+		$this->export_fields_array[$r]=array('c.rowid'=>'Id',
+			'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session'=>'AgfFormTypeSession');
+		$this->export_TypeFields_array[$r]=array('c.rowid'=>"Text");
+		$this->export_entities_array[$r]=array('c.rowid'=>"Id",'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session'=>'AgfSessionDetail'
 		);	// We define here only fields that use another picto
 		
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
-		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire as s';
-		$this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';*/
+		$this->export_sql_end[$r]=' FROM llx_agefodd_session as s';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_stagiaire as sta ON sta.rowid = ss.fk_stagiaire';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_stagiaire_type as ssdicttype ON ssdicttype.rowid = ss.fk_agefodd_stagiaire_type';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_societe as so ON so.rowid = s.fk_soc';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_session_formateur as sf ON sf.fk_session = s.rowid';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_user as fu ON fu.rowid = f.fk_user';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_socpeople as fp ON fp.rowid = f.fk_socpeople';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_formation_catalogue_type as dictcat ON dictcat.rowid = c.fk_c_category';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_c_pays as p_pays ON p_pays.rowid = p.fk_pays';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_product as product ON product.rowid = c.fk_product';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND staopca.fk_soc_trainee=sta.fk_soc';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN llx_socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
 
 
 		// Array to add new pages in new tabs

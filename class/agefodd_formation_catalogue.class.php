@@ -717,12 +717,14 @@ class Agefodd extends CommonObject {
 	 *        	offset limit
 	 * @param int $arch
 	 *        	archive
+	 * @param array $filter
+	 *        	array of filter where clause
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter=array()) {
 		global $langs;
 		
-		$sql = "SELECT c.rowid, c.intitule, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
+		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.archive=1) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.archive=1) as nbsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
@@ -732,7 +734,21 @@ class Agefodd extends CommonObject {
 		$sql .= " ON dictcat.rowid = c.fk_c_category";
 		$sql .= " WHERE c.archive = " . $arch;
 		$sql .= " AND c.entity IN (" . getEntity ( 'agsession' ) . ")";
-		$sql .= " GROUP BY c.ref,c.rowid, dictcat.code, dictcat.intitule";
+		// Manage filter
+		if (! empty ( $filter )) {
+			foreach ( $filter as $key => $value ) {
+				if ($key == 'c.datec') 				// To allow $filter['YEAR(s.dated)']=>$year
+				{
+					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date($value,'%Y-%m-%d') . '\'';
+				} elseif ($key == 'c.duree') {
+					$sql .= ' AND ' . $key . ' = ' . $value;
+				} else {
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
+				}
+			}
+		}
+		
+		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule";
 		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit ( $limit + 1, $offset );
 		
 		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
@@ -751,6 +767,7 @@ class Agefodd extends CommonObject {
 					$line->rowid = $obj->rowid;
 					$line->intitule = $obj->intitule;
 					$line->ref = $obj->ref;
+					$line->ref_interne = $obj->ref_interne;
 					$line->datec = $this->db->jdate ( $obj->datec );
 					$line->duree = $obj->duree;
 					$line->lastsession = $obj->lastsession;
@@ -860,6 +877,7 @@ class AgfObjPedaLine {
 class AgfTrainingLine {
 	var $rowid;
 	var $intitule;
+	var $ref_interne;
 	var $ref;
 	var $datec;
 	var $duree;
