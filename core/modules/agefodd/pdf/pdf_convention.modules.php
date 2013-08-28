@@ -639,7 +639,7 @@ class pdf_convention extends ModelePDFAgefodd
 				//signature de l'organisme de formation
 				$pdf->SetXY( $posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize);
-				$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM."\n". $langs->transnoentities('AgfConvArtSig')." ".$conf->global->AGF_ORGANISME_REPRESENTANT." (*)";
+				$this->str = $mysoc->name."\n". $langs->transnoentities('AgfConvArtSig')." ".$conf->global->AGF_ORGANISME_REPRESENTANT." (*)";
 				$pdf->MultiCell($this->espaceH_dispo/2, 4, $outputlangs->transnoentities($this->str),0,'C');
 				$hauteurA = dol_nboflines_bis($this->str,50)*3;
 				

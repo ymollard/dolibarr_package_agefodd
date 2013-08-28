@@ -265,17 +265,17 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	}
 
 	//intro1
-	$statut = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-	$intro1 = $langs->trans('AgfConvIntro1_1').' '.$conf->global->MAIN_INFO_SOCIETE_NOM .', '.$statut.$langs->trans('AgfConvIntro1_2').' ';
-	if (!empty($conf->global->MAIN_INFO_CAPITAL)) {
-		$capital_text=$conf->global->MAIN_INFO_CAPITAL.' '.$langs->trans("Currency".$conf->currency);
+	$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
+	$intro1 = $langs->trans('AgfConvIntro1_1').' '.$mysoc->name .', '.$statut.$langs->trans('AgfConvIntro1_2').' ';
+	if (!empty($mysoc->capital)) {
+		$capital_text=$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
 	} else {
 		$capital_text='';
 	}
-	$intro1.= $capital_text.' '.$statut.' '.$langs->trans('AgfConvIntro1_3').' '.$conf->global->MAIN_INFO_SOCIETE_VILLE;
-	$intro1.= ' ('.$conf->global->MAIN_INFO_SOCIETE_CP.') ';
-	if (!empty($conf->global->MAIN_INFO_RCS)) {
-		$intro1.= $langs->trans('AgfConvIntro1_4').' '.$conf->global->MAIN_INFO_RCS;
+	$intro1.= $capital_text.' '.$statut.' '.$langs->trans('AgfConvIntro1_3').' '.$mysoc->town;
+	$intro1.= ' ('.$mysoc->zip.') ';
+	if (!empty($mysoc->idprof4)) {
+		$intro1.= $langs->trans('AgfConvIntro1_4').' '.$mysoc->idprof4;
 	}
 	if (empty ($conf->global->AGF_ORGANISME_NUM)) {
 		$intro1.= ' '.$langs->trans('AgfConvIntro1_5').' '.$conf->global->AGF_ORGANISME_PREF;
@@ -318,9 +318,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
-	for ( $i = 0; $i < count($obj_peda->lines); $i++)
+	foreach($obj_peda->lines as $line)
 	{
-		$art1.= "## ".$obj_peda->line[$i]->intitule."\n";
+		$art1.= "##	".$line->intitule."\n";
 	}
 	$art1.= $langs->trans('AgfConvArt1_5')."\n";
 	$art1.= $langs->trans('AgfConvArt1_6')."\n";
@@ -422,7 +422,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	else
 	{
 		$art7 = $langs->trans('AgfConvArt7_1');
-		$art7 .= $langs->trans('AgfConvArt7_2').' '.$conf->global->MAIN_INFO_SOCIETE_VILLE.".";
+		$art7 .= $langs->trans('AgfConvArt7_2').' '.$mysoc->town.".";
 	}
 
 	// Signature du client

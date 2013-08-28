@@ -227,7 +227,7 @@ class pdf_demo extends ModelePDFAgefodd
 
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
-				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
+				$this->str = $outputlangs->transnoentities($mysoc->url);
 				$this->width = $pdf->GetStringWidth($this->str);
 
 				// alignement du bord droit du container avec le haut de la page
@@ -338,7 +338,7 @@ class pdf_demo extends ModelePDFAgefodd
 		$pdf->SetDrawColor($this->color1[0], $this->color1[1], $this->color1[2]);
 		$pdf->Line ($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 
-		$this->str = $conf->global->MAIN_INFO_SOCIETE_NOM;
+		$this->str = $mysoc->name;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);//$pdf->SetFont('Arial','',9);
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->SetXY( $this->marge_gauche, $this->page_hauteur - 20);

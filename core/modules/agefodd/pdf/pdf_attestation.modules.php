@@ -320,7 +320,7 @@ class pdf_attestation extends ModelePDFAgefodd
 
 					// Mise en place du copyright
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',8);
-					$this->str = $outputlangs->transnoentities('copyright '.date("Y").' - '.$conf->global->MAIN_INFO_SOCIETE_NOM);
+					$this->str = $outputlangs->transnoentities('copyright '.date("Y").' - '.$mysoc->name);
 					$this->width = $pdf->GetStringWidth($this->str);
 					// alignement du bord droit du container avec le haut de la page
 					$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;

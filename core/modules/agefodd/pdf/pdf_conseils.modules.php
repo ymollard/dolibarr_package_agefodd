@@ -239,7 +239,7 @@ class pdf_conseils extends ModelePDFAgefodd
 
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',18);
-				$this->str = $outputlangs->transnoentities($conf->global->MAIN_INFO_SOCIETE_WEB);
+				$this->str = $outputlangs->transnoentities($mysoc->url);
 				$this->width = $pdf->GetStringWidth($this->str);
 
 				// alignement du bord droit du container avec le haut de la page

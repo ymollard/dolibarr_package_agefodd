@@ -1,6 +1,8 @@
 English Dolibarr ChangeLog
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
+For All:
+	- Fix : When generating convention Main company information missing
 
 ***** ChangeLog for 2.1.3 compared to 2.1.2 *****
 For Dev:
