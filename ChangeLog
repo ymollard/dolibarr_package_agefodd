@@ -4,9 +4,12 @@ English Dolibarr ChangeLog
 For All:
 	- Fix : When generating convention Main company information missing
 	- Fix : Bad PDF Conseil pratique display when using WYSIWYG on training
-	- Fix : Send Doc Welcome letter do not work
+	- Fix : Send Doc Welcome letter, convocation, courrier acceuil, conseil pratique did not work
 	- New : Add filter on training list
 	- New : New Session Export (can be use for BPF france)
+	- Fix : Create invoice process block with 
+	- Fix : Fix SQL upgrade bug (between 2.1.0 and 2.1.3 or 2.1.4) (no impact for orhter upgrade)
+
 
 ***** ChangeLog for 2.1.3 compared to 2.1.2 *****
 For Dev:

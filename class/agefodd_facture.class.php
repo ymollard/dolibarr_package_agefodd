@@ -232,13 +232,13 @@ class Agefodd_facture
 				$this->facid = $invoiceid;
 				$this->comid = $obj->fk_commande;
 				$this->propalid = $obj->fk_propal;
+				
+				$result=$this->update($user);
+				if ($result < 0) {
+					return -1;
+				}
 			}
 			$this->db->free($resql);
-			
-			$result=$this->update($user);
-			if ($result < 0) {
-				return -1;
-			}
 			
 		}
 		else

@@ -748,7 +748,7 @@ if (! empty ( $id )) {
 				
 				// Trainee List
 				$agf_trainnee = new Agefodd_session_stagiaire ( $db );
-				$agf_trainnee->Agefodd_session_stagiaire ( $agf->id, $socid );
+				$agf_trainnee->fetch_stagiaire_per_session ( $agf->id, $socid );
 				foreach ( $agf_trainnee->lines as $line ) {
 					if (! empty ( $line->email ) && (! empty ( $line->fk_socpeople ))) {
 						if (! array_key_exists ( $line->fk_socpeople, $withto )) {
@@ -781,8 +781,8 @@ if (! empty ( $id )) {
 				$formmail->withfile = 2;
 				
 				// Trainee List
-				$agf_trainnee = new Agsession ( $db );
-				$agf_trainnee->Agefodd_session_stagiaire ( $agf->id, $socid );
+				$agf_trainnee = new Agefodd_session_stagiaire ( $db );
+				$agf_trainnee->fetch_stagiaire_per_session ( $agf->id, $socid );
 				foreach ( $agf_trainnee->lines as $line ) {
 					if (! empty ( $line->email ) && (! empty ( $line->fk_socpeople ))) {
 						if (! array_key_exists ( $line->fk_socpeople, $withto )) {

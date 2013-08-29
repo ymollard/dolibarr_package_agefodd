@@ -445,7 +445,7 @@ function document_send_line($intitule, $level=2, $mdle, $socid=0, $nom_courrier=
 	{
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
-		$filename = 'conseils_'.$idform.'.pdf';
+		$filename = 'conseils_'.$id.'.pdf';
 		$file = $conf->agefodd->dir_output . '/' .$filename;
 		if(file_exists($file)) {
 			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=presend_conseils&mode=init"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> '.$langs->trans('SendMail').'</a>';
