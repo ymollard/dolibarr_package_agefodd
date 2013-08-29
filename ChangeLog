@@ -9,6 +9,7 @@ For All:
 	- New : New Session Export (can be use for BPF france)
 	- Fix : Create invoice process block with 
 	- Fix : Fix SQL upgrade bug (between 2.1.0 and 2.1.3 or 2.1.4) (no impact for orhter upgrade)
+	- Upgrade : Dutch language file upgrade
 
 
 ***** ChangeLog for 2.1.3 compared to 2.1.2 *****
