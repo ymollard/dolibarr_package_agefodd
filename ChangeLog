@@ -6,6 +6,7 @@ For All:
 	- Fix : Bad PDF Conseil pratique display when using WYSIWYG on training
 	- Fix : Send Doc Welcome letter do not work
 	- New : Add filter on training list
+	- New : New Session Export (can be use for BPF france)
 
 ***** ChangeLog for 2.1.3 compared to 2.1.2 *****
 For Dev:
