@@ -671,10 +671,11 @@ class FormAgefodd extends Form {
 	 *
 	 * @param string $htmlname control HTML
 	 * @param int $selectval selectionner par defaut
+	 * @param int $showempty Show Empty
 	 * @return string HTML control
 	 */
-	function select_type_session($htmlname, $selectval) {
-		return $this->selectarray ( $htmlname, $this->type_session_def, $selectval, 0 );
+	function select_type_session($htmlname, $selectval, $showempty=0) {
+		return $this->selectarray ( $htmlname, $this->type_session_def, $selectval, $showempty );
 	}
 	
 	/**

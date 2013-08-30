@@ -637,10 +637,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
-	print '<td>'.$formAgefodd->select_formation(GETPOST('foration','int'), 'formation','intitule',1).'</a></td></tr>';
+	print '<td>'.$formAgefodd->select_formation(GETPOST('foration','int'), 'formation','intitule',1).'</td></tr>';
 
 	print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
-	print '<td>'.$formAgefodd->select_type_session('type_session',0).'</a></td></tr>';
+	print '<td>'.$formAgefodd->select_type_session('type_session',0).'</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfSessionCommercial").'</span></td>';
 	print '<td>';
@@ -759,7 +759,7 @@ else
 					print '</td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
-					print '<td>'.$formAgefodd->select_type_session('type_session',$agf->type_session).'</a></td></tr>';
+					print '<td>'.$formAgefodd->select_type_session('type_session',$agf->type_session).'</td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
 					print '<td>'.$agf->formref.'</td></tr>';

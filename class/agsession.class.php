@@ -1529,8 +1529,10 @@ class Agsession extends CommonObject {
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = '') {
 		global $langs;
 		
-		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " c.intitule, c.ref,s.nb_subscribe_min,";
+		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, ";
+		$sql .= " s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, ";
+		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
 		$sql .= " p.ref_interne";
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid,";
@@ -1614,6 +1616,7 @@ class Agsession extends CommonObject {
 					$line->datef = $this->db->jdate ( $obj->datef );
 					$line->intitule = $obj->intitule;
 					$line->ref = $obj->ref;
+					$line->training_ref_interne=$obj->trainingrefinterne;
 					$line->ref_interne = $obj->ref_interne;
 					$line->color = $obj->color;
 					$line->nb_stagiaire = $obj->nb_stagiaire;

@@ -56,7 +56,9 @@ $search_training_ref = GETPOST ( "search_training_ref", 'alpha' );
 $search_start_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_start_datemonth', 'int' ), GETPOST ( 'search_start_dateday', 'int' ), GETPOST ( 'search_start_dateyear', 'int' ) );
 $search_end_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_end_datemonth', 'int' ), GETPOST ( 'search_end_dateday', 'int' ), GETPOST ( 'search_end_dateyear', 'int' ) );
 $search_site = GETPOST ( "search_site" );
-
+$search_training_ref_interne = GETPOST('search_training_ref_interne','alpha');
+$search_type_session=GETPOST ( "search_type_session",'int' );
+print 
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 
@@ -69,6 +71,8 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_start_date = "";
 	$search_end_date = "";
 	$search_site = "";
+	$search_training_ref_interne="";
+	$search_type_session="";
 }
 
 $filter = array ();
@@ -96,6 +100,13 @@ if (! empty ( $search_site ) && $search_site != - 1) {
 if (! empty ( $search_order ) && $search_order != - 1) {
 	$filter ['s.fk_session_place'] = $search_order;
 }
+if (! empty ( $search_training_ref_interne )) {
+	$filter ['c.ref_interne'] = $search_training_ref_interne;
+}
+if ($search_type_session!='' && $search_type_session != - 1) {
+	$filter ['s.type_session'] = $search_type_session;
+}
+print '$search_type_session='.$search_type_session;
 
 if (empty ( $sortorder ))
 	$sortorder = "DESC";
@@ -179,7 +190,9 @@ if ($resql != - 1) {
 	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfFormateur" ), $_SERVER ['PHP_SELF'], "", "", "&arch=" . $arch, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Ref" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfFormTypeSession" ), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
@@ -239,6 +252,14 @@ if ($resql != - 1) {
 	
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="20">';
+	print '</td>';
+	
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="20">';
+	print '</td>';
+	
+	print '<td class="liste_titre">';
+	print $formAgefodd->select_type_session('search_type_session',$search_type_session ,1);
 	print '</td>';
 	
 	print '<td class="liste_titre">';
@@ -305,6 +326,8 @@ if ($resql != - 1) {
 			print '</td>';
 			print '<td>' . stripslashes ( dol_trunc ( $line->intitule, 60 ) ) . '</td>';
 			print '<td>' . $line->ref . '</td>';
+			print '<td>' . $line->training_ref_interne . '</td>';
+			print '<td>' .($line->type_session ? $langs->trans ( 'AgfFormTypeSessionInter' ) : $langs->trans ( 'AgfFormTypeSessionIntra' )). '</td>';
 			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
@@ -335,6 +358,8 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
+			print '<td></td>';
+			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
