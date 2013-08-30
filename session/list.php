@@ -106,7 +106,6 @@ if (! empty ( $search_training_ref_interne )) {
 if ($search_type_session!='' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
 }
-print '$search_type_session='.$search_type_session;
 
 if (empty ( $sortorder ))
 	$sortorder = "DESC";
