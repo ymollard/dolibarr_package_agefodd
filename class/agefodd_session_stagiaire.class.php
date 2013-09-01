@@ -363,12 +363,10 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$this->fk_agefodd_stagiaire_type = $this->db->escape(trim($this->fk_agefodd_stagiaire_type));
 	
 		// Check parameters
-		// Put here code to add control on parameters values
-		// Check parameters
 		// Put here code to add control on parameters value
 		if (!$conf->global->AGF_USE_STAGIAIRE_TYPE)
 		{
-			$this->stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
+			$this->fk_agefodd_stagiaire_type=$conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
 		}
 	
 		// Update request
