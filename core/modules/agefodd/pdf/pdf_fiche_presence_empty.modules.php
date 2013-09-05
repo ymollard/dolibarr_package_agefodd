@@ -302,7 +302,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2').' « '.$mysoc->name.' »,'. $outputlangs->transnoentities('AgfPDFFichePres3').' ';
 		$this->str.= $mysoc->address.' ';
 		$this->str.= $mysoc->zip.' '.$mysoc->town;
-		$this->str.=$outputlangs->transnoentities('AgfPDFFichePres4').' '.AGF_ORGANISME_REPRESENTANT.",\n";
+		$this->str.=$outputlangs->transnoentities('AgfPDFFichePres4').' '.$conf->global->AGF_ORGANISME_REPRESENTANT.",\n";
 		$this->str.=$outputlangs->transnoentities('AgfPDFFichePres5');
 		$pdf->MultiCell(0,4, $outputlangs->convToOutputCharset($this->str),0,'C');
 		$hauteur = dol_nboflines_bis($this->str,50)*2;
