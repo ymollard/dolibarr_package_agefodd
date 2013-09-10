@@ -61,10 +61,10 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		if ($agfsta->update($user) > 0)
 		{
 			$redirect=true;
-			if ($agf->fetch($agf->sessid)) {
+			if ($agf->fetch(GETPOST('sessid','int'))) {
 
 				// TODO : si session inter => ajout des infos OPCA dans la table
-				if ($result && $agf->type_session == 1) {
+				if ($agf->type_session == 1) {
 
 					/*
 					 *  Test si les infos existent déjà
@@ -238,6 +238,10 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer)
 					$action='edit_subrogation';
 				}
 			}
+		}
+		else
+		{
+			setEventMessage($agf->error,'errors');
 		}
 	}
 }
