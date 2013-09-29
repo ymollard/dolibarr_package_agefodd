@@ -4,6 +4,9 @@ English Dolibarr ChangeLog
 For All:
 	- New : Add session type into session list 
 	- Fix : bugs_agefodd #1050 - Error when update trainee without using type
+	- Fix : Update certificate with numbering rule always increment it
+	- Fix : Field label Training internal ref vs ref
+	- Fix : Use of Agefodd contact select list do not work.
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
 For All:

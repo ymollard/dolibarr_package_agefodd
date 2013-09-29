@@ -251,7 +251,7 @@ if (!empty($id))
 				$defaultref='';
 				$obj = empty($conf->global->AGF_CERTIF_ADDON)?'mod_agefoddcertif_simple':$conf->global->AGF_CERTIF_ADDON;
 				$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
-				if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel))
+				if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel) && (empty($agf_certif->certif_code)))
 				{
 					$agf_training = new Agefodd($db);
 					$agf_training->fetch($agf->formid);
@@ -288,7 +288,7 @@ if (!empty($id))
 				print '<td>'."\n";
 				if ($user->rights->agefodd->modifier)
 				{
-					print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="certif_save" alt="'.$langs->trans("AgfModSave").'" ">';
+					print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="certif_save" alt="'.$langs->trans("Save").'" ">';
 				}
 				print '</td>';
 				print '</form>';
@@ -333,12 +333,12 @@ if (!empty($id))
 				print '<td>';
 				if ($user->rights->agefodd->modifier)
 				{
-					print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="certif_edit" alt="'.$langs->trans("AgfModSave").'">';
+					print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="certif_edit" alt="'.$langs->trans("Modify").'">';
 				}
 				print '&nbsp;';
 				if ($user->rights->agefodd->creer)
 				{
-					print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="certif_remove" alt="'.$langs->trans("AgfModSave").'">';
+					print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="certif_remove" alt="'.$langs->trans("Delete").'">';
 				}
 				print '</td>';
 

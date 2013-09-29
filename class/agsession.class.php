@@ -1793,7 +1793,7 @@ class Agsession extends CommonObject {
 		print '<tr><td>' . $langs->trans ( "AgfFormIntitule" ) . '</td>';
 		print '<td><a href="' . dol_buildpath ( '/agefodd/training/card.php', 1 ) . '?id=' . $this->fk_formation_catalogue . '">' . $this->formintitule . '</a></td></tr>';
 		
-		print '<tr><td>' . $langs->trans ( "AgfFormCodeInterne" ) . '</td>';
+		print '<tr><td>' . $langs->trans ( "AgfFormRef" ) . '</td>';
 		print '<td>' . $this->formref . '</td></tr>';
 		
 		// Type de la session

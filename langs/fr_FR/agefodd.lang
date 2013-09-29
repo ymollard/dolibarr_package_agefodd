@@ -760,3 +760,4 @@ AgfTrainerLastname=Nom Formateur
 AgfTrainerCivFirstname=Prenom formateur
 AgfStaLastname=Participant nom
 AgfStaFirstname=Participant prenom
+AgfFormRef=Référence formation

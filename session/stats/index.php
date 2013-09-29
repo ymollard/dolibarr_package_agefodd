@@ -23,11 +23,11 @@
  *  \brief      Page des stats factures
  */
 
-
+/*
 error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('html_errors', false);
-
+*/
 $res=@include("../../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -84,6 +84,8 @@ $stats = new SessionStats($db, $socid, $mode, ($userid>0?$userid:0),($training_i
 // Build graphic number of object
 // $data = array(array('Lib',val1,val2,val3),...)
 $data = $stats->getNbByMonthWithPrevYear($endyear,$startyear);
+
+//dol_syslog(var_export($data,true));
 
 $filenamenb = $dir."/sessionsnbinyear-".$year.".png";
 

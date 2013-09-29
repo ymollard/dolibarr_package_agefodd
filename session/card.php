@@ -761,7 +761,7 @@ else
 					print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
 					print '<td>'.$formAgefodd->select_type_session('type_session',$agf->type_session).'</td></tr>';
 
-					print '<tr><td>'.$langs->trans("AgfFormCodeInterne").'</td>';
+					print '<tr><td>'.$langs->trans("AgfFormRef").'</td>';
 					print '<td>'.$agf->formref.'</td></tr>';
 
 					print '<tr><td>'.$langs->trans("Color").'</td>';

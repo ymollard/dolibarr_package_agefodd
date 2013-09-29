@@ -385,7 +385,7 @@ class FormAgefodd extends Form {
 		
 		$sql = "SELECT";
 		$sql .= " c.rowid, ";
-		$sql .= " s.name, s.firstname, s.civilite, ";
+		$sql .= " s.lastname, s.firstname, s.civilite, ";
 		$sql .= " soc.nom as socname";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_contact as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON c.fk_socpeople = s.rowid";
