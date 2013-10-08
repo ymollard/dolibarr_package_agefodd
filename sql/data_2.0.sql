@@ -36,3 +36,4 @@ INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, pos
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030007, 'AC_AGF_CLOT', 'agefodd', 'Send dossier cloture by mail', 'agefodd', 1, NULL, 70);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030008, 'AC_AGF_CONSE', 'agefodd', 'Send Advise document by mail', 'agefodd', 1, NULL, 80);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030009, 'AC_AGF_ACCUE', 'agefodd', 'Send welcome document by mail', 'agefodd', 1, NULL, 90);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030010, 'AC_AGF_SESST', 'agefodd', 'Link to Training for trainer', 'agefodd', 1, NULL, 15);

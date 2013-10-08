@@ -312,6 +312,7 @@ AgfClotureSentByEmail=End training documents send by email
 AgfAgendaModuleNedeed=Module Diaries Dolibarr is nedeed
 AgfAgendaModuleUse=Create Event in Diaries on calendar session creation
 AgfAgendaUseForTrainer=Enable time management for trainers
+AgfTrainerCostHour=Cost by hour
 AgfCoutDeplacement=Transfert cost
 AgfRegInt=Internal Rules
 AgfDeleteRegint=Delete Internal Rules

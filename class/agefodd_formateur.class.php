@@ -38,9 +38,9 @@ class Agefodd_teacher extends CommonObject
 	var $table_element='agefodd_formateur';
 	var $id;
 	var $type_trainer_def=array();
-	
+
 	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	
+
 
 	var $entity;
 	var $fk_socpeople;
@@ -123,7 +123,7 @@ class Agefodd_teacher extends CommonObject
 			{
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-					
+
 				//// Call triggers
 				//include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				//$interface=new Interfaces($this->db);
@@ -199,6 +199,7 @@ class Agefodd_teacher extends CommonObject
 				//trainer is Dolibarr contact
 				elseif ($this->type_trainer==$this->type_trainer_def[1]) {
 					$this->spid = $obj->spid;
+					$this->fk_socpeople = $obj->fk_socpeople;
 					$this->name = $obj->sp_name;
 					$this->firstname = $obj->sp_firstname;
 					$this->civilite = $obj->sp_civilite;
@@ -263,9 +264,9 @@ class Agefodd_teacher extends CommonObject
 				while( $i < $num)
 				{
 					$obj = $this->db->fetch_object($resql);
-						
+
 					$line = new AgfTrainerLine();
-						
+
 					$line->id = $obj->rowid;
 					$line->type_trainer = $obj->type_trainer;
 					$line->archive = $obj->archive;
@@ -291,7 +292,7 @@ class Agefodd_teacher extends CommonObject
 						$line->phone_mobile = $obj->sp_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
 					}
-						
+
 					$this->lines[$i]=$line;
 					$i++;
 				}
