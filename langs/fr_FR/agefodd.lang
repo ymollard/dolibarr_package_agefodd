@@ -311,6 +311,7 @@ AgfFichePedaSentByEMail=Fiche pédagogique envoyée par courriel
 AgfClotureSentByEmail=Dossier de clôture envoyé par courriel
 AgfAgendaModuleNedeed=Pour activer l'option Agenda le module Agenda de Dolibarr doit être activée
 AgfAgendaModuleUse=Création d'un événement dans l'agenda Dolibarr lier avec les creneaux horaire des sessions
+AgfAgendaUseForTrainer=Activer la gestion du temps des formateurs
 AgfCoutDeplacement=Coût du déplacement
 AgfRegInt=Règlement intérieur
 AgfDeleteRegint=Suppression du règlement intérieur

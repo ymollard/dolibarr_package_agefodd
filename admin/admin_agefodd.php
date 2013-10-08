@@ -227,7 +227,16 @@ if ($action == 'setvarother')
 	else {
 		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda,'chaine',0,'',$conf->entity);
 	}
+	if (! $res > 0) $error++;
 
+	$use_trainer_agenda=GETPOST('AGF_DOL_TRAINER_AGENDA','alpha');
+	if ($use_trainer_agenda && !$conf->global->MAIN_MODULE_AGENDA) {
+		setEventMessage($langs->trans("AgfAgendaModuleNedeed"),'errors');
+		$error++;
+	}
+	else {
+		$res = dolibarr_set_const($db, 'AGF_DOL_TRAINER_AGENDA', $use_trainer_agenda,'chaine',0,'',$conf->entity);
+	}
 	if (! $res > 0) $error++;
 
 	$logo_client=GETPOST('AGF_USE_LOGO_CLIENT','alpha');
@@ -285,7 +294,7 @@ if ($action == 'setvarother')
 	$useWISIYGtraining=GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING','alpha');
 	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
-	
+
 	$usesessiontraineeauto=GETPOST('AGF_SESSION_TRAINEE_STATUS_AUTO','alpha');
 	$res = dolibarr_set_const($db, 'AGF_SESSION_TRAINEE_STATUS_AUTO', $usesessiontraineeauto,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
@@ -626,7 +635,7 @@ print '</table><br>';
 if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 
 	require_once('../class/agefodd_stagiaire_certif.class.php');
-	
+
 	// Agefodd Certification numbering module
 	print_titre($langs->trans("AgfAdminCertifNumber"));
 	print '<br>';
@@ -1038,6 +1047,21 @@ print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
+
+// Active la gestion du temps formateur
+print '<tr class="pair"><td>'.$langs->trans("AgfAgendaUseForTrainer").'</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_DOL_TRAINER_AGENDA');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_DOL_TRAINER_AGENDA",$arrval,$conf->global->AGF_DOL_TRAINER_AGENDA);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
 
 // use ajax combo box for contact
 print '<tr class="impair">';
