@@ -104,7 +104,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->intitule = GETPOST('intitule','alpha');
 		$agf->ref_obj = GETPOST('ref','alpha');
 		$agf->ref_interne = GETPOST('ref_interne','alpha');
-		$agf->duree = GETPOST('duree','int');
+		$agf->duree = intval(GETPOST('duree','int'));
 		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
 		$agf->fk_c_category =GETPOST('categid','int');

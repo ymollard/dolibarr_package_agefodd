@@ -313,12 +313,13 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
-
-		// Dictionnaries
+		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = (object) array();
 			$conf->agefodd->enabled=0; // This is to avoid warnings
 		}
+		
+		// Dictionnaries
 		$this->dictionnaries=array(
 		'langs'=>'agefodd@agefodd',
 		'tabname'=>array(MAIN_DB_PREFIX."agefodd_stagiaire_type", MAIN_DB_PREFIX."agefodd_certificate_type", MAIN_DB_PREFIX."agefodd_formation_catalogue_type"),		// List of tables we want to see into dictonnary editor
