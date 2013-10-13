@@ -1035,7 +1035,7 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE)
 }
 
 //Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
-print '<tr class="pair"><td>'.$langs->trans("AgfAgendaModuleUse").'</td>';
+print '<tr class="impair"><td>'.$langs->trans("AgfAgendaModuleUse").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
 	print ajax_constantonoff('AGF_DOL_AGENDA');
@@ -1152,7 +1152,7 @@ if (!empty($conf->global->AGF_MANAGE_OPCA))
 
 
 // Update global variable AGF_FCKEDITOR_ENABLE_TRAINING
-print '<tr class="pair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
+print '<tr class="impair"><td>'.$langs->trans("AgfUseWISIWYGTraining").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
 	print ajax_constantonoff('AGF_FCKEDITOR_ENABLE_TRAINING');
