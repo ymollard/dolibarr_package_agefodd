@@ -136,7 +136,36 @@ class InterfaceAgefodd
 					}
 				}
 			}
-			
+			if ($object->type_code=='AC_AGF_SESST') {
+
+				$action = new ActionComm($this->db);
+				$result = $action->fetch($object->id);
+
+				if ($result != -1) {
+
+					if ($object->id == $action->id) {
+
+						$agf_cal = new Agefoddsessionformateurcalendrier($this->db);
+						$result = $agf_cal->fetch_by_action($action->id);
+						if ($result != -1) {
+
+							$dt_array =  getdate($action->datep);
+							$agf_cal->date_session = dol_mktime(0,0,0,$dt_array['mon'],$dt_array['mday'],$dt_array['year']);
+							$agf_cal->heured = $action->datep;
+							$agf_cal->heuref = $action->datef;
+
+							$result = $agf_cal->update($user,1);
+
+							if ($result == -1) {
+								dol_syslog(get_class($this)."::run_trigger ".$agf_cal->error, LOG_ERR);
+								return -1;
+							}
+						}
+					}
+				}
+			}
+
+
 			return 1;
 		}
 		// Envoi fiche pédago par mail
@@ -354,16 +383,16 @@ class InterfaceAgefodd
 		if ($action == 'AGSESSION_UPDATE') {
 			// Change Trainning session actino if needed
 			require_once(DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php');
-				
+
 			$actioncomm = new ActionComm($this->db);
 			$actioncomm->getActions(0, $object->id, 'agefodd_agsession');
-				
+
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-				
+
 			$agftraincat= new Agefodd($this->db);
 			$agftraincat->fetch($object->fk_formation_catalogue);
-				
-				
+
+
 			$num = count($actioncomm->actions);
 			if ($num)
 			{
@@ -386,18 +415,18 @@ class InterfaceAgefodd
 			}
 
 			return 1;
-			
+
 		}elseif($action == 'CONTACT_MODIFY') {
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-				
+
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-				
+
 			//Find trainee link with this contact
 			$sql = "SELECT";
 			$sql.= " s.rowid,  s.fk_socpeople";
 			$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
 			$sql.= " WHERE s.fk_socpeople=".$object->id;
-				
+
 			dol_syslog('interface_modAgefodd_Agefodd.class.php: $sql='.$sql, LOG_DEBUG);
 			$resql=$this->db->query($sql);
 			if ($resql)
@@ -405,7 +434,7 @@ class InterfaceAgefodd
 				if ($this->db->num_rows($resql))
 				{
 					$sta=new Agefodd_stagiaire($this->db);
-						
+
 					$obj = $this->db->fetch_object($resql);
 
 					$sta->id=$obj->rowid;
@@ -419,13 +448,13 @@ class InterfaceAgefodd
 					$sta->mail=$object->email;
 					$sta->fk_socpeople=$object->id;
 					$sta->date_birth=$object->birthday;
-						
+
 					$result=$sta->update($user);
 					if ($result < 0)
 					{
 						$error ="Failed to update trainee : ".$sta->error." ";
 						$this->error=$error;
-							
+
 						dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
 						return -1;
 					}
@@ -438,102 +467,102 @@ class InterfaceAgefodd
 				return -1;
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		}
 		elseif($action == 'BILL_CREATE') {
-			
+
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-			
+
 			dol_include_once('/agefodd/class/agefodd_facture.class.php');
-			
+
 			$object->fetchObjectLinked();
-			
+
 			foreach($object->linkedObjects as $objecttype => $objectslinked)
 			{
 
 				if ($objectslinked[0]->element=='propal' || $objectslinked[0]->element=='commande') {
-					
+
 					$agf_fin=new Agefodd_facture($this->db);
 
 					$result= $agf_fin->update_invoice($user, $objectslinked[0]->id, $objectslinked[0]->element, $object->id);
-					
+
 					if ($result < 0)
 					{
 						$error ="Failed to update agefodd invoice link : ".$agf_fin->error." ";
 						$this->error=$error;
-							
+
 						dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
 						return -1;
 					}
 				}
-				
+
 			}
-			
+
 			return 1;
-			
+
 		}
 		elseif($action == 'PROPAL_CLOSE_SIGNED') {
-				
+
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-				
+
 			dol_include_once('/agefodd/class/agefodd_facture.class.php');
 			$agf_fin=new Agefodd_facture($this->db);
 			$agf_fin->fetch_fac_by_id($object->id,'prop');
-				
-			
+
+
 			if (count($agf_fin->lines)>0) {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-				
+
 				$session_sta=new Agefodd_session_stagiaire($this->db);
 				$session_sta->fk_session_agefodd=$agf_fin->lines[0]->fk_session;
 				$session_sta->update_status_by_soc($user,0,$object->socid,2);
 			}
-			
+
 			return 1;
-				
+
 		}
 		elseif($action == 'PROPAL_CLOSE_REFUSED') {
-		
+
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-				
+
 			dol_include_once('/agefodd/class/agefodd_facture.class.php');
 			$agf_fin=new Agefodd_facture($this->db);
 			$agf_fin->fetch_fac_by_id($object->id,'prop');
-				
-			
+
+
 			if (count($agf_fin->lines)>0) {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-				
+
 				$session_sta=new Agefodd_session_stagiaire($this->db);
 				$session_sta->fk_session_agefodd=$agf_fin->lines[0]->fk_session;
 				$session_sta->update_status_by_soc($user,0,$object->socid,6);
 			}
-			
+
 			return 1;
-		
+
 		}
 		elseif($action == 'PROPAL_REOPEN') {
-		
+
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
-		
+
 			dol_include_once('/agefodd/class/agefodd_facture.class.php');
 			$agf_fin=new Agefodd_facture($this->db);
 			$agf_fin->fetch_fac_by_id($object->id,'prop');
-		
-				
+
+
 			if (count($agf_fin->lines)>0) {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-		
+
 				$session_sta=new Agefodd_session_stagiaire($this->db);
 				$session_sta->fk_session_agefodd=$agf_fin->lines[0]->fk_session;
 				$session_sta->update_status_by_soc($user,0,$object->socid,0);
 			}
-				
+
 			return 1;
-		
-		}		
-		
+
+		}
+
 		return 0;
 	}
 }
