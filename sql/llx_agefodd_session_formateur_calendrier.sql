@@ -20,12 +20,13 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur_calendrier (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
+  entity integer NOT NULL DEFAULT 1,
   fk_agefodd_session_formateur integer NOT NULL,
   date_session date NOT NULL,
   heured datetime NOT NULL,
   heuref datetime NOT NULL,
   trainer_cost real NULL,
-  fk_actioncomm int DEFAULT NULL,
+  fk_actioncomm integer DEFAULT NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,

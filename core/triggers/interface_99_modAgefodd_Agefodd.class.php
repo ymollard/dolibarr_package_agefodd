@@ -101,6 +101,7 @@ class InterfaceAgefodd
 	{
 		dol_include_once('/comm/action/class/actioncomm.class.php');
 		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+		dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 		// Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
 
@@ -153,6 +154,7 @@ class InterfaceAgefodd
 							$agf_cal->date_session = dol_mktime(0,0,0,$dt_array['mon'],$dt_array['mday'],$dt_array['year']);
 							$agf_cal->heured = $action->datep;
 							$agf_cal->heuref = $action->datef;
+							$agf_cal->trainer_cost=$agf_cal->trainer_cost;
 
 							$result = $agf_cal->update($user,1);
 

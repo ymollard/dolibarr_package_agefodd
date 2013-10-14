@@ -764,3 +764,4 @@ AgfStaLastname=Participant nom
 AgfStaFirstname=Participant prenom
 AgfFormRef=Référence formation
 AgfFinSession= Date de fin de session
+ActionAC_AGF_SESST=Session de formation des formateurs

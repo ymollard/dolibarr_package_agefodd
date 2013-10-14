@@ -93,7 +93,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		// Check parameters
 		// Put here code to add control on parameters values
 
-		if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+		if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 			$result = $this->createAction($user);
 			if ($result <= 0){
 				$error++; $this->errors[]="Error ".$this->db->lasterror();
@@ -245,7 +245,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
     	global $langs;
 
     	$sql = "SELECT";
-    	$sql.= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur ";
+    	$sql.= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost ";
     	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as s";
     	$sql.= " WHERE s.fk_actioncomm = ".$actionid;
 
@@ -262,6 +262,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
     			$this->heured = $this->db->jdate($obj->heured);
     			$this->heuref = $this->db->jdate($obj->heuref);
     			$this->sessid = $obj->fk_agefodd_session;
+    			$this->trainer_cost = $obj->trainer_cost;
     			$this->fk_actioncomm = $obj->fk_actioncomm;
     		}
     		$this->db->free($resql);

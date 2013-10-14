@@ -155,7 +155,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINING_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Search Training with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -163,7 +163,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINER_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Search Trainer with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -171,7 +171,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_TRAINEE_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Search Trainee with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -179,7 +179,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_SITE_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Search site with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -187,7 +187,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_STAGTYPE_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Search stagiaire type with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -195,7 +195,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_CONTACT_USE_SEARCH_TO_SELECT";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Search contact with combobox';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -220,7 +220,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_DOL_AGENDA";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -228,7 +228,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_USE_FAC_WITHOUT_ORDER";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Can link invocie without order to session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -310,6 +310,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Manage subcription status by propal/order status';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_DOL_TRAINER_AGENDA";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Manage time by session for trainer';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 

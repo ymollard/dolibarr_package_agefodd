@@ -20,7 +20,7 @@
 --
 -- Contraintes pour la table llx_agefodd_session_formateur_calendrier
 --
-ALTER TABLE llx_agefodd_session_formateur_calendrier ADD CONSTRAINT llx_agefodd_session_formateur_ibfk_1 FOREIGN KEY (fk_agefodd_session_formateur) REFERENCES llx_agefodd_session_formateur (rowid);
+ALTER TABLE llx_agefodd_session_formateur_calendrier ADD CONSTRAINT llx_agefodd_session_formateur_calendrier_ibfk_1 FOREIGN KEY (fk_agefodd_session_formateur) REFERENCES llx_agefodd_session_formateur (rowid);
 ALTER TABLE llx_agefodd_session_formateur_calendrier ADD INDEX fk_agefodd_session_formateur_sta (fk_agefodd_session_formateur);
 ALTER TABLE llx_agefodd_session_formateur_calendrier ADD INDEX fk_actioncomm_sta (fk_actioncomm);
 ALTER TABLE llx_agefodd_session_formateur_calendrier ADD INDEX fk_user_author_sta (fk_user_author);

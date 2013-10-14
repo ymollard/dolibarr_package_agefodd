@@ -498,7 +498,7 @@ if (!empty($id))
 								print '</td>';
 
 								// Coût horaire
-								print '<td width="20%"> <input type="text" size="10" name="trainer_cost" value="'.price2num($calendrier->lines[$i]->trainer_cost).'"/></td>';
+								print '<td width="20%"> <input type="text" size="10" name="trainer_cost" value="'.price($calendrier->lines[$i]->trainer_cost).'"/>'.$langs->getCurrencySymbol($conf->currency).'</td>';
 
 								if ($user->rights->agefodd->modifier)
 								{
@@ -512,7 +512,7 @@ if (!empty($id))
 								print '</td>';
 
 								// Coût horaire
-								print '<td>'.$calendrier->lines[$j]->trainer_cost.'</td>';
+								print '<td>'.$calendrier->lines[$j]->trainer_cost.' '.$langs->getCurrencySymbol($conf->currency).'</td>';
 
 								print '<td width="30%;">';
 								if ($user->rights->agefodd->modifier)

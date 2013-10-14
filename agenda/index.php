@@ -78,7 +78,6 @@ if ($type == 'trainer') {
 	$canedit=0;
 	
 	$filter_trainer=$user->id;
-	print '$user->id='.$user->id;
 	
 	if (! $user->rights->agefodd->agendatrainer)
 		accessforbidden ();
@@ -488,6 +487,7 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 	$newparam = preg_replace ( '/month=[0-9]+&?/i', '', $newparam );
 	$newparam = preg_replace ( '/year=[0-9]+&?/i', '', $newparam );
 	$newparam = preg_replace ( '/viewcal=[0-9]+&?/i', '', $newparam );
+	$newparam = preg_replace ( '/type=trainer/i', '', $newparam );
 	$newparam .= '&viewcal=1';
 	echo '<table width="100%" class="nocellnopadd cal_month">';
 	echo ' <tr class="liste_titre">';
