@@ -118,7 +118,7 @@ class Agefodd_stagiaire extends CommonObject
 		$sql.= " ".(isset($this->civilite)?"'".$this->civilite."'":"null").", ";
 		$sql.= ' '.$user->id.", ";
 		$sql.= ' '.$user->id.", ";
-		$sql.= $this->db->idate(dol_now()).', ';
+		$sql.= "'".$this->db->idate(dol_now())."', ";
 		$sql.= " ".(isset($this->socid)?$this->db->escape($this->socid):"null").", ";
 		$sql.= " ".(isset($this->fonction)?"'".$this->fonction."'":"null").", ";
 		$sql.= " ".(isset($this->tel1)?"'".$this->tel1."'":"null").", ";

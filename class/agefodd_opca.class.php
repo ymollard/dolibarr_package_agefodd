@@ -128,9 +128,9 @@ class Agefodd_opca // extends CommonObject
 		$sql.= " ".(! isset($this->fk_socpeople_OPCA)?'NULL':"'".$this->fk_socpeople_OPCA."'").",";
 		$sql.= " ".(! isset($this->num_OPCA_soc)?'NULL':"'".$this->db->escape($this->num_OPCA_soc)."'").",";
 		$sql.= " ".(! isset($this->num_OPCA_file)?'NULL':"'".$this->db->escape($this->num_OPCA_file)."'").",";
-		$sql.= " ".(! isset($this->fk_user_author)?'NULL':"'".$this->fk_user_author."'").",";
-		$sql.= " ".(! isset($this->datec) || dol_strlen($this->datec)==0?'NULL':$this->db->idate($this->datec)).",";
-		$sql.= " ".(! isset($this->fk_user_mod)?'NULL':"'".$this->fk_user_mod."'").",";
+		$sql.= " ".$user->id.",";
+		$sql.= " '".$this->db->idate(dol_now())."',";
+		$sql.= " ".$user->id;
 
 
 		$sql.= ")";

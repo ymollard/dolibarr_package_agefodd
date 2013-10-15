@@ -34,7 +34,7 @@ class Agefodd_teacher extends CommonObject
 	var $db;
 	var $error;
 	var $errors=array();
-	var $element='agefodd';
+	var $element='agefodd_formateur';
 	var $table_element='agefodd_formateur';
 	var $id;
 	var $type_trainer_def=array();

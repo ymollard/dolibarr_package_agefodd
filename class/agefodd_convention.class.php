@@ -33,8 +33,8 @@ class Agefodd_convention
 	var $db;
 	var $error;
 	var $errors=array();
-	var $element='agefodd';
-	var $table_element='agefodd';
+	var $element='agefodd_convention';
+	var $table_element='agefodd_convention';
 	var $id;
 
 

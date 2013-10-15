@@ -32,7 +32,7 @@ class Agefodd extends CommonObject {
 	var $db;
 	var $error;
 	var $errors = array ();
-	var $element = 'agefodd';
+	var $element = 'agefodd_formation_catalogue';
 	var $table_element = 'agefodd_formation_catalogue';
 	
 	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
