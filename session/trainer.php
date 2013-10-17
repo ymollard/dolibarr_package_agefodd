@@ -453,7 +453,7 @@ if (!empty($id))
 				{
 					/* Time management */
 					$calendrier = new Agefoddsessionformateurcalendrier($db);
-					$calendrier->fetch_all($formateurs->lines[$i]->formid);
+					$calendrier->fetch_all($formateurs->lines[$i]->opsid);
 					$blocNumber = count($calendrier->lines);
 
 					if ($blocNumber < 1 && !(empty($newperiod)))
@@ -512,7 +512,7 @@ if (!empty($id))
 								print '</td>';
 
 								// Coût horaire
-								print '<td>'.$calendrier->lines[$j]->trainer_cost.' '.$langs->getCurrencySymbol($conf->currency).'</td>';
+								print '<td>'.price($calendrier->lines[$j]->trainer_cost,0,$langs).' '.$langs->getCurrencySymbol($conf->currency).'</td>';
 
 								print '<td width="30%;">';
 								if ($user->rights->agefodd->modifier)
