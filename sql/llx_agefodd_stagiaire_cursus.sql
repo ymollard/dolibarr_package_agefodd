@@ -17,7 +17,15 @@
 --
 -- ============================================================================
 --
--- Contraintes pour la table llx_agefodd_formation_cursus
-
-ALTER TABLE llx_agefodd_formation_cursus ADD CONSTRAINT llx_agefodd_formation_cursus_ibfk_1 FOREIGN KEY (fk_formation_catalogue) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
-ALTER TABLE llx_agefodd_formation_cursus ADD CONSTRAINT llx_agefodd_formation_cursus_ibfk_2 FOREIGN KEY (fk_cursus) REFERENCES llx_agefodd_cursus (rowid) ON DELETE CASCADE;
+-- Structure de la table llx_agefodd_stagiaire_cursus
+--
+CREATE TABLE IF NOT EXISTS llx_agefodd_stagaire_cursus (
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  entity integer NOT NULL DEFAULT 1,
+  fk_stagiaire integer NOT NULL,
+  fk_cursus integer NOT NULL,
+  fk_user_author integer NOT NULL,
+  datec datetime NOT NULL,
+  fk_user_mod integer NOT NULL,
+  tms timestamp NOT NULL
+) ENGINE=InnoDB;
