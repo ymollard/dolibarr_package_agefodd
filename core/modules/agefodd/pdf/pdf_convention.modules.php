@@ -35,6 +35,7 @@ require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
 
 class pdf_convention extends ModelePDFAgefodd
