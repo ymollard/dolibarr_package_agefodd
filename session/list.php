@@ -58,7 +58,6 @@ $search_end_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_end_datemonth', 'int'
 $search_site = GETPOST ( "search_site" );
 $search_training_ref_interne = GETPOST('search_training_ref_interne','alpha');
 $search_type_session=GETPOST ( "search_type_session",'int' );
-print 
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 

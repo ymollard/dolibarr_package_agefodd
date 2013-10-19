@@ -127,7 +127,6 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		}
 
 		$extrafields->setOptionalsFromPost($extralabels,$agf);
-		var_export($agf);
 		$result = $agf->update($user);
 
 		if ($result > 0)
