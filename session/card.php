@@ -166,6 +166,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
 		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
+		$agf->fk_product=GETPOST('productid','int');
 		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 			$agf->sourcecontactid = $agf->contactid;
 		}
@@ -644,7 +645,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfSessionCommercial").'</span></td>';
 	print '<td>';
-	$form->select_users(GETPOST('commercial','int'),'commercial',1, array(1));
+	$commercial=GETPOST('commercial','int');
+	$form->select_users((empty ( $commercial ) ? $user->id : $commercial),'commercial',1, array(1));
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfDateDebut").'</span></td><td>';
@@ -737,8 +739,11 @@ else
 				$other_amount .= '/'. $langs->trans('AgfInvoiceAmountWaiting').' '.$agf_fact->invoice_ongoing_amount.' '.$langs->trans('Currency'.$conf->currency);
 				$other_amount .= '/'. $langs->trans('AgfInvoiceAmountPayed').' '.$agf_fact->invoice_payed_amount.' '.$langs->trans('Currency'.$conf->currency).')';
 								
-				
-				// Display edit mode
+				/*
+				 * 
+				 * Display edit mode
+				 * 
+				 */
 				if ($action == 'edit')
 				{
 						
@@ -800,6 +805,10 @@ else
 
 					print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
 					print '<td>'.$agf->duree.'</td></tr>';
+					
+					print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
+					print $form->select_produits($agf->fk_product,'productid','',10000);
+					print "</td></tr>";
 
 					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
 					$form->select_date($agf->dated, 'dad','','','','update');

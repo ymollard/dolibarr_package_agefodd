@@ -130,16 +130,20 @@ class Agsession extends CommonObject {
 			$this->nb_place = trim ( $this->nb_place );
 		if (isset ( $this->notes ))
 			$this->notes = trim ( $this->notes );
+
 			
-			// Check parameters
-			// Put here code to add control on parameters values
+		// Check parameters
+		// Put here code to add control on parameters values
 		if (empty ( $this->nb_place ))
 			$this->nb_place = 0;
 			
-			// find the nb_subscribe_min of training to set it into session
+		// find the nb_subscribe_min of training to set it into session
 		$training = new Agefodd ( $this->db );
 		$training->fetch ( $this->fk_formation_catalogue );
 		$this->nb_subscribe_min = $training->nb_subscribe_min;
+		if (empty ($this->fk_product)) {
+			$this->fk_product = $training->fk_product;
+		}
 		
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session(";
@@ -155,7 +159,8 @@ class Agsession extends CommonObject {
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod,";
-		$sql .= "entity";
+		$sql .= "entity,";
+		$sql .= "fk_product";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset ( $this->fk_soc ) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
 		$sql .= " " . (! isset ( $this->fk_formation_catalogue ) ? 'NULL' : "'" . $this->fk_formation_catalogue . "'") . ",";
@@ -168,8 +173,9 @@ class Agsession extends CommonObject {
 		$sql .= " " . (! isset ( $this->nb_subscribe_min ) ? 'NULL' : $this->nb_subscribe_min) . ",";
 		$sql .= " " . $this->db->escape ( $user->id ) . ",";
 		$sql .= " '" . $this->db->idate ( dol_now () ) . "',";
-		$sql .= " " . $this->db->escape ( $user->id );
-		$sql .= ", " . $conf->entity;
+		$sql .= " " . $this->db->escape ( $user->id ). ",";
+		$sql .= " " . $conf->entity. ",";
+		$sql .= " " . ( empty ( $this->fk_product ) ? 'NULL' : $this->fk_product );
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -363,7 +369,6 @@ class Agsession extends CommonObject {
 		$sql .= " c.rowid as formid,";
 		$sql .= " c.ref as formref,";
 		$sql .= " c.duree,";
-		$sql .= " c.fk_product, ";
 		$sql .= " t.fk_session_place,";
 		$sql .= " t.nb_place,";
 		$sql .= " t.nb_stagiaire,";
@@ -395,6 +400,7 @@ class Agsession extends CommonObject {
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms,";
 		$sql .= " t.archive,";
+		$sql .= " t.fk_product,";
 		$sql .= " p.rowid as placeid, p.ref_interne as placecode,";
 		$sql .= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
 		$sql .= " com.fk_user_com as commercialid, ";
@@ -942,6 +948,8 @@ class Agsession extends CommonObject {
 			$this->num_OPCA_file = trim ( $this->num_OPCA_file );
 		if (isset ( $this->archive ))
 			$this->archive = trim ( $this->archive );
+		if (isset ( $this->fk_product ))
+			$this->fk_product = trim ( $this->fk_product );
 			
 			// Create or update line in session commercial table and get line number
 		$result = $this->setCommercialSession ( $this->commercialid, $user );
@@ -1003,7 +1011,8 @@ class Agsession extends CommonObject {
 			$sql .= " num_OPCA_soc=" . (isset ( $this->num_OPCA_soc ) ? "'" . $this->db->escape ( $this->num_OPCA_soc ) . "'" : "null") . ",";
 			$sql .= " num_OPCA_file=" . (isset ( $this->num_OPCA_file ) ? "'" . $this->db->escape ( $this->num_OPCA_file ) . "'" : "null") . ",";
 			$sql .= " fk_user_mod=" . $this->db->escape ( $user->id ) . ",";
-			$sql .= " archive=" . (isset ( $this->archive ) ? $this->archive : "0") . "";
+			$sql .= " archive=" . (isset ( $this->archive ) ? $this->archive : "0") . ",";
+			$sql .= " fk_product=" . (isset ( $this->fk_product ) ? $this->fk_product : "null") . "";
 			
 			$sql .= " WHERE rowid=" . $this->id;
 			
@@ -1781,6 +1790,7 @@ class Agsession extends CommonObject {
 		global $form, $langs;
 		
 		require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+		require_once(DOL_DOCUMENT_ROOT.'/product/class/product.class.php');
 		$extrafields = new ExtraFields($this->db);
 		$extralabels=$extrafields->fetch_name_optionals_label($this->table_element);
 		
@@ -1805,6 +1815,20 @@ class Agsession extends CommonObject {
 		
 		print '<tr><td>' . $langs->trans ( "AgfDuree" ) . '</td>';
 		print '<td>' . $this->duree . ' heure(s)</td></tr>';
+		
+		print '<tr><td>' . $langs->trans ( "AgfProductServiceLinked" ) . '</td>';
+		print '<td>';
+		 if (!empty($this->fk_product)) {
+			$product= new Product($this->db);
+			$result = $product->fetch($this->fk_product);
+			if ($result<0) {
+				setEventMessage($product->error,'errors');
+			}
+			print $product->getNomUrl(1).' - '.$product->label;
+		}
+
+		print "</td></tr>";
+		
 		
 		print '<tr><td>' . $langs->trans ( "AgfDateDebut" ) . '</td>';
 		print '<td>' . dol_print_date ( $this->dated, 'daytext' ) . '</td></tr>';

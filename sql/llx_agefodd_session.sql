@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   nb_stagiaire integer NULL,
   force_nb_stagiaire integer NULL,
   nb_subscribe_min integer NULL,
+  fk_product integer NULL,
   dated datetime default NULL,
   datef datetime default NULL,
   notes text NOT NULL,

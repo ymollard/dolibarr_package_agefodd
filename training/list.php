@@ -84,7 +84,7 @@ $form = new Form ( $db );
 
 $filter = array ();
 if (! empty ( $search_intitule )) {
-	$filter ['c.intitule'] = $search_intitule;
+	$filter ['c.intitule'] = $db->escape($search_intitule);
 }
 if (! empty ( $search_ref )) {
 	$filter ['c.ref'] = $search_ref;

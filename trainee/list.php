@@ -24,7 +24,6 @@
  *	\brief      list of trainee
 */
 
-
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -102,7 +101,7 @@ $formcompagny = new FormCompany($db);
 $agf = new Agefodd_stagiaire($db);
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
-if ($result>0)
+if ($result>=0)
 {
 
 	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER['PHP_SELF'],"", $sortfield, $sortorder,'', $result);
