@@ -320,6 +320,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Manage time by session for trainer';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_DEFAULT_SESSION_STATUS";
+		$this->const[$r][1] = "1";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Defaut status session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
@@ -733,13 +741,25 @@ class modAgefodd extends DolibarrModules
 		'target'=>'',
 		'user'=>0);
 		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
+		'type'=>'left',
+		'titre'=>'AgfMenuSessDraftList',
+		'url'=>'/agefodd/session/list.php?status=1',
+		'langs'=>'agefodd@agefodd',
+		'position'=>202,
+		'enabled'=>1,
+		'perms'=>'$user->rights->agefodd->lire',
+		'target'=>'',
+		'user'=>0);
+		$r++;
 
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessActList',
 		'url'=>'/agefodd/session/list.php',
 		'langs'=>'agefodd@agefodd',
-		'position'=>202,
+		'position'=>203,
 		'enabled'=>1,
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
@@ -751,7 +771,7 @@ class modAgefodd extends DolibarrModules
 		'titre'=>'AgfMenuSessArchList',
 		'url'=>'/agefodd/session/list.php?arch=1',
 		'langs'=>'agefodd@agefodd',
-		'position'=>203,
+		'position'=>204,
 		'enabled'=>1,
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
@@ -763,7 +783,7 @@ class modAgefodd extends DolibarrModules
 		'titre'=>'AgfMenuSessArchiveByYear',
 		'url'=>'/agefodd/session/archive_year.php',
 		'langs'=>'agefodd@agefodd',
-		'position'=>204,
+		'position'=>205,
 		'enabled'=>1,
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
@@ -790,6 +810,18 @@ class modAgefodd extends DolibarrModules
 		'position'=>207,
 		'enabled'=>'$user->rights->agefodd->viewstats',
 		'perms'=>'$user->rights->agefodd->viewstats',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
+		'type'=>'left',
+		'titre'=>'AgfMenuSessListOpe',
+		'url'=>'/agefodd/session/list_ope.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>208,
+		'enabled'=>1,
+		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
 		'user'=>0);
 		$r++;

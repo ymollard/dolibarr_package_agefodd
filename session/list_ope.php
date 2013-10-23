@@ -61,7 +61,6 @@ $search_training_ref_interne = GETPOST('search_training_ref_interne','alpha');
 $search_type_session=GETPOST ( "search_type_session",'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
-$status_view = GETPOST('status','int');
 
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
@@ -106,9 +105,6 @@ if (! empty ( $search_training_ref_interne )) {
 }
 if ($search_type_session!='' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
-}
-if (! empty ( $status_view )) {
-	$filter ['s.status'] = $status_view;
 }
 
 if (empty ( $sortorder ))

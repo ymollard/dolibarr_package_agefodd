@@ -356,8 +356,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
 
-
-
 		// Check parameters
 		// Put here code to add a control on parameters values
 
@@ -368,7 +366,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= " date_session=".(dol_strlen($this->date_session)!=0 ? "'".$this->db->idate($this->date_session)."'" : 'null').",";
 		$sql.= " heured=".(dol_strlen($this->heured)!=0 ? "'".$this->db->idate($this->heured)."'" : 'null').",";
 		$sql.= " heuref=".(dol_strlen($this->heuref)!=0 ? "'".$this->db->idate($this->heuref)."'" : 'null').",";
-		$sql.= " trainer_cost=".(isset($this->trainer_cost)?$this->trainer_cost:"null").",";
+		$sql.= " trainer_cost='".(isset($this->trainer_cost)?$this->trainer_cost:"null")."',";
 		$sql.= " fk_actioncomm=".(isset($this->fk_actioncomm)?$this->fk_actioncomm:"null").",";
 		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
 		$sql.= " datec=".(dol_strlen($this->datec)!=0 ? "'".$this->db->idate($this->datec)."'" : 'null').",";

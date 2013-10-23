@@ -79,7 +79,7 @@ print '<a href="'.$_SERVER['PHP_SELF'].'?arch='.$arch.'">'.$txt.'</a>'."\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"s.rowid",'',"&arch=".$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Name"),$_SERVER['PHP_SELF'],"s.name","", "&arch=".$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("Name"),$_SERVER['PHP_SELF'],"s.lastname","", "&arch=".$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Firstname"),$_SERVER['PHP_SELF'],"s.firstname","","&arch=".$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfCivilite"),$_SERVER['PHP_SELF'],"s.civilite","","&arch=".$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Phone"),$_SERVER['PHP_SELF'],"s.phone","","&arch=".$arch,'',$sortfield,$sortorder);

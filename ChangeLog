@@ -9,6 +9,8 @@ For All:
 	- Fix : Use of Agefodd contact select list do not work.
 	- New : Add trainer time management
 	- New : Add product link to session (copied from training is defined)
+	- New : Add session status (and default status in administration)
+	- New : Add menu session in draft status
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
 For All:

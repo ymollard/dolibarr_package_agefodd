@@ -89,6 +89,9 @@ class Agsession extends CommonObject {
 	var $formref;
 	var $duree;
 	var $nb_subscribe_min;
+	var $status;
+	var $statuscode;
+	var $statuslib;
 	
 	/**
 	 * Constructor
@@ -130,6 +133,9 @@ class Agsession extends CommonObject {
 			$this->nb_place = trim ( $this->nb_place );
 		if (isset ( $this->notes ))
 			$this->notes = trim ( $this->notes );
+		if (isset ( $this->status ))
+			$this->status = trim ( $this->status );
+		if (empty($this->status)) $this->status=$conf->global->AGF_DEFAULT_SESSION_STATUS;
 
 			
 		// Check parameters
@@ -160,7 +166,8 @@ class Agsession extends CommonObject {
 		$sql .= "datec,";
 		$sql .= "fk_user_mod,";
 		$sql .= "entity,";
-		$sql .= "fk_product";
+		$sql .= "fk_product,";
+		$sql .= "status";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset ( $this->fk_soc ) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
 		$sql .= " " . (! isset ( $this->fk_formation_catalogue ) ? 'NULL' : "'" . $this->fk_formation_catalogue . "'") . ",";
@@ -175,7 +182,8 @@ class Agsession extends CommonObject {
 		$sql .= " '" . $this->db->idate ( dol_now () ) . "',";
 		$sql .= " " . $this->db->escape ( $user->id ). ",";
 		$sql .= " " . $conf->entity. ",";
-		$sql .= " " . ( empty ( $this->fk_product ) ? 'NULL' : $this->fk_product );
+		$sql .= " " . ( empty ( $this->fk_product ) ? 'NULL' : $this->fk_product ). ",";
+		$sql .= " " . (! isset ( $this->status ) ? 'NULL' : "'" . $this->db->escape ( $this->status ) . "'");
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -401,6 +409,7 @@ class Agsession extends CommonObject {
 		$sql .= " t.tms,";
 		$sql .= " t.archive,";
 		$sql .= " t.fk_product,";
+		$sql .= " t.status,dictstatus.intitule as statuslib, dictstatus.code as statuscode,";
 		$sql .= " p.rowid as placeid, p.ref_interne as placecode,";
 		$sql .= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
 		$sql .= " com.fk_user_com as commercialid, ";
@@ -432,6 +441,8 @@ class Agsession extends CommonObject {
 		$sql .= " ON t.fk_soc_OPCA = socOPCA.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
 		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
+		$sql .= " ON t.status = dictstatus.rowid";
 		$sql .= " WHERE t.rowid = " . $id;
 		$sql .= " AND t.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
@@ -496,6 +507,14 @@ class Agsession extends CommonObject {
 				$this->sourcecontactid = $obj->sourcecontactid;
 				$this->contactid = $obj->contactid;
 				$this->archive = $obj->archive;
+				$this->status = $obj->status;
+				$this->statuscode = $obj->statuscode;
+				if ($obj->statuslib==$langs->trans('AgfStatusSession_'.$obj->statuscode)) {
+					$label=stripslashes ( $obj->statuslib );
+				}else {
+					$label=$langs->trans('AgfStatusSession_'.$obj->statuscode);
+				}
+				$this->statuslib = $label;
 			}
 			$this->db->free ( $resql );
 			
@@ -950,6 +969,8 @@ class Agsession extends CommonObject {
 			$this->archive = trim ( $this->archive );
 		if (isset ( $this->fk_product ))
 			$this->fk_product = trim ( $this->fk_product );
+		if (isset ( $this->status ))
+			$this->status = trim ( $this->status );
 			
 			// Create or update line in session commercial table and get line number
 		$result = $this->setCommercialSession ( $this->commercialid, $user );
@@ -1012,7 +1033,8 @@ class Agsession extends CommonObject {
 			$sql .= " num_OPCA_file=" . (isset ( $this->num_OPCA_file ) ? "'" . $this->db->escape ( $this->num_OPCA_file ) . "'" : "null") . ",";
 			$sql .= " fk_user_mod=" . $this->db->escape ( $user->id ) . ",";
 			$sql .= " archive=" . (isset ( $this->archive ) ? $this->archive : "0") . ",";
-			$sql .= " fk_product=" . (isset ( $this->fk_product ) ? $this->fk_product : "null") . "";
+			$sql .= " fk_product=" . (isset ( $this->fk_product ) ? $this->fk_product : "null") . ",";
+			$sql .= " status=" . (isset ( $this->status ) ? $this->status : "null") . "";
 			
 			$sql .= " WHERE rowid=" . $this->id;
 			
@@ -1538,7 +1560,7 @@ class Agsession extends CommonObject {
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = '') {
 		global $langs;
 		
-		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, ";
+		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
@@ -1563,6 +1585,8 @@ class Agsession extends CommonObject {
 		$sql .= " ON sf.fk_session = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
+		$sql .= " ON s.status = dictstatus.rowid";
 		
 		if ($arch == 2) {
 			$sql .= " WHERE s.archive = 0";
@@ -1589,7 +1613,7 @@ class Agsession extends CommonObject {
 				}
 			}
 		}
-		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid";
 		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		if (! empty ( $limit )) {
@@ -1635,6 +1659,13 @@ class Agsession extends CommonObject {
 					$line->nb_prospect = $obj->nb_prospect;
 					$line->nb_confirm = $obj->nb_confirm;
 					$line->nb_cancelled = $obj->nb_cancelled;
+					
+					if ($obj->statuslib==$langs->trans('AgfStatusSession_'.$obj->code)) {
+						$label=stripslashes ( $obj->statuslib );
+					}else {
+						$label=$langs->trans('AgfStatusSession_'.$obj->code);
+					}
+					$line->status_lib=$obj->statuscode.' - '.$label;
 					
 					$this->lines [$i] = $line;
 					$i ++;
@@ -1872,6 +1903,9 @@ class Agsession extends CommonObject {
 		
 		print '<tr><td>' . $langs->trans ( "AgfNbMintarget" ) . '</td><td>';
 		print $this->nb_subscribe_min . '</td></tr>';
+		
+		print '<tr><td>' . $langs->trans ( "AgfStatusSession" ) . '</td><td>';
+		print $this->statuslib . '</td></tr>';
 		
 		if (! empty($extrafields->attribute_label))
 		{
@@ -2570,6 +2604,8 @@ class AgfSessionLine {
 	var $nb_prospect;
 	var $nb_confirm;
 	var $nb_cancelled;
+	var $statuslib;
+	var $statuscode;
 	function __construct() {
 		return 1;
 	}

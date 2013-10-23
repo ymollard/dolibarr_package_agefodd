@@ -561,6 +561,63 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 * Display select of session status from dictionnary
+	 *
+	 * @param int $selectid Id 
+	 * @param string $htmlname Name of HTML control
+	 * @param string $filter SQL part for filter
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+		global $conf, $langs;
+	
+		$sql = "SELECT t.rowid, t.code ,t.intitule ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
+		if (! empty ( $filter )) {
+			$sql .= ' WHERE ' . $filter;
+		}
+		$sql .= " ORDER BY t.sort";
+	
+		dol_syslog ( get_class ( $this ) . "::select_session_status sql=" . $sql, LOG_DEBUG );
+		$result = $this->db->query ( $sql );
+		if ($result) {
+				
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value=""></option>';
+			$num = $this->db->num_rows ( $result );
+			$i = 0;
+			if ($num) {
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object ( $result );
+					if ($obj->intitule==$langs->trans('AgfStatusSession_'.$obj->code)) {
+						$label=stripslashes ( $obj->intitule );
+					}else {
+						$label=$langs->trans('AgfStatusSession_'.$obj->code);
+					}
+						
+					if ($selectid > 0 && $selectid == $obj->rowid) {
+						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+			$this->db->free ( $result );
+			return $out;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::select_session_status " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
+	
+	/**
 	 * Display list of training category
 	 *
 	 * @param int $selectid Id de la session selectionner

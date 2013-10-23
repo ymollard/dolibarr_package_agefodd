@@ -158,12 +158,8 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 
 			$agf_cal->sessid = GETPOST('sessid','int');
 			$agf_cal->fk_agefodd_session_formateur = GETPOST('fk_agefodd_session_formateur','int');
-
-			$agf_cal->trainer_cost = GETPOST('trainer_cost','alpha');
-
+			$agf_cal->trainer_cost = price(GETPOST('trainer_cost','alpha'));
 			$agf_cal->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-
-
 
 			//From calendar selection
 			$heure_tmp_arr = array();
@@ -231,7 +227,7 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 		if(!empty($date_session)) 		$agf_cal->date_session = $date_session;
 		if(!empty($heured)) 			$agf_cal->heured = $heured;
 		if(!empty($heuref)) 			$agf_cal->heuref =  $heuref;
-		if(!empty($trainer_cost)) 		$agf_cal->trainer_cost = $trainer_cost;
+		if(!empty($trainer_cost)) 		$agf_cal->trainer_cost = price($trainer_cost);
 		if(!empty($fk_agefodd_session_formateur))
 			$agf_cal->fk_agefodd_session_formateur = $fk_agefodd_session_formateur;
 
@@ -433,7 +429,17 @@ if (!empty($id))
 
 		if ($nbform < 1)
 		{
-			print '<td style="text-decoration: blink;">'.$langs->trans("AgfNobody").'</td></tr>';
+			print '<td style="text-decoration: blink;"><BR><BR>'.$langs->trans("AgfNobody").'</td></tr>';
+			print '<table style="border:0;" width="100%">';
+			print '<tr><td align="right">';
+			print '<form name="newform" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+			print '<input type="hidden" name="action" value="edit">'."\n";
+			print '<input type="hidden" name="newform" value="1">'."\n";
+			print '<input type="submit" class="butAction" value="'.$langs->trans("AgfFormateurAdd").'">';
+			print '</td></tr>';
+			print '</form>';
+			print '</table>';
 		}
 		else
 		{
@@ -552,16 +558,13 @@ if (!empty($id))
 						}
 						else
 						{
-
 							if($action =="edit_calendrier" && GETPOST('rowf') == $formateurs->lines[$i]->formid)
 							{
-
-
 								print '<form name="period_formateur_update_'.($i + 1).'" action="'.$_SERVER['PHP_SELF'].'?action=edit_calendrier&id='.$id.'"  method="POST">'."\n";
 								print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 								print '<input type="hidden" name="action" value="edit_calendrier">'."\n";
 								print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-								print '<input type="hidden" name="fk_agefodd_session_formateur" value="'.$formateurs->lines[$i]->formid.'">'."\n";
+								print '<input type="hidden" name="fk_agefodd_session_formateur" value="'.$formateurs->lines[$i]->opsid.'">'."\n";
 								print '<input type="hidden" name="periodid" value="'.$calendrier->lines[$j]->stagerowid.'">'."\n";
 								print '<input type="hidden" id="datetmplday"   name="datetmplday"   value="'.dol_print_date($agf->dated, "%d").'">'."\n";
 								print '<input type="hidden" id="datetmplmonth" name="datetmplmonth" value="'.dol_print_date($agf->dated, "%m").'">'."\n";
@@ -588,7 +591,7 @@ if (!empty($id))
 
 								print '</tr>'."\n";
 
-								print '<tr><td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id='.$agf->id.'">'.$langs->trans('Back').'</a></td></tr>';
+								print '<tr><td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id='.$agf->id.'">'.$langs->trans('Cancel').'</a></td></tr>';
 
 								print '</form>';
 
@@ -619,7 +622,7 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 {
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->creer && $nbform >= 1)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}

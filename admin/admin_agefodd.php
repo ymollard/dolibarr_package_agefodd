@@ -157,6 +157,10 @@ if ($action == 'setvar')
 	$pref_val=GETPOST('AGF_ORGANISME_PREF','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val,'chaine',0,'',$conf->entity);
 	if (! $res > 0) $error++;
+	
+	$def_status=GETPOST('AGF_DEFAULT_SESSION_STATUS','alpha');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_SESSION_STATUS', $def_status,'chaine',0,'',$conf->entity);
+	if (! $res > 0) $error++;
 
 	$num_org=GETPOST('AGF_ORGANISME_NUM','alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_NUM', $num_org,'chaine',0,'',$conf->entity);
@@ -855,6 +859,15 @@ print '<td align="center">';
 print $form->textwithpicto('',$langs->trans("AgfInfoTamponHelp"),1,'help');
 
 print '</td></tr>';
+
+//Default session status
+print '<tr class="impair"><td>'.$langs->trans("AgfDefaultSessionStatus").'</td>';
+print '<td align="left">';
+print $formAgefodd->select_session_status($conf->global->AGF_DEFAULT_SESSION_STATUS,"AGF_DEFAULT_SESSION_STATUS",'t.active=1');
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
 
 print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
 print '</tr>';

@@ -329,20 +329,52 @@ class Agefodd_session_formateur
 	 */
 	function remove($id)
 	{
+		global $conf;
+
+		$this->db->begin();
+		
+		if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+			$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'actioncomm WHERE id IN ';
+			$sql .= '(SELECT fk_actioncomm FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier ';
+			$sql .= 'WHERE fk_agefodd_session_formateur='.$id.')';
+			
+			dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
+			$resql=$this->db->query ($sql);
+			if (! $resql) {
+				$error++; $this->errors[]="Error ".$this->db->lasterror();
+			}
+			
+			$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier ';
+			$sql .= 'WHERE fk_agefodd_session_formateur='.$id;
+				
+			dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
+			$resql=$this->db->query ($sql);
+			if (! $resql) {
+				$error++; $this->errors[]="Error ".$this->db->lasterror();
+			}
+		}
+		
+		
 		$sql  = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_session_formateur";
 		$sql .= " WHERE rowid = ".$id;
 
 		dol_syslog(get_class($this)."::remove sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query ($sql);
-
-		if ($resql)
+		// Commit or rollback
+		if ($error)
 		{
-			return 1;
+			foreach($this->errors as $errmsg)
+			{
+				dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+				$this->error.=($this->error?', '.$errmsg:$errmsg);
+			}
+			$this->db->rollback();
+			return -1*$error;
 		}
 		else
 		{
-			$this->error=$this->db->lasterror();
-			return -1;
+			$this->db->commit();
+			return 1;
 		}
 	}
 }

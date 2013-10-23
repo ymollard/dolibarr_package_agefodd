@@ -171,6 +171,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 			$agf->sourcecontactid = $agf->contactid;
 		}
 		$agf->notes = GETPOST('notes','alpha');
+		$agf->status = GETPOST('session_status','int');
 
 		$agf->cost_trainer = GETPOST('costtrainer','alpha');
 		$agf->cost_site = GETPOST('costsite','alpha');
@@ -463,7 +464,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		$agf->nb_place = GETPOST('nb_place','int');
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->nb_place = GETPOST('nb_place','int');
-		$agf->type_session = GETPOST('type_session','int');
+		$agf->status = GETPOST('session_status','int');
 
 		$agf->fk_soc = GETPOST('fk_soc','int');
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
@@ -696,6 +697,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.GETPOST('notes','aplha').'</textarea></td></tr>';
+	
+	print '<tr><td valign="top">'.$langs->trans("AgfStatusSession").'</td>';
+	print '<td>';
+	$defstat=GETPOST('AGF_DEFAULT_SESSION_STATUS');
+	if (empty($defstat)) $defstat=$conf->global->AGF_DEFAULT_SESSION_STATUS;
+	print $formAgefodd->select_session_status($defstat,"session_status",'t.active=1');
+	print '</td></tr>';
 
 	if (! empty($extrafields->attribute_label))
 	{
@@ -900,6 +908,11 @@ else
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 					print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';
+					
+					print '<tr><td valign="top">'.$langs->trans("AgfStatusSession").'</td>';
+					print '<td>';
+					print $formAgefodd->select_session_status($agf->status,"session_status",'t.active=1');
+					print '</td></tr>';
 					
 					print '</td></tr>';
 

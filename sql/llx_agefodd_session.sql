@@ -58,5 +58,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL,
   archive smallint NOT NULL DEFAULT 0,
+  status varchar(30) DEFAULT NULL,
   import_key varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB;

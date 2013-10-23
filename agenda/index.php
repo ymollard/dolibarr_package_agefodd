@@ -667,7 +667,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 	$curtime = dol_mktime ( 0, 0, 0, $month, $day, $year );
 	print '<table class="nobordernopadding" width="100%">';
 	print '<tr><td align="left" class="nowrap">';
-	print '<a href="' . DOL_URL_ROOT . '/comm/action/index.php?';
+	print '<a href="' . $_SERVER['PHP_SELF'];
 	print 'action=show_day&day=' . str_pad ( $day, 2, "0", STR_PAD_LEFT ) . '&month=' . str_pad ( $month, 2, "0", STR_PAD_LEFT ) . '&year=' . $year;
 	print $newparam;
 	print '">';
