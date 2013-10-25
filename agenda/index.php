@@ -25,9 +25,11 @@
  * \ingroup agefodd
  * \brief Home page of calendar events
  */
-$res=@include("../../main.inc.php");				// For root directory
-if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
-if (! $res) die("Include of main fails");
+$res = @include ("../../main.inc.php"); // For root directory
+if (! $res)
+	$res = @include ("../../../main.inc.php"); // For "custom" directory
+if (! $res)
+	die ( "Include of main fails" );
 
 require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
@@ -71,17 +73,16 @@ if (! $sortorder)
 if (! $sortfield)
 	$sortfield = "a.datec";
 
-
-$canedit=1;
+$canedit = 1;
 
 if ($type == 'trainer') {
-	$canedit=0;
+	$canedit = 0;
 	
-	$filter_trainer=$user->id;
+	$filter_trainer = $user->id;
 	
 	if (! $user->rights->agefodd->agendatrainer)
 		accessforbidden ();
-}else {
+} else {
 	if (! $user->rights->agefodd->agenda)
 		accessforbidden ();
 }
@@ -124,7 +125,7 @@ if (GETPOST ( "viewlist" )) {
 		$param .= '&' . $key . '=' . urlencode ( $val );
 	}
 	// print $param;
-	header ( "Location: " . DOL_URL_ROOT . '/comm/action/listactions.php?' . $param );
+	header ( "Location: " . dol_buildpath('/agefodd/agenda/listactions.php',1).'?' . $param );
 	exit ();
 }
 
@@ -294,7 +295,7 @@ if (! empty ( $filter_contact )) {
 }
 if (! empty ( $filter_trainer )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-	if ($type=='trainer') {
+	if ($type == 'trainer') {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ';
 	}
 }
@@ -348,12 +349,11 @@ if (! empty ( $filter_contact )) {
 }
 if (! empty ( $filter_trainer )) {
 	
-	if ($type=='trainer') {
+	if ($type == 'trainer') {
 		$sql .= " AND trainer.fk_user=" . $filter_trainer;
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
-	
 }
 
 // Sort on date
@@ -461,20 +461,12 @@ if (is_readable ( $color_file )) {
 }
 if (! is_array ( $theme_datacolor ))
 	$theme_datacolor = array (
-	array (
-	120,
-	130,
-	150 
-	),
-	array (
-	200,
-	160,
-	180 
-	),
-	array (
-	190,
-	190,
-	220 
+		array (
+		120,130,150 
+	),array (
+		200,160,180 
+	),array (
+		190,190,220 
 	) 
 	);
 
@@ -516,8 +508,8 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 				echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
 				show_day_events ( $db, $max_day_in_prev_month + $tmpday, $prev_month, $prev_year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam );
 				echo "  </td>\n";
-			} 			/* Show days of the current month */
-elseif ($tmpday <= $max_day_in_month) {
+			} elseif ($tmpday <= $max_day_in_month) {
+				/* Show days of the current month */
 				$curtime = dol_mktime ( 0, 0, 0, $month, $tmpday, $year );
 				
 				$style = 'cal_current_month';
@@ -534,8 +526,8 @@ elseif ($tmpday <= $max_day_in_month) {
 				echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
 				show_day_events ( $db, $tmpday, $month, $year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam );
 				echo "  </td>\n";
-			} 			/* Show days after the current month (next month) */
-else {
+			} else {
+				/* Show days after the current month (next month) */
 				$style = 'cal_other_month';
 				if ($iter_day == 6)
 					$style .= ' cal_other_month_right';
@@ -658,7 +650,8 @@ llxFooter ();
  * @return void
  */
 function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60) {
-	global $user, $conf, $langs;
+
+	global $user, $conf, $langs;	
 	global $filter, $filtera, $filtert, $filterd, $status;
 	global $theme_datacolor;
 	global $cachethirdparties, $cachecontacts, $colorindexused;
@@ -667,7 +660,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 	$curtime = dol_mktime ( 0, 0, 0, $month, $day, $year );
 	print '<table class="nobordernopadding" width="100%">';
 	print '<tr><td align="left" class="nowrap">';
-	print '<a href="' . $_SERVER['PHP_SELF'];
+	print '<a href="' . $_SERVER ['PHP_SELF'];
 	print 'action=show_day&day=' . str_pad ( $day, 2, "0", STR_PAD_LEFT ) . '&month=' . str_pad ( $month, 2, "0", STR_PAD_LEFT ) . '&year=' . $year;
 	print $newparam;
 	print '">';
@@ -874,9 +867,10 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					print '</div>';
 					$i ++;
 				} else {
-					print '<a href="' . DOL_URL_ROOT . '/comm/action/index.php?maxprint=0&month=' . $monthshown . '&year=' . $year;
+					print '<a href="' . $_SERVER['PHP_SELF'].'?month=' . $monthshown . '&year=' . $year;
 					print ($status ? '&status=' . $status : '') . ($filter ? '&filter=' . $filter : '');
-					print ($filtera ? '&filtera=' . $filtera : '') . ($filtert ? '&filtert=' . $filtert : '') . ($filterd ? '&filterd=' . $filterd : '');
+					$newparam = preg_replace ( '/maxprint=[0-9]+&?/i', 'maxprint=0', $newparam );
+					print $newparam;
 					print '">' . img_picto ( "all", "1downarrow_selected.png" ) . ' ...';
 					print ' +' . (count ( $eventarray [$daykey] ) - $maxprint);
 					print '</a>';
@@ -921,6 +915,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
  * @return string color
  */
 function dol_color_minus($color, $minus) {
+
 	$newcolor = $color;
 	$newcolor [0] = ((hexdec ( $newcolor [0] ) - $minus) < 0) ? 0 : dechex ( (hexdec ( $newcolor [0] ) - $minus) );
 	$newcolor [2] = ((hexdec ( $newcolor [2] ) - $minus) < 0) ? 0 : dechex ( (hexdec ( $newcolor [2] ) - $minus) );

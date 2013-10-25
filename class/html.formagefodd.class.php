@@ -336,7 +336,7 @@ class FormAgefodd extends Form {
 		$result = $this->db->query ( $sql );
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox ( $htmlname, $event );
+				$out .= ajax_combobox ( $htmlname, $event, 3 );
 			}
 			
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';

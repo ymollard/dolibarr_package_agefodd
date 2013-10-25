@@ -626,7 +626,7 @@ class Agsession extends CommonObject {
 		// Soc trainee
 		$sql = "SELECT";
 		$sql .= " DISTINCT so.rowid as socid,";
-		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca, so.nom as socname ";
+		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca, so.nom as socname, so.code_client ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -652,6 +652,7 @@ class Agsession extends CommonObject {
 					
 					$newline->sessid = $obj->rowid;
 					$newline->socname = $obj->socname;
+					$newline->code_client = $obj->code_client;
 					$newline->socid = $obj->socid;
 					$newline->type_session = $obj->type_session;
 					$newline->is_OPCA = $obj->is_opca;
@@ -2489,16 +2490,17 @@ class Agsession extends CommonObject {
 			
 			// multiprix
 			if (! empty ( $conf->global->PRODUIT_MULTIPRICES ) && ! empty ( $propal->client->price_level )) {
-				$pu_ht = $prod->multiprices [$propal->client->price_level];
-				$pu_ttc = $prod->multiprices_ttc [$propal->client->price_level];
-				$price_min = $prod->multiprices_min [$propal->client->price_level];
-				$price_base_type = $prod->multiprices_base_type [$propal->client->price_level];
+				$pu_ht = $product->multiprices [$propal->client->price_level];
+				$pu_ttc = $product->multiprices_ttc [$propal->client->price_level];
+				$price_min = $product->multiprices_min [$propal->client->price_level];
+				$price_base_type = $product->multiprices_base_type [$propal->client->price_level];
 			} else {
 				$pu_ht = $product->price;
 				$pu_ttc = $product->price_ttc;
 				$price_min = $product->price_min;
 				$price_base_type = $product->price_base_type;
 			}
+
 			
 			$propal->lines [0]->subprice = $pu_ht;
 			$propal->lines [0]->tva_tx = $tva_tx;
@@ -2545,6 +2547,7 @@ class AgfSocLine {
 	var $type_session;
 	var $is_OPCA;
 	var $fk_soc_OPCA;
+	var $code_client;
 	function __construct() {
 		return 1;
 	}

@@ -320,6 +320,18 @@ if (!empty($id))
 		$head = session_prepare_head($agf);
 
 		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
+		
+		//Put user on the right action block after reload
+		if (!empty($socid)) {
+			print '<script type="text/javascript">
+					jQuery(document).ready(function () {
+						jQuery(function() {
+							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;
+		    				 $(documentBody).animate({scrollTop: $("#socid'.$socid.'").offset().top}, 500,\'easeInOutCubic\');
+						});
+					});
+					</script> ';
+		}
 
 		/*
 		 * Confirm delete
@@ -419,7 +431,7 @@ if (!empty($id))
 
 				print '<tr class="liste_titre">'."\n";
 				print '<td colspan=3>';
-				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->lines[$i]->socid.'">'.$agf->lines[$i]->socname.'</a></td>'."\n";
+				print  '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$agf->lines[$i]->socid.'" name="socid'.$agf->lines[$i]->socid.'" id="socid'.$agf->lines[$i]->socid.'">'.$agf->lines[$i]->code_client.' - '.$agf->lines[$i]->socname.'</a></td>'."\n";
 				print '</tr>'."\n";
 
 				// Before training session

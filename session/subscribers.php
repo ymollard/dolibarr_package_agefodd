@@ -116,7 +116,7 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 		}
 		else
 		{
-			setEventMessage($agf->error,'errors');
+			setEventMessage($agfsta->error,'errors');
 		}
 	}
 
@@ -289,7 +289,7 @@ if (!empty($id))
 		print '&nbsp';
 
 		/*
-		 * Manage funding
+		 * Manage funding for intra enterprise
 		 */
 		if(!$agf->type_session > 0 && !empty($conf->global->AGF_MANAGE_OPCA))
 		{
@@ -381,6 +381,7 @@ if (!empty($id))
 						print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status',$stagiaires->lines[$i]->status_in_session);
 					} else  {
 						print $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session,4);
+						print '<input type="hidden" name="stagiaire_session_status" value="'.$stagiaires->lines[$i]->status_in_session.'">';
 					}
 					/*
 					 * Manage trainee Funding for inter-enterprise
