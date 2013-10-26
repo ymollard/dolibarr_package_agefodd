@@ -107,6 +107,9 @@ class Agefodd extends CommonObject {
 		
 		if (empty ( $this->duree ))
 			$this->duree = 0;
+		
+		if ($this->fk_c_category==-1)
+			$this->fk_c_category = 0;
 			
 			// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formation_catalogue(";
@@ -308,6 +311,10 @@ class Agefodd extends CommonObject {
 		$this->programme = $this->db->escape ( trim ( $this->programme ) );
 		$this->note1 = $this->db->escape ( trim ( $this->note1 ) );
 		$this->note2 = $this->db->escape ( trim ( $this->note2 ) );
+		
+		if ($this->fk_c_category==-1)
+			$this->fk_c_category = 0;
+		
 		$this->fk_c_category = $this->db->escape ( trim ( $this->fk_c_category ) );
 		
 		// Check parameters

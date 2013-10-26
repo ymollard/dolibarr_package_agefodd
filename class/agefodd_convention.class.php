@@ -118,7 +118,7 @@ class Agefodd_convention
 		$sql.= "'".$this->notes."', ";
 		$sql.= $user->id.', ';
 		$sql.= $user->id.', ';
-		$sql.= $this->db->idate(dol_now());
+		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ")";
 
 		$this->db->begin();
@@ -236,6 +236,7 @@ class Agefodd_convention
 		$sql.= " c.rowid, MAX(c.fk_agefodd_session) as sessid";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_convention as c";
 		$sql.= " WHERE c.fk_societe = ".$socid;
+		$sql.= " GROUP BY c.rowid";
 
 		dol_syslog(get_class($this)."::fetch_last_conv_per_socity sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);

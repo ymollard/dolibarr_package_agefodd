@@ -1,6 +1,6 @@
 # Language file - fr_FR - agefodd
 CHARSET=UTF-8
-Module103000Name=Gestion Formation
+Module103000Name=Formation
 Module103000Desc=Assistant de Gestion de la Formation dans Dolibarr
 Permission103001=Voir la gestion des formations
 Permission103002=Modifiée les formations
