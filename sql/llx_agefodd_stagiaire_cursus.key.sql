@@ -19,5 +19,6 @@
 --
 -- Contraintes pour la table llx_agefodd_formation_cursus
 
-ALTER TABLE llx_agefodd_stagiaire_cursus ADD CONSTRAINT llx_agefodd_stagiaire_cursus_ibfk_1 FOREIGN KEY (fk_formation_catalogue) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_stagiaire_cursus ADD CONSTRAINT llx_agefodd_stagiaire_cursus_ibfk_1 FOREIGN KEY (fk_cursus) REFERENCES llx_agefodd_cursus (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_stagiaire_cursus ADD CONSTRAINT llx_agefodd_stagiaire_cursus_ibfk_2 FOREIGN KEY (fk_stagiaire) REFERENCES llx_agefodd_stagiaire (rowid) ON DELETE CASCADE;
+

@@ -17,9 +17,9 @@
  */
 
 /**
- *  \file       agefodd/class/agefodd_formation_curus.class.php
+ *  \file       agefodd/class/agefodd_stagiaire_curus.class.php
  *  \ingroup    agefodd
- *  \brief      class to manage 'training program' link to training on agefodd module
+ *  \brief      class to manage 'training program' link to trainee on agefodd module
  */
 
 // Put here all includes required by your class file
@@ -31,26 +31,25 @@ require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 /**
  *	Put here description of your class
  */
-class Agefodd_formation_cursus extends CommonObject
+class Agefodd_stagiaire_cursus extends CommonObject
 {
 	var $db;							//!< To store db handler
 	var $error;							//!< To return error code (or message)
 	var $errors=array();				//!< To return several error codes (or messages)
-	var $element='agefodd_formation_cursus';			//!< Id that identify managed objects
-	var $table_element='agefodd_formation_cursus';		//!< Name of table without prefix where object is stored
+	var $element='agefodd_stagiaire_cursus';			//!< Id that identify managed objects
+	var $table_element='agefodd_stagiaire_cursus';		//!< Name of table without prefix where object is stored
 	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	
+
     var $id;
     
 	var $entity;
-	var $fk_formation_catalogue;
+	var $fk_stagiaire;
 	var $fk_cursus;
 	var $fk_user_author;
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
-	
-	var $lines=array();
 
     
 
@@ -81,8 +80,11 @@ class Agefodd_formation_cursus extends CommonObject
 
 		// Clean parameters
         
-		if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
+		
+		if (isset($this->fk_stagiaire)) $this->fk_stagiaire=trim($this->fk_stagiaire);
 		if (isset($this->fk_cursus)) $this->fk_cursus=trim($this->fk_cursus);
+		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
+		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
 
         
 
@@ -90,24 +92,24 @@ class Agefodd_formation_cursus extends CommonObject
 		// Put here code to add control on parameters values
 
         // Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_formation_cursus(";
+		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus(";
 		
 		$sql.= "entity,";
-		$sql.= "fk_formation_catalogue,";
+		$sql.= "fk_stagiaire,";
 		$sql.= "fk_cursus,";
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
-		$sql.= "fk_user_mod";
+		$sql.= "fk_user_mod,";
 
 		
         $sql.= ") VALUES (";
         
 		$sql.= " ".$conf->entity.",";
-		$sql.= " ".(! isset($this->fk_formation_catalogue)?'NULL':"'".$this->fk_formation_catalogue."'").",";
+		$sql.= " ".(! isset($this->fk_stagiaire)?'NULL':"'".$this->fk_stagiaire."'").",";
 		$sql.= " ".(! isset($this->fk_cursus)?'NULL':"'".$this->fk_cursus."'").",";
 		$sql.= " ".$user->id.",";
 		$sql.= " '".$this->db->idate(dol_now())."',";
-		$sql.= " ".$user->id;
+		$sql.= " ".$user->id.",";
 
         
 		$sql.= ")";
@@ -120,7 +122,7 @@ class Agefodd_formation_cursus extends CommonObject
 
 		if (! $error)
         {
-            $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_formation_cursus");
+            $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_stagiaire_cursus");
 
 			if (! $notrigger)
 			{
@@ -168,7 +170,7 @@ class Agefodd_formation_cursus extends CommonObject
 		$sql.= " t.rowid,";
 		
 		$sql.= " t.entity,";
-		$sql.= " t.fk_formation_catalogue,";
+		$sql.= " t.fk_stagiaire,";
 		$sql.= " t.fk_cursus,";
 		$sql.= " t.fk_user_author,";
 		$sql.= " t.datec,";
@@ -176,9 +178,8 @@ class Agefodd_formation_cursus extends CommonObject
 		$sql.= " t.tms";
 
 		
-        $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_cursus as t";
+        $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus as t";
         $sql.= " WHERE t.rowid = ".$id;
-        $sql .= " AND t.entity IN (" . getEntity ( 'agsession' ) . ")";
 
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
         $resql=$this->db->query($sql);
@@ -191,7 +192,7 @@ class Agefodd_formation_cursus extends CommonObject
                 $this->id    = $obj->rowid;
                 
 				$this->entity = $obj->entity;
-				$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
+				$this->fk_stagiaire = $obj->fk_stagiaire;
 				$this->fk_cursus = $obj->fk_cursus;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
@@ -227,8 +228,8 @@ class Agefodd_formation_cursus extends CommonObject
 
 		// Clean parameters
         
-		if (isset($this->entity)) $this->entity=trim($this->entity);
-		if (isset($this->fk_formation_catalogue)) $this->fk_formation_catalogue=trim($this->fk_formation_catalogue);
+		
+		if (isset($this->fk_stagiaire)) $this->fk_stagiaire=trim($this->fk_stagiaire);
 		if (isset($this->fk_cursus)) $this->fk_cursus=trim($this->fk_cursus);
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
@@ -239,10 +240,10 @@ class Agefodd_formation_cursus extends CommonObject
 		// Put here code to add a control on parameters values
 
         // Update request
-        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_formation_cursus SET";
+        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus SET";
         
 		$sql.= " entity=".$conf->entity.",";
-		$sql.= " fk_formation_catalogue=".(isset($this->fk_formation_catalogue)?$this->fk_formation_catalogue:"null").",";
+		$sql.= " fk_stagiaire=".(isset($this->fk_stagiaire)?$this->fk_stagiaire:"null").",";
 		$sql.= " fk_cursus=".(isset($this->fk_cursus)?$this->fk_cursus:"null").",";
 		$sql.= " fk_user_mod=".$user->id;
 
@@ -322,7 +323,7 @@ class Agefodd_formation_cursus extends CommonObject
 
 		if (! $error)
 		{
-    		$sql = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_formation_cursus";
+    		$sql = "DELETE FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus";
     		$sql.= " WHERE rowid=".$this->id;
 
     		dol_syslog(get_class($this)."::delete sql=".$sql);
@@ -362,7 +363,7 @@ class Agefodd_formation_cursus extends CommonObject
 
 		$error=0;
 
-		$object=new Agefoddformationcursus($this->db);
+		$object=new Agefoddstagiairecursus($this->db);
 
 		$this->db->begin();
 
@@ -415,7 +416,7 @@ class Agefodd_formation_cursus extends CommonObject
 		$this->id=0;
 		
 		$this->entity='';
-		$this->fk_formation_catalogue='';
+		$this->fk_stagiaire='';
 		$this->fk_cursus='';
 		$this->fk_user_author='';
 		$this->datec='';
@@ -424,82 +425,6 @@ class Agefodd_formation_cursus extends CommonObject
 
 		
 	}
-	
-	/**
-	 *  Load object in memory from database
-	 *
-	 *  @param	string $sortorder    Sort Order
-	 *  @param	string $sortfield    Sort field
-	 *  @param	int $limit    	offset limit
-	 *  @param	int $offset    	offset limit
-	 *  @param	int $arch    	archive
-	 *  @return int          	<0 if KO, >0 if OK
-	 */
-	function fetch_formation_per_cursus($sortorder, $sortfield, $limit, $offset ) {
-		global $langs;
-		
-		$sql = "SELECT";
-		$sql.= " t.rowid,";
-		
-		$sql.= " f.ref_interne,";
-		$sql.= " f.ref,";
-		$sql.= " f.entity,";
-		$sql.= " f.intitule,";
-		$sql.= " f.archive";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_cursus as t";
-		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_cursus as c ON t.fk_cursus=c.rowid";
-		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as f ON t.fk_formation_catalogue=f.rowid"; 
-		$sql.= " WHERE f.entity IN (".getEntity('agsession').") AND c.entity IN (".getEntity('agcursus').")";
-		$sql.= " AND fk_cursus=".$this->fk_cursus;
-		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
-		
-		dol_syslog(get_class($this)."::fetch_formation_per_cursus sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{	
-			$this->line = array();
-			$num = $this->db->num_rows($resql);
-		
-			while( $obj = $this->db->fetch_object($resql))
-			{
-				$line = new AgfCursusTrainingLine();
-		
-				$line->id    = $obj->rowid;
-		
-				$line->ref_interne = $obj->ref_interne;
-				$line->ref = $obj->ref;
-				$line->intitule = $obj->intitule;
-				$line->archive = $obj->archive;
-		
-				$this->lines[]=$line;
-
-			}
-			$this->db->free($resql);
-			return $num;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch_formation_per_cursus ".$this->error, LOG_ERR);
-			return -1;
-		}
-	}
 
 }
-
-Class AgfCursusTrainingLine {
-	
-	
-	var $id;
-	
-	var $ref_interne;
-	var $ref;
-	var $entity;
-	var $intitule;
-	var $archive;
-	
-	function __construct()
-	{
-		return 1;
-	}
-}
+?>

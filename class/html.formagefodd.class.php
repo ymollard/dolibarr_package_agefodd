@@ -56,7 +56,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string select field
 	 */
-	function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array()) {
+	function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
 		global $conf, $user, $langs;
 		
 		$out = '';
@@ -70,6 +70,10 @@ class FormAgefodd extends Form {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE archive = 0";
 		$sql .= " AND entity IN (" . getEntity ( 'agsession' ) . ")";
+		if (count($filters)>0) {
+			foreach($filters as $filter)
+				$sql .= $filter;
+		}
 		$sql .= " ORDER BY " . $order;
 		
 		dol_syslog ( get_class ( $this ) . "::select_formation sql=" . $sql, LOG_DEBUG );

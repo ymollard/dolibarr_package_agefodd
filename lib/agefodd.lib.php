@@ -287,6 +287,40 @@ function site_prepare_head($object)
 }
 
 /**
+ *  Return head table for program tabs screen
+ *
+ *  @param	object	$object        Current program
+ *  @return array      		   	 head table of tabs
+ */
+function cursus_prepare_head($object)
+{
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+
+	$head[$h][0] = dol_buildpath('/agefodd/cursus/card.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Card");
+	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath('/agefodd/cursus/traineelist.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfMenuActStagiaire");
+	$head[$h][2] = 'trainee';
+	$h++;
+
+	$head[$h][0] = dol_buildpath('/agefodd/cursus/info.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("Info");
+	$head[$h][2] = 'info';
+	$h++;
+
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_cursus');
+
+	return $head;
+}
+
+
+/**
  *  Return head table for admin tabs screen
  *
  *  @return array      		   	 head table of tabs

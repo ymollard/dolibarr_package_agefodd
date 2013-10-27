@@ -336,6 +336,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Add trainnee name when create order/proposal';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_MANAGE_CURSUS";
+		$this->const[$r][1] = "1";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'MAnage cursus';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
@@ -966,6 +974,43 @@ class modAgefodd extends DolibarrModules
 		'langs'=>'agefodd@agefodd',
 		'position'=>503,
 		'enabled'=>'$user->rights->agefodd->agendatrainer',
+		'perms'=>'$user->rights->agefodd->agendatrainer',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
+		'type'=>'left',
+		'titre'=>'AgfMenuCursus',
+		'leftmenu'=>'AgfMenuCursus',
+		'url'=>'/agefodd/cursus/list.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>601,
+		'enabled'=>'$conf->global->AGF_MANAGE_CURSUS',
+		'perms'=>'$user->rights->agefodd->lire',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCursus',
+		'type'=>'left',
+		'titre'=>'AgfMenuCursusList',
+		'url'=>'/agefodd/cursus/list.php',
+		'langs'=>'agefodd@agefodd',
+		'position'=>602,
+		'enabled'=>'$conf->global->AGF_MANAGE_CURSUS',
+		'perms'=>'$user->rights->agefodd->agenda',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCursus',
+		'type'=>'left',
+		'titre'=>'AgfMenuCursusNew',
+		'url'=>'/agefodd/cursus/card.php?action=create',
+		'langs'=>'agefodd@agefodd',
+		'position'=>603,
+		'enabled'=>'$conf->global->AGF_MANAGE_CURSUS',
 		'perms'=>'$user->rights->agefodd->agendatrainer',
 		'target'=>'',
 		'user'=>0);

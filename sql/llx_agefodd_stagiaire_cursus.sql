@@ -19,7 +19,7 @@
 --
 -- Structure de la table llx_agefodd_stagiaire_cursus
 --
-CREATE TABLE IF NOT EXISTS llx_agefodd_stagaire_cursus (
+CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_cursus (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   entity integer NOT NULL DEFAULT 1,
   fk_stagiaire integer NOT NULL,

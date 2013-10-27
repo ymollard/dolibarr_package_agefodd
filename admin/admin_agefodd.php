@@ -1208,6 +1208,21 @@ $form->textwithpicto('',$langs->trans("AgfAddTraineeNameIntoDocHelp"),1,'help');
 print '</td>';
 print '</tr>';
 
+// Update global variable AGF_MANAGE_CURSUS
+print '<tr class="pair"><td>'.$langs->trans("AgfManageCursus").'</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_MANAGE_CURSUS');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_MANAGE_CURSUS",$arrval,$conf->global->AGF_MANAGE_CURSUS);
+}
+print '</td>';
+print '<td align="center">';
+$form->textwithpicto('',$langs->trans("AgfManageCursusHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
 
 
 if (!$conf->use_javascript_ajax){

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_cursus (
   ref_interne varchar(80) NULL,
   entity integer NOT NULL DEFAULT 1,
   intitule varchar(80) NOT NULL,
+  archive smallint NOT NULL DEFAULT 0,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,

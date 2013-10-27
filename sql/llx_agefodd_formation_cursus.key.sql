@@ -21,3 +21,4 @@
 
 ALTER TABLE llx_agefodd_formation_cursus ADD CONSTRAINT llx_agefodd_formation_cursus_ibfk_1 FOREIGN KEY (fk_formation_catalogue) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_formation_cursus ADD CONSTRAINT llx_agefodd_formation_cursus_ibfk_2 FOREIGN KEY (fk_cursus) REFERENCES llx_agefodd_cursus (rowid) ON DELETE CASCADE;
+ALTER TABLE llx_agefodd_formation_cursus ADD UNIQUE INDEX uk_agefodd_formation_cursus (fk_formation_catalogue, fk_cursus);

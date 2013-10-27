@@ -45,14 +45,15 @@ class Agefodd_cursus extends CommonObject
 	var $ref_interne;
 	var $entity;
 	var $intitule;
+	var $archive;
 	var $fk_user_author;
 	var $datec='';
 	var $fk_user_mod;
 	var $note_private;
 	var $note_public;
 	var $tms='';
-
-    
+	
+	var $lines=array();
 
 
     /**
@@ -86,44 +87,55 @@ class Agefodd_cursus extends CommonObject
 		if (isset($this->note_private)) $this->note_private=trim($this->note_private);
 		if (isset($this->note_public)) $this->note_public=trim($this->note_public);
 
-        
-
 		// Check parameters
 		// Put here code to add control on parameters values
-
-        // Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_cursus(";
 		
-		$sql.= "ref_interne,";
-		$sql.= "entity,";
-		$sql.= "intitule,";
-		$sql.= "fk_user_author,";
-		$sql.= "datec,";
-		$sql.= "fk_user_mod,";
-		$sql.= "note_private,";
-		$sql.= "note_public,";
-
-		
-        $sql.= ") VALUES (";
+		if (empty($this->ref_interne)) {
+			$error++;
+			$this->errors[]=$langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv("AgfRefInterne"));
+		}
+		if (empty($this->intitule)) {
+			$error++;
+			$this->errors[]=$langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv("AgfIntitule"));
+		}
         
-		$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->db->escape($this->ref_interne)."'").",";
-		$sql.= " ".$conf->entity.",";
-		$sql.= " ".(! isset($this->intitule)?'NULL':"'".$this->db->escape($this->intitule)."'").",";
-		$sql.= " ".$user->id.",";
-		$sql.= " '".$this->db->idate(dol_now())."',";
-		$sql.= " ".$user->id.",";
-		$sql.= " ".(! isset($this->note_private)?'NULL':"'".$this->db->escape($this->note_private)."'").",";
-		$sql.= " ".(! isset($this->note_public)?'NULL':"'".$this->db->escape($this->note_public)."'");
-
-        
-		$sql.= ")";
-
-		$this->db->begin();
-
-	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
-        $resql=$this->db->query($sql);
-    	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-
+		if (!$error) {
+			
+	        // Insert request
+			$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_cursus(";
+			
+			$sql.= "ref_interne,";
+			$sql.= "entity,";
+			$sql.= "intitule,";
+			$sql.= "archive,";
+			$sql.= "fk_user_author,";
+			$sql.= "datec,";
+			$sql.= "fk_user_mod,";
+			$sql.= "note_private,";
+			$sql.= "note_public";
+	
+			
+	        $sql.= ") VALUES (";
+	        
+			$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->db->escape($this->ref_interne)."'").",";
+			$sql.= " ".$conf->entity.",";
+			$sql.= " ".(! isset($this->intitule)?'NULL':"'".$this->db->escape($this->intitule)."'").",";
+			$sql.= " ".(! isset($this->archive)?'0':$this->archive).",";
+			$sql.= " ".$user->id.",";
+			$sql.= " '".$this->db->idate(dol_now())."',";
+			$sql.= " ".$user->id.",";
+			$sql.= " ".(! isset($this->note_private)?'NULL':"'".$this->db->escape($this->note_private)."'").",";
+			$sql.= " ".(! isset($this->note_public)?'NULL':"'".$this->db->escape($this->note_public)."'");
+	
+	        
+			$sql.= ")";
+	
+			$this->db->begin();
+	
+		   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
+	        $resql=$this->db->query($sql);
+	    	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		}
 		if (! $error)
         {
             $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_cursus");
@@ -176,6 +188,7 @@ class Agefodd_cursus extends CommonObject
 		$sql.= " t.ref_interne,";
 		$sql.= " t.entity,";
 		$sql.= " t.intitule,";
+		$sql.= " t.archive,";
 		$sql.= " t.fk_user_author,";
 		$sql.= " t.datec,";
 		$sql.= " t.fk_user_mod,";
@@ -201,6 +214,7 @@ class Agefodd_cursus extends CommonObject
 				$this->ref_interne = $obj->ref_interne;
 				$this->entity = $obj->entity;
 				$this->intitule = $obj->intitule;
+				$this->archive = $obj->archive;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
@@ -242,30 +256,42 @@ class Agefodd_cursus extends CommonObject
 		if (isset($this->note_private)) $this->note_private=trim($this->note_private);
 		if (isset($this->note_public)) $this->note_public=trim($this->note_public);
 
-        
+        if (empty($this->ref_interne)) {
+        	$error++; 
+        	$this->errors[]=$langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv("AgfRefInterne"));
+        }
+        if (empty($this->intitule)) {
+        	$error++; 
+        	$this->errors[]=$langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv("AgfIntitule"));
+        }
 
-		// Check parameters
-		// Put here code to add a control on parameters values
 
-        // Update request
-        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_cursus SET";
-        
-		$sql.= " ref_interne=".(isset($this->ref_interne)?"'".$this->db->escape($this->ref_interne)."'":"null").",";
-		$sql.= " entity=".$conf->entity.",";
-		$sql.= " intitule=".(isset($this->intitule)?"'".$this->db->escape($this->intitule)."'":"null").",";
-		$sql.= " fk_user_mod=".$user->id.",";
-		$sql.= " note_private=".(isset($this->note_private)?"'".$this->db->escape($this->note_private)."'":"null").",";
-		$sql.= " note_public=".(isset($this->note_public)?"'".$this->db->escape($this->note_public)."'":"null");
+        if (! $error)
+        {
+			// Check parameters
+			// Put here code to add a control on parameters values
+	
+	        // Update request
+	        $sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_cursus SET";
+	        
+			$sql.= " ref_interne=".(isset($this->ref_interne)?"'".$this->db->escape($this->ref_interne)."'":"null").",";
+			$sql.= " entity=".$conf->entity.",";
+			$sql.= " intitule=".(isset($this->intitule)?"'".$this->db->escape($this->intitule)."'":"null").",";
+			$sql.= " archive=".(isset($this->archive)?$this->archive:"0").",";
+			$sql.= " fk_user_mod=".$user->id.",";
+			$sql.= " note_private=".(isset($this->note_private)?"'".$this->db->escape($this->note_private)."'":"null").",";
+			$sql.= " note_public=".(isset($this->note_public)?"'".$this->db->escape($this->note_public)."'":"null");
+	
+	        
+	        $sql.= " WHERE rowid=".$this->id;
+	
+			$this->db->begin();
+	
+			dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+	        $resql = $this->db->query($sql);
+	    	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 
-        
-        $sql.= " WHERE rowid=".$this->id;
-
-		$this->db->begin();
-
-		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
-        $resql = $this->db->query($sql);
-    	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
-
+        }
 		if (! $error)
 		{
 			if (! $notrigger)
@@ -413,6 +439,39 @@ class Agefodd_cursus extends CommonObject
 			return -1;
 		}
 	}
+	
+	function info($id)
+	{
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_cursus as p";
+		$sql.= " WHERE p.rowid = ".$id;
+	
+		dol_syslog(get_class($this)."::info sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			if ($this->db->num_rows($resql))
+			{
+				$obj = $this->db->fetch_object($resql);
+				$this->id = $obj->rowid;
+				$this->date_creation = $this->db->jdate($obj->datec);
+				$this->date_modification = $this->db->jdate($obj->tms);
+				$this->user_modification = $obj->fk_user_mod;
+				$this->user_creation = $obj->fk_user_author;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::info ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 
 	/**
@@ -437,5 +496,101 @@ class Agefodd_cursus extends CommonObject
 
 		
 	}
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    Sort Order
+	 *  @param	string $sortfield    Sort field
+	 *  @param	int $limit    	offset limit
+	 *  @param	int $offset    	offset limit
+	 *  @param	int $arch    	archive
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch=0)
+	{
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " t.rowid,";
+		
+		$sql.= " t.ref_interne,";
+		$sql.= " t.entity,";
+		$sql.= " t.intitule,";
+		$sql.= " t.archive,";
+		$sql.= " t.fk_user_author,";
+		$sql.= " t.datec,";
+		$sql.= " t.fk_user_mod,";
+		$sql.= " t.note_private,";
+		$sql.= " t.note_public,";
+		$sql.= " t.tms";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_cursus as t";
+		$sql.= " WHERE t.entity IN (".getEntity('agcursus').")";
+		if ($arch == 0 || $arch == 1) $sql.= " AND t.archive = ".$arch;
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+	
+		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+	
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+	
+			$i = 0;
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+	
+				$line = new AgfCursusLine();
+	
+				$line->id    = $obj->rowid;
+                
+				$line->ref_interne = $obj->ref_interne;
+				$line->entity = $obj->entity;
+				$line->intitule = $obj->intitule;
+				$line->archive = $obj->archive;
+				$line->fk_user_author = $obj->fk_user_author;
+				$line->datec = $this->db->jdate($obj->datec);
+				$line->fk_user_mod = $obj->fk_user_mod;
+				$line->note_private = $obj->note_private;
+				$line->note_public = $obj->note_public;
+				$line->tms = $this->db->jdate($obj->tms);
+	
+				$this->lines[$i]=$line;
+	
+				$i++;
+			}
+			$this->db->free($resql);
+			return $num;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
+}
+
+class AgfCursusLine {
+
+	var $id;
+    
+	var $ref_interne;
+	var $entity;
+	var $intitule;
+	var $archive;
+	var $fk_user_author;
+	var $datec='';
+	var $fk_user_mod;
+	var $note_private;
+	var $note_public;
+	var $tms='';
+
+	function __construct()
+	{
+		return 1;
+	}
 }
