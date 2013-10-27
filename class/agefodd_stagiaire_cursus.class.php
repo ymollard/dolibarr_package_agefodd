@@ -99,7 +99,7 @@ class Agefodd_stagiaire_cursus extends CommonObject
 		$sql.= "fk_cursus,";
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
-		$sql.= "fk_user_mod,";
+		$sql.= "fk_user_mod";
 
 		
         $sql.= ") VALUES (";
@@ -109,7 +109,7 @@ class Agefodd_stagiaire_cursus extends CommonObject
 		$sql.= " ".(! isset($this->fk_cursus)?'NULL':"'".$this->fk_cursus."'").",";
 		$sql.= " ".$user->id.",";
 		$sql.= " '".$this->db->idate(dol_now())."',";
-		$sql.= " ".$user->id.",";
+		$sql.= " ".$user->id;
 
         
 		$sql.= ")";
@@ -425,6 +425,123 @@ class Agefodd_stagiaire_cursus extends CommonObject
 
 		
 	}
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    Sort Order
+	 *  @param	string $sortfield    Sort field
+	 *  @param	int $limit    	offset limit
+	 *  @param	int $offset    	offset limit
+	 *  @param	int $arch    	archive
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset ) {
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " t.rowid,";
+	
+		$sql.= " so.rowid as socid, so.nom as socname,";
+		$sql.= " civ.code as civilitecode,";
+		$sql.= " sta.rowid as starowid, sta.nom, sta.prenom, sta.civilite, sta.fk_soc, sta.fonction,";
+		$sql.= " sta.fk_socpeople";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus as t";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_cursus as c ON t.fk_cursus=c.rowid";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sta ON t.fk_stagiaire=sta.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
+		$sql.= " ON sta.fk_soc = so.rowid";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_civilite as civ";
+		$sql.= " ON sta.civilite = civ.code";
+		
+		//Manage filter
+		if (!empty($filter)){
+			$addcriteria=false;
+			foreach($filter as $key => $value) {
+				if ($key=='civ.code') {
+					if ($addcriteria) {
+						$sql.= ' AND ';
+					}
+					$sqlwhere.= $key.' = \''.$value.'\'';
+					$addcriteria=true;
+				}
+				else {
+					if ($addcriteria) {
+						$sql.= ' AND ';
+					}
+					$sqlwhere.= $key.' LIKE \'%'.$value.'%\'';
+					$addcriteria=true;
+				}
+			}
+			if (!empty($sqlwhere))	{
+				$sql .= ' WHERE '. $sqlwhere;
+			}
+		}
+		else {
+			$sql.= " WHERE c.entity IN (".getEntity('agsession').")";
+		}
+		
+		
+		$sql.= " AND fk_cursus=".$this->fk_cursus;
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+		
+		dol_syslog(get_class($this)."::fetch_stagiaire_per_cursus sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+	
+			while( $obj = $this->db->fetch_object($resql))
+			{
+				$line = new AgfCursusTraineeLine();
+				
+				$line->id    = $obj->rowid;
+	
+				$line->starowid = $obj->starowid;
+				$line->socid = $obj->socid;
+				$line->socname = $obj->socname;
+				$line->civilitecode = $obj->civilitecode;
+				$line->nom = $obj->nom;
+				$line->prenom = $obj->prenom;
+				$line->civilite = $obj->civilite;	
+				
+				$line->nbsessdone = $obj->civilite;
+				$line->nbsessdoto = $obj->civilite;
+	
+				$this->lines[]=$line;
+	
+			}
+			$this->db->free($resql);
+			return $num;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_stagiaire_per_cursus ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 }
-?>
+
+Class AgfCursusTraineeLine {
+	
+	
+	var $id;
+	
+	var $socid;
+	var $socname;
+	var $civilitecode;
+	var $nom;
+	var $prenom;
+	var $civilite;
+	var $starowid;
+	var $nbsessdone;
+	var $nbsessdoto;
+	
+	function __construct()
+	{
+		return 1;
+	}
+}

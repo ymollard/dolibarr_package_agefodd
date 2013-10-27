@@ -788,3 +788,6 @@ AgfCacherCursusArchives=Masquer les cursus archivés
 AgfAddTraining=Ajouter la formation au cursus
 AgfRemoveTrainingCursus=Supprimer la formation du cursus
 AgfConfirmRemoveTrainingCursus=Etes vous sure de supprimer la formation du cursus
+AgfCursusParticipants=Participants aux cursus
+AgfSessionDoneInCursus=Nb. de session du cursus inscrit
+AgfSessionToDoInCursus=Nb. de session du cursus à programmer

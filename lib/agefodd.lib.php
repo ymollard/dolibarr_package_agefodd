@@ -304,7 +304,7 @@ function cursus_prepare_head($object)
 	$head[$h][2] = 'card';
 	$h++;
 
-	$head[$h][0] = dol_buildpath('/agefodd/cursus/traineelist.php',1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath('/agefodd/cursus/card_trainee.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfMenuActStagiaire");
 	$head[$h][2] = 'trainee';
 	$h++;
