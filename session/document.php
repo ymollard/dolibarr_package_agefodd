@@ -322,7 +322,7 @@ if (!empty($id))
 		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 		
 		//Put user on the right action block after reload
-		if (!empty($socid)) {
+		if (!empty($socid) && $action!='unlink' && $action!='createorder') {
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {

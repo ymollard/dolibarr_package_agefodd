@@ -773,3 +773,5 @@ AgfDefaultSessionStatus=Default session status
 AgfStatusSession=Session status
 AgfMenuSessDraftList=Training Sessions draft
 AgfMenuSessListOpe=Session list by admin task
+AgfAddTraineeNameIntoDoc=Add trainee name into Proposal/Order
+AgfAddTraineeNameIntoDocHelp=When auto-generate proposal or order, trainne name will be added into product lines

@@ -328,6 +328,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Defaut status session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR";
+		$this->const[$r][1] = "0";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Add trainnee name when create order/proposal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {

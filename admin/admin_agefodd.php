@@ -1193,6 +1193,23 @@ $form->textwithpicto('',$langs->trans("AgfUseSubscriptionStatusAutoHelp"),1,'hel
 print '</td>';
 print '</tr>';
 
+// Update global variable AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR
+print '<tr class="impair"><td>'.$langs->trans("AgfAddTraineeNameIntoDoc").'</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax){
+	print ajax_constantonoff('AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR');
+}else {
+	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+	print $form->selectarray("AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR",$arrval,$conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR);
+}
+print '</td>';
+print '<td align="center">';
+$form->textwithpicto('',$langs->trans("AgfAddTraineeNameIntoDocHelp"),1,'help');
+print '</td>';
+print '</tr>';
+
+
+
 if (!$conf->use_javascript_ajax){
 	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="'.$langs->trans("Save").'"></td>';
 	print '</tr>';

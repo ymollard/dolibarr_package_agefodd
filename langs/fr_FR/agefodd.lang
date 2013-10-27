@@ -774,3 +774,5 @@ AgfDefaultSessionStatus=Status de la session par defaut
 AgfStatusSession=Status de la session
 AgfMenuSessDraftList=Sessions brouillons
 AgfMenuSessListOpe=Liste des session/tâches administratives
+AgfAddTraineeNameIntoDoc=Ajouté le nom des participants dans le proposition commerciales / commandes
+AgfAddTraineeNameIntoDocHelp=Lors de la génération automatique des proposition commerciales et/ou commande, le nom des stagiaires est rajouté sur la ligne correspondantes

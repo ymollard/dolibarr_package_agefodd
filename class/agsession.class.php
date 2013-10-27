@@ -2482,7 +2482,18 @@ class Agsession extends CommonObject {
 			$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' ) . '-' . dol_print_date ( $this->datef, 'daytext' );
 			$session_trainee = new Agefodd_session_stagiaire ( $this->db );
 			$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid );
-			$desc .= "\n" . count ( $session_trainee->lines ) . ' ' . $langs->trans ( 'AgfParticipant' ) . '/' . $langs->trans ( 'AgfParticipants' );
+			$desc .= "\n" . count ( $session_trainee->lines ) . ' '; 
+			if (count ( $session_trainee->lines ) >= 1) {
+				$desc .= $langs->trans ( 'AgfParticipant' );
+			} else {
+				 $desc .=  $langs->trans ( 'AgfParticipants' );
+			}
+			if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
+				foreach( $session_trainee->lines as $line) {
+					$desc .=  "\n". dol_strtoupper($line->nom). ' '.$line->prenom. "\n";
+				}
+				
+			}
 			$propal->lines [0]->desc = $desc;
 			
 			// Calculate price

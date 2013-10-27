@@ -38,6 +38,7 @@ require_once('../class/agefodd_contact.class.php');
 require_once('../class/agefodd_place.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once('../class/agefodd_session_stagiaire.class.php');
+require_once('../core/modules/agefodd/modules_agefodd.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -102,6 +103,40 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 	{
 		Header ('Location: '.$_SERVER['PHP_SELF'].'?sessid='.$sessid);
 		exit;
+	}
+}
+
+/*
+ * Action generate fiche pédagogique
+*/
+if ($action == 'builddoc' && $user->rights->agefodd->creer)
+{
+	$agf = new Agefodd_convention($db);
+	
+	$result = $agf->fetch(0,0,$id);
+	
+	// Define output language
+	$outputlangs = $langs;
+	$newlang=GETPOST('lang_id','alpha');
+	if ($conf->global->MAIN_MULTILANGS && empty($newlang)) $newlang=$object->client->default_lang;
+	if (! empty($newlang))
+	{
+		$outputlangs = new Translate("",$conf);
+		$outputlangs->setDefaultLang($newlang);
+	}
+	$model='convention';
+	$file = $model.'_'.$agf->sessid.'_'.$agf->socid.'.pdf';
+	
+	$result = agf_pdf_create($db, $agf->sessid, '', $model, $outputlangs, $file, $agf->socid);
+
+	if ($result > 0)
+	{
+		Header ( "Location: ".dol_buildpath('/agefodd/session/document.php',1)."?id=".$agf->sessid.'&socid='.$agf->socid);
+		exit;
+	}
+	else
+	{
+		setEventMessage($agf->error,'errors');
 	}
 }
 
@@ -688,6 +723,14 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 	else
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
+	}
+	if ($user->rights->agefodd->creer)
+	{
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=builddoc&id='.$id.'">'.$langs->trans('AgfDocCreate').' '.$langs->trans('AgfConvention').'</a>';
+	}
+	else
+	{
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfDocCreate').' '.$langs->trans('AgfConvention').'</a>';
 	}
 }
 

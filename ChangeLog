@@ -7,10 +7,15 @@ For All:
 	- Fix : Update certificate with numbering rule always increment it
 	- Fix : Field label Training internal ref vs ref
 	- Fix : Use of Agefodd contact select list do not work.
-	- New : Add trainer time management
+	- New : Add trainer time management (optional in admnistration)
 	- New : Add product link to session (copied from training is defined)
 	- New : Add session status (and default status in administration)
 	- New : Add menu session in draft status
+	- New : Add button to generate convention directly from convention edit screen
+	- New : When generate a document the screen auto scroll to targeted customer
+	- New : Less click to add trainer
+	- New : Add trainee name into proposal,order, invoice lines (optionnal in admnistration)
+	- Fix : Specific agenda session and trainer session do not work well
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
 For All:
