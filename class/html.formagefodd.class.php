@@ -110,6 +110,66 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 * Affiche un champs select contenant la liste des cursus disponibles.
+	 *
+	 * @param int $selectid à preselectionner
+	 * @param string $htmlname select field
+	 * @param string $sort Value to show/edit (not used in this function)
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string select field
+	 */
+	function select_cursus($selectid, $htmlname = 'cursus', $sort = 'c.ref_interne', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
+		global $conf, $user, $langs;
+	
+		$out = '';
+
+	
+		$sql = "SELECT c.rowid, c.intitule, c.ref_interne";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as c";
+		$sql .= " WHERE archive = 0";
+		$sql .= " AND entity IN (" . getEntity ( 'agsession' ) . ")";
+		if (count($filters)>0) {
+			foreach($filters as $filter)
+				$sql .= $filter;
+		}
+		$sql .= " ORDER BY " . $sort;
+	
+		dol_syslog ( get_class ( $this ) . "::select_cursus sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			if ($conf->use_javascript_ajax && $conf->global->AGF_CURSUS_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+				$out .= ajax_combobox ( $htmlname, $event );
+			}
+				
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value=""></option>';
+			$num = $this->db->num_rows ( $resql );
+			$i = 0;
+			if ($num) {
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object ( $resql );
+					$label = $obj->intitule;
+						
+					if ($selectid > 0 && $selectid == $obj->rowid) {
+						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+		} else {
+			dol_print_error ( $this->db );
+		}
+		$this->db->free ( $resql );
+		return $out;
+	}
+	
+	/**
 	 * Affiche un champs select contenant la liste des action de session disponibles.
 	 *
 	 * @param int $selectid à preselectionner

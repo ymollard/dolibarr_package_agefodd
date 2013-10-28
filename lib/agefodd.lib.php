@@ -181,6 +181,13 @@ function trainee_prepare_head($object)
 	$head[$h][1] = $langs->trans("AgfSessionDetail");
 	$head[$h][2] = 'sessionlist';
 	$h++;
+	
+	if ($conf->global->AGF_MANAGE_CURSUS) {
+		$head[$h][0] = dol_buildpath('/agefodd/trainee/cursus.php',1).'?id='.$object->id;
+		$head[$h][1] = $langs->trans("AgfMenuCursus");
+		$head[$h][2] = 'cursus';
+		$h++;
+	}
 
 	$head[$h][0] = dol_buildpath('/agefodd/trainee/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");

@@ -344,6 +344,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'MAnage cursus';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_CURSUS_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "1";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Display combobox for cursus select';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {

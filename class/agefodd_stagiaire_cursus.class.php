@@ -571,6 +571,60 @@ class Agefodd_stagiaire_cursus extends CommonObject
 			return -1;
 		}
 	}
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *  @param	string $sortorder    Sort Order
+	 *  @param	string $sortfield    Sort field
+	 *  @param	int $limit    	offset limit
+	 *  @param	int $offset    	offset limit
+	 *  @param	int $arch    	archive
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_cursus_per_trainee($sortorder, $sortfield, $limit, $offset ) {
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql.= " c.rowid,";
+		$sql.= " c.ref_interne,";
+		$sql.= " c.intitule,";
+		$sql.= " c.archive";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus as t";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_cursus as c ON t.fk_cursus=c.rowid AND t.fk_stagiaire=".$this->fk_stagiaire;
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+	
+		dol_syslog(get_class($this)."::fetch_cursus_per_trainee sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->line = array();
+			$num = $this->db->num_rows($resql);
+	
+			while( $obj = $this->db->fetch_object($resql))
+			{
+				$line = new AgfTraineeCursusLine();
+	
+				$line->id    = $obj->rowid;
+	
+				$line->ref_interne = $obj->ref_interne;
+				$line->intitule = $obj->intitule;
+				$line->archive = $obj->archive;
+				
+				$this->lines[]=$line;
+	
+			}
+			$this->db->free($resql);
+	
+			return $num;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_cursus_per_trainee ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
 
 }
 
@@ -594,3 +648,17 @@ Class AgfCursusTraineeLine {
 		return 1;
 	}
 }
+
+Class AgfTraineeCursusLine {
+	
+	var $id;
+	var $ref_interne;
+	var $intitule;
+	var $archive;
+	
+	function __construct()
+	{
+		return 1;
+	}
+}
+

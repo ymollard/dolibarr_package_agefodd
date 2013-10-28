@@ -791,3 +791,5 @@ AgfConfirmRemoveTrainingCursus=Etes vous sure de supprimer la formation du cursu
 AgfCursusParticipants=Participants aux cursus
 AgfSessionDoneInCursus=Nb. de session du cursus inscrit
 AgfSessionToDoInCursus=Nb. de session du cursus à programmer
+AgfStagiaireCursus=Liste des cursus par participant
+AgfCursusAdd=Ajouter le participant au cursus

@@ -790,3 +790,5 @@ AgfConfirmRemoveTrainingCursus=Are you sure to remove the training from program
 AgfCursusParticipants=Program trainnee
 AgfSessionDoneInCursus=Number of session of this program registered
 AgfSessionToDoInCursus=Number of session of this program to do
+AgfStagiaireCursus=Program list by trainee
+AgfCursusAdd=Add trainee to program
