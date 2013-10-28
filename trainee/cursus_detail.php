@@ -19,11 +19,15 @@
 */
 
 /**
- *	\file       agefodd/trainee/session.php
+ *	\file       agefodd/trainee/cursus_detail.php
  *	\ingroup    agefodd
  *	\brief      session of trainee
 */
 
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -34,41 +38,58 @@ require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 require_once('../class/agsession.class.php');
 require_once('../class/agefodd_session_stagiaire.class.php');
 require_once('../class/agefodd_session_calendrier.class.php');
+require_once('../class/agefodd_stagiaire_cursus.class.php');
 
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
 
 $id=GETPOST('id','int');
+$cursus_id=GETPOST('cursus_id','int');
+
+if ($page == - 1) {
+	$page = 0;
+}
+
+$sortorder = GETPOST ( 'sortorder', 'alpha' );
+$sortfield = GETPOST ( 'sortfield', 'alpha' );
+$page = GETPOST ( 'page', 'int' );
+
+$limit = $conf->liste_limit;
+$offset = $limit * $page;
+$pageprev = $page - 1;
+$pagenext = $page + 1;
+
+if (empty ( $sortorder ))
+	$sortorder = "DESC";
+if (empty ( $sortfield ))
+	$sortfield = "s.dated";
+
 
 /*
  * View
 */
 
-llxHeader('',$langs->trans("AgfStagiaireDetail"));
+llxHeader('',$langs->trans("AgfCursusDetail"));
 
 
 // Affichage de la fiche "stagiaire"
-if ($id)
+if (!empty($id) && !empty($cursus_id))
 {
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->fetch($id);
+	
 
 	if ($result>0)
 	{
 		$stagiaires = new Agefodd_session_stagiaire($db);
-		
-		$agf_session = new Agsession($db);
-		$result=$agf_session->fetch_session_per_trainee($id);
-		if ($result<0) {
-			setEventMessage($agf_session->error,'errors');
-		}
 
 		$form = new Form($db);
 
-		$head = trainee_prepare_head($agf);
+		$agf->cursus_id=$cursus_id;
+		$head = trainee_prepare_head($agf,1);
 
-		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfSessionDetail"), 0, 'user');
+		dol_fiche_head($head, 'cursusdetail', $langs->trans("AgfCursusDetail"), 0, 'user');
 
 		print '<table class="border" width="100%">';
 
@@ -128,24 +149,33 @@ if ($id)
 		print "</table>";
 		print '</div>';
 			
-		print_fiche_titre($langs->trans("AgfSessionDetail"));
-			
-		if (count($agf_session->lines)>0) {
+		$agf_cursus = new Agefodd_stagiaire_cursus ( $db );
+		$agf_cursus->fk_stagiaire = $id;
+		$agf_cursus->fk_cursus = $cursus_id;
+		$result = $agf_cursus->fetch_session_cursus_per_trainee ( $sortorder, $sortfield, $limit, $offset );
+		
+		if ($result < 0) {
+			setEventMessage ( $agf_cursus->error, 'errors' );
+		}
+		
+		print_barre_liste ( $langs->trans ( "AgfSessionDetail" ), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", count ( $agf_cursus->lines ) );
+		
+		if (count ( $agf_cursus->lines ) > 0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
-			print '<th class="liste_titre" width="10%">'.$langs->trans('AgfMenuSess').'</th>';
-			print '<th class="liste_titre" width="10%">'.$langs->trans('AgfIntitule').'</th>';
-			print '<th class="liste_titre" width="20%">'.$langs->trans('AgfDebutSession').'</th>';
-			print '<th class="liste_titre" width="20%">'.$langs->trans('AgfFinSession').'</th>';
-			print '<th class="liste_titre" width="20%">'.$langs->trans('AgfPDFFichePeda1').'</th>';
-			print '<th class="liste_titre" width="20%">'.$langs->trans('Status').'</th>';
-			
+			print_liste_field_titre ( $langs->trans ( "AgfMenuSess" ), $_SERVER ['PHP_SELF'], "s.rowid", '', '&id=' . $id.'&cursus_id='.$cursus_id, '', $sortfield, $sortorder );
+			print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVER ['PHP_SELF'], "c.intitule", '', '&id=' . $id.'&cursus_id='.$cursus_id, '', $sortfield, $sortorder );
+			print_liste_field_titre ( $langs->trans ( "AgfDebutSession" ), $_SERVER ['PHP_SELF'], "s.dated", '', '&id=' . $id.'&cursus_id='.$cursus_id, '', $sortfield, $sortorder );
+			print_liste_field_titre ( $langs->trans ( "AgfFinSession" ), $_SERVER ['PHP_SELF'], "s.datef", '', '&id=' . $id.'&cursus_id='.$cursus_id, '', $sortfield, $sortorder );
+			print_liste_field_titre ( $langs->trans ( "AgfPDFFichePeda1" ), $_SERVER ['PHP_SELF'], '', '', '&id=' . $id.'&cursus_id='.$cursus_id, '', $sortfield, $sortorder );
+			print_liste_field_titre ( $langs->trans ( "Status" ), $_SERVER ['PHP_SELF'], "ss.status_in_session", '', '&id=' . $id.'&cursus_id='.$cursus_id, '', $sortfield, $sortorder );
+			print "</tr>\n";
 			print '</tr>';
-
+			
 			$style='pair';
 			
 			$dureetotal=0;
-			foreach($agf_session->lines as $line){
+			foreach($agf_cursus->lines as $line){
 				if ($style=='pair') {
 					$style='impair';
 				}
@@ -154,8 +184,8 @@ if ($id)
 
 				print '<tr class="'.$style.'">';
 					
-				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->rowid.'</a></td>';
-				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->intitule.'</a></td>';
+				print '<td><a href="'.dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$line->rowid.'">'.$line->rowid.'</a></td>';
+				print '<td><a href="'.dol_buildpath('/agefodd/session/subscribers.php',1).'?id='.$line->rowid.'">'.$line->intitule.'</a></td>';
 				print '<td>'.dol_print_date($line->dated,'daytext').'</td>';
 				print '<td>'.dol_print_date($line->datef,'daytext').'</td>';
 				
@@ -192,14 +222,48 @@ if ($id)
 			print '<td></td>';
 			print '</tr>';
 			print '</table>';
-		}
-		else {
-			$langs->trans('AgfNoCertif');
+		} else {
+			print $langs->trans ( 'AgfNoSession' );
 		}
 	}
 	else {
 		setEventMessage($agf->error,'errors');
 	}
+	
+	$agf_cursus = new Agefodd_stagiaire_cursus ( $db );
+	$agf_cursus->fk_stagiaire = $id;
+	$agf_cursus->fk_cursus = $cursus_id;
+	
+	$result = $agf_cursus->fetch_training_session_to_plan ();
+	
+	if ($result < 0) {
+		setEventMessage ( $agf_cursus->error, 'errors' );
+	}
+	
+	if (is_array($agf_cursus->lines) && count($agf_cursus->lines)>0) {
+		print_fiche_titre($langs->trans("AgfSessionInCursusToPlan"));
+		
+		
+		$style='pair';
+		print '<table class="noborder"  width="100%">';
+		foreach($agf_cursus->lines as $line) {
+			if ($style=='pair') {
+				$style='impair';
+			}
+			else {$style='pair';
+			}
+			
+			print '<tr class="'.$style.'"><td>'.$line->ref.' '.$line->ref_interne.' - '.$line->intitule.'</td>';
+			print '<td align="left">';
+			if (empty($line->archive)) {
+				print '<a href="../session/card.php?action=create&formation='.$line->id.'"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0"></a>';
+			}
+			print '</td></tr>';
+		}
+		print '</table>';
+	}
+	
+	
 }
 
 llxFooter();

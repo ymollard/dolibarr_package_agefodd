@@ -158,7 +158,7 @@ if (! empty ( $id )) {
 		print '<table class="border" width="100%">';
 		
 		print '<tr><td width="20%">' . $langs->trans ( "Id" ) . '</td>';
-		print '<td>' . $form->showrefnav ( $agf, 'id	', '', 1, 'rowid', 'id' ) . '</td></tr>';
+		print '<td>' . $form->showrefnav ( $agf, 'id', '', 1, 'rowid', 'id' ) . '</td></tr>';
 		
 		print '<tr><td>' . $langs->trans ( "AgfRefInterne" ) . '</td>';
 		print '<td>' . $agf->ref_interne . '</td></tr>';
@@ -288,8 +288,8 @@ if (! empty ( $id )) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			print '<td><a href="../trainee/session.php?id=' . $line->starowid . '">' . $line->nbsessdone . '</a></td>';
-			print '<td>' . $line->nbsesstodo . '</td>';
+			print '<td><a href="../trainee/cursus_detail.php?cursus_id='.$id.'&id=' . $line->starowid . '">' . $line->nbsessdone . '</a></td>';
+			print '<td><a href="../trainee/cursus_detail.php?cursus_id='.$id.'&id=' . $line->starowid . '">' . $line->nbsesstodo . '</a></td>';
 			print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		}

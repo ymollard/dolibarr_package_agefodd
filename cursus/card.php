@@ -241,9 +241,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			
 			dol_fiche_head ( $head, 'card', $langs->trans ( "AgfMenuCursus" ), 0, 'document' );
 			
-		
-				
-			
 			// Card in edit mode
 			if ($action == 'edit') {
 				print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '" method="post">' . "\n";
@@ -253,7 +250,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				
 				print '<table class="border" width="100%">' . "\n";
 				print '<tr><td width="20%">' . $langs->trans ( "Id" ) . '</td>';
-				print '<td>' . $agf->id . '</td></tr>';
+				print '<td>' . $form->showrefnav ( $agf, 'id', '', 1, 'rowid', 'id' ) . '</td></tr>';
 				
 				print '<tr><td  class="fieldrequired">' . $langs->trans ( "AgfRefInterne" ) . '</td>';
 				print '<td><input name="ref_interne" class="flat" size="50" value="' . $agf->ref_interne . '"></td></tr>';

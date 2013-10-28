@@ -639,7 +639,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfFormIntitule").'</span></td>';
-	print '<td>'.$formAgefodd->select_formation(GETPOST('foration','int'), 'formation','intitule',1).'</td></tr>';
+	print '<td>'.$formAgefodd->select_formation(GETPOST('formation','int'), 'formation','intitule',1).'</td></tr>';
 
 	print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
 	print '<td>'.$formAgefodd->select_type_session('type_session',0).'</td></tr>';
@@ -1034,7 +1034,6 @@ else
 							print '<tr><td colspan=5 align="center"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
 							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
 							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
-							$rsec = sprintf("%02d",$duree % 60);
 							$min = floor($duree/60) ;
 							$rmin = sprintf("%02d", $min %60) ;
 							$hour = floor($min/60);
@@ -1326,7 +1325,6 @@ else
 							print '<tr><td>&nbsp;</td><td colspan=2><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
 							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
 							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
-							$rsec = sprintf("%02d",$duree % 60);
 							$min = floor($duree/60) ;
 							$rmin = sprintf("%02d", $min %60) ;
 							$hour = floor($min/60);

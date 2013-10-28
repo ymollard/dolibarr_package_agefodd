@@ -793,3 +793,5 @@ AgfSessionDoneInCursus=Nb. de session du cursus inscrit
 AgfSessionToDoInCursus=Nb. de session du cursus à programmer
 AgfStagiaireCursus=Liste des cursus par participant
 AgfCursusAdd=Ajouter le participant au cursus
+AgfCursusDetail=Détail du cursus
+AgfSessionInCursusToPlan=Listes les sessions de formation à planifier

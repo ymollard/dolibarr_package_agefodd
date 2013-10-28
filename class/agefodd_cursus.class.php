@@ -210,6 +210,7 @@ class Agefodd_cursus extends CommonObject
                 $obj = $this->db->fetch_object($resql);
 
                 $this->id    = $obj->rowid;
+                $this->ref    = $obj->rowid; //Needed for show_next_prev
                 
 				$this->ref_interne = $obj->ref_interne;
 				$this->entity = $obj->entity;

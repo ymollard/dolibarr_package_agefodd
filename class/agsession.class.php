@@ -554,7 +554,8 @@ class Agsession extends CommonObject {
 		$sql .= " c.intitule,";
 		$sql .= " c.ref,";
 		$sql .= " c.ref_interne,";
-		$sql .= " s.color";
+		$sql .= " s.color,";
+		$sql .= " ss.status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -596,6 +597,7 @@ class Agsession extends CommonObject {
 				$line->ref = $obj->ref;
 				$line->ref_interne = $obj->ref_interne;
 				$line->color = $obj->color;
+				$line->status_in_session = $obj->status_in_session;
 				
 				$this->lines [$i] = $line;
 				
@@ -606,7 +608,7 @@ class Agsession extends CommonObject {
 		} else {
 			$this->error = "Error " . $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::fetch_session_per_trainee " . $this->error, LOG_ERR );
-			return - 1;
+			return -1;
 		}
 	}
 	
@@ -1607,7 +1609,7 @@ class Agsession extends CommonObject {
 				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session')) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
@@ -2620,6 +2622,8 @@ class AgfSessionLine {
 	var $nb_cancelled;
 	var $statuslib;
 	var $statuscode;
+	var $status_in_session;
+	var $realdurationsession;
 	function __construct() {
 		return 1;
 	}

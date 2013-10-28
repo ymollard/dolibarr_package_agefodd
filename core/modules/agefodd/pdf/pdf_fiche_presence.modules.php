@@ -546,15 +546,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 		}
 
-		// Incrustation image tampon
-		if($conf->global->AGF_INFO_TAMPON)
-		{
-			$dir=$conf->agefodd->dir_output.'/images/';
-			$img_tampon=$dir.$conf->global->AGF_INFO_TAMPON;
-			if (file_exists($img_tampon))
-				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
-		}
-
 		// Cachet et signature
 		$posY += 2;
 		$posX -=2;
@@ -570,6 +561,17 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres22');
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
+		$posY= $pdf->GetY();
+		
+		// Incrustation image tampon
+		if($conf->global->AGF_INFO_TAMPON)
+		{
+			$dir=$conf->agefodd->dir_output.'/images/';
+			$img_tampon=$dir.$conf->global->AGF_INFO_TAMPON;
+			if (file_exists($img_tampon))
+				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
+		}
+		
 		// Pied de page
 		$this->_pagefoot($pdf,$agf,$outputlangs);
 		$pdf->AliasNbPages();

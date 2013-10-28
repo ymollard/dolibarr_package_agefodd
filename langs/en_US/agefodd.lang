@@ -791,3 +791,5 @@ AgfSessionDoneInCursus=Number of session of this program registered
 AgfSessionToDoInCursus=Number of session of this program to do
 AgfStagiaireCursus=Program list by trainee
 AgfCursusAdd=Add trainee to program
+AgfCursusDetail=Program's detail
+AgfSessionInCursusToPlan=Training session to plan

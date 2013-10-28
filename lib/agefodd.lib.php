@@ -158,7 +158,7 @@ function session_prepare_head($object,$showconv=0)
  *  @param	object	$object        Current trainee
  *  @return array      		   	 head table of tabs
  */
-function trainee_prepare_head($object)
+function trainee_prepare_head($object,$showcursus=0)
 {
 	global $langs, $conf, $user;
 
@@ -187,6 +187,14 @@ function trainee_prepare_head($object)
 		$head[$h][1] = $langs->trans("AgfMenuCursus");
 		$head[$h][2] = 'cursus';
 		$h++;
+		
+		if (!empty($showcursus)) {
+			$head[$h][0] = dol_buildpath('/agefodd/trainee/cursus_detail.php',1).'?id='.$object->id.'&cursus_id='.$object->cursus_id;
+			$head[$h][1] = $langs->trans("AgfCursusDetail");
+			$head[$h][2] = 'cursusdetail';
+			$h++;
+			
+		}
 	}
 
 	$head[$h][0] = dol_buildpath('/agefodd/trainee/info.php',1).'?id='.$object->id;

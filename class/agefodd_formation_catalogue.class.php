@@ -339,7 +339,7 @@ class Agefodd extends CommonObject {
 		$sql .= " note2=" . (isset ( $this->note2 ) ? "'" . $this->note2 . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " archive=" . $this->archive . ",";
-		$sql .= " fk_product=" . (isset ( $this->fk_product ) ? $this->fk_product : "null") . ",";
+		$sql .= " fk_product=" . (!empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
 		$sql .= " nb_subscribe_min=" . (!empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null") . ",";
 		$sql .= " fk_c_category=" . (!empty ( $this->fk_c_category ) ? $this->fk_c_category : "null");
 		$sql .= " WHERE rowid = " . $this->id;
