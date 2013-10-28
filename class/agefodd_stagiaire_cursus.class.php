@@ -436,7 +436,7 @@ class Agefodd_stagiaire_cursus extends CommonObject
 	 *  @param	int $arch    	archive
 	 *  @return int          	<0 if KO, >0 if OK
 	 */
-	function fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset ) {
+	function fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset ,$filter=array() ) {
 		global $langs;
 	
 		$sql = "SELECT";
@@ -460,14 +460,14 @@ class Agefodd_stagiaire_cursus extends CommonObject
 			foreach($filter as $key => $value) {
 				if ($key=='civ.code') {
 					if ($addcriteria) {
-						$sql.= ' AND ';
+						$sqlwhere.= ' AND ';
 					}
 					$sqlwhere.= $key.' = \''.$value.'\'';
 					$addcriteria=true;
 				}
 				else {
 					if ($addcriteria) {
-						$sql.= ' AND ';
+						$sqlwhere.= ' AND ';
 					}
 					$sqlwhere.= $key.' LIKE \'%'.$value.'%\'';
 					$addcriteria=true;
@@ -506,13 +506,62 @@ class Agefodd_stagiaire_cursus extends CommonObject
 				$line->prenom = $obj->prenom;
 				$line->civilite = $obj->civilite;	
 				
-				$line->nbsessdone = $obj->civilite;
-				$line->nbsessdoto = $obj->civilite;
-	
+				
+				//Count how many session of cursus trainee was done
+				$sqlsessdone = "SELECT";
+				$sqlsessdone.= " count(sess.rowid) as countsess";
+				
+				$sqlsessdone.= " FROM ".MAIN_DB_PREFIX."agefodd_cursus as cursus ";
+				$sqlsessdone.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire_cursus as stacur ON stacur.fk_cursus=cursus.rowid AND stacur.fk_stagiaire=".$line->starowid;
+				$sqlsessdone.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_cursus as formcur ON formcur.fk_cursus=cursus.rowid";
+				$sqlsessdone.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sta ON stacur.fk_stagiaire=sta.rowid";
+				$sqlsessdone.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as form ON formcur.fk_formation_catalogue=form.rowid";
+				$sqlsessdone.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session as sess ON sess.fk_formation_catalogue=form.rowid";
+				$sqlsessdone.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as sessta ON sessta.fk_session_agefodd=sess.rowid AND sessta.fk_stagiaire=".$line->starowid;
+				
+				dol_syslog(get_class($this)."::fetch_stagiaire_per_cursus sqlsessdone=".$sqlsessdone, LOG_DEBUG);
+				$resqlsessdone=$this->db->query($sqlsessdone);
+				if ($resqlsessdone)
+				{
+					$objsessdone = $this->db->fetch_object($resqlsessdone);
+					$line->nbsessdone = $objsessdone->countsess;
+				}
+				else
+				{
+					$this->error="Error ".$this->db->lasterror();
+					dol_syslog(get_class($this)."::fetch_stagiaire_per_cursus ".$this->error, LOG_ERR);
+					return -1;
+				}
+				
+				//Count how many session of cursus trainee was done
+				$sqlsessdoto = "SELECT";
+				$sqlsessdoto.= " count(formcur.fk_formation_catalogue) as nbtotalform";
+				$sqlsessdoto.= " FROM ".MAIN_DB_PREFIX."agefodd_formation_cursus as formcur WHERE formcur.fk_cursus=".$this->fk_cursus;
+				
+				dol_syslog(get_class($this)."::fetch_stagiaire_per_cursus sqlsessdoto=".$sqlsessdoto, LOG_DEBUG);
+				$resqlsesstodo=$this->db->query($sqlsessdoto);
+				if ($resqlsesstodo)
+				{
+					$objsessdone = $this->db->fetch_object($resqlsesstodo);
+					$line->nbsesstodo = $objsessdone->nbtotalform - $line->nbsessdone;
+				}
+				else
+				{
+					$this->error="Error ".$this->db->lasterror();
+					dol_syslog(get_class($this)."::fetch_stagiaire_per_cursus ".$this->error, LOG_ERR);
+					return -1;
+				}
+				
+				
+				$this->db->free($resqlsessdone);
+				$this->db->free($resqlsesstodo);
+				
+
 				$this->lines[]=$line;
 	
 			}
 			$this->db->free($resql);
+		
 			return $num;
 		}
 		else

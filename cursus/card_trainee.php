@@ -24,10 +24,9 @@
  * \ingroup agefodd
  * \brief card of trainee by cursus
  */
-
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
+error_reporting ( E_ALL );
+ini_set ( 'display_errors', true );
+ini_set ( 'html_errors', false );
 
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
@@ -39,8 +38,8 @@ require_once ('../class/agefodd_cursus.class.php');
 require_once ('../class/agefodd_stagiaire_cursus.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
-require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -132,17 +131,17 @@ llxHeader ( '', $title );
 
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
-$formcompagny = new FormCompany($db);
+$formcompagny = new FormCompany ( $db );
 
 // Card
-if ($id) {
+if (! empty ( $id )) {
 	$agf = new Agefodd_cursus ( $db );
 	$result = $agf->fetch ( $id );
 	
 	if ($result > 0) {
 		$head = cursus_prepare_head ( $agf );
 		
-		dol_fiche_head ( $head, 'trainee', $langs->trans ( "AgfCursusParticipants" ), 0, 'document' );
+		dol_fiche_head ( $head, 'trainee', $langs->trans ( "AgfCursusParticipants" ), 0, 'calendarweek' );
 		
 		// Display View mode
 		
@@ -176,141 +175,142 @@ if ($id) {
 		print "</table>";
 		
 		print '</div>';
+	} else {
+		setEventMessage ( $agf->error, 'errors' );
 	}
-} else {
-	setEventMessage ( $agf->error, 'errors' );
-}
-
-/*
+	
+	/*
  * Manage trainee
 */
-
-$trainee = new Agefodd_stagiaire_cursus ( $db );
-$trainee->fk_cursus = $agf->id;
-$result = $trainee->fetch_stagiaire_per_cursus ( $sortorder, $sortfield, $limit, $offset );
-if ($result < 0) {
-	setEventMessage ( $trainee->error, 'errors' );
-}
-$nbtrainee = count ( $trainee->lines );
-
-print_barre_liste ( $langs->trans ( "AgfMenuActStagiaire" ), $page, $_SERVER ['PHP_SELF'], '&id=' . $id, $sortfield, $sortorder, "", $nbtrainee );
-
-print '<table class="noborder" width="100%">';
-print '<tr>';
-if ($nbcursus < 1) {
-	print '<td style="text-decoration: blink;">' . $langs->trans ( "AgfLimiteNoOne" ) . '</td>';
-} else {
-	print '<td>' . $langs->trans ( "AgfMenuActStagiaire" ) . ' (' . $nbcursus . ')' . '</td>';
-}
-print '</tr>';
-
-if ($nbtrainee > 0) {
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	$arg_url = '&page=' . $page . '&search_name=' . $search_name . '&search_firstname=' . $search_firstname . '&search_civ=' . $search_civ . '&search_soc=' . $search_soc;
-	print_liste_field_titre ( $langs->trans ( "AgfNomPrenom" ), $_SERVER ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfCivilite" ), $_SERVER ['PHP_SELF'], "civ.code", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfSessionDoneInCursus" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfSessionToDoInCursus" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
-	print '<td>&nbsp;</td>';
-	print "</tr>\n";
 	
-	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
-	$addcriteria = false;
-	if (! empty ( $sortorder )) {
-		$url_form .= '?sortorder=' . $sortorder;
-		$addcriteria = true;
+	$trainee = new Agefodd_stagiaire_cursus ( $db );
+	$trainee->fk_cursus = $agf->id;
+	$result = $trainee->fetch_stagiaire_per_cursus ( $sortorder, $sortfield, $limit, $offset, $filter );
+	if ($result < 0) {
+		setEventMessage ( $trainee->error, 'errors' );
 	}
-	if (! empty ( $sortfield )) {
-		if ($addcriteria) {
-			$url_form .= '&sortfield=' . $sortfield;
-		} else {
-			$url_form .= '?sortfield=' . $sortfield;
-		}
-		$addcriteria = true;
-	}
-	if (! empty ( $page )) {
-		if ($addcriteria) {
-			$url_form .= '&page=' . $page;
-		} else {
-			$url_form .= '?page=' . $page;
-		}
-	}
+	$nbtrainee = count ( $trainee->lines );
 	
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-	print '<tr class="liste_titre">';
-	
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_name" value="' . $search_name . '" size="10">';
-	print '<input type="text" class="flat" name="search_firstname" value="' . $search_firstname . '" size="10">';
-	print '</td>';
-	
-	print '<td class="liste_titre">';
-	print $formcompagny->select_civility ( $search_civ, 'search_civ' );
-	print '</td>';
-	
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
-	print '</td>';
-	
-	print '<td class="liste_titre">';
-	print '</td>';
-	
-	print '<td class="liste_titre">';
-	print '</td>';
-	
-	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
-	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag ( $langs->trans ( "RemoveFilter" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "RemoveFilter" ) ) . '">';
-	print '</td>';
-	
-	print "</tr>\n";
-	print '</form>';
-	
-	$var = true;
-	foreach ( $trainee->lines as $line ) {
-		
-		// Affichage liste des stagiaires
-		$var = ! $var;
-		print "<tr $bc[$var]>";
-		print '<td><a href="../trainee/card.php?id=' . $line->starowid . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "user" ) . ' ' . strtoupper ( $line->nom ) . ' ' . ucfirst ( $line->prenom ) . '</a></td>';
-		
-		$contact_static = new Contact ( $db );
-		$contact_static->civilite_id = $line->civilite;
-		
-		print '<td>' . $contact_static->getCivilityLabel () . '</td>';
-		print '<td>';
-		if ($line->socid) {
-			print '<a href="' . dol_buildpath ( '/comm/fiche.php', 1 ) . '?socid=' . $line->socid . '">';
-			print img_object ( $langs->trans ( "ShowCompany" ), "company" ) . ' ' . dol_trunc ( $line->socname, 20 ) . '</a>';
-		} else {
-			print '&nbsp;';
-		}
-		print '</td>';
-		print '<td>' . dol_print_phone ( $line->tel1 ) . '</td>';
-		print '<td>' . dol_print_email ( $line->mail, $line->rowid, $line->socid, 'AC_EMAIL', 25 ) . '</td>';
-		print '<td>&nbsp;</td>';
-		print "</tr>\n";
-	}
-	
-	print "</table>";
-}
-
-if ($user->rights->agefodd->modifier) {
-	print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '" method="post">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
-	print '<input type="hidden" name="action" value="addtrainee">' . "\n";
+	print_barre_liste ( $langs->trans ( "AgfMenuActStagiaire" ), $page, $_SERVER ['PHP_SELF'], '&id=' . $id, $sortfield, $sortorder, "", $nbtrainee );
 	
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
-	print '<td>' . $langs->trans ( 'AgfStagiaireAdd' );
-	print $formAgefodd->select_stagiaire('','stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_cursus WHERE fk_cursus='.$id.')',1);
-	print '<input type="submit" class="butAction" value="' . $langs->trans ( "Add" ) . '"></td>';
+	if ($nbtrainee < 1) {
+		print '<td style="text-decoration: blink;">' . $langs->trans ( "AgfLimiteNoOne" ) . '</td>';
+	} else {
+		print '<td>' . $langs->trans ( "AgfMenuActStagiaire" ) . ' (' . $nbtrainee . ')' . '</td>';
+	}
 	print '</tr>';
-	print "</table>";
-	print '</form>';
+	
+	if ($nbtrainee > 0) {
+		print '<table class="noborder" width="100%">';
+		print '<tr class="liste_titre">';
+		$arg_url = '&page=' . $page . '&search_name=' . $search_name . '&search_firstname=' . $search_firstname . '&search_civ=' . $search_civ . '&search_soc=' . $search_soc . '&id=' . $agf->id;
+		print_liste_field_titre ( $langs->trans ( "AgfNomPrenom" ), $_SERVER ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder );
+		print_liste_field_titre ( $langs->trans ( "AgfCivilite" ), $_SERVER ['PHP_SELF'], "civ.code", "", $arg_url, '', $sortfield, $sortorder );
+		print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
+		print_liste_field_titre ( $langs->trans ( "AgfSessionDoneInCursus" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
+		print_liste_field_titre ( $langs->trans ( "AgfSessionToDoInCursus" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
+		print '<td>&nbsp;</td>';
+		print "</tr>\n";
+		
+		// Search bar
+		$url_form = $_SERVER ["PHP_SELF"] . '?id=' . $agf->id;
+		$addcriteria = false;
+		if (! empty ( $sortorder )) {
+			$url_form .= '&sortorder=' . $sortorder;
+			$addcriteria = true;
+		}
+		if (! empty ( $sortfield )) {
+			if ($addcriteria) {
+				$url_form .= '&sortfield=' . $sortfield;
+			} else {
+				$url_form .= '&sortfield=' . $sortfield;
+			}
+			$addcriteria = true;
+		}
+		if (! empty ( $page )) {
+			if ($addcriteria) {
+				$url_form .= '&page=' . $page;
+			} else {
+				$url_form .= '&page=' . $page;
+			}
+		}
+		
+		print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+		print '<input type="hidden" value="'.$id.'" name="id">';
+		print '<tr class="liste_titre">';
+		
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_name" value="' . $search_name . '" size="10">';
+		print '<input type="text" class="flat" name="search_firstname" value="' . $search_firstname . '" size="10">';
+		print '</td>';
+		
+		print '<td class="liste_titre">';
+		print $formcompagny->select_civility ( $search_civ, 'search_civ' );
+		print '</td>';
+		
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
+		print '</td>';
+		
+		print '<td class="liste_titre">';
+		print '</td>';
+		
+		print '<td class="liste_titre">';
+		print '</td>';
+		
+		print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
+		print '&nbsp; ';
+		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag ( $langs->trans ( "RemoveFilter" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "RemoveFilter" ) ) . '">';
+		print '</td>';
+		
+		print "</tr>\n";
+		print '</form>';
+		
+		$var = true;
+		foreach ( $trainee->lines as $line ) {
+			
+			// Affichage liste des stagiaires
+			$var = ! $var;
+			print "<tr $bc[$var]>";
+			print '<td><a href="../trainee/card.php?id=' . $line->starowid . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "user" ) . ' ' . strtoupper ( $line->nom ) . ' ' . ucfirst ( $line->prenom ) . '</a></td>';
+			
+			$contact_static = new Contact ( $db );
+			$contact_static->civilite_id = $line->civilite;
+			
+			print '<td>' . $contact_static->getCivilityLabel () . '</td>';
+			print '<td>';
+			if ($line->socid) {
+				print '<a href="' . dol_buildpath ( '/comm/fiche.php', 1 ) . '?socid=' . $line->socid . '">';
+				print img_object ( $langs->trans ( "ShowCompany" ), "company" ) . ' ' . dol_trunc ( $line->socname, 20 ) . '</a>';
+			} else {
+				print '&nbsp;';
+			}
+			print '</td>';
+			print '<td><a href="../trainee/session.php?id=' . $line->starowid . '">' . $line->nbsessdone . '</a></td>';
+			print '<td>' . $line->nbsesstodo . '</td>';
+			print '<td>&nbsp;</td>';
+			print "</tr>\n";
+		}
+		
+		print "</table>";
+	}
+	
+	if ($user->rights->agefodd->modifier) {
+		print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '" method="post">' . "\n";
+		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+		print '<input type="hidden" name="action" value="addtrainee">' . "\n";
+		
+		print '<table class="noborder" width="100%">';
+		print '<tr>';
+		print '<td>' . $langs->trans ( 'AgfStagiaireAdd' );
+		print $formAgefodd->select_stagiaire ( '', 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_cursus WHERE fk_cursus=' . $id . ')', 1 );
+		print '<input type="submit" class="butAction" value="' . $langs->trans ( "Add" ) . '"></td>';
+		print '</tr>';
+		print "</table>";
+		print '</form>';
+	}
 }
 
 llxFooter ();
