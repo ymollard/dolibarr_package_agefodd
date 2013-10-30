@@ -460,6 +460,9 @@ class Agefodd_sesscalendar
 		$action->fk_element  = $session->id;
 		$action->elementtype = $session->element;
 		$action->type_code = 'AC_AGF_SESS';
+		if (!empty($session->fk_soc)) {
+			$action->societe->id=$session->fk_soc;
+		}
 
 		if ($error == 0) {
 			$result = $action->add($user);

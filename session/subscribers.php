@@ -600,8 +600,14 @@ if (!empty($id))
 			print '<input type="hidden" name="action" value="edit">'."\n";
 			print '<input type="hidden" name="newstag" value="1">'."\n";
 			print '<input type="submit" class="butAction" value="'.$langs->trans("AgfStagiaireAdd").'">';
-			print '<a class="butAction" href="../trainee/card.php?action=create&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
-			if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{
+			//If session are intra entreprise then send Socid on create trainee
+			if ($agf->type_session == 0 && !empty($agf->fk_soc)) {
+				$param_socid='&societe='.$agf->fk_soc;
+			} else {
+				$param_socid='';
+			}
+			print '<a class="butAction" href="../trainee/card.php?action=create'.$param_socid.'&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
+			if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{	
 				print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
 			}
 			else {

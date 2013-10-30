@@ -107,6 +107,8 @@ class Agefodd_session_stagiaire  extends CommonObject
 		if ($resql)
 		{
 			
+			$obj = $this->db->fetch_object($resql);
+			
 			$this->fk_session_agefodd=$obj->fk_session_agefodd;
 			$this->fk_stagiaire=$obj->fk_stagiaire;
 			$this->fk_agefodd_stagiaire_type=$obj->fk_agefodd_stagiaire_type;
@@ -329,6 +331,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 	
 		if ($resql)
 		{
+			require_once 'agsession.class.php';
 			$session = new Agsession($this->db);
 			$session->fetch($this->fk_session_agefodd);
 			if (empty($session->force_nb_stagiaire)) {

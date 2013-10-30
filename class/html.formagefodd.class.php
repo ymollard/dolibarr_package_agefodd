@@ -768,7 +768,7 @@ class FormAgefodd extends Form {
 	 */
 	function select_time($selectval = '', $htmlname = 'period') {
 		$time = 7;
-		$heuref = 21;
+		$heuref = 23;
 		$min = 0;
 		$options = '<option value=""></option>' . "\n";
 		while ( $time < $heuref ) {

@@ -16,6 +16,11 @@ For All:
 	- New : Less click to add trainer
 	- New : Add trainee name into proposal,order, invoice lines (optionnal in admnistration)
 	- Fix : Specific agenda session and trainer session do not work well
+	- New : When create trainee into session intra-entreprise the customer new trainne is already selected
+	- Fix : Remove trainee from session decrement number of trainee into the session
+	- Fix : PDF attestatation : missing space before hour
+	- Fix : Session time selection to 23h (21h before)
+	- New : If customer is specified on session header, if will be apply on calendar event 
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
 For All:

@@ -429,9 +429,8 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" '.$checkedNo.' value="-1"/> <label for="create_thirdparty_cancel">'.$langs->trans('no').'</label>';
 	print '</td>';
 	print '	</tr>';
-
 	print '<tr class="select_thirdparty_block"><td>'.$langs->trans("Company").'</td><td colspan="3">';
-	print $form->select_company('','societe','(s.client IN (1,3,2))',1,1);
+	print $form->select_company(GETPOST('societe','int'),'societe','(s.client IN (1,3,2))',1,1);
 	print '</td></tr>';
 
 
