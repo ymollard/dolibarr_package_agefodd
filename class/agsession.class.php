@@ -2306,7 +2306,7 @@ class Agsession extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
-		require_once ('agefodd_facture.class.php');
+		require_once ('agefodd_session_element.class.php');
 		require_once ('agefodd_session_stagiaire.class.php');
 		
 		global $langs, $mysoc, $conf;
@@ -2396,7 +2396,7 @@ class Agsession extends CommonObject {
 		
 		if (! empty ( $neworderid )) {
 			// Link new order to the session/thridparty
-			$agf = new Agefodd_facture ( $this->db );
+			$agf = new Agefodd_session_element ( $this->db );
 			$result = $agf->fetch ( $this->id, $socid );
 			
 			$agf->comid = $neworderid;
@@ -2436,7 +2436,7 @@ class Agsession extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
-		require_once ('agefodd_facture.class.php');
+		require_once ('agefodd_session_element.class.php');
 		require_once ('agefodd_session_stagiaire.class.php');
 		
 		global $langs, $mysoc, $conf;
@@ -2526,7 +2526,7 @@ class Agsession extends CommonObject {
 		} else {
 			
 			// Link new order to the session/thridparty
-			$agf = new Agefodd_facture ( $this->db );
+			$agf = new Agefodd_session_element ( $this->db );
 			$result = $agf->fetch ( $this->id, $socid );
 			
 			$agf->propalid = $newpropalid;

@@ -20,3 +20,4 @@
 ALTER TABLE llx_agefodd_session_element ADD CONSTRAINT llx_agefodd_session_element_ibfk_1 FOREIGN KEY (fk_session_agefodd) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_session_element ADD INDEX fk_session_element (fk_session_agefodd);
 ALTER TABLE llx_agefodd_session_element ADD INDEX idxagefodd_session_element_fk_element (fk_element);
+ALTER TABLE llx_agefodd_session_element ADD UNIQUE INDEX uk_agefodd_session_element (fk_session_agefodd, fk_element, element_type, fk_soc);

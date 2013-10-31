@@ -58,7 +58,7 @@ $pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'),0,0,"R
 
 
 // Recuperation de la réference de la facture
-$agf_fac = new Agefodd_facture($this->db);
+$agf_fac = new Agefodd_session_element($this->db);
 $ret = $agf_fac->fetch($id, $socid);
 $facnum = $agf_fac->facnumber;
 

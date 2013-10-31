@@ -30,7 +30,7 @@ if (! $res) die("Include of main fails");
 
 require_once('../class/agsession.class.php');
 require_once('../class/agefodd_sessadm.class.php');
-require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_session_element.class.php');
 require_once('../class/agefodd_convention.class.php');
 require_once('../core/modules/agefodd/modules_agefodd.php');
 require_once('../class/html.formagefodd.class.php');
@@ -56,7 +56,7 @@ $type_link = GETPOST('type','alpha');
 // Link invoice or order to session/customer
 if($action == 'link_confirm' && $user->rights->agefodd->creer)
 {
-	$agf = new Agefodd_facture($db);
+	$agf = new Agefodd_session_element($db);
 	$result = $agf->fetch($id, $socid);
 
 	if ($type_link == 'bc') $agf->comid=GETPOST('select','int');
@@ -90,7 +90,7 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 // Unlink propal/order/invoice with the session
 if($action == 'unlink_confirm' && $confirm=='yes' && $user->rights->agefodd->creer)
 {	
-	$agf = new Agefodd_facture($db);
+	$agf = new Agefodd_session_element($db);
 	$result = $agf->fetch($id, $socid);
 		
 	$deleteobject=GETPOST('deleteobject','int');
@@ -265,7 +265,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 	print '<tr class="liste">'."\n";
 
 	// creation de la liste de choix
-	$agf_liste = new Agefodd_facture($db);
+	$agf_liste = new Agefodd_session_element($db);
 	$result = $agf_liste->fetch_fac_per_soc($socid, $type_link);
 	$num = count($agf_liste->lines);
 	if ($num > 0)
@@ -348,7 +348,7 @@ if (!empty($id))
 		if ($action == 'createorder')
 		{
 
-			$agf_liste = new Agefodd_facture($db);
+			$agf_liste = new Agefodd_session_element($db);
 			$result = $agf_liste->fetch($id, $socid);
 			if (!empty($agf_liste->propalid))
 			{
@@ -366,7 +366,7 @@ if (!empty($id))
 		*/
 		if ($action == 'unlink')
 		{
-			$agf_liste = new Agefodd_facture($db);
+			$agf_liste = new Agefodd_session_element($db);
 			$result = $agf_liste->fetch($id, $socid);
 			if ($type_link == 'bc') {
 				$ref=$agf->comref;

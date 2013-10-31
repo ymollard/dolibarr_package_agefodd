@@ -22,9 +22,9 @@
 CREATE TABLE IF NOT EXISTS llx_agefodd_session_element (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   fk_session_agefodd integer NOT NULL,
+  fk_soc integer NOT NULL,
   element_type		varchar(50) NOT NULL,
   fk_element		integer NOT NULL,
-  fk_element_status	varchar(32) NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,

@@ -476,7 +476,7 @@ class InterfaceAgefodd
 
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
-			dol_include_once('/agefodd/class/agefodd_facture.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 
 			$object->fetchObjectLinked();
 
@@ -485,9 +485,9 @@ class InterfaceAgefodd
 
 				if ($objectslinked[0]->element=='propal' || $objectslinked[0]->element=='commande') {
 
-					$agf_fin=new Agefodd_facture($this->db);
+					$agf_fin=new Agefodd_session_element($this->db);
 
-					$result= $agf_fin->update_invoice($user, $objectslinked[0]->id, $objectslinked[0]->element, $object->id);
+					$result= $agf_fin->add_invoice($user, $objectslinked[0]->id, $objectslinked[0]->element, $object->id);
 
 					if ($result < 0)
 					{
@@ -508,8 +508,8 @@ class InterfaceAgefodd
 
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
-			dol_include_once('/agefodd/class/agefodd_facture.class.php');
-			$agf_fin=new Agefodd_facture($this->db);
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
 			$agf_fin->fetch_fac_by_id($object->id,'prop');
 
 
@@ -528,8 +528,8 @@ class InterfaceAgefodd
 
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
-			dol_include_once('/agefodd/class/agefodd_facture.class.php');
-			$agf_fin=new Agefodd_facture($this->db);
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
 			$agf_fin->fetch_fac_by_id($object->id,'prop');
 
 
@@ -548,8 +548,8 @@ class InterfaceAgefodd
 
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
 
-			dol_include_once('/agefodd/class/agefodd_facture.class.php');
-			$agf_fin=new Agefodd_facture($this->db);
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
 			$agf_fin->fetch_fac_by_id($object->id,'prop');
 
 

@@ -19,7 +19,7 @@
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_contact FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_convention FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_formateur FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
-CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_facture FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_session_element FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_formation_catalogue FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_formation_objectifs_peda FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_opca FOR EACH ROW EXECUTE PROCEDURE update_modified_column();

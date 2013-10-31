@@ -37,7 +37,7 @@ require_once('../class/agefodd_session_calendrier.class.php');
 require_once('../class/agefodd_calendrier.class.php');
 require_once('../class/agefodd_session_formateur.class.php');
 require_once('../class/agefodd_session_stagiaire.class.php');
-require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_session_element.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
@@ -740,7 +740,7 @@ else
 
 				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 
-				$agf_fact=new Agefodd_facture($db);
+				$agf_fact=new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
 				$other_amount = '('. $langs->trans('AgfProposalAmountSigned').' '.$agf_fact->propal_sign_amount.' '.$langs->trans('Currency'.$conf->currency);
 				$other_amount .= '/'. $langs->trans('AgfOrderAmount').' '.$agf_fact->order_amount.' '.$langs->trans('Currency'.$conf->currency);

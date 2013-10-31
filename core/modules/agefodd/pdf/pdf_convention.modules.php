@@ -27,7 +27,7 @@
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 require_once('../class/agsession.class.php');
 require_once('../class/agefodd_formation_catalogue.class.php');
-require_once('../class/agefodd_facture.class.php');
+require_once('../class/agefodd_session_element.class.php');
 require_once('../class/agefodd_contact.class.php');
 require_once('../class/agefodd_convention.class.php');
 require_once('../class/agefodd_place.class.php');
@@ -156,7 +156,7 @@ class pdf_convention extends ModelePDFAgefodd
 			$result = $agf_conv->fetch($id, $socid);
 
 			// On récupére le contenu du bon de commande ou de la facture
-			$agf_comid= new Agefodd_facture($this->db);
+			$agf_comid= new Agefodd_session_element($this->db);
 			$result = $agf_comid->fetch($id,$socid);
 
 			$agf_comdetails= new Agefodd_convention($this->db);

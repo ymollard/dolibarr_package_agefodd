@@ -35,7 +35,7 @@ function show_conv($file, $socid,$nom_courrier)
 
 	$continue=true;
 	// Get proposal/order/invoice informations
-	$agf_comid= new Agefodd_facture($db);
+	$agf_comid= new Agefodd_session_element($db);
 	$result = $agf_comid->fetch($id,$socid);
 
 	if (!empty($conf->global->MAIN_MODULE_COMMANDE)) {
@@ -155,7 +155,7 @@ function show_fac($file, $socid, $mdle)
 {
 	global $langs, $conf, $db, $id, $form;
 
-	$agf = new Agefodd_facture($db);
+	$agf = new Agefodd_session_element($db);
 	$result = $agf->fetch($id, $socid);
 
 	// Manage order

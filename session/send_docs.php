@@ -34,7 +34,7 @@ if (! $res)
 
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_sessadm.class.php');
-require_once ('../class/agefodd_facture.class.php');
+require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_convention.class.php');
 require_once ('../core/modules/agefodd/modules_agefodd.php');
 require_once ('../class/html.formagefodd.class.php');
@@ -479,7 +479,7 @@ if (! empty ( $id )) {
 						print '<div class="error">' . $langs->trans ( 'AgfCourrierClotureNotExists' ) . '</div>';
 						
 						// Ajout facture
-					$agf_fac = new Agefodd_facture ( $db );
+					$agf_fac = new Agefodd_session_element ( $db );
 					$result = $agf_fac->fetch ( $id, $socid );
 					$filename = $agf_fac->facnumber . '/' . $agf_fac->facnumber . '.pdf';
 					$file = $conf->facture->dir_output . '/' . $filename;
