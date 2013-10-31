@@ -524,7 +524,7 @@ class FormAgefodd extends Form {
 		if (! empty ( $filter )) {
 			$sql .= ' AND ' . $filter;
 		}
-		$sql .= " ORDER BY s.rowid";
+		$sql .= " ORDER BY sp.lastname,u.lastname";
 		
 		dol_syslog ( get_class ( $this ) . "::select_formateur sql=" . $sql, LOG_DEBUG );
 		$result = $this->db->query ( $sql );
