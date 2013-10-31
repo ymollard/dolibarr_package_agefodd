@@ -139,6 +139,7 @@ abstract class ModeleNumRefAgefodd
 /**
  *	\brief   	Crée un document PDF
  *	\param   	db  			objet base de donnee
+ *  \param   	id	  			can be object or rowid
  *	\param   	modele  		modele à utiliser
  *	\param		outputlangs		objet lang a utiliser pour traduction
  *	\return  	int        		<0 if KO, >0 if OK

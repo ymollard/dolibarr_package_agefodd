@@ -187,7 +187,7 @@ class Agefodd_stagiaire extends CommonObject
 
 		$sql = "SELECT";
 		$sql.= " so.rowid as socid, so.nom as socname,";
-		$sql.= " civ.code as civilite,";
+		$sql.= " civ.code as civilite_code,";
 		$sql.= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql.= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";

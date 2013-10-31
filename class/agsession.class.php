@@ -1612,7 +1612,7 @@ class Agsession extends CommonObject {
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
-					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
 		}

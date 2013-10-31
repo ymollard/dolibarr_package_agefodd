@@ -31,6 +31,7 @@ require_once('../class/agefodd_session_stagiaire.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 
 
 class pdf_attestation extends ModelePDFAgefodd
@@ -220,7 +221,11 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
 					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 12);
-					$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2')." " .ucfirst(strtolower($agf2->lines[$i]->civilitel)).' ';
+					
+					$contact_static= new Contact($this->db);
+					$contact_static->civilite_id = $agf2->lines[$i]->civilite;
+					
+					$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2')." " .ucfirst(strtolower($contact_static->getCivilityLabel())).' ';
 					$this->width1 = $pdf->GetStringWidth($this->str1);
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 16);

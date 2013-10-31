@@ -96,7 +96,7 @@ if ($id) {
 		
 		$head = trainee_prepare_head ( $agf );
 		
-		dol_fiche_head ( $head, 'cursus', $langs->trans ( "AgfSessionDetail" ), 0, 'user' );
+		dol_fiche_head ( $head, 'cursus', $langs->trans ( "AgfStagiaireDetail" ), 0, 'user' );
 		
 		print '<table class="border" width="100%">';
 		

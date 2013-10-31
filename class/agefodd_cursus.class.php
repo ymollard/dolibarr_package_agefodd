@@ -54,6 +54,8 @@ class Agefodd_cursus extends CommonObject
 	var $tms='';
 	
 	var $lines=array();
+	
+	var $fk_stagiaire;
 
 
     /**

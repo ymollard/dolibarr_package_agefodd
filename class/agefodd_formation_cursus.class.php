@@ -432,10 +432,9 @@ class Agefodd_formation_cursus extends CommonObject
 	 *  @param	string $sortfield    Sort field
 	 *  @param	int $limit    	offset limit
 	 *  @param	int $offset    	offset limit
-	 *  @param	int $arch    	archive
 	 *  @return int          	<0 if KO, >0 if OK
 	 */
-	function fetch_formation_per_cursus($sortorder, $sortfield, $limit, $offset ) {
+	function fetch_formation_per_cursus($sortorder="ASC", $sortfield="f.ref", $limit=0, $offset=0 ) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -451,7 +450,10 @@ class Agefodd_formation_cursus extends CommonObject
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as f ON t.fk_formation_catalogue=f.rowid"; 
 		$sql.= " WHERE f.entity IN (".getEntity('agsession').") AND c.entity IN (".getEntity('agcursus').")";
 		$sql.= " AND fk_cursus=".$this->fk_cursus;
-		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ".$this->db->plimit( $limit + 1 ,$offset);
+		$sql.= " ORDER BY ".$sortfield." ".$sortorder." ";
+		if (!empty($limit)) {
+			$sql.= $this->db->plimit( $limit + 1 ,$offset);
+		}
 		
 		dol_syslog(get_class($this)."::fetch_formation_per_cursus sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);

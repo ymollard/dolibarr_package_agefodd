@@ -558,7 +558,10 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_cursus as formcur ON formcur.fk_formation_catalogue=c.rowid";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_cursus as stacur ON stacur.fk_stagiaire=sa.rowid AND stacur.fk_stagiaire=" . $this->fk_stagiaire;
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_cursus as cursus  ON stacur.fk_cursus=cursus.rowid AND formcur.fk_cursus=cursus.rowid AND cursus.rowid=".$this->fk_cursus;
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit ( $limit + 1, $offset );
+		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " ;
+		if (!empty($limit)) {
+			$this->db->plimit ( $limit + 1, $offset );
+		}
 		
 		dol_syslog ( get_class ( $this ) . "::fetch_session_cursus_per_trainee sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
