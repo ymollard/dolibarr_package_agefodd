@@ -21,6 +21,7 @@ For All:
 	- Fix : PDF attestatation : missing space before hour
 	- Fix : Session time selection to 23h (21h before)
 	- New : If customer is specified on session header, if will be apply on calendar event 
+	- New : Tab Training session on Thirdparty screen
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
 For All:

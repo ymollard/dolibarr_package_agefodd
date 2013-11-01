@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur_calendrier (
   heured datetime NOT NULL,
   heuref datetime NOT NULL,
   trainer_cost real NULL,
+  trainer_status integer NULL,
   fk_actioncomm integer DEFAULT NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,

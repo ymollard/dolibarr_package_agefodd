@@ -682,6 +682,28 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 * Display select of session status from dictionnary
+	 *
+	 * @param int $selectid Id
+	 * @param string $htmlname Name of HTML control
+	 * @return string The HTML control
+	 */
+	function select_type_affect($selectid, $htmlname = 'search_type_affect' ) {
+		global $conf, $langs;
+	
+		$select_array=array(
+		'thirdparty'=>$langs->trans('ThirdParty'),
+		'trainee'=>$langs->trans('AgfParticipant')
+		);
+		
+		if ($conf->global->AGF_MANAGE_OPCA) {
+			$select_array['opca']=$langs->trans('AgfMailTypeContactOPCA');
+		}
+		
+		return $this->selectarray ( $htmlname, $select_array, $selectid, 0 );
+	}
+	
+	/**
 	 * Display list of training category
 	 *
 	 * @param int $selectid Id de la session selectionner

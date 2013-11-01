@@ -19,7 +19,7 @@
 */
 
 /**
- * \file agefodd/session/list.php
+ * \file agefodd/session/list_ope.php
  * \ingroup agefodd
  * \brief list of session
  */

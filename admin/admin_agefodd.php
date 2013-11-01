@@ -1131,7 +1131,7 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-// Update global variable AGF_MANAGE_CERTIF
+// Update global variable AGF_MANAGE_OPCA
 print '<tr class="pair"><td>'.$langs->trans("AgfManageOPCA").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
