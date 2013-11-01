@@ -203,7 +203,7 @@ class modAgefodd extends DolibarrModules
 		$r++;
 		$this->const[$r][0] = "AGF_CONTACT_DOL_SESSION";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -945,7 +945,7 @@ class modAgefodd extends DolibarrModules
 		'url'=>'/agefodd/contact/list.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>404,
-		'enabled'=>'$user->rights->agefodd->lire',
+		'enabled'=>'!($conf->global->AGF_CONTACT_DOL_SESSION)',
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
 		'user'=>0);
