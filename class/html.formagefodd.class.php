@@ -960,9 +960,8 @@ class FormAgefodd extends Form {
 			print '<td class="nowrap">';
 			print $langs->trans ( "AgfSessionCommercial" );
 			print ' &nbsp;</td><td class="nowrap">';
-			$form->select_users ( $filter_commercial, 'commercial', 1, array (
-			1 
-			) );
+			if (empty($filter_commercial)) {$filter_commercial='a';}
+			$form->select_users ( $filter_commercial, 'commercial', 1, array (1) );
 			print '</td>';
 			print '</tr>';
 			

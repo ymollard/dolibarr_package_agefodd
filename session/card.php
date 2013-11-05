@@ -42,6 +42,7 @@ require_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
 require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+require_once('../class/agefodd_formation_catalogue.class.php');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();
@@ -156,7 +157,18 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		}
 
 		$result = $agf->fetch($id);
-
+		
+		if ($agf->fk_formation_catalogue != GETPOST('formation','int')) {
+			$training_session = new Agefodd ( $this->db );
+			$result = $training_session->fetch ( GETPOST('formation','int') );
+			if ($result > 0 ) {
+				$agf->nb_subscribe_min = $training_session->nb_subscribe_min;
+				$agf->duree_session = $training_session->duree;
+				$agf->intitule_custo = $training_session->intitule;
+				$agf->fk_product = $training_session->fk_product;
+			}
+		}
+		
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
 
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
@@ -172,6 +184,9 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		}
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->status = GETPOST('session_status','int');
+		
+		$agf->duree_session = GETPOST('duree_session','int');
+		$agf->intitule_custo = GETPOST('intitule_custo','alpha');
 
 		$agf->cost_trainer = GETPOST('costtrainer','alpha');
 		$agf->cost_site = GETPOST('costsite','alpha');
@@ -472,6 +487,9 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
+		
+		$agf->duree_session = GETPOST('duree_session','int');
+		$agf->intitule_custo = GETPOST('intitule_custo','alpha');
 
 		if ($error==0)
 		{
@@ -770,6 +788,9 @@ else
 					print '<tr><td>'.$langs->trans("AgfFormIntitule").'</td>';
 					print '<td>'.$formAgefodd->select_formation($agf->formid, 'formation');
 					print '</td></tr>';
+					
+					print '<tr><td>' . $langs->trans ( "AgfFormIntituleCust" ) . '</td>';
+					print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="'.$agf->intitule_custo.'" /></td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfFormTypeSession").'</td>';
 					print '<td>'.$formAgefodd->select_type_session('type_session',$agf->type_session).'</td></tr>';
@@ -812,7 +833,7 @@ else
 					print '</td></tr>';
 
 					print '<tr><td>'.$langs->trans("AgfDuree").'</td>';
-					print '<td>'.$agf->duree.'</td></tr>';
+					print '<td><input size="4" type="text" class="flat" id="duree_session" name="duree_session" value="'.$agf->duree_session.'" /></td></tr>';
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
 					print $form->select_produits($agf->fk_product,'productid','',10000);
@@ -874,7 +895,7 @@ else
 					}
 					// if not force we must input values
 					print '<tr><td width="20%">'.$langs->trans("AgfNbreParticipants").'</td>';
-					print '<td><input size="4" type="text" class="flat" id="nb_stagiaire" name="nb_stagiaire" '.$disabled.' value="'.($agf->nb_stagiaire>0?$agf->nb_stagiaire:'0').'" />'.'</td></tr>';
+					print '<td><input size="4" type="text" class="flat" id="nb_stagiaire" name="nb_stagiaire" '.$disabled.' value="'.($agf->nb_stagiaire>0?$agf->nb_stagiaire:'0').'" /></td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfForceNbreParticipants").'</td>';
 					print '<td>';
@@ -1029,16 +1050,16 @@ else
 							print '</form>'."\n";
 							print '</tr>'."\n";
 						}
-						if (($agf->duree * 3600) != $duree)
+						if (($agf->duree_session * 3600) != $duree)
 						{
 							print '<tr><td colspan=5 align="center"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
-							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
-							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
+							if (($agf->duree_session * 3600) < $duree) print $langs->trans("AgfCalendarSup");
+							if (($agf->duree_session * 3600) > $duree) print $langs->trans("AgfCalendarInf");
 							$min = floor($duree/60) ;
 							$rmin = sprintf("%02d", $min %60) ;
 							$hour = floor($min/60);
 							print ' ('.$langs->trans("AgfCalendarDureeProgrammee").': '.$hour.':'.$rmin.', ';
-							print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree).':00).</td></tr>';
+							print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree_session).':00).</td></tr>';
 						}
 					}
 

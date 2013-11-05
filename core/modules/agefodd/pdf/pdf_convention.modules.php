@@ -294,7 +294,7 @@ class pdf_convention extends ModelePDFAgefodd
 				}
 				$pdf->MultiCell(0, 5, $titre,0,'C');
 
-				$this->str = $agf->formintitule;
+				$this->str = $agf->intitule_custo;
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetXY( $this->marge_gauche, $this->marge_haute + 180);
 				$pdf->MultiCell(0, 5, $this->str,0,'C');

@@ -805,3 +805,4 @@ AgfPDFAttestationCursus5=(pour un total de
 AgfPDFAttestationCursus6=h effectives).
 AgfPDFAttestationCursus8=Avec les félicitations du pôle formation de
 AgfTypeRessource=Type de la relation
+AgfFormIntituleCust=Intitulé formation (pour les documents PDF)

@@ -336,7 +336,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
-		$this->str = '« '.$agf->formintitule.' »';
+		$this->str = '« '.$agf->intitule_custo.' »';
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
 		$posY += $hauteur;

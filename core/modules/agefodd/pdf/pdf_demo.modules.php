@@ -257,7 +257,7 @@ class pdf_demo extends ModelePDFAgefodd
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',12);
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-				$this->str = $agf->formintitule;
+				$this->str = $agf->intitule_custo;
 				$hauteur = dol_nboflines_bis($this->str,50)*4;
 
 				// cadre

@@ -804,3 +804,4 @@ AgfPDFAttestationCursus5=(For a total of
 AgfPDFAttestationCursus6=hhour done).
 AgfPDFAttestationCursus7=With the congratulation of training center
 AgfTypeRessource=Link Type
+AgfFormIntituleCust=Trainning label (use in PDF docs)

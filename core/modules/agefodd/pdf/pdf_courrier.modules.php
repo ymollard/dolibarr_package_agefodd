@@ -265,7 +265,7 @@ class pdf_courrier extends ModelePDFAgefodd
 				}
 				if (!empty($agf_contact->address))
 				{
-					$this->str.= $agf_contact->address."\n".$agf_contact->cp.' '.$agf_contact->ville;
+					$this->str.= $agf_contact->address."\n".$agf_contact->zip.' '.$agf_contact->town;
 				}
 				else
 				{

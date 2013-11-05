@@ -250,7 +250,7 @@ class pdf_attestation extends ModelePDFAgefodd
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', 18);
 					$newY = $newY + 10;
 					$pdf->SetXY ($this->marge_gauche + 1, $newY);
-					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->formintitule.' »'), 0, 0, 'C', 0);
+					$pdf->Cell(0, 0, $outputlangs->transnoentities('« '.$agf->intitule_custo.' »'), 0, 0, 'C', 0);
 
 					$this->str = $outputlangs->transnoentities('AgfPDFAttestation4')." ";
 					if ($agf->dated == $agf->datef) $this->str.= $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef);

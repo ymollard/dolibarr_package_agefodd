@@ -75,7 +75,7 @@ $pdf->SetXY($posX - 80, $posY);
 $this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4')."\n\n\n";
 
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierConv1')."\n";
-$this->str.= '« '.$agf->formintitule." » ".$outputlangs->transnoentities('AgfPDFCourrierConv2')." ".$this->date.".\n\n";
+$this->str.= '« '.$agf->intitule_custo." » ".$outputlangs->transnoentities('AgfPDFCourrierConv2')." ".$this->date.".\n\n";
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierConv3')."\n\n";
 
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11')."\n\n";
