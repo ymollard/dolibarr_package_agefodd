@@ -23,6 +23,7 @@ For All:
 	- New : If customer is specified on session header, if will be apply on calendar event 
 	- New : Tab Training session on Thirdparty screen
 	- Fix : Hide manage agefodd contact according admin setup
+	- New : Session list by administrative task
 
 ***** ChangeLog for 2.1.4 compared to 2.1.3 *****
 For All:

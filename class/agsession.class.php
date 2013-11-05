@@ -194,7 +194,7 @@ class Agsession extends CommonObject {
 		$sql .= " " . (empty ( $this->fk_product ) ? 'NULL' : $this->fk_product) . ",";
 		$sql .= " " . (! isset ( $this->status ) ? 'NULL' : "'" . $this->db->escape ( $this->status ) . "'"). ",";
 		$sql .= " " . (empty( $this->duree_session ) ? '0' : $this->duree_session). ",";
-		$sql .= " " . (! isset ( $this->intitule_custo ) ? 'NULL' : "'" . $this->db->escape ( $this->intitule_custo ) . "'"). ",";
+		$sql .= " " . (! isset ( $this->intitule_custo ) ? 'NULL' : "'" . $this->db->escape ( $this->intitule_custo ) . "'"). "";
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -1632,7 +1632,6 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit ( $limit + 1, $offset );
 		}
 		
-		$resql = $this->db->query ( $sql );
 		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
@@ -1694,6 +1693,148 @@ class Agsession extends CommonObject {
 		}
 	}
 
+	
+	/**
+	 * Load all objects in memory from database
+	 *
+	 * @param string $sortorder order
+	 * @param string $sortfield field
+	 * @param int $limit page
+	 * @param int $offset
+	 * @param int $arch archive or not
+	 * @param array $filter output
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '') {
+	
+		global $langs;
+		
+		$interval0day='0 DAY';
+		$interval3day='3 DAY';
+		$interval8day='8 DAY';
+		
+		if ($this->db->type=='pgsql') {
+			$interval0day="'0 DAYS'";
+			$interval3day="'3 DAYS'";;
+			$interval8day="'8 DAYS'";;
+		}
+	
+		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
+		$sql .= " s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, ";
+		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
+		$sql .= " p.ref_interne";
+		$sql .= " ,so.nom as socname";
+		$sql .= " ,f.rowid as trainerrowid";
+		$sql .= " ,s.intitule_custo";
+		$sql .= " ,s.duree_session,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL ".$interval0day.") <= NOW() AND fk_agefodd_session=s.rowid) as task0,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL ".$interval3day.") AND (datea) ) AND fk_agefodd_session=s.rowid) as task1,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL ".$interval8day.") AND (datea - INTERVAL ".$interval3day.") ) AND fk_agefodd_session=s.rowid) as task2,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid) as task3";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
+		$sql .= " ON c.rowid = s.fk_formation_catalogue";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
+		$sql .= " ON p.rowid = s.fk_session_place";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
+		$sql .= " ON s.rowid = ss.fk_session_agefodd";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
+		$sql .= " ON s.rowid = sa.fk_agefodd_session";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
+		$sql .= " ON so.rowid = s.fk_soc";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
+		$sql .= " ON sf.fk_session = s.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
+		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
+		$sql .= " ON s.status = dictstatus.rowid";
+	
+		$sql .= " WHERE s.archive = 0";
+		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
+	
+		// Manage filter
+		if (! empty ( $filter )) {
+			foreach ( $filter as $key => $value ) {
+				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
+				{
+					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
+					$sql .= ' AND ' . $key . ' = ' . $value;
+				} else {
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
+				}
+			}
+		}
+		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid";
+		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		if (! empty ( $limit )) {
+			$sql .= ' ' . $this->db->plimit ( $limit + 1, $offset );
+		}
+	
+		dol_syslog ( get_class ( $this ) . "::fetch_all_with_task_state sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+	
+		if ($resql) {
+			$this->lines = array ();
+				
+			$num = $this->db->num_rows ( $resql );
+			$i = 0;
+				
+			if ($num) {
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object ( $resql );
+						
+					$line = new AgfSessionLineTask ();
+						
+					$line->rowid = $obj->rowid;
+					$line->socid = $obj->fk_soc;
+					$line->socname = $obj->socname;
+					$line->trainerrowid = $obj->trainerrowid;
+					$line->type_session = $obj->type_session;
+					$line->is_date_res_site = $obj->is_date_res_site;
+					$line->is_date_res_trainer = $obj->is_date_res_trainer;
+					$line->date_res_trainer = $this->db->jdate ( $obj->date_res_trainer );
+					$line->fk_session_place = $obj->fk_session_place;
+					$line->dated = $this->db->jdate ( $obj->dated );
+					$line->datef = $this->db->jdate ( $obj->datef );
+					$line->intitule = $obj->intitule;
+					$line->ref = $obj->ref;
+					$line->training_ref_interne = $obj->trainingrefinterne;
+					$line->ref_interne = $obj->ref_interne;
+					$line->color = $obj->color;
+					$line->nb_stagiaire = $obj->nb_stagiaire;
+					$line->force_nb_stagiaire = $obj->force_nb_stagiaire;
+					$line->notes = $obj->notes;
+					$line->task0 = $obj->task0;
+					$line->task1 = $obj->task1;
+					$line->task2 = $obj->task2;
+					$line->task3 = $obj->task3;
+					$line->duree_session = $obj->duree_session;
+					$line->intitule_custo = $obj->intitule_custo;
+						
+					if ($obj->statuslib == $langs->trans ( 'AgfStatusSession_' . $obj->code )) {
+						$label = stripslashes ( $obj->statuslib );
+					} else {
+						$label = $langs->trans ( 'AgfStatusSession_' . $obj->code );
+					}
+					$line->status_lib = $obj->statuscode . ' - ' . $label;
+						
+					$this->lines [$i] = $line;
+					$i ++;
+				}
+			}
+			$this->db->free ( $resql );
+			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::fetch_all_with_task_state " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
+	
 	/**
 	 * Load all objects in memory from database
 	 *
@@ -1813,7 +1954,6 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit ( $limit + 1, $offset );
 		}
 		
-		$resql = $this->db->query ( $sql );
 		dol_syslog ( get_class ( $this ) . "::fetch_all_by_soc sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
@@ -1950,7 +2090,6 @@ class Agsession extends CommonObject {
 		
 		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit ( $limit + 1, $offset );
 		
-		$resql = $this->db->query ( $sql );
 		dol_syslog ( get_class ( $this ) . "::fetch_all_by_order_invoice_propal sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		
@@ -2806,6 +2945,45 @@ class AgfSessionLine {
 	var $nb_prospect;
 	var $nb_confirm;
 	var $nb_cancelled;
+	var $statuslib;
+	var $statuscode;
+	var $status_in_session;
+	var $realdurationsession;
+	var $duree_session;
+
+	function __construct() {
+
+		return 1;
+	}
+}
+
+/**
+ * Session line Class
+ */
+class AgfSessionLineTask {
+	var $rowid;
+	var $socid;
+	var $socname;
+	var $trainerrowid;
+	var $type_session;
+	var $is_date_res_site;
+	var $is_date_res_trainer;
+	var $date_res_trainer;
+	var $fk_session_place;
+	var $dated;
+	var $datef;
+	var $intitule;
+	var $intitule_custom;
+	var $ref;
+	var $ref_interne;
+	var $color;
+	var $nb_stagiaire;
+	var $force_nb_stagiaire;
+	var $notes;
+	var $task0;
+	var $task1;
+	var $task2;
+	var $task3;
 	var $statuslib;
 	var $statuscode;
 	var $status_in_session;

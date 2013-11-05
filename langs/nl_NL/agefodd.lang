@@ -804,3 +804,7 @@ AgfPDFAttestationCursus6=hhour done).
 AgfPDFAttestationCursus7=With the congratulation of training center
 AgfTypeRessource=Link Type
 AgfFormIntituleCust=Trainning label (use in PDF docs)
+AgfAlertLevel0Short=Tasks late
+AgfAlertLevel1Short=tasks soon Late
+AgfAlertLevel2Short=Task to do soon
+AgfAlertLevel3Short=Running task

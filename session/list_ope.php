@@ -47,7 +47,6 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST ( 'sortorder', 'alpha' );
 $sortfield = GETPOST ( 'sortfield', 'alpha' );
 $page = GETPOST ( 'page', 'int' );
-$arch = GETPOST ( 'arch', 'int' );
 
 // Search criteria
 $search_trainning_name = GETPOST ( "search_trainning_name" );
@@ -111,8 +110,6 @@ if (empty ( $sortorder ))
 	$sortorder = "DESC";
 if (empty ( $sortfield ))
 	$sortfield = "s.dated";
-if (empty ( $arch ))
-	$arch = 0;
 
 if ($page == - 1) {
 	$page = 0;
@@ -125,12 +122,8 @@ $pagenext = $page + 1;
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
 
-if (empty ( $arch ))
-	$title = $langs->trans ( "AgfMenuSessAct" );
-elseif ($arch == 2)
-	$title = $langs->trans ( "AgfMenuSessArchReady" );
-else
-	$title = $langs->trans ( "AgfMenuSessArch" );
+
+$title = $langs->trans ( "AgfMenuSess");
 llxHeader ( '', $title );
 
 if ($training_view && ! empty ( $search_training_ref )) {
@@ -164,39 +157,33 @@ $agf = new Agsession ( $db );
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty ( $conf->global->MAIN_DISABLE_FULL_SCANLIST )) {
-	$nbtotalofrecords = $agf->fetch_all ( $sortorder, $sortfield, 0, 0, $arch, $filter );
+	$nbtotalofrecords = $agf->fetch_all_with_task_state ( $sortorder, $sortfield, 0, 0, $filter );
 }
-$resql = $agf->fetch_all ( $sortorder, $sortfield, $conf->liste_limit, $offset, $arch, $filter );
+$resql = $agf->fetch_all_with_task_state ( $sortorder, $sortfield, $conf->liste_limit, $offset, $filter );
 
 if ($resql != - 1) {
 	$num = $resql;
+
 	
-	if (empty ( $arch ))
-		$menu = $langs->trans ( "AgfMenuSessAct" );
-	elseif ($arch == 2)
-		$menu = $langs->trans ( "AgfMenuSessArchReady" );
-	else
-		$menu = $langs->trans ( "AgfMenuSessArch" );
-	
-	$option = '&arch=' . $arch . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
+	$option = '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	print_barre_liste ( $title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&page=' . $page . '&arch=' . $arch . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	$arg_url = '&page=' . $page . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfFormateur" ), $_SERVER ['PHP_SELF'], "", "", "&arch=" . $arch, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Ref" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfFormTypeSession" ), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfNbreParticipants" ), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfListParticipantsStatus" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfAlertLevel0Short" ), $_SERVEUR ['PHP_SELF'], "", '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfAlertLevel1Short" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfAlertLevel2Short" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfAlertLevel3Short" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print '<td/>';
 	print "</tr>\n";
 	
 	// Search bar
@@ -242,19 +229,7 @@ if ($resql != - 1) {
 	print '</td>';
 	
 	print '<td class="liste_titre">';
-	print $formAgefodd->select_formateur ( $search_teacher_id, 'search_teacher_id', '', 1 );
-	print '</td>';
-	
-	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
-	print '</td>';
-	
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="20">';
-	print '</td>';
-	
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="20">';
 	print '</td>';
 	
 	print '<td class="liste_titre">';
@@ -275,6 +250,12 @@ if ($resql != - 1) {
 	
 	print '<td class="liste_titre">';
 	print '</td>';
+	print '<td class="liste_titre">';
+	print '</td>';
+	print '<td class="liste_titre">';
+	print '</td>';
+	print '<td class="liste_titre">';
+	print '</td>';
 	
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
 	print '&nbsp; ';
@@ -287,7 +268,7 @@ if ($resql != - 1) {
 	$var = true;
 	foreach ( $agf->lines as $line ) {
 		
-		if ($line->rowid != $oldid) {
+		
 			
 			// Affichage tableau des sessions
 			$var = ! $var;
@@ -312,62 +293,18 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			print '<td>';
-			$trainer = new Agefodd_teacher ( $db );
-			if (! empty ( $line->trainerrowid )) {
-				$trainer->fetch ( $line->trainerrowid );
-			}
-			if (! empty ( $trainer->id )) {
-				print ucfirst ( strtolower ( $trainer->civilite ) ) . ' ' . strtoupper ( $trainer->name ) . ' ' . ucfirst ( strtolower ( $trainer->firstname ) );
-			} else {
-				print '&nbsp;';
-			}
-			print '</td>';
 			print '<td>' . stripslashes ( dol_trunc ( $line->intitule, 60 ) ) . '</td>';
-			print '<td>' . $line->ref . '</td>';
-			print '<td>' . $line->training_ref_interne . '</td>';
 			print '<td>' .($line->type_session ? $langs->trans ( 'AgfFormTypeSessionInter' ) : $langs->trans ( 'AgfFormTypeSessionIntra' )). '</td>';
 			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
-			print '<td>' . $line->nb_stagiaire . '</td>';
-			if (! empty ( $line->nb_subscribe_min )) {
-				if ($line->nb_confirm >= $line->nb_subscribe_min) {
-					$style = 'style="background: green"';
-				} else {
-					$style = 'style="background: red"';
-				}
-			} else {
-				$style = '';
-			}
-			print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			print '<td>' . $line->task0 . '</td>';
+			print '<td>' . $line->task1 . '</td>';
+			print '<td>' . $line->task2 . '</td>';
+			print '<td>' . $line->task3 . '</td>';
+			print '<td/>';
 			print "</tr>\n";
-		} else {
-			print "<tr $bc[$var]>";
-			print '<td></td>';
-			print '<td></td>';
-			print '<td>';
-			$trainer = new Agefodd_teacher ( $db );
-			if (! empty ( $line->trainerrowid )) {
-				$trainer->fetch ( $line->trainerrowid );
-			}
-			if (! empty ( $trainer->id )) {
-				print ucfirst ( strtolower ( $trainer->civilite ) ) . ' ' . strtoupper ( $trainer->name ) . ' ' . ucfirst ( strtolower ( $trainer->firstname ) );
-			} else {
-				print '&nbsp;';
-			}
-			print '</td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print "</tr>\n";
-		}
+		
 		
 		$oldid = $line->rowid;
 		

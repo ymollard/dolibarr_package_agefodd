@@ -806,3 +806,7 @@ AgfPDFAttestationCursus6=h effectives).
 AgfPDFAttestationCursus8=Avec les félicitations du pôle formation de
 AgfTypeRessource=Type de la relation
 AgfFormIntituleCust=Intitulé formation (pour les documents PDF)
+AgfAlertLevel0Short=tâches en retard
+AgfAlertLevel1Short=tâches urgentes
+AgfAlertLevel2Short=tâches à planifier
+AgfAlertLevel3Short=tâches en cours
