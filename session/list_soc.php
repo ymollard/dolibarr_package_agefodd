@@ -300,11 +300,11 @@ if ($result >= 0) {
 	print '</td>';
 	
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="20">';
+	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="10">';
 	print '</td>';
 	
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="20">';
+	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
 	print '</td>';
 	
 	print '<td class="liste_titre">';
