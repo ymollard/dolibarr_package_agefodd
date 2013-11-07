@@ -269,6 +269,12 @@ class Agefodd_session_stagiaire  extends CommonObject
 		if (! $resql) {
 			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
+		
+		/*if (! $error && !empty($conf->global->AGF_MANAGE_CERTIF) && !empty($conf->global->AGF_DEFAULT_CREATE_CERTIF)) 
+		{
+			
+		}*/
+		
 		if (! $error)
 		{
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_session_stagiaire");
@@ -284,7 +290,8 @@ class Agefodd_session_stagiaire  extends CommonObject
 				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				//// End call triggers
 			}
-				
+			
+			require_once 'agsession.class.php';
 			$session = new Agsession($this->db);
 			$session->fetch($this->fk_session_agefodd);
 			if (empty($session->force_nb_stagiaire)) {

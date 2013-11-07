@@ -42,5 +42,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   fk_product integer,
   nb_subscribe_min integer NULL,
   fk_c_category integer NULL,
+  certif_duration varchar(30) NULL,
   tms timestamp NOT NULL
 ) ENGINE=InnoDB;

@@ -60,6 +60,7 @@ class Agefodd extends CommonObject {
 	var $priorite;
 	var $fk_c_category;
 	var $category_lib;
+	var $certif_duration;
 	var $lines = array ();
 	
 
@@ -104,6 +105,8 @@ class Agefodd extends CommonObject {
 			$this->note2 = $this->db->escape ( trim ( $this->note2 ) );
 		if (isset ( $this->note2 ))
 			$this->programme = $this->db->escape ( trim ( $this->programme ) );
+		if (isset ( $this->certif_duration ))
+			$this->certif_duration = $this->db->escape ( trim ( $this->certif_duration ) );
 		
 		if (empty ( $this->duree ))
 			$this->duree = 0;
@@ -115,7 +118,7 @@ class Agefodd extends CommonObject {
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formation_catalogue(";
 		$sql .= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,";
 		$sql .= "programme, note1, note2, fk_user_author,fk_user_mod,entity,";
-		$sql .= "fk_product,nb_subscribe_min,fk_c_category";
+		$sql .= "fk_product,nb_subscribe_min,fk_c_category,certif_duration";
 		$sql .= ") VALUES (";
 		$sql .= $this->db->idate ( dol_now () ) . ', ';
 		$sql .= " " . (! isset ( $this->ref_obj ) ? 'NULL' : "'" . $this->ref_obj . "'") . ",";
@@ -134,7 +137,8 @@ class Agefodd extends CommonObject {
 		$sql .= " " . $conf->entity . ', ';
 		$sql .= " " . (empty ( $this->fk_product ) ? 'null' : $this->fk_product) . ', ';
 		$sql .= " " . (empty ( $this->nb_subscribe_min ) ? "null" : $this->nb_subscribe_min). ', ';
-		$sql .= " " . (empty ( $this->fk_c_category ) ? "null" : $this->fk_c_category);
+		$sql .= " " . (empty ( $this->fk_c_category ) ? "null" : $this->fk_c_category). ', ';
+		$sql .= " " . (empty ( $this->certif_duration ) ? "null" : "'".$this->certif_duration."'");
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -197,6 +201,7 @@ class Agefodd extends CommonObject {
 		$sql .= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
 		$sql .= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 		$sql .= " ,c.note_private, c.note_public, c.fk_product,c.nb_subscribe_min,c.fk_c_category,dictcat.code as catcode ,dictcat.intitule as catlib ";
+		$sql .= " ,c.certif_duration";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat ON dictcat.rowid=c.fk_c_category";
 		if ($id && ! $ref)
@@ -232,6 +237,7 @@ class Agefodd extends CommonObject {
 				if (!empty($obj->catcode) || !empty($obj->catlib)) {
 					$this->category_lib = $obj->catcode.' - '.$obj->catlib;
 				}
+				$this->certif_duration = $obj->certif_duration;
 			}
 			$this->db->free ( $resql );
 			
@@ -311,6 +317,7 @@ class Agefodd extends CommonObject {
 		$this->programme = $this->db->escape ( trim ( $this->programme ) );
 		$this->note1 = $this->db->escape ( trim ( $this->note1 ) );
 		$this->note2 = $this->db->escape ( trim ( $this->note2 ) );
+		$this->certif_duration = $this->db->escape ( trim ( $this->certif_duration ) );
 		
 		if ($this->fk_c_category==-1)
 			$this->fk_c_category = 0;
@@ -340,8 +347,9 @@ class Agefodd extends CommonObject {
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " archive=" . $this->archive . ",";
 		$sql .= " fk_product=" . (!empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
-		$sql .= " nb_subscribe_min=" . (!empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null") . ",";
-		$sql .= " fk_c_category=" . (!empty ( $this->fk_c_category ) ? $this->fk_c_category : "null");
+		$sql .= " nb_subscribe_min=" . (!empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null"). "," ;
+		$sql .= " fk_c_category=" . (!empty ( $this->fk_c_category ) ? $this->fk_c_category : "null"). ",";
+		$sql .= " certif_duration=" . (!empty ( $this->certif_duration ) ? "'" .$this->certif_duration. "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
 		$this->db->begin ();

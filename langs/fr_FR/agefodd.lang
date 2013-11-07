@@ -810,3 +810,6 @@ AgfAlertLevel0Short=tâches en retard
 AgfAlertLevel1Short=tâches urgentes
 AgfAlertLevel2Short=tâches à planifier
 AgfAlertLevel3Short=tâches en cours
+AgfConfirmChangeState=Etes vous sûre de changer cette option ?
+AgfCertifAutoAdd=Crée les certificats par defaut lors de l'inscription du participants
+AgfCertificateDuration=Durée de validité du certificats

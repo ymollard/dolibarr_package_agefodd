@@ -808,3 +808,6 @@ AgfAlertLevel0Short=Tasks late
 AgfAlertLevel1Short=tasks soon Late
 AgfAlertLevel2Short=Task to do soon
 AgfAlertLevel3Short=Running task
+AgfConfirmChangeState=Are you sure to change this option state ?
+AgfCertifAutoAdd=Create automaticly the certificat on subscribers subscription
+AgfCertificateDuration=Duration validity of certificate

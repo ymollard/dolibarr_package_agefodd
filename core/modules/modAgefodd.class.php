@@ -272,6 +272,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Manage certification';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_DEFAULT_CREATE_CERTIF";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Whenn Add a trainee defaut create sertificate';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		$r++;
 		$this->const[$r][0] = "AGF_FCKEDITOR_ENABLE_TRAINING";

@@ -800,13 +800,61 @@ class FormAgefodd extends Form {
 			}
 			$ftime = sprintf ( "%02d", $time ) . ':' . sprintf ( "%02d", $min );
 			if ($selectval == $ftime)
-				$selected = ' selected="true"';
+				$selected = ' selected="selected"';
 			else
 				$selected = '';
 			$options .= '<option value="' . $ftime . '"' . $selected . '>' . $ftime . '</option>' . "\n";
 			$min += 15;
 		}
 		return '<select class="flat" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
+	}
+	
+	/**
+	 * Affiche un champs select contenant la liste des 1/4 d"heures de 7:00 à 21h00.
+	 *
+	 * @param string $selectval valeur a selectionner par defaut
+	 * @param string $htmlname nom du control HTML
+	 * @return string The HTML control
+	 */
+	function select_duration_agf($selectval = '', $htmlname = 'duration') {
+
+		global $langs;
+		
+		$duration_array=array();
+		
+		if (!empty($selectval)){
+			$duration_array=explode(':',$selectval);
+			$year=$duration_array[0];
+			$month=$duration_array[1];
+			$day=$duration_array[2];
+		}else {
+			$year=$month=$day=0;
+		}
+		
+		$out = '<input name="'.$htmlname.'_year" class="flat" size="4" value="'.$year.'">'.$langs->trans('Year').'(s)';
+		$out .= '<select class="flat" name="' . $htmlname . '_month">';
+		for ($i = 0; $i <= 12; $i ++) {
+			if ($i==$month) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
+			}
+			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+		}
+		$out .=	'</select>' .$langs->trans('Month').'(s)'. "\n";
+		
+		$out .= '<select class="flat" name="' . $htmlname . '_day">';
+		for ($i = 0; $i <= 31; $i ++) {
+			if ($i==$day) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
+			}
+			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+		}
+		$out .=	'</select>' .$langs->trans('Day').'(s)'. "\n";
+		
+		return $out;
 	}
 	
 	/**
