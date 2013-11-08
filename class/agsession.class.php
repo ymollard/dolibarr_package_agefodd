@@ -1566,7 +1566,7 @@ class Agsession extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = '') {
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = array()) {
 
 		global $langs;
 		
@@ -1613,7 +1613,7 @@ class Agsession extends CommonObject {
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
 		// Manage filter
-		if (! empty ( $filter )) {
+		if (count ( $filter ) > 0) {
 			foreach ( $filter as $key => $value ) {
 				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{

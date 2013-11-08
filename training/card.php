@@ -109,12 +109,12 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->fk_product = GETPOST('productid','int');
 		$agf->fk_c_category =GETPOST('categid','int');
 		
-		/*if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+		if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 			$certif_year= GETPOST('certif_year','int');
 			$certif_month= GETPOST('certif_month','int');
 			$certif_day= GETPOST('certif_day','int');
 			$agf->certif_duration =$certif_year.':'.$certif_month.':'.$certif_day;
-		} */
+		} 
 		
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
@@ -173,12 +173,12 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->fk_product = GETPOST('productid','int');
 		$agf->fk_c_category =GETPOST('categid','int');
 		
-		/*if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+		if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 			$certif_year= GETPOST('certif_year','int');
 			$certif_month= GETPOST('certif_month','int');
 			$certif_day= GETPOST('certif_day','int');
 			$agf->certif_duration =$certif_year.':'.$certif_month.':'.$certif_day;
-		}*/
+		}
 		
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
@@ -369,11 +369,11 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
 	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','int').'"></td></tr>';
 	
-	/*if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+	if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 		print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
 		print $formagefodd->select_duration_agf($agf->certif_duration,'certif');
 		print '</td></tr>';
-	}*/
+	}
 	
 	print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 	print '<input name="nbmintarget" class="flat" size="5" value="'.GETPOST('nbmintarget','int').'"></td></tr>';
@@ -488,11 +488,11 @@ else
 				print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
 				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
 				
-				/*if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 					print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
 					print $formagefodd->select_duration_agf($agf->certif_duration,'certif');
 					print '</td></tr>';
-				}*/
+				}
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';
@@ -681,7 +681,7 @@ else
 				print '<tr><td>'.$langs->trans("AgfDuree").'</td><td colspan=2>';
 				print $agf->duree.'</td></tr>';
 				
-				/*if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 					print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
 					if (!empty($agf->certif_duration)){
 						$duration_array=explode(':',$agf->certif_duration);
@@ -694,7 +694,7 @@ else
 					
 					print $year.' '.$langs->trans('Year').'(s) '.$month.' '.$langs->trans('Month').'(s) '. $day.' '.$langs->trans('Day').'(s)';
 					print '</td></tr>';
-				}*/
+				}
 				
 				print '<tr><td>'.$langs->trans("AgfNbMintarget").'</td><td colspan=2>';
 				print $agf->nb_subscribe_min.'</td></tr>';

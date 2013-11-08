@@ -387,6 +387,7 @@ class FormAgefodd extends Form {
 		$sql .= " so.nom as socname, so.rowid as socid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
+		
 		$sql .= " ON so.rowid = s.fk_soc";
 		if (! empty ( $filter )) {
 			$sql .= ' WHERE ' . $filter;

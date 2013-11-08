@@ -220,12 +220,18 @@ if (!empty($id))
 			}
 			else
 			{
+				$soc = new Societe($db);
+				$result=$soc->fetch($stagiaires->lines[$i]->socid);
+				$socinfo='';
+				if ($result > 0 ) {
+					$socinfo='-'.$soc->getNomUrl(1);
+				}
 				$trainee_info = '<a href="'.dol_buildpath('/agefodd/trainee/card.php',1).'?id='.$stagiaires->lines[$i]->id.'">';
 				$trainee_info .= img_object($langs->trans("ShowContact"),"contact").' ';
 				$trainee_info .= strtoupper($stagiaires->lines[$i]->nom).' '.ucfirst($stagiaires->lines[$i]->prenom).'</a>';
 				$contact_static= new Contact($db);
 				$contact_static->civilite_id = $stagiaires->lines[$i]->civilite;
-				$trainee_info .= ' ('.$contact_static->getCivilityLabel().')';
+				$trainee_info .= ' ('.$contact_static->getCivilityLabel().')'.$socinfo;
 					
 				print'<label for="'.$htmlname.'" style="width:45%; display: inline-block;margin-left:5px;">'.$trainee_info.'</label>';
 			}

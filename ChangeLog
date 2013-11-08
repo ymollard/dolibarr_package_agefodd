@@ -1,6 +1,6 @@
 English Dolibarr ChangeLog
 
-***** ChangeLog for 2.1.5 compared to 2.1.4 *****
+***** ChangeLog for 2.1.6 compared to 2.1.4 *****
 For All:
 	- New : Add session type into session list 
 	- Fix : bugs_agefodd #1050 - Error when update trainee without using type

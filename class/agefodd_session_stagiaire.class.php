@@ -270,10 +270,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
 		
-		/*if (! $error && !empty($conf->global->AGF_MANAGE_CERTIF) && !empty($conf->global->AGF_DEFAULT_CREATE_CERTIF)) 
-		{
-			
-		}*/
+		
 		
 		if (! $error)
 		{
@@ -291,6 +288,8 @@ class Agefodd_session_stagiaire  extends CommonObject
 				//// End call triggers
 			}
 			
+			
+			//Recalculate number of trainee in session
 			require_once 'agsession.class.php';
 			$session = new Agsession($this->db);
 			$session->fetch($this->fk_session_agefodd);
@@ -298,6 +297,81 @@ class Agefodd_session_stagiaire  extends CommonObject
 				$this->fetch_stagiaire_per_session($this->fk_session_agefodd);
 				$session->nb_stagiaire=count($this->lines);
 				$session->update($user);
+			}
+		}
+		
+		//Create auto certif if enabled
+		if (! $error && !empty($conf->global->AGF_MANAGE_CERTIF) && !empty($conf->global->AGF_DEFAULT_CREATE_CERTIF))
+		{
+			require_once 'agefodd_stagiaire_certif.class.php';
+				
+			$agf_certif=new Agefodd_stagiaire_certif($this->db);
+			//New cerficiation
+			
+			require_once 'agefodd_formation_catalogue.class.php';
+			//Find next certificate code
+			$agf_training = new Agefodd($this->db);
+			$agf_training->fetch($session->formid);			
+			$obj = empty($conf->global->AGF_CERTIF_ADDON)?'mod_agefoddcertif_simple':$conf->global->AGF_CERTIF_ADDON;
+			$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+			if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel) && (empty($agf_certif->certif_code)))
+			{
+				dol_include_once('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+				$modAgefodd = new $obj;
+				$agf_certif->certif_code = $modAgefodd->getNextValue($agf_training,$session);
+			}
+			
+			if (is_numeric($agf_certif->certif_code) && $agf_certif->certif_code <= 0) $agf_certif->certif_code='';
+			
+			$agf_certif->fk_session_agefodd=$this->fk_session_agefodd;
+			$agf_certif->fk_session_stagiaire=$this->id;
+			$agf_certif->fk_stagiaire=$this->fk_stagiaire;
+			$agf_certif->certif_label=$agf_certif->certif_code;
+			
+			//Start date in the end of session ot now if not set yet
+			if (dol_strlen ( $session->datef ) == 0) {
+				$certif_dt_start = dol_now();
+			} else {
+				$certif_dt_start = $session->datef;
+			}
+			$agf_certif->certif_dt_start=$certif_dt_start;
+			
+			//End date is end of seesion more the time set in session
+			if (!empty($agf_training->certif_duration)) {
+				require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
+				$duration_array=explode(':',$agf_training->certif_duration);
+				$year=$duration_array[0];
+				$month=$duration_array[1];
+				$day=$duration_array[2];
+				$certif_dt_end = dol_time_plus_duree($certif_dt_start, $year, 'y');
+				$certif_dt_end = dol_time_plus_duree($certif_dt_end, $month, 'm');
+				$certif_dt_end = dol_time_plus_duree($certif_dt_end, $day, 'd');
+			} else {
+				$certif_dt_end = $certif_dt_start;
+			}
+			
+			$agf_certif->certif_dt_end=$certif_dt_end;
+				
+			$resultcertif=$agf_certif->create($user);
+			if ($resultcertif<0) {
+				$error++; $this->errors[]="Error ".$agf_certif->error;
+			}else {
+					
+				$certif_type_array = $agf_certif->get_certif_type();
+					
+				if (is_array($certif_type_array) && count($certif_type_array)>0)
+				{
+					foreach($certif_type_array as $certif_type_id=>$certif_type_label)
+					{
+						//Set Certification type to not passed yet
+						$result=$agf_certif->set_certif_state($user,$resultcertif, $certif_type_id, 0);
+						if ($result<0) {
+							$error++; $this->errors[]="Error ".$agf_certif->error;
+						}
+					}
+				}
+					
+					
 			}
 		}
 	

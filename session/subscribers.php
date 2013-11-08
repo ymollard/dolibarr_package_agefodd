@@ -599,6 +599,7 @@ if (!empty($id))
 		if (!isset($_POST["newstag"]))
 		{
 			print '</div>';
+			print '<br>';
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
 			print '<form name="newstag" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -613,22 +614,27 @@ if (!empty($id))
 				$param_socid='';
 			}
 			print '<a class="butAction" href="../trainee/card.php?action=create'.$param_socid.'&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
-			if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{	
-				print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
+			
+			if ($conf->global->AGF_MANAGE_OPCA) {
+				if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{	
+					print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
+				}
+				else {
+					if($agf->type_session) $title = ' / '.$langs->trans('AgfAvailableForIntraOnly');
+					print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).$title.'">'.$langs->trans('AgfModifySubrogation').'</a>';
+				}
 			}
-			else {
-				if($agf->type_session) $title = ' / '.$langs->trans('AgfAvailableForIntraOnly');
-				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).$title.'">'.$langs->trans('AgfModifySubrogation').'</a>';
-			}
+			
 			print '</td></tr>';
 			print '</form>';
+		} else {
+			print '<br>';
+			print '<table style="border:0;" width="100%">';
+			print '<tr><td align="right">';
+			print '<a class="butAction" href="../trainee/card.php?action=create'.$param_socid.'&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
+			print '</td></tr>';
+			print '</table>';
 		}
-		
-		print '<table style="border:0;" width="100%">';
-		print '<tr><td align="right">';
-		print '<a class="butAction" href="../trainee/card.php?action=create'.$param_socid.'&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
-		print '</td></tr>';
-		print '</table>';
 		
 		
 		print '</table>';

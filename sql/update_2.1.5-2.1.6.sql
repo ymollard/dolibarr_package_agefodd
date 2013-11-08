@@ -1,0 +1,1 @@
+--ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN certif_duration varchar(30) NULL AFTER fk_c_category;
