@@ -319,6 +319,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 
 		$posX+= 2;
 		$posY+= 2;
+		$posYintitule=$posY;
 
 		$larg_col1 = 20;
 		$larg_col2 = 130;
@@ -335,10 +336,13 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
-		$this->str = '« '.$agf->intitule_custo.' »';
+		if (empty($agf->intitule_custo)) {
+			$this->str = '« '.$agf->formintitule.' »';
+		} else {
+			$this->str = '« '.$agf->intitule_custo.' »';
+		}
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
-		$hauteur = dol_nboflines_bis($this->str,50)*4;
-		$posY += $hauteur;
+		$posY = $pdf->getY()+2;
 		$haut_col2 += $hauteur;
 
 		// Période
@@ -355,14 +359,14 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 		$haut_col2 += $hauteur + 2;
 
 		// Lieu
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posY - $hauteur);
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posYintitule);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres11');
 		$pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
 
 		$agf_place = new Agefodd_place($this->db);
 		$resql = $agf_place->fetch($agf->placeid);
 
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2  + $larg_col3, $posY - $hauteur);
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2  + $larg_col3, $posYintitule);
 		$this->str = $agf_place->ref_interne."\n". $agf_place->adresse."\n".$agf_place->cp." ".$agf_place->ville;
 		$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
@@ -534,8 +538,11 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd
 
 			// Nom
 			$pdf->SetXY($posX - 2, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs),'',7);
 			$this->str = $line->nom.' '.$line->prenom;
+			if (!empty($line->poste)) {
+				$this->str.= ' ('.$line->poste.')';
+			}
 			$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str),1,"C",false,1,'','',true,0,false,false,$h_ligne,'M');
 
 			// Société

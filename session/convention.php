@@ -301,13 +301,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	//intro1
 	$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-	$intro1 = $langs->trans('AgfConvIntro1_1').' '.$mysoc->name .', '.$statut.$langs->trans('AgfConvIntro1_2').' ';
+	$intro1 = $langs->trans('AgfConvIntro1_1').' '.$mysoc->name .', '.$statut.' '.$langs->trans('AgfConvIntro1_2').' ';
 	if (!empty($mysoc->capital)) {
-		$capital_text=$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
+		$capital_text=' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
 	} else {
 		$capital_text='';
 	}
-	$intro1.= $capital_text.' '.$statut.' '.$langs->trans('AgfConvIntro1_3').' '.$mysoc->town;
+	$intro1.= $capital_text.' '.$langs->trans('AgfConvIntro1_3').' '.$mysoc->town;
 	$intro1.= ' ('.$mysoc->zip.') ';
 	if (!empty($mysoc->idprof4)) {
 		$intro1.= $langs->trans('AgfConvIntro1_4').' '.$mysoc->idprof4;
@@ -417,6 +417,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	for ($i= 0; $i < $nbstag; $i++)
 	{
 		$art3.= $stagiaires->lines[$i]->nom.' '.$stagiaires->lines[$i]->prenom;
+		if (!empty($stagiaires->lines[$i]->poste)) {
+			$art3.= ' ('.$stagiaires->lines[$i]->poste.')';
+		}
 		if ($i == $nbstag - 1) $art3.= '.';
 		else
 		{

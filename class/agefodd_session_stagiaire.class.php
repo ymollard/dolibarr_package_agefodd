@@ -149,7 +149,9 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$sql.= " sa.date_birth,";
 		$sql.= " sa.place_birth,";
 		$sql.= " sa.fk_socpeople,";
-		$sql.= " sope.birthday";
+		$sql.= " sope.birthday,";
+		$sql.= " sope.poste,";
+		$sql.= " sa.fonction";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
@@ -206,6 +208,13 @@ class Agefodd_session_stagiaire  extends CommonObject
 				} else {
 					$line->email = $obj->mail;
 				}
+				
+				if (empty($obj->poste)) {
+					$line->poste=$obj->fonction;
+				} else {
+					$line->poste=$obj->poste;
+				}
+				
 				$line->fk_agefodd_stagiaire_type=$obj->fk_agefodd_stagiaire_type;
 	
 				$this->lines[$i]=$line;
@@ -669,6 +678,7 @@ class AgfTraineeSessionLine
 	var $place_birth;
 	var $status_in_session;
 	var $fk_agefodd_stagiaire_type;
+	var $poste;
 
 	function __construct()
 	{

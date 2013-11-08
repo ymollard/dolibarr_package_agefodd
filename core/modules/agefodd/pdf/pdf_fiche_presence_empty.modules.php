@@ -320,55 +320,62 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd
 
 		$posX+= 2;
 		$posY+= 2;
-
+		$posYintitule=$posY;
+		
 		$larg_col1 = 20;
 		$larg_col2 = 80;
 		$larg_col3 = 27;
 		$larg_col4 = 82;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
-
+		
 		// Intitulé
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres6');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+		
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
-		$this->str = '« '.$agf->intitule_custo.' »';
+		
+		if (empty($agf->intitule_custo)) {
+			$this->str = '« '.$agf->formintitule.' »';
+		} else {
+			$this->str = '« '.$agf->intitule_custo.' »';
+		}
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
-		$hauteur = dol_nboflines_bis($this->str,50)*4;
-		$posY += $hauteur;
+		
+		$posY = $pdf->getY()+2;
 		$haut_col2 += $hauteur;
-
+		
 		// Période
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+		
 		if ($agf->dated == $agf->datef) $this->str = $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef,'daytext');
 		else $this->str = $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef,'daytext');
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->MultiCell($larg_col2,4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
 		$haut_col2 += $hauteur + 2;
-
+		
 		// Lieu
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posY - $hauteur);
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posYintitule );
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres11');
 		$pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+		
 		$agf_place = new Agefodd_place($this->db);
 		$resql = $agf_place->fetch($agf->placeid);
-
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2  + $larg_col3, $posY - $hauteur);
+		
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2  + $larg_col3, $posYintitule);
 		$this->str = $agf_place->ref_interne."\n". $agf_place->adresse."\n".$agf_place->cp." ".$agf_place->ville;
 		$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
 		$posY += $hauteur+5;
 		$haut_col4 += $hauteur +7;
+		
 
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
