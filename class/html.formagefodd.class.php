@@ -499,6 +499,158 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 *	Return list of all contacts (for a third party or all)
+	 *
+	 *	@param	int		$socid      	Id ot third party or 0 for all
+	 *	@param  string	$selected   	Id contact pre-selectionne
+	 *	@param  string	$htmlname  	    Name of HTML field ('none' for a not editable field)
+	 *	@param  int		$showempty      0=no empty value, 1=add an empty value
+	 *	@param  string	$exclude        List of contacts id to exclude
+	 *	@param	string	$limitto		Disable answers that are not id in this array list
+	 *	@param	string	$showfunction   Add function into label
+	 *	@param	string	$moreclass		Add more class to class style
+	 *	@param	string	$showsoc	    Add company into label
+	 * 	@param	int		$forcecombo		Force to use combo box
+	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *  @param	bool	$options_only	Return options only (for ajax treatment)
+	 *	@return	int						<0 if KO, Nb of contact in list if OK
+	 */
+	function select_contacts_custom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto='',$showfunction=0, $moreclass='', $showsoc=0, $forcecombo=0, $event=array(), $options_only=false)
+	{
+		print $this->selectcontactscustom($socid,$selected,$htmlname,$showempty,$exclude,$limitto,$showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
+		return $this->num;
+	}
+	
+	/**
+	 *	Return list of all contacts (for a third party or all)
+	 *
+	 *	@param	int		$socid      	Id ot third party or 0 for all
+	 *	@param  string	$selected   	Id contact pre-selectionne
+	 *	@param  string	$htmlname  	    Name of HTML field ('none' for a not editable field)
+	 *	@param  int		$showempty     	0=no empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
+	 *	@param  string	$exclude        List of contacts id to exclude
+	 *	@param	string	$limitto		Number of contact ti display in max
+	 *	@param	string	$showfunction   Add function into label
+	 *	@param	string	$moreclass		Add more class to class style
+	 *	@param	bool	$options_only	Return options only (for ajax treatment)
+	 *	@param	string	$showsoc	    Add company into label
+	 * 	@param	int		$forcecombo		Force to use combo box
+	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *	@return	 int						<0 if KO, Nb of contact in list if OK
+	 */
+	function selectcontactscustom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto=0,$showfunction=0, $moreclass='', $options_only=false, $showsoc=0, $forcecombo=0, $event=array())
+	{
+		global $conf,$langs;
+	
+		$langs->load('companies');
+	
+		$out='';
+	
+		// On recherche les societes
+		$sql = "SELECT sp.rowid, sp.lastname, sp.firstname, sp.poste";
+		if ($showsoc > 0) {
+			$sql.= " , s.nom as company";
+		}
+		$sql.= " FROM ".MAIN_DB_PREFIX ."socpeople as sp";
+		if ($showsoc > 0) {
+			$sql.= " LEFT OUTER JOIN  ".MAIN_DB_PREFIX ."societe as s ON s.rowid=sp.fk_soc ";
+		}
+		$sql.= " WHERE sp.entity IN (".getEntity('societe', 1).")";
+		if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
+		if (! empty($conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX)) $sql.= " AND sp.statut<>0 ";
+		$sql.= " ORDER BY sp.lastname ASC";
+	
+		dol_syslog(get_class($this)."::select_contacts sql=".$sql);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$num=$this->db->num_rows($resql);
+	
+			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only)
+			{
+				$out.= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
+			}
+	
+			if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
+			if ($showempty == 1) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'></option>';
+			if ($showempty == 2) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'>'.$langs->trans("Internal").'</option>';
+			$num = $this->db->num_rows($resql);
+			
+			if ($num>$limitto){
+				$num=$limitto;
+			}
+			
+			$i = 0;
+			if ($num)
+			{
+				include_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
+				$contactstatic=new Contact($this->db);
+	
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+	
+					$contactstatic->id=$obj->rowid;
+					$contactstatic->lastname=$obj->lastname;
+					$contactstatic->firstname=$obj->firstname;
+	
+					if ($htmlname != 'none')
+					{
+						$disabled=0;
+						if (is_array($exclude) && count($exclude) && in_array($obj->rowid,$exclude)) $disabled=1;
+						if ($selected && $selected == $obj->rowid)
+						{
+							$out.= '<option value="'.$obj->rowid.'"';
+							if ($disabled) $out.= ' disabled="disabled"';
+							$out.= ' selected="selected">';
+							$out.= $contactstatic->getFullName($langs);
+							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+							$out.= '</option>';
+						}
+						else
+						{
+							$out.= '<option value="'.$obj->rowid.'"';
+							if ($disabled) $out.= ' disabled="disabled"';
+							$out.= '>';
+							$out.= $contactstatic->getFullName($langs);
+							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+							$out.= '</option>';
+						}
+					}
+					else
+					{
+						if ($selected == $obj->rowid)
+						{
+							$out.= $contactstatic->getFullName($langs);
+							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+						}
+					}
+					$i++;
+				}
+			}
+			else
+			{
+				$out.= '<option value="-1"'.($showempty==2?'':' selected="selected"').' disabled="disabled">'.$langs->trans($socid?"NoContactDefinedForThirdParty":"NoContactDefined").'</option>';
+			}
+			if ($htmlname != 'none' || $options_only)
+			{
+				$out.= '</select>';
+			}
+	
+			$this->num = $num;
+			return $out;
+		}
+		else
+		{
+			dol_print_error($this->db);
+			return -1;
+		}
+	}
+	
+	/**
 	 * affiche un champs select contenant la liste des formateurs déjà référéencés.
 	 *
 	 * @param int $selectid Id de la session selectionner

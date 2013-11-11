@@ -691,9 +691,9 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print '<tr><td>'.$langs->trans("AgfSessionContact").'</td>';
 		print '<td><table class="nobordernopadding"><tr><td>';
 		if (!empty($fk_soc_crea)) {
-			$form->select_contacts($fk_soc_crea,'','contact',1,'','',1,'',1);
+			$formAgefodd->select_contacts_custom($fk_soc_crea,'','contact',1,'','',1,'',1);
 		} else {
-			$form->select_contacts(0,'','contact',1,'','',1,'',1);
+			$formAgefodd->select_contacts_custom(0,'','contact',1,'',20,1,'',1);
 		}
 		print '</td>';
 		print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';

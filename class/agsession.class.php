@@ -2180,7 +2180,7 @@ class Agsession extends CommonObject {
 		print '<td><a href="' . dol_buildpath ( '/user/fiche.php', 1 ) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
 		
 		print '<tr><td>' . $langs->trans ( "AgfDuree" ) . '</td>';
-		print '<td>' . $this->duree_session . ' heure(s)</td></tr>';
+		print '<td>' . $this->duree_session . ' '.$langs->trans('Hour').'(s)</td></tr>';
 		
 		print '<tr><td>' . $langs->trans ( "AgfProductServiceLinked" ) . '</td>';
 		print '<td>';
