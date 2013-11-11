@@ -55,7 +55,8 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 	$certif_label=GETPOST('certif_label','alpha');
 	$certif_dt_start=dol_mktime(0,0,0,GETPOST('dt_startmonth','int'),GETPOST('dt_startday','int'),GETPOST('dt_startyear','int'));
 	$certif_dt_end=dol_mktime(0,0,0,GETPOST('dt_endmonth','int'),GETPOST('dt_endday','int'),GETPOST('dt_endyear','int'));
-
+	$certif_dt_warning=dol_mktime(0,0,0,GETPOST('dt_warningmonth','int'),GETPOST('dt_warningday','int'),GETPOST('dt_warningyear','int'));
+	
 	if (!empty($certif_save_x)) {
 		$agf_certif = new Agefodd_stagiaire_certif($db);
 		$result=$agf_certif->fetch(0,$certif_sta_id,$id,$certif_session_sta_id);
@@ -67,13 +68,14 @@ if ($action=='edit' && $user->rights->agefodd->creer) {
 			$agf_certif->certif_label=$certif_label;
 			$agf_certif->certif_dt_start=$certif_dt_start;
 			$agf_certif->certif_dt_end=$certif_dt_end;
+			$agf_certif->certif_dt_warning=$certif_dt_warning;
 
 			//Existing certification
 			if (!empty($agf_certif->id)) {
 				$result=$agf_certif->update($user);
 				if ($result<0) {
 					dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
-					$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+					setEventMessage($agf_certif->error,'errors');
 				}else {
 						
 					$certif_type_array = $agf_certif->get_certif_type();
@@ -277,6 +279,9 @@ if (!empty($id))
 				print '<tr><td>'.$langs->trans('AgfCertifDateEnd').'</td><td>';
 				print $form->select_date($agf_certif->certif_dt_end, 'dt_end','','',1,'obj_update_'.$i,1,1);
 				print '</td></tr>'."\n";
+				print '<tr><td>'.$langs->trans('AgfCertifDateWarning').'</td><td>';
+				print $form->select_date($agf_certif->certif_dt_warning, 'dt_warning','','',1,'obj_update_'.$i,1,1);
+				print '</td></tr>'."\n";
 
 				if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
 				{
@@ -317,6 +322,9 @@ if (!empty($id))
 					print '</td></tr>'."\n";
 					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateEnd').':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_end,'daytext');
+					print '</td></tr>'."\n";
+					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateWarning').':</td><td>';
+					print dol_print_date($agf_certif->certif_dt_warning,'daytext');
 					print '</td></tr>'."\n";
 						
 					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)
@@ -361,6 +369,9 @@ if (!empty($id))
 					print '</td></tr>'."\n";
 					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateEnd').':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_end,'daytext');
+					print '</td></tr>'."\n";
+					print '<tr class="impair"><td>'.$langs->trans('AgfCertifDateWarning').':</td><td>';
+					print dol_print_date($agf_certif->certif_dt_warning,'daytext');
 					print '</td></tr>'."\n";
 						
 					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state)>0)

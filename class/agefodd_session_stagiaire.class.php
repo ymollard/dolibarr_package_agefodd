@@ -345,7 +345,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 			}
 			$agf_certif->certif_dt_start=$certif_dt_start;
 			
-			//End date is end of seesion more the time set in session
+			//End date is end of session more the time set in session
 			if (!empty($agf_training->certif_duration)) {
 				require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 				$duration_array=explode(':',$agf_training->certif_duration);
@@ -360,6 +360,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 			}
 			
 			$agf_certif->certif_dt_end=$certif_dt_end;
+			$agf_certif->certif_dt_warning=dol_time_plus_duree($certif_dt_end, -6, 'm');
 				
 			$resultcertif=$agf_certif->create($user);
 			if ($resultcertif<0) {

@@ -52,6 +52,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 	var $certif_label;
 	var $certif_dt_start='';
 	var $certif_dt_end='';
+	var $certif_dt_warning='';
 
 	var $lines=array();
 	var $lines_state=array();
@@ -106,7 +107,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= "certif_code,";
 		$sql.= "certif_label,";
 		$sql.= "certif_dt_start,";
-		$sql.= "certif_dt_end";
+		$sql.= "certif_dt_end,";
+		$sql.= "certif_dt_warning";
 
 
 		$sql.= ") VALUES (";
@@ -121,7 +123,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " ".(! isset($this->certif_code)?'NULL':"'".$this->db->escape($this->certif_code)."'").",";
 		$sql.= " ".(! isset($this->certif_label)?'NULL':"'".$this->db->escape($this->certif_label)."'").",";
 		$sql.= " ".(! isset($this->certif_dt_start) || dol_strlen($this->certif_dt_start)==0?'NULL':"'".$this->db->idate($this->certif_dt_start)."'").",";
-		$sql.= " ".(! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end)==0?'NULL':"'".$this->db->idate($this->certif_dt_end)."'")."";
+		$sql.= " ".(! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end)==0?'NULL':"'".$this->db->idate($this->certif_dt_end)."'").",";
+		$sql.= " ".(! isset($this->certif_dt_warning) || dol_strlen($this->certif_dt_warning)==0?'NULL':"'".$this->db->idate($this->certif_dt_warning)."'")."";
 
 
 		$sql.= ")";
@@ -197,7 +200,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " t.certif_code,";
 		$sql.= " t.certif_label,";
 		$sql.= " t.certif_dt_start,";
-		$sql.= " t.certif_dt_end";
+		$sql.= " t.certif_dt_end,";
+		$sql.= " t.certif_dt_warning";
 
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
 
@@ -244,6 +248,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$this->certif_label = $obj->certif_label;
 				$this->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$this->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$this->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 					
 				$this->fetch_certif_state($this->id);
 
@@ -284,6 +289,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= "certif.certif_label,";
 		$sql.= "certif.certif_dt_end,";
 		$sql.= "certif.certif_dt_start,";
+		$sql.= "certif.certif_dt_warning,";
 		$sql.= "c.intitule as fromintitule,";
 		$sql.= "c.ref as fromref,";
 		$sql.= "c.ref_interne as fromrefinterne,";
@@ -351,6 +357,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_label=$obj->certif_label;
 				$line->certif_dt_end=$this->db->jdate($obj->certif_dt_end);
 				$line->certif_dt_start=$this->db->jdate($obj->certif_dt_start);
+				$line->certif_dt_warning=$this->db->jdate($obj->certif_dt_warning);
 				$line->customer_name=$obj->customer_name;
 				$line->customer_id=$obj->customer_id;
 				$line->dated=$obj->dated;
@@ -586,7 +593,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " t.certif_code,";
 		$sql.= " t.certif_label,";
 		$sql.= " t.certif_dt_start,";
-		$sql.= " t.certif_dt_end";
+		$sql.= " t.certif_dt_end,";
+		$sql.= " t.certif_dt_warning";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
 
 		$sql.= " WHERE t.entity IN (".getEntity('agsession').")";
@@ -622,6 +630,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_label = $obj->certif_label;
 				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 
 				$this->lines[$i]=$line;
 
@@ -665,7 +674,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " t.certif_code,";
 		$sql.= " t.certif_label,";
 		$sql.= " t.certif_dt_start,";
-		$sql.= " t.certif_dt_end";
+		$sql.= " t.certif_dt_end,";
+		$sql.= " t.certif_dt_warning";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
 
 		$sql.= " WHERE t.entity IN (".getEntity('agsession').")";
@@ -700,6 +710,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_label = $obj->certif_label;
 				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 
 				$this->line[$i]=$line;
 
@@ -750,7 +761,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " certif_code=".(isset($this->certif_code)?"'".$this->db->escape($this->certif_code)."'":"null").",";
 		$sql.= " certif_label=".(isset($this->certif_label)?"'".$this->db->escape($this->certif_label)."'":"null").",";
 		$sql.= " certif_dt_start=".(dol_strlen($this->certif_dt_start)!=0 ? "'".$this->db->idate($this->certif_dt_start)."'" : 'null').",";
-		$sql.= " certif_dt_end=".(dol_strlen($this->certif_dt_end)!=0 ? "'".$this->db->idate($this->certif_dt_end)."'" : 'null')."";
+		$sql.= " certif_dt_end=".(dol_strlen($this->certif_dt_end)!=0 ? "'".$this->db->idate($this->certif_dt_end)."'" : 'null').",";
+		$sql.= " certif_dt_warning=".(dol_strlen($this->certif_dt_warning)!=0 ? "'".$this->db->idate($this->certif_dt_warning)."'" : 'null')."";
 
 		$sql.= " WHERE rowid=".$this->id;
 
@@ -930,6 +942,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$this->certif_label='';
 		$this->certif_dt_start='';
 		$this->certif_dt_end='';
+		$this->certif_dt_warning='';
 
 
 	}
@@ -952,6 +965,7 @@ class AgfStagiaireCertifLine
 	var $certif_label;
 	var $certif_dt_start='';
 	var $certif_dt_end='';
+	var $certif_dt_warning='';
 
 
 	function __construct()
@@ -990,6 +1004,7 @@ Class Agefodd_CertifExpire_line {
 	var $trainee_firstname;
 	var $certif_dt_end;
 	var $certif_dt_start;
+	var $certif_dt_warning;
 	var $certif_code;
 	var $certif_label;
 	var $customer_name;

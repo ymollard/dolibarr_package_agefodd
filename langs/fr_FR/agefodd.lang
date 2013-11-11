@@ -814,3 +814,4 @@ AgfConfirmChangeState=Etes vous sûre de changer cette option ?
 AgfCertifAutoAdd=Crée les certificats par defaut lors de l'inscription du participants
 AgfCertificateDuration=Durée de validité du certificats
 AgfListCertificate=Liste des certificats
+AgfCertifDateWarning=Date d'alerte
