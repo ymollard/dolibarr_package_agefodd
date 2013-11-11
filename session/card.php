@@ -25,6 +25,7 @@
  *	\brief      card of session
 */
 
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -159,7 +160,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$result = $agf->fetch($id);
 		
 		if ($agf->fk_formation_catalogue != GETPOST('formation','int')) {
-			$training_session = new Agefodd ( $this->db );
+			$training_session = new Agefodd ( $db );
 			$result = $training_session->fetch ( GETPOST('formation','int') );
 			if ($result > 0 ) {
 				$agf->nb_subscribe_min = $training_session->nb_subscribe_min;
@@ -167,6 +168,11 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 				$agf->intitule_custo = $training_session->intitule;
 				$agf->fk_product = $training_session->fk_product;
 			}
+		}else {
+			$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
+			$agf->fk_product=GETPOST('productid','int');
+			$agf->duree_session = GETPOST('duree_session','int');
+			$agf->intitule_custo = GETPOST('intitule_custo','alpha');
 		}
 		
 		$agf->fk_formation_catalogue = GETPOST('formation','int');
@@ -177,16 +183,12 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
-		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
-		$agf->fk_product=GETPOST('productid','int');
+		
 		if ($conf->global->AGF_CONTACT_DOL_SESSION)	{
 			$agf->sourcecontactid = $agf->contactid;
 		}
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->status = GETPOST('session_status','int');
-		
-		$agf->duree_session = GETPOST('duree_session','int');
-		$agf->intitule_custo = GETPOST('intitule_custo','alpha');
 
 		$agf->cost_trainer = GETPOST('costtrainer','alpha');
 		$agf->cost_site = GETPOST('costsite','alpha');

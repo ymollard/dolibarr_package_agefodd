@@ -367,7 +367,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input name="ref_interne" class="flat" size="50" value="'.GETPOST('ref_interne','alpha').'"></td></tr>';
 
 	print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
-	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','int').'"></td></tr>';
+	print '<input name="duree" class="flat" size="4" value="'.GETPOST('duree','int').'"></td></tr>';
 	
 	if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 		print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
@@ -486,7 +486,7 @@ else
 				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
 				print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
-				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
+				print '<input name="duree" class="flat" size="4" value="'.$agf->duree.'"></td></tr>';
 				
 				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 					print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';

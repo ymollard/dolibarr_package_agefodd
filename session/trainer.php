@@ -620,9 +620,9 @@ if (!empty($id))
 
 print '<div class="tabsAction">';
 
-if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
+if ($action != 'create' && $action != 'edit' && (!empty($agf->id)) && $nbform >= 1)
 {
-	if ($user->rights->agefodd->creer && $nbform >= 1)
+	if ($user->rights->agefodd->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
