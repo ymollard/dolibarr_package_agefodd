@@ -61,5 +61,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   status integer DEFAULT NULL,
   duree_session integer NOT NULL DEFAULT 0,
   intitule_custo varchar(80) DEFAULT NULL,
-  import_key varchar(36) DEFAULT NULL
+  import_key varchar(36) DEFAULT NULL,
+  ref_ext varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB;

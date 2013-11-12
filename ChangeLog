@@ -1,5 +1,11 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.7 compared to 2.1.6 *****
+For All:
+
+For Dev:
+	-New: Add column ref_ext into agefodd_session.
+
 ***** ChangeLog for 2.1.6 compared to 2.1.4 *****
 For All:
 	- New : Add session type into session list 
