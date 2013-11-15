@@ -200,7 +200,6 @@ class pdf_courrier extends ModelePDFAgefodd
 				$this->str = $mysoc->address."\n";
 				$this->str.= $mysoc->zip.' '.$mysoc->town;
 				$this->str.= ' - '.$mysoc->country."\n";
-				$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
 				if ($mysoc->phone) {
 					$this->str.= $outputlangs->transnoentities('AgfPDFHead1').' '.$mysoc->phone."\n";
 				}
@@ -269,7 +268,7 @@ class pdf_courrier extends ModelePDFAgefodd
 				}
 				else
 				{
-					$this->str = $agf_soc->address."\n".$agf_soc->zip.' '.$agf_contact->town;
+					$this->str = $agf_soc->address."\n".$agf_soc->zip.' '.$agf_soc->town;
 				}
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs),'',11);

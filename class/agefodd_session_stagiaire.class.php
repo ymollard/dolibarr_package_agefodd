@@ -23,6 +23,7 @@
 
 // Put here all includes required by your class file
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 
 
 /**
@@ -264,7 +265,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$sql.= ") VALUES (";
 		$sql.= $this->fk_session_agefodd.', ';
 		$sql.= $this->fk_stagiaire.', ';
-		$sql.= $this->fk_agefodd_stagiaire_type.', ';
+		$sql.= ((!empty($this->fk_agefodd_stagiaire_type))?$this->fk_agefodd_stagiaire_type:"0").', ';
 		$sql.= $this->status_in_session.', ';
 		$sql.= $user->id.",";
 		$sql.= $user->id.",";

@@ -34,6 +34,8 @@ require_once('../class/agefodd_session_formateur.class.php');
 require_once('../class/agefodd_session_formateur_calendrier.class.php');
 require_once('../class/html.formagefodd.class.php');
 require_once('../lib/agefodd.lib.php');
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
+
 
 
 // Security check
@@ -120,71 +122,34 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 		$error=0;
 		$error_message='';
 
-		//From template
-		$idtemplate_array=GETPOST('fromtemplate');
-		if (is_array($idtemplate_array)) {
-			foreach ($idtemplate_array as $idtemplate) {
+		$agf_cal = new Agefoddsessionformateurcalendrier($db);
 
-				$agf = new Agefodd_sesscalendar($db);
+		$agf_cal->sessid = GETPOST('sessid','int');
+		$agf_cal->fk_agefodd_session_formateur = GETPOST('fk_agefodd_session_formateur','int');
+		$agf_cal->trainer_cost = price2num(GETPOST('trainer_cost','alpha'),'MU');
+		$agf_cal->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 
-				$agf->sessid = GETPOST('sessid','int');
-				$agf->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		//From calendar selection
+		$heure_tmp_arr = array();
 
-				$tmpl_calendar = new Agefoddcalendrier($db);
-				$result=$tmpl_calendar->fetch($idtemplate);
-				$tmpldate = dol_mktime(0,0,0,GETPOST('datetmplmonth','int'),GETPOST('datetmplday','int'),GETPOST('datetmplyear','int'));
-				if ($tmpl_calendar->day_session!=1) {
-					$tmpldate = dol_time_plus_duree($tmpldate, (($tmpl_calendar->day_session)-1), 'd');
-				}
-
-				$agf->date_session = $tmpldate;
-
-				$heure_tmp_arr = explode(':',$tmpl_calendar->heured);
-				$agf->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
-
-				$heure_tmp_arr = explode(':',$tmpl_calendar->heuref);
-				$agf->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,dol_print_date($agf->date_session, "%m"),dol_print_date($agf->date_session, "%d"),dol_print_date($agf->date_session, "%Y"));
-
-				$result = $agf->create($user);
-				if ($result < 0)
-				{
-					$error++;
-					$error_message .=  $agf->error;
-				}
-			}
-		}else {
-
-			$agf_cal = new Agefoddsessionformateurcalendrier($db);
-
-			$agf_cal->sessid = GETPOST('sessid','int');
-			$agf_cal->fk_agefodd_session_formateur = GETPOST('fk_agefodd_session_formateur','int');
-			$agf_cal->trainer_cost = price(GETPOST('trainer_cost','alpha'));
-			$agf_cal->date_session = dol_mktime(0,0,0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-
-			//From calendar selection
-			$heure_tmp_arr = array();
-
-			$heured_tmp = GETPOST('dated','alpha');
-			if (!empty($heured_tmp)){
-				$heure_tmp_arr = explode(':',$heured_tmp);
-				$agf_cal->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-			}
-
-			$heuref_tmp = GETPOST('datef','alpha');
-			if (!empty($heuref_tmp)){
-				$heure_tmp_arr = explode(':',$heuref_tmp);
-				$agf_cal->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
-			}
-
-			$result = $agf_cal->create($user);
-			if ($result < 0)
-			{
-				$error++;
-				$error_message =  $agf_cal->error;
-			}
+		$heured_tmp = GETPOST('dated','alpha');
+		if (!empty($heured_tmp)){
+			$heure_tmp_arr = explode(':',$heured_tmp);
+			$agf_cal->heured = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		}
 
+		$heuref_tmp = GETPOST('datef','alpha');
+		if (!empty($heuref_tmp)){
+			$heure_tmp_arr = explode(':',$heuref_tmp);
+			$agf_cal->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
+		}
 
+		$result = $agf_cal->create($user);
+		if ($result < 0)
+		{
+			$error++;
+			$error_message =  $agf_cal->error;
+		}
 
 		if (!$error)
 		{
@@ -217,7 +182,7 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 			$heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		}
 
-		$trainer_cost = GETPOST('trainer_cost','alpha');
+		$trainer_cost = price2num(GETPOST('trainer_cost','alpha'),'MU');
 		$fk_agefodd_session_formateur = GETPOST('fk_agefodd_session_formateur','int');
 
 		$agf_cal = new Agefoddsessionformateurcalendrier($db);
@@ -227,7 +192,7 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 		if(!empty($date_session)) 		$agf_cal->date_session = $date_session;
 		if(!empty($heured)) 			$agf_cal->heured = $heured;
 		if(!empty($heuref)) 			$agf_cal->heuref =  $heuref;
-		if(!empty($trainer_cost)) 		$agf_cal->trainer_cost = price($trainer_cost);
+		if(!empty($trainer_cost)) 		$agf_cal->trainer_cost = $trainer_cost;
 		if(!empty($fk_agefodd_session_formateur))
 			$agf_cal->fk_agefodd_session_formateur = $fk_agefodd_session_formateur;
 

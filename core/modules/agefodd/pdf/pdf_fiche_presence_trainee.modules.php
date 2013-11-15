@@ -155,10 +155,24 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 				$agfsta = new Agefodd_session_stagiaire($this->db);
 				$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 				$nbsta=count($agfsta->lines);
-
-				//$blocsta=0;
-				foreach ($agfsta->lines as $line)	{
-					$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
+				
+				if ($nbsta>0) {
+					//$blocsta=0;
+					foreach ($agfsta->lines as $line)	{
+						$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
+					}
+				} else {
+					$pdf->AddPage();
+					$pagenb++;
+					$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+					$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
+					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+					
+					$posY = $this->marge_haute;
+					$posX = $this->marge_gauche;
+					
+					$pdf->MultiCell(100, 3, $outputlangs->transnoentities("No Trainee"), 0, 'R');
 				}
 			}
 

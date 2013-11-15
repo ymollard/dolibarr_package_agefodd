@@ -2,7 +2,13 @@ English Dolibarr ChangeLog
 
 ***** ChangeLog for 2.1.7 compared to 2.1.6 *****
 For All:
-
+	-Fix : Update session bug if no product set
+	-Fix : Agenda session got Week and go to list file main.inc.php is missing
+	-Fix : Trainer calendar in session decimal cost didn't save
+	-Fix : Add trainee to session bug ( dol_time_plus_duree undefined function)
+	-Fix : Problem with no use of trainee type into session
+	-Fix : Various problem on Adress into letter PDF
+	-New : Extend Training label to 100 caracters
 For Dev:
 	-New: Add column ref_ext into agefodd_session.
 

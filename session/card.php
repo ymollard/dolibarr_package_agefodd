@@ -695,7 +695,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		if (!empty($fk_soc_crea)) {
 			$formAgefodd->select_contacts_custom($fk_soc_crea,'','contact',1,'','',1,'',1);
 		} else {
-			$formAgefodd->select_contacts_custom(0,'','contact',1,'',20,1,'',1);
+			$formAgefodd->select_contacts_custom(0,'','contact',1,'',1000,1,'',1);
 		}
 		print '</td>';
 		print '<td>'.$form->textwithpicto('',$langs->trans("AgfAgefoddDolContactHelp"),1,'help').'</td></tr></table>';
@@ -750,7 +750,7 @@ else
 	if ($id)
 	{
 		$agf = new Agsession($db);
-		$result = $agf->fetch($id);
+		$result = $agf->fetch($id);		
 		
 		if ($result>0)
 		{

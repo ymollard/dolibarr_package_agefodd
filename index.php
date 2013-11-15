@@ -74,6 +74,7 @@ print '<tr class="liste"><td>'.$langs->trans("AgfIndexSessDo").' </td><td align=
 $resql = $agf->fetch_heures_sessions_nb();
 print '<tr class="liste"><td>'.$langs->trans("AgfIndexHourSessDo").' </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 $total_heures = $agf->total;
+if ($total_heures == 0 ) $total_heures = 1;
 
 
 

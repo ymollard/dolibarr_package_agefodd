@@ -50,6 +50,9 @@ if ($result<0)
 	setEventMessage($object->error,'errors');
 }
 
+//Manage note right on this objects
+$user->rights->agefodd_formation_catalogue->creer=$user->rights->agefodd->creer;
+
 
 /*
  * Actions

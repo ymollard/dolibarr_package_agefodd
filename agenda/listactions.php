@@ -25,7 +25,12 @@
  * \brief Page to list actions
  */
 
-require '../../main.inc.php';
+$res = @include ("../../main.inc.php"); // For root directory
+if (! $res)
+	$res = @include ("../../../main.inc.php"); // For "custom" directory
+if (! $res)
+	die ( "Include of main fails" );
+
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';

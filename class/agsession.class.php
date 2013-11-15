@@ -117,6 +117,8 @@ class Agsession extends CommonObject {
 
 		require_once ('agefodd_formation_catalogue.class.php');
 		
+		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
+		
 		global $conf, $langs;
 		$error = 0;
 		
@@ -244,6 +246,23 @@ class Agsession extends CommonObject {
 			
 			if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 			// For avoid conflicts if trigger used
 			{
+
+				//Fill session extrafields with customer extrafield if they are the same
+				if (!empty($this->fk_soc)) {
+					$soc=new Societe($this->db);
+					$soc->fetch($this->fk_soc);
+					if (!empty($soc->id)) {
+						foreach($this->array_options as $key=>$value) {
+							//If same extrafeild exists into customer=> Transfert it to session and value is not fill yet
+							if ( array_key_exists($key,$soc->array_options) && (!empty($soc->array_options[$key])) && (empty($this->array_options[$key]))) {
+								$this->array_options[$key]=$soc->array_options[$key];
+							}
+						}
+						
+					}
+				}
+				
+				
 				$result = $this->insertExtraFields ();
 				if ($result < 0) {
 					$error ++;
@@ -691,7 +710,7 @@ class Agsession extends CommonObject {
 		// Get OPCA Soc
 		$sql = "SELECT";
 		$sql .= " DISTINCT so.rowid as socid,";
-		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca, so.nom as socname ";
+		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca, so.nom as socname, so.code_client ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON so.rowid = s.fk_soc_OPCA";
@@ -715,6 +734,7 @@ class Agsession extends CommonObject {
 							$newline->sessid = $obj->rowid;
 							$newline->socname = $obj->socname;
 							$newline->socid = $obj->socid;
+							$newline->code_client = $obj->code_client;
 							$newline->type_session = $obj->type_session;
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
@@ -742,7 +762,7 @@ class Agsession extends CommonObject {
 		// Get OPCA Soc of trainee
 		$sql = "SELECT";
 		$sql .= " DISTINCT soOPCATrainee.rowid as socid,";
-		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca, soOPCATrainee.nom as socname ";
+		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca, soOPCATrainee.nom as socname, soOPCATrainee.code_client ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -774,6 +794,7 @@ class Agsession extends CommonObject {
 							$newline->sessid = $obj->rowid;
 							$newline->socname = $obj->socname;
 							$newline->socid = $obj->socid;
+							$newline->code_client = $obj->code_client;
 							$newline->type_session = $obj->type_session;
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
@@ -800,7 +821,7 @@ class Agsession extends CommonObject {
 		// Get session customer
 		$sql = "SELECT";
 		$sql .= " DISTINCT s.fk_soc as socid,";
-		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca , so.nom as socname ";
+		$sql .= " s.rowid, s.type_session, s.is_OPCA as is_opca, s.fk_soc_OPCA as fk_soc_opca , so.nom as socname, so.code_client ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON so.rowid = s.fk_soc";
@@ -823,6 +844,7 @@ class Agsession extends CommonObject {
 							$newline->sessid = $obj->rowid;
 							$newline->socname = $obj->socname;
 							$newline->socid = $obj->socid;
+							$newline->code_client = $obj->code_client;
 							$newline->type_session = $obj->type_session;
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
@@ -1052,10 +1074,10 @@ class Agsession extends CommonObject {
 			$sql .= " num_OPCA_file=" . (isset ( $this->num_OPCA_file ) ? "'" . $this->db->escape ( $this->num_OPCA_file ) . "'" : "null") . ",";
 			$sql .= " fk_user_mod=" . $this->db->escape ( $user->id ) . ",";
 			$sql .= " archive=" . (isset ( $this->archive ) ? $this->archive : "0") . ",";
-			$sql .= " fk_product=" . (isset ( $this->fk_product ) ? $this->fk_product : "null") . ",";
+			$sql .= " fk_product=" . (!empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
 			$sql .= " status=" . (isset ( $this->status ) ? $this->status : "null") . ",";
-			$sql .= " duree_session=" . (isset ( $this->duree_session ) ? $this->duree_session : "0") . ",";
-			$sql .= " intitule_custo=" . (isset ( $this->intitule_custo ) ?   "'" .$this->db->escape ($this->intitule_custo). "'" : "null") . "";
+			$sql .= " duree_session=" . (!empty ( $this->duree_session ) ? $this->duree_session : "0") . ",";
+			$sql .= " intitule_custo=" . (!empty ( $this->intitule_custo ) ?   "'" .$this->db->escape ($this->intitule_custo). "'" : "null") . "";
 			
 			$sql .= " WHERE rowid=" . $this->id;
 			
