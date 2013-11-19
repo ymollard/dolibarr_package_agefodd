@@ -32,7 +32,7 @@ require_once('../class/agefodd_place.class.php');
 require_once('../lib/agefodd.lib.php');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_place->lire) accessforbidden();
 
 llxHeader('',$langs->trans("AgfSessPlace"));
 
@@ -109,7 +109,7 @@ print "</table>";
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit')
 {
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_place->creer)
 	{
 		print '<a class="butAction" href="card.php?action=create">'.$langs->trans('Create').'</a>';
 	}

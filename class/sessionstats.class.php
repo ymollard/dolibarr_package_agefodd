@@ -71,11 +71,11 @@ class SessionStats extends Stats
 		//if ($mode == 'customer') $this->where.=" AND (fk_statut <> 3 OR close_code <> 'replaced')";	// Exclude replaced invoices as they are duplicated (we count closed invoices for other reasons)
 		if ($this->socid)
 		{
-			$this->where.=" AND fk_soc = ".$this->socid;
+			$this->where.=" AND main.fk_soc = ".$this->socid;
 		}
-		if ($this->userid > 0) $this->where.=' AND fk_user_author = '.$this->userid;
+		if ($this->userid > 0) $this->where.=' AND com.fk_user_com = '.$this->userid;
 
-		if ($this->training_id > 0 ) $this->where.=' AND fk_formation_catalogue='.$this->training_id;
+		if ($this->training_id > 0 ) $this->where.=' AND main.fk_formation_catalogue='.$this->training_id;
 	}
 
 
@@ -86,8 +86,9 @@ class SessionStats extends Stats
 	 */
 	function getNbByYear()
 	{
-		$sql = "SELECT YEAR(datef) as dm, COUNT(rowid)";
-		$sql.= " FROM ".$this->from;
+		$sql = "SELECT YEAR(main.datef) as dm, COUNT(main.rowid)";
+		$sql.= " FROM ".$this->from." as main";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		$sql.= " WHERE ".$this->where;
 		$sql.= " GROUP BY dm";
 		$sql.= $this->db->order('dm','DESC');
@@ -104,8 +105,9 @@ class SessionStats extends Stats
 	 */
 	function getNbByMonth($year)
 	{
-		$sql = "SELECT MONTH(datef) as dm, COUNT(rowid)";
-		$sql.= " FROM ".$this->from;
+		$sql = "SELECT MONTH(main.datef) as dm, COUNT(main.rowid)";
+		$sql.= " FROM ".$this->from." as main";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		$sql.= " WHERE datef BETWEEN '".$this->db->idate(dol_get_first_day($year))."' AND '".$this->db->idate(dol_get_last_day($year))."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
@@ -125,9 +127,10 @@ class SessionStats extends Stats
 	 */
 	function getAmountByMonth($year)
 	{
-		$sql = "SELECT date_format(datef,'%m') as dm, SUM(".$this->field.")";
-		$sql.= " FROM ".$this->from;
-		$sql.= " WHERE date_format(datef,'%Y') = '".$year."'";
+		$sql = "SELECT date_format(main.datef,'%m') as dm, SUM(".$this->field.")";
+		$sql.= " FROM ".$this->from." as main";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		$sql.= " WHERE date_format(main.datef,'%Y') = '".$year."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
 		$sql.= $this->db->order('dm','DESC');
@@ -145,8 +148,9 @@ class SessionStats extends Stats
 	 */
 	function getAverageByMonth($year)
 	{
-		$sql = "SELECT date_format(datef,'%m') as dm, AVG(".$this->field.")";
-		$sql.= " FROM ".$this->from;
+		$sql = "SELECT date_format(main.datef,'%m') as dm, AVG(".$this->field.")";
+		$sql.= " FROM ".$this->from." as main";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		$sql.= " WHERE datef BETWEEN '".$this->db->idate(dol_get_first_day($year))."' AND '".$this->db->idate(dol_get_last_day($year))."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
@@ -162,8 +166,9 @@ class SessionStats extends Stats
 	 */
 	function getAllByYear()
 	{
-		$sql = "SELECT date_format(datef,'%Y') as year, COUNT(rowid) as nb, SUM(".$this->field.") as total, AVG(".$this->field.") as avg";
-		$sql.= " FROM ".$this->from;
+		$sql = "SELECT date_format(main.datef,'%Y') as year, COUNT(main.rowid) as nb, SUM(".$this->field.") as total, AVG(".$this->field.") as avg";
+		$sql.= " FROM ".$this->from." as main";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		$sql.= " WHERE ".$this->where;
 		$sql.= " GROUP BY year";
 		$sql.= $this->db->order('year','DESC');

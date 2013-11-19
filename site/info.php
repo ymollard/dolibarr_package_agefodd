@@ -34,7 +34,7 @@ require_once(DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_place->lire) accessforbidden();
 
 $id=GETPOST('id','int');
 

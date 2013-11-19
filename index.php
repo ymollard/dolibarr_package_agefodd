@@ -220,7 +220,7 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 		}
 		print '<option value="'.$i.'" '.$selected.'>'.$i.'</option>';
 	}
-	print '</select>'.$langs->trans('Month').'(s)';
+	print '</select>'.$langs->trans('Month');
 	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
 	print '</th></tr>';
 

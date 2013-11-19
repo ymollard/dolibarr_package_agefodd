@@ -37,7 +37,7 @@ $langs->load("admin");
 $langs->load('agefodd@agefodd');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
 
 $action = GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
