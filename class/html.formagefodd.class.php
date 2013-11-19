@@ -984,7 +984,7 @@ class FormAgefodd extends Form {
 			$year=$month=$day=0;
 		}
 		
-		$out = '<input name="'.$htmlname.'_year" class="flat" size="4" value="'.$year.'">'.$langs->trans('Year').'(s)';
+		$out = '<input name="'.$htmlname.'_year" class="flat" size="4" value="'.$year.'">'.$langs->trans('Year');
 		$out .= '<select class="flat" name="' . $htmlname . '_month">';
 		for ($i = 0; $i <= 12; $i ++) {
 			if ($i==$month) {
@@ -994,7 +994,7 @@ class FormAgefodd extends Form {
 			}
 			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 		}
-		$out .=	'</select>' .$langs->trans('Month').'(s)'. "\n";
+		$out .=	'</select>' .$langs->trans('Month'). "\n";
 		
 		$out .= '<select class="flat" name="' . $htmlname . '_day">';
 		for ($i = 0; $i <= 31; $i ++) {
@@ -1005,7 +1005,7 @@ class FormAgefodd extends Form {
 			}
 			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 		}
-		$out .=	'</select>' .$langs->trans('Day').'(s)'. "\n";
+		$out .=	'</select>' .$langs->trans('Day'). "\n";
 		
 		return $out;
 	}

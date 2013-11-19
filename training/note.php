@@ -51,6 +51,7 @@ if ($result<0)
 }
 
 //Manage note right on this objects
+$user->rights->agefodd_formation_catalogue=new stdClass(); //Avoid warning
 $user->rights->agefodd_formation_catalogue->creer=$user->rights->agefodd->agefodd_formation_catalogue->creer;
 
 
