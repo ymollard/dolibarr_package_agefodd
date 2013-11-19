@@ -1,5 +1,5 @@
 <?php
-/** Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 * Copyright (C) 2012-2013		Florian Henry	<florian.henry@open-concept.pro>
 * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
@@ -587,12 +587,19 @@ if (!empty($id))
 			print '</td>';
 			print '</form>';
 			print '</tr>'."\n";
+			//If session are intra entreprise then send Socid on create trainee
+			if ($agf->type_session == 0 && !empty($agf->fk_soc)) {
+				$param_socid='&societe='.$agf->fk_soc;
+			} else {
+				$param_socid='';
+			}			
 		}
 
 		print '</table>';
 		if (!isset($_POST["newstag"]))
 		{
 			print '</div>';
+			print '<br>';
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
 			print '<form name="newstag" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
@@ -607,17 +614,29 @@ if (!empty($id))
 				$param_socid='';
 			}
 			print '<a class="butAction" href="../trainee/card.php?action=create'.$param_socid.'&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
-			if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{	
-				print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
+			
+			if ($conf->global->AGF_MANAGE_OPCA) {
+				if ($user->rights->agefodd->creer && !$agf->type_session > 0)	{	
+					print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit_subrogation&id='.$id.'">'.$langs->trans('AgfModifySubrogation').'</a>';
+				}
+				else {
+					if($agf->type_session) $title = ' / '.$langs->trans('AgfAvailableForIntraOnly');
+					print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).$title.'">'.$langs->trans('AgfModifySubrogation').'</a>';
+				}
 			}
-			else {
-				if($agf->type_session) $title = ' / '.$langs->trans('AgfAvailableForIntraOnly');
-				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).$title.'">'.$langs->trans('AgfModifySubrogation').'</a>';
-			}
+			
 			print '</td></tr>';
 			print '</form>';
+		} else {
+			print '<br>';
+			print '<table style="border:0;" width="100%">';
+			print '<tr><td align="right">';
+			print '<a class="butAction" href="../trainee/card.php?action=create'.$param_socid.'&session_id='.$id.'&url_back='.urlencode($_SERVER['PHP_SELF'].'?action=edit&id='.$id).'" title="'.$langs->trans('AgfNewParticipantLinkInfo').'">'.$langs->trans('AgfNewParticipant').'</a>';
+			print '</td></tr>';
+			print '</table>';
 		}
-
+		
+		
 		print '</table>';
 		print '</div>';
 	}

@@ -38,7 +38,7 @@ require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -52,7 +52,7 @@ $extralabels=$extrafields->fetch_name_optionals_label($agf->table_element);
 /*
  * Actions delete
 */
-if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_formation_catalogue->supprimer)
 {
 	$agf = new Agefodd($db);
 	$agf->id=$id;
@@ -70,7 +70,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 }
 
-if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_formation_catalogue->creer)
 {
 	$agf = new Agefodd($db);
 
@@ -93,7 +93,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 /*
  * Action update (fiche de formation)
 */
-if ($action == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->creer)
 {
 	if (! $_POST["cancel"])
 	{
@@ -108,6 +108,14 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
 		$agf->fk_c_category =GETPOST('categid','int');
+		
+		if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+			$certif_year= GETPOST('certif_year','int');
+			$certif_month= GETPOST('certif_month','int');
+			$certif_day= GETPOST('certif_day','int');
+			$agf->certif_duration =$certif_year.':'.$certif_month.':'.$certif_day;
+		} 
+		
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
 			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));
@@ -151,7 +159,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
 /*
  * Action create (fiche formation)
 */
-if ($action == 'create_confirm' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_catalogue->creer)
 {
 	if (! $_POST["cancel"])
 	{
@@ -164,6 +172,14 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 		$agf->nb_subscribe_min=GETPOST('nbmintarget','int');
 		$agf->fk_product = GETPOST('productid','int');
 		$agf->fk_c_category =GETPOST('categid','int');
+		
+		if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+			$certif_year= GETPOST('certif_year','int');
+			$certif_month= GETPOST('certif_month','int');
+			$certif_day= GETPOST('certif_day','int');
+			$agf->certif_duration =$certif_year.':'.$certif_month.':'.$certif_day;
+		}
+		
 		if (!empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->public = dol_htmlcleanlastbr(GETPOST('public'));
 			$agf->methode = dol_htmlcleanlastbr(GETPOST('methode'));
@@ -218,7 +234,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
  * Action create (objectif pedagogique)
 */
 
-if ($action == "obj_update" && $user->rights->agefodd->creer)
+if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer)
 {
 	$agf = new Agefodd($db);
 
@@ -272,7 +288,7 @@ if ($action == "obj_update" && $user->rights->agefodd->creer)
 /*
  * Action generate fiche pédagogique
 */
-if ($action == 'fichepeda' && $user->rights->agefodd->creer)
+if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogue->creer)
 {
 	// Define output language
 	$outputlangs = $langs;
@@ -316,7 +332,7 @@ $formagefodd = new FormAgefodd($db);
 /*
  * Action create
 */
-if ($action == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->creer)
 {
 	print_fiche_titre($langs->trans("AgfMenuCatNew"));
 
@@ -351,7 +367,13 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<input name="ref_interne" class="flat" size="50" value="'.GETPOST('ref_interne','alpha').'"></td></tr>';
 
 	print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
-	print '<input name="duree" class="flat" size="50" value="'.GETPOST('duree','int').'"></td></tr>';
+	print '<input name="duree" class="flat" size="4" value="'.GETPOST('duree','int').'"></td></tr>';
+	
+	if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+		print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
+		print $formagefodd->select_duration_agf($agf->certif_duration,'certif');
+		print '</td></tr>';
+	}
 	
 	print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 	print '<input name="nbmintarget" class="flat" size="5" value="'.GETPOST('nbmintarget','int').'"></td></tr>';
@@ -464,7 +486,13 @@ else
 				print '<input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
 				print '<tr><td width="20%" class="fieldrequired">'.$langs->trans("AgfDuree").'</td><td>';
-				print '<input name="duree" class="flat" size="50" value="'.$agf->duree.'"></td></tr>';
+				print '<input name="duree" class="flat" size="4" value="'.$agf->duree.'"></td></tr>';
+				
+				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+					print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
+					print $formagefodd->select_duration_agf($agf->certif_duration,'certif');
+					print '</td></tr>';
+				}
 				
 				print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 				print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';
@@ -549,7 +577,7 @@ else
 					print '<td>';
 				}
 				print '&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?action=edit&amp;id='.$agf->id.'&amp;objc=1">';
-				if ($user->rights->agefodd->creer)	print img_edit_add($langs->trans("AgfNewObjAdd")) ."</a></td>";
+				if ($user->rights->agefodd->agefodd_formation_catalogue->creer)	print img_edit_add($langs->trans("AgfNewObjAdd")) ."</a></td>";
 				print '</tr>';
 
 				$i = 0;
@@ -571,12 +599,12 @@ else
 
 					if ( $line->id )
 					{
-						if ($user->rights->agefodd->modifier)
+						if ($user->rights->agefodd->agefodd_formation_catalogue->modifier)
 						{
 							print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" name="obj_update" alt="'.$langs->trans("AgfModSave").'">';
 						}
 						print '&nbsp;';
-						if ($user->rights->agefodd->creer)
+						if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 						{
 							print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="obj_remove" alt="'.$langs->trans("AgfModSave").'">';
 						}
@@ -600,7 +628,7 @@ else
 					print $priorite;
 					print '<td width="400"><input name="intitule" class="flat" size="50" value=""></td>'."\n";
 					print "<td>";
-					if ($user->rights->agefodd->creer)
+					if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 					{
 						print '<input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" name="obj_add" alt="'.$langs->trans("AgfNewObjAdd").'">';
 					}
@@ -652,6 +680,21 @@ else
 
 				print '<tr><td>'.$langs->trans("AgfDuree").'</td><td colspan=2>';
 				print $agf->duree.'</td></tr>';
+				
+				if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+					print '<tr><td width="20%">'.$langs->trans("AgfCertificateDuration").'</td><td>';
+					if (!empty($agf->certif_duration)){
+						$duration_array=explode(':',$agf->certif_duration);
+						$year=$duration_array[0];
+						$month=$duration_array[1];
+						$day=$duration_array[2];
+					}else {
+						$year=$month=$day=0;
+					}
+					
+					print $year.' '.$langs->trans('Year').'(s) '.$month.' '.$langs->trans('Month').'(s) '. $day.' '.$langs->trans('Day').'(s)';
+					print '</td></tr>';
+				}
 				
 				print '<tr><td>'.$langs->trans("AgfNbMintarget").'</td><td colspan=2>';
 				print $agf->nb_subscribe_min.'</td></tr>';
@@ -803,7 +846,7 @@ print '<div class="tabsAction">';
 
 if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 {
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
@@ -812,7 +855,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
 
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 	{
 		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
@@ -824,7 +867,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	if ($agf->archive == 0)
 	{
 		$button_action = $langs->trans('AgfArchiver');
-		if ($user->rights->agefodd->creer)
+		if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 		{
 			print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=archive&id='.$id.'">';
 			print $button_action.'</a>';
@@ -838,7 +881,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 	else
 	{
 		$button_action = $langs->trans('AgfActiver');
-		if ($user->rights->agefodd->creer)
+		if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 		{
 			print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=active&id='.$id.'">';
 			print $button_action.'</a>';
@@ -849,7 +892,7 @@ if ($_GET["action"] != 'create' && $_GET["action"] != 'edit')
 		}
 	}
 
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_formation_catalogue->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=fichepeda&id='.$id.'">'.$langs->trans('AgfPrintFichePedago').'</a>';
 	}

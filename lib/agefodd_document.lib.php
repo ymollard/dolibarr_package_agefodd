@@ -165,12 +165,12 @@ function show_fac($file, $socid, $mdle)
 		{
 			// Create order
 			$legende = $langs->trans("AgfFactureSeeBon",$agf->comref);
-			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?mainmenu=commercial&id='.$agf->comid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Go to send mail card
 			$legende = $langs->trans("AgfFactureSeeBonMail",$agf->comref);
-			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?id='.$agf->comid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<a href="'.DOL_URL_ROOT.'/commande/fiche.php?mainmenu=commercial&id='.$agf->comid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Unlink order
@@ -189,7 +189,7 @@ function show_fac($file, $socid, $mdle)
 
 			// Generer le bon de commande
 			$legende = $langs->trans("AgfFactureGenererBon");
-			$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<td><a href="'.DOL_URL_ROOT.'/commande/fiche.php?mainmenu=commercial&action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 				
 			
@@ -210,12 +210,12 @@ function show_fac($file, $socid, $mdle)
 		{
 			// See Invoice card
 			$legende = $langs->trans("AgfFactureSeeFac").' '.$agf->facnumber;
-			$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess = '<a href="'.DOL_URL_ROOT.'/compta/facture.php?mainmenu=accountancy&facid='.$agf->facid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Go to send mail card
 			$legende = $langs->trans("AgfFactureSeeFacMail",$agf->facnumber);
-			$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?id='.$agf->facid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?mainmenu=accountancy&id='.$agf->facid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 
 			// Unlink invoice
@@ -233,7 +233,7 @@ function show_fac($file, $socid, $mdle)
 			if (!empty($agf->propalid)) {
 				$legende = $langs->trans("AgfFactureAddFacFromPropal");
 				$propal_static= new Propal($db);
-				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$propal_static->element.'&originid='.$agf->propalid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?mainmenu=accountancy&action=create&origin='.$propal_static->element.'&originid='.$agf->propalid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			
@@ -244,7 +244,7 @@ function show_fac($file, $socid, $mdle)
 				if (!empty($agf->comid)) {
 					$legende = $langs->trans("AgfFactureAddFacFromOrder");
 					$commande_static= new Commande($db);
-					$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+					$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?mainmenu=accountancy&action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 					$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				}
 				// link existing invoice
@@ -257,7 +257,7 @@ function show_fac($file, $socid, $mdle)
 					
 				$legende = $langs->trans("AgfFactureAddFacFromOrder");
 				$commande_static= new Commande($db);
-				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
+				$mess.= '<a href="'.DOL_URL_ROOT.'/compta/facture.php?mainmenu=accountancy&action=create&origin='.$commande_static->element.'&originid='.$agf->comid.'&socid='.$socid.'"  alt="'.$legende.'" title="'.$legende.'">';
 				$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				//link existing invoice
@@ -277,12 +277,12 @@ function show_fac($file, $socid, $mdle)
 		{
 			// See Proposal card
 			$legende = $langs->trans("AgfFactureSeeProp").' '.$agf->propalref;
-			$mess = '<a href="'.DOL_URL_ROOT.'/comm/propal.php?id='.$agf->propalid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess = '<a href="'.DOL_URL_ROOT.'/comm/propal.php?id='.$agf->propalid.'&mainmenu=commercial" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	
 			// Go to send mail card
 			$legende = $langs->trans("AgfFactureSeePropMail",$agf->propalref);
-			$mess.= '<a href="'.DOL_URL_ROOT.'/comm/propal.php?id='.$agf->propalid.'&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
+			$mess.= '<a href="'.DOL_URL_ROOT.'/comm/propal.php?id='.$agf->propalid.'&mainmenu=commercial&action=presend&mode=init" alt="'.$legende.'" title="'.$legende.'">';
 			$mess.= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	
 			// Unlink invoice
@@ -303,7 +303,7 @@ function show_fac($file, $socid, $mdle)
 			
 			// Generer le bon de commande
 			$legende = $langs->trans("AgfFactureGenererProp");
-			$mess .= '<td><a href="'.DOL_URL_ROOT.'/comm/propal.php?action=create&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
+			$mess .= '<td><a href="'.DOL_URL_ROOT.'/comm/propal.php?action=create&mainmenu=commercial&socid='.$socid.'" alt="'.$legende.'" title="'.$legende.'">';
 			$mess .= '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a></td>';
 			
 

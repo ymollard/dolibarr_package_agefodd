@@ -40,7 +40,7 @@ $ref=GETPOST('ref','alpha');
 $action=GETPOST('action','alpha');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
 
 
 $object = new Agefodd($db);
@@ -49,6 +49,9 @@ if ($result<0)
 {
 	setEventMessage($object->error,'errors');
 }
+
+//Manage note right on this objects
+$user->rights->agefodd_formation_catalogue->creer=$user->rights->agefodd->agefodd_formation_catalogue->creer;
 
 
 /*

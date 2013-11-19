@@ -23,6 +23,7 @@
 
 // Put here all includes required by your class file
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
+require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 
 
 /**
@@ -149,7 +150,9 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$sql.= " sa.date_birth,";
 		$sql.= " sa.place_birth,";
 		$sql.= " sa.fk_socpeople,";
-		$sql.= " sope.birthday";
+		$sql.= " sope.birthday,";
+		$sql.= " sope.poste,";
+		$sql.= " sa.fonction";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ss";
 		$sql.= " ON s.rowid = ss.fk_session_agefodd";
@@ -206,6 +209,13 @@ class Agefodd_session_stagiaire  extends CommonObject
 				} else {
 					$line->email = $obj->mail;
 				}
+				
+				if (empty($obj->poste)) {
+					$line->poste=$obj->fonction;
+				} else {
+					$line->poste=$obj->poste;
+				}
+				
 				$line->fk_agefodd_stagiaire_type=$obj->fk_agefodd_stagiaire_type;
 	
 				$this->lines[$i]=$line;
@@ -255,7 +265,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$sql.= ") VALUES (";
 		$sql.= $this->fk_session_agefodd.', ';
 		$sql.= $this->fk_stagiaire.', ';
-		$sql.= $this->fk_agefodd_stagiaire_type.', ';
+		$sql.= ((!empty($this->fk_agefodd_stagiaire_type))?$this->fk_agefodd_stagiaire_type:"0").', ';
 		$sql.= $this->status_in_session.', ';
 		$sql.= $user->id.",";
 		$sql.= $user->id.",";
@@ -269,6 +279,9 @@ class Agefodd_session_stagiaire  extends CommonObject
 		if (! $resql) {
 			$error++; $this->errors[]="Error ".$this->db->lasterror();
 		}
+		
+		
+		
 		if (! $error)
 		{
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."agefodd_session_stagiaire");
@@ -284,13 +297,92 @@ class Agefodd_session_stagiaire  extends CommonObject
 				//if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				//// End call triggers
 			}
-				
+			
+			
+			//Recalculate number of trainee in session
+			require_once 'agsession.class.php';
 			$session = new Agsession($this->db);
 			$session->fetch($this->fk_session_agefodd);
 			if (empty($session->force_nb_stagiaire)) {
 				$this->fetch_stagiaire_per_session($this->fk_session_agefodd);
 				$session->nb_stagiaire=count($this->lines);
 				$session->update($user);
+			}
+		}
+		
+		//Create auto certif if enabled
+		if (! $error && !empty($conf->global->AGF_MANAGE_CERTIF) && !empty($conf->global->AGF_DEFAULT_CREATE_CERTIF))
+		{
+			require_once 'agefodd_stagiaire_certif.class.php';
+				
+			$agf_certif=new Agefodd_stagiaire_certif($this->db);
+			//New cerficiation
+			
+			require_once 'agefodd_formation_catalogue.class.php';
+			//Find next certificate code
+			$agf_training = new Agefodd($this->db);
+			$agf_training->fetch($session->formid);			
+			$obj = empty($conf->global->AGF_CERTIF_ADDON)?'mod_agefoddcertif_simple':$conf->global->AGF_CERTIF_ADDON;
+			$path_rel=dol_buildpath('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+			if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel) && (empty($agf_certif->certif_code)))
+			{
+				dol_include_once('/agefodd/core/modules/agefodd/certificate/'.$conf->global->AGF_CERTIF_ADDON.'.php');
+				$modAgefodd = new $obj;
+				$agf_certif->certif_code = $modAgefodd->getNextValue($agf_training,$session);
+			}
+			
+			if (is_numeric($agf_certif->certif_code) && $agf_certif->certif_code <= 0) $agf_certif->certif_code='';
+			
+			$agf_certif->fk_session_agefodd=$this->fk_session_agefodd;
+			$agf_certif->fk_session_stagiaire=$this->id;
+			$agf_certif->fk_stagiaire=$this->fk_stagiaire;
+			$agf_certif->certif_label=$agf_certif->certif_code;
+			
+			//Start date in the end of session ot now if not set yet
+			if (dol_strlen ( $session->datef ) == 0) {
+				$certif_dt_start = dol_now();
+			} else {
+				$certif_dt_start = $session->datef;
+			}
+			$agf_certif->certif_dt_start=$certif_dt_start;
+			
+			//End date is end of session more the time set in session
+			if (!empty($agf_training->certif_duration)) {
+				require_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
+				$duration_array=explode(':',$agf_training->certif_duration);
+				$year=$duration_array[0];
+				$month=$duration_array[1];
+				$day=$duration_array[2];
+				$certif_dt_end = dol_time_plus_duree($certif_dt_start, $year, 'y');
+				$certif_dt_end = dol_time_plus_duree($certif_dt_end, $month, 'm');
+				$certif_dt_end = dol_time_plus_duree($certif_dt_end, $day, 'd');
+			} else {
+				$certif_dt_end = $certif_dt_start;
+			}
+			
+			$agf_certif->certif_dt_end=$certif_dt_end;
+			$agf_certif->certif_dt_warning=dol_time_plus_duree($certif_dt_end, -6, 'm');
+				
+			$resultcertif=$agf_certif->create($user);
+			if ($resultcertif<0) {
+				$error++; $this->errors[]="Error ".$agf_certif->error;
+			}else {
+					
+				$certif_type_array = $agf_certif->get_certif_type();
+					
+				if (is_array($certif_type_array) && count($certif_type_array)>0)
+				{
+					foreach($certif_type_array as $certif_type_id=>$certif_type_label)
+					{
+						//Set Certification type to not passed yet
+						$result=$agf_certif->set_certif_state($user,$resultcertif, $certif_type_id, 0);
+						if ($result<0) {
+							$error++; $this->errors[]="Error ".$agf_certif->error;
+						}
+					}
+				}
+					
+					
 			}
 		}
 	
@@ -588,6 +680,7 @@ class AgfTraineeSessionLine
 	var $place_birth;
 	var $status_in_session;
 	var $fk_agefodd_stagiaire_type;
+	var $poste;
 
 	function __construct()
 	{

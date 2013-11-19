@@ -74,6 +74,7 @@ print '<tr class="liste"><td>'.$langs->trans("AgfIndexSessDo").' </td><td align=
 $resql = $agf->fetch_heures_sessions_nb();
 print '<tr class="liste"><td>'.$langs->trans("AgfIndexHourSessDo").' </td><td align="right">'.$agf->total.'&nbsp;</td></tr>';
 $total_heures = $agf->total;
+if ($total_heures == 0 ) $total_heures = 1;
 
 
 
@@ -196,11 +197,36 @@ print '&nbsp;';
 
 if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 	// tableau de bord travail
+	
+	$time_expiration=GETPOST('certif_time','int');
+	if (empty($time_expiration)) {
+		$time_expiration=6;
+	}
+	
+	$filter_month_array=array(1,2,3,6,12);
+	
+	print '<form name="search_certif" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<div style="overflow:auto; height: 200px; overflow-x: hidden;">';
 	print '<table class="noborder" width="500px" align="left">';
-	print '<tr class="liste_titre"><th>'.$langs->trans("AgfIndexCertif").' </th></tr>';
+	print '<tr class="liste_titre"><th>'.$langs->trans("AgfIndexCertif");
+	print '<select name="certif_time">';
+	foreach($filter_month_array as $i) {
+		
+		if ($time_expiration==$i) {
+			$selected='selected="selected"';
+		}else {
+			$selected='';
+		}
+		print '<option value="'.$i.'" '.$selected.'>'.$i.'</option>';
+	}
+	print '</select>'.$langs->trans('Month').'(s)';
+	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
+	print '</th></tr>';
 
 	//List de stagaire concerné
-	$result = $agf->fetch_certif_expire();
+	
+	$result = $agf->fetch_certif_expire($time_expiration);
 	if ($result && (count($agf->lines)>0)) {
 
 		$style='impair';
@@ -213,9 +239,7 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 				
 			print '<tr class="'.$style.'"><td>';
 			print '<a href="'.dol_buildpath('/societe/soc.php',1).'?socid='.$line->customer_id.'">'.$line->customer_name.'</a>';
-			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/session/subscribers_certif.php',1).'?id='.$line->id_session.'">'.$line->fromintitule.'</a>';
-			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/trainee/certificate.php',1).'?id='.$line->trainee_id.'">'.$line->trainee_name.' '.$line->trainee_firstname.'</a>';
-			print '&nbsp;-&nbsp;'.dol_print_date($line->certif_dt_end,'daytext');
+			print '&nbsp;-&nbsp;<a href="'.dol_buildpath('/agefodd/certificate/list.php',1).'?socid='.$line->customer_id.'&search_training_ref='.$line->fromref.'">'.$line->fromintitule.'</a>';
 			print '</td></tr>';
 				
 		}
@@ -226,6 +250,8 @@ if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
 	}
 
 	print '</table>';
+	print '</div>';
+	print '</form>';
 }
 
 // fin colonne droite

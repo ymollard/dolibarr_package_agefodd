@@ -155,10 +155,24 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 				$agfsta = new Agefodd_session_stagiaire($this->db);
 				$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 				$nbsta=count($agfsta->lines);
-
-				//$blocsta=0;
-				foreach ($agfsta->lines as $line)	{
-					$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
+				
+				if ($nbsta>0) {
+					//$blocsta=0;
+					foreach ($agfsta->lines as $line)	{
+						$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
+					}
+				} else {
+					$pdf->AddPage();
+					$pagenb++;
+					$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+					$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
+					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+					
+					$posY = $this->marge_haute;
+					$posX = $this->marge_gauche;
+					
+					$pdf->MultiCell(100, 3, $outputlangs->transnoentities("No Trainee"), 0, 'R');
 				}
 			}
 
@@ -331,50 +345,56 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 		$posX+= 2;
 		$posY+= 2;
-
+		$posYintitule=$posY;
+		
 		$larg_col1 = 20;
 		$larg_col2 = 80;
 		$larg_col3 = 27;
 		$larg_col4 = 82;
 		$haut_col2 = 0;
 		$haut_col4 = 0;
-
+		
 		// Intitulé
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres6');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+		
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
-		$this->str = '« '.$agf->formintitule.' »';
+		
+		if (empty($agf->intitule_custo)) {
+			$this->str = '« '.$agf->formintitule.' »';
+		} else {
+			$this->str = '« '.$agf->intitule_custo.' »';
+		}
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
-		$hauteur = dol_nboflines_bis($this->str,50)*4;
-		$posY += $hauteur;
+		
+		$posY = $pdf->getY()+2;
 		$haut_col2 += $hauteur;
-
+		
 		// Période
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+		
 		if ($agf->dated == $agf->datef) $this->str = $outputlangs->transnoentities('AgfPDFFichePres8')." ".dol_print_date($agf->datef,'daytext');
 		else $this->str = $outputlangs->transnoentities('AgfPDFFichePres9')." ".dol_print_date($agf->dated).' '.$outputlangs->transnoentities('AgfPDFFichePres10').' '.dol_print_date($agf->datef,'daytext');
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->MultiCell($larg_col2,4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
 		$haut_col2 += $hauteur + 2;
-
+		
 		// Lieu
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posY - $hauteur);
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2 , $posYintitule );
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres11');
 		$pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($this->str),0,2,"L",0);
-
+		
 		$agf_place = new Agefodd_place($this->db);
 		$resql = $agf_place->fetch($agf->placeid);
-
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2  + $larg_col3, $posY - $hauteur);
+		
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2  + $larg_col3, $posYintitule);
 		$this->str = $agf_place->ref_interne."\n". $agf_place->adresse."\n".$agf_place->cp." ".$agf_place->ville;
 		$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str),0,'L');
 		$hauteur = dol_nboflines_bis($this->str,50)*4;
@@ -470,7 +490,10 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		//Trainee
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs),'B',9);
-		$this->str = $this->str = $line->nom.' '.$line->prenom.' - '.dol_trunc($line->socname, 27);
+		$this->str = $line->nom.' '.$line->prenom.' - '.dol_trunc($line->socname, 27);
+		if (!empty($line->poste)) {
+			$this->str.= ' ('.$line->poste.')';
+		}
 		$pdf->Cell(0, 5 , $outputlangs->convToOutputCharset($this->str),TR,2,"C",0);
 
 		$posY= $pdf->GetY();

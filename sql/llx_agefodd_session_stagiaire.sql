@@ -32,5 +32,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_stagiaire (
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL,
-  import_key		varchar(14)
+  import_key		varchar(14),
+  dt_acknowledgement	timestamp NULL
 ) ENGINE=InnoDB;

@@ -34,7 +34,7 @@ dol_include_once('/core/lib/functions2.lib.php');
 
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
 
 $id=GETPOST('id','int');
 

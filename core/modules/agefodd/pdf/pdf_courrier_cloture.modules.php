@@ -104,7 +104,7 @@ $pdf->SetXY($posX - 80, $posY);
 $this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4')."\n\n\n";
 
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierCloture7')." ";
-$this->str.= '« '.$agf->formintitule." » ".$outputlangs->transnoentities('AgfPDFCourrierCloture8')." ";
+$this->str.= '« '.$agf->intitule_custo." » ".$outputlangs->transnoentities('AgfPDFCourrierCloture8')." ";
 $this->str.= $stagiaires;
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11')."\n\n";
 $this->str.= $outputlangs->transnoentities('AgfPDFCourrierAcceuil13');

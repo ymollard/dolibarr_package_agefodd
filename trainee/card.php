@@ -435,7 +435,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 
 	print '<tr class="create_thirdparty_block"><td>'.$langs->trans("ThirdPartyName").'</td>';
-	print '<td colspan="3"><input name="societe_name" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="societe_name" class="flat" size="50" value="'.GETPOST('societe_name','alpha').'"></td></tr>';
 
 	// Address
 	print '<tr class="create_thirdparty_block"><td valign="top">'.$langs->trans('Address').'</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
@@ -454,14 +454,14 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '<tr class="liste_titre"><td colspan="4"><strong>'.$langs->trans("AgfMailTypeContactTrainee").'</strong></td>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("AgfCivilite").'</span></td>';
-	print '<td colspan="3">'.$formcompany->select_civility().'</td>';
+	print '<td colspan="3">'.$formcompany->select_civility(GETPOST('civilite_id')).'</td>';
 	print '</tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Lastname").'</span></td>';
-	print '<td colspan="3"><input name="nom" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="nom" class="flat" size="50" value="'.GETPOST('nom','alpha').'"></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Firstname").'</span></td>';
-	print '<td colspan="3"><input name="prenom" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="prenom" class="flat" size="50" value="'.GETPOST('prenom','alpha').'"></td></tr>';
 
 	print '<tr><td>'.$langs->trans('CreateANewContactFromTraineeForm');
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"),'help');
@@ -480,16 +480,16 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	print '	</tr>';
 
 	print '<tr><td>'.$langs->trans("AgfFonction").'</td>';
-	print '<td colspan="3"><input name="fonction" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="fonction" class="flat" size="50" value="'.GETPOST('fonction','alpha').'"></td></tr>';
 
 	print '<tr><td>'.$langs->trans("Phone").'</td>';
-	print '<td colspan="3"><input name="tel1" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="tel1" class="flat" size="50" value="'.GETPOST('tel1','alpha').'"></td></tr>';
 
 	print '<tr><td>'.$langs->trans("Mobile").'</td>';
-	print '<td colspan="3"><input name="tel2" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="tel2" class="flat" size="50" value="'.GETPOST('tel2','alpha').'"></td></tr>';
 
 	print '<tr><td>'.$langs->trans("Mail").'</td>';
-	print '<td colspan="3"><input name="mail" class="flat" size="50" value=""></td></tr>';
+	print '<td colspan="3"><input name="mail" class="flat" size="50" value="'.GETPOST('mail','alpha').'"></td></tr>';
 
 	print '<tr><td>'.$langs->trans("DateToBirth").'</td>';
 	print '<td>';

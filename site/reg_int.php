@@ -33,7 +33,7 @@ require_once('../class/agefodd_reginterieur.class.php');
 require_once('../lib/agefodd.lib.php');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_place->lire) accessforbidden();
 
 $action=GETPOST('action','alpha');
 $confirm=GETPOST('confirm','alpha');
@@ -43,7 +43,7 @@ $idreg=GETPOST('idreg','int');
 /*
  * Actions delete
 */
-if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_place->creer)
 {
 	$agf = new Agefodd_reg_interieur($db);
 	$agf->id=$idreg;
@@ -73,7 +73,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 /*
  * Action update (Location internal rules)
 */
-if ($action == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer)
 {
 	if (! $_POST["cancel"])
 	{
@@ -112,7 +112,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
  * Action create (Location internal rules)
 */
 
-if ($action == 'create_confirm' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 {
 	if (! $_POST["cancel"])
 	{
@@ -186,7 +186,7 @@ dol_fiche_head($head, 'reg_int', $langs->trans("AgfRegInt"), 0, 'address');
 /*
  * Action create
 */
-if ($action == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer)
 {
 	print '<form name="create" action="'.$_SERVER['PHP_SELF'].'" method="POST">'."\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
@@ -306,7 +306,7 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_place->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
@@ -314,7 +314,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_place->creer)
 	{
 		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}

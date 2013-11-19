@@ -531,6 +531,15 @@ print_fiche_titre($langs->trans("AgefoddSetupDesc"),$linkback,'setup');
 $head = agefodd_admin_prepare_head();
 dol_fiche_head($head, 'settings', $langs->trans("Module103000Name"), 0,"agefodd@agefodd");
 
+if ($conf->use_javascript_ajax){
+print ' <script type="text/javascript">';
+print 'window.fnDisplayOPCAAdrr=function() {$( "#OPCAAdrr" ).show();};'."\n";
+print 'window.fnHideOPCAAdrr=function() {$( "#OPCAAdrr" ).hide();};'."\n";
+print 'window.fnDisplayCertifAutoAdd=function() {$( "#CertifAutoAdd" ).show();};'."\n";
+print 'window.fnHideCertifAutoAdd=function() {$( "#CertifAutoAdd" ).hide();};'."\n";
+print ' </script>';
+}
+
 // Agefodd numbering module
 print_titre($langs->trans("AgfAdminTrainingNumber"));
 print '<br>';
@@ -1121,21 +1130,76 @@ print '</tr>';
 print '<tr class="impair"><td>'.$langs->trans("AgfManageCertification").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
-	print ajax_constantonoff('AGF_MANAGE_CERTIF');
+	$input_array=array('alert'=>
+	array(
+	'set'=>array('content'=>$langs->trans('AgfConfirmChangeState'),'title'=>$langs->trans('AgfConfirmChangeState'),'method'=>'fnDisplayCertifAutoAdd','yesButton'=>$langs->trans('Yes'),'noButton'=>$langs->trans('No')),
+	'del'=>array('content'=>$langs->trans('AgfConfirmChangeState'),'title'=>$langs->trans('AgfConfirmChangeState'),'method'=>'fnHideCertifAutoAdd','yesButton'=>$langs->trans('Yes'),'noButton'=>$langs->trans('No'))));
+
+	print ajax_constantonoff('AGF_MANAGE_CERTIF',$input_array);
 }else {
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_MANAGE_CERTIF",$arrval,$conf->global->AGF_MANAGE_CERTIF);
 }
+
 print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-// Update global variable AGF_MANAGE_CERTIF
+
+if ($conf->use_javascript_ajax){
+
+
+	// Update global variable AGF_DEFAULT_CREATE_CERTIF
+	print '<tr id ="CertifAutoAdd" class="impair"><td>'.$langs->trans("AgfCertifAutoAdd").'</td>';
+	print '<td align="left">';
+	print ajax_constantonoff('AGF_DEFAULT_CREATE_CERTIF');
+	print '</td>';
+	print '<td align="center">';
+	print $form->textwithpicto('',$langs->trans("AgfCertifAutoAddHelp"),1,'help');
+	print '</td>';
+	print '</tr>';
+
+	if (!empty($conf->global->AGF_MANAGE_CERTIF))
+	{
+		print ' <script type="text/javascript">';
+		print '$( "#CertifAutoAdd" ).show()';
+		print ' </script>';
+	} else {
+		print ' <script type="text/javascript">';
+		print '$( "#CertifAutoAdd" ).hide()';
+		print ' </script>';
+	}
+
+}
+else
+{
+	if (!empty($conf->global->AGF_MANAGE_CERTIF))
+	{
+		// Update global variable AGF_DEFAULT_CREATE_CERTIF
+		print '<tr id ="CertifAutoAdd" class="impair"><td>'.$langs->trans("AgfCertifAutoAdd").'</td>';
+		print '<td align="left">';
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_DEFAULT_CREATE_CERTIF",$arrval,$conf->global->AGF_DEFAULT_CREATE_CERTIF);
+		print '</td>';
+		print '<td align="center">';
+		print $form->textwithpicto('',$langs->trans("AgfCertifAutoAddHelp"),1,'help');
+		print '</td>';
+		print '</tr>';
+	}
+}
+
+
+// Update global variable AGF_MANAGE_OPCA
 print '<tr class="pair"><td>'.$langs->trans("AgfManageOPCA").'</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax){
-	print ajax_constantonoff('AGF_MANAGE_OPCA');
+	$input_array=array('alert'=>
+	array(
+		'set'=>array('content'=>$langs->trans('AgfConfirmChangeState'),'title'=>$langs->trans('AgfConfirmChangeState'),'method'=>'fnDisplayOPCAAdrr','yesButton'=>$langs->trans('Yes'),'noButton'=>$langs->trans('No')),
+		'del'=>array('content'=>$langs->trans('AgfConfirmChangeState'),'title'=>$langs->trans('AgfConfirmChangeState'),'method'=>'fnHideOPCAAdrr','yesButton'=>$langs->trans('Yes'),'noButton'=>$langs->trans('No'))));
+	
+	print ajax_constantonoff('AGF_MANAGE_OPCA',$input_array);
 }else {
 	$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
 	print $form->selectarray("AGF_MANAGE_OPCA",$arrval,$conf->global->AGF_MANAGE_OPCA);
@@ -1145,22 +1209,46 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-if (!empty($conf->global->AGF_MANAGE_OPCA))
-{
+if ($conf->use_javascript_ajax){
+	
+	
 	// Update global variable MAIN_USE_COMPANY_NAME_OF_CONTACT
-	print '<tr class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
+	print '<tr id ="OPCAAdrr" class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
 	print '<td align="left">';
-	if ($conf->use_javascript_ajax){
-		print ajax_constantonoff('AGF_LINK_OPCA_ADRR_TO_CONTACT');
-	}else {
-		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
-		print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT);
-	}
+	print ajax_constantonoff('AGF_LINK_OPCA_ADRR_TO_CONTACT');
 	print '</td>';
 	print '<td align="center">';
 	print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'help');
 	print '</td>';
 	print '</tr>';
+	
+	if (!empty($conf->global->AGF_MANAGE_OPCA))
+	{
+		print ' <script type="text/javascript">';
+		print '$( "#OPCAAdrr" ).show()';
+		print ' </script>';
+	} else {
+		print ' <script type="text/javascript">';
+		print '$( "#OPCAAdrr" ).hide()';
+		print ' </script>';
+	}
+
+}
+else 
+{
+	if (!empty($conf->global->AGF_MANAGE_OPCA))
+	{
+		// Update global variable AGF_LINK_OPCA_ADRR_TO_CONTACT
+		print '<tr id ="OPCAAdrr" class="impair"><td>'.$langs->trans("AgfLinkOPCAAddrToContact").'</td>';
+		print '<td align="left">';
+		$arrval=array('0'=>$langs->trans("No"),	'1'=>$langs->trans("Yes"));
+		print $form->selectarray("AGF_LINK_OPCA_ADRR_TO_CONTACT",$arrval,$conf->global->AGF_LINK_OPCA_ADRR_TO_CONTACT);
+		print '</td>';
+		print '<td align="center">';
+		print $form->textwithpicto('',$langs->trans("AgfLinkOPCAAddrToContactHelp"),1,'help');
+		print '</td>';
+		print '</tr>';
+	}
 }
 
 

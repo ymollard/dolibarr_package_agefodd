@@ -39,6 +39,7 @@ require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 require_once ('../class/agefodd_formateur.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -47,11 +48,10 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST ( 'sortorder', 'alpha' );
 $sortfield = GETPOST ( 'sortfield', 'alpha' );
 $page = GETPOST ( 'page', 'int' );
-$arch = GETPOST ( 'arch', 'int' );
+$socid = GETPOST ( 'socid', 'int' );
 
 // Search criteria
 $search_trainning_name = GETPOST ( "search_trainning_name" );
-$search_soc = GETPOST ( "search_soc" );
 $search_teacher_id = GETPOST ( "search_teacher_id" );
 $search_training_ref = GETPOST ( "search_training_ref", 'alpha' );
 $search_start_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_start_datemonth', 'int' ), GETPOST ( 'search_start_dateday', 'int' ), GETPOST ( 'search_start_dateyear', 'int' ) );
@@ -62,11 +62,13 @@ $search_type_session=GETPOST ( "search_type_session",'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 $status_view = GETPOST('status','int');
+$search_type_affect=GETPOST('search_type_affect','alpha');
+
+if (empty($search_type_affect)) $search_type_affect='thirdparty';
 
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
 	$search_trainning_name = '';
-	$search_soc = '';
 	$search_teacher_id = "";
 	$search_training_ref = '';
 	$search_start_date = "";
@@ -74,14 +76,12 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_site = "";
 	$search_training_ref_interne="";
 	$search_type_session="";
+	$status_view="";
 }
 
 $filter = array ();
 if (! empty ( $search_trainning_name )) {
 	$filter ['c.intitule'] = $search_trainning_name;
-}
-if (! empty ( $search_soc )) {
-	$filter ['so.nom'] = $search_soc;
 }
 if (! empty ( $search_teacher_id )) {
 	$filter ['f.rowid'] = $search_teacher_id;
@@ -107,13 +107,15 @@ if ($search_type_session!='' && $search_type_session != - 1) {
 if (! empty ( $status_view )) {
 	$filter ['s.status'] = $status_view;
 }
+if (! empty ( $search_type_affect )) {
+	$filter ['type_affect'] = $search_type_affect;
+}
+
 
 if (empty ( $sortorder ))
 	$sortorder = "DESC";
 if (empty ( $sortfield ))
 	$sortfield = "s.dated";
-if (empty ( $arch ))
-	$arch = 0;
 
 if ($page == - 1) {
 	$page = 0;
@@ -125,79 +127,113 @@ $pagenext = $page + 1;
 
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
+$agf = new Agsession ( $db );
 
-if (empty ( $arch ))
-	$title = $langs->trans ( "AgfMenuSessAct" );
-elseif ($arch == 2)
-	$title = $langs->trans ( "AgfMenuSessArchReady" );
-else
-	$title = $langs->trans ( "AgfMenuSessArch" );
+
+$title = $langs->trans ( "AgfMenuSess" );
 llxHeader ( '', $title );
 
-if ($training_view && ! empty ( $search_training_ref )) {
-	$agf = new Agefodd ( $db );
-	$result = $agf->fetch ( '', $search_training_ref );
-	
-	$head = training_prepare_head ( $agf );
-	
-	dol_fiche_head ( $head, 'sessions', $langs->trans ( "AgfCatalogDetail" ), 0, 'label' );
-	
-	$agf->printFormationInfo ();
-	print '</div>';
+$object = new Societe($db);
+$object->fetch($socid);
+if ($object->id <= 0)
+{
+	setEventMessage($object->error,'errors');
 }
 
-if ($site_view) {
-	$agf = new Agefodd_place ( $db );
-	$result = $agf->fetch ( $search_site );
-	
-	if ($result) {
-		$head = site_prepare_head ( $agf );
-		
-		dol_fiche_head ( $head, 'sessions', $langs->trans ( "AgfSessPlace" ), 0, 'address' );
-	}
-	
-	$agf->printPlaceInfo ();
-	print '</div>';
+
+$head = societe_prepare_head($object);
+
+dol_fiche_head($head, 'tabAgefodd', $langs->trans("ThirdParty"),0,'company');
+
+
+
+print '<table class="border" width="100%">';
+
+print '<tr><td width="25%">'.$langs->trans("ThirdPartyName").'</td><td colspan="3">';
+print $form->showrefnav($object,'socid','',($user->societe_id?0:1),'rowid','nom');
+print '</td></tr>';
+
+if (! empty($conf->global->SOCIETE_USEPREFIX))  // Old not used prefix field
+{
+	print '<tr><td>'.$langs->trans('Prefix').'</td><td colspan="3">'.$object->prefix_comm.'</td></tr>';
 }
 
-$agf = new Agsession ( $db );
+if ($object->client)
+{
+	print '<tr><td>';
+	print $langs->trans('CustomerCode').'</td><td colspan="3">';
+	print $object->code_client;
+	if ($object->check_codeclient() <> 0) print ' <font class="error">('.$langs->trans("WrongCustomerCode").')</font>';
+	print '</td></tr>';
+}
+
+if ($object->fournisseur)
+{
+	print '<tr><td>';
+	print $langs->trans('SupplierCode').'</td><td colspan="3">';
+	print $object->code_fournisseur;
+	if ($object->check_codefournisseur() <> 0) print ' <font class="error">('.$langs->trans("WrongSupplierCode").')</font>';
+	print '</td></tr>';
+}
+
+if (! empty($conf->barcode->enabled))
+{
+	print '<tr><td>'.$langs->trans('Gencod').'</td><td colspan="3">'.$soc->barcode.'</td></tr>';
+}
+
+print "<tr><td valign=\"top\">".$langs->trans('Address')."</td><td colspan=\"3\">";
+dol_print_address($object->address, 'gmap', 'thirdparty', $soc->id);
+print "</td></tr>";
+
+// Zip / Town
+print '<tr><td width="25%">'.$langs->trans('Zip').'</td><td width="25%">'.$object->zip."</td>";
+print '<td width="25%">'.$langs->trans('Town').'</td><td width="25%">'.$object->town."</td></tr>";
+
+// Country
+if ($object->country) {
+	print '<tr><td>'.$langs->trans('Country').'</td><td colspan="3">';
+	$img=picto_from_langcode($object->country_code);
+	print ($img?$img.' ':'');
+	print $object->country;
+	print '</td></tr>';
+}
+
+// EMail
+print '<tr><td>'.$langs->trans('EMail').'</td><td colspan="3">';
+print dol_print_email($object->email,0,$object->id,'AC_EMAIL');
+print '</td></tr>';
+
+// Web
+print '<tr><td>'.$langs->trans('Web').'</td><td colspan="3">';
+print dol_print_url($object->url);
+print '</td></tr>';
+
+// Phone / Fax
+print '<tr><td>'.$langs->trans('Phone').'</td><td>'.dol_print_phone($object->tel,$object->country_code,0,$object->id,'AC_TEL').'</td>';
+print '<td>'.$langs->trans('Fax').'</td><td>'.dol_print_phone($object->fax,$object->country_code,0,$object->id,'AC_FAX').'</td></tr>';
+
+print '</table>';
+
+print '</div>';
+
 
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty ( $conf->global->MAIN_DISABLE_FULL_SCANLIST )) {
-	$nbtotalofrecords = $agf->fetch_all ( $sortorder, $sortfield, 0, 0, $arch, $filter );
+	$nbtotalofrecords = $agf->fetch_all_by_soc ($object->id, $sortorder, $sortfield, 0, 0, $filter );
 }
-$resql = $agf->fetch_all ( $sortorder, $sortfield, $conf->liste_limit, $offset, $arch, $filter );
+$result = $agf->fetch_all_by_soc ($object->id, $sortorder, $sortfield, $conf->liste_limit, $offset, $filter );
 
-if ($resql != - 1) {
-	$num = $resql;
+if ($result >= 0) {
+	$num = $result;
 	
-	if (empty ( $arch ))
-		$menu = $langs->trans ( "AgfMenuSessAct" );
-	elseif ($arch == 2)
-		$menu = $langs->trans ( "AgfMenuSessArchReady" );
-	else
-		$menu = $langs->trans ( "AgfMenuSessArch" );
-	
-	$option ='&training_view='.$training_view.'&site_view='.$site_view. '&arch=' . $arch . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	$option_noarch ='&training_view='.$training_view.'&site_view='.$site_view. '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
-	
-	
-	if ($arch == 1)
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?arch=0'.$option_noarch.'">'.$langs->trans("AgfMenuSessAct").'</a>'."\n";
-	}
-	else
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?arch=1'.$option_noarch.'">'.$langs->trans("AgfMenuSessArch").'</a>'."\n";
-	
-	}
+	$option = '&socid='.$socid.'&search_type_affect='.$search_type_affect.'&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	print_barre_liste ( $title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&training_view='.$training_view.'&site_view='.$site_view. '&page=' . $page . '&arch=' . $arch . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	$arg_url = '&socid='.$socid.'&page=' . $page . '&search_type_affect='.$search_type_affect.'&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfFormateur" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
@@ -208,8 +244,9 @@ if ($resql != - 1) {
 	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfNbreParticipants" ), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfListParticipantsStatus" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Status" ), $_SERVEUR ['PHP_SELF'], 's.status', '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfTypeRessource" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print '<td></td>';
 	print "</tr>\n";
 	
 	// Search bar
@@ -235,23 +272,23 @@ if ($resql != - 1) {
 		}
 		$addcriteria = true;
 	}
-	if (! empty ( $arch )) {
+	if (! empty ( $socid )) {
 		if ($addcriteria) {
-			$url_form .= '&arch=' . $arch;
+			$url_form .= '&socid=' . $socid;
 		} else {
-			$url_form .= '?arch=' . $arch;
+			$url_form .= '?socid=' . $socid;
 		}
 		$addcriteria = true;
 	}
 	
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-	print '<input type="hidden" name="arch" value="' . $arch . '" >';
+	print '<input type="hidden" name="socid" value="' . $socid . '" >';
 	print '<tr class="liste_titre">';
 	
-	print '<td>&nbsp;</td>';
+	print '<td class="liste_titre">';
+	print '</td>';
 	
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
 	print '</td>';
 	
 	print '<td class="liste_titre">';
@@ -287,7 +324,13 @@ if ($resql != - 1) {
 	print '</td>';
 	
 	print '<td class="liste_titre">';
+	print $formAgefodd->select_session_status($status_view,'status','',1);
 	print '</td>';
+	
+	print '<td class="liste_titre">';
+	print $formAgefodd->select_type_affect($search_type_affect,'search_type_affect');
+	print '</td>';
+	
 	
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
 	print '&nbsp; ';
@@ -304,7 +347,16 @@ if ($resql != - 1) {
 			
 			// Affichage tableau des sessions
 			$var = ! $var;
-			print "<tr $bc[$var]>";
+			
+			( $line->archive == 1 ) ? $style_archive = ' style="background: gray"' : $style_archive = '';
+			
+			if (empty($style_archive)) {
+				$style=$bc[$var];
+			} else {
+				$style=$style_archive;
+			}
+
+			print "<tr ". $style.">";
 			// Calcul de la couleur du lien en fonction de la couleur définie sur la session
 			// http://www.w3.org/TR/AERT#color-contrast
 			// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS
@@ -315,6 +367,7 @@ if ($resql != - 1) {
 				$color_a = ' style="color: #FFFFFF;"';
 			
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->rowid . '</a></td>';
+			
 			print '<td>';
 			
 			if (! empty ( $line->socid ) && $line->socid != - 1) {
@@ -325,6 +378,7 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
+			
 			print '<td>';
 			$trainer = new Agefodd_teacher ( $db );
 			if (! empty ( $line->trainerrowid )) {
@@ -336,6 +390,7 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
+			
 			print '<td>' . stripslashes ( dol_trunc ( $line->intitule, 60 ) ) . '</td>';
 			print '<td>' . $line->ref . '</td>';
 			print '<td>' . $line->training_ref_interne . '</td>';
@@ -343,20 +398,12 @@ if ($resql != - 1) {
 			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
-			print '<td>' . $line->nb_stagiaire . '</td>';
-			if (! empty ( $line->nb_subscribe_min )) {
-				if ($line->nb_confirm >= $line->nb_subscribe_min) {
-					$style = 'style="background: green"';
-				} else {
-					$style = 'style="background: red"';
-				}
-			} else {
-				$style = '';
-			}
-			print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			print '<td>' . stripslashes ( $line->status_lib ) . '</td>';
+			print '<td>' . stripslashes ( $line->type_affect ) . '</td>';
+			print '<td></td>';
 			print "</tr>\n";
 		} else {
-			print "<tr $bc[$var]>";
+			print "<tr ". $style.">";
 			print '<td></td>';
 			print '<td></td>';
 			print '<td>';
@@ -370,7 +417,6 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
@@ -388,9 +434,26 @@ if ($resql != - 1) {
 	}
 	
 	print "</table>";
-} else {
+} 
+elseif ($result==0) {
+	print $langs->trans('AgfNoSession');
+}
+else {
 	setEventMessage ( $agf->error, 'errors' );
 }
+
+print '<div class="tabsAction">';
+
+	if ($user->rights->agefodd->creer)
+	{
+		print '<a class="butAction" href="'.dol_buildpath('/agefodd/session/card.php',1).'?mainmenu=agefodd&action=create&fk_soc='.$object->id.'">'.$langs->trans('AgfMenuSessNew').'</a>';
+	}
+	else
+	{
+		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfMenuSessNew').'</a>';
+	}
+
+print '</div>';
 
 llxFooter ();
 $db->close ();

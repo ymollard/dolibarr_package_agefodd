@@ -52,6 +52,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 	var $certif_label;
 	var $certif_dt_start='';
 	var $certif_dt_end='';
+	var $certif_dt_warning='';
 
 	var $lines=array();
 	var $lines_state=array();
@@ -106,7 +107,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= "certif_code,";
 		$sql.= "certif_label,";
 		$sql.= "certif_dt_start,";
-		$sql.= "certif_dt_end";
+		$sql.= "certif_dt_end,";
+		$sql.= "certif_dt_warning";
 
 
 		$sql.= ") VALUES (";
@@ -121,7 +123,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " ".(! isset($this->certif_code)?'NULL':"'".$this->db->escape($this->certif_code)."'").",";
 		$sql.= " ".(! isset($this->certif_label)?'NULL':"'".$this->db->escape($this->certif_label)."'").",";
 		$sql.= " ".(! isset($this->certif_dt_start) || dol_strlen($this->certif_dt_start)==0?'NULL':"'".$this->db->idate($this->certif_dt_start)."'").",";
-		$sql.= " ".(! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end)==0?'NULL':"'".$this->db->idate($this->certif_dt_end)."'")."";
+		$sql.= " ".(! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end)==0?'NULL':"'".$this->db->idate($this->certif_dt_end)."'").",";
+		$sql.= " ".(! isset($this->certif_dt_warning) || dol_strlen($this->certif_dt_warning)==0?'NULL':"'".$this->db->idate($this->certif_dt_warning)."'")."";
 
 
 		$sql.= ")";
@@ -197,7 +200,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " t.certif_code,";
 		$sql.= " t.certif_label,";
 		$sql.= " t.certif_dt_start,";
-		$sql.= " t.certif_dt_end";
+		$sql.= " t.certif_dt_end,";
+		$sql.= " t.certif_dt_warning";
 
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
 
@@ -244,6 +248,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$this->certif_label = $obj->certif_label;
 				$this->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$this->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$this->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 					
 				$this->fetch_certif_state($this->id);
 
@@ -257,6 +262,118 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		{
 			$this->error="Error ".$this->db->lasterror();
 			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *	@param	int		$socid	Trainne
+	 *  @param string $sortorder order
+	 *  @param string $sortfield field
+	 *  @param int $limit page
+	 *  @param int $offset
+	 *  @param array $filter output
+	 *  @return int <0 if KO, >0 if OK
+	 */
+	function fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter = array())
+	{
+		global $langs;
+	
+		$sql = "SELECT ";
+		$sql .= " DISTINCT ";
+		$sql.= "certif.fk_stagiaire,";
+		$sql.= "certif.fk_session_agefodd,";
+		$sql.= "certif.certif_code,";
+		$sql.= "certif.certif_label,";
+		$sql.= "certif.certif_dt_end,";
+		$sql.= "certif.certif_dt_start,";
+		$sql.= "certif.certif_dt_warning,";
+		$sql.= "c.intitule as fromintitule,";
+		$sql.= "c.ref as fromref,";
+		$sql.= "c.ref_interne as fromrefinterne,";
+		$sql.= "sta.nom as trainee_name,";
+		$sql.= "sta.prenom as trainee_firstname,";
+		$sql.= "sta.civilite,";
+		$sql.= "soc.nom as customer_name,";
+		$sql.= "soc.rowid as customer_id,";
+		$sql.= "s.dated,";
+		$sql.= "s.datef";
+	
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as certif";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session as s ON certif.fk_session_agefodd=s.rowid";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sta ON sta.rowid = certif.fk_stagiaire";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as stasess ON sta.rowid = stasess.fk_stagiaire AND stasess.fk_session_agefodd=s.rowid  AND certif.fk_session_stagiaire=stasess.rowid";
+		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sta.fk_soc";
+	
+		$sql.= " WHERE s.entity IN (".getEntity('agsession').")";
+		
+		// Manage filter
+		if (count ( $filter ) > 0) {
+			foreach ( $filter as $key => $value ) {
+				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
+				{
+					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
+					$sql .= ' AND ' . $key . ' = ' . $value;
+				} else {
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
+				}
+			}
+		}
+	
+		$sql .= ' AND soc.rowid='.$socid;
+		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		if (! empty ( $limit )) {
+			$sql .= ' ' . $this->db->plimit ( $limit + 1, $offset );
+		}
+	
+	
+		dol_syslog(get_class($this)."::fetch_certif_customer sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->lines = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+	
+			while( $i < $num)
+			{
+				$obj = $this->db->fetch_object($resql);
+	
+	
+				$line = new Agefodd_CertifExpire_line();
+	
+				$line->id_session = $obj->fk_session_agefodd;
+				$line->fromintitule=$obj->fromintitule;
+				$line->fromref=$obj->fromref;
+				$line->fromrefinterne=$obj->fromrefinterne;
+				$line->trainee_id=$obj->fk_stagiaire;
+				$line->trainee_name=$obj->trainee_name;
+				$line->trainee_firstname=$obj->trainee_firstname;
+				$line->certif_code=$obj->certif_code;
+				$line->certif_label=$obj->certif_label;
+				$line->certif_dt_end=$this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_start=$this->db->jdate($obj->certif_dt_start);
+				$line->certif_dt_warning=$this->db->jdate($obj->certif_dt_warning);
+				$line->customer_name=$obj->customer_name;
+				$line->customer_id=$obj->customer_id;
+				$line->dated=$obj->dated;
+				$line->datef=$obj->datef;
+	
+				$this->lines[$i]=$line;
+	
+				$i++;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::fetch_certif_customer ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -476,7 +593,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " t.certif_code,";
 		$sql.= " t.certif_label,";
 		$sql.= " t.certif_dt_start,";
-		$sql.= " t.certif_dt_end";
+		$sql.= " t.certif_dt_end,";
+		$sql.= " t.certif_dt_warning";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
 
 		$sql.= " WHERE t.entity IN (".getEntity('agsession').")";
@@ -512,6 +630,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_label = $obj->certif_label;
 				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 
 				$this->lines[$i]=$line;
 
@@ -555,7 +674,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " t.certif_code,";
 		$sql.= " t.certif_label,";
 		$sql.= " t.certif_dt_start,";
-		$sql.= " t.certif_dt_end";
+		$sql.= " t.certif_dt_end,";
+		$sql.= " t.certif_dt_warning";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire_certif as t";
 
 		$sql.= " WHERE t.entity IN (".getEntity('agsession').")";
@@ -590,6 +710,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_label = $obj->certif_label;
 				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 
 				$this->line[$i]=$line;
 
@@ -640,7 +761,8 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$sql.= " certif_code=".(isset($this->certif_code)?"'".$this->db->escape($this->certif_code)."'":"null").",";
 		$sql.= " certif_label=".(isset($this->certif_label)?"'".$this->db->escape($this->certif_label)."'":"null").",";
 		$sql.= " certif_dt_start=".(dol_strlen($this->certif_dt_start)!=0 ? "'".$this->db->idate($this->certif_dt_start)."'" : 'null').",";
-		$sql.= " certif_dt_end=".(dol_strlen($this->certif_dt_end)!=0 ? "'".$this->db->idate($this->certif_dt_end)."'" : 'null')."";
+		$sql.= " certif_dt_end=".(dol_strlen($this->certif_dt_end)!=0 ? "'".$this->db->idate($this->certif_dt_end)."'" : 'null').",";
+		$sql.= " certif_dt_warning=".(dol_strlen($this->certif_dt_warning)!=0 ? "'".$this->db->idate($this->certif_dt_warning)."'" : 'null')."";
 
 		$sql.= " WHERE rowid=".$this->id;
 
@@ -820,6 +942,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		$this->certif_label='';
 		$this->certif_dt_start='';
 		$this->certif_dt_end='';
+		$this->certif_dt_warning='';
 
 
 	}
@@ -842,6 +965,7 @@ class AgfStagiaireCertifLine
 	var $certif_label;
 	var $certif_dt_start='';
 	var $certif_dt_end='';
+	var $certif_dt_warning='';
 
 
 	function __construct()
@@ -866,4 +990,25 @@ class AgfStagiaireCertifLineState
 	{
 		return 1;
 	}
+}
+
+/**
+ *	Certif line
+ */
+Class Agefodd_CertifExpire_line {
+	var $id_session;
+	var $fromintitule;
+	var $fromref;
+	var $trainee_id;
+	var $trainee_name;
+	var $trainee_firstname;
+	var $certif_dt_end;
+	var $certif_dt_start;
+	var $certif_dt_warning;
+	var $certif_code;
+	var $certif_label;
+	var $customer_name;
+	var $customer_id;
+	var $dated;
+	var $datef;
 }

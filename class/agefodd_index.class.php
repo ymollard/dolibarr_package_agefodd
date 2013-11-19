@@ -39,18 +39,14 @@ class Agefodd_index_line {
 	var $duree;
 }
 
-Class Agefodd_CertifExpire_line {
-	var $id_session;
-	var $fromintitule;
-	var $fromref;
-	var $trainee_id;
-	var $trainee_name;
-	var $trainee_firstname;
-	var $certif_dt_end;
-	var $certif_code;
-	var $certif_label;
+
+
+Class Agefodd_CertifExpireSoc_line {
+
 	var $customer_name;
 	var $customer_id;
+	var $fromintitule;
+	var $fromref;
 }
 /**
  *	Index pages
@@ -641,23 +637,17 @@ class Agefodd_index
 	/**
 	 *  Load object in memory from database
 	 *
-	 *  @return int					<0 if KO, $num of student if OK
+	 *	@param	int		$time_expiration	Month duration before expiration
+	 *  @return int							<0 if KO, $num of student if OK
 	 */
-	function fetch_certif_expire()
+	function fetch_certif_expire($month_expiration)
 	{
 		global $langs;
 
 		$sql = "SELECT ";
-		$sql.= "certif.fk_stagiaire,";
-		$sql.= "certif.fk_session_agefodd,";
-		$sql.= "certif.certif_code,";
-		$sql.= "certif.certif_label,";
-		$sql.= "certif.certif_dt_end,";
+		$sql .= " DISTINCT ";
 		$sql.= "c.intitule as fromintitule,";
 		$sql.= "c.ref as fromref,";
-		$sql.= "sta.nom as trainee_name,";
-		$sql.= "sta.prenom as trainee_firstname,";
-		$sql.= "sta.civilite,";
 		$sql.= "soc.nom as customer_name,";
 		$sql.= "soc.rowid as customer_id";
 
@@ -665,14 +655,15 @@ class Agefodd_index
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session as s ON certif.fk_session_agefodd=s.rowid";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as sta ON sta.rowid = certif.fk_stagiaire";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_stagiaire as stasess ON sta.rowid = stasess.fk_stagiaire AND stasess.fk_session_agefodd=s.rowid AND certif.fk_session_stagiaire=stasess.rowid";
 		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sta.fk_soc";
 
 		$sql.= " WHERE s.entity IN (".getEntity('agsession').")";
 
 		if ($this->db->type=='pgsql') {
-			$sql.= " AND certif.certif_dt_end < ( NOW() + INTERVAL '30 DAYS') ";
+			$sql.= " AND certif.certif_dt_end < ( NOW() + INTERVAL '".$month_expiration." MONTHS') ";
 		}else {
-			$sql.= " AND certif.certif_dt_end < ( NOW() + INTERVAL 30 DAY) ";
+			$sql.= " AND certif.certif_dt_end < ( NOW() + INTERVAL ".$month_expiration." MONTH) ";
 		}
 
 
@@ -688,18 +679,10 @@ class Agefodd_index
 			{
 				$obj = $this->db->fetch_object($resql);
 
-
-				$line = new Agefodd_CertifExpire_line();
-
-				$line->id_session = $obj->fk_session_agefodd;
+				$line = new Agefodd_CertifExpireSoc_line();
+				
 				$line->fromintitule=$obj->fromintitule;
 				$line->fromref=$obj->fromref;
-				$line->trainee_id=$obj->fk_stagiaire;
-				$line->trainee_name=$obj->trainee_name;
-				$line->trainee_firstname=$obj->trainee_firstname;
-				$line->certif_code=$obj->certif_code;
-				$line->certif_label=$obj->certif_label;
-				$line->certif_dt_end=$this->db->jdate($obj->certif_dt_end);
 				$line->customer_name=$obj->customer_name;
 				$line->customer_id=$obj->customer_id;
 
@@ -713,7 +696,7 @@ class Agefodd_index
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_certif_expire ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}

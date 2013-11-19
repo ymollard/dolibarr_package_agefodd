@@ -23,6 +23,5 @@
 --
 ALTER TABLE llx_agefodd_session_stagiaire ADD CONSTRAINT llx_agefodd_session_stagiaire_ibfk_1 FOREIGN KEY (fk_session_agefodd) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_session_stagiaire ADD CONSTRAINT llx_agefodd_session_stagiaire_ibfk_2 FOREIGN KEY (fk_stagiaire) REFERENCES llx_agefodd_stagiaire (rowid);
-ALTER TABLE llx_agefodd_session_stagiaire ADD CONSTRAINT llx_agefodd_session_stagiaire_ibfk_3 FOREIGN KEY (fk_agefodd_stagiaire_type) REFERENCES llx_agefodd_stagiaire_type (rowid);
 ALTER TABLE llx_agefodd_session_stagiaire ADD INDEX fk_session_sess_sta (fk_session_agefodd);
 ALTER TABLE llx_agefodd_session_stagiaire ADD INDEX fk_agefodd_stagiaire_type_sess_sta (fk_agefodd_stagiaire_type);

@@ -33,7 +33,7 @@ require_once('../lib/agefodd.lib.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_place->lire) accessforbidden();
 
 $langs->load('agefodd@agefodd');
 $langs->load('companies');
@@ -48,7 +48,7 @@ $url_return=GETPOST('url_return','alpha');
 /*
  * Actions delete
 */
-if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer)
+if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_place->creer)
 {
 	$agf = new Agefodd_place($db);
 	$agf->id=$id;
@@ -69,7 +69,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 /*
  * Actions archive/active
 */
-if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
+if ($action == 'arch_confirm_delete' && $user->rights->agefodd->agefodd_place->creer)
 {
 	if ($confirm == "yes")
 	{
@@ -101,7 +101,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 /*
  * Action update (Location)
 */
-if ($action == 'update' && $user->rights->agefodd->creer)
+if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer)
 {
 	if (! $_POST["cancel"] && ! $_POST["importadress"])
 	{
@@ -167,7 +167,7 @@ if ($action == 'update' && $user->rights->agefodd->creer)
  * Action create (Location)
 */
 
-if ($action == 'create_confirm' && $user->rights->agefodd->creer)
+if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 {
 	if (! $_POST["cancel"])
 	{
@@ -215,7 +215,7 @@ $form = new Form($db);
 /*
  * Action create
 */
-if ($action == 'create' && $user->rights->agefodd->creer)
+if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer)
 {
 	$formcompany = new FormCompany($db);
 	print_fiche_titre($langs->trans("AgfCreatePlace"));
@@ -420,7 +420,7 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 {
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_place->creer)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('Modify').'</a>';
 	}
@@ -428,7 +428,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Modify').'</a>';
 	}
-	if ($user->rights->agefodd->creer)
+	if ($user->rights->agefodd->agefodd_place->creer)
 	{
 		print '<a class="butActionDelete" href="'.$_SERVER['PHP_SELF'].'?action=delete&id='.$id.'">'.$langs->trans('Delete').'</a>';
 	}
@@ -436,7 +436,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact')
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
 	}
-	if ($user->rights->agefodd->modifier)
+	if ($user->rights->agefodd->agefodd_place->creer)
 	{
 		if ($agf->archive == 0)
 		{

@@ -387,6 +387,7 @@ class FormAgefodd extends Form {
 		$sql .= " so.nom as socname, so.rowid as socid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
+		
 		$sql .= " ON so.rowid = s.fk_soc";
 		if (! empty ( $filter )) {
 			$sql .= ' WHERE ' . $filter;
@@ -498,6 +499,158 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 *	Return list of all contacts (for a third party or all)
+	 *
+	 *	@param	int		$socid      	Id ot third party or 0 for all
+	 *	@param  string	$selected   	Id contact pre-selectionne
+	 *	@param  string	$htmlname  	    Name of HTML field ('none' for a not editable field)
+	 *	@param  int		$showempty      0=no empty value, 1=add an empty value
+	 *	@param  string	$exclude        List of contacts id to exclude
+	 *	@param	string	$limitto		Disable answers that are not id in this array list
+	 *	@param	string	$showfunction   Add function into label
+	 *	@param	string	$moreclass		Add more class to class style
+	 *	@param	string	$showsoc	    Add company into label
+	 * 	@param	int		$forcecombo		Force to use combo box
+	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *  @param	bool	$options_only	Return options only (for ajax treatment)
+	 *	@return	int						<0 if KO, Nb of contact in list if OK
+	 */
+	function select_contacts_custom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto='',$showfunction=0, $moreclass='', $showsoc=0, $forcecombo=0, $event=array(), $options_only=false)
+	{
+		print $this->selectcontactscustom($socid,$selected,$htmlname,$showempty,$exclude,$limitto,$showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
+		return $this->num;
+	}
+	
+	/**
+	 *	Return list of all contacts (for a third party or all)
+	 *
+	 *	@param	int		$socid      	Id ot third party or 0 for all
+	 *	@param  string	$selected   	Id contact pre-selectionne
+	 *	@param  string	$htmlname  	    Name of HTML field ('none' for a not editable field)
+	 *	@param  int		$showempty     	0=no empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
+	 *	@param  string	$exclude        List of contacts id to exclude
+	 *	@param	string	$limitto		Number of contact ti display in max
+	 *	@param	string	$showfunction   Add function into label
+	 *	@param	string	$moreclass		Add more class to class style
+	 *	@param	bool	$options_only	Return options only (for ajax treatment)
+	 *	@param	string	$showsoc	    Add company into label
+	 * 	@param	int		$forcecombo		Force to use combo box
+	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *	@return	 int						<0 if KO, Nb of contact in list if OK
+	 */
+	function selectcontactscustom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto=0,$showfunction=0, $moreclass='', $options_only=false, $showsoc=0, $forcecombo=0, $event=array())
+	{
+		global $conf,$langs;
+	
+		$langs->load('companies');
+	
+		$out='';
+	
+		// On recherche les societes
+		$sql = "SELECT sp.rowid, sp.lastname, sp.firstname, sp.poste";
+		if ($showsoc > 0) {
+			$sql.= " , s.nom as company";
+		}
+		$sql.= " FROM ".MAIN_DB_PREFIX ."socpeople as sp";
+		if ($showsoc > 0) {
+			$sql.= " LEFT OUTER JOIN  ".MAIN_DB_PREFIX ."societe as s ON s.rowid=sp.fk_soc ";
+		}
+		$sql.= " WHERE sp.entity IN (".getEntity('societe', 1).")";
+		if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
+		if (! empty($conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX)) $sql.= " AND sp.statut<>0 ";
+		$sql.= " ORDER BY sp.lastname ASC";
+	
+		dol_syslog(get_class($this)."::select_contacts sql=".$sql);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$num=$this->db->num_rows($resql);
+	
+			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only)
+			{
+				$out.= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
+			}
+	
+			if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
+			if ($showempty == 1) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'></option>';
+			if ($showempty == 2) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'>'.$langs->trans("Internal").'</option>';
+			$num = $this->db->num_rows($resql);
+			
+			if ($num>$limitto){
+				$num=$limitto;
+			}
+			
+			$i = 0;
+			if ($num)
+			{
+				include_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
+				$contactstatic=new Contact($this->db);
+	
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+	
+					$contactstatic->id=$obj->rowid;
+					$contactstatic->lastname=$obj->lastname;
+					$contactstatic->firstname=$obj->firstname;
+	
+					if ($htmlname != 'none')
+					{
+						$disabled=0;
+						if (is_array($exclude) && count($exclude) && in_array($obj->rowid,$exclude)) $disabled=1;
+						if ($selected && $selected == $obj->rowid)
+						{
+							$out.= '<option value="'.$obj->rowid.'"';
+							if ($disabled) $out.= ' disabled="disabled"';
+							$out.= ' selected="selected">';
+							$out.= $contactstatic->getFullName($langs);
+							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+							$out.= '</option>';
+						}
+						else
+						{
+							$out.= '<option value="'.$obj->rowid.'"';
+							if ($disabled) $out.= ' disabled="disabled"';
+							$out.= '>';
+							$out.= $contactstatic->getFullName($langs);
+							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+							$out.= '</option>';
+						}
+					}
+					else
+					{
+						if ($selected == $obj->rowid)
+						{
+							$out.= $contactstatic->getFullName($langs);
+							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+						}
+					}
+					$i++;
+				}
+			}
+			else
+			{
+				$out.= '<option value="-1"'.($showempty==2?'':' selected="selected"').' disabled="disabled">'.$langs->trans($socid?"NoContactDefinedForThirdParty":"NoContactDefined").'</option>';
+			}
+			if ($htmlname != 'none' || $options_only)
+			{
+				$out.= '</select>';
+			}
+	
+			$this->num = $num;
+			return $out;
+		}
+		else
+		{
+			dol_print_error($this->db);
+			return -1;
+		}
+	}
+	
+	/**
 	 * affiche un champs select contenant la liste des formateurs déjà référéencés.
 	 *
 	 * @param int $selectid Id de la session selectionner
@@ -524,7 +677,7 @@ class FormAgefodd extends Form {
 		if (! empty ( $filter )) {
 			$sql .= ' AND ' . $filter;
 		}
-		$sql .= " ORDER BY s.rowid";
+		$sql .= " ORDER BY sp.lastname,u.lastname";
 		
 		dol_syslog ( get_class ( $this ) . "::select_formateur sql=" . $sql, LOG_DEBUG );
 		$result = $this->db->query ( $sql );
@@ -682,6 +835,28 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 * Display select of session status from dictionnary
+	 *
+	 * @param int $selectid Id
+	 * @param string $htmlname Name of HTML control
+	 * @return string The HTML control
+	 */
+	function select_type_affect($selectid, $htmlname = 'search_type_affect' ) {
+		global $conf, $langs;
+	
+		$select_array=array(
+		'thirdparty'=>$langs->trans('ThirdParty'),
+		'trainee'=>$langs->trans('AgfParticipant')
+		);
+		
+		if ($conf->global->AGF_MANAGE_OPCA) {
+			$select_array['opca']=$langs->trans('AgfMailTypeContactOPCA');
+		}
+		
+		return $this->selectarray ( $htmlname, $select_array, $selectid, 0 );
+	}
+	
+	/**
 	 * Display list of training category
 	 *
 	 * @param int $selectid Id de la session selectionner
@@ -778,13 +953,61 @@ class FormAgefodd extends Form {
 			}
 			$ftime = sprintf ( "%02d", $time ) . ':' . sprintf ( "%02d", $min );
 			if ($selectval == $ftime)
-				$selected = ' selected="true"';
+				$selected = ' selected="selected"';
 			else
 				$selected = '';
 			$options .= '<option value="' . $ftime . '"' . $selected . '>' . $ftime . '</option>' . "\n";
 			$min += 15;
 		}
 		return '<select class="flat" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
+	}
+	
+	/**
+	 * Affiche un champs select contenant la liste des 1/4 d"heures de 7:00 à 21h00.
+	 *
+	 * @param string $selectval valeur a selectionner par defaut
+	 * @param string $htmlname nom du control HTML
+	 * @return string The HTML control
+	 */
+	function select_duration_agf($selectval = '', $htmlname = 'duration') {
+
+		global $langs;
+		
+		$duration_array=array();
+		
+		if (!empty($selectval)){
+			$duration_array=explode(':',$selectval);
+			$year=$duration_array[0];
+			$month=$duration_array[1];
+			$day=$duration_array[2];
+		}else {
+			$year=$month=$day=0;
+		}
+		
+		$out = '<input name="'.$htmlname.'_year" class="flat" size="4" value="'.$year.'">'.$langs->trans('Year').'(s)';
+		$out .= '<select class="flat" name="' . $htmlname . '_month">';
+		for ($i = 0; $i <= 12; $i ++) {
+			if ($i==$month) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
+			}
+			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+		}
+		$out .=	'</select>' .$langs->trans('Month').'(s)'. "\n";
+		
+		$out .= '<select class="flat" name="' . $htmlname . '_day">';
+		for ($i = 0; $i <= 31; $i ++) {
+			if ($i==$day) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
+			}
+			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+		}
+		$out .=	'</select>' .$langs->trans('Day').'(s)'. "\n";
+		
+		return $out;
 	}
 	
 	/**
@@ -938,9 +1161,8 @@ class FormAgefodd extends Form {
 			print '<td class="nowrap">';
 			print $langs->trans ( "AgfSessionCommercial" );
 			print ' &nbsp;</td><td class="nowrap">';
-			$form->select_users ( $filter_commercial, 'commercial', 1, array (
-			1 
-			) );
+			if (empty($filter_commercial)) {$filter_commercial='a';}
+			$form->select_users ( $filter_commercial, 'commercial', 1, array (1) );
 			print '</td>';
 			print '</tr>';
 			

@@ -31,7 +31,7 @@ if (! $res) die("Include of main fails");
 require_once('../class/agefodd_formation_catalogue.class.php');
 
 // Security check
-if (!$user->rights->agefodd->lire) accessforbidden();
+if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
 
 $langs->load('agefodd@agefodd');
 
