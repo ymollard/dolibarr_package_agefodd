@@ -86,7 +86,7 @@ class modAgefodd extends DolibarrModules
 		$this->module_parts = array('triggers' => 1);
 
 		// Dependencies
-		$this->depends = array('modSociete', 'modPropale', 'modCommande', 'modComptabilite', 'modFacture', 'modBanque', 'modFournisseur', 'modService', 'modAgenda');		// List of modules id that must be enabled if this module is enabled
+		$this->depends = array('modSociete', 'modPropale', 'modComptabilite', 'modFacture', 'modBanque', 'modFournisseur', 'modService', 'modAgenda');		// List of modules id that must be enabled if this module is enabled
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->phpmin = array(4,3);					// Minimum version of PHP required by module
 		$this->need_dolibarr_version = array(3,4);	// Minimum version of Dolibarr required by module
@@ -277,7 +277,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][0] = "AGF_DEFAULT_CREATE_CERTIF";
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '';
-		$this->const[$r][3] = 'Whenn Add a trainee defaut create sertificate';
+		$this->const[$r][3] = 'When Add a trainee defaut create certificate';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -692,6 +692,55 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'agendatrainer';
 		$r++;
 		
+		$r++;
+		$this->rights[$r][0] = 103009; // id de la permission
+		$this->rights[$r][1] = 'Voir les formations du catalogue'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'agefodd_formation_catalogue';
+		$this->rights[$r][5] = 'lire';
+		
+		$r++;
+		$this->rights[$r][0] = 103010; // id de la permission
+		$this->rights[$r][1] = 'Creer/Modifier les formations du catalogue'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'agefodd_formation_catalogue';
+		$this->rights[$r][5] = 'creer';
+		
+		$r++;
+		$this->rights[$r][0] = 103011; // id de la permission
+		$this->rights[$r][1] = 'Supprimer les formations du catalogue'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'agefodd_formation_catalogue';
+		$this->rights[$r][5] = 'supprimer';
+		
+		$r++;
+		$this->rights[$r][0] = 103012; // id de la permission
+		$this->rights[$r][1] = 'Voir les sites (lieux)'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'agefodd_place';
+		$this->rights[$r][5] = 'lire';
+		
+		$r++;
+		$this->rights[$r][0] = 103013; // id de la permission
+		$this->rights[$r][1] = 'Creer/Modifier les sites (lieux)'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'agefodd_place';
+		$this->rights[$r][5] = 'creer';
+		
+		$r++;
+		$this->rights[$r][0] = 103014; // id de la permission
+		$this->rights[$r][1] = 'Supprimer les sites (lieux)'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'agefodd_place';
+		$this->rights[$r][5] = 'supprimer';
+		
+
 		$r++;
 		$this->rights[$r][0] = 103009; // id de la permission
 		$this->rights[$r][1] = 'Voir les formations du catalogue'; // libelle de la permission

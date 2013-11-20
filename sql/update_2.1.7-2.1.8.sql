@@ -7,3 +7,4 @@ INSERT INTO llx_agefodd_session_element (fk_session_agefodd, fk_soc ,element_typ
 INSERT INTO llx_agefodd_session_element (fk_session_agefodd, fk_soc ,element_type,fk_element,fk_user_author,datec,fk_user_mod,tms) SELECT llx_agefodd_facture.fk_session, llx_agefodd_facture.fk_societe,'invoice',llx_agefodd_facture.fk_facture,llx_agefodd_facture.fk_user_author,llx_agefodd_facture.datec,llx_agefodd_facture.fk_user_mod,llx_agefodd_facture.tms FROM llx_agefodd_facture INNER JOIN llx_facture ON llx_agefodd_facture.fk_facture=llx_facture.rowid;
 
 --DROP TABLE llx_agefodd_facture;
+

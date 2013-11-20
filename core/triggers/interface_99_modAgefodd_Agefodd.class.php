@@ -491,7 +491,7 @@ class InterfaceAgefodd
 
 					if ($result < 0)
 					{
-						$error ="Failed to update agefodd invoice link : ".$agf_fin->error." ";
+						$error ="Failed to add agefodd invoice link : ".$agf_fin->error." ";
 						$this->error=$error;
 
 						dol_syslog("interface_modAgefodd_Agefodd.class.php: ".$this->error, LOG_ERR);
@@ -510,7 +510,7 @@ class InterfaceAgefodd
 
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			$agf_fin=new Agefodd_session_element($this->db);
-			$agf_fin->fetch_fac_by_id($object->id,'prop');
+			$agf_fin->fetch_element_by_id($object->id,'prop');
 
 
 			if (count($agf_fin->lines)>0) {
@@ -530,7 +530,7 @@ class InterfaceAgefodd
 
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			$agf_fin=new Agefodd_session_element($this->db);
-			$agf_fin->fetch_fac_by_id($object->id,'prop');
+			$agf_fin->fetch_element_by_id($object->id,'prop');
 
 
 			if (count($agf_fin->lines)>0) {
@@ -550,7 +550,7 @@ class InterfaceAgefodd
 
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			$agf_fin=new Agefodd_session_element($this->db);
-			$agf_fin->fetch_fac_by_id($object->id,'prop');
+			$agf_fin->fetch_element_by_id($object->id,'prop');
 
 
 			if (count($agf_fin->lines)>0) {

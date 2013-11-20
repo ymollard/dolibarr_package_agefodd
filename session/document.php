@@ -24,6 +24,10 @@
  *	\brief      list of document
 */
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('html_errors', false);
+
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
@@ -52,36 +56,25 @@ $socid=GETPOST('socid','int');
 $confirm=GETPOST('confirm','alpha');
 
 $type_link = GETPOST('type','alpha');
+$idelement= GETPOST('idelement','int');
 
 // Link invoice or order to session/customer
 if($action == 'link_confirm' && $user->rights->agefodd->creer)
 {
 	$agf = new Agefodd_session_element($db);
-	$result = $agf->fetch($id, $socid);
+	$agf->fk_element=GETPOST('select','int');
+	$agf->fk_session_agefodd=$id;
+	$agf->fk_soc=$socid;
 
-	if ($type_link == 'bc') $agf->comid=GETPOST('select','int');
-	if ($type_link == 'fac') $agf->facid=GETPOST('select','int');
-	if ($type_link == 'prop') $agf->propalid=GETPOST('select','int');
+	if ($type_link == 'bc') $agf->element_type='order';
+	if ($type_link == 'fac') $agf->element_type='invoice';
+	if ($type_link == 'prop') $agf->element_type='propal';
 	
-	// si existe déjà, on met à jour
-	if ($agf->id)
-	{
-		$result2 = $agf->update($user);
-	}
-	// si nouveau, on créé
-	else
-	{
-		$agf->sessid = $id;
-		$agf->socid = $socid;
-		$result2 = $agf->create($user);
-	}
 
-	if ($result2>0)
-	{
-		Header( 'Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
-		exit;
-	}
-	else
+	$result = $agf->create($user);
+
+
+	if ($result<0)
 	{
 		setEventMessage($agf->error,'errors');
 	}
@@ -91,24 +84,24 @@ if($action == 'link_confirm' && $user->rights->agefodd->creer)
 if($action == 'unlink_confirm' && $confirm=='yes' && $user->rights->agefodd->creer)
 {	
 	$agf = new Agefodd_session_element($db);
-	$result = $agf->fetch($id, $socid);
+	$result = $agf->fetch($idelement);
 		
 	$deleteobject=GETPOST('deleteobject','int');
 	if (!empty($deleteobject)) {
 		if ($type_link == 'bc') {
 			$obj_link=new Commande($db);
-			$obj_link->id=$agf->comid;
+			$obj_link->id=$agf->fk_element;
 			$resultdel=$obj_link->delete($user);
 		}
 		if ($type_link == 'fac') {
 			$obj_link=new Facture($db);
-			$obj_link->id=$agf->facid;
+			$obj_link->id=$agf->fk_element;
 			$resultdel=$obj_link->delete();
 			
 		}
 		if ($type_link == 'prop') {
 			$obj_link=new Propal($db);
-			$obj_link->id=$agf->propalid;
+			$obj_link->id=$agf->fk_element;
 			$resultdel=$obj_link->delete($user);
 		}
 		
@@ -121,10 +114,7 @@ if($action == 'unlink_confirm' && $confirm=='yes' && $user->rights->agefodd->cre
 	// If exists we update
 	if ($agf->id)
 	{
-		if ($type_link == 'bc') $agf->comid="";
-		if ($type_link == 'fac') $agf->facid="";
-		if ($type_link == 'prop') $agf->propalid="";
-		$result2 = $agf->update($user);
+		$result2 = $agf->delete($user);
 	}
 	if ($result2 > 0)
 	{
@@ -146,6 +136,12 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	$cour=GETPOST('cour','alpha');
 	$model=GETPOST('model','alpha');
 	$idform=GETPOST('idform','alpha');
+	
+
+	$idtypeelement=GETPOST('idtypelement','alpha');
+	if (!empty($idtypeelement)) {
+		$idtypeelement_array=explode(':',$idtypeelement);
+	}
 
 	// Define output language
 	$outputlangs = $langs;
@@ -266,7 +262,7 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 
 	// creation de la liste de choix
 	$agf_liste = new Agefodd_session_element($db);
-	$result = $agf_liste->fetch_fac_per_soc($socid, $type_link);
+	$result = $agf_liste->fetch_element_per_soc($socid, $type_link);
 	$num = count($agf_liste->lines);
 	if ($num > 0)
 	{
@@ -284,7 +280,9 @@ if (($action == 'link' ) && $user->rights->agefodd->creer)
 		$select = '<select class="flat" name="select">'."\n".$options."\n".'</select>'."\n";
 
 		print '<td width="250px">';
-		($type_link == 'bc') ? print $langs->trans("AgfFactureBcSelectList") : print $langs->trans("AgfFactureFacSelectList");
+		if ($type_link == 'bc')  print $langs->trans("AgfFactureBcSelectList");
+		if ($type_link == 'fac')  print $langs->trans("AgfFactureFacSelectList");
+		if ($type_link == 'prop')  print $langs->trans("AgfFacturePropSelectList");
 		print '</td>'."\n";
 		print '<td>'.$select.'</td>'."\n";
 		if ($user->rights->agefodd->modifier)
@@ -349,14 +347,42 @@ if (!empty($id))
 		{
 
 			$agf_liste = new Agefodd_session_element($db);
-			$result = $agf_liste->fetch($id, $socid);
-			if (!empty($agf_liste->propalid))
-			{
+			$result = $agf_liste->fetch_by_session_by_thirdparty($id, $socid);
+			$propal_array=array('0'=>$langs->trans('AgfFromScratch'));
+			
+			foreach($agf_liste->lines as $line) {
+				if ($line->element_type=='propal') {
+					$propal_array[$line->fk_element]=$langs->trans('AgfFromObject').' '.$line->propalref;
+				}
+			}
+			
 				$form_question=array();
 				$form_question[]=array('label'=> $langs->trans("AgfCreateOrderFromPropal"),'type'=> 'radio',
-				'values'=>array('0'=>$langs->trans('AgfFromScratch'),
-				$agf_liste->propalid=>$langs->trans('AgfFromObject').' '.$agf_liste->propalref),'name'=>'propalid');
+				'values'=>$propal_array,'name'=>'propalid');
+			
+			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?socid=".$socid."&id=".$id,$langs->trans("AgfCreateOrderFromSession"),'',"createorder_confirm",$form_question,'',1);
+			if ($ret == 'html') print '<br>';
+		}
+		
+		
+		/*
+		 * Confirm create order
+		*/
+		if ($action == 'refreshask' || $action == 'createask')
+		{
+		
+			$agf_liste = new Agefodd_session_element($db);
+			$result = $agf_liste->fetch_by_session_by_thirdparty($id, $socid);
+			$propal_array=array();
+				
+			foreach($agf_liste->lines as $line) {
+				$propal_array[$line->fk_element.':'.$line->element_type]=$langs->trans('AgfFromObject').' '.$line->propalref;
 			}
+				
+			$form_question=array();
+			$form_question[]=array('label'=> $langs->trans("AgfGénérateConvFrom"),'type'=> 'radio',
+			'values'=>$propal_array,'name'=>'idtypelement');
+				
 			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?socid=".$socid."&id=".$id,$langs->trans("AgfCreateOrderFromSession"),'',"createorder_confirm",$form_question,'',1);
 			if ($ret == 'html') print '<br>';
 		}
@@ -366,16 +392,17 @@ if (!empty($id))
 		*/
 		if ($action == 'unlink')
 		{
+			
 			$agf_liste = new Agefodd_session_element($db);
-			$result = $agf_liste->fetch($id, $socid);
+			$result = $agf_liste->fetch($idelement);
 			if ($type_link == 'bc') {
-				$ref=$agf->comref;
+				$ref=$agf_liste->comref;
 			}
 			if ($type_link == 'fac') {
-				$ref=$agf->facnumber;
+				$ref=$agf_liste->facnumber;
 			}
 			if ($type_link == 'prop') {
-				$ref=$agf->propalref;
+				$ref=$agf_liste->propalref;
 			}
 			if (!empty($agf->id))
 			{
@@ -384,7 +411,7 @@ if (!empty($id))
 				'type'=> 'radio','values'=>array('0'=>$langs->trans('No'),'1'=>$langs->trans('Yes')),
 				'name'=>'deleteobject');
 			}
-			$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?type='.$type_link.'&socid='.$socid.'&id='.$id,$langs->trans("AgfConfirmUnlink"),
+			$ret=$form->form_confirm($_SERVER['PHP_SELF'].'?type='.$type_link.'&socid='.$socid.'&id='.$id.'&idelement='.$idelement,$langs->trans("AgfConfirmUnlink"),
 				'',"unlink_confirm",$form_question,'',1);
 			if ($ret == 'html') print '<br>';
 		}

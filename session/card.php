@@ -19,10 +19,6 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
 /**
  *	\file       agefodd/session/card.php
  *	\ingroup    agefodd
