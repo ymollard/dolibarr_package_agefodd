@@ -39,6 +39,9 @@ require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 require_once ('../class/agefodd_formateur.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
+require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -60,6 +63,8 @@ $search_training_ref_interne = GETPOST('search_training_ref_interne','alpha');
 $search_type_session=GETPOST ( "search_type_session",'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
+$search_sale=GETPOST('search_sale','int');
+$ts_logistique=GETPOST('options_ts_logistique','int');
 
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
@@ -77,6 +82,12 @@ if (GETPOST ( "button_removefilter_x" )) {
 $filter = array ();
 if (! empty ( $search_trainning_name )) {
 	$filter ['c.intitule'] = $search_trainning_name;
+}
+if (! empty ( $search_sale )) {
+	$filter ['sale.fk_user_com'] = $search_sale;
+}
+if (! empty ( $ts_logistique )) {
+	$filter ['extra.ts_logistique'] = $ts_logistique;
 }
 if (! empty ( $search_soc )) {
 	$filter ['so.nom'] = $search_soc;
@@ -121,7 +132,7 @@ $pagenext = $page + 1;
 
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
-
+$formother = new FormOther ( $db );
 
 $title = $langs->trans ( "AgfMenuSess");
 llxHeader ( '', $title );
@@ -167,6 +178,31 @@ if ($resql != - 1) {
 	
 	$option = '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_barre_liste ( $title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
+	
+	
+	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";
+	
+	// If the user can view prospects other than his'
+	if ($user->rights->societe->client->voir || $socid)
+	{
+		$moreforfilter.=$langs->trans('SalesRepresentatives'). ': ';
+		$moreforfilter.=$formother->select_salesrepresentatives($search_sale,'search_sale',$user);
+	}
+	
+	
+	//I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
+	$extrafields = new ExtraFields ( $db );
+	$extralabels = $extrafields->fetch_name_optionals_label ( $agf->table_element, true );
+	if (is_array($extralabels) && key_exists('ts_logistique', $extralabels)) {
+		$moreforfilter.=$extralabels['ts_logistique'];
+		$moreforfilter.=$extrafields->showInputField('ts_logistique', $ts_logistique);
+	}
+	if ($moreforfilter)
+	{
+		print '<div class="liste_titre">';
+		print $moreforfilter;
+		print '</div>';
+	}
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
@@ -218,7 +254,7 @@ if ($resql != - 1) {
 		$addcriteria = true;
 	}
 	
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	
 	print '<input type="hidden" name="arch" value="' . $arch . '" >';
 	print '<tr class="liste_titre">';
 	
