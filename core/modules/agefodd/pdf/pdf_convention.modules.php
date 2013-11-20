@@ -155,21 +155,19 @@ class pdf_convention extends ModelePDFAgefodd
 			$agf_conv = new Agefodd_convention($this->db);
 			$result = $agf_conv->fetch($id, $socid);
 
-			// On récupére le contenu du bon de commande ou de la facture
-			$agf_comid= new Agefodd_session_element($this->db);
-			$result = $agf_comid->fetch($id,$socid);
+			
 
 			$agf_comdetails= new Agefodd_convention($this->db);
-			if (!empty($agf_comid->facid)) {
-				$result = $agf_comdetails->fetch_invoice_lines($agf_comid->facid);
+			if ($agf_conv->element_type=='invoice') {
+				$result = $agf_comdetails->fetch_invoice_lines($agf_conv->fk_element);
 			}
-			elseif (!empty($agf_comid->comid)) {
-				$result = $agf_comdetails->fetch_order_lines($agf_comid->comid);
-			}elseif (!empty($agf_comid->propalid)) {
-				$result = $agf_comdetails->fetch_propal_lines($agf_comid->propalid);
-			} else {
-				$result=false;
+			if ($agf_conv->element_type=='order') {
+				$result = $agf_comdetails->fetch_order_lines($agf_conv->fk_element);
 			}
+			if ($agf_conv->element_type=='propal') {
+				$result = $agf_comdetails->fetch_propal_lines($agf_conv->fk_element);
+			}
+			if (empty($agf_conv->element_type)) $result=false;
 
 			if ($result)
 			{
@@ -713,7 +711,22 @@ class pdf_convention extends ModelePDFAgefodd
 					}
 				}
 
+			}else {
+				$pdf->AddPage();
+			
+					$pagenb++;
+					$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs),'',9);
+					$pdf->MultiCell(0, 3, '', 0, 'J');		// Set interline to 3
+					$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+					
+					$posY = $this->marge_haute;
+					$posX = $this->marge_gauche;
+					
+					$pdf->MultiCell(100, 3, $outputlangs->transnoentities("Choose a financial document into convention detail page"), 0, 'R');
 			}
+			
+			
 			$pdf->Close();
 			$pdf->Output($file,'F');
 			if (! empty($conf->global->MAIN_UMASK))

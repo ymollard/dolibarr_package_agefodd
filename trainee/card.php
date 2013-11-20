@@ -592,7 +592,7 @@ else
 
 					print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 
-					print $form->select_company($agf->socid,'societe','(s.client IN (1,2))',1,1);
+					print $form->select_company($agf->socid,'societe','(s.client IN (1,3,2))',1,1);
 
 					print '</td></tr>';
 
@@ -734,8 +734,9 @@ else
 				print '<tr><td valign="top">'.$langs->trans("Company").'</td><td>';
 				if ($agf->socid)
 				{
-					print '<a href="'.dol_buildpath('/comm/fiche.php',1).'?socid='.$agf->socid.'">';
-					print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($agf->socname,20).'</a>';
+					$soc=new Societe($db);
+					$soc->fetch($agf->socid);
+					print $soc->getNomUrl(1);
 				}
 				else
 				{

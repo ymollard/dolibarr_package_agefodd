@@ -480,13 +480,17 @@ if (! empty ( $id )) {
 						
 						// Ajout facture
 					$agf_fac = new Agefodd_session_element ( $db );
-					$result = $agf_fac->fetch ( $id, $socid );
-					$filename = $agf_fac->facnumber . '/' . $agf_fac->facnumber . '.pdf';
-					$file = $conf->facture->dir_output . '/' . $filename;
-					if (file_exists ( $file ))
-						$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
-					else
-						print '<div class="error">' . $langs->trans ( 'AgfInvoiceNotExists' ) . '</div>';
+					$result = $agf_fac->fetch_by_session_by_thirdparty ( $id, $socid );
+					foreach($agf_fac->lines as $line) {
+						if ($line->element_type=='invoice' && !empty($line->facnumber)) {
+						$filename = $line->facnumber . '/' . $line->facnumber . '.pdf';
+						$file = $conf->facture->dir_output . '/' . $filename;
+						if (file_exists ( $file ))
+							$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
+						else
+							print '<div class="error">' . $langs->trans ( 'AgfInvoiceNotExists' ) . '</div>';
+						}
+					}
 				} else {
 					$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 				}

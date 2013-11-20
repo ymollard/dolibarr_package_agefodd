@@ -136,12 +136,6 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	$cour=GETPOST('cour','alpha');
 	$model=GETPOST('model','alpha');
 	$idform=GETPOST('idform','alpha');
-	
-
-	$idtypeelement=GETPOST('idtypelement','alpha');
-	if (!empty($idtypeelement)) {
-		$idtypeelement_array=explode(':',$idtypeelement);
-	}
 
 	// Define output language
 	$outputlangs = $langs;
@@ -360,29 +354,6 @@ if (!empty($id))
 				$form_question[]=array('label'=> $langs->trans("AgfCreateOrderFromPropal"),'type'=> 'radio',
 				'values'=>$propal_array,'name'=>'propalid');
 			
-			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?socid=".$socid."&id=".$id,$langs->trans("AgfCreateOrderFromSession"),'',"createorder_confirm",$form_question,'',1);
-			if ($ret == 'html') print '<br>';
-		}
-		
-		
-		/*
-		 * Confirm create order
-		*/
-		if ($action == 'refreshask' || $action == 'createask')
-		{
-		
-			$agf_liste = new Agefodd_session_element($db);
-			$result = $agf_liste->fetch_by_session_by_thirdparty($id, $socid);
-			$propal_array=array();
-				
-			foreach($agf_liste->lines as $line) {
-				$propal_array[$line->fk_element.':'.$line->element_type]=$langs->trans('AgfFromObject').' '.$line->propalref;
-			}
-				
-			$form_question=array();
-			$form_question[]=array('label'=> $langs->trans("AgfGénérateConvFrom"),'type'=> 'radio',
-			'values'=>$propal_array,'name'=>'idtypelement');
-				
 			$ret=$form->form_confirm($_SERVER['PHP_SELF']."?socid=".$socid."&id=".$id,$langs->trans("AgfCreateOrderFromSession"),'',"createorder_confirm",$form_question,'',1);
 			if ($ret == 'html') print '<br>';
 		}

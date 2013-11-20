@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   fk_agefodd_session integer NOT NULL,
   fk_societe integer NOT NULL,
+  element_type	varchar(50) DEFAULT NULL,
+  fk_element	integer  DEFAULT NULL,
   intro1 text NOT NULL,
   intro2 text NOT NULL,
   art1 text NOT NULL,

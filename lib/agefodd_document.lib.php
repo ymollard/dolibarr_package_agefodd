@@ -85,7 +85,7 @@ function show_conv($file, $socid, $nom_courrier) {
 			
 			// Regenerer
 			$legende = $langs->trans ( "AgfDocRefresh" );
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refreshask&model=' . $model . '&cour=' . $nom_courrier . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '" alt="' . $legende . '" title="' . $legende . '">';
 			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			
 			// Delete
@@ -106,7 +106,7 @@ function show_conv($file, $socid, $nom_courrier) {
 	} elseif ($continue) {
 		// If not exists you should do it now
 		$legende = $langs->trans ( "AgfDocEdit" );
-		$mess .= '<a href="' . dol_buildpath ( '/agefodd/session/convention.php', 1 ) . '?action=createask&sessid=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . dol_buildpath ( '/agefodd/session/convention.php', 1 ) . '?action=create&sessid=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	}
 	

@@ -40,6 +40,8 @@ class Agefodd_convention
 
 	var $sessid;
 	var $socid;
+	var $element_type;
+	var $fk_element;
 	var $socname;
 	var $intro1;
 	var $intro2;
@@ -93,6 +95,8 @@ class Agefodd_convention
 		if (isset($this->art8)) $this->art8 = $this->db->escape(trim($this->art8));
 		if (isset($this->sig)) $this->sig = $this->db->escape(trim($this->sig));
 		if (isset($this->notes)) $this->notes = $this->db->escape(trim($this->notes));
+		if (empty($this->fk_element)) $this->fk_element = 0;
+		if (isset($this->element_type)) $this->element_type = $this->db->escape(trim($this->element_type));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -101,6 +105,8 @@ class Agefodd_convention
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_convention(";
 		$sql.= "fk_agefodd_session, fk_societe, intro1, intro2, art1, art2, art3,";
 		$sql.= " art4, art5, art6, art7, art8, sig, notes, fk_user_author, fk_user_mod, datec";
+		$sql.= ",element_type";
+		$sql.= ",fk_element";
 		$sql.= ") VALUES (";
 		$sql.= "'".$this->sessid."', ";
 		$sql.= "'".$this->socid."', ";
@@ -119,6 +125,8 @@ class Agefodd_convention
 		$sql.= $user->id.', ';
 		$sql.= $user->id.', ';
 		$sql.= "'".$this->db->idate(dol_now())."'";
+		$sql.= ",'".$this->element_type."'";
+		$sql.= ",".$this->fk_element;
 		$sql.= ")";
 
 		$this->db->begin();
@@ -176,6 +184,8 @@ class Agefodd_convention
 		$sql = "SELECT";
 		$sql.= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
 		$sql.= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.sig, notes, s.nom as socname";
+		$sql.= ",element_type";
+		$sql.= ",fk_element";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_convention as c";
 		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as s ON s.rowid=c.fk_societe";
 		if ( $id > 0) $sql.= " WHERE c.rowid = ".$id;
@@ -209,6 +219,8 @@ class Agefodd_convention
 				$this->art8 = $obj->art8;
 				$this->sig = $obj->sig;
 				$this->notes = $obj->notes;
+				$this->element_type = $obj->element_type;
+				$this->fk_element = $obj->fk_element;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -536,6 +548,8 @@ class Agefodd_convention
 		if (isset($this->art8)) $this->art8 = $this->db->escape(trim($this->art8));
 		if (isset($this->sig)) $this->sig = $this->db->escape(trim($this->sig));
 		if (isset($this->notes)) $this->notes = $this->db->escape(trim($this->notes));
+		if (empty($this->fk_element)) $this->fk_element = 0;
+		if (isset($this->element_type)) $this->element_type = $this->db->escape(trim($this->element_type));
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
@@ -552,6 +566,8 @@ class Agefodd_convention
 		$sql.= " art8='".$this->art8."',";
 		$sql.= " sig='".$this->sig."',";
 		$sql.= " notes='".$this->notes."',";
+		$sql.= " fk_element=".$this->fk_element.",";
+		$sql.= " element_type='".$this->element_type."',";
 		$sql.= " fk_societe=".$this->socid.",";
 		$sql.= " fk_agefodd_session=".$this->sessid.",";
 		$sql.= " fk_user_mod=".$user->id." ";

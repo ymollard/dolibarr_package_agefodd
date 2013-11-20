@@ -8,3 +8,7 @@ INSERT INTO llx_agefodd_session_element (fk_session_agefodd, fk_soc ,element_typ
 
 --DROP TABLE llx_agefodd_facture;
 
+ALTER TABLE llx_agefodd_convention ADD COLUMN element_type varchar(50) DEFAULT NULL AFTER fk_societe;
+ALTER TABLE llx_agefodd_convention ADD COLUMN fk_element integer DEFAULT NULL AFTER element_type;
+
+

@@ -42,7 +42,6 @@ class Agefodd_session_element extends CommonObject {
 	var $fk_soc;
 	var $element_type;
 	var $fk_element;
-	var $flag_conv;
 	var $fk_user_author;
 	var $datec = '';
 	var $fk_user_mod;
@@ -100,7 +99,6 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= "fk_soc,";
 		$sql .= "element_type,";
 		$sql .= "fk_element,";
-		$sql .= "flag_conv,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
@@ -111,7 +109,6 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " " . (! isset ( $this->fk_soc ) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
 		$sql .= " " . (! isset ( $this->element_type ) ? 'NULL' : "'" . $this->db->escape ( $this->element_type ) . "'") . ",";
 		$sql .= " " . (! isset ( $this->fk_element ) ? 'NULL' : "'" . $this->fk_element . "'") . ",";
-		$sql .= " " . (! isset ( $this->flag_conv ) ? '0' : $this->flag_conv) . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate ( dol_now () ) . "',";
 		$sql .= " " . $user->id;
@@ -173,7 +170,6 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " t.fk_soc,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
-		$sql .= " t.flag_conv,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
@@ -201,7 +197,6 @@ class Agefodd_session_element extends CommonObject {
 				$this->fk_soc = $obj->fk_soc;
 				$this->element_type = $obj->element_type;
 				$this->fk_element = $obj->fk_element;
-				$this->flag_conv = $obj->flag_conv;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate ( $obj->datec );
 				$this->fk_user_mod = $obj->fk_user_mod;
@@ -350,7 +345,6 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " t.fk_soc,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
-		$sql .= " t.flag_conv,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
@@ -384,7 +378,6 @@ class Agefodd_session_element extends CommonObject {
 				$line->fk_soc = $obj->fk_soc;
 				$line->element_type = $obj->element_type;
 				$line->fk_element = $obj->fk_element;
-				$line->flag_conv = $obj->flag_conv;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->datec = $this->db->jdate ( $obj->datec );
 				$line->fk_user_mod = $obj->fk_user_mod;
@@ -442,7 +435,6 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " fk_soc=" . (isset ( $this->fk_soc ) ? $this->fk_soc : "null") . ",";
 		$sql .= " element_type=" . (isset ( $this->element_type ) ? "'" . $this->db->escape ( $this->element_type ) . "'" : "null") . ",";
 		$sql .= " fk_element=" . (isset ( $this->fk_element ) ? $this->fk_element : "null") . ",";
-		$sql .= " flag_conv=" . (isset ( $this->flag_conv ) ? $this->flag_conv : "0") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
 		
 		$sql .= " WHERE rowid=" . $this->id;
@@ -733,7 +725,6 @@ class AgefoddSessionElementLine {
 	var $fk_soc;
 	var $element_type;
 	var $fk_element;
-	var $flag_conv;
 	var $fk_user_author;
 	var $datec = '';
 	var $fk_user_mod;
