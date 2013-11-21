@@ -84,8 +84,8 @@ class Agefodd_stagiaire extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		if (isset($this->nom)) $this->nom = trim($this->nom);
-		if (isset($this->prenom)) $this->prenom = trim($this->prenom);
+		if (isset($this->nom)) $this->nom = $this->db->escape(trim($this->nom));
+		if (isset($this->prenom)) $this->prenom = $this->db->escape(trim($this->prenom));
 		if (isset($this->fonction)) $this->fonction = $this->db->escape(trim($this->fonction));
 		if (isset($this->tel1)) $this->tel1 = $this->db->escape(trim($this->tel1));
 		if (isset($this->tel2)) $this->tel2 = $this->db->escape(trim($this->tel2));
@@ -300,14 +300,14 @@ class Agefodd_stagiaire extends CommonObject
 					if ($addcriteria) {
 						$sql.= ' AND ';
 					}
-					$sqlwhere.= $key.' = \''.$value.'\'';
+					$sqlwhere.= $key.' = \''.$this->db->escape($value).'\'';
 					$addcriteria=true;
 				}
 				elseif ($key!='s.tel1') {
 					if ($addcriteria) {
 						$sql.= ' AND ';
 					}
-					$sqlwhere.= $key.' LIKE \'%'.$value.'%\'';
+					$sqlwhere.= $key.' LIKE \'%'.$this->db->escape($value).'%\'';
 					$addcriteria=true;
 				}
 			}
@@ -479,8 +479,8 @@ class Agefodd_stagiaire extends CommonObject
 		$error=0;
 
 		// Clean parameters
-		if (isset($this->nom)) $this->nom = trim($this->nom);
-		if (isset($this->prenom)) $this->prenom = trim($this->prenom);
+		if (isset($this->nom)) $this->nom = $this->db->escape(trim($this->nom));
+		if (isset($this->prenom)) $this->prenom = $this->db->escape(trim($this->prenom));
 		if (isset($this->fonction)) $this->fonction = $this->db->escape(trim($this->fonction));
 		if (isset($this->tel1)) $this->tel1 = $this->db->escape(trim($this->tel1));
 		if (isset($this->tel2)) $this->tel2 = $this->db->escape(trim($this->tel2));

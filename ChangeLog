@@ -5,6 +5,7 @@ English Dolibarr ChangeLog
 -Fix : Statistics screen account manager do not work
 -Fix : Remove PHP warning on training note screen
 -New : Can manage more than on proposal/order/invoice per session/thirdparty.
+-Fix : bugs_agefodd #1143 - Apostrophe into trainee lastname or firstname 
 
 ***** ChangeLog for 2.1.7 compared to 2.1.6 *****
 For All:
