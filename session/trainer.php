@@ -335,12 +335,17 @@ if (!empty($id))
 
 					if ($user->rights->agefodd->modifier)
 					{
-						print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="form_edit" alt="'.$langs->trans("AgfModSave").'">';
+						print '<input type="image" src="'.img_picto($langs->trans("Save"), 'edit', '' , false ,1).'" border="0" name="form_edit" alt="'.$langs->trans("Save").'">';
 					}
 					print '&nbsp;';
 					if ($user->rights->agefodd->creer)
 					{
-						print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="form_remove" alt="'.$langs->trans("AgfModSave").'">';
+						print '<input type="image" src="'.img_picto($langs->trans("Delete"), 'delete', '' , false ,1).'" border="0" name="form_remove" alt="'.$langs->trans("Delete").'">';
+					}
+					if ($user->rights->agefodd->creer && !empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+					{
+						print '&nbsp;';
+						print '<a href="'.dol_buildpath('/agefodd/session/trainer.php',1).'?action=edit_calendrier&id='.$id.'&rowf='.$formateurs->lines[$i]->formid.'">'.img_picto($langs->trans('Time'), 'calendar').'</a>';
 					}
 					print '</td>'."\n";
 				}
@@ -441,7 +446,10 @@ if (!empty($id))
 						print '<tr class="liste_titre">';
 						print '<th class="liste_titre">'.$langs->trans('Date').'</th>';
 						print '<th class="liste_titre">'.$langs->trans('Hours').'</th>';
-						print '<th class="liste_titre">'.$langs->trans('AgfTrainerCostHour').'</th>';
+						//Trainer cost is fully managed into cost  management not here
+						if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+							print '<th class="liste_titre">'.$langs->trans('AgfTrainerCostHour').'</th>';
+						}
 						print '<th class="liste_titre">'.$langs->trans('Edit').'</th>';
 						print '</tr>';
 
@@ -468,9 +476,11 @@ if (!empty($id))
 								print $formAgefodd->select_time(dol_print_date($calendrier->lines[$j]->heuref,'hour'),'datef');
 								print '</td>';
 
-								// Coût horaire
-								print '<td width="20%"> <input type="text" size="10" name="trainer_cost" value="'.price($calendrier->lines[$i]->trainer_cost).'"/>'.$langs->getCurrencySymbol($conf->currency).'</td>';
-
+								//Trainer cost is fully managed into cost  management not here
+								if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+									// Coût horaire
+									print '<td width="20%"> <input type="text" size="10" name="trainer_cost" value="'.price($calendrier->lines[$i]->trainer_cost).'"/>'.$langs->getCurrencySymbol($conf->currency).'</td>';
+								}
 								if ($user->rights->agefodd->modifier)
 								{
 									print '</td><td width="30%;"><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_update" alt="'.$langs->trans("AgfModSave").'" ">';
@@ -481,19 +491,22 @@ if (!empty($id))
 								print '<td width="20%">'.dol_print_date($calendrier->lines[$j]->date_session,'daytext').'</td>';
 								print '<td  width="40%">'.dol_print_date($calendrier->lines[$j]->heured,'hour').' - '.dol_print_date($calendrier->lines[$j]->heuref,'hour');
 								print '</td>';
-
-								// Coût horaire
-								print '<td>'.price($calendrier->lines[$j]->trainer_cost,0,$langs).' '.$langs->getCurrencySymbol($conf->currency).'</td>';
+								
+								//Trainer cost is fully managed into cost  management not here
+								if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+									// Coût horaire
+									print '<td>'.price($calendrier->lines[$j]->trainer_cost,0,$langs).' '.$langs->getCurrencySymbol($conf->currency).'</td>';
+								}
 
 								print '<td width="30%;">';
 								if ($user->rights->agefodd->modifier)
 								{
-									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" name="period_edit" alt="'.$langs->trans("AgfModSave").'">';
+									print '<input type="image" src="'.img_picto($langs->trans("Delete"), 'edit', '' , false ,1).'" border="0" name="period_edit" alt="'.$langs->trans("AgfModSave").'">';
 								}
 								print '&nbsp;';
 								if ($user->rights->agefodd->creer)
 								{
-									print '<input type="image" src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="period_remove" alt="'.$langs->trans("AgfModSave").'">';
+									print '<input type="image" src="'.img_picto($langs->trans("Delete"), 'delete', '' , false ,1).'" border="0" name="period_remove" alt="'.$langs->trans("AgfModSave").'">';
 								}
 
 							}
@@ -547,8 +560,11 @@ if (!empty($id))
 								print $langs->trans("AgfPeriodTimeE").' ';
 								print $formAgefodd->select_time('18:00','datef');
 								print '</td>';
-								// Coût horaire
-								print '<td width="20%"><input type="text" size="10" name="trainer_cost" /></td>';
+								//Trainer cost is fully managed into cost  management not here
+								if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+									// Coût horaire
+									print '<td width="20%"><input type="text" size="10" name="trainer_cost" /></td>';
+								}
 								if ($user->rights->agefodd->modifier)
 								{
 									print '<td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png',1).'" border="0" align="absmiddle" name="period_add" alt="'.$langs->trans("AgfModSave").'" "></td>';
@@ -563,7 +579,9 @@ if (!empty($id))
 							}
 							else
 							{
-								print '<tr><td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?action=edit_calendrier&id='.$agf->id.'&amp;rowf='.$formateurs->lines[$i]->formid.'">'.$langs->trans('Edit').'</a></td></tr>';
+								print '<tr><td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?action=edit_calendrier&id='.$agf->id.'&amp;rowf='.$formateurs->lines[$i]->formid.'">';
+								print img_picto($langs->trans("Add"), dol_buildpath('/agefodd/img/new.png',1), '' , true ,0).'</a>';
+								print '</td></tr>';
 							}
 						}
 						print '</table>';

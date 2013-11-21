@@ -823,3 +823,6 @@ Permission103013=Creer/Modifier les sites (lieux)
 Permission103014=Supprimer les sites (lieux)
 AgfFacturePropSelectList=Selectionner la proposition commerciale à lier
 AgfElementToUse=Elément financier à utiliser pour la convention
+AgfManageCost=Utiliser la gestion des coûts avancer dans la session (facture fournisseurs)
+AgfManageCostHelp=Cela va activer automatiquement la gestion du temps des formateurs
+AgfCostManagement=Gestion des coûts

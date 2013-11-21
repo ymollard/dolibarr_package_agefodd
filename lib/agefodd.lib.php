@@ -141,6 +141,14 @@ function session_prepare_head($object,$showconv=0)
 		$head[$h][2] = 'convention';
 		$h++;
 	}
+	
+	if (!empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+	
+		$head[$h][0] = dol_buildpath('/agefodd/session/cost.php',1).'?id='.$object->id;
+		$head[$h][1] = $langs->trans("AgfCostManagement");
+		$head[$h][2] = 'cost';
+		$h++;
+	}
 
 	$head[$h][0] = dol_buildpath('/agefodd/session/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");

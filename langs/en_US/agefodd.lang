@@ -823,3 +823,6 @@ Permission103013=Create/change location
 Permission103014=Delete location
 AgfFacturePropSelectList=Select proposal to link
 AgfElementToUse=Propal/Order/invoice use for convention
+AgfManageCost=Use cost management into session (supplier invoice)
+AgfManageCostHelp=It will automaticly enabled the trainer time management
+AgfCostManagement=Cost management

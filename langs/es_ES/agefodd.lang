@@ -824,3 +824,6 @@ Permission103013=Modificar lugares
 Permission103014=Eliminar lugares
 AgfFacturePropSelectList=Select proposal to link
 AgfElementToUse=Propal/Order/invoice use for convention
+AgfManageCost=Use cost management into session (supplier invoice)
+AgfManageCostHelp=It will automaticly enabled the trainer time management
+AgfCostManagement=Cost management
