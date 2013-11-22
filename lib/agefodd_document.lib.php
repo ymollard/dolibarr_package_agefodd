@@ -160,11 +160,11 @@ function show_fac($file, $socid, $mdle) {
 	global $langs, $conf, $db, $id, $form;
 	
 	$agf = new Agefodd_session_element ( $db );
-	$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid );
+	
 	
 	// Manage order
 	if ($mdle == 'bc') {
-		
+		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid, 'order' );
 		$mess = '<table class="nobordernopadding">';
 		foreach ( $agf->lines as $line ) {
 			if ($line->element_type == 'order' && ! empty ( $line->comref )) {
@@ -218,6 +218,8 @@ function show_fac($file, $socid, $mdle) {
 	elseif ($mdle == 'fac') {
 		$order_array = array ();
 		$propal_array = array ();
+		
+		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid );
 		
 		$mess = '<table class="nobordernopadding">';
 		foreach ( $agf->lines as $line ) {
@@ -306,6 +308,8 @@ function show_fac($file, $socid, $mdle) {
 		
 	}	// Manage Proposal
 	elseif ($mdle == 'prop') {
+		
+		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid, 'propal' );
 		$mess = '<table class="nobordernopadding">';
 		foreach ( $agf->lines as $line ) {
 			if ($line->element_type == 'propal' && ! empty ( $line->propalref )) {

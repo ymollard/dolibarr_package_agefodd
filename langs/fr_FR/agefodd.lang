@@ -826,3 +826,7 @@ AgfElementToUse=Elément financier à utiliser pour la convention
 AgfManageCost=Utiliser la gestion des coûts avancer dans la session (facture fournisseurs)
 AgfManageCostHelp=Cela va activer automatiquement la gestion du temps des formateurs
 AgfCostManagement=Gestion des coûts
+AgfTrainerNotAContactOfSupplier=Le formateur n'est pas le contact d'un fournisseur
+AgfCreateSupplierInvoice=Crée la facture fournisseur
+AgfFactureUnselectSuplierInvoice=Délier la facture fournisseur
+AgfFactureSelectInvoice=Lier une facture fournisseur existante

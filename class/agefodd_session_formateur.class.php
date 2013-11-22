@@ -42,17 +42,40 @@ class Agefodd_session_formateur
 	var $formid;
 	var $lastname;
 	var $firstname;
+	var $trainer_status;
 	
 	var $lines=array();
-
+	
+	var $labelstatut;
+	var $labelstatut_short;
+	
 	/**
 	 *  Constructor
 	 *
 	 *  @param	DoliDb		$db      Database handler
 	 */
-	function __construct($DB)
+	function __construct($db)
 	{
-		$this->db = $DB;
+		global $langs;
+		
+		$this->db = $db;
+		
+		$this->labelstatut[0]=$langs->trans("TraineeSessionStatusProspect");
+		$this->labelstatut[1]=$langs->trans("TraineeSessionStatusVerbalAgreement");
+		$this->labelstatut[2]=$langs->trans("TraineeSessionStatusConfirm");
+		$this->labelstatut[3]=$langs->trans("TraineeSessionStatusPresent");
+		$this->labelstatut[4]=$langs->trans("TraineeSessionStatusPartPresent");
+		$this->labelstatut[5]=$langs->trans("TraineeSessionStatusNotPresent");
+		$this->labelstatut[6]=$langs->trans("TraineeSessionStatusCancelled");
+		
+		$this->labelstatut_short[0]=$langs->trans("TraineeSessionStatusProspectShort");
+		$this->labelstatut_short[1]=$langs->trans("TraineeSessionStatusVerbalAgreementShort");
+		$this->labelstatut_short[2]=$langs->trans("TraineeSessionStatusConfirmShort");
+		$this->labelstatut_short[3]=$langs->trans("TraineeSessionStatusPresentShort");
+		$this->labelstatut_short[4]=$langs->trans("TraineeSessionStatusPartPresentShort");
+		$this->labelstatut_short[5]=$langs->trans("TraineeSessionStatusNotPresentShort");
+		$this->labelstatut_short[6]=$langs->trans("TraineeSessionStatusCancelledShort");
+		
 		return 1;
 	}
 
@@ -72,6 +95,7 @@ class Agefodd_session_formateur
 		// Clean parameters
 		$this->sessid = trim($this->sessid);
 		$this->formid = trim($this->formid);
+		if (isset($this->trainer_status)) $this->trainer_cost=trim($this->trainer_status);
 
 		// Check parameters
 
@@ -79,12 +103,14 @@ class Agefodd_session_formateur
 		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."agefodd_session_formateur(";
 		$sql.= "fk_session,fk_agefodd_formateur, fk_user_author,fk_user_mod, datec";
+		$sql.= ",trainer_status";
 		$sql.= ") VALUES (";
 		$sql.= " ".$this->sessid.", ";
 		$sql.= " ".$this->formid.', ';
 		$sql.= " ".$user->id.', ';
 		$sql.= " ".$user->id.', ';
-		$sql.= "'".$this->db->idate(dol_now())."'";
+		$sql.= "'".$this->db->idate(dol_now())."',";
+		$sql.= " ".(! isset($this->trainer_status)?'NULL':$this->db->escape($this->trainer_status));
 		$sql.= ")";
 
 		$this->db->begin();
@@ -144,6 +170,7 @@ class Agefodd_session_formateur
 		$sql.= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql.= " f.fk_socpeople,";
 		$sql.= " sp.lastname, sp.firstname";
+		$sql.= " ,sf.trainer_status";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -163,6 +190,7 @@ class Agefodd_session_formateur
 				$this->formid = $obj->fk_agefodd_formateur;
 				$this->lastname = $obj->lastname;
 				$this->firstname = $obj->firstname;
+				$this->trainer_status=$obj->trainer_status;
 			}
 			$this->db->free($resql);
 
@@ -192,6 +220,7 @@ class Agefodd_session_formateur
 		$sql.= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
 		$sql.= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
 		$sql.= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user";
+		$sql.= " ,sf.trainer_status";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur as sf";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f";
 		$sql.= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -234,6 +263,7 @@ class Agefodd_session_formateur
 					$line->userid = $obj->fk_user;
 					$line->formid = $obj->formid;
 					$line->sessid = $obj->fk_session;
+					$line->trainer_status=$obj->trainer_status;
 						
 					$this->lines[$i]=$line;
 						
@@ -276,6 +306,7 @@ class Agefodd_session_formateur
 		// Update request
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur SET";
 		$sql.= " fk_agefodd_formateur=".$this->formid.",";
+		$sql.= " trainer_status=".(isset($this->trainer_status)?$this->trainer_status:"null").",";
 		$sql.= " fk_user_mod=".$user->id." ";
 		$sql.= " WHERE rowid = ".$this->opsid;
 
@@ -377,6 +408,83 @@ class Agefodd_session_formateur
 			return 1;
 		}
 	}
+	
+	/**
+	 *    	Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
+	 *
+	 *    	@param      int			$mode        0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
+	 *    	@return     string		Label
+	 */
+	function getLibStatut($mode=0)
+	{
+		return $this->LibStatut($this->trainer_status,$mode);
+	}
+	
+	/**
+	 *    	Return label of a status (draft, validated, ...)
+	 *
+	 *    	@param      int			$statut		id statut
+	 *    	@param      int			$mode      	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
+	 *    	@return     string		Label
+	 */
+	function LibStatut($statut,$mode=1)
+	{
+		global $langs;
+	
+		if (empty($statut)) $statut=0;
+	
+		$langs->load("agefodd@agefodd");
+	
+		if ($mode == 0)
+		{
+	
+			return $this->labelstatut[$statut];
+		}
+		if ($mode == 1)
+		{
+			return $this->labelstatut_short[$statut];
+		}
+		if ($mode == 2)
+		{
+			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0').' '.$this->labelstatut_short[$statut];
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3').' '.$this->labelstatut_short[$statut];
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4').' '.$this->labelstatut_short[$statut];
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6').' '.$this->labelstatut_short[$statut];
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7').' '.$this->labelstatut_short[$statut];
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9').' '.$this->labelstatut_short[$statut];
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8').' '.$this->labelstatut_short[$statut];
+		}
+		if ($mode == 3)
+		{
+			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0');
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3');
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4');
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6');
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7');
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9');
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8');
+		}
+		if ($mode == 4)
+		{
+			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0').' '.$this->labelstatut[$statut];
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3').' '.$this->labelstatut[$statut];
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4').' '.$this->labelstatut[$statut];
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6').' '.$this->labelstatut[$statut];
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7').' '.$this->labelstatut[$statut];
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9').' '.$this->labelstatut[$statut];
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8').' '.$this->labelstatut[$statut];
+		}
+		if ($mode == 5)
+		{
+			if ($statut==0) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0');
+			if ($statut==1) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3');
+			if ($statut==2) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4');
+			if ($statut==3) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6');
+			if ($statut==4) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7');
+			if ($statut==5) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9');
+			if ($statut==6) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8');
+		}
+	}
 }
 
 /**
@@ -392,9 +500,105 @@ Class AgfSessionTrainer {
 	var $userid;
 	var $formid;
 	var $sessid;
+	var $trainer_status;
+	
+	/**
+	 *    	Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
+	 *
+	 *    	@param      int			$mode        0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
+	 *    	@return     string		Label
+	 */
+	function getLibStatut($mode=0)
+	{
+		return $this->LibStatut($this->trainer_status,$mode);
+	}
+	
+	/**
+	 *    	Return label of a status (draft, validated, ...)
+	 *
+	 *    	@param      int			$statut		id statut
+	 *    	@param      int			$mode      	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
+	 *    	@return     string		Label
+	 */
+	function LibStatut($statut,$mode=1)
+	{
+		global $langs;
+	
+		if (empty($statut)) $statut=0;
+	
+		$langs->load("agefodd@agefodd");
+	
+		if ($mode == 0)
+		{
+	
+			return $this->labelstatut[$statut];
+		}
+		if ($mode == 1)
+		{
+			return $this->labelstatut_short[$statut];
+		}
+		if ($mode == 2)
+		{
+			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0').' '.$this->labelstatut_short[$statut];
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3').' '.$this->labelstatut_short[$statut];
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4').' '.$this->labelstatut_short[$statut];
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6').' '.$this->labelstatut_short[$statut];
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7').' '.$this->labelstatut_short[$statut];
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9').' '.$this->labelstatut_short[$statut];
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8').' '.$this->labelstatut_short[$statut];
+		}
+		if ($mode == 3)
+		{
+			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0');
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3');
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4');
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6');
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7');
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9');
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8');
+		}
+		if ($mode == 4)
+		{
+			if ($statut==0) return img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0').' '.$this->labelstatut[$statut];
+			if ($statut==1) return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3').' '.$this->labelstatut[$statut];
+			if ($statut==2) return img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4').' '.$this->labelstatut[$statut];
+			if ($statut==3) return img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6').' '.$this->labelstatut[$statut];
+			if ($statut==4) return img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7').' '.$this->labelstatut[$statut];
+			if ($statut==5) return img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9').' '.$this->labelstatut[$statut];
+			if ($statut==6) return img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8').' '.$this->labelstatut[$statut];
+		}
+		if ($mode == 5)
+		{
+			if ($statut==0) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusProspect'),'statut0');
+			if ($statut==1) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'),'statut3');
+			if ($statut==2) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusConfirm'),'statut4');
+			if ($statut==3) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPresent'),'statut6');
+			if ($statut==4) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusPartPresent'),'statut7');
+			if ($statut==5) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusNotPresent'),'statut9');
+			if ($statut==6) return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($langs->trans('TraineeSessionStatusCancelled'),'statut8');
+		}
+	}
 
 	function __construct()
 	{
+		global $langs;
+		
+		$this->labelstatut[0]=$langs->trans("TraineeSessionStatusProspect");
+		$this->labelstatut[1]=$langs->trans("TraineeSessionStatusVerbalAgreement");
+		$this->labelstatut[2]=$langs->trans("TraineeSessionStatusConfirm");
+		$this->labelstatut[3]=$langs->trans("TraineeSessionStatusPresent");
+		$this->labelstatut[4]=$langs->trans("TraineeSessionStatusPartPresent");
+		$this->labelstatut[5]=$langs->trans("TraineeSessionStatusNotPresent");
+		$this->labelstatut[6]=$langs->trans("TraineeSessionStatusCancelled");
+		
+		$this->labelstatut_short[0]=$langs->trans("TraineeSessionStatusProspectShort");
+		$this->labelstatut_short[1]=$langs->trans("TraineeSessionStatusVerbalAgreementShort");
+		$this->labelstatut_short[2]=$langs->trans("TraineeSessionStatusConfirmShort");
+		$this->labelstatut_short[3]=$langs->trans("TraineeSessionStatusPresentShort");
+		$this->labelstatut_short[4]=$langs->trans("TraineeSessionStatusPartPresentShort");
+		$this->labelstatut_short[5]=$langs->trans("TraineeSessionStatusNotPresentShort");
+		$this->labelstatut_short[6]=$langs->trans("TraineeSessionStatusCancelledShort");
+		
 		return 1;
 	}
 }

@@ -68,9 +68,9 @@ class Agefodd_place extends CommonObject
 	 *
 	 *  @param	DoliDb		$db      Database handler
 	*/
-	function __construct($DB)
+	function __construct($db)
 	{
-		$this->db = $DB;
+		$this->db = $db;
 		return 1;
 	}
 

@@ -1,5 +1,5 @@
 <?php
-/** Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 * Copyright (C) 2012-2013       Florian Henry   <florian.henry@open-concept.pro>
 *
@@ -23,10 +23,6 @@
  *	\ingroup    agefodd
  *	\brief      list of document
 */
-
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
 
 $res=@include("../../main.inc.php");				// For root directory
 if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
@@ -375,7 +371,7 @@ if (!empty($id))
 			if ($type_link == 'prop') {
 				$ref=$agf_liste->propalref;
 			}
-			if (!empty($agf->id))
+			if (!empty($agf_liste->id))
 			{
 				$form_question=array();
 				$form_question[]=array('label'=> $langs->trans("AgfDeleteObjectAlso",$ref),

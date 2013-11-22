@@ -1620,13 +1620,13 @@ class Agsession extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
 		
-		//I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
-		if (key_exists('extra.ts_logistique', $filter)) {
+		// I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
+		if (key_exists ( 'extra.ts_logistique', $filter )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
 			$sql .= " ON s.rowid = extra.fk_object";
 		}
 		
-		if (key_exists('sale.fk_user_com', $filter)) {
+		if (key_exists ( 'sale.fk_user_com', $filter )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commerciaux as sale";
 			$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		}
@@ -1649,8 +1649,7 @@ class Agsession extends CommonObject {
 				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') 
-							|| ($key == 's.status') || ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com') ) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
@@ -1782,13 +1781,13 @@ class Agsession extends CommonObject {
 		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
-		//I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
-		if (key_exists('extra.ts_logistique', $filter)) {
+		// I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
+		if (key_exists ( 'extra.ts_logistique', $filter )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
 			$sql .= " ON s.rowid = extra.fk_object";
 		}
 		
-		if (key_exists('sale.fk_user_com', $filter)) {
+		if (key_exists ( 'sale.fk_user_com', $filter )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commerciaux as sale";
 			$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		}
@@ -1803,16 +1802,13 @@ class Agsession extends CommonObject {
 				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') 
-						|| ($key == 's.status') || ($key =='extra.ts_logistique') || ($key =='sale.fk_user_com')  ) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
-				} elseif ($key!='extra.ts_logistics') {
+				} elseif ($key != 'extra.ts_logistics') {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
 				}
 			}
 		}
-		
-		
 		
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid";
@@ -2744,13 +2740,9 @@ class Agsession extends CommonObject {
 					$price_base_type = $prod->multiprices_base_type [$order->client->price_level];
 				} elseif (! empty ( $conf->global->PRODUIT_CUSTOMER_PRICES )) {
 					$sql = "SELECT ";
-					$sql .= " p.price, p.price_ttc, p.price_base_type, p.tva_tx";
-					$sql .= ' ,pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
+					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 					$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
-					$sql .= " FROM " . MAIN_DB_PREFIX . "product as p";
-					$sql .= " LEFT JOIN  " . MAIN_DB_PREFIX . "product_customer_price as pcp ON pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=p.rowid";
-					$sql .= " WHERE p.rowid=" . $this->fk_product;
-					
+					$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp ON pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
 					dol_syslog ( get_class ( $this ) . "::createOrder sql=" . $sql, LOG_DEBUG );
 					$resql = $this->db->query ( $sql );
 					if ($resql) {
@@ -2789,13 +2781,13 @@ class Agsession extends CommonObject {
 		
 		if (! empty ( $neworderid )) {
 			// Link new order to the session/thridparty
-			$agf = new Agefodd_session_element($this->db);
-			$agf->fk_element=$neworderid;
-			$agf->fk_session_agefodd=$this->id;
-			$agf->fk_soc=$socid;
-			$agf->element_type='order';		
+			$agf = new Agefodd_session_element ( $this->db );
+			$agf->fk_element = $neworderid;
+			$agf->fk_session_agefodd = $this->id;
+			$agf->fk_soc = $socid;
+			$agf->element_type = 'order';
 			
-			$result = $agf->create($user);
+			$result = $agf->create ( $user );
 			if ($result < 0) {
 				$this->error = $agf->error;
 				return - 1;
@@ -2869,16 +2861,19 @@ class Agsession extends CommonObject {
 			$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' ) . '-' . dol_print_date ( $this->datef, 'daytext' );
 			$session_trainee = new Agefodd_session_stagiaire ( $this->db );
 			$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid );
-			$desc .= "\n" . count ( $session_trainee->lines ) . ' ';
-			if (count ( $session_trainee->lines ) >= 1) {
-				$desc .= $langs->trans ( 'AgfParticipant' );
-			} else {
-				$desc .= $langs->trans ( 'AgfParticipants' );
-			}
-			if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
-				foreach ( $session_trainee->lines as $line ) {
-					$desc .= "\n" . dol_strtoupper ( $line->nom ) . ' ' . $line->prenom . "\n";
+			if (count ( $session_trainee->lines ) > 0) {
+				$desc_trainee = "\n" . count ( $session_trainee->lines ) . ' ';
+				if (count ( $session_trainee->lines ) >= 1) {
+					$desc_trainee .= $langs->trans ( 'AgfParticipant' );
+				} else {
+					$desc_trainee .= $langs->trans ( 'AgfParticipants' );
 				}
+				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
+					foreach ( $session_trainee->lines as $line ) {
+						$desc_trainee .= "\n" . dol_strtoupper ( $line->nom ) . ' ' . $line->prenom . "\n";
+					}
+				}
+				$desc .= ' ' . $desc_trainee;
 			}
 			$propal->lines [0]->desc = $desc;
 			
@@ -2893,13 +2888,9 @@ class Agsession extends CommonObject {
 				$price_base_type = $product->multiprices_base_type [$propal->client->price_level];
 			} elseif (! empty ( $conf->global->PRODUIT_CUSTOMER_PRICES )) {
 				$sql = "SELECT ";
-				$sql .= " p.price, p.price_ttc, p.price_base_type, p.tva_tx";
-				$sql .= ' ,pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
+				$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 				$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
-				$sql .= " FROM " . MAIN_DB_PREFIX . "product as p";
-				$sql .= " LEFT JOIN  " . MAIN_DB_PREFIX . "product_customer_price as pcp ON pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=p.rowid";
-				$sql .= " WHERE p.rowid=" . $this->fk_product;
-				
+				$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp ON pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
 				dol_syslog ( get_class ( $this ) . "::createProposal sql=" . $sql, LOG_DEBUG );
 				$resql = $this->db->query ( $sql );
 				if ($resql) {
@@ -2927,6 +2918,8 @@ class Agsession extends CommonObject {
 			
 			$propal->lines [0]->subprice = $pu_ht;
 			$propal->lines [0]->tva_tx = $tva_tx;
+			
+			//dol_syslog ( get_class ( $this ) . "::createProposal propal->lines=" . var_export ( $propal->lines [0], true ), LOG_DEBUG );
 		}
 		
 		$newpropalid = $propal->create ( $user );
@@ -2937,13 +2930,13 @@ class Agsession extends CommonObject {
 			
 			// Link new order to the session/thridparty
 			
-			$agf = new Agefodd_session_element($this->db);
-			$agf->fk_element=$newpropalid;
-			$agf->fk_session_agefodd=$this->id;
-			$agf->fk_soc=$socid;
-			$agf->element_type='propal';		
+			$agf = new Agefodd_session_element ( $this->db );
+			$agf->fk_element = $newpropalid;
+			$agf->fk_session_agefodd = $this->id;
+			$agf->fk_soc = $socid;
+			$agf->element_type = 'propal';
 			
-			$result = $agf->create($user);
+			$result = $agf->create ( $user );
 			if ($result < 0) {
 				$this->error = $agf->error;
 				return - 1;

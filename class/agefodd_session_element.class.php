@@ -49,6 +49,7 @@ class Agefodd_session_element extends CommonObject {
 	var $propalref = '';
 	var $comref = '';
 	var $facnumber = '';
+	var $facfournnumber = '';
 	var $lines = array ();
 
 	/**
@@ -177,12 +178,14 @@ class Agefodd_session_element extends CommonObject {
 		
 		$sql .= " propal.ref as propalref,";
 		$sql .= " commande.ref as comref,";
-		$sql .= " facture.facnumber";
+		$sql .= " facture.facnumber,";
+		$sql .= " facture_fourn.ref as facfournnumber";
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as t";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "propal as propal ON propal.rowid=t.fk_element AND t.element_type='propal'";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "commande as commande ON commande.rowid=t.fk_element AND t.element_type='order'";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture as facture ON facture.rowid=t.fk_element AND t.element_type='invoice'";
+		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture_fourn as facture_fourn ON facture_fourn.rowid=t.fk_element AND t.element_type='invoice_supplier_trainer'";
 		$sql .= " WHERE t.rowid = " . $id;
 		
 		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
@@ -204,6 +207,7 @@ class Agefodd_session_element extends CommonObject {
 				$this->propalref = $obj->propalref;
 				$this->comref = $obj->comref;
 				$this->facnumber = $obj->facnumber;
+				$this->facfournnumber = $obj->facfournnumber;
 			}
 			$this->db->free ( $resql );
 			
@@ -269,73 +273,73 @@ class Agefodd_session_element extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
-	 *  Load object in memory from database
+	 * Load object in memory from database
 	 *
-	 *  @param	int		$id    id ob object
-	 *  @param	string		$type    bc is default
-	 *  @return int          	<0 if KO, >0 if OK
+	 * @param int $id ob object
+	 * @param string $type is default
+	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_element_by_id($id, $type='bc')
-	{
+	function fetch_element_by_id($id, $type = 'bc') {
+
 		global $langs;
-	
-		$sql = "SELECT";
-		$sql.= " rowid, fk_session_agefodd, fk_soc ";
-	
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_element";
-		if ($type == 'bc')
-		{
-			$sql.= " WHERE fk_element = ".$id." AND element_type='order'";
-		}
-		if ($type == 'fac')
-		{
-			$sql.= " WHERE fk_facture = ".$id." AND element_type='invoice'";
-		}
-		if ($type == 'prop')
-		{
-			$sql.= " WHERE fk_propal = ".$id." AND element_type='propal'";
-		}
-	
-	
-		dol_syslog(get_class($this)."::fetch_element_by_id sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
-			$this->lines = array();
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			for ($i=0; $i < $num; $i++)
-			{
-			$line = new AgefoddElementLine();
-	
-			$obj = $this->db->fetch_object($resql);
-			$line->id = $obj->rowid;
-			$line->socid = $obj->fk_soc;
-			$line->fk_session = $obj->fk_session_agefodd;
-	
-			$this->lines[$i]=$line;
+		
+		if (! empty ( $id )) {
+			$sql = "SELECT";
+			$sql .= " rowid, fk_session_agefodd, fk_soc ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
+			$sql .= " WHERE fk_element = " . $id;
+			if ($type == 'bc') {
+				$sql .= " AND element_type='order'";
 			}
-			$this->db->free($resql);
+			if ($type == 'fac') {
+				$sql .= " AND element_type='invoice'";
+			}
+			if ($type == 'prop') {
+				$sql .= " AND element_type='propal'";
+			}
+			if ($type == 'invoice_supplier_trainer') {
+				$sql .= " AND element_type='invoice_supplier_trainer'";
+			}
+			
+			dol_syslog ( get_class ( $this ) . "::fetch_element_by_id sql=" . $sql, LOG_DEBUG );
+			$resql = $this->db->query ( $sql );
+			if ($resql) {
+				$this->lines = array ();
+				$num = $this->db->num_rows ( $resql );
+				$i = 0;
+				for($i = 0; $i < $num; $i ++) {
+					$line = new AgefoddElementLine ();
+					
+					$obj = $this->db->fetch_object ( $resql );
+					$line->id = $obj->rowid;
+					$line->socid = $obj->fk_soc;
+					$line->fk_session = $obj->fk_session_agefodd;
+					
+					$this->lines [$i] = $line;
+				}
+				$this->db->free ( $resql );
+				return 1;
+			} else {
+				$this->error = "Error " . $this->db->lasterror ();
+				dol_syslog ( get_class ( $this ) . "::fetch_element_by_id " . $this->error, LOG_ERR );
+				return - 1;
+			}
+		} else {
 			return 1;
 		}
-		else
-		{
-		$this->error="Error ".$this->db->lasterror();
-		dol_syslog(get_class($this)."::fetch_element_by_id ".$this->error, LOG_ERR);
-		return -1;
-		}
-		}
+	}
 
 	/**
 	 * Load object in memory from the database
 	 *
 	 * @param int $idsession session id
 	 * @param int $idsoc
+	 * @param string type order,invoice,propal,invoice_supplier
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_by_session_by_thirdparty($idsession, $idsoc) {
+	function fetch_by_session_by_thirdparty($idsession, $idsoc=0, $type = '') {
 
 		global $langs;
 		$sql = "SELECT";
@@ -359,7 +363,12 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "commande as commande ON commande.rowid=t.fk_element AND t.element_type='order'";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture as facture ON facture.rowid=t.fk_element AND t.element_type='invoice'";
 		$sql .= " WHERE t.fk_session_agefodd = " . $idsession;
-		$sql .= " AND t.fk_soc = " . $idsoc;
+		if (! empty ( $idsoc )) {
+			$sql .= " AND t.fk_soc = " . $idsoc;
+		}
+		if (! empty ( $type )) {
+			$sql .= ' AND t.element_type=\'' . $type . '\'';
+		}
 		
 		dol_syslog ( get_class ( $this ) . "::fetch_by_session_by_thirdparty sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
@@ -397,6 +406,57 @@ class Agefodd_session_element extends CommonObject {
 			return - 1;
 		}
 	}
+	
+	
+	/**
+	 * Load object in memory from the database
+	 *
+	 * @param int $idsession session id
+	 * @param int $idsoc
+	 * @param string type order,invoice,propal,invoice_supplier
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function fetch_invoice_supplier_by_thridparty($idsoc) {
+	
+		global $langs;
+		$sql = "SELECT";
+		$sql .= " t.rowid";
+		$sql .= " ,t.ref";
+		$sql .= " ,t.ref_supplier";
+
+	
+		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as t";
+		$sql .= " WHERE t.fk_soc = " . $idsoc;
+	
+	
+		dol_syslog ( get_class ( $this ) . "::fetch_invoice_supplier_by_thridparty sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			$num = $this->db->num_rows ( $resql );
+				
+			$this->lines = array ();
+				
+			while ( $obj = $this->db->fetch_object ( $resql ) ) {
+	
+				$line = new AgefoddElementInvoiceLine ();
+	
+				$line->id = $obj->rowid;
+	
+				$line->ref = $obj->ref;
+				$line->ref_supplier = $obj->ref_supplier;
+	
+				$this->lines [] = $line;
+			}
+			$this->db->free ( $resql );
+				
+			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::fetch_invoice_supplier_by_thridparty " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
+	
 
 	/**
 	 * Update object into database
@@ -529,57 +589,50 @@ class Agefodd_session_element extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
-	 *  Set invoice ref where propal or order is already linked
+	 * Set invoice ref where propal or order is already linked
 	 *
-	 *  @param	int		$id    		Id to find
-	 *  @param	int		$type    	order or propal
-	 *  @param	int 	$invoiceid	Invoice to link
-	 *  @return int          	<0 if KO, >0 if OK
+	 * @param int $id to find
+	 * @param int $type or propal
+	 * @param int $invoiceid to link
+	 * @return int <0 if KO, >0 if OK
 	 */
-	function add_invoice($user,$id,$type,$invoiceid)
-	{
+	function add_invoice($user, $id, $type, $invoiceid) {
+
 		global $langs;
-	
+		
 		$sql = "SELECT";
-		$sql.= " f.rowid, f.fk_element, f.element_type, f.fk_soc, f.fk_session_agefodd ";
-		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_element as f";
-		if ($type=='propal') {
-			$sql.= " WHERE f.fk_element = ".$id . " AND f.element_type='propal'";
+		$sql .= " f.rowid, f.fk_element, f.element_type, f.fk_soc, f.fk_session_agefodd ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as f";
+		if ($type == 'propal') {
+			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='propal'";
 		}
-		if ($type=='commande') {
-			$sql.= " WHERE f.fk_element = ".$id . " AND f.element_type='order'";
+		if ($type == 'commande') {
+			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='order'";
 		}
-	
-	
-		dol_syslog(get_class($this)."::add_invoice sql=".$sql, LOG_DEBUG);
-		$resql=$this->db->query($sql);
-	
-		if ($resql)
-		{
-			if ($this->db->num_rows($resql))
-			{
-				$obj = $this->db->fetch_object($resql);
-				$this->fk_session_agefodd=$obj->fk_session_agefodd;
+		
+		dol_syslog ( get_class ( $this ) . "::add_invoice sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		
+		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
+				$obj = $this->db->fetch_object ( $resql );
+				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->fk_soc = $obj->fk_soc;
 				$this->fk_element = $invoiceid;
-				$this->element_type='invoice';
+				$this->element_type = 'invoice';
 				
-	
-				$result=$this->create($user);
+				$result = $this->create ( $user );
 				if ($result < 0) {
-					return -1;
+					return - 1;
 				}
 			}
-			$this->db->free($resql);
-				
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::add_invoice ".$this->error, LOG_ERR);
-			return -1;
+			$this->db->free ( $resql );
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::add_invoice " . $this->error, LOG_ERR );
+			return - 1;
 		}
 	}
 
@@ -739,5 +792,11 @@ class AgefoddElementLine {
 	var $socid;
 	var $fk_session;
 	var $ref;
+}
+
+class AgefoddElementInvoiceLine {
+	var $id;
+	var $ref;
+	var $ref_supplier;
 }
 ?>

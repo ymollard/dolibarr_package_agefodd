@@ -564,6 +564,61 @@ class InterfaceAgefodd
 			return 1;
 
 		}
+		elseif($action=='BILL_SUPPLIER_DELETE' && $conf->global->AGF_ADVANCE_COST_MANAGEMENT) {
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+			
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
+			$agf_fin->fetch_element_by_id($object->id,'invoice_supplier_trainer');
+			if (count($agf_fin->lines)>0) {
+				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->delete($user);
+			}
+			
+			return 1;
+		}
+		elseif($action=='PROPAL_DELETE') {
+			
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+				
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
+			$agf_fin->fetch_element_by_id($object->id,'prop');
+			if (count($agf_fin->lines)>0) {
+				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->delete($user);
+			}
+			
+			return 1;
+		}
+		elseif($action=='BILL_DELETE') {
+			
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
+			$agf_fin->fetch_element_by_id($object->id,'fac');
+			if (count($agf_fin->lines)>0) {
+				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->delete($user);
+			}
+			
+			return 1;
+		}
+		elseif($action=='ORDER_DELETE') {
+			
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".$user->id.". id=".$object->id);
+		
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin=new Agefodd_session_element($this->db);
+			$agf_fin->fetch_element_by_id($object->id,'bc');
+			if (count($agf_fin->lines)>0) {
+				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->delete($user);
+			}
+			
+			return 1;
+		}
 
 		return 0;
 	}

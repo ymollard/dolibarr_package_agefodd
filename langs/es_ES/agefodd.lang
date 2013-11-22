@@ -827,3 +827,7 @@ AgfElementToUse=Propal/Order/invoice use for convention
 AgfManageCost=Use cost management into session (supplier invoice)
 AgfManageCostHelp=It will automaticly enabled the trainer time management
 AgfCostManagement=Cost management
+AgfTrainerNotAContactOfSupplier= Trainer is not a supplier contact
+AgfCreateSupplierInvoice=Create supplier invoice
+AgfFactureUnselectSuplierInvoice=Unlink supplier invoice
+AgfFactureSelectInvoice=Link existing supplier invoice

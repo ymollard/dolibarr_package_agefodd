@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   fk_session integer NOT NULL,
   fk_agefodd_formateur integer NOT NULL,
+  trainer_status integer NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,

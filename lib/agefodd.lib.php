@@ -104,7 +104,7 @@ function session_prepare_head($object,$showconv=0)
 		$h++;
 	}
 
-	$head[$h][0] = dol_buildpath('/agefodd/session/trainer.php',1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath('/agefodd/session/trainer.php',1).'?action=edit&id='.$object->id;
 	$head[$h][1] = $langs->trans("AgfFormateur");
 	$head[$h][2] = 'trainers';
 	$h++;

@@ -47,13 +47,14 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 	var $heured='';
 	var $heuref='';
 	var $trainer_cost;
+	var $trainer_status;
 	var $fk_actioncomm;
 	var $fk_user_author;
 	var $datec='';
 	var $fk_user_mod;
 	var $tms='';
-
-
+	
+	var $lines=array();
 
 
     /**
@@ -84,6 +85,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 
 		if (isset($this->fk_agefodd_session_formateur)) $this->fk_agefodd_session_formateur=trim($this->fk_agefodd_session_formateur);
 		if (isset($this->trainer_cost)) $this->trainer_cost=trim($this->trainer_cost);
+		if (isset($this->trainer_status)) $this->trainer_cost=trim($this->trainer_status);
 		if (isset($this->fk_actioncomm)) $this->fk_actioncomm=trim($this->fk_actioncomm);
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
@@ -111,6 +113,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= "heured,";
 		$sql.= "heuref,";
 		$sql.= "trainer_cost,";
+		$sql.= "trainer_status,";
 		$sql.= "fk_actioncomm,";
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
@@ -123,6 +126,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= " ".(! isset($this->heured) || dol_strlen($this->heured)==0?'NULL':$this->db->escape($this->db->idate($this->heured))).",";
 		$sql.= " ".(! isset($this->heuref) || dol_strlen($this->heuref)==0?'NULL':$this->db->escape($this->db->idate($this->heuref))).",";
 		$sql.= " ".(! isset($this->trainer_cost)?'NULL':"'".$this->db->escape($this->trainer_cost)."'").",";
+		$sql.= " ".(! isset($this->trainer_status)?'NULL':$this->db->escape($this->trainer_status)).",";
 		$sql.= " ".(! isset($this->fk_actioncomm)?'NULL':"'".$this->fk_actioncomm."'").",";
 		$sql.= " ".(! isset($this->fk_user_author)?$user->id:"'".$this->fk_user_author."'").",";
 		$sql.= " ".(! isset($this->datec) || dol_strlen($this->datec)==0?$this->db->idate(dol_now()):$this->db->idate($this->datec)).",";
@@ -189,6 +193,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= " t.heured,";
 		$sql.= " t.heuref,";
 		$sql.= " t.trainer_cost,";
+		$sql.= " t.trainer_status,";
 		$sql.= " t.fk_actioncomm,";
 		$sql.= " t.fk_user_author,";
 		$sql.= " t.datec,";
@@ -214,6 +219,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 				$this->heured = $this->db->jdate($obj->heured);
 				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->trainer_cost = $obj->trainer_cost;
+				$this->trainer_status = $obj->trainer_status;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
@@ -245,7 +251,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
     	global $langs;
 
     	$sql = "SELECT";
-    	$sql.= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost ";
+    	$sql.= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost,s.trainer_status ";
     	$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as s";
     	$sql.= " WHERE s.fk_actioncomm = ".$actionid;
 
@@ -263,6 +269,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
     			$this->heuref = $this->db->jdate($obj->heuref);
     			$this->sessid = $obj->fk_agefodd_session;
     			$this->trainer_cost = $obj->trainer_cost;
+    			$this->trainer_status = $obj->trainer_status;
     			$this->fk_actioncomm = $obj->fk_actioncomm;
     		}
     		$this->db->free($resql);
@@ -293,6 +300,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= "s.heured,";
 		$sql.= "s.heuref,";
 		$sql.= "s.trainer_cost,";
+		$sql.= "s.trainer_status,";
 		$sql.= "s.fk_actioncomm,";
 		$sql.= "s.fk_user_author";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as s";
@@ -318,6 +326,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 				$line->heured = $this->db->jdate($obj->heured);
 				$line->heuref = $this->db->jdate($obj->heuref);
 				$line->trainer_cost = $obj->trainer_cost;
+				$line->trainer_status = $obj->trainer_status;
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
 
@@ -352,6 +361,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 
 		if (isset($this->fk_agefodd_session_formateur)) $this->fk_agefodd_session_formateur=trim($this->fk_agefodd_session_formateur);
 		if (isset($this->trainer_cost)) $this->trainer_cost=trim($this->trainer_cost);
+		if (isset($this->trainer_status)) $this->trainer_status=trim($this->trainer_status);
 		if (isset($this->fk_actioncomm)) $this->fk_actioncomm=trim($this->fk_actioncomm);
 		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
 		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
@@ -367,6 +377,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= " heured=".(dol_strlen($this->heured)!=0 ? "'".$this->db->idate($this->heured)."'" : 'null').",";
 		$sql.= " heuref=".(dol_strlen($this->heuref)!=0 ? "'".$this->db->idate($this->heuref)."'" : 'null').",";
 		$sql.= " trainer_cost='".(isset($this->trainer_cost)?$this->trainer_cost:"null")."',";
+		$sql.= " trainer_status=".(isset($this->trainer_status)?$this->trainer_status:"null").",";
 		$sql.= " fk_actioncomm=".(isset($this->fk_actioncomm)?$this->fk_actioncomm:"null").",";
 		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
 		$sql.= " datec=".(dol_strlen($this->datec)!=0 ? "'".$this->db->idate($this->datec)."'" : 'null').",";
@@ -675,7 +686,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 
 
 	}
-
 }
 
 
