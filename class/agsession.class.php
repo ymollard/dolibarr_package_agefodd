@@ -1644,7 +1644,7 @@ class Agsession extends CommonObject {
 		
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
-		if (empty($user->rights->agefodd->session->all) && is_object($user) && !empty($user->id)) {
+		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all)) {
 			//Saleman of session is current user
 			$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
 			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com='.$user->id.')';
@@ -1743,9 +1743,10 @@ class Agsession extends CommonObject {
 	 * @param int $offset
 	 * @param int $arch archive or not
 	 * @param array $filter output
+	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '') {
+	function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '', $user=0) {
 
 		global $langs;
 		
@@ -1805,6 +1806,15 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.archive = 0";
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
+		
+		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all)) {
+			//Saleman of session is current user
+			$sql .= ' AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
+			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com='.$user->id.')';
+			$sql .= " OR ";
+			//current user is saleman of customersession
+			$sql .=' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user='.$user->id.')))';
+		}
 		
 		// Manage filter
 		if (! empty ( $filter )) {

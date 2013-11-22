@@ -2,6 +2,7 @@ English Dolibarr ChangeLog
 
 ***** ChangeLog for 2.1.8 compared to 2.1.7 *****
 -New : New permissions on Training catalogue, location (basic (old) permissions apply now sessions) all defaulted to yes (to avoid right problem)
+-New : New permission on session to limit session display in list regarding user customer sales affectation
 -Fix : Statistics screen account manager do not work
 -Fix : Remove PHP warning on training note screen
 -New : Can manage more than on proposal/order/invoice per session/thirdparty.

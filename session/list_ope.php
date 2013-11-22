@@ -168,9 +168,9 @@ $agf = new Agsession ( $db );
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty ( $conf->global->MAIN_DISABLE_FULL_SCANLIST )) {
-	$nbtotalofrecords = $agf->fetch_all_with_task_state ( $sortorder, $sortfield, 0, 0, $filter );
+	$nbtotalofrecords = $agf->fetch_all_with_task_state ( $sortorder, $sortfield, 0, 0, $filter,$user );
 }
-$resql = $agf->fetch_all_with_task_state ( $sortorder, $sortfield, $conf->liste_limit, $offset, $filter );
+$resql = $agf->fetch_all_with_task_state ( $sortorder, $sortfield, $conf->liste_limit, $offset, $filter,$user );
 
 if ($resql != - 1) {
 	$num = $resql;
