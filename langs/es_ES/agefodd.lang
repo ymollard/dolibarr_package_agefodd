@@ -831,3 +831,5 @@ AgfTrainerNotAContactOfSupplier= Trainer is not a supplier contact
 AgfCreateSupplierInvoice=Create supplier invoice
 AgfFactureUnselectSuplierInvoice=Unlink supplier invoice
 AgfFactureSelectInvoice=Link existing supplier invoice
+AgfPlaceSocNotASupplier=Thridparty of locationis not a supplier
+AgfTripAndMissions=Tips and various

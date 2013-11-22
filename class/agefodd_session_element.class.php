@@ -185,7 +185,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "propal as propal ON propal.rowid=t.fk_element AND t.element_type='propal'";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "commande as commande ON commande.rowid=t.fk_element AND t.element_type='order'";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture as facture ON facture.rowid=t.fk_element AND t.element_type='invoice'";
-		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture_fourn as facture_fourn ON facture_fourn.rowid=t.fk_element AND t.element_type='invoice_supplier_trainer'";
+		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture_fourn as facture_fourn ON facture_fourn.rowid=t.fk_element AND t.element_type LIKE 'invoice_supplier_%'";
 		$sql .= " WHERE t.rowid = " . $id;
 		
 		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
@@ -740,14 +740,14 @@ class Agefodd_session_element extends CommonObject {
 				if ($obj->element_type == 'order') {
 					$order = new Commande ( $this->db );
 					$order->fetch ( $obj->fk_element );
-					$this->order_amount += $order->total_ttc;
+					$this->order_amount += $order->total_ht;
 				}
 				
 				if ($obj->element_type == 'propal') {
 					$proposal = new Propal ( $this->db );
 					$proposal->fetch ( $obj->fk_element );
 					if ($proposal->statut == 2) {
-						$this->propal_sign_amount += $proposal->total_ttc;
+						$this->propal_sign_amount += $proposal->total_ht;
 					}
 				}
 				
@@ -755,10 +755,10 @@ class Agefodd_session_element extends CommonObject {
 					$facture = new Facture ( $this->db );
 					$facture->fetch ( $obj->fk_element );
 					if ($facture->statut == 2) {
-						$this->invoice_payed_amount += $facture->total_ttc;
+						$this->invoice_payed_amount += $facture->total_ht;
 					}
 					if ($facture->statut == 1) {
-						$this->invoice_ongoing_amount += $facture->total_ttc;
+						$this->invoice_ongoing_amount += $facture->total_ht;
 					}
 				}
 			}

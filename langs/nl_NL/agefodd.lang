@@ -830,3 +830,5 @@ AgfTrainerNotAContactOfSupplier=Le formateur n'est pas un contact fournisseur
 AgfCreateSupplierInvoice=Crée la facture fournisseur
 AgfFactureUnselectSuplierInvoice=Délier la facture fournisseur
 AgfFactureSelectInvoice=Lier une facture fournisseur existante
+AgfPlaceSocNotASupplier=Le client lié à l'emplacement n'est pas un fournisseur
+AgfTripAndMissions=Déplacement et missions
