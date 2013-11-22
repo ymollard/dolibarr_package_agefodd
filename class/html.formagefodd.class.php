@@ -540,7 +540,7 @@ class FormAgefodd extends Form {
 	 */
 	function selectcontactscustom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto=0,$showfunction=0, $moreclass='', $options_only=false, $showsoc=0, $forcecombo=0, $event=array())
 	{
-		global $conf,$langs;
+		global $conf,$langs,$user;
 	
 		$langs->load('companies');
 	
@@ -551,21 +551,33 @@ class FormAgefodd extends Form {
 		if ($showsoc > 0) {
 			$sql.= " , s.nom as company";
 		}
-		$sql.= " FROM ".MAIN_DB_PREFIX ."socpeople as sp";
-		if ($showsoc > 0) {
-			$sql.= " LEFT OUTER JOIN  ".MAIN_DB_PREFIX ."societe as s ON s.rowid=sp.fk_soc ";
+		$sql.= " FROM (".MAIN_DB_PREFIX ."socpeople as sp";
+
+		//Limit contact visibility to contact of thirdparty saleman
+		if (empty($user->rights->societe->client->voir)) {
+			$sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		}
+		$sql.=")";
+		
+		
+		$sql.= " LEFT OUTER JOIN  ".MAIN_DB_PREFIX ."societe as s ON s.rowid=sp.fk_soc ";
+		
 		$sql.= " WHERE sp.entity IN (".getEntity('societe', 1).")";
 		if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
 		if (! empty($conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX)) $sql.= " AND sp.statut<>0 ";
+		
+		if (empty($user->rights->societe->client->voir)) {
+			$sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
+		}
+		
 		$sql.= " ORDER BY sp.lastname ASC";
 	
-		dol_syslog(get_class($this)."::select_contacts sql=".$sql);
+		dol_syslog(get_class($this)."::selectcontactscustom sql=".$sql);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
 			$num=$this->db->num_rows($resql);
-	
+
 			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only)
 			{
 				$out.= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
@@ -574,12 +586,11 @@ class FormAgefodd extends Form {
 			if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
 			if ($showempty == 1) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'></option>';
 			if ($showempty == 2) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'>'.$langs->trans("Internal").'</option>';
-			$num = $this->db->num_rows($resql);
-			
-			if ($num>$limitto){
+
+			if ($num>$limitto && !empty($limitto)){
 				$num=$limitto;
 			}
-			
+
 			$i = 0;
 			if ($num)
 			{

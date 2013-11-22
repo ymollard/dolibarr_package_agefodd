@@ -833,3 +833,4 @@ AgfFactureUnselectSuplierInvoice=Unlink supplier invoice
 AgfFactureSelectInvoice=Link existing supplier invoice
 AgfPlaceSocNotASupplier=Thridparty of locationis not a supplier
 AgfTripAndMissions=Tips and various
+Permission103015=See all sessions (else see only session with user as account manager and customer session with user  salesman) 

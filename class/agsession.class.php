@@ -1584,9 +1584,10 @@ class Agsession extends CommonObject {
 	 * @param int $offset
 	 * @param int $arch archive or not
 	 * @param array $filter output
+	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = array()) {
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = array(), $user=0) {
 
 		global $langs;
 		
@@ -1627,7 +1628,7 @@ class Agsession extends CommonObject {
 		}
 		
 		if (key_exists ( 'sale.fk_user_com', $filter )) {
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commerciaux as sale";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 			$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		}
 		
@@ -1642,6 +1643,15 @@ class Agsession extends CommonObject {
 			$sql .= " WHERE s.archive = " . $arch;
 		
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
+		
+		if (empty($user->rights->agefodd->session->all) && is_object($user) && !empty($user->id)) {
+			//Saleman of session is current user
+			$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
+			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com='.$user->id.')';
+			$sql .= " OR ";
+			//current user is saleman of customersession
+			$sql .=' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user='.$user->id.')))';
+		}
 		
 		// Manage filter
 		if (count ( $filter ) > 0) {
@@ -1788,7 +1798,7 @@ class Agsession extends CommonObject {
 		}
 		
 		if (key_exists ( 'sale.fk_user_com', $filter )) {
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commerciaux as sale";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 			$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		}
 		

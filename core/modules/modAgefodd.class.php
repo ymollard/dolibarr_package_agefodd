@@ -652,7 +652,7 @@ class modAgefodd extends DolibarrModules
 		$r=0;
 
 		$this->rights[$r][0] = 103001;
-		$this->rights[$r][1] = 'Voir les sesisons';
+		$this->rights[$r][1] = 'Voir les sessions';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'lire';
 		$r++;
@@ -796,6 +796,15 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
 		$this->rights[$r][4] = 'agefodd_place';
 		$this->rights[$r][5] = 'supprimer';
+		
+		$r++;
+		$this->rights[$r][0] = 103015; // id de la permission
+		$this->rights[$r][1] = 'Visibilité transverse des session'; // libelle de la permission
+		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
+		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
+		$this->rights[$r][4] = 'session';
+		$this->rights[$r][5] = 'all';
+		
 		
 
 		// Main menu entries

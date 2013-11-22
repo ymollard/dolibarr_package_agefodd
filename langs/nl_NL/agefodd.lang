@@ -832,3 +832,4 @@ AgfFactureUnselectSuplierInvoice=Délier la facture fournisseur
 AgfFactureSelectInvoice=Lier une facture fournisseur existante
 AgfPlaceSocNotASupplier=Le client lié à l'emplacement n'est pas un fournisseur
 AgfTripAndMissions=Déplacement et missions
+Permission103015=Voir toute les sessions (sinon filtré par commerciale de la session ou commerciaux du client de la sessions)
