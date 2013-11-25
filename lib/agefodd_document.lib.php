@@ -69,7 +69,7 @@ function show_conv($file, $socid, $nom_courrier) {
 			}
 		}
 	} else {
-		if (count($propal_array)>0) {
+		if (count($propal_array)==0) {
 			$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFacturePropalHelp" ), 1, 'help' );
 			$continue = false;
 		}
@@ -200,10 +200,12 @@ function show_fac($file, $socid, $mdle) {
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createorder&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		
-		// Generate order
-		$legende = $langs->trans ( "AgfFactureGenererBon" );
-		$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&action=create&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		if (!empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
+			// Generate order
+			$legende = $langs->trans ( "AgfFactureGenererBon" );
+			$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&action=create&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		}
 		
 		// Link existing order
 		$legende = $langs->trans ( "AgfFactureSelectBon" );
@@ -350,11 +352,12 @@ function show_fac($file, $socid, $mdle) {
 			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		}
 		
-		
-		// Generate Proposal
-		$legende = $langs->trans ( "AgfFactureGenererProp" );
-		$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?action=create&mainmenu=commercial&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		if (empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
+			// Generate Proposal
+			$legende = $langs->trans ( "AgfFactureGenererProp" );
+			$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?action=create&mainmenu=commercial&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		}
 		
 		// Link existing proposal
 		$legende = $langs->trans ( "AgfFactureSelectProp" );

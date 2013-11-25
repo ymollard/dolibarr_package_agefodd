@@ -233,44 +233,50 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			$element_type = $idtypeelement_array [1];
 		}
 		
-		if (! empty ( $intro1 ))
-			$agf->intro1 = $intro1;
-		if (! empty ( $intro2 ))
-			$agf->intro2 = $intro2;
-		if (! empty ( $art1 ))
-			$agf->art1 = $art1;
-		if (! empty ( $art2 ))
-			$agf->art2 = $art2;
-		if (! empty ( $art3 ))
-			$agf->art3 = $art3;
-		if (! empty ( $art4 ))
-			$agf->art4 = $art4;
-		if (! empty ( $art5 ))
-			$agf->art5 = $art5;
-		if (! empty ( $art6 ))
-			$agf->art6 = $art6;
-		if (! empty ( $art7 ))
-			$agf->art7 = $art7;
-		if (! empty ( $art8 ))
-			$agf->art8 = $art8;
-		if (! empty ( $sig ))
-			$agf->sig = $sig;
-		if (! empty ( $notes ))
-			$agf->notes = $notes;
-		if (! empty ( $fk_element ))
-			$agf->fk_element = $fk_element;
-		if (! empty ( $element_type ))
-			$agf->element_type = $element_type;
-		$agf->socid = $socid;
-		$agf->sessid = $sessid;
-		
-		$result = $agf->create ( $user );
-		
-		if ($result > 0) {
-			Header ( 'Location: ' . $_SERVER ['PHP_SELF'] . '?id=' . $result );
-			exit ();
+		if (empty($fk_element)) {
+			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentities('AgfElementToUse')),'errors');
+			$action='create';
 		} else {
-			setEventMessage ( $agf->error, 'errors' );
+		
+			if (! empty ( $intro1 ))
+				$agf->intro1 = $intro1;
+			if (! empty ( $intro2 ))
+				$agf->intro2 = $intro2;
+			if (! empty ( $art1 ))
+				$agf->art1 = $art1;
+			if (! empty ( $art2 ))
+				$agf->art2 = $art2;
+			if (! empty ( $art3 ))
+				$agf->art3 = $art3;
+			if (! empty ( $art4 ))
+				$agf->art4 = $art4;
+			if (! empty ( $art5 ))
+				$agf->art5 = $art5;
+			if (! empty ( $art6 ))
+				$agf->art6 = $art6;
+			if (! empty ( $art7 ))
+				$agf->art7 = $art7;
+			if (! empty ( $art8 ))
+				$agf->art8 = $art8;
+			if (! empty ( $sig ))
+				$agf->sig = $sig;
+			if (! empty ( $notes ))
+				$agf->notes = $notes;
+			if (! empty ( $fk_element ))
+				$agf->fk_element = $fk_element;
+			if (! empty ( $element_type ))
+				$agf->element_type = $element_type;
+			$agf->socid = $socid;
+			$agf->sessid = $sessid;
+			
+			$result = $agf->create ( $user );
+			
+			if ($result > 0) {
+				Header ( 'Location: ' . $_SERVER ['PHP_SELF'] . '?id=' . $result );
+				exit ();
+			} else {
+				setEventMessage ( $agf->error, 'errors' );
+			}
 		}
 	} else {
 		Header ( 'Location: ' . $_SERVER ['PHP_SELF'] . '?sessid=' . $sessid );
@@ -501,10 +507,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfElementToUse" ) . '</td>';
 	print '<td>';
-	print '<select id="idtypelement" name="idtypelement" class="flat">';
+	
 	$agf_element = new Agefodd_session_element ( $db );
-	$agf_element->fetch_by_session_by_thirdparty ( $sessid, $socid );
+	$result=$agf_element->fetch_by_session_by_thirdparty ( $sessid, $socid );
+	if ($result<0) {
+		setEventMessage($agf_element->error, 'errors');
+	}
+	print '<select id="idtypelement" name="idtypelement" class="flat">';
 	foreach ( $agf_element->lines as $line ) {
+		
 		if ($line->element_type == 'propal' && ! empty ( $line->propalref )) {
 			$propal = new Propal ( $db );
 			$propal->fetch ( $line->fk_element );
