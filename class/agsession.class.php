@@ -2811,6 +2811,19 @@ class Agsession extends CommonObject {
 		}
 		
 		if (! empty ( $neworderid )) {
+			
+			
+			//add contact to proposal
+			if (!empty($this->contactid)){
+				$order->add_contact($this->contactid, 100, 'external'); //Contact client facturation commande
+				$order->add_contact($this->contactid, 101, 'external'); //Contact client suivi commande
+			
+			}
+			if (!empty($this->commercialid)){
+				$order->add_contact($this->commercialid, 91, 'internal'); //Responsable suivi commande client
+			}
+			
+			
 			// Link new order to the session/thridparty
 			$agf = new Agefodd_session_element ( $this->db );
 			$agf->fk_element = $neworderid;
@@ -2958,6 +2971,16 @@ class Agsession extends CommonObject {
 			$this->error = $propal->error;
 			return - 1;
 		} else {
+			
+			//add contact to proposal
+			if (!empty($this->contactid)){
+				$propal->add_contact($this->contactid, 40, 'external'); //Contact client facturation propale
+				$propal->add_contact($this->contactid, 41, 'external'); //Contact client suivi propale
+				
+			}
+			if (!empty($this->commercialid)){
+				$propal->add_contact($this->commercialid, 31, 'internal'); //Commercial suivi propale
+			}
 			
 			// Link new order to the session/thridparty
 			

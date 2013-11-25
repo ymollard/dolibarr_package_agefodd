@@ -42,6 +42,8 @@ require_once(DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php');
 
 
 $langs->load('propal');
+$langs->load('bills');
+$langs->load('orders');
 
 // Security check
 if (!$user->rights->agefodd->lire) accessforbidden();

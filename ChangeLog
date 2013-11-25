@@ -8,6 +8,8 @@ English Dolibarr ChangeLog
 -New : Can manage more than on proposal/order/invoice per session/thirdparty.
 -Fix : bugs_agefodd #1143 - Apostrophe into trainee lastname or firstname 
 -New : Cannot generate "auto-compelte" proposal from document link screen if no product linked before
+-New : On Propal and order "auto" génération contacts are filled with session informations
+-Fix : No-limit contact list if combobox is not use
 
 ***** ChangeLog for 2.1.7 compared to 2.1.6 *****
 For All:

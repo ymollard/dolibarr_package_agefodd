@@ -157,8 +157,9 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 			$error++;
 		}
 		
+		$custid=GETPOST('fk_soc','int');
 		$contactclientid = GETPOST('contact','int');
-		if (($contactclientid==-1) || (empty($contactclientid)))
+		if ((($custid==-1) || (empty($custid))) && (($contactclientid==-1) || (empty($contactclientid))))
 		{
 			$error++;
 			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
@@ -476,8 +477,9 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
 		}
 		
+		$custid=GETPOST('fk_soc','int');
 		$contactclientid = GETPOST('contact','int');
-		if (($contactclientid==-1) || (empty($contactclientid)))
+		if ((($custid==-1) || (empty($custid))) && (($contactclientid==-1) || (empty($contactclientid))))
 		{
 			$error++;
 			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');

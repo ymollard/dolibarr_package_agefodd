@@ -342,7 +342,7 @@ function show_fac($file, $socid, $mdle) {
 		
 		$agf_session->fetch($id);
 		if (empty($agf_session->fk_product)) {
-			$mess .= img_picto($langs->trans ( "AgfFacturePropSelectProductHelp" ), 'help') ;
+			$mess .= img_picto($langs->trans ( "AgfFacturePropSelectProductHelp" ), 'warning') ;
 		}else {
 			// Create Proposal
 			$legende = $langs->trans ( "AgfFactureGenererPropAuto" );

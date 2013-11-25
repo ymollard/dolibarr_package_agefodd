@@ -581,15 +581,15 @@ class FormAgefodd extends Form {
 			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only)
 			{
 				$out.= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
+				
+				if ($num>$limitto && !empty($limitto)){
+					$num=$limitto;
+				}
 			}
 	
 			if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
 			if ($showempty == 1) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'></option>';
 			if ($showempty == 2) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'>'.$langs->trans("Internal").'</option>';
-
-			if ($num>$limitto && !empty($limitto)){
-				$num=$limitto;
-			}
 
 			$i = 0;
 			if ($num)
