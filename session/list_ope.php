@@ -64,7 +64,10 @@ $search_type_session=GETPOST ( "search_type_session",'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 $search_sale=GETPOST('search_sale','int');
+
 $ts_logistique=GETPOST('options_ts_logistique','int');
+$ts_prospection=GETPOST('options_ts_prospection','int');
+$ts_interentreprises=GETPOST('options_ts_interentreprises','int');
 
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
@@ -115,6 +118,17 @@ if (! empty ( $search_training_ref_interne )) {
 }
 if ($search_type_session!='' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
+}
+
+//I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
+if (! empty ( $ts_logistique )) {
+	$filter ['extra.ts_logistique'] = $ts_logistique;
+}
+if (! empty ( $ts_prospection )) {
+	$filter ['extra.ts_prospection'] = $ts_prospection;
+}
+if (! empty ( $ts_interentreprises )) {
+	$filter ['extra.ts_interentreprises'] = $ts_interentreprises;
 }
 
 if (empty ( $sortorder ))
@@ -196,6 +210,14 @@ if ($resql != - 1) {
 	if (is_array($extralabels) && key_exists('ts_logistique', $extralabels)) {
 		$moreforfilter.=$extralabels['ts_logistique'];
 		$moreforfilter.=$extrafields->showInputField('ts_logistique', $ts_logistique);
+	}
+	if (is_array($extralabels) && key_exists('ts_prospection', $extralabels)) {
+		$moreforfilter.=$extralabels['ts_prospection'];
+		$moreforfilter.=$extrafields->showInputField('ts_prospection', $ts_prospection);
+	}
+	if (is_array($extralabels) && key_exists('ts_interentreprises', $extralabels)) {
+		$moreforfilter.=$extralabels['ts_interentreprises'];
+		$moreforfilter.=$extrafields->showInputField('ts_interentreprises', $ts_interentreprises);
 	}
 	if ($moreforfilter)
 	{

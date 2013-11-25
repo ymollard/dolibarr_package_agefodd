@@ -231,7 +231,7 @@ class Agefodd_session_formateur
 		$sql.= " WHERE sf.fk_session = ".$id;
 		$sql.= " ORDER BY sf.rowid ASC";
 
-		dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_formateur_per_session sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -277,7 +277,7 @@ class Agefodd_session_formateur
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_formateur_per_session ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}

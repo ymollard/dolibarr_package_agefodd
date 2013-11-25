@@ -156,6 +156,13 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
 			$error++;
 		}
+		
+		$contactclientid = GETPOST('contact','int');
+		if (($contactclientid==-1) || (empty($contactclientid)))
+		{
+			$error++;
+			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
+		}
 
 		$result = $agf->fetch($id);
 		
@@ -467,6 +474,13 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		{
 			$error++;
 			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
+		}
+		
+		$contactclientid = GETPOST('contact','int');
+		if (($contactclientid==-1) || (empty($contactclientid)))
+		{
+			$error++;
+			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
 		}
 		
 		$training_id = GETPOST('formation','int');
@@ -1296,6 +1310,7 @@ else
 							print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
 							print img_object($langs->trans("ShowContact"),"contact").' ';
 							print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
+							print $formateurs->lines[$i]->getLibStatut(3);
 							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 
 						}

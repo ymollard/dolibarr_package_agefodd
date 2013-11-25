@@ -160,6 +160,7 @@ function show_fac($file, $socid, $mdle) {
 	global $langs, $conf, $db, $id, $form;
 	
 	$agf = new Agefodd_session_element ( $db );
+	$agf_session = new Agsession ( $db );
 	
 	
 	// Manage order
@@ -338,10 +339,17 @@ function show_fac($file, $socid, $mdle) {
 			}
 		}
 		$mess .= '<tr><td width="5%" nowrap="nowrap">';
-		// Create Proposal
-		$legende = $langs->trans ( "AgfFactureGenererPropAuto" );
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createproposal&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		
+		$agf_session->fetch($id);
+		if (empty($agf_session->fk_product)) {
+			$mess .= img_picto($langs->trans ( "AgfFacturePropSelectProductHelp" ), 'help') ;
+		}else {
+			// Create Proposal
+			$legende = $langs->trans ( "AgfFactureGenererPropAuto" );
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createproposal&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		}
+		
 		
 		// Generate Proposal
 		$legende = $langs->trans ( "AgfFactureGenererProp" );

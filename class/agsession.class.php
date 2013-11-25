@@ -1621,10 +1621,13 @@ class Agsession extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
 		
-		// I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
-		if (key_exists ( 'extra.ts_logistique', $filter )) {
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
-			$sql .= " ON s.rowid = extra.fk_object";
+
+		foreach($filter as $key => $value) {
+			if (strpos($key,'extra.') !== false) {
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
+				$sql .= " ON s.rowid = extra.fk_object";
+				break;
+			}
 		}
 		
 		if (key_exists ( 'sale.fk_user_com', $filter )) {
@@ -1644,7 +1647,7 @@ class Agsession extends CommonObject {
 		
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
-		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all)) {
+		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
 			//Saleman of session is current user
 			$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
 			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com='.$user->id.')';
@@ -1659,7 +1662,9 @@ class Agsession extends CommonObject {
 				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') 
+						|| ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')
+						|| ($key == 'extra.ts_prospection') || ($key == 'extra.ts_interentreprises')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
@@ -1792,11 +1797,15 @@ class Agsession extends CommonObject {
 		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
-		// I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
-		if (key_exists ( 'extra.ts_logistique', $filter )) {
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
-			$sql .= " ON s.rowid = extra.fk_object";
+		
+		foreach($filter as $key => $value) {
+			if (strpos($key,'extra.') !== false) {
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
+				$sql .= " ON s.rowid = extra.fk_object";
+				break;
+			}
 		}
+		
 		
 		if (key_exists ( 'sale.fk_user_com', $filter )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
@@ -1807,7 +1816,7 @@ class Agsession extends CommonObject {
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
 		
-		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all)) {
+		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
 			//Saleman of session is current user
 			$sql .= ' AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
 			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com='.$user->id.')';
@@ -1822,7 +1831,9 @@ class Agsession extends CommonObject {
 				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') 
+						|| ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')
+						|| ($key == 'extra.ts_prospection') || ($key == 'extra.ts_interentreprises')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} elseif ($key != 'extra.ts_logistics') {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
