@@ -384,6 +384,16 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Do not display manual propal/order/invoice creation';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_NEW_BROWSER_WINDOWS_ON_LINK";
+		$this->const[$r][1] = "0";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'open new browser window/tab on link click';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		
 
 		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {

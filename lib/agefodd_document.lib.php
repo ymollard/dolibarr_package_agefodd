@@ -159,6 +159,13 @@ function show_fac($file, $socid, $mdle) {
 
 	global $langs, $conf, $db, $id, $form;
 	
+	
+	if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
+		$target=' target="_blanck" ';
+	} else {
+		$target='';
+	}
+	
 	$agf = new Agefodd_session_element ( $db );
 	$agf_session = new Agsession ( $db );
 	
@@ -170,10 +177,10 @@ function show_fac($file, $socid, $mdle) {
 		foreach ( $agf->lines as $line ) {
 			if ($line->element_type == 'order' && ! empty ( $line->comref )) {
 				$mess .= '<tr><td colspan="2">';
-				
+
 				// Send order by mail
 				$legende = $langs->trans ( "AgfFactureSeeBonMail", $line->comref );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Unlink order
@@ -183,7 +190,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See order card
 				$legende = $langs->trans ( "AgfFactureSeeProp" ) . ' ' . $line->comref;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '"  '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->comref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 				$order = new Commande ( $db );
@@ -231,7 +238,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// Go to send mail card
 				$legende = $langs->trans ( "AgfFactureSeeFacMail", $line->facnumber );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Unlink invoice
@@ -241,7 +248,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See Invoice card
 				$legende = $langs->trans ( "AgfFactureSeeFac" ) . ' ' . $line->facnumber;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&facid=' . $line->fk_element . '"" alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&facid=' . $line->fk_element . '"" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->facnumber . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 				$invoice = new Facture ( $db );
@@ -266,14 +273,14 @@ function show_fac($file, $socid, $mdle) {
 			foreach ( $propal_array as $key => $val ) {
 				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ).' '.$val;
 				$propal_static = new Propal ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			
 			foreach ( $order_array as $key => $val ) {
 				$legende = $langs->trans ( "AgfFactureAddFacFromOrder" ).' '.$val;
 				$commande_static = new Commande ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			// link existing invoice
@@ -286,14 +293,14 @@ function show_fac($file, $socid, $mdle) {
 			foreach ( $propal_array as $key => $val ) {
 				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ).' '.$val;
 				$propal_static = new Propal ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			
 			foreach ( $order_array as $key => $val ) {
 				$legende = $langs->trans ( "AgfFactureAddFacFromOrder" ).' '.$val;
 				$commande_static = new Commande ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			
@@ -320,7 +327,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// Go to send mail card
 				$legende = $langs->trans ( "AgfFactureSeePropMail", $line->propalref );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Unlink proposal
@@ -330,7 +337,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See Proposal card
 				$legende = $langs->trans ( "AgfFactureSeeProp" ) . ' ' . $line->propalref;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial" alt="' . $legende . '" title="' . $legende . '">';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->propalref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 				$propal = new Propal ( $db );

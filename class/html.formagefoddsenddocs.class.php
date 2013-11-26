@@ -383,7 +383,7 @@ class FormAgefoddsenddocs extends FormMail
 		}
 
 		// Ask delivery receipt
-		if ($this->withdeliveryreceipt)
+		if (!empty($this->withdeliveryreceipt))
 		{
 			$out.= '<tr><td width="180">'.$langs->trans("DeliveryReceipt").'</td><td>';
 
@@ -393,7 +393,7 @@ class FormAgefoddsenddocs extends FormMail
 			}
 			else
 			{
-				$out.= $form->selectyesno('deliveryreceipt', (isset($_POST["deliveryreceipt"])?$_POST["deliveryreceipt"]:0), 1);
+				$out.= $form->selectyesno('deliveryreceipt', (isset($_POST["deliveryreceipt"])?$_POST["deliveryreceipt"]:$this->withdeliveryreceipt), 1);
 			}
 
 			$out.= "</td></tr>\n";
@@ -537,7 +537,9 @@ class FormAgefoddsenddocs extends FormMail
 						$defaultmessage.=dol_htmlentitiesbr_decode($fuser->signature);
 					}
 				}
-
+				if (!empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+					$this->withfckeditor=1;
+				}
 				// Editor wysiwyg
 				require_once(DOL_DOCUMENT_ROOT."/core/class/doleditor.class.php");
 				$doleditor=new DolEditor('message',$defaultmessage,'',280,'dolibarr_notes','In',true,false,$this->withfckeditor,8,72);

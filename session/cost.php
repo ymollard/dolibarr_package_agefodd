@@ -389,6 +389,12 @@ $head = session_prepare_head ( $agf );
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
 
+if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
+	$target=' target="_blanck" ';
+} else {
+	$target='';
+}
+
 dol_fiche_head ( $head, 'cost', $langs->trans ( "AgfCostManagement" ), 0, 'bill' );
 
 /*
@@ -463,6 +469,8 @@ if ($result < 0) {
 	setEventMessage ( $agf_formateurs->error, 'errors' );
 }
 
+
+
 print '<form method="POST" action="' . $_SERVER ['PHP_SELF'] . '" name="costmanamgent">';
 print '<table class="border" width="100%">';
 foreach ( $agf_formateurs->lines as $line ) {
@@ -470,7 +478,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 	
 	print '<td width="20%" valign="top">';
 	// Trainers info
-	print '<a href="' . DOL_URL_ROOT . '/contact/fiche.php?id=' . $line->socpeopleid . '">';
+	print '<a href="' . DOL_URL_ROOT . '/contact/fiche.php?id=' . $line->socpeopleid . '" '.$target.'>';
 	print img_object ( $langs->trans ( "ShowContact" ), "contact" ) . ' ';
 	print strtoupper ( $line->lastname ) . ' ' . ucfirst ( $line->firstname ) . '</a>';
 	print '&nbsp;';
@@ -516,7 +524,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 					print '<tr>';
 					// Supplier Invoice inforamtion
 					print '<td nowrap="nowrap">';
-					print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1 );
+					print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK);
 					print '</td>';
 					print '<td>';
 					// Unlink order
@@ -630,7 +638,7 @@ foreach ( $agf_fin->lines as $line ) {
 				print '<tr>';
 				// Supplier Invoice inforamtion
 				print '<td nowrap="nowrap">';
-				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1 );
+				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK);
 				print '</td>';
 				print '<td>';
 				// Unlink order
@@ -765,7 +773,7 @@ if (! empty ( $place->id )) {
 				print '<tr>';
 				// Supplier Invoice inforamtion
 				print '<td nowrap="nowrap">';
-				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1 );
+				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK);
 				print '</td>';
 				print '<td>';
 				// Unlink order

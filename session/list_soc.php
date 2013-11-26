@@ -366,7 +366,13 @@ if ($result >= 0) {
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
 			
-			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->rowid . '</a></td>';
+			if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
+				$target=' target="_blanck" ';
+			} else {
+				$target='';
+			}
+			
+			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '"'.$target.'>' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->rowid . '</a></td>';
 			
 			print '<td>';
 			
