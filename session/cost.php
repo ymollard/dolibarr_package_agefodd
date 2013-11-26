@@ -128,7 +128,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 			foreach ( $session_invoice->lines as $line ) {
 				$suplier_invoice->fetch ( $line->fk_element );
 				
-				$totalttc += $suplier_invoice->total_ht;
+				$total_ht += $suplier_invoice->total_ht;
 			}
 		}
 		$agf->cost_trainer = $total_ht;

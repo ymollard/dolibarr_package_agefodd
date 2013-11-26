@@ -368,6 +368,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Advanced session cost management';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_NOT_DISPLAY_WARNING_TIME_SESSION";
+		$this->const[$r][1] = "0";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Do not display warning betwenn training and session time';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r++;
+		$this->const[$r][0] = "AGF_NO_MANUAL_CREATION_DOC";
+		$this->const[$r][1] = "0";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Do not display manual propal/order/invoice creation';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 
 		//Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
