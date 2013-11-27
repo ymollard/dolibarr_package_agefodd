@@ -772,57 +772,8 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
 		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
 		$this->rights[$r][4] = 'agefodd_place';
-		$this->rights[$r][5] = 'supprimer';
-		
-
-		$r++;
-		$this->rights[$r][0] = 103009; // id de la permission
-		$this->rights[$r][1] = 'Voir les formations du catalogue'; // libelle de la permission
-		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
-		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
-		$this->rights[$r][4] = 'agefodd_formation_catalogue';
-		$this->rights[$r][5] = 'lire';
-		
-		$r++;
-		$this->rights[$r][0] = 103010; // id de la permission
-		$this->rights[$r][1] = 'Creer/Modifier les formations du catalogue'; // libelle de la permission
-		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
-		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
-		$this->rights[$r][4] = 'agefodd_formation_catalogue';
-		$this->rights[$r][5] = 'creer';
-		
-		$r++;
-		$this->rights[$r][0] = 103011; // id de la permission
-		$this->rights[$r][1] = 'Supprimer les formations du catalogue'; // libelle de la permission
-		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
-		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
-		$this->rights[$r][4] = 'agefodd_formation_catalogue';
-		$this->rights[$r][5] = 'supprimer';
-		
-		$r++;
-		$this->rights[$r][0] = 103012; // id de la permission
-		$this->rights[$r][1] = 'Voir les sites (lieux)'; // libelle de la permission
-		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
-		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
-		$this->rights[$r][4] = 'agefodd_place';
-		$this->rights[$r][5] = 'lire';
-		
-		$r++;
-		$this->rights[$r][0] = 103013; // id de la permission
-		$this->rights[$r][1] = 'Creer/Modifier les sites (lieux)'; // libelle de la permission
-		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
-		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
-		$this->rights[$r][4] = 'agefodd_place';
-		$this->rights[$r][5] = 'creer';
-		
-		$r++;
-		$this->rights[$r][0] = 103014; // id de la permission
-		$this->rights[$r][1] = 'Supprimer les sites (lieux)'; // libelle de la permission
-		$this->rights[$r][2] = 'r'; // type de la permission (deprecie a ce jour)
-		$this->rights[$r][3] = 1; // La permission est-elle une permission par defaut
-		$this->rights[$r][4] = 'agefodd_place';
-		$this->rights[$r][5] = 'supprimer';
-		
+		$this->rights[$r][5] = 'supprimer';		
+	
 		$r++;
 		$this->rights[$r][0] = 103015; // id de la permission
 		$this->rights[$r][1] = 'Visibilité transverse des session'; // libelle de la permission

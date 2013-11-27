@@ -86,7 +86,7 @@ class SessionStats extends Stats
 	 */
 	function getNbByYear()
 	{
-		$sql = "SELECT YEAR(main.datef) as dm, COUNT(main.rowid)";
+		$sql = "SELECT YEAR(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql.= " FROM ".$this->from." as main";
 		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		$sql.= " WHERE ".$this->where;
@@ -105,7 +105,7 @@ class SessionStats extends Stats
 	 */
 	function getNbByMonth($year)
 	{
-		$sql = "SELECT MONTH(main.datef) as dm, COUNT(main.rowid)";
+		$sql = "SELECT MONTH(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql.= " FROM ".$this->from." as main";
 		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		$sql.= " WHERE datef BETWEEN '".$this->db->idate(dol_get_first_day($year))."' AND '".$this->db->idate(dol_get_last_day($year))."'";
