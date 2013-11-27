@@ -11,6 +11,7 @@ English Dolibarr ChangeLog
 -New : On Propal and order "auto" génération contacts are filled with session informations
 -Fix : No-limit contact list if combobox is not use
 -Fix : session : Send document better warining message and enabled WYSIWYG into mail message
+-New : List session order by session start date closest from now
 
 ***** ChangeLog for 2.1.7 compared to 2.1.6 *****
 For All:

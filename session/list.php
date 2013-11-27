@@ -127,7 +127,7 @@ if (! empty ( $search_id )) {
 
 
 if (empty ( $sortorder ))
-	$sortorder = "DESC";
+	$sortorder = "ASC";
 if (empty ( $sortfield ))
 	$sortfield = "s.dated";
 if (empty ( $arch ))
