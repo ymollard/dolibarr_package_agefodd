@@ -88,7 +88,10 @@ class SessionStats extends Stats
 	{
 		$sql = "SELECT YEAR(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql.= " FROM ".$this->from." as main";
-		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		
+		if (strpos($this->where,'com.fk_user_com'!==false)) {
+			$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		}
 		$sql.= " WHERE ".$this->where;
 		$sql.= " GROUP BY dm";
 		$sql.= $this->db->order('dm','DESC');
@@ -107,7 +110,9 @@ class SessionStats extends Stats
 	{
 		$sql = "SELECT MONTH(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql.= " FROM ".$this->from." as main";
-		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		if (strpos($this->where,'com.fk_user_com'!==false)) {
+			$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		}
 		$sql.= " WHERE datef BETWEEN '".$this->db->idate(dol_get_first_day($year))."' AND '".$this->db->idate(dol_get_last_day($year))."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
@@ -129,7 +134,9 @@ class SessionStats extends Stats
 	{
 		$sql = "SELECT date_format(main.datef,'%m') as dm, SUM(".$this->field.")";
 		$sql.= " FROM ".$this->from." as main";
-		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		if (strpos($this->where,'com.fk_user_com'!==false)) {
+			$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		}
 		$sql.= " WHERE date_format(main.datef,'%Y') = '".$year."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
@@ -150,7 +157,9 @@ class SessionStats extends Stats
 	{
 		$sql = "SELECT date_format(main.datef,'%m') as dm, AVG(".$this->field.")";
 		$sql.= " FROM ".$this->from." as main";
-		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		if (strpos($this->where,'com.fk_user_com'!==false)) {
+			$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		}
 		$sql.= " WHERE datef BETWEEN '".$this->db->idate(dol_get_first_day($year))."' AND '".$this->db->idate(dol_get_last_day($year))."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
@@ -166,9 +175,11 @@ class SessionStats extends Stats
 	 */
 	function getAllByYear()
 	{
-		$sql = "SELECT date_format(main.datef,'%Y') as year, COUNT(main.rowid) as nb, SUM(".$this->field.") as total, AVG(".$this->field.") as avg";
+		$sql = "SELECT date_format(main.datef,'%Y') as year, COUNT(DISTINCT main.rowid) as nb, SUM(".$this->field.") as total, AVG(".$this->field.") as avg";
 		$sql.= " FROM ".$this->from." as main";
-		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		if (strpos($this->where,'com.fk_user_com'!==false)) {
+			$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
+		}
 		$sql.= " WHERE ".$this->where;
 		$sql.= " GROUP BY year";
 		$sql.= $this->db->order('year','DESC');
