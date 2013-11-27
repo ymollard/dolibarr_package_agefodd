@@ -66,7 +66,7 @@ $search_duree = GETPOST('search_duree');
 //$search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear', 'int' ) );
 $search_id = GETPOST ( 'search_id', 'int');
 $search_categ = GETPOST ( 'search_categ', 'int');
-
+if ($search_categ==-1) $search_categ='';
 
 
 // Do we click on purge search criteria ?
