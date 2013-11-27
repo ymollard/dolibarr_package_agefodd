@@ -209,7 +209,7 @@ if (! empty ( $filter_contact )) {
 if (! empty ( $filter_trainer )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
 	if ($type == 'trainer') {
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ';
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST' ";
 	}
 }
 $sql .= " WHERE c.id = a.fk_action";
@@ -252,6 +252,8 @@ if (! empty ( $filter_trainer )) {
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
+}else {
+	$sql .= " AND ca.code<>'AC_AGF_SESST'";
 }
 $sql .= $db->order ( $sortfield, $sortorder );
 $sql .= $db->plimit ( $limit + 1, $offset );

@@ -2823,9 +2823,9 @@ class Agsession extends CommonObject {
 			
 			
 			//add contact to proposal
-			if (!empty($this->contactid)){
-				$order->add_contact($this->contactid, 100, 'external'); //Contact client facturation commande
-				$order->add_contact($this->contactid, 101, 'external'); //Contact client suivi commande
+			if (!empty($this->sourcecontactid)){
+				$order->add_contact($this->sourcecontactid, 100, 'external'); //Contact client facturation commande
+				$order->add_contact($this->sourcecontactid, 101, 'external'); //Contact client suivi commande
 			
 			}
 			if (!empty($this->commercialid)){
@@ -2982,9 +2982,9 @@ class Agsession extends CommonObject {
 		} else {
 			
 			//add contact to proposal
-			if (!empty($this->contactid)){
-				$propal->add_contact($this->contactid, 40, 'external'); //Contact client facturation propale
-				$propal->add_contact($this->contactid, 41, 'external'); //Contact client suivi propale
+			if (!empty($this->sourcecontactid)){
+				$propal->add_contact($this->sourcecontactid, 40, 'external'); //Contact client facturation propale
+				$propal->add_contact($this->sourcecontactid, 41, 'external'); //Contact client suivi propale
 				
 			}
 			if (!empty($this->commercialid)){
