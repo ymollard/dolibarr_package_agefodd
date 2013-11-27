@@ -64,6 +64,7 @@ $search_type_session=GETPOST ( "search_type_session",'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 $status_view = GETPOST('status','int');
+$search_id = GETPOST ( 'search_id', 'int');
 
 $search_sale=GETPOST('search_sale','int');
 
@@ -83,6 +84,7 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_site = "";
 	$search_training_ref_interne="";
 	$search_type_session="";
+	$search_id='';
 }
 
 $filter = array ();
@@ -119,16 +121,8 @@ if ($search_type_session!='' && $search_type_session != - 1) {
 if (! empty ( $status_view )) {
 	$filter ['s.status'] = $status_view;
 }
-
-//I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
-if (! empty ( $ts_logistique )) {
-	$filter ['extra.ts_logistique'] = $ts_logistique;
-}
-if (! empty ( $ts_prospection )) {
-	$filter ['extra.ts_prospection'] = $ts_prospection;
-}
-if (! empty ( $ts_interentreprises )) {
-	$filter ['extra.ts_interentreprises'] = $ts_interentreprises;
+if (! empty ( $search_id )) {
+	$filter ['s.rowid'] = $search_id;
 }
 
 
@@ -227,23 +221,6 @@ if ($resql != - 1) {
 		$moreforfilter.=$langs->trans('SalesRepresentatives'). ': ';
 		$moreforfilter.=$formother->select_salesrepresentatives($search_sale,'search_sale',$user);
 	}
-	
-	
-	//I knwon specific code for one of my customer is bad, but no impact on others, sorry to be so intrusive in the module
-	$extrafields = new ExtraFields ( $db );
-	$extralabels = $extrafields->fetch_name_optionals_label ( $agf->table_element, true );
-	if (is_array($extralabels) && key_exists('ts_logistique', $extralabels)) {
-		$moreforfilter.=$extralabels['ts_logistique'];
-		$moreforfilter.=$extrafields->showInputField('ts_logistique', $ts_logistique);
-	}
-	if (is_array($extralabels) && key_exists('ts_prospection', $extralabels)) {
-		$moreforfilter.=$extralabels['ts_prospection'];
-		$moreforfilter.=$extrafields->showInputField('ts_prospection', $ts_prospection);
-	}
-	if (is_array($extralabels) && key_exists('ts_interentreprises', $extralabels)) {
-		$moreforfilter.=$extralabels['ts_interentreprises'];
-		$moreforfilter.=$extrafields->showInputField('ts_interentreprises', $ts_interentreprises);
-	}
 	if ($moreforfilter)
 	{
 		print '<div class="liste_titre">';
@@ -307,7 +284,7 @@ if ($resql != - 1) {
 	print '<input type="hidden" name="arch" value="' . $arch . '" >';
 	print '<tr class="liste_titre">';
 	
-	print '<td>&nbsp;</td>';
+	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 	
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';

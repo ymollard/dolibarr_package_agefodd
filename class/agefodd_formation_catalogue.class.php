@@ -755,7 +755,7 @@ class Agefodd extends CommonObject {
 				if ($key == 'c.datec') 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date($value,'%Y-%m-%d') . '\'';
-				} elseif ($key == 'c.duree') {
+				} elseif ($key == 'c.duree' || $key=='c.fk_c_category') {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';

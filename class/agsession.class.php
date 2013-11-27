@@ -1663,8 +1663,7 @@ class Agsession extends CommonObject {
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') 
-						|| ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')
-						|| ($key == 'extra.ts_prospection') || ($key == 'extra.ts_interentreprises')) {
+						 || ($key == 'sale.fk_user_com')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
@@ -1832,10 +1831,9 @@ class Agsession extends CommonObject {
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') 
-						|| ($key == 'extra.ts_logistique') || ($key == 'sale.fk_user_com')
-						|| ($key == 'extra.ts_prospection') || ($key == 'extra.ts_interentreprises')) {
+						|| ($key == 'sale.fk_user_com')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
-				} elseif ($key != 'extra.ts_logistics') {
+				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
 				}
 			}

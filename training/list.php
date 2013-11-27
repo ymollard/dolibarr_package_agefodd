@@ -29,6 +29,7 @@ if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
 if (! $res) die("Include of main fails");
 
 require_once('../class/agefodd_formation_catalogue.class.php');
+require_once('../class/html.formagefodd.class.php');
 
 // Security check
 if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
@@ -63,6 +64,8 @@ $search_ref_interne = GETPOST ( "search_ref_interne" );
 $search_datec = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datecmonth', 'int' ), GETPOST ( 'search_datecday', 'int' ), GETPOST ( 'search_datecyear', 'int' ) );
 $search_duree = GETPOST('search_duree');
 //$search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear', 'int' ) );
+$search_id = GETPOST ( 'search_id', 'int');
+$search_categ = GETPOST ( 'search_categ', 'int');
 
 
 
@@ -74,6 +77,8 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_datec = '';
 	$search_duree = "";
 	//$search_dated = "";
+	$search_id='';
+	$search_categ='';
 }
 
 
@@ -81,6 +86,7 @@ llxHeader('',$langs->trans('AgfMenuCat'));
 
 $agf = new Agefodd($db);
 $form = new Form ( $db );
+$formagefodd = new FormAgefodd($db);
 
 $filter = array ();
 if (! empty ( $search_intitule )) {
@@ -98,6 +104,12 @@ if (! empty ( $search_datec )) {
 if (! empty ( $search_duree )) {
 	$filter ['c.duree'] = $search_duree;
 }
+if (! empty ( $search_id )) {
+	$filter ['c.rowid'] = $search_id;
+}
+if (! empty ( $search_categ )) {
+	$filter ['c.fk_c_category'] = $search_categ;
+}
 
 
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
@@ -111,6 +123,7 @@ print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","",'&
 print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("Ref"),$_SERVER['PHP_SELF'],"c.ref","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref_interne","",'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre($langs->trans("AgfTrainingCateg"),$_SERVER['PHP_SELF'],"dictcat.code","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","",'&arch='.$arch,'',$sortfield,$sortorder);
 print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","",'&arch='.$arch,'',$sortfield,$sortorder);
@@ -121,7 +134,7 @@ print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n"
 print '<input type="hidden" name="arch" value="' . $arch . '" >';
 print '<tr class="liste_titre">';
 
-print '<td>&nbsp;</td>';
+print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
 print '<td class="liste_titre">';
 print '<input type="text" class="flat" name="search_intitule" value="' . $search_intitule . '" size="20">';
@@ -133,6 +146,10 @@ print '</td>';
 
 print '<td class="liste_titre">';
 print '<input type="text" class="flat" name="search_ref_interne" value="' . $search_ref_interne . '" size="20">';
+print '</td>';
+
+print '<td class="liste_titre">';
+print $formagefodd->select_training_categ($search_categ,'search_categ','t.active=1');
 print '</td>';
 
 print '<td class="liste_titre">';
@@ -168,6 +185,7 @@ if ($resql>0)
 		print '<td>'.stripslashes($line->intitule).'</td>';
 		print '<td>'.$line->ref.'</td>';
 		print '<td>'.$line->ref_interne.'</td>';
+		print '<td>'.$line->category_lib.'</td>';
 		print '<td>'.dol_print_date($line->datec,'daytext').'</td>';
 		print '<td>'.$line->duree.'</td>';
 		print '<td>'.dol_print_date($line->lastsession,'daytext').'</td>';
