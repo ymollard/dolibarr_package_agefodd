@@ -779,7 +779,9 @@ else
 				$agf_fact=new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
 				$other_amount = '('. $langs->trans('AgfProposalAmountSigned').' '.$agf_fact->propal_sign_amount.' '.$langs->trans('Currency'.$conf->currency);
-				$other_amount .= '/'. $langs->trans('AgfOrderAmount').' '.$agf_fact->order_amount.' '.$langs->trans('Currency'.$conf->currency);
+				if (!empty($conf->global->MAIN_MODULE_COMMANDE)) {
+					$other_amount .= '/'. $langs->trans('AgfOrderAmount').' '.$agf_fact->order_amount.' '.$langs->trans('Currency'.$conf->currency);
+				}
 				$other_amount .= '/'. $langs->trans('AgfInvoiceAmountWaiting').' '.$agf_fact->invoice_ongoing_amount.' '.$langs->trans('Currency'.$conf->currency);
 				$other_amount .= '/'. $langs->trans('AgfInvoiceAmountPayed').' '.$agf_fact->invoice_payed_amount.' '.$langs->trans('Currency'.$conf->currency).')';
 								
