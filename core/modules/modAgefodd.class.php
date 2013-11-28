@@ -393,6 +393,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 		
+		$r++;
+		$this->const[$r][0] = "AGF_CONTACT_NOT_MANDATORY_ON_SESSION";
+		$this->const[$r][1] = "1";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Contact is not mandatory on session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		
 
 		//Setup $conf environement Dolibarr variable

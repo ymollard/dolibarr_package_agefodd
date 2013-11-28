@@ -157,12 +157,15 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 			$error++;
 		}
 		
+		//If customer is selected contact is required
 		$custid=GETPOST('fk_soc','int');
 		$contactclientid = GETPOST('contact','int');
-		if ((($custid==-1) || (empty($custid))) && (($contactclientid==-1) || (empty($contactclientid))))
-		{
-			$error++;
-			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
+		if (empty($conf->global->AGF_CONTACT_NOT_MANDATORY_ON_SESSION)) {
+			if (((($custid!=-1) && (!empty($custid))) && (($contactclientid==-1) || (empty($contactclientid)))))
+			{
+				$error++;
+				setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
+			}
 		}
 
 		$result = $agf->fetch($id);
@@ -477,12 +480,15 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 			setEventMessage($langs->trans('AgfPlaceMandatory'),'errors');
 		}
 		
+		//If customer is selected contact is required
 		$custid=GETPOST('fk_soc','int');
 		$contactclientid = GETPOST('contact','int');
-		if ((($custid==-1) || (empty($custid))) && (($contactclientid==-1) || (empty($contactclientid))))
-		{
-			$error++;
-			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
+		if (empty($conf->global->AGF_CONTACT_NOT_MANDATORY_ON_SESSION)) {
+			if (((($custid!=-1) && (!empty($custid))) && (($contactclientid==-1) || (empty($contactclientid)))))
+			{
+				$error++;
+				setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
+			}
 		}
 		
 		$training_id = GETPOST('formation','int');
@@ -515,7 +521,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 			$extrafields->setOptionalsFromPost($extralabels,$agf);
 			
 			$result = $agf->create($user);
-
+			
 			if ($result > 0)
 			{
 				// If session creation are ok

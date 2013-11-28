@@ -311,6 +311,11 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 	
+	$contactsessionmandatory = GETPOST ( 'AGF_CONTACT_NOT_MANDATORY_ON_SESSION', 'alpha' );
+	$res = dolibarr_set_const ( $db, 'AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $contactsessionmandatory, 'chaine', 0, '', $conf->entity );
+	if (! $res > 0)
+		$error ++;
+	
 	if (! $error) {
 		setEventMessage ( $langs->trans ( "SetupSaved" ), 'mesgs' );
 	} else {
@@ -1230,7 +1235,7 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-$form->textwithpicto ( '', $langs->trans ( "AgfUseSubscriptionStatusAutoHelp" ), 1, 'help' );
+print $form->textwithpicto ( '', $langs->trans ( "AgfUseSubscriptionStatusAutoHelp" ), 1, 'help' );
 print '</td>';
 print '</tr>';
 
@@ -1247,7 +1252,7 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-$form->textwithpicto ( '', $langs->trans ( "AgfAddTraineeNameIntoDocHelp" ), 1, 'help' );
+print $form->textwithpicto ( '', $langs->trans ( "AgfAddTraineeNameIntoDocHelp" ), 1, 'help' );
 print '</td>';
 print '</tr>';
 
@@ -1264,12 +1269,12 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-$form->textwithpicto ( '', $langs->trans ( "AgfManageCursusHelp" ), 1, 'help' );
+print $form->textwithpicto ( '', $langs->trans ( "AgfManageCursusHelp" ), 1, 'help' );
 print '</td>';
 print '</tr>';
 
 // Update global variable AGF_ADVANCE_COST_MANAGEMENT
-print '<tr class="pair"><td>' . $langs->trans ( "AgfManageCost" ) . '</td>';
+print '<tr class="impair"><td>' . $langs->trans ( "AgfManageCost" ) . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
 	$input_array = array ('set' => array ('AGF_DOL_TRAINER_AGENDA'=>1));
@@ -1285,9 +1290,28 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-$form->textwithpicto ( '', $langs->trans ( "AgfManageCostHelp" ), 1, 'help' );
+print $form->textwithpicto ( '', $langs->trans ( "AgfManageCostHelp" ), 1, 'help' );
 print '</td>';
 print '</tr>';
+
+// Update global variable AGF_CONTACT_NOT_MANDATORY_ON_SESSION
+print '<tr class="pair"><td>' . $langs->trans ( "AgfContacCustMandatory" ) . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff ( 'AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $input_array );
+
+} else {
+	$arrval = array (
+	'0' => $langs->trans ( "No" ),'1' => $langs->trans ( "Yes" )
+	);
+	print $form->selectarray ( "AGF_CONTACT_NOT_MANDATORY_ON_SESSION", $arrval, $conf->global->AGF_CONTACT_NOT_MANDATORY_ON_SESSION );
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto ( '', $langs->trans ( "AgfContacCustMandatoryHelp" ), 1, 'help' );
+print '</td>';
+print '</tr>';
+
 
 if (! $conf->use_javascript_ajax) {
 	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans ( "Save" ) . '"></td>';

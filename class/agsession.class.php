@@ -376,7 +376,7 @@ class Agsession extends CommonObject {
 				$this->error = $action_static->error;
 				$error ++;
 			}
-		} else {
+		} elseif ($result2<0) {
 			dol_syslog ( get_class ( $this ) . "::createAdmLevelForSession error=" . $admlevel->error, LOG_ERR );
 			$this->error = $admlevel->error;
 			$error ++;
