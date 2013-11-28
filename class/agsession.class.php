@@ -2763,7 +2763,10 @@ class Agsession extends CommonObject {
 				$order->lines [0]->fk_product = $this->fk_product;
 				$order->lines [0]->qty = 1;
 				
-				$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' ) . '-' . dol_print_date ( $this->datef, 'daytext' );
+				$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+				if ($this->datef!=$this->dated) {
+					$desc .= '-' . dol_print_date ( $this->datef, 'daytext' );
+				}
 				$session_trainee = new Agefodd_session_stagiaire ( $this->db );
 				$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid );
 				$desc .= "\n" . count ( $session_trainee->lines ) . ' ' . $langs->trans ( 'AgfParticipant' ) . '/' . $langs->trans ( 'AgfParticipants' );
@@ -2911,7 +2914,10 @@ class Agsession extends CommonObject {
 			$propal->lines [0]->fk_product = $this->fk_product;
 			$propal->lines [0]->qty = 1;
 			
-			$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' ) . '-' . dol_print_date ( $this->datef, 'daytext' );
+			$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+			if ($this->datef!=$this->dated) {
+				$desc .= '-' . dol_print_date ( $this->datef, 'daytext' );
+			}
 			$session_trainee = new Agefodd_session_stagiaire ( $this->db );
 			$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid );
 			if (count ( $session_trainee->lines ) > 0) {
