@@ -1621,7 +1621,7 @@ class Agsession extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
 		
-
+		if (is_array($filter)) {
 		foreach($filter as $key => $value) {
 			if (strpos($key,'extra.') !== false) {
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
@@ -1633,6 +1633,7 @@ class Agsession extends CommonObject {
 		if (key_exists ( 'sale.fk_user_com', $filter )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 			$sql .= " ON s.rowid = sale.fk_session_agefodd";
+		}
 		}
 		
 		if ($arch == 2) {
@@ -3011,7 +3012,7 @@ class Agsession extends CommonObject {
 				return - 1;
 			}
 			
-			return 1;
+			return $propal->id;
 		}
 	}
 }

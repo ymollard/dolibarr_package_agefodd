@@ -14,6 +14,7 @@ English Dolibarr ChangeLog
 -New : List session order by session start date closest from now
 -Fix : bugs_agefodd #1146 - small errors in fr_FR/agefodd.lang 
 -Fix : On proposal or Order auto generation fill line with only on date if strat date and end date are the same 
+-Fix/New : Propal/order/invoice session tab allow order and display Propal/Oerder/Inoice other tabs
 
 ***** ChangeLog for 2.1.7 compared to 2.1.6 *****
 For All:

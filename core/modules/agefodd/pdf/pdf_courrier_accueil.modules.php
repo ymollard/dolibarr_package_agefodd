@@ -87,7 +87,9 @@ else
 	{
 		if ($i < ($num - 1) && $i > 0 )  $stagiaires.= ', ';
 		if ($i == ($num - 1) && $i > 0) $stagiaires.= ' et ';
-		$stagiaires.= ucfirst(strtolower($agf_stag->lines[$i]->civilitel)).' '.$agf_stag->lines[$i]->prenom.' '.$agf_stag->lines[$i]->nom;
+		$civilite = ($langs->transnoentities("Civility".$agf_stag->lines[$i]->civilite)!="Civility".$agf_stag->lines[$i]->civilite ? $langs->transnoentities("Civility".$agf_stag->lines[$i]->civilite) : ($agf_stag->lines[$i]->civilite!='-'?$agf_stag->lines[$i]->civilite:''));
+		
+		$stagiaires.= ucfirst(strtolower($civilite)).' '.$agf_stag->lines[$i]->prenom.' '.$agf_stag->lines[$i]->nom;
 		if ($i == ($num - 1)) $stagiaires.= '.';
 	}
 	$stagiaires.="\n\n";
