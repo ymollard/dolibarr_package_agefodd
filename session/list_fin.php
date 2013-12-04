@@ -118,6 +118,23 @@ if (!empty($search_propalid)) {
 	$search_propalref=$propal->ref;
 }
 
+if (!empty($search_orderid) ||  !empty($search_orderref)) {
+	require_once DOL_DOCUMENT_ROOT.'/core/lib/order.lib.php';
+	$head = commande_prepare_head($order);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans("AgfMenuSessByInvoiceOrder"), 0, 'order');
+}
+
+if (!empty($search_invoiceid) ||  !empty($search_invoiceref)) {
+	require_once DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php';
+	$head = facture_prepare_head($invoice);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'bill');
+}
+
+if (!empty($search_propalref) ||  !empty($search_propalid)) {
+	require_once DOL_DOCUMENT_ROOT.'/core/lib/propal.lib.php';
+	$head = propal_prepare_head($propal);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'propal');
+}
 
 $agf = new Agsession($db);
 $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid);
@@ -127,12 +144,12 @@ if ($resql != -1)
 	$num = $resql;
 
 	$menu = $langs->trans("AgfMenuSessAct");
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&search_orderid='.$search_orderid.'&search_invoiceid='.$search_invoiceid, $sortfield, $sortorder,'', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'],'&search_propalid='.$search_propalid.'&search_orderid='.$search_orderid.'&search_invoiceid='.$search_invoiceid, $sortfield, $sortorder,'', $num);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url='&page='.$page.'&search_orderid='.$search_orderid.'&search_invoiceid='.$search_invoiceid;
+	$arg_url='&page='.$page.'&search_propalid='.$search_propalid.'&search_orderid='.$search_orderid.'&search_invoiceid='.$search_invoiceid;
 	print_liste_field_titre($langs->trans("Id"),$_SERVEUR['PHP_SELF'],"s.rowid","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVEUR['PHP_SELF'],"c.intitule","",$arg_url,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVEUR['PHP_SELF'],"c.ref","",$arg_url,'',$sortfield,$sortorder);
