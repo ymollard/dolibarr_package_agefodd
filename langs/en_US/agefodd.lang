@@ -835,3 +835,5 @@ Permission103015=See all sessions (else see only session with user as account ma
 AgfFacturePropSelectProductHelp=Link a product to proposal to activate the automatic complete generation
 AgfContacCustMandatory=Session customer contact is not mandatory
 AgfContacCustMandatoryHelp=Only if customer is fill
+AgfMenuSessConfList=Training Sessions confirmed
+AgfMenuSessNotDoneList=Training Sessions not done

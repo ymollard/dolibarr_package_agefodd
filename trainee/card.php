@@ -510,7 +510,7 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 
 	$agf = new Agsession($db);
 
-	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, 0, $filter);
+	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
 	$sessions = array();
 	foreach ($agf->lines as $line)
 	{

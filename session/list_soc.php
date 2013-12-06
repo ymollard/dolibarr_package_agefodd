@@ -250,7 +250,7 @@ if ($result >= 0) {
 	print "</tr>\n";
 	
 	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
+	/*$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
 	if (! empty ( $sortorder )) {
 		$url_form .= '?sortorder=' . $sortorder;
@@ -279,7 +279,7 @@ if ($result >= 0) {
 			$url_form .= '?socid=' . $socid;
 		}
 		$addcriteria = true;
-	}
+	}*/
 	
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 	print '<input type="hidden" name="socid" value="' . $socid . '" >';

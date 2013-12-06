@@ -121,9 +121,10 @@ if($action == 'search_year')
 	}
 
 	$filter['YEAR(s.dated)']=$year;
+	$filter['!s.status']=4;
 
 	$agf = new Agsession($db);
-	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch, $filter);
+	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
 
 	print_fiche_titre($langs->trans('AgfSearchResults'));
 

@@ -835,3 +835,5 @@ Permission103015=Voir toute les sessions (sinon filtré par commerciale de la se
 AgfFacturePropSelectProductHelp=Lié un produit a la session pour activé la génération compléte automatique
 AgfContacCustMandatory=Le contact client d'une session n'est pas obligatoire
 AgfContacCustMandatoryHelp=seulement si le client est renseigné
+AgfMenuSessConfList=Sessions confirmées
+AgfMenuSessNotDoneList=Sessions non réalisées

@@ -1575,12 +1575,11 @@ class Agsession extends CommonObject {
 	 * @param string $sortfield field
 	 * @param int $limit page
 	 * @param int $offset
-	 * @param int $arch archive or not
 	 * @param array $filter output
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter = array(), $user=0) {
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user=0) {
 
 		global $langs;
 		
@@ -1615,21 +1614,21 @@ class Agsession extends CommonObject {
 		$sql .= " ON s.status = dictstatus.rowid";
 		
 		if (is_array($filter)) {
-		foreach($filter as $key => $value) {
-			if (strpos($key,'extra.') !== false) {
-				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
-				$sql .= " ON s.rowid = extra.fk_object";
-				break;
+			foreach($filter as $key => $value) {
+				if (strpos($key,'extra.') !== false) {
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
+					$sql .= " ON s.rowid = extra.fk_object";
+					break;
+				}
+			}
+			
+			if (key_exists ( 'sale.fk_user_com', $filter )) {
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+				$sql .= " ON s.rowid = sale.fk_session_agefodd";
 			}
 		}
 		
-		if (key_exists ( 'sale.fk_user_com', $filter )) {
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
-			$sql .= " ON s.rowid = sale.fk_session_agefodd";
-		}
-		}
-		
-		if ($arch == 2) {
+		/*if ($arch == 2) {
 			$sql .= " WHERE s.status <> 4";
 			$sql .= " AND sa.indice=";
 			$sql .= "(";
@@ -1640,9 +1639,9 @@ class Agsession extends CommonObject {
 			$sql .= " WHERE s.status <> 4";
 		} elseif ($arch == 1) {
 			$sql .= " WHERE s.status = 4";
-		}
+		}*/
 		
-		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
 		if (is_object($user) && !empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
 			//Saleman of session is current user
@@ -1662,6 +1661,8 @@ class Agsession extends CommonObject {
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') 
 						 || ($key == 'sale.fk_user_com')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
+				} elseif ($key == '!s.status')  {
+					$sql .= ' AND s.status <> '.$value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
 				}

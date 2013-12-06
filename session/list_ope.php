@@ -222,7 +222,7 @@ if ($resql != - 1) {
 	print "</tr>\n";
 	
 	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
+	/*$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
 	if (! empty ( $sortorder )) {
 		$url_form .= '?sortorder=' . $sortorder;
@@ -251,10 +251,10 @@ if ($resql != - 1) {
 			$url_form .= '?arch=' . $arch;
 		}
 		$addcriteria = true;
-	}
+	}*/
 	
 	
-	print '<input type="hidden" name="arch" value="' . $arch . '" >';
+	//print '<input type="hidden" name="arch" value="' . $arch . '" >';
 	print '<tr class="liste_titre">';
 	
 	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';

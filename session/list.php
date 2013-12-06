@@ -49,7 +49,6 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST ( 'sortorder', 'alpha' );
 $sortfield = GETPOST ( 'sortfield', 'alpha' );
 $page = GETPOST ( 'page', 'int' );
-$arch = GETPOST ( 'arch', 'int' );
 
 // Search criteria
 $search_trainning_name = GETPOST ( "search_trainning_name" );
@@ -130,8 +129,6 @@ if (empty ( $sortorder ))
 	$sortorder = "ASC";
 if (empty ( $sortfield ))
 	$sortfield = "s.dated";
-if (empty ( $arch ))
-	$arch = 0;
 
 if ($page == - 1) {
 	$page = 0;
@@ -144,17 +141,19 @@ $pagenext = $page + 1;
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
 $formother = new FormOther ( $db );
-if (empty ( $arch )) {
-	if ($status_view==1) {
-		$title = $langs->trans ( "AgfMenuSessDraftList" );
-	} else {
-		$title = $langs->trans ( "AgfMenuSessAct" );
-	}
-}
-elseif ($arch == 2)
-	$title = $langs->trans ( "AgfMenuSessArchReady" );
-else
+
+if ($status_view==1) {
+	$title = $langs->trans ( "AgfMenuSessDraftList" );
+} elseif ($status_view==2) {
+	$title = $langs->trans ( "AgfMenuSessConfList" );
+}elseif ($status_view==3) {
+	$title = $langs->trans ( "AgfMenuSessNotDoneList" );
+}elseif ($status_view==4) {
 	$title = $langs->trans ( "AgfMenuSessArch" );
+} else {
+	$title = $langs->trans ( "AgfMenuSess" );
+}
+
 llxHeader ( '', $title );
 
 if ($training_view && ! empty ( $search_training_ref )) {
@@ -187,41 +186,29 @@ $agf = new Agsession ( $db );
 
 // Count total nb of records
 $nbtotalofrecords = 0;
+
 if (empty ( $conf->global->MAIN_DISABLE_FULL_SCANLIST )) {
-	$nbtotalofrecords = $agf->fetch_all ( $sortorder, $sortfield, 0, 0, $arch, $filter, $user );
+	$nbtotalofrecords = $agf->fetch_all ( $sortorder, $sortfield, 0, 0, $filter, $user );
 }
-$resql = $agf->fetch_all ( $sortorder, $sortfield, $conf->liste_limit, $offset, $arch, $filter, $user );
+$resql = $agf->fetch_all ( $sortorder, $sortfield, $conf->liste_limit, $offset, $filter, $user );
 
 if ($resql != - 1) {
 	$num = $resql;
 	
-	if (empty ( $arch )) {
-		if ($status_view==1) {
-			$menu = $langs->trans ( "AgfMenuSessDraftList" );
-		} else {
-			$menu = $langs->trans ( "AgfMenuSessAct" );
-		}
-	}
-	elseif ($arch == 2)
-		$menu = $langs->trans ( "AgfMenuSessArchReady" );
-	else
+	if ($status_view==1) {
+		$menu = $langs->trans ( "AgfMenuSessDraftList" );
+	} elseif ($status_view==2) {
+		$menu = $langs->trans ( "AgfMenuSessConfList" );
+	}elseif ($status_view==3) {
+		$menu = $langs->trans ( "AgfMenuSessNotDoneList" );
+	}elseif ($status_view==4) {
 		$menu = $langs->trans ( "AgfMenuSessArch" );
+	} else {
+		$title = $langs->trans ( "AgfMenuSess" );
+	}	
 	
-	$option ='&training_view='.$training_view.'&site_view='.$site_view. '&arch=' . $arch . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	$option_noarch ='&training_view='.$training_view.'&site_view='.$site_view. '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	$option ='&status='.$status_view.'&training_view='.$training_view.'&site_view='.$site_view. '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
-	
-	if ($status_view!=1) {
-		if ($arch == 1)
-		{
-			print '<a href="'.$_SERVER['PHP_SELF'].'?arch=0'.$option_noarch.'">'.$langs->trans("AgfMenuSessAct").'</a>'."\n";
-		}
-		else
-		{
-			print '<a href="'.$_SERVER['PHP_SELF'].'?arch=1'.$option_noarch.'">'.$langs->trans("AgfMenuSessArch").'</a>'."\n";
-		
-		}
-	}
 	
 	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";
 	
@@ -243,7 +230,7 @@ if ($resql != - 1) {
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&training_view='.$training_view.'&site_view='.$site_view. '&page=' . $page . '&arch=' . $arch . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	$arg_url = '&status='.$status_view.'&training_view='.$training_view.'&site_view='.$site_view. '&page=' . $page .'&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfFormateur" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
@@ -259,7 +246,7 @@ if ($resql != - 1) {
 	print "</tr>\n";
 	
 	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
+	/*$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
 	if (! empty ( $sortorder )) {
 		$url_form .= '?sortorder=' . $sortorder;
@@ -280,18 +267,9 @@ if ($resql != - 1) {
 			$url_form .= '?page=' . $page;
 		}
 		$addcriteria = true;
-	}
-	if (! empty ( $arch )) {
-		if ($addcriteria) {
-			$url_form .= '&arch=' . $arch;
-		} else {
-			$url_form .= '?arch=' . $arch;
-		}
-		$addcriteria = true;
-	}
+	}*/
 	
 	
-	print '<input type="hidden" name="arch" value="' . $arch . '" >';
 	print '<tr class="liste_titre">';
 	
 	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';

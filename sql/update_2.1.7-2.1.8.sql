@@ -28,6 +28,8 @@ UPDATE llx_agefodd_session SET status=4 WHERE archive=1;
 
 ALTER TABLE llx_agefodd_session DROP COLUMN archive;
 
+ALTER TABLE llx_agefodd_session ADD INDEX idx_agefodd_session_status (status);
+
 
 
  

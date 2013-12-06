@@ -890,8 +890,20 @@ class modAgefodd extends DolibarrModules
 
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
-		'titre'=>'AgfMenuSessActList',
-		'url'=>'/agefodd/session/list.php',
+		'titre'=>'AgfMenuSessConfList',
+		'url'=>'/agefodd/session/list.php?status=2',
+		'langs'=>'agefodd@agefodd',
+		'position'=>203,
+		'enabled'=>'$user->rights->agefodd->lire',
+		'perms'=>'$user->rights->agefodd->lire',
+		'target'=>'',
+		'user'=>0);
+		$r++;
+		
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
+		'type'=>'left',
+		'titre'=>'AgfMenuSessNotDoneList',
+		'url'=>'/agefodd/session/list.php?status=3',
 		'langs'=>'agefodd@agefodd',
 		'position'=>203,
 		'enabled'=>'$user->rights->agefodd->lire',
@@ -903,7 +915,7 @@ class modAgefodd extends DolibarrModules
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessArchList',
-		'url'=>'/agefodd/session/list.php?arch=1',
+		'url'=>'/agefodd/session/list.php?status=4',
 		'langs'=>'agefodd@agefodd',
 		'position'=>204,
 		'enabled'=>'$user->rights->agefodd->lire',
