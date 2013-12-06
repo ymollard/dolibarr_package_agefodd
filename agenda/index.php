@@ -282,10 +282,16 @@ $sql .= ' a.fk_user_author,a.fk_user_action,a.fk_user_done,';
 $sql .= ' a.priority, a.fulldayevent, a.location,';
 $sql .= ' a.fk_soc, a.fk_contact,';
 $sql .= ' ca.code';
+$sql .= ' ,agf.rowid as sessionid';
+$sql .= ' ,agf_status.code as sessionstatus';
+if (! empty ( $filter_trainer )) {
+	$sql .= ' ,trainer_session.trainer_status';
+}
 $sql .= " FROM " . MAIN_DB_PREFIX . "actioncomm as a";
 $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_actioncomm as ca ON a.fk_action = ca.id';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'user as u ON a.fk_user_author = u.rowid ';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session as agf ON agf.rowid = a.fk_element ';
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON agf.status = agf_status.rowid';
 if (! empty ( $filter_commercial )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_commercial as salesman ON agf.rowid = salesman.fk_session_agefodd ';
 }
@@ -295,7 +301,7 @@ if (! empty ( $filter_contact )) {
 }
 if (! empty ( $filter_trainer )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-	if ($type == 'trainer') {
+	if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST'";
 	}
 }
@@ -382,6 +388,11 @@ if ($resql) {
 		$event->usertodo->id = $obj->fk_user_action;
 		$event->userdone->id = $obj->fk_user_done;
 		
+		$event->sessionid=$obj->sessionid;
+		$event->sessionstatus=$obj->sessionstatus;
+		if (! empty ( $filter_trainer )) {
+			$event->trainer_status=$obj->trainer_status;
+		}
 		$event->priority = $obj->priority;
 		$event->fulldayevent = $obj->fulldayevent;
 		$event->location = $obj->location;
@@ -728,22 +739,20 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					}
 					if ($color == - 1) 					// Color was not forced. Set color according to color index.
 					{
-						// Define color index if not yet defined
-						$idusertouse = ($event->usertodo->id ? $event->usertodo->id : 0);
-						if (isset ( $colorindexused [$idusertouse] )) {
-							$colorindex = $colorindexused [$idusertouse]; // Color already assigned to this
-								                                              // user
+						if (!isset($event->trainer_status)) {
+							if ($event->sessionstatus=='ENV') $color='ffcc66';
+							if ($event->sessionstatus=='CONF') $color='33cc00';
+							if ($event->sessionstatus=='NOT') $color='ff6600';
+							if ($event->sessionstatus=='ARCH') $color='c0c0c0';
 						} else {
-							$colorindex = $nextindextouse;
-							$colorindexused [$idusertouse] = $colorindex;
-							if (! empty ( $theme_datacolor [$nextindextouse + 1] ))
-								$nextindextouse ++; // Prepare
-									                    // to use next color
+							if ($event->trainer_status==0) $color='ffffcc';
+							if ($event->trainer_status==1) $color='66ff99';
+							if ($event->trainer_status==2) $color='33ff33';
+							if ($event->trainer_status==3) $color='3366ff';
+							if ($event->trainer_status==4) $color='33ccff';
+							if ($event->trainer_status==5) $color='cc6600';
+							if ($event->trainer_status==5) $color='cc0000';			
 						}
-						// print
-						// '|'.($color).'='.($idusertouse?$idusertouse:0).'='.$colorindex.'<br>';
-						// Define color
-						$color = sprintf ( "%02x%02x%02x", $theme_datacolor [$colorindex] [0], $theme_datacolor [$colorindex] [1], $theme_datacolor [$colorindex] [2] );
 					}
 					$cssclass = $cssclass . ' ' . $cssclass . '_day_' . $ymd;
 					
@@ -815,7 +824,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						if ($event->type_code == 'ICALEVENT')
 							print dol_trunc ( $event->libelle, $maxnbofchar );
 						else
-							print $event->getNomUrl ( 0, $maxnbofchar, 'cal_event' );
+							print '<a href="../session/card.php?id='.$event->sessionid.'">'.$event->sessionid.'</a> - '.$event->getNomUrl ( 0, $maxnbofchar, 'cal_event' );
 						
 						if ($event->type_code == 'ICALEVENT')
 							print '<br>(' . dol_trunc ( $event->icalname, $maxnbofchar ) . ')';
@@ -860,9 +869,9 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					print '</td>';
 					// Status - Percent
 					print '<td align="right" class="nowrap">';
-					if ($event->type_code != 'BIRTHDAY' && $event->type_code != 'ICALEVENT')
-						print $event->getLibStatut ( 3, 1 );
-					else
+					/*if ($event->type_code != 'BIRTHDAY' && $event->type_code != 'ICALEVENT')
+						//print $event->getLibStatut ( 3, 1 );
+					else*/
 						print '&nbsp;';
 					print '</td></tr></table>';
 					print '</li></ul>';

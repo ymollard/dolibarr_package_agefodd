@@ -194,7 +194,7 @@ class Agsession extends CommonObject {
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (empty ( $this->fk_product ) ? 'NULL' : $this->fk_product) . ",";
 		$sql .= " " . (! isset ( $this->status ) ? 'NULL' : "'" . $this->db->escape ( $this->status ) . "'") . ",";
-		$sql .= " " . (empty ( $this->duree_session ) ? '0' : $this->duree_session) . ",";
+		$sql .= " " . (empty ( $this->duree_session ) ? '0' : price2num($this->duree_session)) . ",";
 		$sql .= " " . (! isset ( $this->intitule_custo ) ? 'NULL' : "'" . $this->db->escape ( $this->intitule_custo ) . "'") . "";
 		$sql .= ")";
 		
@@ -1148,7 +1148,7 @@ class Agsession extends CommonObject {
 			$sql .= " fk_user_mod=" . $this->db->escape ( $user->id ) . ",";
 			$sql .= " fk_product=" . (! empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
 			$sql .= " status=" . (isset ( $this->status ) ? $this->status : "null") . ",";
-			$sql .= " duree_session=" . (! empty ( $this->duree_session ) ? $this->duree_session : "0") . ",";
+			$sql .= " duree_session=" . (! empty ( $this->duree_session ) ? price2num($this->duree_session) : "0") . ",";
 			$sql .= " intitule_custo=" . (! empty ( $this->intitule_custo ) ? "'" . $this->db->escape ( $this->intitule_custo ) . "'" : "null") . "";
 			
 			$sql .= " WHERE rowid=" . $this->id;

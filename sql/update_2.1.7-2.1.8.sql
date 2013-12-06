@@ -30,6 +30,9 @@ ALTER TABLE llx_agefodd_session DROP COLUMN archive;
 
 ALTER TABLE llx_agefodd_session ADD INDEX idx_agefodd_session_status (status);
 
+ALTER TABLE llx_agefodd_session MODIFY duree_session real NOT NULL DEFAULT 0;
+ALTER TABLE llx_agefodd_formation_catalogue MODIFY duree real NOT NULL DEFAULT 0;
+
 
 
  

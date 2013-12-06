@@ -41,6 +41,7 @@ require_once '../class/html.formagefodd.class.php';
 $langs->load ( "companies" );
 $langs->load ( "agenda" );
 $langs->load ( "commercial" );
+$langs->load ( "agefodd@agefodd" );
 
 $action = GETPOST ( 'action', 'alpha' );
 $year = GETPOST ( "year", 'int' );
@@ -188,6 +189,8 @@ $sql .= " ua.login as loginauthor, ua.rowid as useridauthor,";
 $sql .= " ut.login as logintodo, ut.rowid as useridtodo,";
 $sql .= " ud.login as logindone, ud.rowid as useriddone,";
 $sql .= " sp.lastname, sp.firstname";
+$sql .= ' ,agf.rowid as sessionid';
+$sql .= ' ,agf_status.code as sessionstatus';
 $sql .= " FROM " . MAIN_DB_PREFIX . "c_actioncomm as c,";
 $sql .= " " . MAIN_DB_PREFIX . 'user as u,';
 $sql .= " " . MAIN_DB_PREFIX . "actioncomm as a";
@@ -200,6 +203,7 @@ $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ua ON a.fk_user_author = ua.rowid";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ut ON a.fk_user_action = ut.rowid";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ud ON a.fk_user_done = ud.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session as agf ON agf.rowid = a.fk_element AND a.elementtype=\'agefodd_agsession\'';
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON agf.status = agf_status.rowid';
 if (! empty ( $filter_commercial )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_commercial as salesman ON agf.rowid = salesman.fk_session_agefodd ';
 }
@@ -209,7 +213,7 @@ if (! empty ( $filter_contact )) {
 }
 if (! empty ( $filter_trainer )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-	if ($type == 'trainer') {
+	if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST' ";
 	}
 }
@@ -338,6 +342,7 @@ if ($resql) {
 		
 		// Action (type)
 		print '<td>';
+		print '<a href="../session/card.php?id='.$obj->sessionid.'">'.$obj->sessionid.'</a> - ';
 		$actionstatic->id = $obj->id;
 		$actionstatic->type_code = $obj->acode;
 		$actionstatic->libelle = $obj->label;
@@ -425,7 +430,7 @@ if ($resql) {
 		print '</td>';
 		
 		// Status/Percent
-		print '<td align="right" class="nowrap">' . $actionstatic->LibStatut ( $obj->percent, 6 ) . '</td>';
+		print '<td align="right" class="nowrap">' . $langs->trans('AgfStatusSession_'.$obj->sessionstatus) . '</td>';
 		
 		print "</tr>\n";
 		$i ++;

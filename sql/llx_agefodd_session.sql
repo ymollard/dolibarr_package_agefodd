@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL,
   status integer DEFAULT NULL,
-  duree_session integer NOT NULL DEFAULT 0,
+  duree_session real NOT NULL DEFAULT 0,
   intitule_custo varchar(100) DEFAULT NULL,
   import_key varchar(36) DEFAULT NULL,
   ref_ext varchar(50) DEFAULT NULL
