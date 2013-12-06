@@ -14,3 +14,21 @@ ALTER TABLE llx_agefodd_convention ADD COLUMN fk_element integer DEFAULT NULL AF
 ALTER TABLE llx_agefodd_session_formateur ADD COLUMN trainer_status integer DEFAULT NULL AFTER fk_agefodd_formateur;
 ALTER TABLE llx_agefodd_session_formateur_calendrier ADD COLUMN trainer_status integer DEFAULT NULL AFTER trainer_cost;
 
+
+TRUNCATE TABLE llx_agefodd_session_status_type;
+INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES (1,'ENV', 'Envisagée', 1, 1, '2013-01-01 00:00:00' );
+INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES (2,'CONF', 'Confirmée', 1, 1, '2013-01-01 00:00:00' );
+INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES (3,'NOT', 'Non réalisée', 1, 1, '2013-01-01 00:00:00' );
+INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES (4,'ARCH', 'Archivé', 1, 1, '2013-01-01 00:00:00' );
+
+UPDATE llx_agefodd_session SET status=1 WHERE status=2;
+UPDATE llx_agefodd_session SET status=2 WHERE status=3;
+UPDATE llx_agefodd_session SET status=2 WHERE status=4;
+UPDATE llx_agefodd_session SET status=4 WHERE archive=1;
+
+ALTER TABLE llx_agefodd_session DROP COLUMN archive;
+
+
+
+ 
+

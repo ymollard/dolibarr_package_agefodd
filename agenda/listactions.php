@@ -194,6 +194,7 @@ $sql .= " " . MAIN_DB_PREFIX . "actioncomm as a";
 if (! $user->rights->societe->client->voir && ! $socid)
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sc ON a.fk_soc = sc.fk_soc";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON a.fk_soc = s.rowid";
+$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_actioncomm as ca ON a.fk_action = ca.id';
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp ON a.fk_contact = sp.rowid";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ua ON a.fk_user_author = ua.rowid";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ut ON a.fk_user_action = ut.rowid";

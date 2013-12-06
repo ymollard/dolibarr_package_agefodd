@@ -112,7 +112,14 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer)
 		$agf = new Agsession($db);
 
 		$result = $agf->fetch($id);
-		$agf->archive = $_GET["arch"];
+		$arch=GETPOST("arch",'int');
+		
+		if (empty($arch)) {
+			$agf->status = 1;
+		} else {
+			$agf->status = 4;
+		}
+		
 		$result = $agf->updateArchive($user);
 
 		if ($result > 0)
@@ -1551,7 +1558,7 @@ if ($action != 'create' && $action != 'edit' && (!empty($agf->id)))
 	{
 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('Delete').'</a>';
 	}
-	if ($agf->archive == 0)
+	if ($agf->status != 4)
 	{
 		$button = $langs->trans('AgfArchiver');
 		$arch = 1;

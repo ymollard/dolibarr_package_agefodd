@@ -898,7 +898,7 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" && (!empty($agf->id)))
 {
-	if ($user->rights->agefodd->creer && $agf->archive!=1)
+	if ($user->rights->agefodd->creer && $agf->status!=4)
 	{
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'">'.$langs->trans('AgfModifyTrainee').'</a>';
 	}

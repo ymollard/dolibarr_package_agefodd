@@ -273,7 +273,6 @@ class Agefodd_stagiaire extends CommonObject
 	 *  @param	string		$sortfield    sort field
 	 *  @param	int			$limit		  limit page
 	 *  @param	int			$offset    	  page
-	 *  @param	int			$arch    	  display archive or not
 	 *  @param	array		$filter    	  filter output
 	 *  @return int          	<0 if KO, >0 if OK
 	 */
@@ -492,7 +491,6 @@ class Agefodd_stagiaire extends CommonObject
 		// Put here code to add control on parameters values
 
 		// Update request
-		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_stagiaire SET";
 		$sql.= " nom=".(isset($this->nom)?"'".$this->nom."'":"null").",";
 		$sql.= " prenom=".(isset($this->prenom)?"'".$this->prenom."'":"null").",";

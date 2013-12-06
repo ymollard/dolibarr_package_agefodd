@@ -74,7 +74,6 @@ class Agsession extends CommonObject {
 	var $datec = '';
 	var $fk_user_mod;
 	var $tms = '';
-	var $archive;
 	var $lines = array ();
 	var $commercialid;
 	var $commercialname;
@@ -433,7 +432,6 @@ class Agsession extends CommonObject {
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms,";
-		$sql .= " t.archive,";
 		$sql .= " t.fk_product,";
 		$sql .= " t.duree_session,";
 		$sql .= " t.intitule_custo,";
@@ -528,14 +526,12 @@ class Agsession extends CommonObject {
 				$this->datec = $this->db->jdate ( $obj->datec );
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate ( $obj->tms );
-				$this->archive = $obj->archive;
 				$this->commercialname = $obj->commercialname . ' ' . $obj->commercialfirstname;
 				$this->commercialid = $obj->commercialid;
 				$this->contactname = $obj->contactname . ' ' . $obj->contactfirstname;
 				$this->contactcivilite = $obj->contactcivilite;
 				$this->sourcecontactid = $obj->sourcecontactid;
 				$this->contactid = $obj->contactid;
-				$this->archive = $obj->archive;
 				$this->status = $obj->status;
 				$this->statuscode = $obj->statuscode;
 				if ($obj->statuslib == $langs->trans ( 'AgfStatusSession_' . $obj->statuscode )) {
@@ -924,7 +920,7 @@ class Agsession extends CommonObject {
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
 		$sql .= " fk_user_mod=" . $this->db->escape ( $user->id ) . ",";
-		$sql .= " archive=" . (isset ( $this->archive ) ? $this->archive : "0") . "";
+		$sql .= " status=" . (isset ( $this->status ) ? $this->status : "1") . "";
 		$sql .= " WHERE rowid=" . $this->id;
 		
 		$this->db->begin ();
@@ -1000,8 +996,6 @@ class Agsession extends CommonObject {
 			$this->num_OPCA_soc = trim ( $this->num_OPCA_soc );
 		if (isset ( $this->num_OPCA_file ))
 			$this->num_OPCA_file = trim ( $this->num_OPCA_file );
-		if (isset ( $this->archive ))
-			$this->archive = trim ( $this->archive );
 		if (isset ( $this->fk_product ))
 			$this->fk_product = trim ( $this->fk_product );
 		if (isset ( $this->status ))
@@ -1071,7 +1065,6 @@ class Agsession extends CommonObject {
 			$sql .= " num_OPCA_soc=" . (isset ( $this->num_OPCA_soc ) ? "'" . $this->db->escape ( $this->num_OPCA_soc ) . "'" : "null") . ",";
 			$sql .= " num_OPCA_file=" . (isset ( $this->num_OPCA_file ) ? "'" . $this->db->escape ( $this->num_OPCA_file ) . "'" : "null") . ",";
 			$sql .= " fk_user_mod=" . $this->db->escape ( $user->id ) . ",";
-			$sql .= " archive=" . (isset ( $this->archive ) ? $this->archive : "0") . ",";
 			$sql .= " fk_product=" . (! empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
 			$sql .= " status=" . (isset ( $this->status ) ? $this->status : "null") . ",";
 			$sql .= " duree_session=" . (! empty ( $this->duree_session ) ? $this->duree_session : "0") . ",";
@@ -1637,14 +1630,17 @@ class Agsession extends CommonObject {
 		}
 		
 		if ($arch == 2) {
-			$sql .= " WHERE s.archive = 0";
+			$sql .= " WHERE s.status <> 4";
 			$sql .= " AND sa.indice=";
 			$sql .= "(";
 			$sql .= " SELECT MAX(indice) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE level_rank=0";
 			$sql .= ")";
 			$sql .= " AND sa.archive = 1";
-		} else
-			$sql .= " WHERE s.archive = " . $arch;
+		} elseif ($arch == 0) {
+			$sql .= " WHERE s.status <> 4";
+		} elseif ($arch == 1) {
+			$sql .= " WHERE s.status = 4";
+		}
 		
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
@@ -1823,7 +1819,7 @@ class Agsession extends CommonObject {
 			$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		}
 		
-		$sql .= " WHERE s.archive = 0";
+		$sql .= " WHERE s.status <> 4";
 		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
 		
@@ -1943,7 +1939,6 @@ class Agsession extends CommonObject {
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session";
-		$sql .= " ,s.archive";
 		if ($filter ['type_affect'] == 'thirdparty') {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
@@ -2072,7 +2067,6 @@ class Agsession extends CommonObject {
 					$line->notes = $obj->notes;
 					$line->nb_subscribe_min = $obj->nb_subscribe_min;
 					$line->type_affect = $type_affect;
-					$line->archive = $obj->archive;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
 					
@@ -2657,13 +2651,13 @@ class Agsession extends CommonObject {
 		// Update request
 		if (! $error) {
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
-			$sql .= " archive='1',";
+			$sql .= " status=4,";
 			$sql .= " fk_user_mod=" . $user->id . " ";
 			$sql .= " WHERE YEAR(dated)='" . $year . "'";
 			
 			$this->db->begin ();
 			
-			dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
+			dol_syslog ( get_class ( $this ) . "::updateArchiveByYear sql=" . $sql, LOG_DEBUG );
 			$resql = $this->db->query ( $sql );
 			if (! $resql) {
 				$error ++;
@@ -2684,7 +2678,7 @@ class Agsession extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog ( get_class ( $this ) . "::updateArchiveByYear " . $errmsg, LOG_ERR );
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback ();

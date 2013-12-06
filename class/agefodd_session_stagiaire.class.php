@@ -465,7 +465,6 @@ class Agefodd_session_stagiaire  extends CommonObject
 		}
 	
 		// Update request
-		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET";
 		$sql.= " fk_session_agefodd=".(isset($this->fk_session_agefodd)?$this->fk_session_agefodd:"null").",";
 		$sql.= " fk_stagiaire=".(isset($this->fk_stagiaire)?$this->fk_stagiaire:"null").",";
@@ -530,7 +529,6 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$error=0;
 	
 		// Update request
-		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET";
 		$sql.= " status_in_session=".$status;
 		$sql.= " WHERE fk_session_agefodd = ".$this->fk_session_agefodd;

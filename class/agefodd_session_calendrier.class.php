@@ -337,7 +337,6 @@ class Agefodd_sesscalendar
 		// Put here code to add control on parameters values
 
 		// Update request
-		if (!isset($this->archive)) $this->archive = 0;
 		$sql = "UPDATE ".MAIN_DB_PREFIX."agefodd_session_calendrier SET";
 		$sql.= " date_session='".$this->db->idate($this->date_session)."',";
 		$sql.= " heured='".$this->db->idate($this->heured)."',";

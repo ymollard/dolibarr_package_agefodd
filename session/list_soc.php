@@ -348,7 +348,7 @@ if ($result >= 0) {
 			// Affichage tableau des sessions
 			$var = ! $var;
 			
-			( $line->archive == 1 ) ? $style_archive = ' style="background: gray"' : $style_archive = '';
+			( $line->status == 4 ) ? $style_archive = ' style="background: gray"' : $style_archive = '';
 			
 			if (empty($style_archive)) {
 				$style=$bc[$var];

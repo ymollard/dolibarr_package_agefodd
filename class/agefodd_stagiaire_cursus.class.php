@@ -391,7 +391,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param string $sortfield Sort field
 	 * @param int $limit offset limit
 	 * @param int $offset offset limit
-	 * @param int $arch archive
+	 * @param array $filter filter array
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset, $filter = array()) {
@@ -522,7 +522,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param string $sortfield Sort field
 	 * @param int $limit offset limit
 	 * @param int $offset offset limit
-	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_session_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
@@ -608,7 +607,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param string $sortfield Sort field
 	 * @param int $limit offset limit
 	 * @param int $offset offset limit
-	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {

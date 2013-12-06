@@ -144,9 +144,13 @@ $pagenext = $page + 1;
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
 $formother = new FormOther ( $db );
-
-if (empty ( $arch ))
-	$title = $langs->trans ( "AgfMenuSessAct" );
+if (empty ( $arch )) {
+	if ($status_view==1) {
+		$title = $langs->trans ( "AgfMenuSessDraftList" );
+	} else {
+		$title = $langs->trans ( "AgfMenuSessAct" );
+	}
+}
 elseif ($arch == 2)
 	$title = $langs->trans ( "AgfMenuSessArchReady" );
 else
@@ -191,8 +195,13 @@ $resql = $agf->fetch_all ( $sortorder, $sortfield, $conf->liste_limit, $offset, 
 if ($resql != - 1) {
 	$num = $resql;
 	
-	if (empty ( $arch ))
-		$menu = $langs->trans ( "AgfMenuSessAct" );
+	if (empty ( $arch )) {
+		if ($status_view==1) {
+			$menu = $langs->trans ( "AgfMenuSessDraftList" );
+		} else {
+			$menu = $langs->trans ( "AgfMenuSessAct" );
+		}
+	}
 	elseif ($arch == 2)
 		$menu = $langs->trans ( "AgfMenuSessArchReady" );
 	else
@@ -202,15 +211,16 @@ if ($resql != - 1) {
 	$option_noarch ='&training_view='.$training_view.'&site_view='.$site_view. '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
 	
-	
-	if ($arch == 1)
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?arch=0'.$option_noarch.'">'.$langs->trans("AgfMenuSessAct").'</a>'."\n";
-	}
-	else
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?arch=1'.$option_noarch.'">'.$langs->trans("AgfMenuSessArch").'</a>'."\n";
-	
+	if ($status_view!=1) {
+		if ($arch == 1)
+		{
+			print '<a href="'.$_SERVER['PHP_SELF'].'?arch=0'.$option_noarch.'">'.$langs->trans("AgfMenuSessAct").'</a>'."\n";
+		}
+		else
+		{
+			print '<a href="'.$_SERVER['PHP_SELF'].'?arch=1'.$option_noarch.'">'.$langs->trans("AgfMenuSessArch").'</a>'."\n";
+		
+		}
 	}
 	
 	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";

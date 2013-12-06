@@ -15,6 +15,12 @@ English Dolibarr ChangeLog
 -Fix : bugs_agefodd #1146 - small errors in fr_FR/agefodd.lang 
 -Fix : On proposal or Order auto generation fill line with only on date if strat date and end date are the same 
 -Fix/New : Propal/order/invoice session tab allow order and display Propal/Oerder/Inoice other tabs
+-Change : Change status session list
+-New : New left session menu
+-Fix : Export Session didn't work if prefeix table were not llx_
+
+For Dev : 
+Column archive from llx_agefodd_session have been dropped now it's llx_agefodd_session.status=4
 
 ***** ChangeLog for 2.1.7 compared to 2.1.6 *****
 For All:

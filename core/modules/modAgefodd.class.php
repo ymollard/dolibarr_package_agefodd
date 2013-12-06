@@ -543,7 +543,7 @@ class modAgefodd extends DolibarrModules
 			's.cost_site'=>'AgfCoutSalle',
 			's.cost_trip'=>'AgfCoutDeplacement',
 			's.sell_price'=>'AgfCoutFormation',
-			's.archive as sessionarchive'=>'AgfArchiver',
+			'statusdict.code as sessionstatus'=>'AgfStatusSession',
 			's.is_opca as sessionisopca'=>'AgfSubrocation',
 			'socsessopca.nom as sessionsocopca'=>'AgfOPCAName',
 			'contactsessopca.civilite as contactsessopcaciv'=>'AgfOPCASessContactCiv',
@@ -589,7 +589,7 @@ class modAgefodd extends DolibarrModules
 			's.cost_site'=>'AgfSessionDetail',
 			's.cost_trip'=>'AgfSessionDetail',
 			's.sell_price'=>'AgfSessionDetail',
-			's.archive as sessionarchive'=>'AgfSessionDetail',
+			'statusdict.code as sessionstatus'=>'AgfSessionDetail',
 			's.is_opca as sessionisopca'=>'AgfSessionDetail',
 			'socsessopca.nom as sessionsocopca'=>'AgfSessionDetail',
 			'contactsessopca.civilite as contactsessopcaciv'=>'AgfSessionDetail',
@@ -626,25 +626,26 @@ class modAgefodd extends DolibarrModules
 		);	// We define here only fields that use another picto
 		
 		$this->export_sql_start[$r]='SELECT DISTINCT ';
-		$this->export_sql_end[$r]=' FROM llx_agefodd_session as s';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_stagiaire as sta ON sta.rowid = ss.fk_stagiaire';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_stagiaire_type as ssdicttype ON ssdicttype.rowid = ss.fk_agefodd_stagiaire_type';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_societe as so ON so.rowid = s.fk_soc';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_session_formateur as sf ON sf.fk_session = s.rowid';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_user as fu ON fu.rowid = f.fk_user';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_socpeople as fp ON fp.rowid = f.fk_socpeople';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_formation_catalogue_type as dictcat ON dictcat.rowid = c.fk_c_category';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_c_pays as p_pays ON p_pays.rowid = p.fk_pays';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_product as product ON product.rowid = c.fk_product';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND staopca.fk_soc_trainee=sta.fk_soc';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
-		$this->export_sql_end[$r].=' LEFT JOIN llx_socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
+		$this->export_sql_end[$r]=' FROM '.MAIN_DB_PREFIX.'agefodd_session as s';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_place as p ON p.rowid = s.fk_session_place';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire as sta ON sta.rowid = ss.fk_stagiaire';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_stagiaire_type as ssdicttype ON ssdicttype.rowid = ss.fk_agefodd_stagiaire_type';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'societe as so ON so.rowid = s.fk_soc';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur as sf ON sf.fk_session = s.rowid';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'user as fu ON fu.rowid = f.fk_user';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'socpeople as fp ON fp.rowid = f.fk_socpeople';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue_type as dictcat ON dictcat.rowid = c.fk_c_category';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'c_pays as p_pays ON p_pays.rowid = p.fk_pays';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'product as product ON product.rowid = c.fk_product';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND staopca.fk_soc_trainee=sta.fk_soc';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
+		$this->export_sql_end[$r].=' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';
 
 
 		// Array to add new pages in new tabs

@@ -85,7 +85,7 @@ class Agefodd_index
 		$sql = "SELECT ";
 		$sql.= " sum(se.nb_stagiaire) as nb_sta ";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as se";
-		$sql.= " WHERE se.archive = 1";
+		$sql.= " WHERE se.status = 4";
 
 		dol_syslog(get_class($this)."::fetch_student_nb sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
@@ -126,7 +126,7 @@ class Agefodd_index
 
 		$sql = "SELECT count(*) as num";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session";
-		$sql.= " WHERE archive = 1";
+		$sql.= " WHERE status = 4";
 		$sql.= " AND entity IN (".getEntity('agsession').")";
 
 
@@ -203,7 +203,7 @@ class Agefodd_index
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
-		$sql.= " WHERE s.archive = 1";
+		$sql.= " WHERE s.status = 4";
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		//$sql.= " GROUP BY f.duree";
 
@@ -245,7 +245,7 @@ class Agefodd_index
 		$sql.= " ON ss.fk_session_agefodd = s.rowid";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue AS f";
 		$sql.= " ON s.fk_formation_catalogue = f.rowid";
-		$sql.= " WHERE s.archive = 1";
+		$sql.= " WHERE s.status = 4";
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		//$sql.= " GROUP BY f.duree";
 
@@ -285,7 +285,7 @@ class Agefodd_index
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
-		$sql.= " WHERE s.archive = 1";
+		$sql.= " WHERE s.status = 4";
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		$sql.= " ORDER BY s.dated DESC LIMIT ".$number;
 
@@ -339,7 +339,7 @@ class Agefodd_index
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session as s";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c";
 		$sql.= " ON c.rowid = s.fk_formation_catalogue";
-		$sql.= " WHERE s.archive = 1";
+		$sql.= " WHERE s.status = 4";
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		$sql.= " GROUP BY c.intitule, c.duree,s.fk_formation_catalogue";
 		$sql.= " ORDER BY num DESC LIMIT ".$number;
@@ -387,10 +387,16 @@ class Agefodd_index
 	function fetch_session($archive=0)
 	{
 		global $langs;
-
+		
 		$sql = "SELECT count(*) as total";
 		$sql.= " FROM  ".MAIN_DB_PREFIX."agefodd_session";
-		$sql.= " WHERE archive = ".$archive;
+		
+		if (empty($archive)) {
+			$sql.= " WHERE status <> 4";
+		} else {
+			$sql.= " WHERE status=".$archive;
+		}
+		
 		$sql.= " AND entity IN (".getEntity('agsession').")";
 
 		dol_syslog(get_class($this)."::fetch_session sql=".$sql, LOG_DEBUG);
@@ -607,7 +613,7 @@ class Agefodd_index
 		$sql.= " ON s.rowid = sa.fk_agefodd_session";
 		$sql.= " WHERE sa.archive = 1";
 		$sql.= " AND sa.level_rank=0";
-		$sql.= " AND s.archive = 0";
+		$sql.= " AND s.status <> 4";
 		$sql.= " AND s.entity IN (".getEntity('agsession').")";
 		$sql.= " GROUP BY sa.fk_agefodd_session";
 
