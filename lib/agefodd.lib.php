@@ -232,6 +232,11 @@ function trainer_prepare_head($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/agefodd/trainer/session.php',1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("AgfSessionDetail");
+	$head[$h][2] = 'sessionlist';
+	$h++;
 
 	$head[$h][0] = dol_buildpath('/agefodd/trainer/info.php',1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Info");

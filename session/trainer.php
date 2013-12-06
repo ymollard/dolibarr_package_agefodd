@@ -1,5 +1,5 @@
 <?php
-/** Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
 * Copyright (C) 2012-2013		Florian Henry	<florian.henry@open-concept.pro>
 *
@@ -145,12 +145,35 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 			$heure_tmp_arr = explode(':',$heuref_tmp);
 			$agf_cal->heuref = dol_mktime($heure_tmp_arr[0],$heure_tmp_arr[1],0,GETPOST('datemonth','int'),GETPOST('dateday','int'),GETPOST('dateyear','int'));
 		}
-
-		$result = $agf_cal->create($user);
+		
+		//Test if trainer is already book for another training
+		$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid','int'));
 		if ($result < 0)
 		{
 			$error++;
 			$error_message =  $agf_cal->error;
+		}
+		
+		foreach($agf_cal->lines as $line) {
+			if (
+			($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || 
+			($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) ||
+			($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) ||
+			($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref  && $agf_cal->heured < $line->heuref)
+			)
+			{
+				$error++;
+				$error_message .=  $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php',1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+			}
+		}
+		if (!$error) {
+
+			$result = $agf_cal->create($user);
+			if ($result < 0)
+			{
+				$error++;
+				$error_message =  $agf_cal->error;
+			}
 		}
 
 		if (!$error)
@@ -198,17 +221,44 @@ if ($action=='edit_calendrier' && $user->rights->agefodd->creer)
 		if(!empty($fk_agefodd_session_formateur))
 			$agf_cal->fk_agefodd_session_formateur = $fk_agefodd_session_formateur;
 
+		//Test if trainer is already book for another training
+		$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid','int'));
+		if ($result < 0)
+		{
+			$error++;
+			$error_message =  $agf_cal->error;
+		} else {
+			foreach($agf_cal->lines as $line) {
+				
+				if (
+					(($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || 
+					($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) ||
+					($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) ||
+					($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref  && $agf_cal->heured < $line->heuref)) &&
+					 $line->fk_session!=$id) {
+					$error++;
+					$error_message .=  $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php',1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+				}
+			}
+		}
+		
+		if (!$error) {
+			$result = $agf_cal->update($user);
+			if ($result < 0)
+			{
+				$error++;
+				$error_message =  $agf_cal->error;
+			}
+		}
 
-		$result = $agf_cal->update($user);
-
-		if ($result > 0)
+		if (!$error)
 		{
 			Header ( "Location: ".$_SERVER['PHP_SELF']."?action=edit_calendrier&id=".$id);
 			exit;
 		}
 		else
 		{
-			setEventMessage($agf_cal->error,'errors');
+			setEventMessage($error_message,'errors');
 		}
 	}
 }
@@ -330,7 +380,7 @@ if (!empty($id))
 						print $langs->trans("AgfUndefinedTrainer");
 					}
 					else {
-						print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
+						print '<a href="'.dol_buildpath('/agefodd/trainer/card.php',1).'?id='.$formateurs->lines[$i]->formid.'">';
 						print img_object($langs->trans("ShowContact"),"contact").' ';
 						print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 						print '&nbsp;';
@@ -445,7 +495,8 @@ if (!empty($id))
 			for ($i=0; $i < $nbform; $i++) {
 				print '<tr><td width="20%" valign="top">';
 				// Trainers info
-				print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
+				
+				print '<a href="'.dol_buildpath('/agefodd/trainer/card.php',1).'?id='.$formateurs->lines[$i]->formid.'">';
 				print img_object($langs->trans("ShowContact"),"contact").' ';
 				print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 				print '&nbsp;';
@@ -507,6 +558,7 @@ if (!empty($id))
 							print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
 							print '<input type="hidden" name="action" value="edit_calendrier">'."\n";
 							print '<input type="hidden" name="sessid" value="'.$calendrier->lines[$j]->sessid.'">'."\n";
+							print '<input type="hidden" name="trainerid" value="'.$formateurs->lines[$i]->formid.'">'."\n";
 							print '<input type="hidden" name="modperiod" value="'.$calendrier->lines[$j]->id.'">'."\n";
 
 							if ($calendrier->lines[$j]->id == $_POST["modperiod"] && ! $_POST["period_remove_x"])
@@ -588,6 +640,7 @@ if (!empty($id))
 								print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
 								print '<input type="hidden" name="fk_agefodd_session_formateur" value="'.$formateurs->lines[$i]->opsid.'">'."\n";
 								print '<input type="hidden" name="periodid" value="'.$calendrier->lines[$j]->stagerowid.'">'."\n";
+								print '<input type="hidden" name="trainerid" value="'.$formateurs->lines[$i]->formid.'">'."\n";
 								print '<input type="hidden" id="datetmplday"   name="datetmplday"   value="'.dol_print_date($agf->dated, "%d").'">'."\n";
 								print '<input type="hidden" id="datetmplmonth" name="datetmplmonth" value="'.dol_print_date($agf->dated, "%m").'">'."\n";
 								print '<input type="hidden" id="datetmplyear"  name="datetmplyear"  value="'.dol_print_date($agf->dated, "%Y").'">'."\n";

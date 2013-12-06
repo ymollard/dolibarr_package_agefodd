@@ -524,7 +524,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 					print '<tr>';
 					// Supplier Invoice inforamtion
 					print '<td nowrap="nowrap">';
-					print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK);
+					print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK).' ('.price($suplier_invoice->total_ht).$langs->getCurrencySymbol ( $conf->currency ).')';
 					print '</td>';
 					print '<td>';
 					// Unlink order
@@ -638,7 +638,7 @@ foreach ( $agf_fin->lines as $line ) {
 				print '<tr>';
 				// Supplier Invoice inforamtion
 				print '<td nowrap="nowrap">';
-				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK);
+				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) .' ('.price($suplier_invoice->total_ht).$langs->getCurrencySymbol ( $conf->currency ).')';
 				print '</td>';
 				print '<td>';
 				// Unlink order
@@ -773,7 +773,7 @@ if (! empty ( $place->id )) {
 				print '<tr>';
 				// Supplier Invoice inforamtion
 				print '<td nowrap="nowrap">';
-				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK);
+				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '',0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK).' ('.price($suplier_invoice->total_ht).$langs->getCurrencySymbol ( $conf->currency ).')';
 				print '</td>';
 				print '<td>';
 				// Unlink order

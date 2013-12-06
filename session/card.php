@@ -174,6 +174,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 				setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentitiesnoconv("AgfSessionContact")),'errors');
 			}
 		}
+		
+		
 
 		$result = $agf->fetch($id);
 		
@@ -197,6 +199,14 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
+		
+		if ($agf->dated > $agf->datef)
+		{
+			$error++;
+			setEventMessage($langs->trans('AgfSessionDateErrors'),'errors');
+		}
+		
+		
 		$agf->fk_session_place = $fk_session_place;
 		$agf->type_session = GETPOST('type_session','int');
 		$agf->commercialid = GETPOST('commercial','int');
@@ -515,6 +525,13 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		$agf->fk_soc = GETPOST('fk_soc','int');
 		$agf->dated = dol_mktime(0,0,0,GETPOST('dadmonth','int'),GETPOST('dadday','int'),GETPOST('dadyear','int'));
 		$agf->datef = dol_mktime(0,0,0,GETPOST('dafmonth','int'),GETPOST('dafday','int'),GETPOST('dafyear','int'));
+		
+		if ($agf->dated > $agf->datef)
+		{
+			$error++;
+			setEventMessage($langs->trans('AgfSessionDateErrors'),'errors');
+		}
+		
 		$agf->notes = GETPOST('notes','alpha');
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
@@ -566,9 +583,10 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 // Action clone object
 if ($action == 'confirm_clone' && $confirm == 'yes')
 {
-	if (1==0 &&  ! GETPOST('clone_content'))
+	$clone_content=GETPOST('clone_content');
+	if (empty($clone_content))
 	{
-		$mesg='<div class="error">'.$langs->trans("NoCloneOptionsSpecified").'</div>';
+		setEventMessage($langs->trans("NoCloneOptionsSpecified"),'errors');
 	}
 	else
 	{
@@ -1324,70 +1342,34 @@ else
 						for ($i=0; $i < $nbform; $i++)
 						{
 							// Infos trainers
-							print '<a href="'.DOL_URL_ROOT.'/contact/fiche.php?id='.$formateurs->lines[$i]->socpeopleid.'">';
+							print '<a href="'.dol_buildpath('/agefodd/trainer/card.php',1).'?id='.$formateurs->lines[$i]->formid.'">';
 							print img_object($langs->trans("ShowContact"),"contact").' ';
 							print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 							print $formateurs->lines[$i]->getLibStatut(3);
+							
+							//Print warning message if trainer calendar date are not set within session date
+							if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+								$alertday=false;
+								require_once('../class/agefodd_session_formateur_calendrier.class.php');
+								$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
+								$result=$trainer_calendar->fetch_all($formateurs->lines[$i]->opsid);
+								if ($result<0) {
+									setEventMessage($trainer_calendar->error,'errors');
+								}
+								foreach($trainer_calendar->lines as $line) {
+									if (($line->date_session < $agf->dated) || ($line->date_session > $agf->datef)) $alertday=true;
+								}
+								if ($alertday) {
+									print img_warning($langs->trans ( "AgfCalendarDayOutOfScope" ));
+									print $langs->trans ( "AgfCalendarDayOutOfScope" );
+								}
+							}
 							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
 
 						}
 						print '</td>';
 						print "</tr>\n";
 					}
-					print "</table>";
-
-					/*
-					 * Manage calendars
-					*/
-
-					print '&nbsp';
-					print '<table class="border" width="100%">';
-					print '<tr>';
-
-					$calendrier = new Agefodd_sesscalendar($db);
-					$calendrier->fetch_all($agf->id);
-					$blocNumber = count($calendrier->lines);
-					if ($blocNumber < 1)
-					{
-						print '<td  width="20%" valign="top" >'.$langs->trans("AgfCalendrier").'</td>';
-						print '<td style="color:red; text-decoration: blink;">'.$langs->trans("AgfNoCalendar").'</td></tr>';
-					}
-					else
-					{
-						print '<td  width="20%" valign="top" style="border-bottom:0px;">'.$langs->trans("AgfCalendrier").'</td>';
-						$old_date = 0;
-						$duree = 0;
-						for ($i = 0; $i < $blocNumber; $i++)
-						{
-							if ($calendrier->lines[$i]->date_session != $old_date)
-							{
-								if ($i > 0 )print '</tr><tr><td width="150px" style="border:0px;">&nbsp;</td>';
-								print '<td width="150px">';
-								print dol_print_date($calendrier->lines[$i]->date_session,'daytext').'</td><td>';
-							}
-							else print ', ';
-							print dol_print_date($calendrier->lines[$i]->heured,'hour').' - '.dol_print_date($calendrier->lines[$i]->heuref,'hour');
-							if ($i == $blocNumber -1 ) print '</td></tr>';
-
-							$old_date = $calendrier->lines[$i]->date_session;
-
-							// We calculate the total duration times
-							// reminders: mktime(hours, minutes, secondes, month, day, year);
-							$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
-						}
-						if ((($agf->duree * 3600) != $duree) && (!empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION)))
-						{
-							print '<tr><td>&nbsp;</td><td colspan=2><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
-							if (($agf->duree * 3600) < $duree) print $langs->trans("AgfCalendarSup");
-							if (($agf->duree * 3600) > $duree) print $langs->trans("AgfCalendarInf");
-							$min = floor($duree/60) ;
-							$rmin = sprintf("%02d", $min %60) ;
-							$hour = floor($min/60);
-							print ' ('.$langs->trans("AgfCalendarDureeProgrammee").': '.$hour.':'.$rmin.', ';
-							print $langs->trans("AgfCalendarDureeThéorique").' : '.($agf->duree).':00).</td></tr>';
-						}
-					}
-					print '</tr>';
 					print "</table>";
 
 					/*

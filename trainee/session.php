@@ -146,13 +146,21 @@ if ($id)
 			
 			$dureetotal=0;
 			foreach($agf_session->lines as $line){
+				$duree=0;
+				
 				if ($style=='pair') {
-					$style='impair';
+					$style='class="impair"';
 				}
-				else {$style='pair';
+				else {
+					$style='class="pair"';
+				}
+				
+				
+				if ( $line->status == 4 ) {
+					$style = ' style="background: gray"';
 				}
 
-				print '<tr class="'.$style.'">';
+				print '<tr '.$style.'>';
 					
 				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->rowid.'</a></td>';
 				print '<td><a href="'.dol_buildpath('/agefodd/session/card.php',1).'?id='.$line->rowid.'">'.$line->intitule.'</a></td>';

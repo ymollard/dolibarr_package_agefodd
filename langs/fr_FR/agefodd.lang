@@ -837,3 +837,6 @@ AgfContacCustMandatory=Le contact client d'une session n'est pas obligatoire
 AgfContacCustMandatoryHelp=seulement si le client est renseigné
 AgfMenuSessConfList=Sessions confirmées
 AgfMenuSessNotDoneList=Sessions non réalisées
+AgfTrainerlAreadybookAtThisTime=Le/la formateur/trice est déja réservé(e) pour ces horaires sur une autre formations
+AgfCalendarDayOutOfScope=Les dates du calendrier semblent incohérentes avec les dates de la sessions
+AgfSessionDateErrors=La date de debut de session doit être avant la date de fin session

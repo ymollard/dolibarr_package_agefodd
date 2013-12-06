@@ -283,6 +283,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
     		return -1;
     	}
     }
+    
 	/**
 	 *  Load object in memory from database
 	 *
@@ -302,8 +303,10 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 		$sql.= "s.trainer_cost,";
 		$sql.= "s.trainer_status,";
 		$sql.= "s.fk_actioncomm,";
-		$sql.= "s.fk_user_author";
+		$sql.= "s.fk_user_author,";
+		$sql.= "sf.fk_session";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as s";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
 		$sql.= " WHERE s.fk_agefodd_session_formateur = ".$id;
 		$sql.= " ORDER BY s.date_session ASC, s.heured ASC";
 
@@ -329,6 +332,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 				$line->trainer_status = $obj->trainer_status;
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
+				$line->fk_session = $obj->fk_session;
 
 
 				$this->lines[$i]=$line;
@@ -344,6 +348,73 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 			return -1;
 		}
 	}
+	
+	
+	/**
+	 *  Load object in memory from database
+	 *
+	 *  @param	int		$id    Id of session
+	 *  @return int          	<0 if KO, >0 if OK
+	 */
+	function fetch_all_by_trainer($id)
+	{
+		global $langs;
+	
+		$sql = "SELECT ";
+		$sql.= "s.rowid,";
+		$sql.= "s.fk_agefodd_session_formateur,";
+		$sql.= "s.date_session,";
+		$sql.= "s.heured,";
+		$sql.= "s.heuref,";
+		$sql.= "s.trainer_cost,";
+		$sql.= "s.trainer_status,";
+		$sql.= "s.fk_actioncomm,";
+		$sql.= "s.fk_user_author,";
+		$sql.= "sf.fk_session";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as s";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
+		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_formateur as trainer ON trainer.rowid=sf.fk_agefodd_formateur";
+		$sql.= " WHERE trainer.rowid = ".$id;
+		$sql.= " ORDER BY s.date_session ASC, s.heured ASC";
+	
+		dol_syslog(get_class($this)."::fetch_all_by_trainer sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$this->lines = array();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			for ($i=0; $i < $num; $i++)
+			{
+			$line = new AgefoddcalendrierformateurLines();
+	
+			$obj = $this->db->fetch_object($resql);
+	
+			$line->id = $obj->rowid;
+			$line->date_session = $this->db->jdate($obj->date_session);
+			$line->fk_agefodd_session_formateur = $obj->fk_agefodd_session_formateur;
+			$line->heured = $this->db->jdate($obj->heured);
+			$line->heuref = $this->db->jdate($obj->heuref);
+			$line->trainer_cost = $obj->trainer_cost;
+			$line->trainer_status = $obj->trainer_status;
+			$line->fk_actioncomm = $obj->fk_actioncomm;
+			$line->fk_user_author = $obj->fk_user_author;
+			$line->fk_session = $obj->fk_session;
+	
+	
+			$this->lines[$i]=$line;
+	
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+		$this->error="Error ".$this->db->lasterror();
+		dol_syslog(get_class($this)."::fetch_all_by_trainer ".$this->error, LOG_ERR);
+		return -1;
+		}
+		}
 
     /**
      *  Update object into database
@@ -691,8 +762,14 @@ class Agefoddsessionformateurcalendrier extends CommonObject
 
 class AgefoddcalendrierformateurLines {
 	var $id;
-	var $day_session;
+	var $date_session;
+	var $fk_agefodd_session_formateur;
 	var $heured;
 	var $heuref;
+	var $trainer_cost;
+	var $trainer_status;
+	var $fk_actioncomm;
+	var $fk_user_author;
+	var $fk_session;
 }
 ?>
