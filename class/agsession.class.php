@@ -2455,6 +2455,7 @@ class Agsession extends CommonObject {
 				print '<tr><td>&nbsp;</td><td colspan=2>';
 				print img_warning($langs->trans ( "AgfCalendarDayOutOfScope" ));
 				print $langs->trans ( "AgfCalendarDayOutOfScope" ) .'</td></tr>';
+				setEventMessage($langs->trans ( "AgfCalendarDayOutOfScope" ),'warnings');
 			}
 		}
 		print '</tr>';

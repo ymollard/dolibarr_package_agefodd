@@ -840,4 +840,4 @@ AgfMenuSessConfList=Training Sessions confirmed
 AgfMenuSessNotDoneList=Training Sessions not done
 AgfTrainerlAreadybookAtThisTime=Trainer is already book on another training at this times
 AgfCalendarDayOutOfScope=Session calendar date seems to be not correct regardinf session dates
-AgfSessionDateErrors=Session strat date must be before session date end
+AgfSessionDateErrors=Session start date must be before session date end

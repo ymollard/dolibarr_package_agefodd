@@ -1362,6 +1362,7 @@ else
 								if ($alertday) {
 									print img_warning($langs->trans ( "AgfCalendarDayOutOfScope" ));
 									print $langs->trans ( "AgfCalendarDayOutOfScope" );
+									setEventMessage($langs->trans ( "AgfCalendarDayOutOfScope" ),'warnings');
 								}
 							}
 							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
