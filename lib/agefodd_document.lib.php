@@ -1,6 +1,5 @@
 <?php
-
-/**
+/*
  * Copyright (C) 2012 Florian Henry <florian.henry@open-concept.pro>
  * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
  *
@@ -273,8 +272,13 @@ function show_fac($file, $socid, $mdle) {
 			foreach ( $propal_array as $key => $val ) {
 				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ).' '.$val;
 				$propal_static = new Propal ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$propal_static->fetch($key);
+				if ($propal_static->statut==2) {
+					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				} else {
+					$mess .= img_picto($langs->trans ( "AgfFactureFacNoPropalSignedHelp" ), 'warning') ;
+				}
 			}
 			
 			foreach ( $order_array as $key => $val ) {
@@ -293,8 +297,15 @@ function show_fac($file, $socid, $mdle) {
 			foreach ( $propal_array as $key => $val ) {
 				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ).' '.$val;
 				$propal_static = new Propal ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$propal_static->fetch($key);
+				if ($propal_static->statut==2) {
+					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				} else {
+					$mess .= img_picto($langs->trans ( "AgfFactureFacNoPropalSignedHelp" ), 'warning') ;
+				}
+				//$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				//$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			
 			foreach ( $order_array as $key => $val ) {

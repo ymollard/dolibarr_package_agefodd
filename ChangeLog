@@ -22,6 +22,7 @@ English Dolibarr ChangeLog
 -New : If trainer calendar is use then control on existing booked date is done on update or add trainer calendar in session
 -New : Warning message if session date are not correct regarding session calendar date (and trainer calendar date if use)
 -New : color into Session agenda show status of session
+-New : Session-> Document link => Cannot create invoice from proposal if proposal is not signed
 
 For Dev : 
 Column archive from llx_agefodd_session have been dropped now it's llx_agefodd_session.status=4
