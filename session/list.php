@@ -64,6 +64,8 @@ $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 $status_view = GETPOST('status','int');
 $search_id = GETPOST ( 'search_id', 'int');
+$search_month = GETPOST ( 'search_month', 'int');
+$search_year = GETPOST ( 'search_year', 'int');
 
 $search_sale=GETPOST('search_sale','int');
 
@@ -122,6 +124,11 @@ if (! empty ( $status_view )) {
 }
 if (! empty ( $search_id )) {
 	$filter ['s.rowid'] = $search_id;
+}
+
+if (! empty ( $search_month ) && ! empty ( $search_year )) {
+	$filter ['YEAR(s.dated)'] = $search_year;
+	$filter ['MONTH(s.dated)'] = $search_month;
 }
 
 
@@ -218,6 +225,11 @@ if ($resql != - 1) {
 		$moreforfilter.=$langs->trans('SalesRepresentatives'). ': ';
 		$moreforfilter.=$formother->select_salesrepresentatives($search_sale,'search_sale',$user);
 	}
+	
+	$moreforfilter.=$langs->trans('Period').'('.$langs->trans ( "AgfDateDebut" ).')'. ': ';
+	$moreforfilter.= $langs->trans('Month').':<input class="flat" type="text" size="1" maxlength="2" name="search_month" value="'.$search_month.'">';
+    $moreforfilter.= $langs->trans('Year').':'.$formother->selectyear($search_year?$search_year:-1,'search_year',1, 20, 5);
+	
 	if ($moreforfilter)
 	{
 		print '<div class="liste_titre">';
