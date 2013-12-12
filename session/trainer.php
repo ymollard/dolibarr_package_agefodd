@@ -380,11 +380,15 @@ if (!empty($id))
 						print $langs->trans("AgfUndefinedTrainer");
 					}
 					else {
+						print '<table class="nobordernopadding">';
+						print '<tr><td width="50%">';
+						
 						print '<a href="'.dol_buildpath('/agefodd/trainer/card.php',1).'?id='.$formateurs->lines[$i]->formid.'">';
 						print img_object($langs->trans("ShowContact"),"contact").' ';
 						print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
 						print '&nbsp;';
 						print $formateurs->lines[$i]->getLibStatut(2);
+						print '</td>';
 						
 						if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
 							print '&nbsp;';
@@ -400,7 +404,11 @@ if (!empty($id))
 							}
 								
 							print '('.dol_print_date($totaltime,'hourduration','tz').')';
+							
+							
 						}
+						
+						print '<tr></table>';
 					}
 					print '</td>';
 					print '<td>';

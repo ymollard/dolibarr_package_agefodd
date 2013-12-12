@@ -1339,16 +1339,25 @@ else
 					else
 					{
 						print '<td>';
+						
+						print '<table class="nobordernopadding">';
 						for ($i=0; $i < $nbform; $i++)
 						{
+							print '<tr><td width="50%">';
 							// Infos trainers
 							print '<a href="'.dol_buildpath('/agefodd/trainer/card.php',1).'?id='.$formateurs->lines[$i]->formid.'">';
 							print img_object($langs->trans("ShowContact"),"contact").' ';
 							print strtoupper($formateurs->lines[$i]->lastname).' '.ucfirst($formateurs->lines[$i]->firstname).'</a>';
-							print $formateurs->lines[$i]->getLibStatut(3);
+							print ' '.$formateurs->lines[$i]->getLibStatut(3);
+							print '</td>';
 							
-							//Print warning message if trainer calendar date are not set within session date
+							//Print trainer calendar
 							if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+								
+								print '<td>';
+								
+								print '<table class="nobordernopadding">';
+								
 								$alertday=false;
 								require_once('../class/agefodd_session_formateur_calendrier.class.php');
 								$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
@@ -1358,16 +1367,30 @@ else
 								}
 								foreach($trainer_calendar->lines as $line) {
 									if (($line->date_session < $agf->dated) || ($line->date_session > $agf->datef)) $alertday=true;
+									print '<tr><td>';
+									print dol_print_date($line->heured,'dayhourtext');
+									print '</td></tr>';
+									print '<tr><td>';
+									print dol_print_date($line->heuref,'dayhourtext');
+									print '</td></tr>';
 								}
+								//Print warning message if trainer calendar date are not set within session date
 								if ($alertday) {
 									print img_warning($langs->trans ( "AgfCalendarDayOutOfScope" ));
 									print $langs->trans ( "AgfCalendarDayOutOfScope" );
 									setEventMessage($langs->trans ( "AgfCalendarDayOutOfScope" ),'warnings');
 								}
+								
+								print '</table>';
+								print '</td>';
+								
 							}
-							if ($i < ($nbform - 1)) print ',&nbsp;&nbsp;';
+							print '</tr>';
 
 						}
+						
+						print '</table>';
+						
 						print '</td>';
 						print "</tr>\n";
 					}

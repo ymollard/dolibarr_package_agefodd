@@ -23,7 +23,6 @@
  * \ingroup agefodd
  * \brief list of session
  */
-
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
@@ -39,8 +38,8 @@ require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 require_once ('../class/agefodd_formateur.class.php');
-require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
-require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
+require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -58,21 +57,15 @@ $search_training_ref = GETPOST ( "search_training_ref", 'alpha' );
 $search_start_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_start_datemonth', 'int' ), GETPOST ( 'search_start_dateday', 'int' ), GETPOST ( 'search_start_dateyear', 'int' ) );
 $search_end_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_end_datemonth', 'int' ), GETPOST ( 'search_end_dateday', 'int' ), GETPOST ( 'search_end_dateyear', 'int' ) );
 $search_site = GETPOST ( "search_site" );
-$search_training_ref_interne = GETPOST('search_training_ref_interne','alpha');
-$search_type_session=GETPOST ( "search_type_session",'int' );
+$search_training_ref_interne = GETPOST ( 'search_training_ref_interne', 'alpha' );
+$search_type_session = GETPOST ( "search_type_session", 'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
-$status_view = GETPOST('status','int');
-$search_id = GETPOST ( 'search_id', 'int');
-$search_month = GETPOST ( 'search_month', 'int');
-$search_year = GETPOST ( 'search_year', 'int');
-
-$search_sale=GETPOST('search_sale','int');
-
-$ts_logistique=GETPOST('options_ts_logistique','int');
-$ts_prospection=GETPOST('options_ts_prospection','int');
-$ts_interentreprises=GETPOST('options_ts_interentreprises','int');
-
+$status_view = GETPOST ( 'status', 'int' );
+$search_id = GETPOST ( 'search_id', 'int' );
+$search_month = GETPOST ( 'search_month', 'aplha' );
+$search_year = GETPOST ( 'search_year', 'int' );
+$search_sale = GETPOST ( 'search_sale', 'int' );
 
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
@@ -83,9 +76,12 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_start_date = "";
 	$search_end_date = "";
 	$search_site = "";
-	$search_training_ref_interne="";
-	$search_type_session="";
-	$search_id='';
+	$search_training_ref_interne = "";
+	$search_type_session = "";
+	$search_id = '';
+	$search_month = '';
+	$search_year = '';
+	$search_sale = '';
 }
 
 $filter = array ();
@@ -116,7 +112,7 @@ if (! empty ( $search_site ) && $search_site != - 1) {
 if (! empty ( $search_training_ref_interne )) {
 	$filter ['c.ref_interne'] = $search_training_ref_interne;
 }
-if ($search_type_session!='' && $search_type_session != - 1) {
+if ($search_type_session != '' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
 }
 if (! empty ( $status_view )) {
@@ -126,11 +122,13 @@ if (! empty ( $search_id )) {
 	$filter ['s.rowid'] = $search_id;
 }
 
-if (! empty ( $search_month ) && ! empty ( $search_year )) {
-	$filter ['YEAR(s.dated)'] = $search_year;
+if (! empty ( $search_month )) {
 	$filter ['MONTH(s.dated)'] = $search_month;
 }
 
+if (! empty ( $search_year )) {
+	$filter ['YEAR(s.dated)'] = $search_year;
+}
 
 if (empty ( $sortorder ))
 	$sortorder = "ASC";
@@ -149,13 +147,13 @@ $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
 $formother = new FormOther ( $db );
 
-if ($status_view==1) {
+if ($status_view == 1) {
 	$title = $langs->trans ( "AgfMenuSessDraftList" );
-} elseif ($status_view==2) {
+} elseif ($status_view == 2) {
 	$title = $langs->trans ( "AgfMenuSessConfList" );
-}elseif ($status_view==3) {
+} elseif ($status_view == 3) {
 	$title = $langs->trans ( "AgfMenuSessNotDoneList" );
-}elseif ($status_view==4) {
+} elseif ($status_view == 4) {
 	$title = $langs->trans ( "AgfMenuSessArch" );
 } else {
 	$title = $langs->trans ( "AgfMenuSess" );
@@ -175,7 +173,7 @@ if ($training_view && ! empty ( $search_training_ref )) {
 	print '</div>';
 }
 
-if ($site_view) {
+if (!empty($site_view)) {
 	$agf = new Agefodd_place ( $db );
 	$result = $agf->fetch ( $search_site );
 	
@@ -202,85 +200,97 @@ $resql = $agf->fetch_all ( $sortorder, $sortfield, $conf->liste_limit, $offset, 
 if ($resql != - 1) {
 	$num = $resql;
 	
-	if ($status_view==1) {
+	if ($status_view == 1) {
 		$menu = $langs->trans ( "AgfMenuSessDraftList" );
-	} elseif ($status_view==2) {
+	} elseif ($status_view == 2) {
 		$menu = $langs->trans ( "AgfMenuSessConfList" );
-	}elseif ($status_view==3) {
+	} elseif ($status_view == 3) {
 		$menu = $langs->trans ( "AgfMenuSessNotDoneList" );
-	}elseif ($status_view==4) {
+	} elseif ($status_view == 4) {
 		$menu = $langs->trans ( "AgfMenuSessArch" );
+	} elseif (!empty($site_view)) {
+		$menu = $langs->trans ( "AgfSessPlace" );
+	} elseif (!empty($training_view)) {
+		$menu = $langs->trans ( "AgfCatalogDetail" );
 	} else {
-		$title = $langs->trans ( "AgfMenuSess" );
-	}	
-	
-	$option ='&status='.$status_view.'&training_view='.$training_view.'&site_view='.$site_view. '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
-	
-	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";
-	
-	// If the user can view prospects other than his'
-	if ($user->rights->societe->client->voir || $socid)
-	{
-		$moreforfilter.=$langs->trans('SalesRepresentatives'). ': ';
-		$moreforfilter.=$formother->select_salesrepresentatives($search_sale,'search_sale',$user);
+		$menu = $langs->trans ( "AgfMenuSess" );
 	}
 	
-	$moreforfilter.=$langs->trans('Period').'('.$langs->trans ( "AgfDateDebut" ).')'. ': ';
-	$moreforfilter.= $langs->trans('Month').':<input class="flat" type="text" size="1" maxlength="2" name="search_month" value="'.$search_month.'">';
-    $moreforfilter.= $langs->trans('Year').':'.$formother->selectyear($search_year?$search_year:-1,'search_year',1, 20, 5);
+	if (! empty ( $search_trainning_name ))
+		$option .= '&search_trainning_name=' . $search_trainning_name;
+	if (! empty ( $search_soc ))
+		$option .= '&search_soc=' . $search_soc;
+	if (! empty ( $search_sale ))
+		$option .= '&search_sale=' . $search_sale;
+	if (! empty ( $status_view ))
+		$option .= '&status=' . $status_view;
+	if (! empty ( $search_id ))
+		$option .= '&search_id=' . $search_id;
+	if (! empty ( $search_month ))
+		$option .= '&search_month=' . $search_month;
+	if (! empty ( $search_year ))
+		$option .= '&search_year=' . $search_year;
+	if (! empty ( $training_view ))
+		$option .= '&training_view=' . $training_view;
+	if (! empty ( $site_view ))
+		$option .= '&site_view=' . $site_view;
+	if (! empty ( $search_teacher_id ))
+		$option .= '&search_teacher_id=' . $search_teacher_id;
+	if (! empty ( $search_training_ref ))
+		$option .= '&search_training_ref=' . $search_training_ref;
+	if (! empty ( $search_start_date ))
+		$option .= '&search_start_datemonth=' . dol_print_date ( $search_start_date, '%m' ) . '&search_start_dateday=' . dol_print_date ( $search_start_date, '%d' ) . '&search_start_dateyear=' . dol_print_date ( $search_start_date, '%Y' );
+	if (! empty ( $search_end_date ))
+		$option .= '&search_end_datemonth=' . dol_print_date ( $search_end_date, '%m' ) . '&search_end_dateday=' . dol_print_date ( $search_end_date, '%d' ) . '&search_end_dateyear=' . dol_print_date ( $search_end_date, '%Y' );
+	if (! empty ( $search_site ) && $search_site != - 1)
+		$option .= '&search_site=' . $search_site;
+	if (! empty ( $search_training_ref_interne ))
+		$option .= '&search_training_ref_interne=' . $search_training_ref_interne;
+	if ($search_type_session != '' && $search_type_session != - 1)
+		$option .= '&search_type_session=' . $search_type_session;
 	
-	if ($moreforfilter)
-	{
+	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
+	
+	print '<form method="post" action="' . $_SERVER['PHP_SELF'] .'" name="search_form">' . "\n";
+	if (! empty ( $status_view )) print '<input type="hidden" name="status" value="'.$status_view.'"/>';
+	if (! empty ( $site_view )) print '<input type="hidden" name="site_view" value="'.$site_view.'"/>';
+	if (! empty ( $training_view )) print '<input type="hidden" name="training_view" value="'.$training_view.'"/>';
+	if (! empty ( $sortfield )) print '<input type="hidden" name="sortfield" value="'.$sortfield.'"/>';
+	if (! empty ( $sortorder )) print '<input type="hidden" name="sortorder" value="'.$sortorder.'"/>';
+	if (! empty ( $page )) print '<input type="hidden" name="page" value="'.$page.'"/>';
+	
+	// If the user can view prospects other than his'
+	if ($user->rights->societe->client->voir || $socid) {
+		$moreforfilter .= $langs->trans ( 'SalesRepresentatives' ) . ': ';
+		$moreforfilter .= $formother->select_salesrepresentatives ( $search_sale, 'search_sale', $user );
+	}
+	
+	$moreforfilter .= $langs->trans ( 'Period' ) . '(' . $langs->trans ( "AgfDateDebut" ) . ')' . ': ';
+	$moreforfilter .= $langs->trans ( 'Month' ) . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
+	$moreforfilter .= $langs->trans ( 'Year' ) . ':' . $formother->selectyear ( $search_year ? $search_year : - 1, 'search_year', 1, 20, 5 );
+	
+	if ($moreforfilter) {
 		print '<div class="liste_titre">';
 		print $moreforfilter;
 		print '</div>';
 	}
 	
-
-	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&status='.$status_view.'&training_view='.$training_view.'&site_view='.$site_view. '&page=' . $page .'&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfFormateur" ), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Ref" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfFormTypeSession" ), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfNbreParticipants" ), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfListParticipantsStatus" ), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfFormateur" ), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Ref" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfFormTypeSession" ), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfNbreParticipants" ), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfListParticipantsStatus" ), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder );
 	print "</tr>\n";
-	
-	// Search bar
-	/*$url_form = $_SERVER ["PHP_SELF"];
-	$addcriteria = false;
-	if (! empty ( $sortorder )) {
-		$url_form .= '?sortorder=' . $sortorder;
-		$addcriteria = true;
-	}
-	if (! empty ( $sortfield )) {
-		if ($addcriteria) {
-			$url_form .= '&sortfield=' . $sortfield;
-		} else {
-			$url_form .= '?sortfield=' . $sortfield;
-		}
-		$addcriteria = true;
-	}
-	if (! empty ( $page )) {
-		if ($addcriteria) {
-			$url_form .= '&page=' . $page;
-		} else {
-			$url_form .= '?page=' . $page;
-		}
-		$addcriteria = true;
-	}*/
-	
 	
 	print '<tr class="liste_titre">';
 	
@@ -307,7 +317,7 @@ if ($resql != - 1) {
 	print '</td>';
 	
 	print '<td class="liste_titre">';
-	print $formAgefodd->select_type_session('search_type_session',$search_type_session ,1);
+	print $formAgefodd->select_type_session ( 'search_type_session', $search_type_session, 1 );
 	print '</td>';
 	
 	print '<td class="liste_titre">';
@@ -375,7 +385,7 @@ if ($resql != - 1) {
 			print '<td>' . stripslashes ( dol_trunc ( $line->intitule, 60 ) ) . '</td>';
 			print '<td>' . $line->ref . '</td>';
 			print '<td>' . $line->training_ref_interne . '</td>';
-			print '<td>' .($line->type_session ? $langs->trans ( 'AgfFormTypeSessionInter' ) : $langs->trans ( 'AgfFormTypeSessionIntra' )). '</td>';
+			print '<td>' . ($line->type_session ? $langs->trans ( 'AgfFormTypeSessionInter' ) : $langs->trans ( 'AgfFormTypeSessionIntra' )) . '</td>';
 			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';

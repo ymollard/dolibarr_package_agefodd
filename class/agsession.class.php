@@ -1709,19 +1709,6 @@ class Agsession extends CommonObject {
 			}
 		}
 		
-		/*if ($arch == 2) {
-			$sql .= " WHERE s.status <> 4";
-			$sql .= " AND sa.indice=";
-			$sql .= "(";
-			$sql .= " SELECT MAX(indice) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE level_rank=0";
-			$sql .= ")";
-			$sql .= " AND sa.archive = 1";
-		} elseif ($arch == 0) {
-			$sql .= " WHERE s.status <> 4";
-		} elseif ($arch == 1) {
-			$sql .= " WHERE s.status = 4";
-		}*/
-		
 		$sql .= " WHERE s.entity IN (" . getEntity ( 'agsession' ) . ")";
 		
 		if (is_object ( $user ) && ! empty ( $user->id ) && empty ( $user->rights->agefodd->session->all ) && empty ( $user->admin )) {
@@ -1734,13 +1721,16 @@ class Agsession extends CommonObject {
 		}
 		
 		// Manage filter
+		$filterperiod=false;
 		if (count ( $filter ) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
-				{
+				if (($key == 'YEAR(s.dated)')
+				|| ($key == 'MONTH(s.dated)')) {
+					$filterperiod=true;
+					$sql .= ' AND '.$key.' IN ('. $value.')';
+				} elseif (strpos ( $key, 'date' )) 	{	// To allow $filter['YEAR(s.dated)']=>$year
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 'YEAR(s.dated)')
-						|| ($key == 'MONTH(s.dated)')) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} elseif ($key == '!s.status') {
 					$sql .= ' AND s.status <> ' . $value;
@@ -1752,12 +1742,13 @@ class Agsession extends CommonObject {
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid";
 		if (! empty ( $sortfield )) {
-			if ($sortfield == 's.dated' || $sortfield == 's.datef') {
-				if ($this->db->type == 'pgsql') {
-					$sql .= " ORDER BY ABS(DATE_PART( 'day', " . $sortfield . " - NOW() )) " . $sortorder;
-				} else {
-					$sql .= " ORDER BY ABS(DATEDIFF(" . $sortfield . ", NOW())) " . $sortorder;
-				}
+			//Date order is not the same if period filter is apply or not
+			if (($sortfield == 's.dated' || $sortfield == 's.datef') && (!$filterperiod)) {
+					if ($this->db->type == 'pgsql') {
+						$sql .= " ORDER BY ABS(DATE_PART( 'day', " . $sortfield . " - NOW() )) " . $sortorder;
+					} else {
+						$sql .= " ORDER BY ABS(DATEDIFF(" . $sortfield . ", NOW())) " . $sortorder;// .' , '. $sortfield .' '. $sortorder;
+					}
 			} else {
 				$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 			}
