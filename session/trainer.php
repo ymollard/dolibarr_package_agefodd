@@ -390,8 +390,13 @@ if (!empty($id))
 						print $formateurs->lines[$i]->getLibStatut(2);
 						print '</td>';
 						
+						$totaltimetrainer='';
+						$hourhtml='';
 						if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
-							print '&nbsp;';
+							
+							$hourhtml.= '<td>';
+							$hourhtml.= '<table class="nobordernopadding">';
+							$hourhtml.= '<tr><td width="50%">';
 							//Calculate time past in session
 							$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
 							$result=$trainer_calendar->fetch_all($formateurs->lines[$i]->opsid);
@@ -401,11 +406,22 @@ if (!empty($id))
 							$totaltime=0;
 							foreach($trainer_calendar->lines as $line_trainer_calendar) {
 								$totaltime+=$line_trainer_calendar->heuref-$line_trainer_calendar->heured;
+								$hourhtml .= '<tr><td>';
+								$hourhtml .= dol_print_date($line_trainer_calendar->heured,'dayhourtext');
+								$hourhtml .= '</td></tr>';
+								$hourhtml .= '<tr><td>';
+								$hourhtml .= dol_print_date($line_trainer_calendar->heuref,'dayhourtext');
+								$hourhtml .= '</td></tr>';
 							}
+							
+							$hourhtml.= '<tr></table>';
 								
-							print '('.dol_print_date($totaltime,'hourduration','tz').')';
+							$totaltimetrainer= '<td>('.dol_print_date($totaltime,'hourduration','tz').')</td>';
 							
+							$hourhtml.= '</td>';
 							
+							print $totaltimetrainer;
+							print $hourhtml;
 						}
 						
 						print '<tr></table>';

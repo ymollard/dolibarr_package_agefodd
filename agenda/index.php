@@ -751,7 +751,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							if ($event->trainer_status==3) $color='3366ff';
 							if ($event->trainer_status==4) $color='33ccff';
 							if ($event->trainer_status==5) $color='cc6600';
-							if ($event->trainer_status==5) $color='cc0000';			
+							if ($event->trainer_status==6) $color='cc0000';			
 						}
 					}
 					$cssclass = $cssclass . ' ' . $cssclass . '_day_' . $ymd;
