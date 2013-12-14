@@ -1194,6 +1194,29 @@ class Agsession extends CommonObject {
 			}
 		}
 		
+		//Set all inside status to cancel
+		if (! $error) {
+			if ($this->status==3) {
+				$sql="UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET status_in_session=6";
+				
+				dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
+				$resql = $this->db->query ( $sql );
+				if (! $resql) {
+					$error ++;
+					$this->errors [] = "Error " . $this->db->lasterror ();
+				}
+				
+				$sql="UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur SET trainer_status=6";
+				
+				dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
+				$resql = $this->db->query ( $sql );
+				if (! $resql) {
+					$error ++;
+					$this->errors [] = "Error " . $this->db->lasterror ();
+				}
+			}
+		}
+		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {

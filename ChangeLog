@@ -11,7 +11,6 @@ English Dolibarr ChangeLog
 -New : On Propal and order "auto" génération contacts are filled with session informations
 -Fix : No-limit contact list if combobox is not use
 -Fix : session : Send document better warining message and enabled WYSIWYG into mail message
--New : List session order by session start date closest from now
 -Fix : bugs_agefodd #1146 - small errors in fr_FR/agefodd.lang 
 -Fix : On proposal or Order auto generation fill line with only on date if strat date and end date are the same 
 -Fix/New : Propal/order/invoice session tab allow order and display Propal/Oerder/Inoice other tabs
@@ -23,6 +22,13 @@ English Dolibarr ChangeLog
 -New : Warning message if session date are not correct regarding session calendar date (and trainer calendar date if use)
 -New : color into Session agenda show status of session
 -New : Session-> Document link => Cannot create invoice from proposal if proposal is not signed
+-New : Session list can be filtered by period (1,2,3 in month and year=2013 will diplsay Jnuary,febuary,march 2013 session)
+-New : Auto calculation of selling price of session (regarding proposal/order/invoicelinked to the session)
+-New : Session cost mangement (supplier invoice creation from session) and auto caculation of session cost
+-New : New field date for confirm reservation date on session
+-New : If session is set to "Not done" status all status of trainer and trainee wil be set to cancelled
+-New : if use trainer calendar date are dipsly in all card where trainer list is displayed
+
 
 For Dev : 
 Column archive from llx_agefodd_session have been dropped now it's llx_agefodd_session.status=4
