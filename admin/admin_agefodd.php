@@ -520,11 +520,10 @@ print "</tr>\n";
 
 clearstatcache ();
 
-$dirmodels = array_merge ( array (
-	'/' 
-), ( array ) $conf->modules_parts ['models'] );
+$dirmodels = array_merge ( array ('/' ));
 
 foreach ( $dirmodels as $reldir ) {
+
 	$dir = dol_buildpath ( "/agefodd/core/modules/agefodd/" );
 	
 	if (is_dir ( $dir )) {
