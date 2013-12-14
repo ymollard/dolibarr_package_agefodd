@@ -134,7 +134,7 @@ class Agefodd_session_element extends CommonObject {
 				
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
-				// $interface=new Interfaces($this->db);
+				// $interface=new Interfaces($this->db);fetch_by_session sql=SELECT rowid, fk_element, element_type, fk_soc  FROM llx_agefodd_session_element WHERE fk_session_agefodd=419
 				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
@@ -151,6 +151,7 @@ class Agefodd_session_element extends CommonObject {
 			return - 1 * $error;
 		} else {
 			$this->db->commit ();
+			$this->updateSellingPrice($user);
 			return $this->id;
 		}
 	}
@@ -294,7 +295,7 @@ class Agefodd_session_element extends CommonObject {
 				$sql .= " AND element_type='order'";
 			}
 			if ($type == 'fac') {
-				$sql .= " AND element_type='invoice'";
+				$sql .= " AND elem$this->invoice_payed_amountent_type='invoice'";
 			}
 			if ($type == 'prop') {
 				$sql .= " AND element_type='propal'";
@@ -586,6 +587,7 @@ class Agefodd_session_element extends CommonObject {
 			return - 1 * $error;
 		} else {
 			$this->db->commit ();
+			$this->updateSellingPrice($user);
 			return 1;
 		}
 	}
@@ -748,6 +750,7 @@ class Agefodd_session_element extends CommonObject {
 					$proposal->fetch ( $obj->fk_element );
 					if ($proposal->statut == 2) {
 						$this->propal_sign_amount += $proposal->total_ht;
+						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=2 proposal->total_ht=" . $proposal->total_ht, LOG_DEBUG );
 					}
 				}
 				
@@ -756,9 +759,11 @@ class Agefodd_session_element extends CommonObject {
 					$facture->fetch ( $obj->fk_element );
 					if ($facture->statut == 2) {
 						$this->invoice_payed_amount += $facture->total_ht;
+						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=2 facture->total_ht=" . $facture->total_ht, LOG_DEBUG );
 					}
 					if ($facture->statut == 1) {
 						$this->invoice_ongoing_amount += $facture->total_ht;
+						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=1 facture->total_ht=" . $facture->total_ht, LOG_DEBUG );
 					}
 				}
 			}
@@ -768,6 +773,40 @@ class Agefodd_session_element extends CommonObject {
 			$this->error = "Error " . $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::fetch_by_session " . $this->error, LOG_ERR );
 			return - 1;
+		}
+	}
+	
+	
+	/**
+	 * update selling price
+	 *
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function updateSellingPrice($user) {
+		//Update session selling price
+		$sell_price=0;
+		
+		$result=$this->fetch_by_session($this->fk_session_agefodd);
+
+		$sell_price = $this->invoice_payed_amount;
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice invoice sell_price=".$sell_price, LOG_DEBUG);
+		
+		if (empty($sell_price)) $sell_price =$this->order_amount;
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice order sell_price=".$sell_price, LOG_DEBUG);
+		
+		if (empty($sell_price)) $sell_price= $this->propal_sign_amount-$this->invoice_payed_amount;
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice propal sell_price=".$sell_price, LOG_DEBUG);
+	
+		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session SET sell_price=\''.price2num($sell_price).'\' WHERE rowid='.$this->fk_session_agefodd;
+			
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if (!$resql) {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::updateSellingPrice " . $this->error, LOG_ERR );
+			return - 1;
+		} else {
+			return 1;
 		}
 	}
 }

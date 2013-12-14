@@ -33,6 +33,9 @@ ALTER TABLE llx_agefodd_session ADD INDEX idx_agefodd_session_status (status);
 ALTER TABLE llx_agefodd_session MODIFY duree_session real NOT NULL DEFAULT 0;
 ALTER TABLE llx_agefodd_formation_catalogue MODIFY duree real NOT NULL DEFAULT 0;
 
+ALTER TABLE llx_agefodd_session ADD COLUMN is_date_res_confirm_site smallint NOT NULL DEFAULT 0 AFTER date_res_site;
+ALTER TABLE llx_agefodd_session ADD COLUMN date_res_confirm_site datetime DEFAULT NULL AFTER is_date_res_confirm_site;
+
 
 
  

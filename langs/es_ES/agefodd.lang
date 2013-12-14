@@ -843,3 +843,4 @@ AgfCalendarDayOutOfScope=Session calendar date seems to be not correct regardinf
 AgfSessionDateErrors=Session start date must be before session date end
 AgfFactureFacNoPropalSignedHelp=Propal must be signed before create invoice
 AgfFactureAddLineSuplierInvoice=Add line on this supplier invoice
+AgfDateResConfirmSite=Confirm Location

@@ -57,6 +57,8 @@ class Agsession extends CommonObject {
 	var $sell_price;
 	var $date_res_site = '';
 	var $is_date_res_site;
+	var $date_res_confirm_site = '';
+	var $is_date_res_confirm_site;
 	var $date_res_trainer = '';
 	var $is_date_res_trainer;
 	var $date_ask_OPCA = '';
@@ -418,6 +420,8 @@ class Agsession extends CommonObject {
 		$sql .= " t.sell_price,";
 		$sql .= " t.date_res_site,";
 		$sql .= " t.is_date_res_site,";
+		$sql .= " t.date_res_confirm_site,";
+		$sql .= " t.is_date_res_confirm_site,";
 		$sql .= " t.date_res_trainer,";
 		$sql .= " t.is_date_res_trainer,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
@@ -506,6 +510,8 @@ class Agsession extends CommonObject {
 				$this->sell_price = $obj->sell_price;
 				$this->date_res_site = $this->db->jdate ( $obj->date_res_site );
 				$this->is_date_res_site = $obj->is_date_res_site;
+				$this->date_res_confirm_site = $this->db->jdate ( $obj->date_res_confirm_site );
+				$this->is_date_res_confirm_site = $obj->is_date_res_confirm_site;
 				$this->date_res_trainer = $this->db->jdate ( $obj->date_res_trainer );
 				$this->is_date_res_trainer = $obj->is_date_res_trainer;
 				$this->date_ask_OPCA = $this->db->jdate ( $obj->date_ask_opca );
@@ -1135,10 +1141,12 @@ class Agsession extends CommonObject {
 			$sql .= " cost_trip=" . (isset ( $this->cost_trip ) ? $this->cost_trip : "null") . ",";
 			$sql .= " sell_price=" . (isset ( $this->sell_price ) ? $this->sell_price : "null") . ",";
 			$sql .= " date_res_site=" . (dol_strlen ( $this->date_res_site ) != 0 ? "'" . $this->db->idate ( $this->date_res_site ) . "'" : 'null') . ",";
+			$sql .= " date_res_confirm_site=" . (dol_strlen ( $this->date_res_confirm_site ) != 0 ? "'" . $this->db->idate ( $this->date_res_confirm_site ) . "'" : 'null') . ",";
 			$sql .= " date_res_trainer=" . (dol_strlen ( $this->date_res_trainer ) != 0 ? "'" . $this->db->idate ( $this->date_res_trainer ) . "'" : 'null') . ",";
 			$sql .= " date_ask_OPCA=" . (dol_strlen ( $this->date_ask_OPCA ) != 0 ? "'" . $this->db->idate ( $this->date_ask_OPCA ) . "'" : 'null') . ",";
 			$sql .= " is_OPCA=" . (isset ( $this->is_OPCA ) ? $this->is_OPCA : "0") . ",";
 			$sql .= " is_date_res_site=" . (isset ( $this->is_date_res_site ) ? $this->is_date_res_site : "0") . ",";
+			$sql .= " is_date_res_confirm_site=" . (isset ( $this->is_date_res_confirm_site ) ? $this->is_date_res_confirm_site : "0") . ",";
 			$sql .= " is_date_res_trainer=" . (isset ( $this->is_date_res_trainer ) ? $this->is_date_res_trainer : "0") . ",";
 			$sql .= " is_date_ask_OPCA=" . (isset ( $this->is_date_ask_OPCA ) ? $this->is_date_ask_OPCA : "0") . ",";
 			$sql .= " fk_soc_OPCA=" . (isset ( $this->fk_soc_OPCA ) && $this->fk_soc_OPCA != - 1 ? $this->fk_soc_OPCA : "null") . ",";
@@ -1672,7 +1680,13 @@ class Agsession extends CommonObject {
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
-		$sql .= " ,s.duree_session,";
+		$sql .= " ,s.duree_session";
+		$sql .= " ,socp.rowid as contactid";
+		$sql .= " ,s.sell_price";
+		$sql .= " ,s.datec";
+		$sql .= " ,s.cost_trainer";
+		$sql .= " ,s.cost_site";
+		$sql .= " ,s.cost_trip,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=0 OR status_in_session IS NULL) AND fk_session_agefodd=s.rowid) as nb_prospect,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1 OR status_in_session=3) AND fk_session_agefodd=s.rowid) as nb_confirm,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE status_in_session=6 AND fk_session_agefodd=s.rowid) as nb_cancelled";
@@ -1693,6 +1707,12 @@ class Agsession extends CommonObject {
 		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_contact as sessioncontact";
+		$sql .= " ON s.rowid = sessioncontact.fk_session_agefodd";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_contact as agefoddcontact";
+		$sql .= " ON agefoddcontact.rowid = sessioncontact.fk_agefodd_contact";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp";
+		$sql .= " ON socp.rowid = agefoddcontact.fk_socpeople";
 		
 		if (is_array ( $filter )) {
 			foreach ( $filter as $key => $value ) {
@@ -1798,6 +1818,11 @@ class Agsession extends CommonObject {
 					$line->nb_cancelled = $obj->nb_cancelled;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
+					$line->contactid = $obj->contactid;
+					$line->sell_price = $obj->sell_price;
+					$line->datec = $this->db->jdate ( $obj->datec );
+					$line->cost_trainer = $obj->cost_trainer;
+					$line->cost_other = $obj->cost_trip+$obj->cost_site;
 					
 					if ($obj->statuslib == $langs->trans ( 'AgfStatusSession_' . $obj->code )) {
 						$label = stripslashes ( $obj->statuslib );
@@ -2378,6 +2403,13 @@ class Agsession extends CommonObject {
 		print '<tr><td>' . $langs->trans ( "AgfDateResSite" ) . '</td>';
 		if ($this->is_date_res_site) {
 			print '<td>' . dol_print_date ( $this->date_res_site, 'daytext' ) . '</td></tr>';
+		} else {
+			print '<td>' . $langs->trans ( "AgfNoDefined" ) . '</td></tr>';
+		}
+		
+		print '<tr><td>' . $langs->trans ( "AgfDateResConfirmSite" ) . '</td>';
+		if ($this->is_date_res_confirm_site) {
+			print '<td>' . dol_print_date ( $this->date_res_confirm_site, 'daytext' ) . '</td></tr>';
 		} else {
 			print '<td>' . $langs->trans ( "AgfNoDefined" ) . '</td></tr>';
 		}
@@ -3135,6 +3167,63 @@ class Agsession extends CommonObject {
 			return $propal->id;
 		}
 	}
+	
+	/**
+	 * Return send by mail propal  max date
+	 *
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function findDateSendPropal() {
+		$sql = "SELECT MAX(act.datep) as maxdate";
+		$sql .= " FROM ".MAIN_DB_PREFIX."agefodd_session_element as elem";
+		$sql .= " INNER JOIN  ".MAIN_DB_PREFIX."actioncomm as act ON act.fk_element=elem.fk_element ";
+		$sql .= " AND elem.element_type='propal' AND act.elementtype='propal'";
+		$sql .= " AND act.code='AC_PROPAL_SENTBYMAIL'";
+		$sql .= " AND elem.fk_session_agefodd=".$this->rowid;
+		
+		dol_syslog ( get_class ( $this ) . "::findDateSendPropal sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
+				$obj = $this->db->fetch_object ( $resql );
+				$returndate=$this->db->jdate($obj->maxdate);
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::findDateSendPropal " . $this->error, LOG_ERR );
+			return - 1;
+		}
+
+		return $returndate;
+	}
+	
+	/**
+	 * Return send by sign propal max date
+	 *
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function findDateSignPropal() {
+		$sql = "SELECT MAX(propal.date_cloture) as maxdate";
+		$sql .= " FROM ".MAIN_DB_PREFIX."agefodd_session_element as elem";
+		$sql .= " INNER JOIN  ".MAIN_DB_PREFIX."propal as propal ON propal.rowid=elem.fk_element ";
+		$sql .= " AND propal.fk_statut=2 AND elem.element_type='propal'";
+		$sql .= " AND elem.fk_session_agefodd=".$this->rowid;
+	
+		dol_syslog ( get_class ( $this ) . "::findDateSignPropal sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
+				$obj = $this->db->fetch_object ( $resql );
+				$returndate=$this->db->jdate($obj->maxdate);
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::findDateSignPropal " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	
+		return $returndate;
+	}
 }
 
 /**
@@ -3197,6 +3286,7 @@ class AgfSessionLine {
 	var $trainerrowid;
 	var $type_session;
 	var $is_date_res_site;
+	var $is_date_res_confirm_site;
 	var $is_date_res_trainer;
 	var $date_res_trainer;
 	var $fk_session_place;
@@ -3222,6 +3312,11 @@ class AgfSessionLine {
 	var $status;
 	var $trainer_status;
 	var $trainersessionid;
+	var $contactid;
+	var $sell_price;
+	var $datec;
+	var $cost_trainer;
+	var $cost_other;
 
 	function __construct() {
 

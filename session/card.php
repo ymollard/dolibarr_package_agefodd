@@ -175,8 +175,6 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 			}
 		}
 		
-		
-
 		$result = $agf->fetch($id);
 		
 		if ($agf->fk_formation_catalogue != GETPOST('formation','int')) {
@@ -224,27 +222,50 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST["stag_updat
 
 		$agf->date_res_site = dol_mktime(0,0,0,GETPOST('res_sitemonth','int'),GETPOST('res_siteday','int'),GETPOST('res_siteyear','int'));
 		$agf->date_res_trainer = dol_mktime(0,0,0,GETPOST('res_trainmonth','int'),GETPOST('res_trainday','int'),GETPOST('res_trainyear','int'));
+		$agf->date_res_confirm_site = dol_mktime(0,0,0,GETPOST('res_siteconfirmmonth','int'),GETPOST('res_siteconfirmday','int'),GETPOST('res_siteconfirmyear','int'));
 
 		if ($agf->date_res_site=='') {
 			$isdateressite=0;
-		} else {$isdateressite=GETPOST('isdateressite','alpha');
+		} else {
+			$isdateressite=GETPOST('isdateressite','alpha');
 		}
+		
 		if ($agf->date_res_trainer=='')	{
 			$isdaterestrainer=0;
-		} else {$isdaterestrainer=GETPOST('isdaterestrainer','alpha');
+		} else {
+			$isdaterestrainer=GETPOST('isdaterestrainer','alpha');
+		}
+		
+		if ($agf->date_res_confirm_site=='') {
+			$isdateresconfirmsite=0;
+		} else {
+			$isdateresconfirmsite=GETPOST('isdateresconfirmsite','alpha');
 		}
 
 		if ($isdateressite==1 && $agf->date_res_site!='') {
 			$agf->is_date_res_site = 1;
 		}
-		else {	$agf->is_date_res_site = 0;	$agf->date_res_site='';
+		else {	
+			$agf->is_date_res_site = 0;	
+			$agf->date_res_site='';
 		}
 
 		if ($isdaterestrainer==1 && $agf->date_res_trainer!='') {
 			$agf->is_date_res_trainer = 1;
 		}
-		else {	$agf->is_date_res_trainer = 0; $agf->date_res_trainer='';
+		else {	
+			$agf->is_date_res_trainer = 0; 
+			$agf->date_res_trainer='';
 		}
+		
+		if ($isdateresconfirmsite==1 && $agf->date_res_confirm_site!='') {
+			$agf->is_date_res_confirm_site = 1;
+		}
+		else {
+			$agf->is_date_res_site = 0;
+			$agf->date_res_confirm_site='';
+		}
+		
 
 		$fk_soc				= GETPOST('fk_soc','int');
 		$color				= GETPOST('color','alpha');
@@ -957,7 +978,9 @@ else
 					else $notes =  $langs->trans("AgfUndefinedNote");
 					print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">'.stripslashes($agf->notes).'</textarea></td></tr>';
 
-					print '<tr><td>'.$langs->trans("AgfDateResTrainer").'</td><td><table class="nobordernopadding"><tr><td>';
+					//Date res trainer
+					print '<tr>
+					<td>'.$langs->trans("AgfDateResTrainer").'</td><td><table class="nobordernopadding"><tr><td>';
 					if ($agf->is_date_res_site==1) {
 						$chkrestrainer='checked="checked"';
 					}
@@ -968,6 +991,7 @@ else
 					print '</td></tr></table>';
 					print '</td></tr>';
 
+					//Date res site
 					print '<tr><td>'.$langs->trans("AgfDateResSite").'</td><td><table class="nobordernopadding"><tr><td>';
 					if ($agf->is_date_res_site==1) {
 						$chkressite='checked="checked"';
@@ -977,6 +1001,17 @@ else
 					print '</td><td>';
 					print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
 					print '</td></tr></table>';
+					
+					//Date confirm site
+					print '<tr><td>'.$langs->trans("AgfDateResConfirmSite").'</td><td><table class="nobordernopadding"><tr><td>';
+					if ($agf->is_date_res_confirm_site==1) {
+						$chkresconfirmsite='checked="checked"';
+					}
+					print '<input type="checkbox" name="isdateresconfirmsite" value="1" '.$chkresconfirmsite.' /></td><td>';
+					$form->select_date($agf->date_res_confirm_site, 'res_siteconfirm','','',1,'update',1,1);
+					print '</td><td>';
+					print $form->textwithpicto('', $langs->trans("AgfDateCheckbox"));
+					print '</td></tr></table>';					
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfNbMintarget").'</td><td>';
 					print '<input name="nbmintarget" class="flat" size="5" value="'.$agf->nb_subscribe_min.'"></td></tr>';

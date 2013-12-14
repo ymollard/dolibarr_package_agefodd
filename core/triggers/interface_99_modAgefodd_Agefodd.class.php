@@ -512,15 +512,19 @@ class InterfaceAgefodd
 			$agf_fin=new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->id,'prop');
 
-
 			if (count($agf_fin->lines)>0) {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
 				$session_sta=new Agefodd_session_stagiaire($this->db);
 				$session_sta->fk_session_agefodd=$agf_fin->lines[0]->fk_session;
+				//Set trainee status to confirm
 				$session_sta->update_status_by_soc($user,0,$object->socid,2);
+				
+				$agf_fin->fk_session_agefodd=$agf_fin->lines[0]->fk_session;
+				//$agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
+				$agf_fin->updateSellingPrice($user);
 			}
-
+			
 			return 1;
 
 		}
@@ -586,6 +590,7 @@ class InterfaceAgefodd
 			$agf_fin->fetch_element_by_id($object->id,'prop');
 			if (count($agf_fin->lines)>0) {
 				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->fk_agefodd_session=$agf_fin->lines[0]->fk_session;
 				$agf_fin->delete($user);
 			}
 			
@@ -600,6 +605,7 @@ class InterfaceAgefodd
 			$agf_fin->fetch_element_by_id($object->id,'fac');
 			if (count($agf_fin->lines)>0) {
 				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->fk_agefodd_session=$agf_fin->lines[0]->fk_session;
 				$agf_fin->delete($user);
 			}
 			
@@ -614,6 +620,7 @@ class InterfaceAgefodd
 			$agf_fin->fetch_element_by_id($object->id,'bc');
 			if (count($agf_fin->lines)>0) {
 				$agf_fin->id=$agf_fin->lines[0]->id;
+				$agf_fin->fk_agefodd_session=$agf_fin->lines[0]->fk_session;
 				$agf_fin->delete($user);
 			}
 			

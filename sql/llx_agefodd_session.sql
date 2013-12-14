@@ -44,6 +44,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   sell_price double(24,8) DEFAULT 0, 
   is_date_res_site smallint NOT NULL DEFAULT 0,
   date_res_site datetime DEFAULT NULL,
+  is_date_res_confirm_site smallint NOT NULL DEFAULT 0,
+  date_res_confirm_site datetime DEFAULT NULL,
   is_date_res_trainer smallint NOT NULL DEFAULT 0,
   date_res_trainer datetime DEFAULT NULL,
   date_ask_OPCA datetime DEFAULT NULL,
