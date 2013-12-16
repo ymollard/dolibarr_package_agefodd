@@ -61,7 +61,7 @@ $pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'),0,0,"R
 
 $pdf->SetXY($posX - 47, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 11);
-$this->str = $outputlangs->transnoentities('AgfConvention').' (x2)';
+$this->str = $outputlangs->transnoentities('AgfConvention');
 $pdf->MultiCell(0,5, $outputlangs->convToOutputCharset($this->str),0,'L');
 $posY += 16;
 

@@ -290,7 +290,10 @@ class pdf_convocation extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'B', $this->defaultFontSize + 3);
-					$this->str = $agf->intitule_custo;
+					
+					$this->str=$agf->formintitule;
+					if (!empty($agf->intitule_custo)) 
+						$this->str = $agf->intitule_custo;
 					$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 8;
 
