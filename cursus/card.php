@@ -66,7 +66,7 @@ $pagenext = $page + 1;
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	$agf = new Agefodd_cursus ( $db );
 	$agf->id = $id;
-	$result = $agf->remove ( $user );
+	$result = $agf->delete ( $user );
 	
 	if ($result > 0) {
 		Header ( "Location: list.php" );
