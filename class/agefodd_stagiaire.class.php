@@ -295,7 +295,11 @@ class Agefodd_stagiaire extends CommonObject
 		if (!empty($filter)){
 			$addcriteria=false;
 			foreach($filter as $key => $value) {
-				if ($key=='civ.code') {
+				if ($key=='naturalsearch') {
+					$sqlwhere.= '(s.nom LIKE \'%'.$this->db->escape($value).'%\' OR s.prenom LIKE \'%'.$this->db->escape($value).'%\')';
+					$addcriteria=true;
+				}
+				elseif ($key=='civ.code') {
 					if ($addcriteria) {
 						$sql.= ' AND ';
 					}

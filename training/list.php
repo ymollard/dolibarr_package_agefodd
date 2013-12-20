@@ -31,6 +31,8 @@ if (! $res) die("Include of main fails");
 require_once('../class/agefodd_formation_catalogue.class.php');
 require_once('../class/html.formagefodd.class.php');
 
+require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+
 // Security check
 if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
 
@@ -87,6 +89,10 @@ llxHeader('',$langs->trans('AgfMenuCat'));
 $agf = new Agefodd($db);
 $form = new Form ( $db );
 $formagefodd = new FormAgefodd($db);
+
+$extrafields = new ExtraFields ( $db );
+$extralabels = $extrafields->fetch_name_optionals_label ( $agf->table_element, true );
+
 
 $filter = array ();
 if (! empty ( $search_intitule )) {

@@ -146,6 +146,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 		$sql.= " sa.nom, sa.prenom,";
 		$sql.= " civ.code as civilite, civ.civilite as civilitel,";
 		$sql.= " so.nom as socname, so.rowid as socid,";
+		$sql.= ' so.code_client as soccode, ';
 		$sql.= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail,";
 		$sql.= " sa.date_birth,";
 		$sql.= " sa.place_birth,";
@@ -193,6 +194,7 @@ class Agefodd_session_stagiaire  extends CommonObject
 				$line->civilitel = $obj->civilitel;
 				$line->socname = $obj->socname;
 				$line->socid = $obj->socid;
+				$line->soccode = $obj->soccode;
 				$line->typeid = $obj->typeid;
 				$line->status_in_session = $obj->status_in_session;
 				$line->place_birth = $obj->place_birth;
@@ -679,6 +681,7 @@ class AgfTraineeSessionLine
 	var $status_in_session;
 	var $fk_agefodd_stagiaire_type;
 	var $poste;
+	var $soccode;
 
 	function __construct()
 	{

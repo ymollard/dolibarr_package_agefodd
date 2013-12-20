@@ -51,13 +51,13 @@ if (!empty($agf->id)) {
 }
 
 
-/*
- //Use for data retreive from Akteos
 
+ //Use for data retreive from Akteos
+/*
 $sql = "SELECT s.rowid";
 $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 $sql .= " WHERE s.rowid NOT IN (select fk_agefodd_session FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)";
-$sql .= " AND s.archive=0";
+$sql .= " AND s.status<>4";
 $resql = $db->query ( $sql );
 if ($resql) {
 

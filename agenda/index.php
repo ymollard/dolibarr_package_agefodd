@@ -740,10 +740,14 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					if ($color == - 1) 					// Color was not forced. Set color according to color index.
 					{
 						if (!isset($event->trainer_status)) {
+							if (isset($event->sessionstatus)) {
 							if ($event->sessionstatus=='ENV') $color='ffcc66';
 							if ($event->sessionstatus=='CONF') $color='33cc00';
 							if ($event->sessionstatus=='NOT') $color='ff6600';
 							if ($event->sessionstatus=='ARCH') $color='c0c0c0';
+						} else {
+								$color='c0c0c0';
+							}
 						} else {
 							if ($event->trainer_status==0) $color='ffffcc';
 							if ($event->trainer_status==1) $color='66ff99';
@@ -831,7 +835,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							
 							// If action related to company / contact
 						$linerelatedto = '';
-						$length = 16;
+						$length = 30;
 						if (! empty ( $event->societe->id ) && ! empty ( $event->contact->id ))
 							$length = round ( $length / 2 );
 						if (! empty ( $event->societe->id ) && $event->societe->id > 0) {

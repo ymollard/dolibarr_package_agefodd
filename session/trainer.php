@@ -409,9 +409,11 @@ if (!empty($id))
 								$hourhtml .= '<tr><td>';
 								$hourhtml .= dol_print_date($line_trainer_calendar->heured,'dayhourtext');
 								$hourhtml .= '</td></tr>';
-								$hourhtml .= '<tr><td>';
-								$hourhtml .= dol_print_date($line_trainer_calendar->heuref,'dayhourtext');
-								$hourhtml .= '</td></tr>';
+								if ($line_trainer_calendar->heured!=$line_trainer_calendar->heuref) {
+									$hourhtml .= '<tr><td>';
+									$hourhtml .= dol_print_date($line_trainer_calendar->heuref,'dayhourtext');
+									$hourhtml .= '</td></tr>';
+								}
 							}
 							
 							$hourhtml.= '<tr></table>';

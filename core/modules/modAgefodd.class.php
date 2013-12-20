@@ -83,7 +83,8 @@ class modAgefodd extends DolibarrModules
 		$this->config_page_url = array("admin_agefodd.php@agefodd");
 
 		//define triggers
-		$this->module_parts = array('triggers' => 1);
+		$this->module_parts = array('triggers' => 1,
+							 'hooks' => array('searchform'));
 
 		// Dependencies
 		$this->depends = array('modSociete', 'modPropale', 'modComptabilite', 'modFacture', 'modBanque', 'modFournisseur', 'modService', 'modAgenda');		// List of modules id that must be enabled if this module is enabled

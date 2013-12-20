@@ -843,3 +843,4 @@ AgfSessionDateErrors=La date de debut de session doit être avant la date de fin
 AgfFactureFacNoPropalSignedHelp=La proposition commercial doit être signée avant de crée la facture
 AgfFactureAddLineSuplierInvoice=Ajouter une ligne sur cette facture fournisseur
 AgfDateResConfirmSite=Confirmation réservation salle
+AgfSessionId=Id session

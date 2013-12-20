@@ -232,7 +232,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer)
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">'.$langs->trans("Company").'</span></td>';
-	print '<td>'.$form->select_company('','societe','((s.client IN (1,2)) OR (s.fournisseur=1))',1,1,0).'</td></tr>';
+	print '<td>'.$form->select_company('','societe','((s.client IN (1,2,3)) OR (s.fournisseur=1))',1,1,0).'</td></tr>';
 
 	print '<tr><td valign="top">'.$langs->trans("AgfNote").'</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -287,7 +287,7 @@ else
 				print '<td><input name="ref_interne" class="flat" size="50" value="'.$agf->ref_interne.'"></td></tr>';
 
 				print '<tr><td>'.$langs->trans("Company").'</td>';
-				print '<td>'.$form->select_company($agf->socid,'societe','((s.client IN (1,2)) OR (s.fournisseur=1))',0,1).'</td></tr>';
+				print '<td>'.$form->select_company($agf->socid,'societe','((s.client IN (1,2,3)) OR (s.fournisseur=1))',0,1).'</td></tr>';
 
 				print '<tr><td>'.$langs->trans("Address").'</td>';
 				print '<td><input name="adresse" class="flat" size="50" value="'.$agf->adresse.'"></td></tr>';

@@ -50,6 +50,7 @@ $search_civ=GETPOST("search_civ");
 $search_soc=GETPOST("search_soc");
 $search_tel=GETPOST("search_tel");
 $search_mail=GETPOST("search_mail");
+$search_namefirstname=GETPOST("search_namefirstname");
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x"))
@@ -80,6 +81,9 @@ if (!empty($search_tel)) {
 }
 if (!empty($search_mail)) {
 	$filter['s.mail']=$search_mail;
+}
+if (!empty($search_namefirstname)) {
+	$filter['naturalsearch']=$search_namefirstname;
 }
 
 

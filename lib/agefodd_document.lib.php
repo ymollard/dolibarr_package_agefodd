@@ -354,6 +354,7 @@ function show_fac($file, $socid, $mdle) {
 				$propal = new Propal ( $db );
 				$propal->fetch ( $line->fk_element );
 				$mess .= $propal->getLibStatut ( 2 );
+				$mess .= ' (' . price ( $propal->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
 				
 				$mess .= '</td></tr>';
 			}
@@ -399,11 +400,11 @@ function document_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courrier =
 	if ($level == 2) {
 		// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
 		if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
-			print '<td style="width=200px;border-left:0px;" align="left">' . show_fac ( $mdle, $socid, $mdle ) . '</td>' . "\n";
+			print '<td style="width=250px;border-left:0px;" align="left">' . show_fac ( $mdle, $socid, $mdle ) . '</td>' . "\n";
 		} elseif ($mdle == 'convention') {
-			print '<td style="border-left:0px; width:200px" align="left">' . show_conv ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
+			print '<td style="border-left:0px; width:250px" align="left">' . show_conv ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
 		} else {
-			print '<td style="border-left:0px; width:200px"  align="left">' . show_doc ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
+			print '<td style="border-left:0px; width:250px"  align="left">' . show_doc ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
 		}
 		print '<td style="border-right:0px;">';
 	} else

@@ -95,6 +95,8 @@ class Agsession extends CommonObject {
 	var $contactcivilite;
 	var $duree_session;
 	var $intitule_custo;
+	var $placecode;
+	var $placeid;
 
 	/**
 	 * Constructor
@@ -255,7 +257,7 @@ class Agsession extends CommonObject {
 					if (! empty ( $soc->id )) {
 						foreach ( $this->array_options as $key => $value ) {
 							// If same extrafeild exists into customer=> Transfert it to session and value is not fill yet
-							if (array_key_exists ( $key, $soc->array_options ) && (! empty ( $soc->array_options [$key] )) && (empty ( $this->array_options [$key] ))) {
+							if (is_array($soc->array_options) && array_key_exists ( $key, $soc->array_options ) && (! empty ( $soc->array_options [$key] )) && (empty ( $this->array_options [$key] ))) {
 								$this->array_options [$key] = $soc->array_options [$key];
 							}
 						}
@@ -1197,7 +1199,7 @@ class Agsession extends CommonObject {
 		//Set all inside status to cancel
 		if (! $error) {
 			if ($this->status==3) {
-				$sql="UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET status_in_session=6";
+				$sql="UPDATE ".MAIN_DB_PREFIX."agefodd_session_stagiaire SET status_in_session=6 WHERE fk_session_agefodd=".$this->id;
 				
 				dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
 				$resql = $this->db->query ( $sql );
@@ -1206,7 +1208,7 @@ class Agsession extends CommonObject {
 					$this->errors [] = "Error " . $this->db->lasterror ();
 				}
 				
-				$sql="UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur SET trainer_status=6";
+				$sql="UPDATE ".MAIN_DB_PREFIX."agefodd_session_formateur SET trainer_status=6 WHERE fk_session=".$this->id;
 				
 				dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
 				$resql = $this->db->query ( $sql );
@@ -1769,6 +1771,13 @@ class Agsession extends CommonObject {
 				if (($key == 'YEAR(s.dated)')
 				|| ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND '.$key.' IN ('. $value.')';
+				}elseif ($key == 's.dated>') 	{
+					if ($this->db->type=='pgsql') {
+						$intervalday="'".$jour." DAYS'";
+					} else {
+						$intervalday=$value . ' DAY)';
+					}
+					$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -'.intervalday.')';
 				} elseif (strpos ( $key, 'date' )) 	{	// To allow $filter['YEAR(s.dated)']=>$year
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com')) {
@@ -2932,7 +2941,11 @@ class Agsession extends CommonObject {
 				$order->lines [0]->fk_product = $this->fk_product;
 				$order->lines [0]->qty = 1;
 				
+				if (!empty($this->intitule_custo)) {
+					$desc = $this->intitule_custo . "\n" . dol_print_date ( $this->dated, 'daytext' );
+				} else {
 				$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+				}
 				if ($this->datef != $this->dated) {
 					$desc .= '-' . dol_print_date ( $this->datef, 'daytext' );
 				}
@@ -2954,7 +2967,7 @@ class Agsession extends CommonObject {
 					$sql = "SELECT ";
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 					$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
-					$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp ON pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
+					$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp WHERE pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
 					dol_syslog ( get_class ( $this ) . "::createOrder sql=" . $sql, LOG_DEBUG );
 					$resql = $this->db->query ( $sql );
 					if ($resql) {
@@ -2965,6 +2978,11 @@ class Agsession extends CommonObject {
 							$price_min = $obj->custprice_min;
 							$price_base_type = $obj->custprice_base_type;
 							$tva_tx = $obj->custtva_tx;
+						} else {
+							$pu_ht = $product->price;
+							$pu_ttc = $product->price_ttc;
+							$price_min = $product->price_min;
+							$price_base_type = $product->price_base_type;
 						}
 						$this->db->free ( $resql );
 					} else {
@@ -3080,7 +3098,11 @@ class Agsession extends CommonObject {
 			$propal->lines [0]->fk_product = $this->fk_product;
 			$propal->lines [0]->qty = 1;
 			
-			$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+			if (!empty($this->intitule_custo)) {
+				$desc = $this->intitule_custo . "\n" . dol_print_date ( $this->dated, 'daytext' );
+			} else {
+				$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+			}
 			if ($this->datef != $this->dated) {
 				$desc .= '-' . dol_print_date ( $this->datef, 'daytext' );
 			}
@@ -3115,7 +3137,7 @@ class Agsession extends CommonObject {
 				$sql = "SELECT ";
 				$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 				$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
-				$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp ON pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
+				$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp WHERE pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
 				dol_syslog ( get_class ( $this ) . "::createProposal sql=" . $sql, LOG_DEBUG );
 				$resql = $this->db->query ( $sql );
 				if ($resql) {
@@ -3126,6 +3148,11 @@ class Agsession extends CommonObject {
 						$price_min = $obj->custprice_min;
 						$price_base_type = $obj->custprice_base_type;
 						$tva_tx = $obj->custtva_tx;
+					} else {
+						$pu_ht = $product->price;
+						$pu_ttc = $product->price_ttc;
+						$price_min = $product->price_min;
+						$price_base_type = $product->price_base_type;
 					}
 					$this->db->free ( $resql );
 				} else {

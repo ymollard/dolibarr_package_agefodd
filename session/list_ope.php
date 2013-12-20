@@ -124,6 +124,9 @@ if ($search_type_session!='' && $search_type_session != - 1) {
 if (! empty ( $search_id )) {
 	$filter ['s.rowid'] = $search_id;
 }
+if (! empty ( $search_id )) {
+	$filter ['s.rowid'] = $search_id;
+}
 
 if (empty ( $sortorder ))
 	$sortorder = "DESC";

@@ -557,6 +557,8 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer)
 		$agf->commercialid = GETPOST('commercial','int');
 		$agf->contactid = GETPOST('contact','int');
 		
+		$agf->fk_product = GETPOST('productid','int');
+		
 		$agf->duree_session = GETPOST('duree_session','int');
 		$agf->intitule_custo = GETPOST('intitule_custo','alpha');
 
@@ -778,6 +780,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 		print '</td></tr>';
 	}
 
+	print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
+	print $form->select_produits($agf->fk_product,'productid','',10000,0,1,2,'',0,array());
+	print "</td></tr>";
+
 	print '<tr><td>'.$langs->trans("AgfNumberPlaceAvailable").'</td>';
 	print '<td>';
 	print '<input type="text" class="flat" name="nb_place" size="4" value="'.GETPOST('nb_place','int').'"/>';
@@ -908,7 +914,7 @@ else
 					print '<td><input size="4" type="text" class="flat" id="duree_session" name="duree_session" value="'.$agf->duree_session.'" /></td></tr>';
 					
 					print '<tr><td width="20%">'.$langs->trans("AgfProductServiceLinked").'</td><td>';
-					print $form->select_produits($agf->fk_product,'productid','',10000);
+					print $form->select_produits($agf->fk_product,'productid','',10000,0,1,2,'',0,array(),$agf->fk_soc);
 					print "</td></tr>";
 
 					print '<tr><td>'.$langs->trans("AgfDateDebut").'</td><td>';
@@ -1038,15 +1044,15 @@ else
 					print '<div class="tabBar">';
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormateur").'</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrainer" value="'.price($agf->cost_trainer).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costtrainer" value="'.price($agf->cost_trainer).'" />'.' '.$langs->getCurrencySymbol ( $conf->currency ).'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutSalle").'</td>';
-					print '<td><input size="6" type="text" class="flat" name="costsite" value="'.price($agf->cost_site).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costsite" value="'.price($agf->cost_site).'" />'.' '.$langs->getCurrencySymbol ( $conf->currency ).'</td></tr>';
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutDeplacement").'</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->trans('Currency'.$conf->currency).'</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costtrip" value="'.price($agf->cost_trip).'" />'.' '.$langs->getCurrencySymbol ( $conf->currency ).'</td></tr>';
 
 					print '<tr><td width="20%">'.$langs->trans("AgfCoutFormation").'</td>';
-					print '<td><input size="6" type="text" class="flat" name="sellprice" value="'.price($agf->sell_price).'" />'.' '.$langs->trans('Currency'.$conf->currency).' '.$other_amount.'</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="sellprice" value="'.price($agf->sell_price).'" />'.' '.$langs->getCurrencySymbol ( $conf->currency ).' '.$other_amount.'</td></tr>';
 					print '</table></div>';
 
 					print '<table style=noborder align="right">';
@@ -1405,9 +1411,11 @@ else
 									print '<tr><td>';
 									print dol_print_date($line->heured,'dayhourtext');
 									print '</td></tr>';
-									print '<tr><td>';
-									print dol_print_date($line->heuref,'dayhourtext');
-									print '</td></tr>';
+									if ($line->heuref!=$line->heured) {
+										print '<tr><td>';
+										print dol_print_date($line->heuref,'dayhourtext');
+										print '</td></tr>';
+									}
 								}
 								//Print warning message if trainer calendar date are not set within session date
 								if ($alertday) {
@@ -1439,7 +1447,10 @@ else
 					print '<table class="border" width="100%">';
 
 					$stagiaires = new Agefodd_session_stagiaire($db);
-					$stagiaires->fetch_stagiaire_per_session($agf->id);
+					$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
+					if ($resulttrainee<0) {
+						setEventMessage($stagiaires->error,'errors');
+					}
 					$nbstag = count($stagiaires->lines);
 					print '<tr><td  width="20%" valign="top" ';
 					if ($nbstag < 1) {
@@ -1519,7 +1530,9 @@ else
 							// Info funding company
 							if ($stagiaires->lines[$i]->socid) {
 								print '<a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$stagiaires->lines[$i]->socid.'">';
-								print img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($stagiaires->lines[$i]->socname,20).'</a>';
+								print img_object($langs->trans("ShowCompany"),"company");
+								if (!empty($stagiaires->lines[$i]->soccode)) print ' '.$stagiaires->lines[$i]->soccode.'-';
+								print ' '.dol_trunc($stagiaires->lines[$i]->socname,20).'</a>';
 							}
 							else {
 								print '&nbsp;';

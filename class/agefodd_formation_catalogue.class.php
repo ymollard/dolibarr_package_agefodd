@@ -747,6 +747,15 @@ class Agefodd extends CommonObject {
 		$sql .= " ON c.rowid = a.fk_formation_catalogue";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat";
 		$sql .= " ON dictcat.rowid = c.fk_c_category";
+		
+		foreach($filter as $key => $value) {
+			if (strpos($key,'extra.') !== false) {
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_extrafields as extra";
+				$sql .= " ON c.rowid = extra.fk_object";
+				break;
+			}
+		}
+		
 		$sql .= " WHERE c.archive = " . $arch;
 		$sql .= " AND c.entity IN (" . getEntity ( 'agsession' ) . ")";
 		// Manage filter
