@@ -42,6 +42,7 @@ class Agefodd_convention
 	var $socid;
 	var $element_type;
 	var $fk_element;
+	var $model_doc;
 	var $socname;
 	var $intro1;
 	var $intro2;
@@ -97,6 +98,7 @@ class Agefodd_convention
 		if (isset($this->notes)) $this->notes = $this->db->escape(trim($this->notes));
 		if (empty($this->fk_element)) $this->fk_element = 0;
 		if (isset($this->element_type)) $this->element_type = $this->db->escape(trim($this->element_type));
+		if (isset($this->model_doc)) $this->model_doc = $this->db->escape(trim($this->model_doc));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -107,6 +109,7 @@ class Agefodd_convention
 		$sql.= " art4, art5, art6, art7, art8, sig, notes, fk_user_author, fk_user_mod, datec";
 		$sql.= ",element_type";
 		$sql.= ",fk_element";
+		$sql.= ",model_doc";
 		$sql.= ") VALUES (";
 		$sql.= "'".$this->sessid."', ";
 		$sql.= "'".$this->socid."', ";
@@ -127,6 +130,7 @@ class Agefodd_convention
 		$sql.= "'".$this->db->idate(dol_now())."'";
 		$sql.= ",'".$this->element_type."'";
 		$sql.= ",".$this->fk_element;
+		$sql.= ",".(! isset($this->model_doc)?'NULL':"'".$this->db->escape($this->model_doc)."'");
 		$sql.= ")";
 
 		$this->db->begin();
@@ -186,6 +190,7 @@ class Agefodd_convention
 		$sql.= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.sig, notes, s.nom as socname";
 		$sql.= ",element_type";
 		$sql.= ",fk_element";
+		$sql.= ",model_doc";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_convention as c";
 		$sql.= " LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe as s ON s.rowid=c.fk_societe";
 		if ( $id > 0) $sql.= " WHERE c.rowid = ".$id;
@@ -221,6 +226,7 @@ class Agefodd_convention
 				$this->notes = $obj->notes;
 				$this->element_type = $obj->element_type;
 				$this->fk_element = $obj->fk_element;
+				$this->model_doc = $obj->model_doc;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -550,6 +556,7 @@ class Agefodd_convention
 		if (isset($this->notes)) $this->notes = $this->db->escape(trim($this->notes));
 		if (empty($this->fk_element)) $this->fk_element = 0;
 		if (isset($this->element_type)) $this->element_type = $this->db->escape(trim($this->element_type));
+		if (isset($this->model_doc)) $this->model_doc = $this->db->escape(trim($this->model_doc));
 
 		// Update request
 		if (!isset($this->archive)) $this->archive = 0;
@@ -570,7 +577,8 @@ class Agefodd_convention
 		$sql.= " element_type='".$this->element_type."',";
 		$sql.= " fk_societe=".$this->socid.",";
 		$sql.= " fk_agefodd_session=".$this->sessid.",";
-		$sql.= " fk_user_mod=".$user->id." ";
+		$sql.= " fk_user_mod=".$user->id.", ";
+		$sql.= " model_doc=".(isset($this->model_doc)?"'".$this->db->escape($this->model_doc)."'":"null");
 		$sql.= " WHERE rowid = ".$this->id;
 
 		$this->db->begin();
