@@ -146,21 +146,23 @@ if (($action == 'create' || $action == 'refresh' ) && $user->rights->agefodd->cr
 	}
 	$id_tmp= $id;
 	if (!empty($cour)) $file = $model.'-'.$cour.'_'.$id.'_'.$socid.'.pdf';
-	elseif(!empty($socid)) $file = $model.'_'.$id.'_'.$socid.'.pdf';
-	elseif ($model=='fiche_pedago') {
-		$file=$model.'_'.$idform.'.pdf';
-		$id_tmp=$idform;
-	}
-	elseif ($model=='convention') {
-		
+    elseif ($model=='convention') {
+	
 		$convention=new Agefodd_convention($db);
 		$convention->fetch(0,0,GETPOST('convid','int'));
-		
+	
 		$model = $convention->model_doc;
+		$model = str_replace('pdf_', '', $model);
 	
 		$file = 'convention' . '_' . $id . '_' . $socid . '.pdf';
+	}elseif(!empty($socid)) {
+		$file = $model.'_'.$id.'_'.$socid.'.pdf';
+	}elseif ($model=='fiche_pedago') {
+		$file=$model.'_'.$idform.'.pdf';
+		$id_tmp=$idform;
+	} else {
+		$file = $model.'_'.$id.'.pdf';
 	}
-	else $file = $model.'_'.$id.'.pdf';
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
 }
 

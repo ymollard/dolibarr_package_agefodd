@@ -11,6 +11,7 @@ INSERT INTO llx_agefodd_session_element (fk_session_agefodd, fk_soc ,element_typ
 ALTER TABLE llx_agefodd_convention ADD COLUMN element_type varchar(50) DEFAULT NULL AFTER fk_societe;
 ALTER TABLE llx_agefodd_convention ADD COLUMN fk_element integer DEFAULT NULL AFTER element_type;
 ALTER TABLE llx_agefodd_convention ADD COLUMN model_doc	varchar(200) DEFAULT NULL AFTER fk_element;
+UPDATE llx_agefodd_convention SET model_doc='pdf_convention' WHERE model_doc IS NULL 
 
 ALTER TABLE llx_agefodd_session_formateur ADD COLUMN trainer_status integer DEFAULT NULL AFTER fk_agefodd_formateur;
 ALTER TABLE llx_agefodd_session_formateur_calendrier ADD COLUMN trainer_status integer DEFAULT NULL AFTER trainer_cost;

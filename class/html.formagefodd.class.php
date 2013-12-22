@@ -1462,7 +1462,6 @@ class FormAgefodd extends Form {
 			dol_print_error($this->db);
 		}
 	}
-	
 
 	/**
 	 *	Return select of available convention document model
@@ -1472,32 +1471,36 @@ class FormAgefodd extends Form {
 	 */
 	function select_conv_model($model='',$htmlname='model_doc') {
 		$outselect='<select class="flat" id="'.$htmlname.'" name="'.$htmlname.'">';
-		
+	
 		$dir = dol_buildpath ( "/agefodd/core/modules/agefodd/pdf/" );
 	
 		if (is_dir ( $dir )) {
 			$handle = opendir ( $dir );
 			if (is_resource ( $handle )) {
 				$var = true;
-				
+	
 				while ( ($file = readdir ( $handle )) !== false ) {
 					if (preg_match ( '/^(pdf_convention.*)\.modules.php$/i', $file, $reg )) {
 						$file = $reg [1];
-						
+	
 						require_once ($dir . $file . ".modules.php");
-						
+	
 						$module = new $file ($this->db);
-						
-						$outselect.='<option value="'.$file.'">'.$module->description.'</option>';
+	
+						$selected='';
+						if ($file==$model) {
+							$selected='selected="selected"';
+						}
+						$outselect.='<option value="'.$file.'" '.$selected.'>'.$module->description.'</option>';
 					}
 				}
 			}
+	
 		}
-		
-		
+	
+	
 		$outselect.='</select>';
-		
+	
 		return $outselect;
 	}
-	
 }

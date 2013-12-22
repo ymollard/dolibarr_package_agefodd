@@ -121,6 +121,7 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 		$outputlangs->setDefaultLang ( $newlang );
 	}
 	$model = $agf->model_doc;
+	$model = str_replace('pdf_', '', $model);
 	
 	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '.pdf';
 	
