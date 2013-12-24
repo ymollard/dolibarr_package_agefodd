@@ -277,7 +277,7 @@ if ($resql != - 1) {
 			print '<td>' . stripslashes ( dol_trunc ( $line->fromintitule, 60 ) ) . '</td>';
 			print '<td>' . $line->fromref . '</td>';
 			print '<td>' . $line->fromrefinterne . '</td>';
-			print '<td>' .$line->trainee_name.' '.$line->trainee_firstname. '</td>';
+			print '<td><a href="'.dol_buildpath('/agefodd/trainee/session.php',1).'?id='.$line->trainee_id.'">' .$line->trainee_name.' '.$line->trainee_firstname. '</a></td>';
 			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
 			print '<td>' . $line->certif_code . '</td>';

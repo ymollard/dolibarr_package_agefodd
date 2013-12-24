@@ -602,7 +602,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 
 		$sql.= " ORDER BY t.datec desc";
 
-		dol_syslog(get_class($this)."::fetch_all sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::fetch_all_by_trainee sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -632,6 +632,9 @@ class Agefodd_stagiaire_certif  extends CommonObject
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
 				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 
+				$this->fetch_certif_state($obj->rowid);
+				$line->lines_state= $this->lines_state;
+				
 				$this->lines[$i]=$line;
 
 				$i++;
@@ -642,7 +645,7 @@ class Agefodd_stagiaire_certif  extends CommonObject
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::fetch_all ".$this->error, LOG_ERR);
+			dol_syslog(get_class($this)."::fetch_all_by_trainee ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -967,6 +970,7 @@ class AgfStagiaireCertifLine
 	var $certif_dt_end='';
 	var $certif_dt_warning='';
 
+	var $lines_state=array();
 
 	function __construct()
 	{

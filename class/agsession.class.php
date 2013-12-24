@@ -97,6 +97,8 @@ class Agsession extends CommonObject {
 	var $intitule_custo;
 	var $placecode;
 	var $placeid;
+	var $commercialemail;
+	var $commercialphone;
 
 	/**
 	 * Constructor
@@ -444,6 +446,8 @@ class Agsession extends CommonObject {
 		$sql .= " t.status,dictstatus.intitule as statuslib, dictstatus.code as statuscode,";
 		$sql .= " p.rowid as placeid, p.ref_interne as placecode,";
 		$sql .= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
+		$sql .= " us.email as commercialemail, ";
+		$sql .= " us.office_phone as commercialphone, ";
 		$sql .= " com.fk_user_com as commercialid, ";
 		$sql .= " socp.lastname as contactname, socp.firstname as contactfirstname, socp.civilite as contactcivilite,";
 		$sql .= " agecont.fk_socpeople as sourcecontactid, ";
@@ -535,6 +539,8 @@ class Agsession extends CommonObject {
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate ( $obj->tms );
 				$this->commercialname = $obj->commercialname . ' ' . $obj->commercialfirstname;
+				$this->commercialemail = $obj->commercialemail;
+				$this->commercialphone = $obj->commercialphone;
 				$this->commercialid = $obj->commercialid;
 				$this->contactname = $obj->contactname . ' ' . $obj->contactfirstname;
 				$this->contactcivilite = $obj->contactcivilite;

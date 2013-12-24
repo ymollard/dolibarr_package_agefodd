@@ -28,6 +28,7 @@ English Dolibarr ChangeLog
 -New : New field date for confirm reservation date on session
 -New : If session is set to "Not done" status all status of trainer and trainee wil be set to cancelled
 -New : if use trainer calendar date are dipslay in all card where trainer list is displayed
+-New : Update certificate information from trainnee->certificate card
 
 
 For Dev : 

@@ -180,7 +180,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	}
 	else
 	{
-		dol_print_error('',$langs->trans("Error")." ".$langs->trans("ErrorFileDoesNotExists",$file));
+		dol_print_error('',$langs->trans("Error")." ".$langs->trans("ErrorFileDoesNotExists",$nomModele));
 		return -1;
 	}
 }

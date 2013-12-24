@@ -143,8 +143,7 @@ if ($action == 'confirm_delete_certif' && $confirm == "yes" && $user->rights->ag
 	$agf_certif = new Agefodd_stagiaire_certif($db);
 	$result=$agf_certif->fetch($certifrowid);
 	if ($result<0) {
-		dol_syslog("agefodd:session:subscribers_certif error=".$agf_certif->error, LOG_ERR);
-		$mesg = '<div class="error">'.$agf_certif->error.'</div>';
+		setEventMessage($agf_certif->error,'errors');
 	}else {
 		if (!empty($agf_certif->id)) {
 			$result=$agf_certif->delete($user);
