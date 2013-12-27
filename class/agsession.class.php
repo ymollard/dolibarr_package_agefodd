@@ -1781,7 +1781,7 @@ class Agsession extends CommonObject {
 					if ($this->db->type=='pgsql') {
 						$intervalday="'".$value." DAYS'";
 					} else {
-						$intervalday=$value . ' DAY)';
+						$intervalday=$value . ' DAY';
 					}
 					$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -'.$intervalday.')';
 				} elseif (strpos ( $key, 'date' )) 	{	// To allow $filter['YEAR(s.dated)']=>$year
