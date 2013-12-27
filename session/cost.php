@@ -743,62 +743,60 @@ foreach ( $agf_fin->lines as $line ) {
 			
 			print '<td>';
 			
-			foreach ( $agf_fin->lines as $line_fin ) {
-				if ($action == 'addline' && $idelement == $line_fin->id) {
-					
-					$suplier_invoice = new FactureFournisseur ( $db );
-					$suplier_invoice->fetch ( $line_fin->fk_element );
-					
-					print '<input type="hidden" name="action" value="invoice_addline">';
-					print '<input type="hidden" name="id" value="' . $id . '">';
-					print '<input type="hidden" name="idelement" value="' . $line_fin->fk_element . '">';
-					print '<table class="nobordernopadding"><tr>';
-					
-					print '<td nowrap="nowrap">';
-					// print $langs->trans('AgfSelectFournProduct');
-					print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK ) . ' (' . price ( $suplier_invoice->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
-					print $formAgefodd->select_produits_fournisseurs_agefodd ( $contact_static->thirdparty->id, $product_fourn, 'product_fourn' );
-					print '</td>';
-					
-					print '<td align="left" style="padding-left:10px">';
-					print $langs->trans ( 'PriceUHT' ) . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST ( 'pricetrainer' ) . '">' . $langs->getCurrencySymbol ( $conf->currency );
-					print '</td>';
-					
-					print '<td  align="left" style="padding-left:10px">';
-					print $form->load_tva ( 'tva_tx', (GETPOST ( 'tva_tx' ) ? GETPOST ( 'tva_tx' ) : - 1) );
-					print '</td>';
-					
-					print '<td  align="left" style="padding-left:10px">';
-					print $langs->trans ( 'Qty' ) . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST ( 'qtytrainer' ) . '">';
-					print '</td>';
-					
-					print '<td align="left" style="padding-left:10px">';
-					print '<input type="submit" class="butAction" name="invoice_supplier_trainer_add" value="' . $langs->trans ( "AgfFactureAddLineSuplierInvoice" ) . '">';
-					print '</td></tr></table>';
-				} else {
-					$suplier_invoice = new FactureFournisseur ( $db );
-					$suplier_invoice->fetch ( $line_fin->fk_element );
-					print '<table class="nobordernopadding">';
-					print '<tr>';
-					// Supplier Invoice inforamtion
-					print '<td nowrap="nowrap">';
-					print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK ) . ' (' . price ( $suplier_invoice->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
-					print '</td>';
-					print '<td>';
-					$legende = $langs->trans ( "AgfFactureAddLineSuplierInvoice" );
-					print '<a href="' . $_SERVER ['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-					print img_picto ( $legende, 'edit_add', 'align="absmiddle"' ) . '</a>';
-					// Unlink order
-					$legende = $langs->trans ( "AgfFactureUnselectSuplierInvoice" );
-					print '<a href="' . $_SERVER ['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-					print '<img src="' . dol_buildpath ( '/agefodd/img/unlink.png', 1 ) . '" border="0" align="absmiddle" hspace="2px" ></a>';
-					print '</td>';
-					print '</tr>';
-					print '</table>';
-				}
+			if ($action == 'addline' && $idelement == $line->id) {
+				
+				$suplier_invoice = new FactureFournisseur ( $db );
+				$suplier_invoice->fetch ( $line->fk_element );
+				
+				print '<input type="hidden" name="action" value="invoice_addline">';
+				print '<input type="hidden" name="id" value="' . $id . '">';
+				print '<input type="hidden" name="idelement" value="' . $line->fk_element . '">';
+				print '<table class="nobordernopadding"><tr>';
+				
+				print '<td nowrap="nowrap">';
+				// print $langs->trans('AgfSelectFournProduct');
+				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK ) . ' (' . price ( $suplier_invoice->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
+				print $formAgefodd->select_produits_fournisseurs_agefodd ( $contact_static->thirdparty->id, $product_fourn, 'product_fourn' );
+				print '</td>';
+				
+				print '<td align="left" style="padding-left:10px">';
+				print $langs->trans ( 'PriceUHT' ) . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST ( 'pricetrainer' ) . '">' . $langs->getCurrencySymbol ( $conf->currency );
+				print '</td>';
+				
+				print '<td  align="left" style="padding-left:10px">';
+				print $form->load_tva ( 'tva_tx', (GETPOST ( 'tva_tx' ) ? GETPOST ( 'tva_tx' ) : - 1) );
+				print '</td>';
+				
+				print '<td  align="left" style="padding-left:10px">';
+				print $langs->trans ( 'Qty' ) . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST ( 'qtytrainer' ) . '">';
+				print '</td>';
+				
+				print '<td align="left" style="padding-left:10px">';
+				print '<input type="submit" class="butAction" name="invoice_supplier_trainer_add" value="' . $langs->trans ( "AgfFactureAddLineSuplierInvoice" ) . '">';
+				print '</td></tr></table>';
+			} else {
+				$suplier_invoice = new FactureFournisseur ( $db );
+				$suplier_invoice->fetch ( $line->fk_element );
+				print '<table class="nobordernopadding">';
+				print '<tr>';
+				// Supplier Invoice inforamtion
+				print '<td nowrap="nowrap">';
+				print $suplier_invoice->getLibStatut ( 2 ) . ' ' . $suplier_invoice->getNomUrl ( 1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK ) . ' (' . price ( $suplier_invoice->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
+				print '</td>';
+				print '<td>';
+				$legende = $langs->trans ( "AgfFactureAddLineSuplierInvoice" );
+				print '<a href="' . $_SERVER ['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+				print img_picto ( $legende, 'edit_add', 'align="absmiddle"' ) . '</a>';
+				// Unlink order
+				$legende = $langs->trans ( "AgfFactureUnselectSuplierInvoice" );
+				print '<a href="' . $_SERVER ['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+				print '<img src="' . dol_buildpath ( '/agefodd/img/unlink.png', 1 ) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+				print '</td>';
+				print '</tr>';
+				print '</table>';
 			}
-			print '</td>';
 		}
+		print '</td>';
 		
 		print '<td>';
 		
