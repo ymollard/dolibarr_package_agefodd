@@ -48,6 +48,7 @@ $confirm=GETPOST('confirm','alpha');
 $id=GETPOST('id','int');
 $arch=GETPOST('arch','int');
 $url_back=GETPOST('url_back','alpha');
+$session_id = GETPOST('session_id','int');
 
 /*
  * Actions delete
@@ -162,7 +163,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer)
 			$town = GETPOST('town','alpha');
 				
 			$stagiaire_type = GETPOST('stagiaire_type','int');
-			$session_id = GETPOST('session_id','int');
+			
 			$date_birth = dol_mktime(0,0,0,GETPOST('datebirthmonth','int'),GETPOST('datebirthday','int'),GETPOST('datebirthyear','int'));
 			$place_birth = GETPOST('place_birth','alpha');
 				
@@ -507,6 +508,10 @@ if ($action == 'create' && $user->rights->agefodd->creer)
 	// Session
 	if (empty($sortorder)) $sortorder="ASC";
 	if (empty($sortfield)) $sortfield="s.dated";
+	
+	if (!empty($session_id)) {
+		$filter['s.rowid']=$session_id;
+	}
 
 	$agf = new Agsession($db);
 

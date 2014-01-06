@@ -190,7 +190,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX+30, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + -2);
-					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.$agf2->lines[$i]->nom);
+					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.ucfirst($agf2->lines[$i]->nom));
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'L');
 					$posY = $pdf->GetY() + 1;
 						

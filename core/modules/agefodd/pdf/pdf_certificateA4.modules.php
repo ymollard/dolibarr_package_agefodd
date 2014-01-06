@@ -185,7 +185,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd
 
 					$pdf->SetXY($posX, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs),'', $this->defaultFontSize + 10);
-					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.$agf2->lines[$i]->nom);
+					$this->str = $outputlangs->transnoentities($agf2->lines[$i]->prenom.' '.ucfirst($agf2->lines[$i]->nom));
 					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str),0,'C');
 					$posY = $pdf->GetY() + 30;
 
