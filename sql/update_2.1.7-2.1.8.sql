@@ -16,7 +16,6 @@ UPDATE llx_agefodd_convention SET model_doc='pdf_convention' WHERE model_doc IS 
 ALTER TABLE llx_agefodd_session_formateur ADD COLUMN trainer_status integer DEFAULT NULL AFTER fk_agefodd_formateur;
 ALTER TABLE llx_agefodd_session_formateur_calendrier ADD COLUMN trainer_status integer DEFAULT NULL AFTER trainer_cost;
 
-
 TRUNCATE TABLE llx_agefodd_session_status_type;
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES (1,'ENV', 'Envisagée', 1, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES (2,'CONF', 'Confirmée', 1, 1, '2013-01-01 00:00:00' );
