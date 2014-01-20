@@ -25,3 +25,4 @@ ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_agefodd_formation_catalogue_i
 ALTER TABLE llx_agefodd_session ADD CONSTRAINT llx_agefodd_session_place_ibfk_1 FOREIGN KEY (fk_session_place) REFERENCES llx_agefodd_place (rowid);
 ALTER TABLE llx_agefodd_session ADD INDEX fk_soc_session (fk_soc);
 ALTER TABLE llx_agefodd_session ADD INDEX idx_agefodd_session_status (status);
+ALTER TABLE llx_agefodd_session ADD INDEX fk_soc_requester_session (fk_soc_requester);

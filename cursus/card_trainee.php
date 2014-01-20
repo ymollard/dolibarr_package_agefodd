@@ -238,7 +238,7 @@ if (! empty ( $id )) {
 		}
 		
 		print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-		print '<input type="hidden" value="'.$id.'" name="id">';
+		print '<input type="hidden" value="' . $id . '" name="id">';
 		print '<tr class="liste_titre">';
 		
 		print '<td class="liste_titre">';
@@ -288,8 +288,8 @@ if (! empty ( $id )) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			print '<td><a href="../trainee/cursus_detail.php?cursus_id='.$id.'&id=' . $line->starowid . '">' . $line->nbsessdone . '</a></td>';
-			print '<td><a href="../trainee/cursus_detail.php?cursus_id='.$id.'&id=' . $line->starowid . '">' . $line->nbsesstodo . '</a></td>';
+			print '<td><a href="../trainee/cursus_detail.php?cursus_id=' . $id . '&id=' . $line->starowid . '">' . $line->nbsessdone . '</a></td>';
+			print '<td><a href="../trainee/cursus_detail.php?cursus_id=' . $id . '&id=' . $line->starowid . '">' . $line->nbsesstodo . '</a></td>';
 			print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		}

@@ -36,11 +36,9 @@ if (! $res)
 if (! $res)
 	die ( "Include of main fails" );
 
-
 dol_include_once ( '/user/class/user.class.php' );
 dol_include_once ( '/comm/propal/class/propal.class.php' );
 dol_include_once ( '/core/modules/propale/modules_propale.php' );
-
 
 $userlogin = GETPOST ( 'login' );
 $idpropal = GETPOST ( 'idpropal' );
@@ -51,9 +49,9 @@ $result = $user->fetch ( '', $userlogin );
 $propal = new Propal ( $db );
 $propal->fetch ( $idpropal );
 if (! empty ( $propal->id )) {
-
-	$result = $propal->cloture ( $user, 2,'From Extranet RH' );
-
+	
+	$result = $propal->cloture ( $user, 2, 'From Extranet RH' );
+	
 	if ($result < 0) {
 		print - 1;
 	} else {

@@ -24,8 +24,6 @@
  * \ingroup agefodd
  * \brief session of trainee
  */
-
-
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
@@ -40,7 +38,7 @@ require_once ('../class/agefodd_session_stagiaire.class.php');
 require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_stagiaire_cursus.class.php');
 require_once ('../class/agefodd_cursus.class.php');
-require_once('../core/modules/agefodd/modules_agefodd.php');
+require_once ('../core/modules/agefodd/modules_agefodd.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -67,40 +65,37 @@ if (empty ( $sortorder ))
 	$sortorder = "DESC";
 if (empty ( $sortfield ))
 	$sortfield = "s.dated";
-
-/*
+	
+	/*
  * Action generate certificate cursus
 */
-if ($action == 'builddoc' && $user->rights->agefodd->creer)
-{
+if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	// Define output language
 	$outputlangs = $langs;
-	$newlang=GETPOST('lang_id','alpha');
-	if ($conf->global->MAIN_MULTILANGS && empty($newlang)) $newlang=$object->client->default_lang;
-	if (! empty($newlang))
-	{
-		$outputlangs = new Translate("",$conf);
-		$outputlangs->setDefaultLang($newlang);
+	$newlang = GETPOST ( 'lang_id', 'alpha' );
+	if ($conf->global->MAIN_MULTILANGS && empty ( $newlang ))
+		$newlang = $object->client->default_lang;
+	if (! empty ( $newlang )) {
+		$outputlangs = new Translate ( "", $conf );
+		$outputlangs->setDefaultLang ( $newlang );
 	}
-	$model='attestation_cursus';
-	$file=$model.'_'.$cursus_id.'_'.$id.'.pdf';
+	$model = 'attestation_cursus';
+	$file = $model . '_' . $cursus_id . '_' . $id . '.pdf';
 	
 	$agf_cursus = new Agefodd_cursus ( $db );
 	$result = $agf_cursus->fetch ( $cursus_id );
-	if ($result < 0)
-	{
-		setEventMessage($agf->error,'errors');
-	}else {
-		$agf_cursus->fk_stagiaire=$id;
-		$result = agf_pdf_create($db, $agf_cursus, '', $model, $outputlangs, $file, 0);
-		if ($result < 0)
-		{
-			setEventMessage($agf->error,'errors');
+	if ($result < 0) {
+		setEventMessage ( $agf->error, 'errors' );
+	} else {
+		$agf_cursus->fk_stagiaire = $id;
+		$result = agf_pdf_create ( $db, $agf_cursus, '', $model, $outputlangs, $file, 0 );
+		if ($result < 0) {
+			setEventMessage ( $agf->error, 'errors' );
 		}
 	}
 }
-	
-	/*
+
+/*
  * View
 */
 
@@ -121,7 +116,7 @@ if (! empty ( $id ) && ! empty ( $cursus_id )) {
 		
 		dol_fiche_head ( $head, 'cursusdetail', $langs->trans ( "AgfStagiaireDetail" ), 0, 'user' );
 		
-		//Trainee Detail
+		// Trainee Detail
 		print '<table class="border" width="100%">';
 		
 		print '<tr><td width="20%">' . $langs->trans ( "Ref" ) . '</td>';
@@ -176,8 +171,7 @@ if (! empty ( $id ) && ! empty ( $cursus_id )) {
 		print "</table>";
 		print '</div>';
 		
-		
-		//Cursus Detail
+		// Cursus Detail
 		$agf_cursus = new Agefodd_cursus ( $db );
 		$result = $agf_cursus->fetch ( $cursus_id );
 		
@@ -210,7 +204,7 @@ if (! empty ( $id ) && ! empty ( $cursus_id )) {
 			setEventMessage ( $agf_cursus->error, 'errors' );
 		}
 		
-		//Session list
+		// Session list
 		print_barre_liste ( $langs->trans ( "AgfSessionDetail" ), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", count ( $agf_cursus->lines ) );
 		
 		if (count ( $agf_cursus->lines ) > 0) {
@@ -281,8 +275,7 @@ if (! empty ( $id ) && ! empty ( $cursus_id )) {
 		setEventMessage ( $agf->error, 'errors' );
 	}
 	
-	
-	//Dispplay Session to plan
+	// Dispplay Session to plan
 	$agf_cursus = new Agefodd_stagiaire_cursus ( $db );
 	$agf_cursus->fk_stagiaire = $id;
 	$agf_cursus->fk_cursus = $cursus_id;
@@ -315,18 +308,16 @@ if (! empty ( $id ) && ! empty ( $cursus_id )) {
 		print '</table>';
 	}
 	
-	
-	//PDF Cursus
-	if (is_file($conf->agefodd->dir_output.'/attestation_cursus_'.$cursus_id.'_'.$id.'.pdf'))
-	{
+	// PDF Cursus
+	if (is_file ( $conf->agefodd->dir_output . '/attestation_cursus_' . $cursus_id . '_' . $id . '.pdf' )) {
 		print '&nbsp';
 		print '<table class="border" width="100%">';
-		print '<tr class="liste_titre"><td colspan=3>'.$langs->trans("AgfLinkedDocuments").'</td></tr>';
+		print '<tr class="liste_titre"><td colspan=3>' . $langs->trans ( "AgfLinkedDocuments" ) . '</td></tr>';
 		// afficher
-		$legende = $langs->trans("AgfDocOpen");
-		print '<tr><td width="200" align="center">'.$langs->trans("AgfAttestationCursus").'</td><td> ';
-		print '<a href="'.DOL_URL_ROOT.'/document.php?modulepart=agefodd&file=attestation_cursus_'.$cursus_id.'_'.$id.'.pdf" alt="'.$legende.'" title="'.$legende.'">';
-		print '<img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$legende = $langs->trans ( "AgfDocOpen" );
+		print '<tr><td width="200" align="center">' . $langs->trans ( "AgfAttestationCursus" ) . '</td><td> ';
+		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=attestation_cursus_' . $cursus_id . '_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td></tr></table>';
 	}
 }
@@ -338,13 +329,10 @@ if (! empty ( $id ) && ! empty ( $cursus_id )) {
 
 print '<div class="tabsAction">';
 
-if ($user->rights->agefodd->creer)
-{
-	print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=builddoc&cursus_id='.$cursus_id.'&id='.$id.'">'.$langs->trans('AgfPrintAttestationCursus').'</a>';
-}
-else
-{
-	print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotAllowed")).'">'.$langs->trans('AgfPrintAttestationCursus').'</a>';
+if ($user->rights->agefodd->creer) {
+	print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=builddoc&cursus_id=' . $cursus_id . '&id=' . $id . '">' . $langs->trans ( 'AgfPrintAttestationCursus' ) . '</a>';
+} else {
+	print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'AgfPrintAttestationCursus' ) . '</a>';
 }
 
 print '</div>';

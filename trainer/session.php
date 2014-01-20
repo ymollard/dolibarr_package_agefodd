@@ -100,7 +100,7 @@ if ($id) {
 			
 			$dureetotal = 0;
 			foreach ( $agf_session->lines as $line ) {
-				$duree=0;
+				$duree = 0;
 				
 				if ($style == 'pair') {
 					$style = 'class="impair"';

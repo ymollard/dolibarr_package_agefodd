@@ -36,9 +36,8 @@ if (! $res)
 if (! $res)
 	die ( "Include of main fails" );
 
-
 dol_include_once ( '/user/class/user.class.php' );
-dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once ( '/agefodd/class/agsession.class.php' );
 
 $userlogin = GETPOST ( 'login' );
 $session_id = GETPOST ( 'sessid' );
@@ -47,14 +46,13 @@ $socid = GETPOST ( 'socid' );
 $user = new User ( $db );
 $result = $user->fetch ( '', $userlogin );
 
-
-$agf = new Agsession($db);
-$result=$agf->fetch($session_id);
-if ($result < 0){
+$agf = new Agsession ( $db );
+$result = $agf->fetch ( $session_id );
+if ($result < 0) {
 	print - 1;
-}else {
-	$result=$agf->createProposal($user,$socid);
-	if ($result < 0){
+} else {
+	$result = $agf->createProposal ( $user, $socid );
+	if ($result < 0) {
 		print - 1;
 	} else {
 		print $result;

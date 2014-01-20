@@ -419,12 +419,12 @@ class modAgefodd extends DolibarrModules
 		'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_certificate_type as f',
 		'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue_type as f',
 		),	// Request to select fields
-		'tabsqlsort'=>array('sort ASC','sort ASC','sort ASC'),					// Sort order
-		'tabfield'=>array("intitule,sort","intitule,sort","code,intitule,sort"),						// List of fields (result of select to show dictionnary)
-		'tabfieldvalue'=>array("intitule,sort","intitule,sort","code,intitule,sort"),				// List of fields (list of fields to edit a record)
-		'tabfieldinsert'=>array("intitule,sort","intitule,sort","code,intitule,sort"),				// List of fields (list of fields for insert)
-		'tabrowid'=>array("rowid","rowid","rowid"),										// Name of columns with primary key (try to always name it 'rowid')
-		'tabcond'=>array('$conf->agefodd->enabled','$conf->agefodd->enabled','$conf->agefodd->enabled')	// Condition to show each dictionnary
+		'tabsqlsort'=>array('sort ASC','sort ASC','sort ASC'),					
+		'tabfield'=>array("intitule,sort","intitule,sort","code,intitule,sort"),						
+		'tabfieldvalue'=>array("intitule,sort","intitule,sort","code,intitule,sort"),			
+		'tabfieldinsert'=>array("intitule,sort","intitule,sort","code,intitule,sort"),			
+		'tabrowid'=>array("rowid","rowid","rowid"),										
+		'tabcond'=>array('$conf->agefodd->enabled','$conf->agefodd->enabled','$conf->agefodd->enabled')	
 		);
 
 

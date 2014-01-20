@@ -37,11 +37,10 @@ function show_conv($file, $socid, $nom_courrier) {
 	$agf_comid = new Agefodd_session_element ( $db );
 	$result = $agf_comid->fetch_by_session_by_thirdparty ( $id, $socid );
 	
-	
-	$order_array=array();
-	$propal_array=array();
-	$invoice_array=array();
-	foreach($agf_comid->lines as $line) {
+	$order_array = array ();
+	$propal_array = array ();
+	$invoice_array = array ();
+	foreach ( $agf_comid->lines as $line ) {
 		if ($line->element_type == 'order' && ! empty ( $line->comref )) {
 			$order_array [$line->fk_element] = $line->comref;
 		}
@@ -52,23 +51,22 @@ function show_conv($file, $socid, $nom_courrier) {
 			$invoice_array [$line->fk_element] = $line->facnumber;
 		}
 	}
-		
 	
 	if (! empty ( $conf->global->MAIN_MODULE_COMMANDE )) {
-		if (count($propal_array)>0) {
-			if ((count($order_array)==0) && (count($invoice_array)==0) && empty ( $conf->global->AGF_USE_FAC_WITHOUT_ORDER )) {
+		if (count ( $propal_array ) > 0) {
+			if ((count ( $order_array ) == 0) && (count ( $invoice_array ) == 0) && empty ( $conf->global->AGF_USE_FAC_WITHOUT_ORDER )) {
 				$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFactureFacNoBonHelp" ), 1, 'help' );
 				$continue = false;
-			} elseif ((count($order_array)==0) && (count($invoice_array)==0) && $conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
+			} elseif ((count ( $order_array ) == 0) && (count ( $invoice_array ) == 0) && $conf->global->AGF_USE_FAC_WITHOUT_ORDER) {
 				$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFactureFacNoBonHelpOpt" ), 1, 'help' );
 				$continue = false;
-			} elseif ((count($order_array)>0) && (count($invoice_array)>0) && empty ( $conf->global->AGF_USE_FAC_WITHOUT_ORDER )) {
+			} elseif ((count ( $order_array ) > 0) && (count ( $invoice_array ) > 0) && empty ( $conf->global->AGF_USE_FAC_WITHOUT_ORDER )) {
 				$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFactureFacNoBonHelp" ), 1, 'help' );
 				$continue = false;
 			}
 		}
 	} else {
-		if (count($propal_array)==0) {
+		if (count ( $propal_array ) == 0) {
 			$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFacturePropalHelp" ), 1, 'help' );
 			$continue = false;
 		}
@@ -84,7 +82,7 @@ function show_conv($file, $socid, $nom_courrier) {
 			
 			// Regenerer
 			$legende = $langs->trans ( "AgfDocRefresh" );
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&convid='.$agf->id.'" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&convid=' . $agf->id . '" alt="' . $legende . '" title="' . $legende . '">';
 			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			
 			// Delete
@@ -94,7 +92,7 @@ function show_conv($file, $socid, $nom_courrier) {
 		} else {
 			// Create PDF document
 			$legende = $langs->trans ( "AgfDocCreate" );
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&socid=' . $socid . '&model=' . $model . '&cour=' . $nom_courrier . '&convid='.$agf->id.'" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&socid=' . $socid . '&model=' . $model . '&cour=' . $nom_courrier . '&convid=' . $agf->id . '" alt="' . $legende . '" title="' . $legende . '">';
 			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		}
 		
@@ -158,16 +156,14 @@ function show_fac($file, $socid, $mdle) {
 
 	global $langs, $conf, $db, $id, $form;
 	
-	
 	if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
-		$target=' target="_blanck" ';
+		$target = ' target="_blanck" ';
 	} else {
-		$target='';
+		$target = '';
 	}
 	
 	$agf = new Agefodd_session_element ( $db );
 	$agf_session = new Agsession ( $db );
-	
 	
 	// Manage order
 	if ($mdle == 'bc') {
@@ -176,10 +172,10 @@ function show_fac($file, $socid, $mdle) {
 		foreach ( $agf->lines as $line ) {
 			if ($line->element_type == 'order' && ! empty ( $line->comref )) {
 				$mess .= '<tr><td colspan="2">';
-
+				
 				// Send order by mail
 				$legende = $langs->trans ( "AgfFactureSeeBonMail", $line->comref );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Unlink order
@@ -189,7 +185,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See order card
 				$legende = $langs->trans ( "AgfFactureSeeProp" ) . ' ' . $line->comref;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '"  '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '"  ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->comref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 				$order = new Commande ( $db );
@@ -206,7 +202,7 @@ function show_fac($file, $socid, $mdle) {
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createorder&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		
-		if (!empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
+		if (! empty ( $conf->global->AGF_NO_MANUAL_CREATION_DOC )) {
 			// Generate order
 			$legende = $langs->trans ( "AgfFactureGenererBon" );
 			$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&action=create&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -223,12 +219,12 @@ function show_fac($file, $socid, $mdle) {
 		$mess .= '</td></tr>';
 		
 		$mess .= '</table>';
-	}	// Manage Invoice
+	} 	// Manage Invoice
 	elseif ($mdle == 'fac') {
 		$order_array = array ();
 		$propal_array = array ();
 		
-		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid );
+		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid, 'invoice' );
 		
 		$mess = '<table class="nobordernopadding">';
 		foreach ( $agf->lines as $line ) {
@@ -237,7 +233,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// Go to send mail card
 				$legende = $langs->trans ( "AgfFactureSeeFacMail", $line->facnumber );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Unlink invoice
@@ -247,7 +243,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See Invoice card
 				$legende = $langs->trans ( "AgfFactureSeeFac" ) . ' ' . $line->facnumber;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&facid=' . $line->fk_element . '"" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&facid=' . $line->fk_element . '"" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->facnumber . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 				$invoice = new Facture ( $db );
@@ -266,25 +262,35 @@ function show_fac($file, $socid, $mdle) {
 		
 		$mess .= '<tr><td width="5%" nowrap="nowrap">';
 		
+		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid );
+		foreach ( $agf->lines as $line ) {
+			if ($line->element_type == 'order' && ! empty ( $line->comref ) && ! key_exists ( $line->comref, $order_array )) {
+				$order_array [$line->fk_element] = $line->comref;
+			}
+			if ($line->element_type == 'propal' && ! empty ( $line->propalref ) && ! key_exists ( $line->propalref, $propal_array )) {
+				$propal_array [$line->fk_element] = $line->propalref;
+			}
+		}
+		
 		if (! empty ( $conf->global->AGF_USE_FAC_WITHOUT_ORDER )) {
 			// Create invoice from order if exists
 			
 			foreach ( $propal_array as $key => $val ) {
-				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ).' '.$val;
+				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ) . ' ' . $val;
 				$propal_static = new Propal ( $db );
-				$propal_static->fetch($key);
-				if ($propal_static->statut==2) {
-					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$propal_static->fetch ( $key );
+				if ($propal_static->statut == 2) {
+					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				} else {
-					$mess .= img_picto($langs->trans ( "AgfFactureFacNoPropalSignedHelp" ), 'warning') ;
+					$mess .= img_picto ( $langs->trans ( "AgfFactureFacNoPropalSignedHelp" ), 'warning' );
 				}
 			}
 			
 			foreach ( $order_array as $key => $val ) {
-				$legende = $langs->trans ( "AgfFactureAddFacFromOrder" ).' '.$val;
+				$legende = $langs->trans ( "AgfFactureAddFacFromOrder" ) . ' ' . $val;
 				$commande_static = new Commande ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			// link existing invoice
@@ -295,23 +301,25 @@ function show_fac($file, $socid, $mdle) {
 			$mess = '';
 			
 			foreach ( $propal_array as $key => $val ) {
-				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ).' '.$val;
+				$legende = $langs->trans ( "AgfFactureAddFacFromPropal" ) . ' ' . $val;
 				$propal_static = new Propal ( $db );
-				$propal_static->fetch($key);
-				if ($propal_static->statut==2) {
-					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$propal_static->fetch ( $key );
+				if ($propal_static->statut == 2) {
+					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				} else {
-					$mess .= img_picto($langs->trans ( "AgfFactureFacNoPropalSignedHelp" ), 'warning') ;
+					$mess .= img_picto ( $langs->trans ( "AgfFactureFacNoPropalSignedHelp" ), 'warning' );
 				}
-				//$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
-				//$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				// $mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element .
+				// '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				// $mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px"
+				// ></a>';
 			}
 			
 			foreach ( $order_array as $key => $val ) {
-				$legende = $langs->trans ( "AgfFactureAddFacFromOrder" ).' '.$val;
+				$legende = $langs->trans ( "AgfFactureAddFacFromOrder" ) . ' ' . $val;
 				$commande_static = new Commande ( $db );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 			
@@ -326,8 +334,7 @@ function show_fac($file, $socid, $mdle) {
 		$mess .= '</td></tr>';
 		
 		$mess .= '</table>';
-		
-	}	// Manage Proposal
+	} 	// Manage Proposal
 	elseif ($mdle == 'prop') {
 		
 		$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid, 'propal' );
@@ -338,7 +345,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// Go to send mail card
 				$legende = $langs->trans ( "AgfFactureSeePropMail", $line->propalref );
-				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				
 				// Unlink proposal
@@ -348,7 +355,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See Proposal card
 				$legende = $langs->trans ( "AgfFactureSeeProp" ) . ' ' . $line->propalref;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial" alt="' . $legende . '" title="' . $legende . '" '.$target.'>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->propalref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 				$propal = new Propal ( $db );
@@ -361,17 +368,17 @@ function show_fac($file, $socid, $mdle) {
 		}
 		$mess .= '<tr><td width="5%" nowrap="nowrap">';
 		
-		$agf_session->fetch($id);
-		if (empty($agf_session->fk_product)) {
-			$mess .= img_picto($langs->trans ( "AgfFacturePropSelectProductHelp" ), 'warning') ;
-		}else {
+		$agf_session->fetch ( $id );
+		if (empty ( $agf_session->fk_product )) {
+			$mess .= img_picto ( $langs->trans ( "AgfFacturePropSelectProductHelp" ), 'warning' );
+		} else {
 			// Create Proposal
 			$legende = $langs->trans ( "AgfFactureGenererPropAuto" );
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createproposal&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
 			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		}
 		
-		if (empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
+		if (empty ( $conf->global->AGF_NO_MANUAL_CREATION_DOC )) {
 			// Generate Proposal
 			$legende = $langs->trans ( "AgfFactureGenererProp" );
 			$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?action=create&mainmenu=commercial&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -394,6 +401,58 @@ function show_fac($file, $socid, $mdle) {
 	return $mess;
 }
 
+function show_facopca($file, $socid, $mdle) {
+
+	global $langs, $conf, $db, $id, $form;
+	
+	if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
+		$target = ' target="_blanck" ';
+	} else {
+		$target = '';
+	}
+	
+	$agf = new Agefodd_session_element ( $db );
+	$agf_session = new Agsession ( $db );
+	$result = $agf->fetch_by_session_by_thirdparty ( $id, $socid, 'invoice' );
+	$mess = '<table class="nobordernopadding">';
+	foreach ( $agf->lines as $line ) {
+		if ($line->element_type == 'invoice' && ! empty ( $line->facnumber )) {
+			$mess .= '<tr><td>';
+			
+			// Go to send mail card
+			$legende = $langs->trans ( "AgfFactureSeeFacMail", $line->facnumber );
+			$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			
+			// Unlink invoice
+			$legende = $langs->trans ( "AgfFactureUnselectFac" );
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=unlink&idelement=' . $line->id . '&id=' . $id . '&type=fac&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<img src="' . dol_buildpath ( '/agefodd/img/unlink.png', 1 ) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+			
+			// See Invoice card
+			$legende = $langs->trans ( "AgfFactureSeeFac" ) . ' ' . $line->facnumber;
+			$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&facid=' . $line->fk_element . '"" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->facnumber . '</a>';
+			require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
+			$invoice = new Facture ( $db );
+			$invoice->fetch ( $line->fk_element );
+			$mess .= $invoice->getLibStatut ( 2 );
+			
+			$mess .= '</td></tr>';
+		}
+	}
+	
+	$mess .= '<tr><td width="5%" nowrap="nowrap">';
+	// Create Invoice for OPCA
+	$legende = $langs->trans ( "AgfFactureGenererAuto" );
+	$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createinvoice&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+	$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+	$mess .= '</td></tr>';
+	$mess .= '</table>';
+	
+	return $mess;
+}
+
 function document_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courrier = '') {
 
 	print '<tr style="height:14px">' . "\n";
@@ -403,6 +462,8 @@ function document_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courrier =
 			print '<td style="width=250px;border-left:0px;" align="left">' . show_fac ( $mdle, $socid, $mdle ) . '</td>' . "\n";
 		} elseif ($mdle == 'convention') {
 			print '<td style="border-left:0px; width:250px" align="left">' . show_conv ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
+		} elseif ($mdle == 'facopca') {
+			print '<td style="border-left:0px; width:250px" align="left">' . show_facopca ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
 		} else {
 			print '<td style="border-left:0px; width:250px"  align="left">' . show_doc ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
 		}

@@ -16,87 +16,83 @@
 */
 
 /**
- * 	\file 		/agefodd/class/actions_agefodd.class.php
- *	\ingroup    agefodd
- *	\brief      File of class to manage Session and trainee
+ * \file /agefodd/class/actions_agefodd.class.php
+ * \ingroup agefodd
+ * \brief File of class to manage Session and trainee
  */
 
 /**
- * 	\class 		ActionsAnnonce
- *	\brief      Class to manage Annonce
+ * \class ActionsAnnonce
+ * \brief Class to manage Annonce
  */
-class ActionsAgefodd
-{
+class ActionsAgefodd {
 	var $db;
 	var $dao;
-
 	var $error;
-	var $errors=array();
-
-	var $resprints='';
+	var $errors = array ();
+	var $resprints = '';
 
 	/**
-	 *  Constructor
+	 * Constructor
 	 *
-	 *	@param	DoliDB	$db			Database handler
-	*/
-	function __construct($db)
-	{
-		$this->db = $db ;
+	 * @param DoliDB $db
+	 */
+	function __construct($db) {
+
+		$this->db = $db;
 		$this->error = 0;
-		$this->errors = array();
-
-
+		$this->errors = array ();
 	}
-	
+
 	/**
-	 *  printSearchForm Method Hook Call
+	 * printSearchForm Method Hook Call
 	 *
-	 *      @param		array	$parameters		Array of parameters
-	 * 		@param		Object	&$object			Object to use hooks on
-	 * 	    @param		string	&$action			Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 *      @param		object	$hookmanager	Hook manager class instance
-	 *      @return 	void
+	 * @param array $parameters parameters
+	 * @param Object	&$object			Object to use hooks on
+	 * @param string	&$action			Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param object $hookmanager class instance
+	 * @return void
 	 */
 	function printSearchForm($parameters, &$object, &$action, $hookmanager) {
+
 		global $langs;
-		$langs->load('agefodd@agefodd');
+		$langs->load ( 'agefodd@agefodd' );
 		
-		$out = printSearchForm(dol_buildpath('/agefodd/session/list.php',1), dol_buildpath('/agefodd/session/list.php',1), img_object('','agefodd@agefodd').' '.$langs->trans("AgfSessionId"), 'agefodd', 'search_id');
-		$out .= printSearchForm(dol_buildpath('/agefodd/trainee/list.php',1), dol_buildpath('/agefodd/trainee/list.php',1), img_object('','contact').' '.$langs->trans("AgfMenuActStagiaire"), 'agefodd', 'search_namefirstname');
+		$out = printSearchForm ( dol_buildpath ( '/agefodd/session/list.php', 1 ), dol_buildpath ( '/agefodd/session/list.php', 1 ), img_object ( '', 'agefodd@agefodd' ) . ' ' . $langs->trans ( "AgfSessionId" ), 'agefodd', 'search_id' );
+		$out .= printSearchForm ( dol_buildpath ( '/agefodd/trainee/list.php', 1 ), dol_buildpath ( '/agefodd/trainee/list.php', 1 ), img_object ( '', 'contact' ) . ' ' . $langs->trans ( "AgfMenuActStagiaire" ), 'agefodd', 'search_namefirstname' );
 		
-		$this->resprints=$out;
+		$this->resprints = $out;
 	}
 
 	/**
-	 *  formObjectOptions Method Hook Call
+	 * formObjectOptions Method Hook Call
 	 *
-	 *      @param		array	$parameters		Array of parameters
-	 * 		@param		Object	&$object			Object to use hooks on
-	 * 	    @param		string	&$action			Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 *      @param		object	$hookmanager	Hook manager class instance
-	 *      @return 	void
+	 * @param array $parameters parameters
+	 * @param Object	&$object			Object to use hooks on
+	 * @param string	&$action			Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param object $hookmanager class instance
+	 * @return void
 	 */
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager) {
-		global $langs,$conf,$user;
-		
-		//dol_syslog(get_class($this).':: formObjectOptions',LOG_DEBUG);
 
+		global $langs, $conf, $user;
+		
+		// dol_syslog(get_class($this).':: formObjectOptions',LOG_DEBUG);
+		
 		return 0;
 	}
 
 	/**
-	 *  DoAction Method Hook Call
+	 * DoAction Method Hook Call
 	 *
-	 *      @param		array	$parameters		Array of parameters
-	 * 		@param		Object	&$object			Object to use hooks on
-	 * 	    @param		string	&$action			Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 *      @param		object	$hookmanager	Hook manager class instance
-	 *      @return 	void
+	 * @param array $parameters parameters
+	 * @param Object	&$object			Object to use hooks on
+	 * @param string	&$action			Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param object $hookmanager class instance
+	 * @return void
 	 */
 	function doActions($parameters, &$object, &$action, $hookmanager) {
-		//global $langs,$conf,$user;
-
+		// global $langs,$conf,$user;
 		return 0;
 	}
 }

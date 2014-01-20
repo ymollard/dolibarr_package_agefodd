@@ -121,7 +121,7 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 		$outputlangs->setDefaultLang ( $newlang );
 	}
 	$model = $agf->model_doc;
-	$model = str_replace('pdf_', '', $model);
+	$model = str_replace ( 'pdf_', '', $model );
 	
 	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '.pdf';
 	
@@ -240,11 +240,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			$element_type = $idtypeelement_array [1];
 		}
 		
-		if (empty($fk_element)) {
-			setEventMessage($langs->trans('ErrorFieldRequired',$langs->transnoentities('AgfElementToUse')),'errors');
-			$action='create';
+		if (empty ( $fk_element )) {
+			setEventMessage ( $langs->trans ( 'ErrorFieldRequired', $langs->transnoentities ( 'AgfElementToUse' ) ), 'errors' );
+			$action = 'create';
 		} else {
-		
+			
 			if (! empty ( $intro1 ))
 				$agf->intro1 = $intro1;
 			if (! empty ( $intro2 ))
@@ -519,9 +519,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>';
 	
 	$agf_element = new Agefodd_session_element ( $db );
-	$result=$agf_element->fetch_by_session_by_thirdparty ( $sessid, $socid );
-	if ($result<0) {
-		setEventMessage($agf_element->error, 'errors');
+	$result = $agf_element->fetch_by_session_by_thirdparty ( $sessid, $socid );
+	if ($result < 0) {
+		setEventMessage ( $agf_element->error, 'errors' );
 	}
 	print '<select id="idtypelement" name="idtypelement" class="flat">';
 	foreach ( $agf_element->lines as $line ) {
@@ -556,7 +556,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfConvModelDoc" ) . '</td>';
 	print '<td>';
-	print $formAgefodd->select_conv_model('','model_doc');
+	print $formAgefodd->select_conv_model ( '', 'model_doc' );
 	print '</td></tr>';
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfConventionIntro1" ) . '</td>';
@@ -674,7 +674,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfConvModelDoc" ) . '</td>';
 			print '<td>';
-			print $formAgefodd->select_conv_model($agf->model_doc,'model_doc');
+			print $formAgefodd->select_conv_model ( $agf->model_doc, 'model_doc' );
 			print '</td></tr>';
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfConventionIntro1" ) . '</td>';
@@ -791,19 +791,18 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfConvModelDoc" ) . '</td>';
 			print '<td>';
-			if (!empty($agf->model_doc)) {
+			if (! empty ( $agf->model_doc )) {
 				
 				$dir = dol_buildpath ( "/agefodd/core/modules/agefodd/pdf/" );
-				$file = $agf->model_doc. '.modules.php';
-				$class=$agf->model_doc;
-				if (file_exists($dir . $file)) {
-					require_once ($dir . $file);	
-					$module = new $class ($db);
+				$file = $agf->model_doc . '.modules.php';
+				$class = $agf->model_doc;
+				if (file_exists ( $dir . $file )) {
+					require_once ($dir . $file);
+					$module = new $class ( $db );
 					print $module->description;
 				}
 			}
-			print 
-			print '</td></tr>';
+			print print '</td></tr>';
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans ( "AgfConventionIntro1" ) . '</td>';
 			print '<td>' . nl2br ( $agf->intro1 ) . '</td></tr>';

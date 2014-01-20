@@ -24,7 +24,6 @@
  * \ingroup agefodd
  * \brief session of trainee
  */
-
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
@@ -191,7 +190,7 @@ if ($id) {
 				print '<td ' . $styletext . '><a ' . $styletext . ' href="' . dol_buildpath ( '/agefodd/cursus/card.php', 1 ) . '?id=' . $line->id . '">' . $line->id . '</a></td>';
 				print '<td ' . $styletext . '><a ' . $styletext . ' href="' . dol_buildpath ( '/agefodd/cursus/card.php', 1 ) . '?id=' . $line->id . '">' . $line->ref_interne . '</a></td>';
 				print '<td ' . $styletext . '>' . $line->intitule . '</td>';
-				print '<td><a href="cursus_detail.php?cursus_id='.$line->id.'&id='.$id.'"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/edit.png" border="0" alt="'.$langs->trans("Modify").'"></a></td>';
+				print '<td><a href="cursus_detail.php?cursus_id=' . $line->id . '&id=' . $id . '"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" alt="' . $langs->trans ( "Modify" ) . '"></a></td>';
 				print '</tr>';
 			}
 			print '</table>';

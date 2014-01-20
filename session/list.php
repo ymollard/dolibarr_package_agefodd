@@ -173,7 +173,7 @@ if ($training_view && ! empty ( $search_training_ref )) {
 	print '</div>';
 }
 
-if (!empty($site_view)) {
+if (! empty ( $site_view )) {
 	$agf = new Agefodd_place ( $db );
 	$result = $agf->fetch ( $search_site );
 	
@@ -208,9 +208,9 @@ if ($resql != - 1) {
 		$menu = $langs->trans ( "AgfMenuSessNotDoneList" );
 	} elseif ($status_view == 4) {
 		$menu = $langs->trans ( "AgfMenuSessArch" );
-	} elseif (!empty($site_view)) {
+	} elseif (! empty ( $site_view )) {
 		$menu = $langs->trans ( "AgfSessPlace" );
-	} elseif (!empty($training_view)) {
+	} elseif (! empty ( $training_view )) {
 		$menu = $langs->trans ( "AgfCatalogDetail" );
 	} else {
 		$menu = $langs->trans ( "AgfMenuSess" );
@@ -251,15 +251,21 @@ if ($resql != - 1) {
 	
 	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
 	
-	print '<form method="post" action="' . $_SERVER['PHP_SELF'] .'" name="search_form">' . "\n";
-	if (! empty ( $status_view )) print '<input type="hidden" name="status" value="'.$status_view.'"/>';
-	if (! empty ( $site_view )) print '<input type="hidden" name="site_view" value="'.$site_view.'"/>';
-	if (! empty ( $training_view )) print '<input type="hidden" name="training_view" value="'.$training_view.'"/>';
-	if (! empty ( $sortfield )) print '<input type="hidden" name="sortfield" value="'.$sortfield.'"/>';
-	if (! empty ( $sortorder )) print '<input type="hidden" name="sortorder" value="'.$sortorder.'"/>';
-	if (! empty ( $page )) print '<input type="hidden" name="page" value="'.$page.'"/>';
-	
-	// If the user can view prospects other than his'
+	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+	if (! empty ( $status_view ))
+		print '<input type="hidden" name="status" value="' . $status_view . '"/>';
+	if (! empty ( $site_view ))
+		print '<input type="hidden" name="site_view" value="' . $site_view . '"/>';
+	if (! empty ( $training_view ))
+		print '<input type="hidden" name="training_view" value="' . $training_view . '"/>';
+	if (! empty ( $sortfield ))
+		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+	if (! empty ( $sortorder ))
+		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+	if (! empty ( $page ))
+		print '<input type="hidden" name="page" value="' . $page . '"/>';
+		
+		// If the user can view prospects other than his'
 	if ($user->rights->societe->client->voir || $socid) {
 		$moreforfilter .= $langs->trans ( 'SalesRepresentatives' ) . ': ';
 		$moreforfilter .= $formother->select_salesrepresentatives ( $search_sale, 'search_sale', $user );

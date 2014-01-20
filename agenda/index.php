@@ -87,6 +87,11 @@ if ($type == 'trainer') {
 		accessforbidden ();
 }
 
+$onlysession = GETPOST ( 'onlysession', 'int' );
+if ($onlysession != '0') {
+	$onlysession = 1;
+}
+
 $action = GETPOST ( 'action', 'alpha' );
 $year = GETPOST ( "year", "int" ) ? GETPOST ( "year", "int" ) : date ( "Y" );
 $month = GETPOST ( "month", "int" ) ? GETPOST ( "month", "int" ) : date ( "m" );
@@ -125,7 +130,7 @@ if (GETPOST ( "viewlist" )) {
 		$param .= '&' . $key . '=' . urlencode ( $val );
 	}
 	// print $param;
-	header ( "Location: " . dol_buildpath('/agefodd/agenda/listactions.php',1).'?' . $param );
+	header ( "Location: " . dol_buildpath ( '/agefodd/agenda/listactions.php', 1 ) . '?' . $param );
 	exit ();
 }
 
@@ -262,7 +267,7 @@ $param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 $head = calendars_prepare_head ( '' );
 
 dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
-$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit );
+$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession );
 dol_fiche_end ();
 
 $link = '';
@@ -301,7 +306,7 @@ if (! empty ( $filter_contact )) {
 }
 if (! empty ( $filter_trainer )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-	if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+	if (! empty ( $conf->global->AGF_DOL_TRAINER_AGENDA )) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST'";
 	}
 }
@@ -360,8 +365,11 @@ if (! empty ( $filter_trainer )) {
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
-}else {
+} else {
 	$sql .= " AND ca.code<>'AC_AGF_SESST'";
+}
+if (! empty ( $onlysession )) {
+	$sql .= " AND ca.code='AC_AGF_SESS'";
 }
 
 // Sort on date
@@ -388,10 +396,10 @@ if ($resql) {
 		$event->usertodo->id = $obj->fk_user_action;
 		$event->userdone->id = $obj->fk_user_done;
 		
-		$event->sessionid=$obj->sessionid;
-		$event->sessionstatus=$obj->sessionstatus;
+		$event->sessionid = $obj->sessionid;
+		$event->sessionstatus = $obj->sessionstatus;
 		if (! empty ( $filter_trainer )) {
-			$event->trainer_status=$obj->trainer_status;
+			$event->trainer_status = $obj->trainer_status;
 		}
 		$event->priority = $obj->priority;
 		$event->fulldayevent = $obj->fulldayevent;
@@ -664,7 +672,7 @@ llxFooter ();
  */
 function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60) {
 
-	global $user, $conf, $langs;	
+	global $user, $conf, $langs;
 	global $filter, $filtera, $filtert, $filterd, $status;
 	global $theme_datacolor;
 	global $cachethirdparties, $cachecontacts, $colorindexused;
@@ -739,23 +747,34 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					}
 					if ($color == - 1) 					// Color was not forced. Set color according to color index.
 					{
-						if (!isset($event->trainer_status)) {
-							if (isset($event->sessionstatus)) {
-							if ($event->sessionstatus=='ENV') $color='ffcc66';
-							if ($event->sessionstatus=='CONF') $color='33cc00';
-							if ($event->sessionstatus=='NOT') $color='ff6600';
-							if ($event->sessionstatus=='ARCH') $color='c0c0c0';
-						} else {
-								$color='c0c0c0';
+						if (! isset ( $event->trainer_status )) {
+							if (isset ( $event->sessionstatus )) {
+								if ($event->sessionstatus == 'ENV')
+									$color = 'ffcc66';
+								if ($event->sessionstatus == 'CONF')
+									$color = '33cc00';
+								if ($event->sessionstatus == 'NOT')
+									$color = 'ff6600';
+								if ($event->sessionstatus == 'ARCH')
+									$color = 'c0c0c0';
+							} else {
+								$color = 'c0c0c0';
 							}
 						} else {
-							if ($event->trainer_status==0) $color='ffffcc';
-							if ($event->trainer_status==1) $color='66ff99';
-							if ($event->trainer_status==2) $color='33ff33';
-							if ($event->trainer_status==3) $color='3366ff';
-							if ($event->trainer_status==4) $color='33ccff';
-							if ($event->trainer_status==5) $color='cc6600';
-							if ($event->trainer_status==6) $color='cc0000';			
+							if ($event->trainer_status == 0)
+								$color = 'ffffcc';
+							if ($event->trainer_status == 1)
+								$color = '66ff99';
+							if ($event->trainer_status == 2)
+								$color = '33ff33';
+							if ($event->trainer_status == 3)
+								$color = '3366ff';
+							if ($event->trainer_status == 4)
+								$color = '33ccff';
+							if ($event->trainer_status == 5)
+								$color = 'cc6600';
+							if ($event->trainer_status == 6)
+								$color = 'cc0000';
 						}
 					}
 					$cssclass = $cssclass . ' ' . $cssclass . '_day_' . $ymd;
@@ -828,7 +847,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						if ($event->type_code == 'ICALEVENT')
 							print dol_trunc ( $event->libelle, $maxnbofchar );
 						else
-							print '<a href="../session/card.php?id='.$event->sessionid.'">'.$event->sessionid.'</a> - '.$event->getNomUrl ( 0, $maxnbofchar, 'cal_event' );
+							print '<a href="../session/card.php?id=' . $event->sessionid . '">' . $event->sessionid . '</a> - ' . $event->getNomUrl ( 0, $maxnbofchar, 'cal_event' );
 						
 						if ($event->type_code == 'ICALEVENT')
 							print '<br>(' . dol_trunc ( $event->icalname, $maxnbofchar ) . ')';
@@ -876,13 +895,13 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					/*if ($event->type_code != 'BIRTHDAY' && $event->type_code != 'ICALEVENT')
 						//print $event->getLibStatut ( 3, 1 );
 					else*/
-						print '&nbsp;';
+					print '&nbsp;';
 					print '</td></tr></table>';
 					print '</li></ul>';
 					print '</div>';
 					$i ++;
 				} else {
-					print '<a href="' . $_SERVER['PHP_SELF'].'?month=' . $monthshown . '&year=' . $year;
+					print '<a href="' . $_SERVER ['PHP_SELF'] . '?month=' . $monthshown . '&year=' . $year;
 					print ($status ? '&status=' . $status : '') . ($filter ? '&filter=' . $filter : '');
 					$newparam = preg_replace ( '/maxprint=[0-9]+&?/i', 'maxprint=0', $newparam );
 					print $newparam;

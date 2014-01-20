@@ -471,7 +471,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 				$sqlsessdone .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as form ON formcur.fk_formation_catalogue=form.rowid";
 				$sqlsessdone .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.fk_formation_catalogue=form.rowid";
 				$sqlsessdone .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sessta ON sessta.fk_session_agefodd=sess.rowid AND sessta.fk_stagiaire=sta.rowid";
-				$sqlsessdone .= " WHERE cursus.rowid=".$this->fk_cursus;
+				$sqlsessdone .= " WHERE cursus.rowid=" . $this->fk_cursus;
 				
 				dol_syslog ( get_class ( $this ) . "::fetch_stagiaire_per_cursus sqlsessdone=" . $sqlsessdone, LOG_DEBUG );
 				$resqlsessdone = $this->db->query ( $sqlsessdone );
@@ -556,9 +556,9 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		$sql .= " ON sope.rowid = sa.fk_socpeople";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_cursus as formcur ON formcur.fk_formation_catalogue=c.rowid";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_cursus as stacur ON stacur.fk_stagiaire=sa.rowid AND stacur.fk_stagiaire=" . $this->fk_stagiaire;
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_cursus as cursus  ON stacur.fk_cursus=cursus.rowid AND formcur.fk_cursus=cursus.rowid AND cursus.rowid=".$this->fk_cursus;
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " ;
-		if (!empty($limit)) {
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_cursus as cursus  ON stacur.fk_cursus=cursus.rowid AND formcur.fk_cursus=cursus.rowid AND cursus.rowid=" . $this->fk_cursus;
+		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
+		if (! empty ( $limit )) {
 			$this->db->plimit ( $limit + 1, $offset );
 		}
 		
@@ -596,7 +596,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		} else {
 			$this->error = "Error " . $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::fetch_session_cursus_per_trainee " . $this->error, LOG_ERR );
-			return -1;
+			return - 1;
 		}
 	}
 
@@ -648,7 +648,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
@@ -660,7 +660,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_training_session_to_plan() {
-	
+
 		global $langs;
 		
 		$sql = "SELECT";
@@ -670,35 +670,33 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		$sql .= " c.intitule,";
 		$sql .= " c.archive";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_cursus as formcur ON formcur.fk_formation_catalogue=c.rowid AND formcur.fk_cursus=".$this->fk_cursus;
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_cursus as formcur ON formcur.fk_formation_catalogue=c.rowid AND formcur.fk_cursus=" . $this->fk_cursus;
 		$sql .= " WHERE c.rowid NOT IN ";
 		$sql .= " (SELECT fk_formation_catalogue ";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=sess.rowid ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire AND sta.rowid=". $this->fk_stagiaire.")";
-		
-
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire AND sta.rowid=" . $this->fk_stagiaire . ")";
 		
 		dol_syslog ( get_class ( $this ) . "::fetch_cursus_per_trainee sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		if ($resql) {
 			$this->line = array ();
 			$num = $this->db->num_rows ( $resql );
-				
+			
 			while ( $obj = $this->db->fetch_object ( $resql ) ) {
 				$line = new AgfTrainingCursusLine ();
-		
+				
 				$line->id = $obj->rowid;
-		
+				
 				$line->ref_interne = $obj->ref_interne;
 				$line->ref = $obj->ref;
 				$line->intitule = $obj->intitule;
 				$line->archive = $obj->archive;
-		
+				
 				$this->lines [] = $line;
 			}
 			$this->db->free ( $resql );
-				
+			
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror ();
@@ -744,9 +742,9 @@ class AgfTrainingCursusLine {
 	var $ref;
 	var $intitule;
 	var $archive;
-	
+
 	function __construct() {
-	
+
 		return 1;
 	}
 }
@@ -781,7 +779,9 @@ class AgfSessionCursusLine {
 	var $statuscode;
 	var $status_in_session;
 	var $realdurationsession;
+
 	function __construct() {
+
 		return 1;
 	}
 }

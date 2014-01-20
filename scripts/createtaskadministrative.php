@@ -16,35 +16,42 @@
 */
 
 /**
- *       \file       /agefodd/scripts/createtaskadmin.php
-*       \brief      Generate script
-*/
-if (! defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL','1'); // Disables token renewal
-if (! defined('NOREQUIREMENU'))  define('NOREQUIREMENU','1');
-if (! defined('NOREQUIREHTML'))  define('NOREQUIREHTML','1');
-if (! defined('NOREQUIREAJAX'))  define('NOREQUIREAJAX','1');
-if (! defined('NOLOGIN'))        define('NOLOGIN','1');
+ * \file /agefodd/scripts/createtaskadmin.php
+ * \brief Generate script
+ */
+if (! defined ( 'NOTOKENRENEWAL' ))
+	define ( 'NOTOKENRENEWAL', '1' ); // Disables token renewal
+if (! defined ( 'NOREQUIREMENU' ))
+	define ( 'NOREQUIREMENU', '1' );
+if (! defined ( 'NOREQUIREHTML' ))
+	define ( 'NOREQUIREHTML', '1' );
+if (! defined ( 'NOREQUIREAJAX' ))
+	define ( 'NOREQUIREAJAX', '1' );
+if (! defined ( 'NOLOGIN' ))
+	define ( 'NOLOGIN', '1' );
 
-$res=@include("../../main.inc.php");				// For root directory
-if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
-if (! $res) die("Include of main fails");
+$res = @include ("../../main.inc.php"); // For root directory
+if (! $res)
+	$res = @include ("../../../main.inc.php"); // For "custom" directory
+if (! $res)
+	die ( "Include of main fails" );
 
-dol_include_once('/agefodd/class/agsession.class.php');
-dol_include_once('/user/class/user.class.php');
+dol_include_once ( '/agefodd/class/agsession.class.php' );
+dol_include_once ( '/user/class/user.class.php' );
 
-$userlogin=GETPOST('login');
-$id=GETPOST('id');
+$userlogin = GETPOST ( 'login' );
+$id = GETPOST ( 'id' );
 
-$user=new User($db);
-$result=$user->fetch('',$userlogin);
+$user = new User ( $db );
+$result = $user->fetch ( '', $userlogin );
 
-$agf = new Agsession($db);
-$agf->fetch($id);
-if (!empty($agf->id)) {
+$agf = new Agsession ( $db );
+$agf->fetch ( $id );
+if (! empty ( $agf->id )) {
 	
-	$result = $agf->createAdmLevelForSession($user);
-	if ($result>0) {
-		print -1;
+	$result = $agf->createAdmLevelForSession ( $user );
+	if ($result > 0) {
+		print - 1;
 	} else {
 		print 1;
 	}

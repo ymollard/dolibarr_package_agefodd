@@ -38,6 +38,11 @@ ALTER TABLE llx_agefodd_formation_catalogue MODIFY duree real NOT NULL DEFAULT 0
 ALTER TABLE llx_agefodd_session ADD COLUMN is_date_res_confirm_site smallint NOT NULL DEFAULT 0 AFTER date_res_site;
 ALTER TABLE llx_agefodd_session ADD COLUMN date_res_confirm_site datetime DEFAULT NULL AFTER is_date_res_confirm_site;
 
+ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_requester int NULL AFTER fk_soc;
+ALTER TABLE llx_agefodd_session ADD COLUMN fk_socpeople_requester int NULL AFTER fk_soc_requester;
+ALTER TABLE llx_agefodd_session ADD INDEX fk_soc_requester_session (fk_soc_requester);
+
+ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN fk_soc_link integer NULL AFTER fk_agefodd_stagiaire_type;
 
 
  

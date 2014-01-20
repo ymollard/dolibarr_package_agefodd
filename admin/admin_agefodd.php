@@ -299,12 +299,11 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 	
-	if (!empty($usecostmanamgemnt)) {
+	if (! empty ( $usecostmanamgemnt )) {
 		$res = dolibarr_set_const ( $db, 'AGF_DOL_TRAINER_AGENDA', $usecostmanamgemnt, 'chaine', 0, '', $conf->entity );
 		if (! $res > 0)
 			$error ++;
 	}
-	
 	
 	$usesessiontraineeauto = GETPOST ( 'AGF_SESSION_TRAINEE_STATUS_AUTO', 'alpha' );
 	$res = dolibarr_set_const ( $db, 'AGF_SESSION_TRAINEE_STATUS_AUTO', $usesessiontraineeauto, 'chaine', 0, '', $conf->entity );
@@ -520,10 +519,12 @@ print "</tr>\n";
 
 clearstatcache ();
 
-$dirmodels = array_merge ( array ('/' ));
+$dirmodels = array_merge ( array (
+	'/' 
+) );
 
 foreach ( $dirmodels as $reldir ) {
-
+	
 	$dir = dol_buildpath ( "/agefodd/core/modules/agefodd/" );
 	
 	if (is_dir ( $dir )) {
@@ -1276,14 +1277,16 @@ print '</tr>';
 print '<tr class="impair"><td>' . $langs->trans ( "AgfManageCost" ) . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
-	$input_array = array ('set' => array ('AGF_DOL_TRAINER_AGENDA'=>1));
-
+	$input_array = array (
+		'set' => array (
+		'AGF_DOL_TRAINER_AGENDA' => 1 
+	) 
+	);
 	
 	print ajax_constantonoff ( 'AGF_ADVANCE_COST_MANAGEMENT', $input_array );
-	
 } else {
 	$arrval = array (
-	'0' => $langs->trans ( "No" ),'1' => $langs->trans ( "Yes" )
+		'0' => $langs->trans ( "No" ),'1' => $langs->trans ( "Yes" ) 
 	);
 	print $form->selectarray ( "AGF_ADVANCE_COST_MANAGEMENT", $arrval, $conf->global->AGF_MANAGE_CURSUS );
 }
@@ -1298,10 +1301,9 @@ print '<tr class="pair"><td>' . $langs->trans ( "AgfContacCustMandatory" ) . '</
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff ( 'AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $input_array );
-
 } else {
 	$arrval = array (
-	'0' => $langs->trans ( "No" ),'1' => $langs->trans ( "Yes" )
+		'0' => $langs->trans ( "No" ),'1' => $langs->trans ( "Yes" ) 
 	);
 	print $form->selectarray ( "AGF_CONTACT_NOT_MANDATORY_ON_SESSION", $arrval, $conf->global->AGF_CONTACT_NOT_MANDATORY_ON_SESSION );
 }
@@ -1310,7 +1312,6 @@ print '<td align="center">';
 print $form->textwithpicto ( '', $langs->trans ( "AgfContacCustMandatoryHelp" ), 1, 'help' );
 print '</td>';
 print '</tr>';
-
 
 if (! $conf->use_javascript_ajax) {
 	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans ( "Save" ) . '"></td>';

@@ -66,6 +66,9 @@ if ($result < 0) {
  * Action
  */
 if ($action == 'invoice_addline') {
+	
+	$error = 0;
+	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->fetch ( $idelement );
 	
@@ -76,73 +79,82 @@ if ($action == 'invoice_addline') {
 		setEventMessage ( $prod->error, 'errors' );
 	}
 	
-	$result = $suplier_invoice->addline ( $prod->ref . ' ' . $prod->description, GETPOST ( 'price' ), GETPOST ( 'tva_tx' ), 0, 0, GETPOST ( 'qty' ), $product_fourn, 0, '', '', 0, '', 'HT', $prod->type );
-	if ($result < 0) {
-		setEventMessage ( $suplier_invoice->error, 'errors' );
+	if (empty ( $prod->id )) {
+		setEventMessage ( $langs->trans ( 'ErrorFieldRequired', $langs->transnoentitiesnoconv ( "Product" ) ), 'errors' );
+		$error ++;
 	}
 	
-	$session_invoice = new Agefodd_session_element ( $db );
-	// Update trainer cost
-	$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_trainer' );
-	if ($result < 0) {
-		setEventMessage ( $session_invoice->error, 'errors' );
-	}
-	if (count ( $session_invoice->lines ) > 0) {
+	if (! $error) {
+		$result = $suplier_invoice->addline ( $prod->ref . ' ' . $prod->description, GETPOST ( 'price' ), GETPOST ( 'tva_tx' ), 0, 0, GETPOST ( 'qty' ), $product_fourn, 0, '', '', 0, '', 'HT', $prod->type );
+		if ($result < 0) {
+			setEventMessage ( $suplier_invoice->error, 'errors' );
+		}
+		
 		$total_ht = 0;
-		foreach ( $session_invoice->lines as $line ) {
-			$suplier_invoice->fetch ( $line->fk_element );
-			
-			$total_ht += $suplier_invoice->total_ht;
+		$session_invoice = new Agefodd_session_element ( $db );
+		// Update trainer cost
+		$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_trainer' );
+		if ($result < 0) {
+			setEventMessage ( $session_invoice->error, 'errors' );
 		}
-	}
-	$agf->cost_trainer = $total_ht;
-	$result = $agf->update ( $user, 1 );
-	if ($result < 0) {
-		setEventMessage ( $agf->error, 'errors' );
-	}
-	
-	// Update trip cost
-	$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_missions' );
-	if ($result < 0) {
-		setEventMessage ( $session_invoice->error, 'errors' );
-	}
-	if (count ( $session_invoice->lines ) > 0) {
+		if (count ( $session_invoice->lines ) > 0) {
+			foreach ( $session_invoice->lines as $line ) {
+				$suplier_invoice->fetch ( $line->fk_element );
+				
+				$total_ht += $suplier_invoice->total_ht;
+			}
+		}
+		$agf->cost_trainer = $total_ht;
+		$result = $agf->update ( $user, 1 );
+		if ($result < 0) {
+			setEventMessage ( $agf->error, 'errors' );
+		}
+		
+		// Update trip cost
 		$total_ht = 0;
-		foreach ( $session_invoice->lines as $line ) {
-			$suplier_invoice->fetch ( $line->fk_element );
-			
-			$total_ht += $suplier_invoice->total_ht;
+		$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_missions' );
+		if ($result < 0) {
+			setEventMessage ( $session_invoice->error, 'errors' );
 		}
-	}
-	$agf->cost_trip = $total_ht;
-	$result = $agf->update ( $user, 1 );
-	if ($result < 0) {
-		setEventMessage ( $agf->error, 'errors' );
-	}
-	
-	// Update training cost
-	$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_room' );
-	if ($result < 0) {
-		setEventMessage ( $session_invoice->error, 'errors' );
-	}
-	if (count ( $session_invoice->lines ) > 0) {
-		$totalht = 0;
-		foreach ( $session_invoice->lines as $line ) {
-			$suplier_invoice->fetch ( $line->fk_element );
-			
-			$totalht += $suplier_invoice->total_ht;
+		if (count ( $session_invoice->lines ) > 0) {
+			foreach ( $session_invoice->lines as $line ) {
+				$suplier_invoice->fetch ( $line->fk_element );
+				
+				$total_ht += $suplier_invoice->total_ht;
+			}
 		}
-	}
-	$agf->cost_site = $totalht;
-	$result = $agf->update ( $user, 1 );
-	if ($result < 0) {
-		setEventMessage ( $agf->error, 'errors' );
+		$agf->cost_trip = $total_ht;
+		$result = $agf->update ( $user, 1 );
+		if ($result < 0) {
+			setEventMessage ( $agf->error, 'errors' );
+		}
+		
+		// Update training cost
+		$total_ht = 0;
+		$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_room' );
+		if ($result < 0) {
+			setEventMessage ( $session_invoice->error, 'errors' );
+		}
+		if (count ( $session_invoice->lines ) > 0) {
+			foreach ( $session_invoice->lines as $line ) {
+				$suplier_invoice->fetch ( $line->fk_element );
+				
+				$totalht += $suplier_invoice->total_ht;
+			}
+		}
+		$agf->cost_site = $totalht;
+		$result = $agf->update ( $user, 1 );
+		if ($result < 0) {
+			setEventMessage ( $agf->error, 'errors' );
+		}
 	}
 	
 	header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 }
 
 if ($action == 'invoice_supplier_trainer_confirm') {
+	
+	$error = 0;
 	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->socid = $socid;
@@ -172,53 +184,62 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 		setEventMessage ( $prod->error, 'errors' );
 	}
 	
-	$suplier_invoice->lines [0]->description = $prod->ref . ' ' . $prod->description;
-	$suplier_invoice->lines [0]->pu_ht = GETPOST ( 'pricetrainer' );
-	$suplier_invoice->lines [0]->tva_tx = GETPOST ( 'tva_tx' );
-	$suplier_invoice->lines [0]->qty = GETPOST ( 'qtytrainer' );
-	$suplier_invoice->lines [0]->fk_product = $product_fourn;
-	$suplier_invoice->lines [0]->product_type = $prod->type;
+	if (empty ( $prod->id )) {
+		setEventMessage ( $langs->trans ( 'ErrorFieldRequired', $langs->transnoentitiesnoconv ( "Product" ) ), 'errors' );
+		$error ++;
+	}
 	
-	$result = $suplier_invoice->create ( $user );
-	if ($result < 0) {
-		setEventMessage ( $suplier_invoice->error, 'errors' );
-	} else {
+	if (! $error) {
+		$suplier_invoice->lines [0]->description = $prod->ref . ' ' . $prod->description;
+		$suplier_invoice->lines [0]->pu_ht = GETPOST ( 'pricetrainer' );
+		$suplier_invoice->lines [0]->tva_tx = GETPOST ( 'tva_tx' );
+		$suplier_invoice->lines [0]->qty = GETPOST ( 'qtytrainer' );
+		$suplier_invoice->lines [0]->fk_product = $product_fourn;
+		$suplier_invoice->lines [0]->product_type = $prod->type;
 		
-		// Create link with the session/customer
-		$session_invoice = new Agefodd_session_element ( $db );
-		$session_invoice->fk_soc = $socid;
-		$session_invoice->fk_session_agefodd = $id;
-		$session_invoice->fk_element = $result;
-		$session_invoice->element_type = 'invoice_supplier_trainer';
-		$result = $session_invoice->create ( $user );
+		$result = $suplier_invoice->create ( $user );
 		if ($result < 0) {
-			setEventMessage ( $session_invoice->error, 'errors' );
-		}
-		
-		// Update training cost
-		$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_trainer' );
-		if ($result < 0) {
-			setEventMessage ( $session_invoice->error, 'errors' );
-		}
-		if (count ( $session_invoice->lines ) > 0) {
-			$total_ht = 0;
-			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch ( $line->fk_element );
-				
-				$total_ht += $suplier_invoice->total_ht;
+			setEventMessage ( $suplier_invoice->error, 'errors' );
+		} else {
+			
+			// Create link with the session/customer
+			$session_invoice = new Agefodd_session_element ( $db );
+			$session_invoice->fk_soc = $socid;
+			$session_invoice->fk_session_agefodd = $id;
+			$session_invoice->fk_element = $result;
+			$session_invoice->element_type = 'invoice_supplier_trainer';
+			$result = $session_invoice->create ( $user );
+			if ($result < 0) {
+				setEventMessage ( $session_invoice->error, 'errors' );
 			}
+			
+			// Update training cost
+			$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_trainer' );
+			if ($result < 0) {
+				setEventMessage ( $session_invoice->error, 'errors' );
+			}
+			if (count ( $session_invoice->lines ) > 0) {
+				$total_ht = 0;
+				foreach ( $session_invoice->lines as $line ) {
+					$suplier_invoice->fetch ( $line->fk_element );
+					
+					$total_ht += $suplier_invoice->total_ht;
+				}
+			}
+			$agf->cost_trainer = $total_ht;
+			$result = $agf->update ( $user, 1 );
+			if ($result < 0) {
+				setEventMessage ( $agf->error, 'errors' );
+			}
+			
+			header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 		}
-		$agf->cost_trainer = $total_ht;
-		$result = $agf->update ( $user, 1 );
-		if ($result < 0) {
-			setEventMessage ( $agf->error, 'errors' );
-		}
-		
-		header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 	}
 } // Creation with soc and product
 elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 	
+	$error = 0;
+	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'standard' );
@@ -236,52 +257,61 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 		setEventMessage ( $prod->error, 'errors' );
 	}
 	
-	$suplier_invoice->lines [0]->description = $prod->ref . ' ' . $prod->description;
-	$suplier_invoice->lines [0]->pu_ht = GETPOST ( 'pricemission' );
-	$suplier_invoice->lines [0]->tva_tx = GETPOST ( 'tva_tx' );
-	$suplier_invoice->lines [0]->qty = GETPOST ( 'qtymission' );
-	$suplier_invoice->lines [0]->fk_product = $product_fourn;
-	$suplier_invoice->lines [0]->product_type = $prod->type;
+	if (empty ( $prod->id )) {
+		setEventMessage ( $langs->trans ( 'ErrorFieldRequired', $langs->transnoentitiesnoconv ( "Product" ) ), 'errors' );
+		$error ++;
+	}
 	
-	$result = $suplier_invoice->create ( $user );
-	if ($result < 0) {
-		setEventMessage ( $suplier_invoice->error, 'errors' );
-	} else {
+	if (! $error) {
+		$suplier_invoice->lines [0]->description = $prod->ref . ' ' . $prod->description;
+		$suplier_invoice->lines [0]->pu_ht = GETPOST ( 'pricemission' );
+		$suplier_invoice->lines [0]->tva_tx = GETPOST ( 'tva_tx' );
+		$suplier_invoice->lines [0]->qty = GETPOST ( 'qtymission' );
+		$suplier_invoice->lines [0]->fk_product = $product_fourn;
+		$suplier_invoice->lines [0]->product_type = $prod->type;
 		
-		// Create link with the session/customer
-		$session_invoice = new Agefodd_session_element ( $db );
-		$session_invoice->fk_soc = $socid;
-		$session_invoice->fk_session_agefodd = $id;
-		$session_invoice->fk_element = $result;
-		$session_invoice->element_type = 'invoice_supplier_missions';
-		$result = $session_invoice->create ( $user );
+		$result = $suplier_invoice->create ( $user );
 		if ($result < 0) {
-			setEventMessage ( $session_invoice->error, 'errors' );
-		}
-		
-		// Update training cost
-		$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_missions' );
-		if ($result < 0) {
-			setEventMessage ( $session_invoice->error, 'errors' );
-		}
-		if (count ( $session_invoice->lines ) > 0) {
-			$total_ht = 0;
-			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch ( $line->fk_element );
-				
-				$total_ht += $suplier_invoice->total_ht;
+			setEventMessage ( $suplier_invoice->error, 'errors' );
+		} else {
+			
+			// Create link with the session/customer
+			$session_invoice = new Agefodd_session_element ( $db );
+			$session_invoice->fk_soc = $socid;
+			$session_invoice->fk_session_agefodd = $id;
+			$session_invoice->fk_element = $result;
+			$session_invoice->element_type = 'invoice_supplier_missions';
+			$result = $session_invoice->create ( $user );
+			if ($result < 0) {
+				setEventMessage ( $session_invoice->error, 'errors' );
 			}
+			
+			// Update training cost
+			$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_missions' );
+			if ($result < 0) {
+				setEventMessage ( $session_invoice->error, 'errors' );
+			}
+			if (count ( $session_invoice->lines ) > 0) {
+				$total_ht = 0;
+				foreach ( $session_invoice->lines as $line ) {
+					$suplier_invoice->fetch ( $line->fk_element );
+					
+					$total_ht += $suplier_invoice->total_ht;
+				}
+			}
+			$agf->cost_trip = $total_ht;
+			$result = $agf->update ( $user, 1 );
+			if ($result < 0) {
+				setEventMessage ( $agf->error, 'errors' );
+			}
+			
+			header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 		}
-		$agf->cost_trip = $total_ht;
-		$result = $agf->update ( $user, 1 );
-		if ($result < 0) {
-			setEventMessage ( $agf->error, 'errors' );
-		}
-		
-		header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 	}
 } elseif ($action == 'invoice_supplier_place_confirm') {
 	
+	$error = 0;
+	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'standard' );
@@ -299,49 +329,56 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 		setEventMessage ( $prod->error, 'errors' );
 	}
 	
-	$suplier_invoice->lines [0]->description = $prod->ref . ' ' . $prod->description;
-	$suplier_invoice->lines [0]->pu_ht = GETPOST ( 'priceroom' );
-	$suplier_invoice->lines [0]->tva_tx = GETPOST ( 'tva_tx' );
-	$suplier_invoice->lines [0]->qty = GETPOST ( 'qtyroom' );
-	$suplier_invoice->lines [0]->fk_product = $product_fourn;
-	$suplier_invoice->lines [0]->product_type = $prod->type;
+	if (empty ( $prod->id )) {
+		setEventMessage ( $langs->trans ( 'ErrorFieldRequired', $langs->transnoentitiesnoconv ( "Product" ) ), 'errors' );
+		$error ++;
+	}
 	
-	$result = $suplier_invoice->create ( $user );
-	if ($result < 0) {
-		setEventMessage ( $suplier_invoice->error, 'errors' );
-	} else {
+	if (! $error) {
+		$suplier_invoice->lines [0]->description = $prod->ref . ' ' . $prod->description;
+		$suplier_invoice->lines [0]->pu_ht = GETPOST ( 'priceroom' );
+		$suplier_invoice->lines [0]->tva_tx = GETPOST ( 'tva_tx' );
+		$suplier_invoice->lines [0]->qty = GETPOST ( 'qtyroom' );
+		$suplier_invoice->lines [0]->fk_product = $product_fourn;
+		$suplier_invoice->lines [0]->product_type = $prod->type;
 		
-		// Create link with the session/customer
-		$session_invoice = new Agefodd_session_element ( $db );
-		$session_invoice->fk_soc = $socid;
-		$session_invoice->fk_session_agefodd = $id;
-		$session_invoice->fk_element = $result;
-		$session_invoice->element_type = 'invoice_supplier_room';
-		$result = $session_invoice->create ( $user );
+		$result = $suplier_invoice->create ( $user );
 		if ($result < 0) {
-			setEventMessage ( $session_invoice->error, 'errors' );
-		}
-		
-		// Update training cost
-		$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_room' );
-		if ($result < 0) {
-			setEventMessage ( $session_invoice->error, 'errors' );
-		}
-		if (count ( $session_invoice->lines ) > 0) {
-			$totalht = 0;
-			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch ( $line->fk_element );
-				
-				$totalht += $suplier_invoice->total_ht;
+			setEventMessage ( $suplier_invoice->error, 'errors' );
+		} else {
+			
+			// Create link with the session/customer
+			$session_invoice = new Agefodd_session_element ( $db );
+			$session_invoice->fk_soc = $socid;
+			$session_invoice->fk_session_agefodd = $id;
+			$session_invoice->fk_element = $result;
+			$session_invoice->element_type = 'invoice_supplier_room';
+			$result = $session_invoice->create ( $user );
+			if ($result < 0) {
+				setEventMessage ( $session_invoice->error, 'errors' );
 			}
+			
+			// Update training cost
+			$result = $session_invoice->fetch_by_session_by_thirdparty ( $id, 0, 'invoice_supplier_room' );
+			if ($result < 0) {
+				setEventMessage ( $session_invoice->error, 'errors' );
+			}
+			if (count ( $session_invoice->lines ) > 0) {
+				$totalht = 0;
+				foreach ( $session_invoice->lines as $line ) {
+					$suplier_invoice->fetch ( $line->fk_element );
+					
+					$totalht += $suplier_invoice->total_ht;
+				}
+			}
+			$agf->cost_site = $totalht;
+			$result = $agf->update ( $user, 1 );
+			if ($result < 0) {
+				setEventMessage ( $agf->error, 'errors' );
+			}
+			
+			header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 		}
-		$agf->cost_site = $totalht;
-		$result = $agf->update ( $user, 1 );
-		if ($result < 0) {
-			setEventMessage ( $agf->error, 'errors' );
-		}
-		
-		header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 	}
 } elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer) {
 	$agf_fin = new Agefodd_session_element ( $db );

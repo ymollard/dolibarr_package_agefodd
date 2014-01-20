@@ -1,102 +1,105 @@
 <?php
-/** Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/**
+ * Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
-* Copyright (C) 2012       Florian Henry   <florian.henry@open-concept.pro>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ * Copyright (C) 2012 Florian Henry <florian.henry@open-concept.pro>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 /**
- *	\file       agefodd/training/list.php
- *	\ingroup    agefodd
- *	\brief      list of training
-*/
+ * \file agefodd/training/list.php
+ * \ingroup agefodd
+ * \brief list of training
+ */
+$res = @include ("../../main.inc.php"); // For root directory
+if (! $res)
+	$res = @include ("../../../main.inc.php"); // For "custom" directory
+if (! $res)
+	die ( "Include of main fails" );
 
-$res=@include("../../main.inc.php");				// For root directory
-if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
-if (! $res) die("Include of main fails");
+require_once ('../class/agefodd_formation_catalogue.class.php');
+require_once ('../class/html.formagefodd.class.php');
 
-require_once('../class/agefodd_formation_catalogue.class.php');
-require_once('../class/html.formagefodd.class.php');
-
-require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 
 // Security check
-if (!$user->rights->agefodd->agefodd_formation_catalogue->lire) accessforbidden();
+if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
+	accessforbidden ();
 
-$langs->load('agefodd@agefodd');
+$langs->load ( 'agefodd@agefodd' );
 
+$sortorder = GETPOST ( 'sortorder', 'alpha' );
+$sortfield = GETPOST ( 'sortfield', 'alpha' );
+$page = GETPOST ( 'page', 'alpha' );
+$arch = GETPOST ( 'arch', 'int' );
 
-$sortorder=GETPOST('sortorder','alpha');
-$sortfield=GETPOST('sortfield','alpha');
-$page=GETPOST('page','alpha');
-$arch=GETPOST('arch','int');
+if (empty ( $sortorder ))
+	$sortorder = "DESC";
+if (empty ( $sortfield ))
+	$sortfield = "c.rowid";
 
-if (empty($sortorder)) $sortorder="DESC";
-if (empty($sortfield)) $sortfield="c.rowid";
-
-
-if ($page == -1) {
-	$page = 0 ;
+if ($page == - 1) {
+	$page = 0;
 }
 
 $limit = $conf->liste_limit;
-$offset = $limit * $page ;
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-if (empty($arch)) $arch = 0;
-
-// Search criteria
+if (empty ( $arch ))
+	$arch = 0;
+	
+	// Search criteria
 $search_intitule = GETPOST ( "search_intitule" );
 $search_ref = GETPOST ( "search_ref" );
 $search_ref_interne = GETPOST ( "search_ref_interne" );
 $search_datec = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datecmonth', 'int' ), GETPOST ( 'search_datecday', 'int' ), GETPOST ( 'search_datecyear', 'int' ) );
-$search_duree = GETPOST('search_duree');
-//$search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear', 'int' ) );
-$search_id = GETPOST ( 'search_id', 'int');
-$search_categ = GETPOST ( 'search_categ', 'int');
-if ($search_categ==-1) $search_categ='';
-
-
-// Do we click on purge search criteria ?
+$search_duree = GETPOST ( 'search_duree' );
+// $search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear',
+// 'int' ) );
+$search_id = GETPOST ( 'search_id', 'int' );
+$search_categ = GETPOST ( 'search_categ', 'int' );
+if ($search_categ == - 1)
+	$search_categ = '';
+	
+	// Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
 	$search_intitule = '';
 	$search_ref = '';
 	$search_ref_interne = "";
 	$search_datec = '';
 	$search_duree = "";
-	//$search_dated = "";
-	$search_id='';
-	$search_categ='';
+	// $search_dated = "";
+	$search_id = '';
+	$search_categ = '';
 }
 
+llxHeader ( '', $langs->trans ( 'AgfMenuCat' ) );
 
-llxHeader('',$langs->trans('AgfMenuCat'));
-
-$agf = new Agefodd($db);
+$agf = new Agefodd ( $db );
 $form = new Form ( $db );
-$formagefodd = new FormAgefodd($db);
+$formagefodd = new FormAgefodd ( $db );
 
 $extrafields = new ExtraFields ( $db );
 $extralabels = $extrafields->fetch_name_optionals_label ( $agf->table_element, true );
 
-
 $filter = array ();
 if (! empty ( $search_intitule )) {
-	$filter ['c.intitule'] = $db->escape($search_intitule);
+	$filter ['c.intitule'] = $db->escape ( $search_intitule );
 }
 if (! empty ( $search_ref )) {
 	$filter ['c.ref'] = $search_ref;
@@ -117,23 +120,22 @@ if (! empty ( $search_categ )) {
 	$filter ['c.fk_c_category'] = $search_categ;
 }
 
+$resql = $agf->fetch_all ( $sortorder, $sortfield, $limit, $offset, $arch, $filter );
 
-$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
-
-print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER['PHP_SELF'],'&arch='.$arch, $sortfield, $sortorder,'', $resql);
+print_barre_liste ( $langs->trans ( "AgfMenuCat" ), $page, $_SERVER ['PHP_SELF'], '&arch=' . $arch, $sortfield, $sortorder, '', $resql );
 
 $i = 0;
 print '<table class="noborder" width="100%">';
 print "<tr class=\"liste_titre\">";
-print_liste_field_titre($langs->trans("Id"),$_SERVER['PHP_SELF'],"c.rowid","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],"c.intitule","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("Ref"),$_SERVER['PHP_SELF'],"c.ref","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"c.ref_interne","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfTrainingCateg"),$_SERVER['PHP_SELF'],"dictcat.code","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfDateC"),$_SERVER['PHP_SELF'],"c.datec","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfDuree"),$_SERVER['PHP_SELF'],"c.duree","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfDateLastAction"),$_SERVER['PHP_SELF'],"a.dated","",'&arch='.$arch,'',$sortfield,$sortorder);
-print_liste_field_titre($langs->trans("AgfNbreAction"),$_SERVER['PHP_SELF'],'' ,'&arch='.$arch,'',$sortfield,$sortorder);
+print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVER ['PHP_SELF'], "c.rowid", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVER ['PHP_SELF'], "c.intitule", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "Ref" ), $_SERVER ['PHP_SELF'], "c.ref", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVER ['PHP_SELF'], "c.ref_interne", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfTrainingCateg" ), $_SERVER ['PHP_SELF'], "dictcat.code", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfDateC" ), $_SERVER ['PHP_SELF'], "c.datec", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfDuree" ), $_SERVER ['PHP_SELF'], "c.duree", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfDateLastAction" ), $_SERVER ['PHP_SELF'], "a.dated", "", '&arch=' . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre ( $langs->trans ( "AgfNbreAction" ), $_SERVER ['PHP_SELF'], '', '&arch=' . $arch, '', $sortfield, $sortorder );
 print "</tr>\n";
 
 print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
@@ -155,7 +157,7 @@ print '<input type="text" class="flat" name="search_ref_interne" value="' . $sea
 print '</td>';
 
 print '<td class="liste_titre">';
-print $formagefodd->select_training_categ($search_categ,'search_categ','t.active=1');
+print $formagefodd->select_training_categ ( $search_categ, 'search_categ', 't.active=1' );
 print '</td>';
 
 print '<td class="liste_titre">';
@@ -167,7 +169,7 @@ print '<input type="text" class="flat" name="search_duree" value="' . $search_du
 print '</td>';
 
 print '<td class="liste_titre">';
-//print $form->select_date ( $search_dated, 'search_dated', 0, 0, 1, 'search_form' );
+// print $form->select_date ( $search_dated, 'search_dated', 0, 0, 1, 'search_form' );
 print '</td>';
 
 print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
@@ -178,35 +180,31 @@ print '</td>';
 print "</tr>\n";
 print '</form>';
 
-$var=true;
-if ($resql>0)
-{
-	foreach ($agf->lines as $line)
-	{
-
+$var = true;
+if ($resql > 0) {
+	foreach ( $agf->lines as $line ) {
+		
 		// Affichage tableau des formations
-		$var=!$var;
+		$var = ! $var;
 		print "<tr $bc[$var]>";
-		print '<td><a href="card.php?id='.$line->rowid.'">'.img_object($langs->trans("AgfShowDetails"),"service").' '.$line->rowid.'</a></td>';
-		print '<td>'.stripslashes($line->intitule).'</td>';
-		print '<td>'.$line->ref.'</td>';
-		print '<td>'.$line->ref_interne.'</td>';
-		print '<td>'.$line->category_lib.'</td>';
-		print '<td>'.dol_print_date($line->datec,'daytext').'</td>';
-		print '<td>'.$line->duree.'</td>';
-		print '<td>'.dol_print_date($line->lastsession,'daytext').'</td>';
-		print '<td>'.$line->nbsession.'</td>';
+		print '<td><a href="card.php?id=' . $line->rowid . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->rowid . '</a></td>';
+		print '<td>' . stripslashes ( $line->intitule ) . '</td>';
+		print '<td>' . $line->ref . '</td>';
+		print '<td>' . $line->ref_interne . '</td>';
+		print '<td>' . $line->category_lib . '</td>';
+		print '<td>' . dol_print_date ( $line->datec, 'daytext' ) . '</td>';
+		print '<td>' . $line->duree . '</td>';
+		print '<td>' . dol_print_date ( $line->lastsession, 'daytext' ) . '</td>';
+		print '<td>' . $line->nbsession . '</td>';
 		print "</tr>\n";
-
-		$i++;
+		
+		$i ++;
 	}
-}
-else
-{
-	setEventMessage($agf->error,'errors');
+} else {
+	setEventMessage ( $agf->error, 'errors' );
 }
 
 print "</table>";
 
-llxFooter();
-$db->close();
+llxFooter ();
+$db->close ();

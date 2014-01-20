@@ -83,7 +83,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 		if (! empty ( $send_to )) {
 			// Le destinataire a ete fourni via le champ libre
 			$sendto = array (
-			$send_to 
+				$send_to 
 			);
 			$sendtoid = 0;
 		} elseif (is_array ( $receiver )) {
@@ -321,11 +321,10 @@ if ($_POST ['addfile']) {
 }
 
 $extrajs = array (
-'/agefodd/includes/multiselect/js/ui.multiselect.js' 
+	'/agefodd/includes/multiselect/js/ui.multiselect.js' 
 );
 $extracss = array (
-'/agefodd/includes/multiselect/css/ui.multiselect.css',
-'/agefodd/css/agefodd.css' 
+	'/agefodd/includes/multiselect/css/ui.multiselect.css','/agefodd/css/agefodd.css' 
 );
 
 llxHeader ( '', $langs->trans ( "AgfSendCommonDocs" ), '', '', '', '', $extrajs, $extracss );
@@ -377,8 +376,7 @@ if (! empty ( $id )) {
 		/*
 		 * Formulaire d'envoi des documents
 		*/
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention' || $action == 'presend_attestation' 
-				|| $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil') {
 			
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
@@ -426,7 +424,7 @@ if (! empty ( $id )) {
 						$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 					else
 						print '<div class="error">' . $langs->trans ( 'AgfConseilNotExists' ) . '</div>';
-					// Ajout fiche péda
+						// Ajout fiche péda
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists ( $file ))
@@ -435,19 +433,19 @@ if (! empty ( $id )) {
 					
 					$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 					
-					if (!empty($conf->global->AGF_MANAGE_CERTIF)) {
+					if (! empty ( $conf->global->AGF_MANAGE_CERTIF )) {
 						// Add certificate A4
 						$filename = 'certificateA4_' . $agf->id . '_' . $socid . '.pdf';
 						$file = $conf->agefodd->dir_output . '/' . $filename;
-						print '$file='.$file;
+						print '$file=' . $file;
 						if (file_exists ( $file )) {
 							$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 						}
 						
-						//  Add certificate card
+						// Add certificate card
 						$filename = 'certificatecard_' . $agf->id . '_' . $socid . '.pdf';
 						$file = $conf->agefodd->dir_output . '/' . $filename;
-						print '$file='.$file;
+						print '$file=' . $file;
 						if (file_exists ( $file )) {
 							$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
 						}
@@ -481,14 +479,14 @@ if (! empty ( $id )) {
 						// Ajout facture
 					$agf_fac = new Agefodd_session_element ( $db );
 					$result = $agf_fac->fetch_by_session_by_thirdparty ( $id, $socid );
-					foreach($agf_fac->lines as $line) {
-						if ($line->element_type=='invoice' && !empty($line->facnumber)) {
-						$filename = $line->facnumber . '/' . $line->facnumber . '.pdf';
-						$file = $conf->facture->dir_output . '/' . $filename;
-						if (file_exists ( $file ))
-							$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
-						else
-							print '<div class="error">' . $langs->trans ( 'AgfInvoiceNotExists' ) . '</div>';
+					foreach ( $agf_fac->lines as $line ) {
+						if ($line->element_type == 'invoice' && ! empty ( $line->facnumber )) {
+							$filename = $line->facnumber . '/' . $line->facnumber . '.pdf';
+							$file = $conf->facture->dir_output . '/' . $filename;
+							if (file_exists ( $file ))
+								$formmail->add_attached_files ( $file, basename ( $file ), dol_mimetype ( $file ) );
+							else
+								print '<div class="error">' . $langs->trans ( 'AgfInvoiceNotExists' ) . '</div>';
 						}
 					}
 				} else {
@@ -503,7 +501,7 @@ if (! empty ( $id )) {
 			$formmail->withfrom = 1;
 			// $formmail->withto=(!GETPOST('sendto','alpha'))?1:explode(',',GETPOST('sendto','alpha'));
 			// $formmail->withtosocid=($agf->fk_soc > 0?$agf->fk_soc:$socid);
-			$formmail->withtocc = 0;
+			$formmail->withtocc = 1;
 			$formmail->withtoccsocid = 0;
 			$formmail->withtoccc = $conf->global->MAIN_EMAIL_USECCC;
 			$formmail->withtocccsocid = 0;
@@ -544,7 +542,7 @@ if (! empty ( $id )) {
 					} else {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -554,7 +552,7 @@ if (! empty ( $id )) {
 				} else {
 					$contactstatic = new Contact ( $db );
 					$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-					if (!empty($contactstatic->email)) {
+					if (! empty ( $contactstatic->email )) {
 						$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 					} else {
 						$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -569,15 +567,15 @@ if (! empty ( $id )) {
 					$withto [$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 				}
 				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -604,7 +602,7 @@ if (! empty ( $id )) {
 				if (! empty ( $agf->fk_socpeople_OPCA )) {
 					$contactstatic = new Contact ( $db );
 					$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-				if (!empty($contactstatic->email)) {
+					if (! empty ( $contactstatic->email )) {
 						$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 					} else {
 						$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -631,15 +629,15 @@ if (! empty ( $id )) {
 					}
 				}
 				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -667,7 +665,7 @@ if (! empty ( $id )) {
 					} elseif ($agf->is_OPCA) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -690,7 +688,7 @@ if (! empty ( $id )) {
 					if ($agf->is_OPCA) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -717,16 +715,15 @@ if (! empty ( $id )) {
 					$withto [$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 				}
 				
-				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -755,7 +752,7 @@ if (! empty ( $id )) {
 					} elseif ($agf->is_OPCA) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -778,7 +775,7 @@ if (! empty ( $id )) {
 					if ($agf->is_OPCA) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -794,15 +791,15 @@ if (! empty ( $id )) {
 					$withto [$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 				}
 				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -832,7 +829,7 @@ if (! empty ( $id )) {
 					} elseif ($agf->is_OPCA) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -843,7 +840,7 @@ if (! empty ( $id )) {
 					if ($agf->is_OPCA) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $agf->fk_socpeople_OPCA );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfMailTypeContactOPCA' ) . ')';
 						} else {
 							$mesg = $langs->trans ( 'AgfSendWarningNoMailOpca' );
@@ -870,15 +867,15 @@ if (! empty ( $id )) {
 					$withto [$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 				}
 				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -918,15 +915,15 @@ if (! empty ( $id )) {
 					$withto [$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 				}
 				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -966,15 +963,15 @@ if (! empty ( $id )) {
 					$withto [$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 				}
 				
-				//All customer contact with client
-				if (!empty($agf->fk_soc)) {
+				// All customer contact with client
+				if (! empty ( $agf->fk_soc )) {
 					$socstatic = new Societe ( $db );
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array ( 'email' );
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact ( $db );
 						$contactstatic->fetch ( $id );
-						if (!empty($contactstatic->email)) {
+						if (! empty ( $contactstatic->email )) {
 							$withto [$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans ( 'AgfSessionContact' ) . ')';
 						}
 					}
@@ -986,7 +983,7 @@ if (! empty ( $id )) {
 				$formmail->withtofree = 1;
 			}
 			
-			$formmail->withdeliveryreceipt=1;
+			$formmail->withdeliveryreceipt = 1;
 			
 			$formmail->withbody .= "\n\n--\n__SIGNATURE__\n";
 			
@@ -1020,8 +1017,8 @@ if (! empty ( $id )) {
 			}
 			$formmail->show_form ();
 			
-			if (!empty($mesg)) {
-				setEventMessage($mesg,$style_mesg);
+			if (! empty ( $mesg )) {
+				setEventMessage ( $mesg, $style_mesg );
 			}
 		}
 		

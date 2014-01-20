@@ -1,22 +1,23 @@
 <?php
-/** Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
+/**
+ * Copyright (C) 2007-2008	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
-* Copyright (C) 2012-2013       Florian Henry       <florian.henry@open-concept.pro>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ * Copyright (C) 2012-2013 Florian Henry <florian.henry@open-concept.pro>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 /**
  * \file agefodd/class/agefodd_foramtion_catalogue.class.php
@@ -34,9 +35,7 @@ class Agefodd extends CommonObject {
 	var $errors = array ();
 	var $element = 'agefodd_formation_catalogue';
 	var $table_element = 'agefodd_formation_catalogue';
-	
-	protected $ismultientitymanaged = 1;  // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	
+	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	var $id;
 	var $entity;
 	var $ref;
@@ -62,29 +61,27 @@ class Agefodd extends CommonObject {
 	var $category_lib;
 	var $certif_duration;
 	var $lines = array ();
-	
 
 	/**
 	 * Constructor
 	 *
-	 * @param DoliDb $db
-	 *        	handler
+	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
+
 		$this->db = $db;
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
-	 * @param User $user
-	 *        	that create
-	 * @param int $notrigger
-	 *        	triggers after, 1=disable triggers
+	 * @param User $user that create
+	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
+
 		global $conf, $langs;
 		$error = 0;
 		
@@ -111,7 +108,7 @@ class Agefodd extends CommonObject {
 		if (empty ( $this->duree ))
 			$this->duree = 0;
 		
-		if ($this->fk_c_category==-1)
+		if ($this->fk_c_category == - 1)
 			$this->fk_c_category = 0;
 			
 			// Insert request
@@ -136,9 +133,9 @@ class Agefodd extends CommonObject {
 		$sql .= " " . $user->id . ',';
 		$sql .= " " . $conf->entity . ', ';
 		$sql .= " " . (empty ( $this->fk_product ) ? 'null' : $this->fk_product) . ', ';
-		$sql .= " " . (empty ( $this->nb_subscribe_min ) ? "null" : $this->nb_subscribe_min). ', ';
-		$sql .= " " . (empty ( $this->fk_c_category ) ? "null" : $this->fk_c_category). ', ';
-		$sql .= " " . (empty ( $this->certif_duration ) ? "null" : "'".$this->certif_duration."'");
+		$sql .= " " . (empty ( $this->nb_subscribe_min ) ? "null" : $this->nb_subscribe_min) . ', ';
+		$sql .= " " . (empty ( $this->fk_c_category ) ? "null" : $this->fk_c_category) . ', ';
+		$sql .= " " . (empty ( $this->certif_duration ) ? "null" : "'" . $this->certif_duration . "'");
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -164,12 +161,11 @@ class Agefodd extends CommonObject {
 			}
 		}
 		
-		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+		if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 		// For avoid conflicts if trigger used
 		{
-			$result=$this->insertExtraFields();
-			if ($result < 0)
-			{
-				$error++;
+			$result = $this->insertExtraFields ();
+			if ($result < 0) {
+				$error ++;
 			}
 		}
 		
@@ -186,15 +182,15 @@ class Agefodd extends CommonObject {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id
-	 *        	object
+	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id, $ref = '') {
+
 		global $langs;
 		
 		$sql = "SELECT";
@@ -234,20 +230,19 @@ class Agefodd extends CommonObject {
 				$this->fk_product = $obj->fk_product;
 				$this->nb_subscribe_min = $obj->nb_subscribe_min;
 				$this->fk_c_category = $obj->fk_c_category;
-				if (!empty($obj->catcode) || !empty($obj->catlib)) {
-					$this->category_lib = $obj->catcode.' - '.$obj->catlib;
+				if (! empty ( $obj->catcode ) || ! empty ( $obj->catlib )) {
+					$this->category_lib = $obj->catcode . ' - ' . $obj->catlib;
 				}
 				$this->certif_duration = $obj->certif_duration;
 			}
 			$this->db->free ( $resql );
 			
-			require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
-			$extrafields=new ExtraFields($this->db);
-			$extralabels=$extrafields->fetch_name_optionals_label($this->table_element,true);
-			if (count($extralabels)>0) {
-				$this->fetch_optionals($this->id,$extralabels);
+			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+			$extrafields = new ExtraFields ( $this->db );
+			$extralabels = $extrafields->fetch_name_optionals_label ( $this->table_element, true );
+			if (count ( $extralabels ) > 0) {
+				$this->fetch_optionals ( $this->id, $extralabels );
 			}
-			
 			
 			return 1;
 		} else {
@@ -256,15 +251,15 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Give information on the object
 	 *
-	 * @param int $id
-	 *        	object
+	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function info($id) {
+
 		global $langs;
 		
 		$sql = "SELECT";
@@ -292,17 +287,16 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
-	 * @param User $user
-	 *        	that modify
-	 * @param int $notrigger
-	 *        	triggers after, 1=disable triggers
+	 * @param User $user that modify
+	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger = 0) {
+
 		global $conf, $langs;
 		$error = 0;
 		
@@ -319,7 +313,7 @@ class Agefodd extends CommonObject {
 		$this->note2 = $this->db->escape ( trim ( $this->note2 ) );
 		$this->certif_duration = $this->db->escape ( trim ( $this->certif_duration ) );
 		
-		if ($this->fk_c_category==-1)
+		if ($this->fk_c_category == - 1)
 			$this->fk_c_category = 0;
 		
 		$this->fk_c_category = $this->db->escape ( trim ( $this->fk_c_category ) );
@@ -346,10 +340,10 @@ class Agefodd extends CommonObject {
 		$sql .= " note2=" . (isset ( $this->note2 ) ? "'" . $this->note2 . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " archive=" . $this->archive . ",";
-		$sql .= " fk_product=" . (!empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
-		$sql .= " nb_subscribe_min=" . (!empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null"). "," ;
-		$sql .= " fk_c_category=" . (!empty ( $this->fk_c_category ) ? $this->fk_c_category : "null"). ",";
-		$sql .= " certif_duration=" . (!empty ( $this->certif_duration ) ? "'" .$this->certif_duration. "'" : "null");
+		$sql .= " fk_product=" . (! empty ( $this->fk_product ) ? $this->fk_product : "null") . ",";
+		$sql .= " nb_subscribe_min=" . (! empty ( $this->nb_subscribe_min ) ? $this->nb_subscribe_min : "null") . ",";
+		$sql .= " fk_c_category=" . (! empty ( $this->fk_c_category ) ? $this->fk_c_category : "null") . ",";
+		$sql .= " certif_duration=" . (! empty ( $this->certif_duration ) ? "'" . $this->certif_duration . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
 		$this->db->begin ();
@@ -361,13 +355,11 @@ class Agefodd extends CommonObject {
 			$this->errors [] = "Error " . $this->db->lasterror ();
 		}
 		
-		
-		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+		if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 		// For avoid conflicts if trigger used
 		{
-			$result=$this->insertExtraFields();
-			if ($result < 0)
-			{
-				$error++;
+			$result = $this->insertExtraFields ();
+			if ($result < 0) {
+				$error ++;
 			}
 		}
 		
@@ -398,16 +390,15 @@ class Agefodd extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
-	 * @param int $id
-	 *        	to delete
+	 * @param int $id to delete
 	 * @return int if KO, >0 if OK
 	 */
 	function remove($id) {
-		
+
 		global $conf;
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
@@ -422,16 +413,14 @@ class Agefodd extends CommonObject {
 		}
 		
 		// Removed extrafields
-		if (! $error)
-		{
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+		if (! $error) {
+			if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 			// For avoid conflicts if trigger used
 			{
-				$this->id=$id;
-				$result=$this->deleteExtraFields();
-				if ($result < 0)
-				{
-					$error++;
-					dol_syslog(get_class($this)."::delete erreur ".$error." ".$this->error, LOG_ERR);
+				$this->id = $id;
+				$result = $this->deleteExtraFields ();
+				if ($result < 0) {
+					$error ++;
+					dol_syslog ( get_class ( $this ) . "::delete erreur " . $error . " " . $this->error, LOG_ERR );
 				}
 			}
 		}
@@ -443,17 +432,16 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Create pegagogic goal
 	 *
-	 * @param User $user
-	 *        	that delete
-	 * @param int $notrigger
-	 *        	triggers after, 1=disable triggers
+	 * @param User $user that delete
+	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function create_objpeda($user, $notrigger = 0) {
+
 		global $conf, $langs;
 		$error = 0;
 		
@@ -511,15 +499,15 @@ class Agefodd extends CommonObject {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id
-	 *        	of object
+	 * @param int $id of object
 	 * @return int if KO, >0 if OK
 	 */
 	function fetch_objpeda($id) {
+
 		global $langs;
 		
 		$sql = "SELECT";
@@ -546,15 +534,15 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id_formation
-	 *        	concern by objectif peda
+	 * @param int $id_formation concern by objectif peda
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_objpeda_per_formation($id_formation) {
+
 		global $langs;
 		
 		$sql = "SELECT";
@@ -591,17 +579,16 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
-	 * @param User $user
-	 *        	that modify
-	 * @param int $notrigger
-	 *        	triggers after, 1=disable triggers
+	 * @param User $user that modify
+	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update_objpeda($user, $notrigger = 0) {
+
 		global $conf, $langs;
 		$error = 0;
 		
@@ -654,15 +641,15 @@ class Agefodd extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
-	 * @param int $id
-	 *        	to delete
+	 * @param int $id to delete
 	 * @return int if KO, >0 if OK
 	 */
 	function remove_objpeda($id) {
+
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -676,7 +663,7 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -684,6 +671,7 @@ class Agefodd extends CommonObject {
 	 * @return void
 	 */
 	function initAsSpecimen() {
+
 		$this->id = 0;
 		$this->ref = '';
 		$this->intitule = '';
@@ -694,13 +682,14 @@ class Agefodd extends CommonObject {
 		$this->programme = '';
 		$this->archive = '';
 	}
-	
+
 	/**
 	 * Return description of training
 	 *
 	 * @return string translated description
 	 */
 	function getToolTip() {
+
 		global $conf;
 		
 		$langs->load ( "admin" );
@@ -718,25 +707,20 @@ class Agefodd extends CommonObject {
 		}
 		return $s;
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param string $sortorder
-	 *        	Sort Order
-	 * @param string $sortfield
-	 *        	Sort field
-	 * @param int $limit
-	 *        	offset limit
-	 * @param int $offset
-	 *        	offset limit
-	 * @param int $arch
-	 *        	archive
-	 * @param array $filter
-	 *        	array of filter where clause
+	 * @param string $sortorder Sort Order
+	 * @param string $sortfield Sort field
+	 * @param int $limit offset limit
+	 * @param int $offset offset limit
+	 * @param int $arch archive
+	 * @param array $filter array of filter where clause
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter=array()) {
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
+
 		global $langs;
 		
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
@@ -748,8 +732,8 @@ class Agefodd extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat";
 		$sql .= " ON dictcat.rowid = c.fk_c_category";
 		
-		foreach($filter as $key => $value) {
-			if (strpos($key,'extra.') !== false) {
+		foreach ( $filter as $key => $value ) {
+			if (strpos ( $key, 'extra.' ) !== false) {
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_extrafields as extra";
 				$sql .= " ON c.rowid = extra.fk_object";
 				break;
@@ -763,8 +747,8 @@ class Agefodd extends CommonObject {
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'c.datec') 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
-					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date($value,'%Y-%m-%d') . '\'';
-				} elseif ($key == 'c.duree' || $key=='c.fk_c_category') {
+					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date ( $value, '%Y-%m-%d' ) . '\'';
+				} elseif ($key == 'c.duree' || $key == 'c.fk_c_category') {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
@@ -798,7 +782,8 @@ class Agefodd extends CommonObject {
 					$line->nbsession = $obj->nbsession;
 					$line->fk_product = $obj->fk_product;
 					$line->nb_subscribe_min = $obj->nb_subscribe_min;
-					$line->category_lib=$obj->catcode.' - '.$obj->catlib;;
+					$line->category_lib = $obj->catcode . ' - ' . $obj->catlib;
+					;
 					
 					$this->lines [$i] = $line;
 					
@@ -813,13 +798,14 @@ class Agefodd extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Return information of Place
 	 *
 	 * @return void
 	 */
 	function printFormationInfo() {
+
 		global $form, $langs;
 		
 		print '<table class="border" width="100%">';
@@ -837,11 +823,12 @@ class Agefodd extends CommonObject {
 		
 		print '</table>';
 	}
-	
+
 	/**
 	 * Create admin level for a session
 	 */
 	function createAdmLevelForTraining($user) {
+
 		$error = '';
 		
 		require_once ('agefodd_sessadm.class.php');
@@ -889,15 +876,19 @@ class Agefodd extends CommonObject {
 		return $error;
 	}
 }
+
 class AgfObjPedaLine {
 	var $id;
 	var $fk_formation_catalogue;
 	var $intitule;
 	var $priorite;
+
 	function __construct() {
+
 		return 1;
 	}
 }
+
 class AgfTrainingLine {
 	var $rowid;
 	var $intitule;
@@ -910,7 +901,9 @@ class AgfTrainingLine {
 	var $fk_product;
 	var $nb_subscribe_min;
 	var $category_lib;
+
 	function __construct() {
+
 		return 1;
 	}
 }

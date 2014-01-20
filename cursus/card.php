@@ -47,12 +47,12 @@ $confirm = GETPOST ( 'confirm', 'alpha' );
 $id = GETPOST ( 'id', 'int' );
 $arch = GETPOST ( 'arch', 'int' );
 
-$sortorder=GETPOST('sortorder','alpha');
-$sortfield=GETPOST('sortfield','alpha');
-$page=GETPOST('page','int');
+$sortorder = GETPOST ( 'sortorder', 'alpha' );
+$sortfield = GETPOST ( 'sortfield', 'alpha' );
+$page = GETPOST ( 'page', 'int' );
 
-if ($page == -1) {
-	$page = 0 ;
+if ($page == - 1) {
+	$page = 0;
 }
 
 $limit = $conf->liste_limit;
@@ -161,29 +161,28 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 	}
 }
 
-
 /*
  * Associate training to cursus
 */
-if ($action=='addtraining') {
+if ($action == 'addtraining') {
 	$training = new Agefodd_formation_cursus ( $db );
-	$training->fk_formation_catalogue=GETPOST('training_id','int');
-	$training->fk_cursus=$id;
-	$result=$training->create($user);
+	$training->fk_formation_catalogue = GETPOST ( 'training_id', 'int' );
+	$training->fk_cursus = $id;
+	$result = $training->create ( $user );
 	if ($result < 0) {
-		setEventMessage($training->error,'errors');
+		setEventMessage ( $training->error, 'errors' );
 	}
 }
 
 /*
  * Remove training to cursus
 */
-if ($action=='confirm_delete_training' && $confirm == "yes" && $user->rights->agefodd->creer) {
+if ($action == 'confirm_delete_training' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	$training = new Agefodd_formation_cursus ( $db );
-	$training->id=GETPOST('lineid','int');
-	$result=$training->delete($user);
+	$training->id = GETPOST ( 'lineid', 'int' );
+	$result = $training->delete ( $user );
 	if ($result < 0) {
-		setEventMessage($training->error,'errors');
+		setEventMessage ( $training->error, 'errors' );
 	}
 }
 
@@ -195,7 +194,7 @@ $title = ($action == 'create' ? $langs->trans ( "AgfMenuCursusNew" ) : $langs->t
 llxHeader ( '', $title );
 
 $form = new Form ( $db );
-$formAgefodd = new FormAgefodd( $db );
+$formAgefodd = new FormAgefodd ( $db );
 
 /*
  * Action create
@@ -303,11 +302,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				/*
 				 * Confirm delete
 				*/
-				if ($action=='delete_training')
-				{
+				if ($action == 'delete_training') {
 					// Param url = id de la ligne stagiaire dans session - id session
-					$ret=$form->form_confirm($_SERVER ['PHP_SELF'] . '?id='.$id.'&lineid='.GETPOST('lineid','int'),$langs->trans("AgfRemoveTrainingCursus"),$langs->trans("AgfConfirmRemoveTrainingCursus"),"confirm_delete_training",'','',1);
-					if ($ret == 'html') print '<br>';
+					$ret = $form->form_confirm ( $_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST ( 'lineid', 'int' ), $langs->trans ( "AgfRemoveTrainingCursus" ), $langs->trans ( "AgfConfirmRemoveTrainingCursus" ), "confirm_delete_training", '', '', 1 );
+					if ($ret == 'html')
+						print '<br>';
 				}
 				
 				print '<table class="border" width="100%">';
@@ -368,81 +367,81 @@ if ($action != 'create' && $action != 'edit') {
 
 print '</div>';
 
-
-if ($action!='edit' && $action!='create') {
+if ($action != 'edit' && $action != 'create') {
 	/*
 	 * Manage training
 	*/
 	
-	if (empty($sortorder)) $sortorder="ASC";
-	if (empty($sortfield)) $sortfield="f.ref";
+	if (empty ( $sortorder ))
+		$sortorder = "ASC";
+	if (empty ( $sortfield ))
+		$sortfield = "f.ref";
 	
 	print '&nbsp';
 	
 	$training = new Agefodd_formation_cursus ( $db );
-	$training->fk_cursus=$agf->id;
+	$training->fk_cursus = $agf->id;
 	$result = $training->fetch_formation_per_cursus ( $sortorder, $sortfield, $limit, $offset );
 	if ($result < 0) {
 		setEventMessage ( $training->error, 'errors' );
 	}
 	$nbcursus = count ( $training->lines );
 	
-	print_barre_liste($langs->trans("AgfTraining"), $page, $_SERVER['PHP_SELF'], '&id='.$id ,$sortfield, $sortorder, "", $nbcursus);
+	print_barre_liste ( $langs->trans ( "AgfTraining" ), $page, $_SERVER ['PHP_SELF'], '&id=' . $id, $sortfield, $sortorder, "", $nbcursus );
 	
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
 	if ($nbcursus < 1) {
 		print '<td style="text-decoration: blink;">' . $langs->trans ( "AgfLimiteNoOne" ) . '</td>';
 	} else {
-		print '<td>'.$langs->trans ( "AgfTraining" ).' (' . $nbcursus . ')'.'</td>';
+		print '<td>' . $langs->trans ( "AgfTraining" ) . ' (' . $nbcursus . ')' . '</td>';
 	}
 	print '</tr>';
 	
-	if ($nbcursus > 0 ){
+	if ($nbcursus > 0) {
 		print '<tr class="liste_titre">';
-		print_liste_field_titre($langs->trans("AgfFormRef"),$_SERVER['PHP_SELF'],"f.ref",'','','',$sortfield,$sortorder);
-		print_liste_field_titre($langs->trans("AgfRefInterne"),$_SERVER['PHP_SELF'],"f.ref_interne",'','','',$sortfield,$sortorder);
-		print_liste_field_titre($langs->trans("AgfIntitule"),$_SERVER['PHP_SELF'],'f.intitule','','','',$sortfield,$sortorder);
+		print_liste_field_titre ( $langs->trans ( "AgfFormRef" ), $_SERVER ['PHP_SELF'], "f.ref", '', '', '', $sortfield, $sortorder );
+		print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVER ['PHP_SELF'], "f.ref_interne", '', '', '', $sortfield, $sortorder );
+		print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVER ['PHP_SELF'], 'f.intitule', '', '', '', $sortfield, $sortorder );
 		print '<td></td>';
 		print "</tr>\n";
 		
-		$var=true;
-
+		$var = true;
+		
 		foreach ( $training->lines as $line ) {
 			
-			$var=!$var;
-
-			if ($action=='delete_training' && $line->id==GETPOST('lineid','int')) {
+			$var = ! $var;
+			
+			if ($action == 'delete_training' && $line->id == GETPOST ( 'lineid', 'int' )) {
 				print '<tr bgcolor="#d5baa8">';
-			}
-			else {
+			} else {
 				print "<tr $bc[$var]>";
 			}
 			
-			
-			print '<td>'.$line->ref.'</td>';
-			print '<td>'.$line->ref_interne.'</td>';
-			print '<td>'.$line->intitule.'</td>';
-			print '<td><a href="' . $_SERVER ['PHP_SELF'] . '?id='.$agf->id.'&action=delete_training&lineid='.$line->id.'"><img src="'.DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/delete.png" border="0" name="stag_remove" alt="'.$langs->trans("AgfModSave").'"></a></td>';
+			print '<td>' . $line->ref . '</td>';
+			print '<td>' . $line->ref_interne . '</td>';
+			print '<td>' . $line->intitule . '</td>';
+			print '<td><a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '&action=delete_training&lineid=' . $line->id . '"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="stag_remove" alt="' . $langs->trans ( "AgfModSave" ) . '"></a></td>';
 			print "</tr>\n";
 		}
-	}		
+	}
 	print "</table>";
 	
-	if($user->rights->agefodd->modifier) {
-		print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id='.$agf->id.'" method="post">' . "\n";
+	if ($user->rights->agefodd->modifier) {
+		print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '" method="post">' . "\n";
 		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 		print '<input type="hidden" name="action" value="addtraining">' . "\n";
 		
 		print '<table class="noborder" width="100%">';
 		print '<tr>';
-		print '<td>'.$langs->trans('AgfAddTraining');
-		print $formAgefodd->select_formation('','training_id','intitule',1, 0, array(), array(' AND c.rowid NOT IN (SELECT fk_formation_catalogue FROM '.MAIN_DB_PREFIX.'agefodd_formation_cursus WHERE fk_cursus='.$id.')'));
+		print '<td>' . $langs->trans ( 'AgfAddTraining' );
+		print $formAgefodd->select_formation ( '', 'training_id', 'intitule', 1, 0, array (), array (
+			' AND c.rowid NOT IN (SELECT fk_formation_catalogue FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_cursus WHERE fk_cursus=' . $id . ')' 
+		) );
 		print '<input type="submit" class="butAction" value="' . $langs->trans ( "Add" ) . '"></td>';
 		print '</tr>';
 		print "</table>";
 		print '</form>';
-		
 	}
 	
 	print '</div>';

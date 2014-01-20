@@ -22,11 +22,9 @@
  * \ingroup agefodd
  * \brief list of certificate
  */
-
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', false);
-
+error_reporting ( E_ALL );
+ini_set ( 'display_errors', true );
+ini_set ( 'html_errors', false );
 
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
@@ -52,8 +50,7 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST ( 'sortorder', 'alpha' );
 $sortfield = GETPOST ( 'sortfield', 'alpha' );
 $page = GETPOST ( 'page', 'int' );
-$socid=GETPOST('socid','int');
-
+$socid = GETPOST ( 'socid', 'int' );
 
 // Search criteria
 $search_trainning_name = GETPOST ( "search_trainning_name" );
@@ -62,8 +59,8 @@ $search_training_ref = GETPOST ( "search_training_ref", 'alpha' );
 $search_start_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_start_datemonth', 'int' ), GETPOST ( 'search_start_dateday', 'int' ), GETPOST ( 'search_start_dateyear', 'int' ) );
 $search_end_date = dol_mktime ( 0, 0, 0, GETPOST ( 'search_end_datemonth', 'int' ), GETPOST ( 'search_end_dateday', 'int' ), GETPOST ( 'search_end_dateyear', 'int' ) );
 $search_site = GETPOST ( "search_site" );
-$search_training_ref_interne = GETPOST('search_training_ref_interne','alpha');
-$search_type_session=GETPOST ( "search_type_session",'int' );
+$search_training_ref_interne = GETPOST ( 'search_training_ref_interne', 'alpha' );
+$search_type_session = GETPOST ( "search_type_session", 'int' );
 $training_view = GETPOST ( "training_view", 'int' );
 $site_view = GETPOST ( 'site_view', 'int' );
 
@@ -75,8 +72,8 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_start_date = "";
 	$search_end_date = "";
 	$search_site = "";
-	$search_training_ref_interne="";
-	$search_type_session="";
+	$search_training_ref_interne = "";
+	$search_type_session = "";
 }
 
 $filter = array ();
@@ -101,10 +98,9 @@ if (! empty ( $search_site ) && $search_site != - 1) {
 if (! empty ( $search_training_ref_interne )) {
 	$filter ['c.ref_interne'] = $search_training_ref_interne;
 }
-if ($search_type_session!='' && $search_type_session != - 1) {
+if ($search_type_session != '' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
 }
-
 
 if (empty ( $sortorder ))
 	$sortorder = "DESC";
@@ -124,24 +120,21 @@ $pagenext = $page + 1;
 $form = new Form ( $db );
 $formAgefodd = new FormAgefodd ( $db );
 
-
 $title = $langs->trans ( "AgfListCertificate" );
 
 llxHeader ( '', $title );
 
-
-$agf = new Agefodd_stagiaire_certif( $db );
+$agf = new Agefodd_stagiaire_certif ( $db );
 
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty ( $conf->global->MAIN_DISABLE_FULL_SCANLIST )) {
-	$nbtotalofrecords = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, 0, 0, $filter);
+	$nbtotalofrecords = $agf->fetch_certif_customer ( $socid, $sortorder, $sortfield, 0, 0, $filter );
 }
-$resql = $agf->fetch_certif_customer ( $socid, $sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+$resql = $agf->fetch_certif_customer ( $socid, $sortorder, $sortfield, $conf->liste_limit, $offset, $filter );
 
 if ($resql != - 1) {
 	$num = $resql;
-	
 	
 	$option = '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_barre_liste ( $title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords );
@@ -190,7 +183,7 @@ if ($resql != - 1) {
 	}
 	
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-	print '<input type="hidden" name="socid" value="'.$socid.'"/>';
+	print '<input type="hidden" name="socid" value="' . $socid . '"/>';
 	print '<tr class="liste_titre">';
 	
 	print '<td>&nbsp;</td>';
@@ -211,7 +204,7 @@ if ($resql != - 1) {
 	print '</td>';
 	
 	print '<td class="liste_titre">';
-	//print $formAgefodd->
+	// print $formAgefodd->
 	print '</td>';
 	
 	print '<td class="liste_titre">';
@@ -222,21 +215,17 @@ if ($resql != - 1) {
 	print $form->select_date ( $search_end_date, 'search_end_date', 0, 0, 1, 'search_form' );
 	print '</td>';
 	
-	
 	print '<td class="liste_titre">';
 	print '</td>';
 	
 	print '<td class="liste_titre">';
 	print '</td>';
 	
-	
 	print '<td class="liste_titre">';
 	print '</td>';
 	
-	
 	print '<td class="liste_titre">';
 	print '</td>';
-	
 	
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
 	print '&nbsp; ';
@@ -249,47 +238,44 @@ if ($resql != - 1) {
 	$var = true;
 	foreach ( $agf->lines as $line ) {
 		
+		// Affichage tableau des sessions
+		$var = ! $var;
+		print "<tr $bc[$var]>";
+		// Calcul de la couleur du lien en fonction de la couleur définie sur la session
+		// http://www.w3.org/TR/AERT#color-contrast
+		// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS
+		// AFFICHER DU BLANC (#FFF)
+		$couleur_rgb = agf_hex2rgb ( $line->color );
+		$color_a = '';
+		if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
+			$color_a = ' style="color: #FFFFFF;"';
 		
-			
-			// Affichage tableau des sessions
-			$var = ! $var;
-			print "<tr $bc[$var]>";
-			// Calcul de la couleur du lien en fonction de la couleur définie sur la session
-			// http://www.w3.org/TR/AERT#color-contrast
-			// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS
-			// AFFICHER DU BLANC (#FFF)
-			$couleur_rgb = agf_hex2rgb ( $line->color );
-			$color_a = '';
-			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
-				$color_a = ' style="color: #FFFFFF;"';
-			
-			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="../session/card.php?id=' . $line->id_session . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->id_session . '</a></td>';
-			print '<td>';
-			
-			if (! empty ( $line->customer_id ) && $line->customer_id != - 1) {
-				$soc = new Societe ( $db );
-				$soc->fetch ( $line->customer_id );
-				print $soc->getNomURL ( 1 );
-			} else {
-				print '&nbsp;';
-			}
-			print '</td>';
-			print '<td>' . stripslashes ( dol_trunc ( $line->fromintitule, 60 ) ) . '</td>';
-			print '<td>' . $line->fromref . '</td>';
-			print '<td>' . $line->fromrefinterne . '</td>';
-			print '<td><a href="'.dol_buildpath('/agefodd/trainee/session.php',1).'?id='.$line->trainee_id.'">' .$line->trainee_name.' '.$line->trainee_firstname. '</a></td>';
-			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
-			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
-			print '<td>' . $line->certif_code . '</td>';
+		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="../session/card.php?id=' . $line->id_session . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->id_session . '</a></td>';
+		print '<td>';
 		
-			print '<td>' . $line->certif_label . '</td>';
-			
-			print '<td>' . dol_print_date($line->certif_dt_start, 'daytextshort'). '</td>';
-			
-			print '<td>' . dol_print_date($line->certif_dt_end, 'daytextshort') . '</td>';
-			print '<td></td>';
-			print "</tr>\n";
+		if (! empty ( $line->customer_id ) && $line->customer_id != - 1) {
+			$soc = new Societe ( $db );
+			$soc->fetch ( $line->customer_id );
+			print $soc->getNomURL ( 1 );
+		} else {
+			print '&nbsp;';
+		}
+		print '</td>';
+		print '<td>' . stripslashes ( dol_trunc ( $line->fromintitule, 60 ) ) . '</td>';
+		print '<td>' . $line->fromref . '</td>';
+		print '<td>' . $line->fromrefinterne . '</td>';
+		print '<td><a href="' . dol_buildpath ( '/agefodd/trainee/session.php', 1 ) . '?id=' . $line->trainee_id . '">' . $line->trainee_name . ' ' . $line->trainee_firstname . '</a></td>';
+		print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
+		print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
+		print '<td>' . $line->certif_code . '</td>';
 		
+		print '<td>' . $line->certif_label . '</td>';
+		
+		print '<td>' . dol_print_date ( $line->certif_dt_start, 'daytextshort' ) . '</td>';
+		
+		print '<td>' . dol_print_date ( $line->certif_dt_end, 'daytextshort' ) . '</td>';
+		print '<td></td>';
+		print "</tr>\n";
 		
 		$oldid = $line->rowid;
 		

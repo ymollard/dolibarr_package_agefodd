@@ -147,7 +147,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$this->_pagehead ( $pdf, $agf, 1, $outputlangs );
 				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 9 );
 				$pdf->MultiCell ( 0, 3, '', 0, 'J' ); // Set interline to 3
-				                                   
+				                                      
 				// On met en place le cadre
 				$pdf->SetDrawColor ( $this->colorhead [0], $this->colorhead [1], $this->colorhead [2] );
 				$ep_line1 = 1;
@@ -191,7 +191,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$pdf->SetTextColor ( $this->colortext [0], $this->colortext [1], $this->colortext [2] );
 				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 12 );
 				
-				$contact_static = new Contact ( $this->db  );
+				$contact_static = new Contact ( $this->db );
 				$contact_static->civilite_id = $agf_stagiaire->civilite;
 				
 				$this->str1 = $outputlangs->transnoentities ( 'AgfPDFAttestationCursus2' ) . " " . ucfirst ( strtolower ( $contact_static->getCivilityLabel () ) ) . ' ';
@@ -221,7 +221,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$pdf->SetXY ( $this->marge_gauche + 1, $newY );
 				$pdf->Cell ( 0, 0, $outputlangs->transnoentities ( '« ' . $agf_cursus->intitule . ' »' ), 0, 0, 'C', 0 );
 				
-				$agf_cursus_stagaire = new Agefodd_stagiaire_cursus ( $this->db  );
+				$agf_cursus_stagaire = new Agefodd_stagiaire_cursus ( $this->db );
 				$agf_cursus_stagaire->fk_stagiaire = $agf_cursus->fk_stagiaire;
 				$agf_cursus_stagaire->fk_cursus = $agf_cursus->id;
 				$agf_cursus_stagaire->fetch_session_cursus_per_trainee ( 'ASC', 'c.intitule', 0, 0 );
@@ -236,7 +236,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 						$training_array [] = $line->intitule;
 						
 						// Calculate time of session according calendar
-						$calendrier = new Agefodd_sesscalendar ( $this->db  );
+						$calendrier = new Agefodd_sesscalendar ( $this->db );
 						$calendrier->fetch_all ( $line->rowid );
 						if (is_array ( $calendrier->lines ) && count ( $calendrier->lines ) > 0) {
 							foreach ( $calendrier->lines as $linecal ) {

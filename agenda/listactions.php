@@ -24,7 +24,6 @@
  * \ingroup agefodd
  * \brief Page to list actions
  */
-
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
@@ -51,6 +50,10 @@ $actioncode = GETPOST ( "actioncode", "alpha", 3 );
 $pid = GETPOST ( "projectid", 'int', 3 );
 $status = GETPOST ( "status", 'alpha' );
 $type = GETPOST ( 'type' );
+
+$filterdatestart = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_start_filtermonth', 'int' ), GETPOST ( 'dt_start_filterday', 'int' ), GETPOST ( 'dt_start_filteryear', 'int' ) );
+$filterdatesend = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_end_filtermonth', 'int' ), GETPOST ( 'dt_end_filterday', 'int' ), GETPOST ( 'dt_end_filteryear', 'int' ) );
+$onlysession = GETPOST ( 'onlysession', 'int' );
 
 $filter = GETPOST ( "filter", '', 3 );
 $filter_commercial = GETPOST ( 'commercial', 'int' );
@@ -94,7 +97,7 @@ if (! $sortfield) {
 		$sortfield = "a.datep2";
 }
 
-$canedit=1;
+$canedit = 1;
 // Security check
 if (! $user->rights->agefodd->agenda)
 	accessforbidden ();
@@ -125,7 +128,7 @@ if (GETPOST ( "viewcal" ) || GETPOST ( "viewweek" ) || GETPOST ( "viewday" )) {
 		$param .= '&' . $key . '=' . urlencode ( $val );
 	}
 	// print $param;
-	header ( "Location: " . dol_buildpath('/agefodd/agenda/index.php',1).'?' . $param );
+	header ( "Location: " . dol_buildpath ( '/agefodd/agenda/index.php', 1 ) . '?' . $param );
 	exit ();
 }
 
@@ -181,6 +184,13 @@ if ($type)
 if ($actioncode)
 	$param .= "&actioncode=" . $actioncode;
 
+if (! empty ( $filterdatestart ))
+	$param .= "&dt_start_filtermonth=" . GETPOST ( 'dt_start_filtermonth', 'int' ) . '&dt_start_filterday=' . GETPOST ( 'dt_start_filterday', 'int' ) . '&dt_start_filteryear=' . GETPOST ( 'dt_start_filteryear', 'int' );
+if (! empty ( $filterdatesend ))
+	$param .= "&dt_end_filtermonth=" . GETPOST ( 'dt_end_filtermonth', 'int' ) . '&dt_end_filterday=' . GETPOST ( 'dt_end_filterday', 'int' ) . '&dt_end_filteryear=' . GETPOST ( 'dt_end_filteryear', 'int' );
+if (! empty ( $onlysession ))
+	$param .= "&onlysession=" . $onlysession;
+
 $sql = "SELECT s.nom as societe, s.rowid as socid, s.client,";
 $sql .= " a.id, a.datep as dp, a.datep2 as dp2,";
 $sql .= " a.fk_contact, a.note, a.label, a.percent as percent,";
@@ -196,12 +206,12 @@ $sql .= " " . MAIN_DB_PREFIX . 'user as u,';
 $sql .= " " . MAIN_DB_PREFIX . "actioncomm as a";
 if (! $user->rights->societe->client->voir && ! $socid)
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sc ON a.fk_soc = sc.fk_soc";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON a.fk_soc = s.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON a.fk_soc = s.rowid";
 $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_actioncomm as ca ON a.fk_action = ca.id';
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp ON a.fk_contact = sp.rowid";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ua ON a.fk_user_author = ua.rowid";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ut ON a.fk_user_action = ut.rowid";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."user as ud ON a.fk_user_done = ud.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sp ON a.fk_contact = sp.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ua ON a.fk_user_author = ua.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ut ON a.fk_user_action = ut.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ud ON a.fk_user_done = ud.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session as agf ON agf.rowid = a.fk_element AND a.elementtype=\'agefodd_agsession\'';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON agf.status = agf_status.rowid';
 if (! empty ( $filter_commercial )) {
@@ -213,7 +223,7 @@ if (! empty ( $filter_contact )) {
 }
 if (! empty ( $filter_trainer )) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-	if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+	if (! empty ( $conf->global->AGF_DOL_TRAINER_AGENDA )) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST' ";
 	}
 }
@@ -257,8 +267,17 @@ if (! empty ( $filter_trainer )) {
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
-}else {
+} else {
 	$sql .= " AND ca.code<>'AC_AGF_SESST'";
+}
+if (! empty ( $filterdatestart )) {
+	$sql .= ' AND a.datep>=\'' . $db->idate ( $filterdatestart ) . '\'';
+}
+if (! empty ( $filterdatesend )) {
+	$sql .= ' AND a.datep2<=\'' . $db->idate ( $filterdatesend ) . '\'';
+}
+if (! empty ( $onlysession )) {
+	$sql .= " AND ca.code='AC_AGF_SESS'";
 }
 $sql .= $db->order ( $sortfield, $sortorder );
 $sql .= $db->plimit ( $limit + 1, $offset );
@@ -290,7 +309,7 @@ if ($resql) {
 	$head = calendars_prepare_head ( '' );
 	
 	dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
-	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit );
+	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession );
 	dol_fiche_end ();
 	
 	// Add link to show birthdays
@@ -342,7 +361,7 @@ if ($resql) {
 		
 		// Action (type)
 		print '<td>';
-		print '<a href="../session/card.php?id='.$obj->sessionid.'">'.$obj->sessionid.'</a> - ';
+		print '<a href="../session/card.php?id=' . $obj->sessionid . '">' . $obj->sessionid . '</a> - ';
 		$actionstatic->id = $obj->id;
 		$actionstatic->type_code = $obj->acode;
 		$actionstatic->libelle = $obj->label;
@@ -430,7 +449,7 @@ if ($resql) {
 		print '</td>';
 		
 		// Status/Percent
-		print '<td align="right" class="nowrap">' . $langs->trans('AgfStatusSession_'.$obj->sessionstatus) . '</td>';
+		print '<td align="right" class="nowrap">' . $langs->trans ( 'AgfStatusSession_' . $obj->sessionstatus ) . '</td>';
 		
 		print "</tr>\n";
 		$i ++;

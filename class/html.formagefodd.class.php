@@ -29,22 +29,22 @@ class FormAgefodd extends Form {
 	var $db;
 	var $error;
 	var $type_session_def;
-	
+
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDB $db handler
 	 */
 	function __construct($db) {
+
 		global $langs;
 		$this->db = $db;
 		$this->type_session_def = array (
-		0 => $langs->trans ( 'AgfFormTypeSessionIntra' ),
-		1 => $langs->trans ( 'AgfFormTypeSessionInter' ) 
+			0 => $langs->trans ( 'AgfFormTypeSessionIntra' ),1 => $langs->trans ( 'AgfFormTypeSessionInter' ) 
 		);
 		return 1;
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des formations disponibles.
 	 *
@@ -57,6 +57,7 @@ class FormAgefodd extends Form {
 	 * @return string select field
 	 */
 	function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
+
 		global $conf, $user, $langs;
 		
 		$out = '';
@@ -70,8 +71,8 @@ class FormAgefodd extends Form {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE archive = 0";
 		$sql .= " AND entity IN (" . getEntity ( 'agsession' ) . ")";
-		if (count($filters)>0) {
-			foreach($filters as $filter)
+		if (count ( $filters ) > 0) {
+			foreach ( $filters as $filter )
 				$sql .= $filter;
 		}
 		$sql .= " ORDER BY " . $order;
@@ -108,7 +109,7 @@ class FormAgefodd extends Form {
 		$this->db->free ( $resql );
 		return $out;
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des cursus disponibles.
 	 *
@@ -121,28 +122,28 @@ class FormAgefodd extends Form {
 	 * @return string select field
 	 */
 	function select_cursus($selectid, $htmlname = 'cursus', $sort = 'c.ref_interne', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
-		global $conf, $user, $langs;
-	
-		$out = '';
 
-	
+		global $conf, $user, $langs;
+		
+		$out = '';
+		
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as c";
 		$sql .= " WHERE archive = 0";
 		$sql .= " AND entity IN (" . getEntity ( 'agsession' ) . ")";
-		if (count($filters)>0) {
-			foreach($filters as $filter)
+		if (count ( $filters ) > 0) {
+			foreach ( $filters as $filter )
 				$sql .= $filter;
 		}
 		$sql .= " ORDER BY " . $sort;
-	
+		
 		dol_syslog ( get_class ( $this ) . "::select_cursus sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		if ($resql) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_CURSUS_USE_SEARCH_TO_SELECT && ! $forcecombo) {
 				$out .= ajax_combobox ( $htmlname, $event );
 			}
-				
+			
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
 				$out .= '<option value=""></option>';
@@ -152,7 +153,7 @@ class FormAgefodd extends Form {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object ( $resql );
 					$label = $obj->intitule;
-						
+					
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -168,7 +169,7 @@ class FormAgefodd extends Form {
 		$this->db->free ( $resql );
 		return $out;
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des action de session disponibles.
 	 *
@@ -178,6 +179,7 @@ class FormAgefodd extends Form {
 	 * @return string select field
 	 */
 	function select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -217,7 +219,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Display select list with training action administrative task
 	 *
@@ -227,6 +229,7 @@ class FormAgefodd extends Form {
 	 * @return string select field
 	 */
 	function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -266,7 +269,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des action des session disponibles par session.
 	 *
@@ -276,6 +279,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_action_session($session_id = 0, $selectid = '', $htmlname = 'action_level') {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -313,7 +317,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des sites de formation déjà référéencés.
 	 *
@@ -325,6 +329,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array()) {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT p.rowid, p.ref_interne";
@@ -367,7 +372,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des stagiaires déjà référéencés.
 	 *
@@ -380,6 +385,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -433,7 +439,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des contact déjà référéencés.
 	 *
@@ -446,6 +452,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_agefodd_contact($selectid = '', $htmlname = 'contact', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -497,170 +504,169 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
-	 *	Return list of all contacts (for a third party or all)
+	 * Return list of all contacts (for a third party or all)
 	 *
-	 *	@param	int		$socid      	Id ot third party or 0 for all
-	 *	@param  string	$selected   	Id contact pre-selectionne
-	 *	@param  string	$htmlname  	    Name of HTML field ('none' for a not editable field)
-	 *	@param  int		$showempty      0=no empty value, 1=add an empty value
-	 *	@param  string	$exclude        List of contacts id to exclude
-	 *	@param	string	$limitto		Disable answers that are not id in this array list
-	 *	@param	string	$showfunction   Add function into label
-	 *	@param	string	$moreclass		Add more class to class style
-	 *	@param	string	$showsoc	    Add company into label
-	 * 	@param	int		$forcecombo		Force to use combo box
-	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
-	 *  @param	bool	$options_only	Return options only (for ajax treatment)
-	 *	@return	int						<0 if KO, Nb of contact in list if OK
+	 * @param int $socid ot third party or 0 for all
+	 * @param string $selected contact pre-selectionne
+	 * @param string $htmlname of HTML field ('none' for a not editable field)
+	 * @param int $showempty empty value, 1=add an empty value
+	 * @param string $exclude of contacts id to exclude
+	 * @param string $limitto that are not id in this array list
+	 * @param string $showfunction function into label
+	 * @param string $moreclass class to class style
+	 * @param string $showsoc company into label
+	 * @param int $forcecombo use combo box
+	 * @param array $event Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid',
+	 *        	'params'=>array('add-customer-contact'=>'disabled')))
+	 * @param bool $options_only only (for ajax treatment)
+	 * @return int if KO, Nb of contact in list if OK
 	 */
-	function select_contacts_custom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto='',$showfunction=0, $moreclass='', $showsoc=0, $forcecombo=0, $event=array(), $options_only=false)
-	{
-		print $this->selectcontactscustom($socid,$selected,$htmlname,$showempty,$exclude,$limitto,$showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
+	function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false) {
+
+		print $this->selectcontactscustom ( $socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event );
 		return $this->num;
 	}
-	
+
 	/**
-	 *	Return list of all contacts (for a third party or all)
+	 * Return list of all contacts (for a third party or all)
 	 *
-	 *	@param	int		$socid      	Id ot third party or 0 for all
-	 *	@param  string	$selected   	Id contact pre-selectionne
-	 *	@param  string	$htmlname  	    Name of HTML field ('none' for a not editable field)
-	 *	@param  int		$showempty     	0=no empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
-	 *	@param  string	$exclude        List of contacts id to exclude
-	 *	@param	string	$limitto		Number of contact ti display in max
-	 *	@param	string	$showfunction   Add function into label
-	 *	@param	string	$moreclass		Add more class to class style
-	 *	@param	bool	$options_only	Return options only (for ajax treatment)
-	 *	@param	string	$showsoc	    Add company into label
-	 * 	@param	int		$forcecombo		Force to use combo box
-	 *  @param	array	$event			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
-	 *	@return	 int						<0 if KO, Nb of contact in list if OK
+	 * @param int $socid ot third party or 0 for all
+	 * @param string $selected contact pre-selectionne
+	 * @param string $htmlname of HTML field ('none' for a not editable field)
+	 * @param int $showempty empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
+	 * @param string $exclude of contacts id to exclude
+	 * @param string $limitto contact ti display in max
+	 * @param string $showfunction function into label
+	 * @param string $moreclass class to class style
+	 * @param bool $options_only only (for ajax treatment)
+	 * @param string $showsoc company into label
+	 * @param int $forcecombo use combo box
+	 * @param array $event Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid',
+	 *        	'params'=>array('add-customer-contact'=>'disabled')))
+	 * @return int if KO, Nb of contact in list if OK
 	 */
-	function selectcontactscustom($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto=0,$showfunction=0, $moreclass='', $options_only=false, $showsoc=0, $forcecombo=0, $event=array())
-	{
-		global $conf,$langs,$user;
-	
-		$langs->load('companies');
-	
-		$out='';
-	
+	function selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showfunction = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array()) {
+
+		global $conf, $langs, $user;
+		
+		$langs->load ( 'companies' );
+		
+		$out = '';
+		
 		// On recherche les societes
 		$sql = "SELECT sp.rowid, sp.lastname, sp.firstname, sp.poste";
 		if ($showsoc > 0) {
-			$sql.= " , s.nom as company";
+			$sql .= " , s.nom as company";
 		}
-		$sql.= " FROM (".MAIN_DB_PREFIX ."socpeople as sp";
-
-		//Limit contact visibility to contact of thirdparty saleman
-		if (empty($user->rights->societe->client->voir)) {
-			$sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+		$sql .= " FROM (" . MAIN_DB_PREFIX . "socpeople as sp";
+		
+		// Limit contact visibility to contact of thirdparty saleman
+		if (empty ( $user->rights->societe->client->voir )) {
+			$sql .= ", " . MAIN_DB_PREFIX . "societe_commerciaux as sc";
 		}
-		$sql.=")";
+		$sql .= ")";
 		
+		$sql .= " LEFT OUTER JOIN  " . MAIN_DB_PREFIX . "societe as s ON s.rowid=sp.fk_soc ";
 		
-		$sql.= " LEFT OUTER JOIN  ".MAIN_DB_PREFIX ."societe as s ON s.rowid=sp.fk_soc ";
+		$sql .= " WHERE sp.entity IN (" . getEntity ( 'societe', 1 ) . ")";
+		if ($socid > 0)
+			$sql .= " AND sp.fk_soc=" . $socid;
+		if (! empty ( $conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX ))
+			$sql .= " AND sp.statut<>0 ";
 		
-		$sql.= " WHERE sp.entity IN (".getEntity('societe', 1).")";
-		if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
-		if (! empty($conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX)) $sql.= " AND sp.statut<>0 ";
-		
-		if (empty($user->rights->societe->client->voir)) {
-			$sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
+		if (empty ( $user->rights->societe->client->voir )) {
+			$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = " . $user->id;
 		}
 		
-		$sql.= " ORDER BY sp.lastname ASC";
-	
-		dol_syslog(get_class($this)."::selectcontactscustom sql=".$sql);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
-			$num=$this->db->num_rows($resql);
-
-			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only)
-			{
-				$out.= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
+		$sql .= " ORDER BY sp.lastname ASC";
+		
+		dol_syslog ( get_class ( $this ) . "::selectcontactscustom sql=" . $sql );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			$num = $this->db->num_rows ( $resql );
+			
+			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only) {
+				$out .= ajax_combobox ( $htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT );
 				
-				if ($num>$limitto && !empty($limitto)){
-					$num=$limitto;
+				if ($num > $limitto && ! empty ( $limitto )) {
+					$num = $limitto;
 				}
 			}
-	
-			if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
-			if ($showempty == 1) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'></option>';
-			if ($showempty == 2) $out.= '<option value="0"'.($selected=='0'?' selected="selected"':'').'>'.$langs->trans("Internal").'</option>';
-
-			$i = 0;
-			if ($num)
-			{
-				include_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
-				$contactstatic=new Contact($this->db);
-	
-				while ($i < $num)
-				{
-					$obj = $this->db->fetch_object($resql);
-	
-					$contactstatic->id=$obj->rowid;
-					$contactstatic->lastname=$obj->lastname;
-					$contactstatic->firstname=$obj->firstname;
-	
-					if ($htmlname != 'none')
-					{
-						$disabled=0;
-						if (is_array($exclude) && count($exclude) && in_array($obj->rowid,$exclude)) $disabled=1;
-						if ($selected && $selected == $obj->rowid)
-						{
-							$out.= '<option value="'.$obj->rowid.'"';
-							if ($disabled) $out.= ' disabled="disabled"';
-							$out.= ' selected="selected">';
-							$out.= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
-							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
-							$out.= '</option>';
-						}
-						else
-						{
-							$out.= '<option value="'.$obj->rowid.'"';
-							if ($disabled) $out.= ' disabled="disabled"';
-							$out.= '>';
-							$out.= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
-							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
-							$out.= '</option>';
-						}
-					}
-					else
-					{
-						if ($selected == $obj->rowid)
-						{
-							$out.= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
-							if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
-						}
-					}
-					$i++;
-				}
-			}
-			else
-			{
-				$out.= '<option value="-1"'.($showempty==2?'':' selected="selected"').' disabled="disabled">'.$langs->trans($socid?"NoContactDefinedForThirdParty":"NoContactDefined").'</option>';
-			}
+			
 			if ($htmlname != 'none' || $options_only)
-			{
-				$out.= '</select>';
+				$out .= '<select class="flat' . ($moreclass ? ' ' . $moreclass : '') . '" id="' . $htmlname . '" name="' . $htmlname . '">';
+			if ($showempty == 1)
+				$out .= '<option value="0"' . ($selected == '0' ? ' selected="selected"' : '') . '></option>';
+			if ($showempty == 2)
+				$out .= '<option value="0"' . ($selected == '0' ? ' selected="selected"' : '') . '>' . $langs->trans ( "Internal" ) . '</option>';
+			
+			$i = 0;
+			if ($num) {
+				include_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+				$contactstatic = new Contact ( $this->db );
+				
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object ( $resql );
+					
+					$contactstatic->id = $obj->rowid;
+					$contactstatic->lastname = $obj->lastname;
+					$contactstatic->firstname = $obj->firstname;
+					
+					if ($htmlname != 'none') {
+						$disabled = 0;
+						if (is_array ( $exclude ) && count ( $exclude ) && in_array ( $obj->rowid, $exclude ))
+							$disabled = 1;
+						if ($selected && $selected == $obj->rowid) {
+							$out .= '<option value="' . $obj->rowid . '"';
+							if ($disabled)
+								$out .= ' disabled="disabled"';
+							$out .= ' selected="selected">';
+							$out .= $contactstatic->getFullName ( $langs );
+							if ($showfunction && $obj->poste)
+								$out .= ' (' . $obj->poste . ')';
+							if (($showsoc > 0) && $obj->company)
+								$out .= ' - (' . $obj->company . ')';
+							$out .= '</option>';
+						} else {
+							$out .= '<option value="' . $obj->rowid . '"';
+							if ($disabled)
+								$out .= ' disabled="disabled"';
+							$out .= '>';
+							$out .= $contactstatic->getFullName ( $langs );
+							if ($showfunction && $obj->poste)
+								$out .= ' (' . $obj->poste . ')';
+							if (($showsoc > 0) && $obj->company)
+								$out .= ' - (' . $obj->company . ')';
+							$out .= '</option>';
+						}
+					} else {
+						if ($selected == $obj->rowid) {
+							$out .= $contactstatic->getFullName ( $langs );
+							if ($showfunction && $obj->poste)
+								$out .= ' (' . $obj->poste . ')';
+							if (($showsoc > 0) && $obj->company)
+								$out .= ' - (' . $obj->company . ')';
+						}
+					}
+					$i ++;
+				}
+			} else {
+				$out .= '<option value="-1"' . ($showempty == 2 ? '' : ' selected="selected"') . ' disabled="disabled">' . $langs->trans ( $socid ? "NoContactDefinedForThirdParty" : "NoContactDefined" ) . '</option>';
 			}
-	
+			if ($htmlname != 'none' || $options_only) {
+				$out .= '</select>';
+			}
+			
 			$this->num = $num;
 			return $out;
-		}
-		else
-		{
-			dol_print_error($this->db);
-			return -1;
+		} else {
+			dol_print_error ( $this->db );
+			return - 1;
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des formateurs déjà référéencés.
 	 *
@@ -673,6 +679,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_formateur($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -730,7 +737,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des financements possible pour un stagiaire
 	 *
@@ -743,6 +750,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_type_stagiaire($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+
 		global $conf, $langs;
 		
 		$sql = "SELECT t.rowid, t.intitule";
@@ -787,11 +795,11 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Display select of session status from dictionnary
 	 *
-	 * @param int $selectid Id 
+	 * @param int $selectid Id
 	 * @param string $htmlname Name of HTML control
 	 * @param string $filter SQL part for filter
 	 * @param int $showempty empty field
@@ -800,19 +808,20 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+
 		global $conf, $langs;
-	
+		
 		$sql = "SELECT t.rowid, t.code ,t.intitule ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
 		if (! empty ( $filter )) {
 			$sql .= ' WHERE ' . $filter;
 		}
 		$sql .= " ORDER BY t.sort";
-	
+		
 		dol_syslog ( get_class ( $this ) . "::select_session_status sql=" . $sql, LOG_DEBUG );
 		$result = $this->db->query ( $sql );
 		if ($result) {
-				
+			
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
 				$out .= '<option value=""></option>';
@@ -821,12 +830,12 @@ class FormAgefodd extends Form {
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object ( $result );
-					if ($obj->intitule==$langs->trans('AgfStatusSession_'.$obj->code)) {
-						$label=stripslashes ( $obj->intitule );
-					}else {
-						$label=$langs->trans('AgfStatusSession_'.$obj->code);
+					if ($obj->intitule == $langs->trans ( 'AgfStatusSession_' . $obj->code )) {
+						$label = stripslashes ( $obj->intitule );
+					} else {
+						$label = $langs->trans ( 'AgfStatusSession_' . $obj->code );
 					}
-						
+					
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -844,7 +853,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Display select of session status from dictionnary
 	 *
@@ -852,21 +861,25 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname Name of HTML control
 	 * @return string The HTML control
 	 */
-	function select_type_affect($selectid, $htmlname = 'search_type_affect' ) {
+	function select_type_affect($selectid, $htmlname = 'search_type_affect') {
+
 		global $conf, $langs;
-	
-		$select_array=array(
-		'thirdparty'=>$langs->trans('ThirdParty'),
-		'trainee'=>$langs->trans('AgfParticipant')
+		
+		$select_array = array (
+			'thirdparty' => $langs->trans ( 'ThirdParty' ),'trainee' => $langs->trans ( 'AgfParticipant' ),'requester' => $langs->trans ( 'AgfTypeRequester' ) 
 		);
 		
+		if ($conf->global->AGF_ADVANCE_COST_MANAGEMENT) {
+			$select_array ['trainer'] = $langs->trans ( 'AgfFormateur' );
+		}
+		
 		if ($conf->global->AGF_MANAGE_OPCA) {
-			$select_array['opca']=$langs->trans('AgfMailTypeContactOPCA');
+			$select_array ['opca'] = $langs->trans ( 'AgfMailTypeContactOPCA' );
 		}
 		
 		return $this->selectarray ( $htmlname, $select_array, $selectid, 0 );
 	}
-	
+
 	/**
 	 * Display list of training category
 	 *
@@ -879,19 +892,20 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_training_categ($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 1) {
+
 		global $conf, $langs;
-	
+		
 		$sql = "SELECT t.rowid, t.code, t.intitule";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as t";
 		if (! empty ( $filter )) {
 			$sql .= ' WHERE ' . $filter;
 		}
 		$sql .= " ORDER BY t.sort";
-	
+		
 		dol_syslog ( get_class ( $this ) . "::select_training_categ sql=" . $sql, LOG_DEBUG );
 		$result = $this->db->query ( $sql );
 		if ($result) {
-				
+			
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
 				$out .= '<option value="-1"></option>';
@@ -900,8 +914,8 @@ class FormAgefodd extends Form {
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object ( $result );
-					$label = stripslashes ( $obj->code.' - '.$obj->intitule );
-						
+					$label = stripslashes ( $obj->code . ' - ' . $obj->intitule );
+					
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -919,8 +933,7 @@ class FormAgefodd extends Form {
 			return - 1;
 		}
 	}
-	
-	
+
 	/**
 	 * Formate une jauge permettant d'afficher le niveau l'état du traitement des tâches administratives
 	 *
@@ -930,6 +943,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function level_graph($actual_level, $total_level, $title) {
+
 		$str = '<table style="border:0px; margin:0px; padding:0px">' . "\n";
 		$str .= '<tr style="border:0px;"><td style="border:0px; margin:0px; padding:0px">' . $title . ' : </td>' . "\n";
 		for($i = 0; $i < $total_level; $i ++) {
@@ -944,7 +958,7 @@ class FormAgefodd extends Form {
 		
 		return $str;
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des 1/4 d"heures de 7:00 à 21h00.
 	 *
@@ -953,6 +967,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_time($selectval = '', $htmlname = 'period') {
+
 		$time = 7;
 		$heuref = 23;
 		$min = 0;
@@ -972,7 +987,7 @@ class FormAgefodd extends Form {
 		}
 		return '<select class="flat" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des 1/4 d"heures de 7:00 à 21h00.
 	 *
@@ -984,43 +999,43 @@ class FormAgefodd extends Form {
 
 		global $langs;
 		
-		$duration_array=array();
+		$duration_array = array ();
 		
-		if (!empty($selectval)){
-			$duration_array=explode(':',$selectval);
-			$year=$duration_array[0];
-			$month=$duration_array[1];
-			$day=$duration_array[2];
-		}else {
-			$year=$month=$day=0;
+		if (! empty ( $selectval )) {
+			$duration_array = explode ( ':', $selectval );
+			$year = $duration_array [0];
+			$month = $duration_array [1];
+			$day = $duration_array [2];
+		} else {
+			$year = $month = $day = 0;
 		}
 		
-		$out = '<input name="'.$htmlname.'_year" class="flat" size="4" value="'.$year.'">'.$langs->trans('Year');
+		$out = '<input name="' . $htmlname . '_year" class="flat" size="4" value="' . $year . '">' . $langs->trans ( 'Year' );
 		$out .= '<select class="flat" name="' . $htmlname . '_month">';
-		for ($i = 0; $i <= 12; $i ++) {
-			if ($i==$month) {
+		for($i = 0; $i <= 12; $i ++) {
+			if ($i == $month) {
 				$selected = ' selected="selected"';
 			} else {
 				$selected = '';
 			}
 			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 		}
-		$out .=	'</select>' .$langs->trans('Month'). "\n";
+		$out .= '</select>' . $langs->trans ( 'Month' ) . "\n";
 		
 		$out .= '<select class="flat" name="' . $htmlname . '_day">';
-		for ($i = 0; $i <= 31; $i ++) {
-			if ($i==$day) {
+		for($i = 0; $i <= 31; $i ++) {
+			if ($i == $day) {
 				$selected = ' selected="selected"';
 			} else {
 				$selected = '';
 			}
 			$out .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 		}
-		$out .=	'</select>' .$langs->trans('Day'). "\n";
+		$out .= '</select>' . $langs->trans ( 'Day' ) . "\n";
 		
 		return $out;
 	}
-	
+
 	/**
 	 * Affiche une liste de sélection des types de formation
 	 *
@@ -1029,10 +1044,11 @@ class FormAgefodd extends Form {
 	 * @param int $showempty Show Empty
 	 * @return string HTML control
 	 */
-	function select_type_session($htmlname, $selectval, $showempty=0) {
+	function select_type_session($htmlname, $selectval, $showempty = 0) {
+
 		return $this->selectarray ( $htmlname, $this->type_session_def, $selectval, $showempty );
 	}
-	
+
 	/**
 	 * Show list of actions for element
 	 *
@@ -1042,6 +1058,7 @@ class FormAgefodd extends Form {
 	 * @return int if KO, >=0 if OK
 	 */
 	function showactions($object, $typeelement = 'agefodd_agsession', $socid = 0) {
+
 		global $langs, $conf, $user;
 		global $bc;
 		
@@ -1083,7 +1100,7 @@ class FormAgefodd extends Form {
 		
 		return $num;
 	}
-	
+
 	/**
 	 * Display select Trainee status in session
 	 *
@@ -1092,12 +1109,13 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_stagiaire_session_status($htmlname, $selectval) {
+
 		require_once 'agefodd_session_stagiaire.class.php';
 		$sess_sta = new Agefodd_session_stagiaire ( $this->db );
 		
 		return $this->selectarray ( $htmlname, $sess_sta->labelstatut, $selectval, 0 );
 	}
-	
+
 	/**
 	 * Display select Trainer status in session
 	 *
@@ -1106,12 +1124,13 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	function select_trainer_session_status($htmlname, $selectval) {
+
 		require_once 'agefodd_session_formateur.class.php';
 		$sess_trainer = new Agefodd_session_formateur ( $this->db );
-	
+		
 		return $this->selectarray ( $htmlname, $sess_trainer->labelstatut, $selectval, 0 );
 	}
-	
+
 	/**
 	 * Output a HTML code to select a color
 	 *
@@ -1120,6 +1139,7 @@ class FormAgefodd extends Form {
 	 * @return string HTML result
 	 */
 	function select_color($set_color = '', $htmlname = 'f_color') {
+
 		$out = '<input id="' . $htmlname . '" type="text" size="8" name="' . $htmlname . '" value="' . $set_color . '" />';
 		
 		$out .= '<script type="text/javascript" language="javascript">
@@ -1151,7 +1171,7 @@ class FormAgefodd extends Form {
 		
 		return $out;
 	}
-	
+
 	/**
 	 * Show filter form in agenda view
 	 *
@@ -1166,7 +1186,8 @@ class FormAgefodd extends Form {
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1) {
+	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0) {
+
 		global $conf, $langs;
 		
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER ["PHP_SELF"] . '" method="POST">';
@@ -1186,8 +1207,12 @@ class FormAgefodd extends Form {
 			print '<td class="nowrap">';
 			print $langs->trans ( "AgfSessionCommercial" );
 			print ' &nbsp;</td><td class="nowrap">';
-			if (empty($filter_commercial)) {$filter_commercial='a';}
-			$form->select_users ( $filter_commercial, 'commercial', 1, array (1) );
+			if (empty ( $filter_commercial )) {
+				$filter_commercial = 'a';
+			}
+			$form->select_users ( $filter_commercial, 'commercial', 1, array (
+				1 
+			) );
 			print '</td>';
 			print '</tr>';
 			
@@ -1198,11 +1223,8 @@ class FormAgefodd extends Form {
 			if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 				$events = array ();
 				$events [] = array (
-				'method' => 'getContacts',
-				'url' => dol_buildpath ( '/core/ajax/contacts.php', 1 ),
-				'htmlname' => 'contact',
-				'params' => array (
-				'add-customer-contact' => 'disabled' 
+					'method' => 'getContacts','url' => dol_buildpath ( '/core/ajax/contacts.php', 1 ),'htmlname' => 'contact','params' => array (
+					'add-customer-contact' => 'disabled' 
 				) 
 				);
 				print $form->select_company ( $filter_customer, 'fk_soc', '', 1, 1, 0, $events );
@@ -1232,6 +1254,38 @@ class FormAgefodd extends Form {
 			print $this->select_formateur ( $filter_trainer, "trainerid", '', 1 );
 			print '</td></tr>';
 			
+			// Filter by periode only on list view
+			if (strpos ( $_SERVER ["PHP_SELF"], 'listactions.php' ) !== false) {
+				
+				print '<tr>';
+				print '<td class="nowrap">' . $langs->trans ( "DateStart" ) . '</td>';
+				print '<td>';
+				$form->select_date ( $filterdatestart, 'dt_start_filter', 0, 0, 1 );
+				print '</td>';
+				print "</tr>\n";
+				
+				print '<td class="nowrap">' . $langs->trans ( "DateEnd" ) . '</td>';
+				print '<td>';
+				$form->select_date ( $filterdatesend, 'dt_end_filter', 0, 0, 1 );
+				print '</td>';
+				print "</tr>\n";
+			}
+			
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans ( "AgfOnlySession" );
+			print ' &nbsp;</td><td class="nowrap">';
+			if (! empty ( $onlysession )) {
+				$checkedyes = ' checked="checked" ';
+				$checkedno = ' ';
+			} else {
+				$checkedyes = '  ';
+				$checkedno = ' checked="checked" ';
+			}
+			print '<input type="radio" name="onlysession" ' . $checkedyes . ' value="1">' . $langs->trans ( 'Yes' );
+			print '<input type="radio" name="onlysession" ' . $checkedno . ' value="0">' . $langs->trans ( 'No' );
+			print '</td></tr>';
+			
 			print '</table>';
 		}
 		print '</td>';
@@ -1252,256 +1306,248 @@ class FormAgefodd extends Form {
 		print '</table>';
 		print '</form>';
 	}
-	
+
 	/**
-	 *	Return list of products for customer (in Ajax if Ajax activated or go to select_produits_fournisseurs_do)
+	 * Return list of products for customer (in Ajax if Ajax activated or go to select_produits_fournisseurs_do)
 	 *
-	 *	@param	int		$socid			Id third party
-	 *	@param  string	$selected       Preselected product
-	 *	@param  string	$htmlname       Name of HTML Select
-	 *  @param	string	$filtertype     Filter on product type (''=nofilter, 0=product, 1=service)
-	 *	@param  string	$filtre			For a SQL filter
-	 *	@param	array	$ajaxoptions	Options for ajax_autocompleter
-	 *	@return	void
+	 * @param int $socid party
+	 * @param string $selected product
+	 * @param string $htmlname of HTML Select
+	 * @param string $filtertype on product type (''=nofilter, 0=product, 1=service)
+	 * @param string $filtre SQL filter
+	 * @param array $ajaxoptions ajax_autocompleter
+	 * @return void
 	 */
-	function select_produits_fournisseurs_agefodd($socid, $selected='', $htmlname='productid', $filtertype='', $filtre='', $ajaxoptions=array())
-	{
-		global $langs,$conf;
+	function select_produits_fournisseurs_agefodd($socid, $selected = '', $htmlname = 'productid', $filtertype = '', $filtre = '', $ajaxoptions = array()) {
+
+		global $langs, $conf;
 		global $price_level, $status, $finished;
-	
-		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->PRODUIT_USE_SEARCH_TO_SELECT))
-		{
+		
+		if (! empty ( $conf->use_javascript_ajax ) && ! empty ( $conf->global->PRODUIT_USE_SEARCH_TO_SELECT )) {
 			// mode=2 means suppliers products
-			$urloption=($socid > 0?'socid='.$socid.'&':'').'htmlname='.$htmlname.'&outjson=1&price_level='.$price_level.'&type='.$filtertype.'&mode=2&status='.$status.'&finished='.$finished;
-			print ajax_autocompleter('', $htmlname, DOL_URL_ROOT.'/product/ajax/products.php', $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, $ajaxoptions);
-			print $langs->trans("RefOrLabel").' : <input type="text" size="16" name="search_'.$htmlname.'" id="search_'.$htmlname.'">';
+			$urloption = ($socid > 0 ? 'socid=' . $socid . '&' : '') . 'htmlname=' . $htmlname . '&outjson=1&price_level=' . $price_level . '&type=' . $filtertype . '&mode=2&status=' . $status . '&finished=' . $finished;
+			print ajax_autocompleter ( '', $htmlname, DOL_URL_ROOT . '/product/ajax/products.php', $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, $ajaxoptions );
+			print $langs->trans ( "RefOrLabel" ) . ' : <input type="text" size="16" name="search_' . $htmlname . '" id="search_' . $htmlname . '">';
 			print '<br>';
-		}
-		else
-		{
-			$this->select_produits_fournisseurs_agefodd_do($socid,$selected,$htmlname,$filtertype,$filtre,'',-1,0);
-		}
-	}
-	
-	/**
-	 *	Return list of suppliers products
-	 *
-	 *	@param	int		$socid   		Id societe fournisseur (0 pour aucun filtre)
-	 *	@param  int		$selected       Produit pre-selectionne
-	 *	@param  string	$htmlname       Nom de la zone select
-	 *  @param	string	$filtertype     Filter on product type (''=nofilter, 0=product, 1=service)
-	 *	@param  string	$filtre         Pour filtre sql
-	 *	@param  string	$filterkey      Filtre des produits
-	 *  @param  int		$statut         -1=Return all products, 0=Products not on sell, 1=Products on sell
-	 *  @param  int		$disableout     Disable print output
-	 *  @return array           		Array of keys for json
-	 */
-	function select_produits_fournisseurs_agefodd_do($socid,$selected='',$htmlname='productid',$filtertype='',$filtre='',$filterkey='',$statut=-1,$disableout=0)
-	{
-		global $langs,$conf;
-	
-		$langs->load('stocks');
-	
-		$sql = "SELECT p.rowid, p.label, p.ref, p.price, p.duration,";
-		$sql.= " pfp.ref_fourn, pfp.rowid as idprodfournprice, pfp.price as fprice, pfp.quantity, pfp.remise_percent, pfp.remise, pfp.unitprice,";
-		$sql.= " s.nom";
-		$sql.= " FROM ".MAIN_DB_PREFIX."product as p";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product_fournisseur_price as pfp ON p.rowid = pfp.fk_product";
-		if ($socid) $sql.= " AND pfp.fk_soc = ".$socid;
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON pfp.fk_soc = s.rowid";
-		$sql.= " WHERE p.entity IN (".getEntity('product', 1).")";
-		$sql.= " AND p.tobuy = 1";
-		if (strval($filtertype) != '') $sql.=" AND p.fk_product_type=".$filtertype;
-		if (! empty($filtre)) $sql.=" ".$filtre;
-		// Add criteria on ref/label
-		if ($filterkey && $filterkey != '')
-		{
-			if (! empty($conf->global->PRODUCT_DONOTSEARCH_ANYWHERE))
-			{
-				$sql.=" AND (pfp.ref_fourn LIKE '".$filterkey."%' OR p.ref LIKE '".$filterkey."%' OR p.label LIKE '".$filterkey."%')";
-			}
-			else
-			{
-				$sql.=" AND (pfp.ref_fourn LIKE '%".$filterkey."%' OR p.ref LIKE '%".$filterkey."%' OR p.label LIKE '%".$filterkey."%')";
-			}
-	
-			if (! empty($conf->barcode->enabled))
-			{
-				$sql .= " OR p.barcode LIKE '".$filterkey."'";
-			}
-		}
-		$sql.= " ORDER BY p.ref";
-	
-		// Build output string
-		$outselect='';
-		$outjson=array();
-	
-		dol_syslog(get_class($this)."::select_produits_fournisseurs_do sql=".$sql,LOG_DEBUG);
-		$result=$this->db->query($sql);
-		if ($result)
-		{
-	
-			$num = $this->db->num_rows($result);
-	
-			//$outselect.='<select class="flat" id="select'.$htmlname.'" name="'.$htmlname.'">';	// remove select to have id same with combo and ajax
-			$outselect.='<select class="flat" id="'.$htmlname.'" name="'.$htmlname.'">';
-			if (! $selected) $outselect.='<option value="0" selected="selected">&nbsp;</option>';
-			else $outselect.='<option value="0">&nbsp;</option>';
-	
-			$i = 0;
-			while ($i < $num)
-			{
-				$objp = $this->db->fetch_object($result);
-	
-				$outkey=$objp->idprodfournprice;
-				$outref=$objp->ref;
-				$outval='';
-				$outqty=1;
-				$outdiscount=0;
-	
-				$opt = '<option value="'.$objp->rowid.'"';
-				if ($selected && $selected == $objp->rowid) $opt.= ' selected="selected"';
-				//if (empty($objp->idprodfournprice)) $opt.=' disabled="disabled"';
-				$opt.= '>';
-	
-				$objRef = $objp->ref;
-				if ($filterkey && $filterkey != '') $objRef=preg_replace('/('.preg_quote($filterkey).')/i','<strong>$1</strong>',$objRef,1);
-				$objRefFourn = $objp->ref_fourn;
-				if ($filterkey && $filterkey != '') $objRefFourn=preg_replace('/('.preg_quote($filterkey).')/i','<strong>$1</strong>',$objRefFourn,1);
-				$label = $objp->label;
-				if ($filterkey && $filterkey != '') $label=preg_replace('/('.preg_quote($filterkey).')/i','<strong>$1</strong>',$label,1);
-	
-				$opt.=$objp->ref;
-				if (! empty($objp->idprodfournprice)) $opt.=' ('.$objp->ref_fourn.')';
-				$opt.=' - ';
-				$outval.=$objRef;
-				if (! empty($objp->idprodfournprice)) $outval.=' ('.$objRefFourn.')';
-				$outval.=' - ';
-				$opt.=dol_trunc($objp->label,18).' - ';
-				$outval.=dol_trunc($label,18).' - ';
-	
-				if (! empty($objp->idprodfournprice))
-				{
-					$currencytext=$langs->trans("Currency".$conf->currency);
-					$currencytextnoent=$langs->transnoentities("Currency".$conf->currency);
-					if (dol_strlen($currencytext) > 10) $currencytext=$conf->currency;   // If text is too long, we use the short code
-					if (dol_strlen($currencytextnoent) > 10) $currencytextnoent=$conf->currency;   // If text is too long, we use the short code
-	
-	
-					$outqty=$objp->quantity;
-					$outdiscount=$objp->remise_percent;
-					if ($objp->quantity == 1)
-					{
-						$opt.= price($objp->fprice).' '.$currencytext."/";
-						$outval.= price($objp->fprice).' '.$currencytextnoent."/";
-						$opt.= $langs->trans("Unit");	// Do not use strtolower because it breaks utf8 encoding
-						$outval.=$langs->transnoentities("Unit");
-					}
-					else
-					{
-						$opt.= price($objp->fprice).' '.$currencytext."/".$objp->quantity;
-						$outval.= price($objp->fprice).' '.$currencytextnoent."/".$objp->quantity;
-						$opt.= ' '.$langs->trans("Units");	// Do not use strtolower because it breaks utf8 encoding
-						$outval.= ' '.$langs->transnoentities("Units");
-					}
-	
-					if ($objp->quantity >= 1)
-					{
-						$opt.=" (".price($objp->unitprice).' '.$currencytext."/".$langs->trans("Unit").")";	// Do not use strtolower because it breaks utf8 encoding
-						$outval.=" (".price($objp->unitprice).' '.$currencytextnoent."/".$langs->transnoentities("Unit").")";	// Do not use strtolower because it breaks utf8 encoding
-					}
-					if ($objp->remise_percent >= 1)
-					{
-						$opt.=" - ".$langs->trans("Discount")." : ".vatrate($objp->remise_percent).' %';
-						$outval.=" - ".$langs->transnoentities("Discount")." : ".vatrate($objp->remise_percent).' %';
-					}
-					if ($objp->duration)
-					{
-						$opt .= " - ".$objp->duration;
-						$outval.=" - ".$objp->duration;
-					}
-					if (! $socid)
-					{
-						$opt .= " - ".dol_trunc($objp->nom,8);
-						$outval.=" - ".dol_trunc($objp->nom,8);
-					}
-				}
-				else
-				{
-					$opt.= $langs->trans("NoPriceDefinedForThisSupplier");
-					$outval.=$langs->transnoentities("NoPriceDefinedForThisSupplier");
-				}
-				$opt .= "</option>\n";
-	
-	
-				// Add new entry
-				// "key" value of json key array is used by jQuery automatically as selected value
-				// "label" value of json key array is used by jQuery automatically as text for combo box
-				$outselect.=$opt;
-				array_push($outjson, array('key'=>rowid, 'value'=>$outref, 'label'=>$outval, 'qty'=>$outqty, 'discount'=>$outdiscount, 'disabled'=>(empty($objp->idprodfournprice)?true:false)));
-				// Exemple of var_dump $outjson
-				// array(1) {[0]=>array(6) {[key"]=>string(1) "2" ["value"]=>string(3) "ppp"
-				//           ["label"]=>string(76) "ppp (<strong>f</strong>ff2) - ppp - 20,00 Euros/1unité (20,00 Euros/unité)"
-				//      	 ["qty"]=>string(1) "1" ["discount"]=>string(1) "0" ["disabled"]=>bool(false)
-				//}
-				//var_dump($outval); var_dump(utf8_check($outval)); var_dump(json_encode($outval));
-				//$outval=array('label'=>'ppp (<strong>f</strong>ff2) - ppp - 20,00 Euros/ Unité (20,00 Euros/unité)');
-				//var_dump($outval); var_dump(utf8_check($outval)); var_dump(json_encode($outval));
-	
-				$i++;
-			}
-			$outselect.='</select>';
-	
-			$this->db->free($result);
-	
-			if (empty($disableout)) print $outselect;
-			return $outjson;
-		}
-		else
-		{
-			dol_print_error($this->db);
+		} else {
+			$this->select_produits_fournisseurs_agefodd_do ( $socid, $selected, $htmlname, $filtertype, $filtre, '', - 1, 0 );
 		}
 	}
 
 	/**
-	 *	Return select of available convention document model
+	 * Return list of suppliers products
 	 *
-	 *	@param	string		$model   	selected item
-	 *  @return string           		HTML output
+	 * @param int $socid societe fournisseur (0 pour aucun filtre)
+	 * @param int $selected pre-selectionne
+	 * @param string $htmlname de la zone select
+	 * @param string $filtertype on product type (''=nofilter, 0=product, 1=service)
+	 * @param string $filtre filtre sql
+	 * @param string $filterkey des produits
+	 * @param int $statut all products, 0=Products not on sell, 1=Products on sell
+	 * @param int $disableout print output
+	 * @return array Array of keys for json
 	 */
-	function select_conv_model($model='',$htmlname='model_doc') {
-		$outselect='<select class="flat" id="'.$htmlname.'" name="'.$htmlname.'">';
-	
+	function select_produits_fournisseurs_agefodd_do($socid, $selected = '', $htmlname = 'productid', $filtertype = '', $filtre = '', $filterkey = '', $statut = -1, $disableout = 0) {
+
+		global $langs, $conf;
+		
+		$langs->load ( 'stocks' );
+		
+		$sql = "SELECT p.rowid, p.label, p.ref, p.price, p.duration,";
+		$sql .= " pfp.ref_fourn, pfp.rowid as idprodfournprice, pfp.price as fprice, pfp.quantity, pfp.remise_percent, pfp.remise, pfp.unitprice,";
+		$sql .= " s.nom";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "product as p";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product_fournisseur_price as pfp ON p.rowid = pfp.fk_product";
+		if ($socid)
+			$sql .= " AND pfp.fk_soc = " . $socid;
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON pfp.fk_soc = s.rowid";
+		$sql .= " WHERE p.entity IN (" . getEntity ( 'product', 1 ) . ")";
+		$sql .= " AND p.tobuy = 1";
+		if (strval ( $filtertype ) != '')
+			$sql .= " AND p.fk_product_type=" . $filtertype;
+		if (! empty ( $filtre ))
+			$sql .= " " . $filtre;
+			// Add criteria on ref/label
+		if ($filterkey && $filterkey != '') {
+			if (! empty ( $conf->global->PRODUCT_DONOTSEARCH_ANYWHERE )) {
+				$sql .= " AND (pfp.ref_fourn LIKE '" . $filterkey . "%' OR p.ref LIKE '" . $filterkey . "%' OR p.label LIKE '" . $filterkey . "%')";
+			} else {
+				$sql .= " AND (pfp.ref_fourn LIKE '%" . $filterkey . "%' OR p.ref LIKE '%" . $filterkey . "%' OR p.label LIKE '%" . $filterkey . "%')";
+			}
+			
+			if (! empty ( $conf->barcode->enabled )) {
+				$sql .= " OR p.barcode LIKE '" . $filterkey . "'";
+			}
+		}
+		$sql .= " ORDER BY p.ref";
+		
+		// Build output string
+		$outselect = '';
+		$outjson = array ();
+		
+		dol_syslog ( get_class ( $this ) . "::select_produits_fournisseurs_do sql=" . $sql, LOG_DEBUG );
+		$result = $this->db->query ( $sql );
+		if ($result) {
+			
+			$num = $this->db->num_rows ( $result );
+			
+			// $outselect.='<select class="flat" id="select'.$htmlname.'" name="'.$htmlname.'">'; // remove select to have id same with combo and ajax
+			$outselect .= '<select class="flat" id="' . $htmlname . '" name="' . $htmlname . '">';
+			if (! $selected)
+				$outselect .= '<option value="0" selected="selected">&nbsp;</option>';
+			else
+				$outselect .= '<option value="0">&nbsp;</option>';
+			
+			$i = 0;
+			while ( $i < $num ) {
+				$objp = $this->db->fetch_object ( $result );
+				
+				$outkey = $objp->idprodfournprice;
+				$outref = $objp->ref;
+				$outval = '';
+				$outqty = 1;
+				$outdiscount = 0;
+				
+				$opt = '<option value="' . $objp->rowid . '"';
+				if ($selected && $selected == $objp->rowid)
+					$opt .= ' selected="selected"';
+					// if (empty($objp->idprodfournprice)) $opt.=' disabled="disabled"';
+				$opt .= '>';
+				
+				$objRef = $objp->ref;
+				if ($filterkey && $filterkey != '')
+					$objRef = preg_replace ( '/(' . preg_quote ( $filterkey ) . ')/i', '<strong>$1</strong>', $objRef, 1 );
+				$objRefFourn = $objp->ref_fourn;
+				if ($filterkey && $filterkey != '')
+					$objRefFourn = preg_replace ( '/(' . preg_quote ( $filterkey ) . ')/i', '<strong>$1</strong>', $objRefFourn, 1 );
+				$label = $objp->label;
+				if ($filterkey && $filterkey != '')
+					$label = preg_replace ( '/(' . preg_quote ( $filterkey ) . ')/i', '<strong>$1</strong>', $label, 1 );
+				
+				$opt .= $objp->ref;
+				if (! empty ( $objp->idprodfournprice ))
+					$opt .= ' (' . $objp->ref_fourn . ')';
+				$opt .= ' - ';
+				$outval .= $objRef;
+				if (! empty ( $objp->idprodfournprice ))
+					$outval .= ' (' . $objRefFourn . ')';
+				$outval .= ' - ';
+				$opt .= dol_trunc ( $objp->label, 18 ) . ' - ';
+				$outval .= dol_trunc ( $label, 18 ) . ' - ';
+				
+				if (! empty ( $objp->idprodfournprice )) {
+					$currencytext = $langs->trans ( "Currency" . $conf->currency );
+					$currencytextnoent = $langs->transnoentities ( "Currency" . $conf->currency );
+					if (dol_strlen ( $currencytext ) > 10)
+						$currencytext = $conf->currency; // If text is too long, we use the short code
+					if (dol_strlen ( $currencytextnoent ) > 10)
+						$currencytextnoent = $conf->currency; // If text is too long, we use the short code
+					
+					$outqty = $objp->quantity;
+					$outdiscount = $objp->remise_percent;
+					if ($objp->quantity == 1) {
+						$opt .= price ( $objp->fprice ) . ' ' . $currencytext . "/";
+						$outval .= price ( $objp->fprice ) . ' ' . $currencytextnoent . "/";
+						$opt .= $langs->trans ( "Unit" ); // Do not use strtolower because it breaks utf8 encoding
+						$outval .= $langs->transnoentities ( "Unit" );
+					} else {
+						$opt .= price ( $objp->fprice ) . ' ' . $currencytext . "/" . $objp->quantity;
+						$outval .= price ( $objp->fprice ) . ' ' . $currencytextnoent . "/" . $objp->quantity;
+						$opt .= ' ' . $langs->trans ( "Units" ); // Do not use strtolower because it breaks utf8 encoding
+						$outval .= ' ' . $langs->transnoentities ( "Units" );
+					}
+					
+					if ($objp->quantity >= 1) {
+						$opt .= " (" . price ( $objp->unitprice ) . ' ' . $currencytext . "/" . $langs->trans ( "Unit" ) . ")"; // Do not use strtolower because it breaks utf8
+						                                                                                    // encoding
+						$outval .= " (" . price ( $objp->unitprice ) . ' ' . $currencytextnoent . "/" . $langs->transnoentities ( "Unit" ) . ")"; // Do not use strtolower
+						                                                                                                      // because it breaks utf8 encoding
+					}
+					if ($objp->remise_percent >= 1) {
+						$opt .= " - " . $langs->trans ( "Discount" ) . " : " . vatrate ( $objp->remise_percent ) . ' %';
+						$outval .= " - " . $langs->transnoentities ( "Discount" ) . " : " . vatrate ( $objp->remise_percent ) . ' %';
+					}
+					if ($objp->duration) {
+						$opt .= " - " . $objp->duration;
+						$outval .= " - " . $objp->duration;
+					}
+					if (! $socid) {
+						$opt .= " - " . dol_trunc ( $objp->nom, 8 );
+						$outval .= " - " . dol_trunc ( $objp->nom, 8 );
+					}
+				} else {
+					$opt .= $langs->trans ( "NoPriceDefinedForThisSupplier" );
+					$outval .= $langs->transnoentities ( "NoPriceDefinedForThisSupplier" );
+				}
+				$opt .= "</option>\n";
+				
+				// Add new entry
+				// "key" value of json key array is used by jQuery automatically as selected value
+				// "label" value of json key array is used by jQuery automatically as text for combo box
+				$outselect .= $opt;
+				array_push ( $outjson, array (
+					'key' => rowid,'value' => $outref,'label' => $outval,'qty' => $outqty,'discount' => $outdiscount,'disabled' => (empty ( $objp->idprodfournprice ) ? true : false) 
+				) );
+				// Exemple of var_dump $outjson
+				// array(1) {[0]=>array(6) {[key"]=>string(1) "2" ["value"]=>string(3) "ppp"
+				// ["label"]=>string(76) "ppp (<strong>f</strong>ff2) - ppp - 20,00 Euros/1unité (20,00 Euros/unité)"
+				// ["qty"]=>string(1) "1" ["discount"]=>string(1) "0" ["disabled"]=>bool(false)
+				// }
+				// var_dump($outval); var_dump(utf8_check($outval)); var_dump(json_encode($outval));
+				// $outval=array('label'=>'ppp (<strong>f</strong>ff2) - ppp - 20,00 Euros/ Unité (20,00 Euros/unité)');
+				// var_dump($outval); var_dump(utf8_check($outval)); var_dump(json_encode($outval));
+				
+				$i ++;
+			}
+			$outselect .= '</select>';
+			
+			$this->db->free ( $result );
+			
+			if (empty ( $disableout ))
+				print $outselect;
+			return $outjson;
+		} else {
+			dol_print_error ( $this->db );
+		}
+	}
+
+	/**
+	 * Return select of available convention document model
+	 *
+	 * @param string $model item
+	 * @return string HTML output
+	 */
+	function select_conv_model($model = '', $htmlname = 'model_doc') {
+
+		$outselect = '<select class="flat" id="' . $htmlname . '" name="' . $htmlname . '">';
+		
 		$dir = dol_buildpath ( "/agefodd/core/modules/agefodd/pdf/" );
-	
+		
 		if (is_dir ( $dir )) {
 			$handle = opendir ( $dir );
 			if (is_resource ( $handle )) {
 				$var = true;
-	
+				
 				while ( ($file = readdir ( $handle )) !== false ) {
 					if (preg_match ( '/^(pdf_convention.*)\.modules.php$/i', $file, $reg )) {
 						$file = $reg [1];
-	
+						
 						require_once ($dir . $file . ".modules.php");
-	
-						$module = new $file ($this->db);
-	
-						$selected='';
-						if ($file==$model) {
-							$selected='selected="selected"';
+						
+						$module = new $file ( $this->db );
+						
+						$selected = '';
+						if ($file == $model) {
+							$selected = 'selected="selected"';
 						}
-						$outselect.='<option value="'.$file.'" '.$selected.'>'.$module->description.'</option>';
+						$outselect .= '<option value="' . $file . '" ' . $selected . '>' . $module->description . '</option>';
 					}
 				}
 			}
-	
 		}
-	
-	
-		$outselect.='</select>';
-	
+		
+		$outselect .= '</select>';
+		
 		return $outselect;
 	}
-	
 }

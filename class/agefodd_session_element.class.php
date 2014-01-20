@@ -134,7 +134,8 @@ class Agefodd_session_element extends CommonObject {
 				
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
-				// $interface=new Interfaces($this->db);fetch_by_session sql=SELECT rowid, fk_element, element_type, fk_soc  FROM llx_agefodd_session_element WHERE fk_session_agefodd=419
+				// $interface=new Interfaces($this->db);fetch_by_session sql=SELECT rowid, fk_element, element_type, fk_soc FROM
+			// llx_agefodd_session_element WHERE fk_session_agefodd=419
 				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
@@ -151,7 +152,7 @@ class Agefodd_session_element extends CommonObject {
 			return - 1 * $error;
 		} else {
 			$this->db->commit ();
-			$this->updateSellingPrice($user);
+			$this->updateSellingPrice ( $user );
 			return $this->id;
 		}
 	}
@@ -295,7 +296,7 @@ class Agefodd_session_element extends CommonObject {
 				$sql .= " AND element_type='order'";
 			}
 			if ($type == 'fac') {
-				$sql .= " AND elem$this->invoice_payed_amountent_type='invoice'";
+				$sql .= " AND element_type='invoice'";
 			}
 			if ($type == 'prop') {
 				$sql .= " AND element_type='propal'";
@@ -340,7 +341,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string type order,invoice,propal,invoice_supplier
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_by_session_by_thirdparty($idsession, $idsoc=0, $type = '') {
+	function fetch_by_session_by_thirdparty($idsession, $idsoc = 0, $type = '') {
 
 		global $langs;
 		$sql = "SELECT";
@@ -407,8 +408,7 @@ class Agefodd_session_element extends CommonObject {
 			return - 1;
 		}
 	}
-	
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -418,38 +418,36 @@ class Agefodd_session_element extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_invoice_supplier_by_thridparty($idsoc) {
-	
+
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid";
 		$sql .= " ,t.ref";
 		$sql .= " ,t.ref_supplier";
-
-	
+		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as t";
 		$sql .= " WHERE t.fk_soc = " . $idsoc;
-	
-	
+		
 		dol_syslog ( get_class ( $this ) . "::fetch_invoice_supplier_by_thridparty sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
 		if ($resql) {
 			$num = $this->db->num_rows ( $resql );
-				
+			
 			$this->lines = array ();
-				
+			
 			while ( $obj = $this->db->fetch_object ( $resql ) ) {
-	
+				
 				$line = new AgefoddElementInvoiceLine ();
-	
+				
 				$line->id = $obj->rowid;
-	
+				
 				$line->ref = $obj->ref;
 				$line->ref_supplier = $obj->ref_supplier;
-	
+				
 				$this->lines [] = $line;
 			}
 			$this->db->free ( $resql );
-				
+			
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror ();
@@ -457,7 +455,6 @@ class Agefodd_session_element extends CommonObject {
 			return - 1;
 		}
 	}
-	
 
 	/**
 	 * Update object into database
@@ -587,7 +584,7 @@ class Agefodd_session_element extends CommonObject {
 			return - 1 * $error;
 		} else {
 			$this->db->commit ();
-			$this->updateSellingPrice($user);
+			$this->updateSellingPrice ( $user );
 			return 1;
 		}
 	}
@@ -775,33 +772,34 @@ class Agefodd_session_element extends CommonObject {
 			return - 1;
 		}
 	}
-	
-	
+
 	/**
 	 * update selling price
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function updateSellingPrice($user) {
-		//Update session selling price
-		$sell_price=0;
+		// Update session selling price
+		$sell_price = 0;
 		
-		$result=$this->fetch_by_session($this->fk_session_agefodd);
-
+		$result = $this->fetch_by_session ( $this->fk_session_agefodd );
+		
 		$sell_price = $this->invoice_payed_amount;
-		dol_syslog ( get_class ( $this ) . "::updateSellingPrice invoice sell_price=".$sell_price, LOG_DEBUG);
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice invoice sell_price=" . $sell_price, LOG_DEBUG );
 		
-		if (empty($sell_price)) $sell_price =$this->order_amount;
-		dol_syslog ( get_class ( $this ) . "::updateSellingPrice order sell_price=".$sell_price, LOG_DEBUG);
+		if (empty ( $sell_price ))
+			$sell_price = $this->order_amount;
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice order sell_price=" . $sell_price, LOG_DEBUG );
 		
-		if (empty($sell_price)) $sell_price= $this->propal_sign_amount-$this->invoice_payed_amount;
-		dol_syslog ( get_class ( $this ) . "::updateSellingPrice propal sell_price=".$sell_price, LOG_DEBUG);
-	
-		$sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session SET sell_price=\''.price2num($sell_price).'\' WHERE rowid='.$this->fk_session_agefodd;
-			
+		if (empty ( $sell_price ))
+			$sell_price = $this->propal_sign_amount - $this->invoice_payed_amount;
+		dol_syslog ( get_class ( $this ) . "::updateSellingPrice propal sell_price=" . $sell_price, LOG_DEBUG );
+		
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session SET sell_price=\'' . price2num ( $sell_price ) . '\' WHERE rowid=' . $this->fk_session_agefodd;
+		
 		dol_syslog ( get_class ( $this ) . "::updateSellingPrice sql=" . $sql, LOG_DEBUG );
 		$resql = $this->db->query ( $sql );
-		if (!$resql) {
+		if (! $resql) {
 			$this->error = "Error " . $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::updateSellingPrice " . $this->error, LOG_ERR );
 			return - 1;
