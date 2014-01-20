@@ -716,6 +716,7 @@ class Agefodd_session_element extends CommonObject {
 		global $langs;
 		
 		$this->propal_sign_amount = 0;
+		$this->propal_amount = 0;
 		$this->order_amount = 0;
 		$this->invoice_ongoing_amount = 0;
 		$this->invoice_payed_amount = 0;
@@ -748,7 +749,8 @@ class Agefodd_session_element extends CommonObject {
 					if ($proposal->statut == 2) {
 						$this->propal_sign_amount += $proposal->total_ht;
 						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=2 proposal->total_ht=" . $proposal->total_ht, LOG_DEBUG );
-					}
+					} 
+					$this->propal_amount +=$proposal->total_ht;
 				}
 				
 				if ($obj->element_type == 'invoice') {
