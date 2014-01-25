@@ -191,6 +191,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 				setEventMessage ( $agf->error, 'errors' );
 				$error ++;
 			}
+		}else {
+			setEventMessage ( $agf->error, 'errors' );
+			$error ++;
 		}
 		
 		if (! $error) {

@@ -103,13 +103,19 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 
 		global $db, $conf;
 		
+		$date = empty ( $agf->date_c ) ? dol_now () : $agf->date_c;
+		
+		// $yymm = strftime("%y%m",time());
+		$yymm = strftime ( "%y%m", $date );
+		
 		// D'abord on recupere la valeur max
 		$posindice = 10;
 		$sql = "SELECT MAX(SUBSTRING(ref FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
-		$sql .= " WHERE ref like '" . $this->prefix . "____-%'";
+		$sql .= " WHERE ref like '" . $this->prefix . $yymm ."-%'";
 		
 		$resql = $db->query ( $sql );
+		dol_syslog ( "mod_agefodd_simple::getNextValue sql=" . $sql );
 		if ($resql) {
 			$obj = $db->fetch_object ( $resql );
 			if ($obj)
@@ -121,10 +127,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 			return - 1;
 		}
 		
-		$date = empty ( $agf->date_c ) ? dol_now () : $agf->date_c;
 		
-		// $yymm = strftime("%y%m",time());
-		$yymm = strftime ( "%y%m", $date );
 		$num = sprintf ( "%04s", $max + 1 );
 		
 		dol_syslog ( "mod_agefodd_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num );
