@@ -625,7 +625,7 @@ if (! empty ( $conf->global->AGF_MANAGE_CERTIF )) {
 	
 	$dirmodels = array_merge ( array (
 		'/' 
-	), ( array ) $conf->modules_parts ['models'] );
+	));
 	
 	foreach ( $dirmodels as $reldir ) {
 		$dir = dol_buildpath ( "/agefodd/core/modules/agefodd/certificate/" );
