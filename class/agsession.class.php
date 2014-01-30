@@ -1933,6 +1933,7 @@ class Agsession extends CommonObject {
 				} elseif ($key == '!s.status') {
 					$sql .= ' AND s.status <> ' . $value;
 				} elseif ($key == 'so.nom') {
+					//Search for all thirdparty concern by the session
 					$sql .= ' AND ((' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\') OR (s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess ';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire ';
@@ -2001,12 +2002,12 @@ class Agsession extends CommonObject {
 					$line->cost_trainer = $obj->cost_trainer;
 					$line->cost_other = $obj->cost_trip + $obj->cost_site;
 					
-					if ($obj->statuslib == $langs->trans ( 'AgfStatusSession_' . $obj->code )) {
+					if ($obj->statuslib == $langs->trans ( 'AgfStatusSession_' . $obj->statuscode )) {
 						$label = stripslashes ( $obj->statuslib );
 					} else {
-						$label = $langs->trans ( 'AgfStatusSession_' . $obj->code );
+						$label = $langs->trans ( 'AgfStatusSession_' . $obj->statuscode );
 					}
-					$line->status_lib = $obj->statuscode . ' - ' . $label;
+					$line->status_lib = $label;
 					
 					$this->lines [$i] = $line;
 					$i ++;

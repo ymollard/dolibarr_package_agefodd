@@ -247,10 +247,15 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 					}
 				}
 				
-				if (strlen ( $url_back ) > 0) {
-					Header ( "Location: " . $url_back );
+				$saveandstay=GETPOST('saveandstay');
+				if (!empty($saveandstay)) {
+					Header ( "Location: " .$_SERVER ['HTTP_REFERER']);
 				} else {
-					Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $agf->id );
+					if (strlen ( $url_back ) > 0) {
+						Header ( "Location: " . $url_back );
+					} else {
+						Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $agf->id );
+					}
 				}
 				exit ();
 			} else {
@@ -465,7 +470,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	print '<tr><td>' . $langs->trans ( "DateToBirth" ) . '</td>';
 	print '<td>';
-	print $form->select_date ( '', 'datebirth', '', '', 1, 'update' );
+	print $form->select_date ( '', 'datebirth', '', '', 1, 'update',0,0,1 );
 	print '</td></tr>';
 	
 	print '<tr><td>' . $langs->trans ( "AgfPlaceBirth" ) . '</td>';
@@ -518,6 +523,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
+	print '<input type="submit" class="butAction" name="saveandstay" value="' . $langs->trans ( "AgfSaveAndStay" ) . '"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans ( "Cancel" ) . '">';
 	print '</td></tr>';
 	print '</table>';
@@ -578,7 +584,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					
 					print '<tr><td>' . $langs->trans ( "DateToBirth" ) . '</td>';
 					print '<td>';
-					print $form->select_date ( $agf->date_birth, 'datebirth', '', '', '', 'update' );
+					print $form->select_date ( $agf->date_birth, 'datebirth', 0, 0, 1, 'update' );
 					print '</td></tr>';
 				} else {
 					print '<input type="hidden" name="fk_socpeople" value="' . $agf->fk_socpeople . '">';
@@ -644,7 +650,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				print '</div>';
 				print '<table style=noborder align="right">';
 				print '<tr><td align="center" colspan=2>';
-				print '<input type="submit" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
+				print '<input type="submit" class="butAction" name="save" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans ( "Cancel" ) . '">';
 				if (! empty ( $agf->fk_socpeople )) {
 					print '<a class="butAction" href="' . dol_buildpath ( '/contact/fiche.php', 1 ) . '?id=' . $agf->fk_socpeople . '">' . $langs->trans ( 'AgfModifierFicheContact' ) . '</a>';

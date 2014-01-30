@@ -570,11 +570,27 @@ class Agefodd_stagiaire extends CommonObject {
 		} else {
 			$this->error = $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR );
-			$this->db->rollback ();
 			return - 1;
 		}
 		
 		$this->db->free ( $resql );
+		
+		$sql = "SELECT";
+		$sql .= " s.rowid";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as s";
+		$sql .= " WHERE s.fk_soc=" . $socid;
+		$sql .= " AND UPPER(s.lastname)='" . strtoupper ( $lastname ) . "'";
+		$sql .= " AND UPPER(s.firstname)='" . strtoupper ( $firstname ) . "'";
+		
+		dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc sql=" . $sql );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			$num =+ $this->db->num_rows ( $resql );
+		} else {
+			$this->error = $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR );
+			return - 1;
+		}
 		
 		return $num;
 	}

@@ -50,6 +50,12 @@ class Agefodd_session_element extends CommonObject {
 	var $comref = '';
 	var $facnumber = '';
 	var $facfournnumber = '';
+	var $propal_sign_amount;
+	var $propal_amount;
+	var $order_amount;
+	var $invoice_ongoing_amount;
+	var $invoice_payed_amount;
+	
 	var $lines = array ();
 
 	/**
@@ -317,7 +323,7 @@ class Agefodd_session_element extends CommonObject {
 					$obj = $this->db->fetch_object ( $resql );
 					$line->id = $obj->rowid;
 					$line->socid = $obj->fk_soc;
-					$line->fk_session = $obj->fk_session_agefodd;
+					$line->fk_session_agefodd = $obj->fk_session_agefodd;
 					
 					$this->lines [$i] = $line;
 				}
@@ -749,6 +755,8 @@ class Agefodd_session_element extends CommonObject {
 					if ($proposal->statut == 2) {
 						$this->propal_sign_amount += $proposal->total_ht;
 						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=2 proposal->total_ht=" . $proposal->total_ht, LOG_DEBUG );
+					} elseif ($proposal->statut != 4 ) {
+						$this->propal_amount=+$proposal->total_ht;
 					} 
 					$this->propal_amount +=$proposal->total_ht;
 				}
@@ -768,6 +776,78 @@ class Agefodd_session_element extends CommonObject {
 			}
 			$this->db->free ( $resql );
 			return 1;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::fetch_by_session " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
+
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $id ob object
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function get_charges_amount($id,$catid=0) {
+
+		global $langs;
+	
+		$total_charges=0;
+		
+		$sql = "SELECT";
+		$sql .= " rowid, fk_element, element_type, fk_soc ";
+	
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
+		$sql .= " WHERE fk_session_agefodd=" . $id;
+	
+		dol_syslog ( get_class ( $this ) . "::fetch_by_session sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			$num = $this->db->num_rows ( $resql );
+			$i = 0;
+			for($i = 0; $i < $num; $i ++) {
+	
+				$obj = $this->db->fetch_object ( $resql );
+	
+				if ($obj->element_type == 'order') {
+					/*$order = new Commande ( $this->db );
+					$order->fetch ( $obj->fk_element );
+					$this->order_amount += $order->total_ht;*/
+				}
+	
+				if ($obj->element_type == 'propal') {
+					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM ".MAIN_DB_PREFIX."propaldet as ldet WHERE ldet.fk_propal=".$obj->fk_element;
+					$sqlcharges .=	" AND ldet.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."categorie_product WHERE fk_categorie IN (".$catid."))";
+					dol_syslog ( get_class ( $this ) . "::get_charges_amount sql=" . $sqlcharges, LOG_DEBUG );
+					$resqlcharges = $this->db->query ( $sqlcharges ); 
+					if ($resqlcharges){
+						$objcharges = $this->db->fetch_object ( $sqlcharges );
+						$total_charges=$objcharges->totalcharges;
+						$this->db->free ( $resqlcharges );
+					}
+					else {
+						$this->error = "Error " . $this->db->lasterror ();
+						dol_syslog ( get_class ( $this ) . "::get_charges_amount " . $this->error, LOG_ERR );
+						return - 1;
+					}
+				}
+	
+				if ($obj->element_type == 'invoice') {
+					/*$facture = new Facture ( $this->db );
+					$facture->fetch ( $obj->fk_element );
+					if ($facture->statut == 2) {
+						$this->invoice_payed_amount += $facture->total_ht;
+						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=2 facture->total_ht=" . $facture->total_ht, LOG_DEBUG );
+					}
+					if ($facture->statut == 1) {
+						$this->invoice_ongoing_amount += $facture->total_ht;
+						dol_syslog ( get_class ( $this ) . "::fetch_by_session status=1 facture->total_ht=" . $facture->total_ht, LOG_DEBUG );
+					}*/
+				}
+			}
+			$this->db->free ( $resql );
+			return $total_charges;
 		} else {
 			$this->error = "Error " . $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::fetch_by_session " . $this->error, LOG_ERR );
@@ -809,6 +889,81 @@ class Agefodd_session_element extends CommonObject {
 			return 1;
 		}
 	}
+	
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $id ob object
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function fetch_element_by_session($id) {
+	
+		require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
+		require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
+		require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
+	
+		global $langs;
+	
+	
+		$sql = "SELECT";
+		$sql .= " rowid, fk_element, element_type, fk_soc ";
+	
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
+		$sql .= " WHERE fk_session_agefodd=" . $id;
+	
+		dol_syslog ( get_class ( $this ) . "::fetch_element_by_session sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			$this->lines = array ();
+			$num = $this->db->num_rows ( $resql );
+			$i = 0;
+			for($i = 0; $i < $num; $i ++) {
+	
+				$obj = $this->db->fetch_object ( $resql );
+	
+				$line = new AgefoddSessionElementLine();
+				$line->id=$obj->rowid;
+				$line->fk_session_agefodd=$id;
+				$line->fk_soc=$obj->fk_soc;
+				$line->element_type = $obj->element_type;
+				$line->fk_element=$obj->fk_element;
+				
+				
+				if ($obj->element_type == 'order') {
+					$order = new Commande ( $this->db );
+					$order->fetch ( $obj->fk_element );
+					if (!empty($order->id)) {
+						$line->urllink=$order->getNomUrl(1);
+					}
+				}
+	
+				if ($obj->element_type == 'propal') {
+					$proposal = new Propal ( $this->db );
+					$proposal->fetch ( $obj->fk_element );
+					if (!empty($proposal->id)) {
+						$line->urllink=$proposal->getNomUrl(1);
+					}
+				}
+	
+				if ($obj->element_type == 'invoice') {
+					$facture = new Facture ( $this->db );
+					$facture->fetch ( $obj->fk_element );
+					if (!empty($facture->id)) {
+						$line->urllink=$facture->getNomUrl(1);
+					}
+				}
+				
+				$this->lines[]=$line;
+				
+			}
+			$this->db->free ( $resql );
+			return 1;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::fetch_element_by_session " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
 }
 
 class AgefoddSessionElementLine {
@@ -824,12 +979,13 @@ class AgefoddSessionElementLine {
 	var $propalref = '';
 	var $comref = '';
 	var $facnumber = '';
+	var $urllink;
 }
 
 class AgefoddElementLine {
 	var $id;
 	var $socid;
-	var $fk_session;
+	var $fk_session_agefodd;
 	var $ref;
 }
 

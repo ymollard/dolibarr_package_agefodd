@@ -377,7 +377,13 @@ class FormAgefoddsenddocs extends FormMail {
 			if (count ( $listofpaths )) {
 				foreach ( $listofpaths as $key => $val ) {
 					$out .= '<div id="attachfile_' . $key . '">';
-					$out .= img_mime ( $listofnames [$key] ) . ' ' . $listofnames [$key];
+					$out .= img_mime ( $listofnames [$key] );// . ' ' . $listofnames [$key];
+					if (strpos($val,DOL_DATA_ROOT.'/agefodd/') !== false) {
+						$out .= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $listofnames [$key] . '" target="_blanck">'.$listofnames [$key].'</a>';
+					} else {
+						$out .= $listofnames [$key];
+					}
+					
 					if (! $this->withfilereadonly) {
 						$out .= ' <input type="image" style="border: 0px;" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" value="' . ($key + 1) . '" class="removedfile" id="removedfile_' . $key . '" name="removedfile_' . $key . '" />';
 						// $out.= ' <a href="'.$_SERVER["PHP_SELF"].'?removedfile='.($key+1).'

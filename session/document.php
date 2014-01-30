@@ -456,6 +456,40 @@ if (! empty ( $id )) {
 		document_line ( $langs->trans ( "AgfFicheEval" ), 2, "fiche_evaluation" );
 		
 		print '</table>' . "\n";
+		
+		
+		$agf_fin=new Agefodd_session_element($db);
+		$agf_fin->fetch_element_by_session($id);
+		if (is_array($agf_fin->lines) && count($agf_fin->lines)>0) {
+			
+			//Build array with 
+			$array_soc=array();
+			if (is_array($agf->lines) && count($agf->lines)>0) {
+				foreach($agf->lines as $line) {
+					$array_soc[]=$line->socid;
+				}
+			}
+			//Build doc list
+			$doclinkwithoutcust=array();
+			foreach ($agf_fin->lines as $linedoc) {
+				if (!in_array($linedoc->fk_soc, $array_soc) && !empty($linedoc->urllink)) {
+					$doclinkwithoutcust[]=$linedoc->urllink;
+				}
+			}
+		}
+		
+		if (count($doclinkwithoutcust)>0) {
+			print '<table class="border" width="100%">' . "\n";
+				
+			print '<tr class="liste_titre">' . "\n";
+			print '<td>'.$langs->trans ( "AgfDocLinkWitoutCustomerLink" ) . '</td>' . "\n";
+			print '</tr>' . "\n";
+			print '<tr>' . "\n";
+			print '<td>'.implode($doclinkwithoutcust,',') . '</td>' . "\n";
+			print '</tr>' . "\n";
+			print '</table>' . "\n";
+		}
+		
 		print '&nbsp;' . "\n";
 		
 		$linecount = count ( $agf->lines );

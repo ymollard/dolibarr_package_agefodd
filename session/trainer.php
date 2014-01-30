@@ -36,6 +36,7 @@ require_once ('../class/agefodd_session_formateur_calendrier.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
+require_once ('../class/agefodd_session_calendrier.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -218,6 +219,69 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
 			if ($result < 0) {
 				$error ++;
 				$error_message = $agf_cal->error;
+			}
+		}
+		
+		if (! $error) {
+			Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?action=edit_calendrier&id=" . $id );
+			exit ();
+		} else {
+			setEventMessage ( $error_message, 'errors' );
+		}
+	}
+	
+	$copysessioncalendar = GETPOST ( 'copysessioncalendar' );
+	if (! empty ( $copysessioncalendar )) {
+		
+		$fk_agefodd_session_formateur = GETPOST ( 'fk_agefodd_session_formateur', 'int' );
+		
+		// Delete all time already inputed
+		$agf_cal = new Agefoddsessionformateurcalendrier ( $db );
+		$agf_cal->fetch_all ( $fk_agefodd_session_formateur );
+		if (is_array ( $agf_cal->lines ) && count ( $agf_cal->lines ) > 0) {
+			foreach ( $agf_cal->lines as $line ) {
+				$delteobject = new Agefoddsessionformateurcalendrier ( $db );
+				$delteobject->remove ( $line->id );
+			}
+     }
+
+		// Create as many as session caldendar
+		$agf_session_cal = new Agefodd_sesscalendar ( $db );
+		$agf_session_cal->fetch_all ( $id );
+		if (is_array ( $agf_session_cal->lines ) && count ( $agf_session_cal ) > 0) {
+			foreach ( $agf_session_cal->lines as $line ) {
+				
+				$agf_cal = new Agefoddsessionformateurcalendrier ( $db );
+				
+				$agf_cal->sessid = $id;
+				$agf_cal->fk_agefodd_session_formateur = $fk_agefodd_session_formateur;
+				
+				$agf_cal->date_session = $line->date_session;
+				
+				$agf_cal->heured = $line->heured;
+				$agf_cal->heuref = $line->heuref;
+				
+				// Test if trainer is already book for another training
+				$result = $agf_cal->fetch_all_by_trainer ( GETPOST ( 'trainerid', 'int' ) );
+				if ($result < 0) {
+					$error ++;
+					$error_message = $agf_cal->error;
+				}
+				
+				foreach ( $agf_cal->lines as $line ) {
+					if (($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) {
+						$error ++;
+						$error_message .= $langs->trans ( 'AgfTrainerlAreadybookAtThisTime' ) . '(<a href=' . dol_buildpath ( '/agefodd/session/trainer.php', 1 ) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+					}
+				}
+				if (! $error) {
+					
+					$result = $agf_cal->create ( $user );
+					if ($result < 0) {
+						$error ++;
+						$error_message = $agf_cal->error;
+					}
+				}
 			}
 		}
 		
@@ -623,6 +687,7 @@ if (! empty ( $id )) {
 								print '</tr>' . "\n";
 								
 								print '<tr><td colspan="4"><a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '">' . $langs->trans ( 'Cancel' ) . '</a></td></tr>';
+								print '<tr><td colspan="4"><input class="button" type="submit" value="' . $langs->trans ( 'AgfEraseWithSessionCalendar' ) . '" name="copysessioncalendar"></td></tr>';
 								
 								print '</form>';
 							} else {
