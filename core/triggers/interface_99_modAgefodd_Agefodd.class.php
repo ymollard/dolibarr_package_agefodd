@@ -540,8 +540,6 @@ class InterfaceAgefodd {
 			if (count ( $agf_fin->lines ) > 0) {
 				$agf_fin->id = $agf_fin->lines [0]->id;
 				$agf_fin->delete ( $user );
-				
-				$agf_fin->updateSellingPrice ( $user );
 			}
 			
 			return 1;
@@ -670,6 +668,20 @@ class InterfaceAgefodd {
 				}
 			}
 		}
+		elseif ($action == 'LINEBILL_SUPPLIER_UPDATE') {
+			
+				dol_syslog ( "Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id );
+				
+				dol_include_once ( '/agefodd/class/agefodd_session_element.class.php' );
+				$agf_fin = new Agefodd_session_element ( $this->db );
+				$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier' );
+				if (count ( $agf_fin->lines ) > 0) {
+					$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+					$agf_fin->updateSellingPrice($user);
+				}
+				
+				return 1;
+			}
 		
 		return 0;
 	}

@@ -331,6 +331,7 @@ function show_fac($file, $socid, $mdle) {
 				$invoice = new Facture ( $db );
 				$invoice->fetch ( $line->fk_element );
 				$mess .= $invoice->getLibStatut ( 2 );
+				$mess .= ' (' . price ( $invoice->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
 				
 				$mess .= '</td></tr>';
 			}
@@ -519,6 +520,7 @@ function show_facopca($file, $socid, $mdle) {
 			$invoice = new Facture ( $db );
 			$invoice->fetch ( $line->fk_element );
 			$mess .= $invoice->getLibStatut ( 2 );
+			$mess .= ' (' . price ( $invoice->total_ht ) . $langs->getCurrencySymbol ( $conf->currency ) . ')';
 			
 			$mess .= '</td></tr>';
 		}

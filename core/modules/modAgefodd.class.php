@@ -667,7 +667,8 @@ class modAgefodd extends DolibarrModules
 		'order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_orderid=__ID__',
 		'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
 		'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_propalid=__ID__',
-		'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_soc.php?socid=__ID__'
+		'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_soc.php?socid=__ID__',
+		'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__'
 			);
 
 

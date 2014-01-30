@@ -2058,7 +2058,9 @@ class Agsession extends CommonObject {
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
-		$sql .= " ,s.duree_session,";
+		$sql .= " ,s.duree_session";
+		$sql .= " ,s.fk_soc_requester";
+		$sql .= " ,sorequester.nom as socrequestername,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid) as task0,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND (datea) ) AND fk_agefodd_session=s.rowid) as task1,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval8day . ") AND (datea - INTERVAL " . $interval3day . ") ) AND fk_agefodd_session=s.rowid) as task2,";
@@ -2074,6 +2076,8 @@ class Agsession extends CommonObject {
 		$sql .= " ON s.rowid = sa.fk_agefodd_session";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON so.rowid = s.fk_soc";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as sorequester";
+		$sql .= " ON sorequester.rowid = s.fk_soc_requester";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 		$sql .= " ON sf.fk_session = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
@@ -2168,6 +2172,8 @@ class Agsession extends CommonObject {
 					$line->task3 = $obj->task3;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
+					$line->socrequesterid = $obj->fk_soc_requester;
+					$line->socrequestername = $obj->socrequestername;
 					
 					if ($obj->statuslib == $langs->trans ( 'AgfStatusSession_' . $obj->code )) {
 						$label = stripslashes ( $obj->statuslib );
@@ -2418,9 +2424,11 @@ class Agsession extends CommonObject {
 	 * @param int $offset
 	 * @param string $ordernum num linked
 	 * @param string $invoicenum num linked
+ 	 * @param string $propalid num linked
+     * @param string $fourninvoiceid num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '') {
+	function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '',  $fourninvoiceid = '') {
 
 		global $langs;
 		
@@ -2431,6 +2439,9 @@ class Agsession extends CommonObject {
 		$sql .= " p.ref_interne";
 		if (! empty ( $invoiceid )) {
 			$sql .= " ,invoice.facnumber as invoiceref";
+		}
+		if (! empty ( $fourninvoiceid )) {
+			$sql .= " ,fourninvoice.ref as fourninvoiceref";
 		}
 		if (! empty ( $orderid )) {
 			$sql .= " ,order_dol.ref as orderref";
@@ -2456,6 +2467,12 @@ class Agsession extends CommonObject {
 			$sql .= ' AND invoice.rowid=' . $invoiceid;
 		}
 		
+		if (! empty ( $fourninvoiceid )) {
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn as fourninvoice ";
+			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%'";
+			$sql .= ' AND fourninvoice.rowid=' . $fourninvoiceid;
+		}
+		
 		if (! empty ( $orderid )) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "commande as order_dol ";
 			$sql .= " ON order_dol.rowid = ord_inv.fk_element AND  ord_inv.element_type='order'";
@@ -2473,6 +2490,10 @@ class Agsession extends CommonObject {
 		
 		if (! empty ( $invoiceid )) {
 			$sql .= " ,invoice.facnumber ";
+		}
+		
+		if (! empty ( $fourninvoiceid )) {
+			$sql .= " ,fourninvoice.ref ";
 		}
 		
 		if (! empty ( $orderid )) {
@@ -2525,6 +2546,9 @@ class Agsession extends CommonObject {
 					}
 					if (! empty ( $propalid )) {
 						$line->propalref = $obj->propalref;
+					}
+					if (! empty ( $fourninvoiceid )) {
+						$line->fourninvoiceref = $obj->fourninvoiceref;
 					}
 					
 					$this->lines [$i] = $line;
@@ -3275,6 +3299,8 @@ class Agsession extends CommonObject {
 		
 		global $langs, $mysoc, $conf;
 		
+		$langs->load('agefodd@agefodd');
+		
 		// Define new propal
 		$propal = new Propal ( $this->db );
 		
@@ -3313,14 +3339,13 @@ class Agsession extends CommonObject {
 			
 			$propal->lines [0] = new PropaleLigne ( $db );
 			$propal->lines [0]->fk_product = $this->fk_product;
-			$propal->lines [0]->qty = 1;
 			
 			if (! empty ( $this->intitule_custo )) {
-				$desc = $this->intitule_custo . "\n" . dol_print_date ( $this->dated, 'daytext' );
+				$desc = $this->intitule_custo . "\n";
 			} else {
-				$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+				$desc = $this->formintitule . "\n";
 			}
-			$desc .= "\n";
+			$desc .= "\n" . dol_print_date ( $this->dated, 'day' );
 			if ($this->datef != $this->dated) {
 				$desc .= '-' . dol_print_date ( $this->datef, 'day' );
 			}
@@ -3334,10 +3359,10 @@ class Agsession extends CommonObject {
 			$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid, 1 );
 			if (count ( $session_trainee->lines ) > 0) {
 				$desc_trainee = "\n" . count ( $session_trainee->lines ) . ' ';
-				if (count ( $session_trainee->lines ) >= 1) {
-					$desc_trainee .= $langs->trans ( 'AgfParticipant' );
-				} else {
+		        if (count ( $session_trainee->lines ) > 1) {
 					$desc_trainee .= $langs->trans ( 'AgfParticipants' );
+				} elseif (count ( $session_trainee->lines ) == 1) {
+					$desc_trainee .= $langs->trans ( 'AgfParticipant' );
 				}
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
@@ -3361,6 +3386,16 @@ class Agsession extends CommonObject {
 				}
 				$desc .= ' ' . $desc_trainee;
 			}
+			
+			//For session inter set the quantity to number of trainee
+			if ($this->type_session==1 && count ( $session_trainee->lines )>=1) {
+				$propal->lines [0]->qty = count ( $session_trainee->lines );
+			} else {
+				$propal->lines [0]->qty = 1 ;
+			}
+			
+			
+			
 			$propal->lines [0]->desc = $desc;
 			
 			// Calculate price
@@ -3507,11 +3542,11 @@ class Agsession extends CommonObject {
 			$invoice->lines [0]->qty = 1;
 			
 			if (! empty ( $this->intitule_custo )) {
-				$desc = $this->intitule_custo . "\n" . dol_print_date ( $this->dated, 'day' );
+				$desc = $this->intitule_custo . "\n";
 			} else {
-				$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'day' );
+				$desc = $this->formintitule . "\n";
 			}
-			$desc .= "\n";
+			$desc .= "\n" . dol_print_date ( $this->dated, 'day' );
 			if ($this->datef != $this->dated) {
 				$desc .= '-' . dol_print_date ( $this->datef, 'day' );
 			}
@@ -3648,6 +3683,9 @@ class Agsession extends CommonObject {
 					}
 				}
 			}
+			
+			$invoice->note_public=$propal->note_public;
+			
 		}
 		
 		$newinvoiceid = $invoice->create ( $user );
@@ -3782,6 +3820,7 @@ class AgfInvoiceOrder {
 	var $propalref;
 	var $duree_session;
 	var $intitule_custom;
+	var $fourninvoiceref;
 
 	function __construct() {
 
@@ -3871,6 +3910,8 @@ class AgfSessionLineTask {
 	var $status_in_session;
 	var $realdurationsession;
 	var $duree_session;
+	var $socrequesterid;
+	var $socrequestername;
 
 	function __construct() {
 
