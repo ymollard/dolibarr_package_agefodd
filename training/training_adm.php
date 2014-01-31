@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright (C) 2013 Florian Henry <florian.henry@open-concept.pro>
  *
  *
@@ -242,6 +242,8 @@ print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme 
 print '</tr>';
 print '</form>';
 print '</table><br>';
+
+print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconfadmin&id=' . $trainingid . '" title="'.$langs->trans('AgfReplaceByAdminLevelHelp').'">' . $langs->trans ( 'AgfReplaceByAdminLevel' ) . '</a>';
 
 llxFooter ();
 $db->close ();
