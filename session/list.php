@@ -66,6 +66,7 @@ $search_id = GETPOST ( 'search_id', 'int' );
 $search_month = GETPOST ( 'search_month', 'aplha' );
 $search_year = GETPOST ( 'search_year', 'int' );
 $search_sale = GETPOST ( 'search_sale', 'int' );
+$search_session_status=GETPOST('search_session_status');
 
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
@@ -82,6 +83,7 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_month = '';
 	$search_year = '';
 	$search_sale = '';
+	$search_session_status='';
 }
 
 $filter = array ();
@@ -128,6 +130,9 @@ if (! empty ( $search_month )) {
 
 if (! empty ( $search_year )) {
 	$filter ['YEAR(s.dated)'] = $search_year;
+}
+if (! empty ( $search_session_status )) {
+	$filter ['s.status'] = $search_session_status;
 }
 
 if (empty ( $sortorder ))
@@ -224,6 +229,8 @@ if ($resql != - 1) {
 		$option .= '&search_sale=' . $search_sale;
 	if (! empty ( $status_view ))
 		$option .= '&status=' . $status_view;
+	if (! empty ( $search_session_status ))
+		$option .= '&search_session_status=' . $search_session_status;
 	if (! empty ( $search_id ))
 		$option .= '&search_id=' . $search_id;
 	if (! empty ( $search_month ))
@@ -293,6 +300,7 @@ if ($resql != - 1) {
 	print_liste_field_titre ( $langs->trans ( "AgfFormTypeSession" ), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfStatusSession" ), $_SERVEUR ['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfNbreParticipants" ), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfListParticipantsStatus" ), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder );
@@ -332,6 +340,10 @@ if ($resql != - 1) {
 	
 	print '<td class="liste_titre">';
 	print $form->select_date ( $search_end_date, 'search_end_date', 0, 0, 1, 'search_form' );
+	print '</td>';
+	
+	print '<td class="liste_titre">';
+	print $formAgefodd->select_session_status ($search_session_status, 'search_session_status','t.active=1', 1 );
 	print '</td>';
 	
 	print '<td class="liste_titre">';
@@ -394,6 +406,9 @@ if ($resql != - 1) {
 			print '<td>' . ($line->type_session ? $langs->trans ( 'AgfFormTypeSessionInter' ) : $langs->trans ( 'AgfFormTypeSessionIntra' )) . '</td>';
 			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
 			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
+			print '<td>';
+			print $line->status_lib;
+			print '</td>';
 			print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
 			print '<td>' . $line->nb_stagiaire . '</td>';
 			if (! empty ( $line->nb_subscribe_min )) {
@@ -422,6 +437,7 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
+			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
