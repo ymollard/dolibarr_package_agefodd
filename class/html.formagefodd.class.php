@@ -870,7 +870,10 @@ class FormAgefodd extends Form {
 		global $conf, $langs;
 		
 		$select_array = array (
-			'thirdparty' => $langs->trans ( 'ThirdParty' ),'trainee' => $langs->trans ( 'AgfParticipant' ),'requester' => $langs->trans ( 'AgfTypeRequester' ) 
+			'thirdparty' => $langs->trans ( 'ThirdParty' ),
+			'trainee' => $langs->trans ( 'AgfParticipant' ),
+			'requester' => $langs->trans ( 'AgfTypeRequester' ),
+			'trainee_requester' => $langs->trans ( 'AgfTypeTraineeRequester' ) 
 		);
 		
 		if ($conf->global->AGF_ADVANCE_COST_MANAGEMENT) {
@@ -1127,12 +1130,19 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	function select_trainer_session_status($htmlname, $selectval) {
+	function select_trainer_session_status($htmlname, $selectval, $filter=array(), $showempty=0) {
 
 		require_once 'agefodd_session_formateur.class.php';
 		$sess_trainer = new Agefodd_session_formateur ( $this->db );
 		
-		return $this->selectarray ( $htmlname, $sess_trainer->labelstatut, $selectval, 0 );
+		$array_status=array();
+		if (count($filter)>0){
+			$array_status = array_intersect_key($sess_trainer->labelstatut,$filter);
+		} else {
+			$array_status = $sess_trainer->labelstatut;
+		}
+		
+		return $this->selectarray ( $htmlname, $array_status, $selectval, $showempty );
 	}
 
 	/**
@@ -1190,7 +1200,7 @@ class FormAgefodd extends Form {
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0) {
+	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0,$filter_type_session='', $display_only_trainer_filter=0) {
 
 		global $conf, $langs;
 		
@@ -1200,13 +1210,14 @@ class FormAgefodd extends Form {
 		print '<input type="hidden" name="year" value="' . $year . '">';
 		print '<input type="hidden" name="month" value="' . $month . '">';
 		print '<input type="hidden" name="day" value="' . $day . '">';
+		print '<input type="hidden" name="displayonlytrainerfilter" value="' . $display_only_trainer_filter . '">';
 		print '<table class="nobordernopadding" width="100%">';
 		
-		print '<tr><td class="nowrap">';
+		print '<tr><td class="nowrap" width="10%">';
 		
 		if (! empty ( $canedit )) {
 			print '<table class="nobordernopadding">';
-			
+			if (empty($display_only_trainer_filter)){
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans ( "AgfSessionCommercial" );
@@ -1250,7 +1261,7 @@ class FormAgefodd extends Form {
 				print $this->select_agefodd_contact ( $filter_contact, 'contact', '', 1 );
 			}
 			print '</td></tr>';
-			
+			}
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans ( "or" ) . ' ' . $langs->trans ( "AgfFormateur" );
@@ -1290,12 +1301,19 @@ class FormAgefodd extends Form {
 			print '<input type="radio" name="onlysession" ' . $checkedno . ' value="0">' . $langs->trans ( 'No' );
 			print '</td></tr>';
 			
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans ( "AgfFormTypeSession" );
+			print ' &nbsp;</td><td class="nowrap">';
+			print $this->select_type_session ( 'type_session', $filter_type_session, 1 );
+			print '</td></tr>';
+			
 			print '</table>';
 		}
 		print '</td>';
 		
 		// Buttons
-		print '<td align="center" valign="middle" class="nowrap">';
+		print '<td align="left" valign="middle" class="nowrap">';
 		print img_picto ( $langs->trans ( "ViewCal" ), 'object_calendar', 'class="hideonsmartphone"' ) . ' <input type="submit" class="button" style="min-width:120px" name="viewcal" value="' . $langs->trans ( "ViewCal" ) . '">';
 		print '<br>';
 		print img_picto ( $langs->trans ( "ViewWeek" ), 'object_calendarweek', 'class="hideonsmartphone"' ) . ' <input type="submit" class="button" style="min-width:120px" name="viewweek" value="' . $langs->trans ( "ViewWeek" ) . '">';

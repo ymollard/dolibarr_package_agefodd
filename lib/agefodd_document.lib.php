@@ -119,7 +119,7 @@ function show_doc($file, $socid, $nom_courrier) {
 		$file = $file . '-' . $nom_courrier . '_' . $id . '_' . $socid . '.pdf';
 	elseif (! empty ( $socid ))
 		$file = $file . '_' . $id . '_' . $socid . '.pdf';
-	elseif ($model == 'fiche_pedago')
+	elseif (strpos($model,'fiche_pedago')!==false)
 		$file = $file . '_' . $idform . '.pdf';
 	else
 		$file = $file . '_' . $id . '.pdf';

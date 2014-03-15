@@ -23,3 +23,4 @@
 --
 ALTER TABLE llx_agefodd_session_adminsitu ADD CONSTRAINT llx_agefodd_session_adminsitu_ibfk_1 FOREIGN KEY (fk_agefodd_session) REFERENCES llx_agefodd_session (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_session_adminsitu ADD INDEX fk_agefodd_session_adminsitu (fk_agefodd_session);
+ALTER TABLE llx_agefodd_session_adminsitu ADD INDEX idx_agefodd_session_adminsitu_fk_parent_level (fk_parent_level);

@@ -46,6 +46,9 @@ $filter_commercial = GETPOST ( 'commercial', 'int' );
 $filter_customer = GETPOST ( 'fk_soc', 'int' );
 $filter_contact = GETPOST ( 'contact', 'int' );
 $filter_trainer = GETPOST ( 'trainerid', 'int' );
+$filter_type_session = GETPOST ( 'type_session', 'int' );
+$display_only_trainer_filter= GETPOST('displayonlytrainerfilter','int');
+
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
 }
@@ -58,7 +61,9 @@ if ($filter_contact == - 1) {
 if ($filter_trainer == - 1) {
 	$filter_trainer = 0;
 }
-
+if ($filter_type_session == - 1) {
+	$filter_type_session = '';
+}
 $type = GETPOST ( 'type' );
 $sortfield = GETPOST ( "sortfield", 'alpha' );
 $sortorder = GETPOST ( "sortorder", 'alpha' );
@@ -235,6 +240,11 @@ if ($type)
 	$param .= "&type=" . $type;
 if ($action == 'show_day' || $action == 'show_week')
 	$param .= '&action=' . $action;
+if ($filter_type_session!='')
+	$param .= '&type_session=' . $filter_type_session;
+if ($display_only_trainer_filter!='') 
+	$param .= '&displayonlytrainerfilter=' . $display_only_trainer_filter;
+
 $param .= "&maxprint=" . $maxprint;
 
 // Show navigation bar
@@ -267,7 +277,7 @@ $param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 $head = calendars_prepare_head ( '' );
 
 dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
-$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession );
+$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session,$display_only_trainer_filter);
 dol_fiche_end ();
 
 $link = '';
@@ -368,8 +378,11 @@ if (! empty ( $filter_trainer )) {
 } else {
 	$sql .= " AND ca.code<>'AC_AGF_SESST'";
 }
-if (! empty ( $onlysession )) {
+if (! empty ( $onlysession ) && empty($filter_trainer)) {
 	$sql .= " AND ca.code='AC_AGF_SESS'";
+}
+if ($filter_type_session!='') {
+	$sql .= " AND agf.type_session=".$filter_type_session;
 }
 
 // Sort on date
@@ -892,10 +905,62 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					print '</td>';
 					// Status - Percent
 					print '<td align="right" class="nowrap">';
-					/*if ($event->type_code != 'BIRTHDAY' && $event->type_code != 'ICALEVENT')
-						//print $event->getLibStatut ( 3, 1 );
-					else*/
-					print '&nbsp;';
+					
+					if (!empty($event->sessionid) && $showinfo) {
+						
+						require_once '../class/agsession.class.php';
+						$agf=new Agsession($db);
+						$result=$agf->fetch($event->sessionid);
+						if ($result<0) {
+							setEventMessage($agf->error,'errors');
+						}
+						
+						
+						if (empty($extralabels)) {
+							$extrafields = new ExtraFields ( $db );
+							$extralabels = $extrafields->fetch_name_optionals_label ( $agf->table_element, true );
+						}
+					
+						require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+						$product=new Product($db);
+						if (!empty($agf->fk_product)) {
+							$result=$product->fetch($agf->fk_product);
+							if ($result<0) {
+								setEventMessage($agf->error,'errors');
+							}
+						}
+					
+						require_once '../class/agefodd_session_formateur.class.php';
+						$agf_trainer=new Agefodd_session_formateur($db);
+						$result=$agf_trainer->fetch_formateur_per_session($event->sessionid);
+						if ($result<0) {
+							setEventMessage($agf->error,'errors');
+						}
+						
+						if (!empty($product->id)) {
+							print $langs->trans ( "Product" ) . ': ' . $product->getNomUrl(1);
+						}
+						print '&nbsp;'.$langs->trans('AgfDuree').':'.$agf->duree_session;
+						print '<BR>';
+						print '&nbsp;'.$langs->trans('AgfParticipants').':'.$agf->nb_stagiaire;
+						print '&nbsp;'.$langs->trans ( 'AgfSessionCommercial' ) .':'.$agf->commercialname;
+						
+						print '<BR>';
+						
+						
+						 if (is_array($agf_trainer->lines) && count($agf_trainer->lines)>0) {
+						 	print '&nbsp;'.$langs->trans('AgfFormateur').':';	
+						 	foreach($agf_trainer->lines as $line) {
+						 		print strtoupper ( $line->lastname ) . ' ' . ucfirst ( $line->firstname ) .',';
+						 	}
+						 	
+						 }
+						 
+						 if (is_array ( $extralabels ) && key_exists ( 'ts_logistique', $extralabels )) {
+						 	print '&nbsp;'.$extralabels ['ts_logistique'] .':'.$extrafields->showOutputField( 'ts_logistique', $agf->array_options['options_ts_logistique'] );
+						 }
+						
+					}
 					print '</td></tr></table>';
 					print '</li></ul>';
 					print '</div>';

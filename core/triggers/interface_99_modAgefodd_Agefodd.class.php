@@ -228,6 +228,12 @@ class InterfaceAgefodd {
 				}
 				
 				$ok = 1;
+				
+				if (! empty ( $conf->global->AGF_AUTO_ACT_ADMIN_UPD )) {
+					dol_include_once ( '/agefodd/class/agefodd_sessadm.class.php' );
+					$admintask = new Agefodd_sessadm ( $this->db );
+					$result = $admintask->updateByTriggerName ( $user, $object->id, 'AGF_CONV_SEND' );
+				}
 			}
 		} 		// Envoi attestation par mail
 		elseif ($action == 'ATTESTATION_SENTBYMAIL') {
@@ -536,7 +542,7 @@ class InterfaceAgefodd {
 			
 			dol_include_once ( '/agefodd/class/agefodd_session_element.class.php' );
 			$agf_fin = new Agefodd_session_element ( $this->db );
-			$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier_trainer' );
+			$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier' );
 			if (count ( $agf_fin->lines ) > 0) {
 				$agf_fin->id = $agf_fin->lines [0]->id;
 				$agf_fin->delete ( $user );
@@ -617,12 +623,20 @@ class InterfaceAgefodd {
 						$desc .= "\n" . $langs->trans ( 'AgfLieu' ) . ': ' . $agfsession->placecode;
 					}
 					$session_trainee = new Agefodd_session_stagiaire ( $this->db );
-					if ($this->type_session == 0) {
+					/*if ($this->type_session == 0) {
 						// For Intra entreprise you take all trainne
 						$session_trainee->fetch_stagiaire_per_session ( $agfsession->id );
 					} else {
 						// For inter entreprise you tkae only trainee link with this OPCA
 						$session_trainee->fetch_stagiaire_per_session_per_OPCA ( $agfsession->id, $object->socid );
+					}*/
+					
+					if ($agfsession->type_session == 0) {
+						// For Intra entreprise you take all trainne
+						$session_trainee->fetch_stagiaire_per_session($agfsession->id);
+					} else {
+						// For inter entreprise you tkae only trainee link with this OPCA
+						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $socid);
 					}
 					if (count ( $session_trainee->lines ) > 0) {
 						
@@ -646,7 +660,7 @@ class InterfaceAgefodd {
 									}
 									
 									if (! empty ( $sessionOPCA->num_OPCA_file )) {
-										$desc_OPCA = "\n" . 'Num dossier OPCA: ' . $sessionOPCA->num_OPCA_file . ' pour ' . $line->socname;
+										$desc_OPCA = "\n" . 'Num dossier : ' . $sessionOPCA->num_OPCA_file . ' pour ' . $line->socname;
 									}
 									$desc_trainee .= dol_strtoupper ( $line->nom ) . ' ' . $line->prenom . "\n";
 								}
@@ -667,8 +681,7 @@ class InterfaceAgefodd {
 					}
 				}
 			}
-		}
-		elseif ($action == 'LINEBILL_SUPPLIER_UPDATE') {
+		} elseif ($action == 'LINEBILL_SUPPLIER_UPDATE') {
 			
 				dol_syslog ( "Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id );
 				
@@ -681,6 +694,65 @@ class InterfaceAgefodd {
 				}
 				
 				return 1;
+		} elseif ($action == 'BILL_VALIDATE') {
+				
+			dol_syslog ( "Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id );
+		
+			dol_include_once ( '/agefodd/class/agefodd_session_element.class.php' );
+			$agf_fin = new Agefodd_session_element ( $this->db );
+			$agf_fin->fetch_element_by_id ( $object->id, 'fac' );
+			
+			if (count ( $agf_fin->lines ) > 0) {
+
+				$agf_fin->updateSellingPrice ( $user );
+				
+				if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+					$result = $agf_fin->check_all_invoice_validate($agf_fin->lines[0]->fk_session_agefodd);
+					if ($result==1){
+							dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+							$admintask=new Agefodd_sessadm($this->db);
+							$admintask->updateByTriggerName($user,$agf_fin->lines[0]->fk_session_agefodd,'AGF_INV_CUST_VALID');
+						}
+					}
+				}
+
+			
+			return 1;
+		}elseif ($action=='BILL_SUPPLIER_VALIDATE') {
+			
+			dol_syslog ( "Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id );
+			
+			dol_include_once ( '/agefodd/class/agefodd_session_element.class.php' );
+			$agf_fin = new Agefodd_session_element ( $this->db );
+			
+			$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier_trainer' );
+			if (count ( $agf_fin->lines ) > 0) {
+				if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+					$admintask=new Agefodd_sessadm($this->db);
+					$admintask->updateByTriggerName($user,$agf_fin->lines[0]->fk_session_agefodd,'AGF_INV_TRAINER_VALID');
+				}
+			}
+				
+			$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier_room' );
+			if (count ( $agf_fin->lines ) > 0) {
+				if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+					$admintask=new Agefodd_sessadm($this->db);
+					$admintask->updateByTriggerName($user,$agf_fin->lines[0]->fk_session_agefodd,'AGF_INV_ROOM_VALID');
+				}
+			}
+				
+			$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier_missions' );
+			if (count ( $agf_fin->lines ) > 0) {
+				if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+					$admintask=new Agefodd_sessadm($this->db);
+					$admintask->updateByTriggerName($user,$agf_fin->lines[0]->fk_session_agefodd,'AGF_INV_TRIP_VALID');
+				}
+			}
+			
+			return 1;
 			}
 		
 		return 0;

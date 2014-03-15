@@ -32,6 +32,7 @@ if (! $res)
 require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
+require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
@@ -65,6 +66,9 @@ $status_view = GETPOST ( 'status', 'int' );
 $search_id = GETPOST ( 'search_id', 'int' );
 $search_month = GETPOST ( 'search_month', 'aplha' );
 $search_year = GETPOST ( 'search_year', 'int' );
+$search_soc_requester = GETPOST ( 'search_soc_requester', 'alpha' );
+$search_session_status=GETPOST('search_session_status');
+
 $search_sale = GETPOST ( 'search_sale', 'int' );
 $search_session_status=GETPOST('search_session_status');
 
@@ -83,6 +87,7 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_month = '';
 	$search_year = '';
 	$search_sale = '';
+	$search_soc_requester = '';
 	$search_session_status='';
 }
 
@@ -92,6 +97,9 @@ if (! empty ( $search_trainning_name )) {
 }
 if (! empty ( $search_soc )) {
 	$filter ['so.nom'] = $search_soc;
+}
+if (! empty ( $search_soc_requester )) {
+	$filter ['sorequester.nom'] = $search_soc_requester;
 }
 if (! empty ( $search_sale )) {
 	$filter ['sale.fk_user_com'] = $search_sale;

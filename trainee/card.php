@@ -122,6 +122,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$name = GETPOST ( 'nom', 'alpha' );
 		$firstname = GETPOST ( 'prenom', 'alpha' );
 		$civilite_id = GETPOST ( 'civilite_id', 'alpha' );
+		$socid= GETPOST ( 'societe', 'int' ) ;
 		
 		if (empty ( $name ) || empty ( $firstname )) {
 			setEventMessage ( $langs->trans ( 'AgfNameRequiredForParticipant' ), 'errors' );
@@ -129,6 +130,10 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		}
 		if (empty ( $civilite_id )) {
 			setEventMessage ( $langs->trans ( 'AgfCiviliteMandatory' ), 'errors' );
+			$error ++;
+		}
+		if (empty ( $socid )) {
+			setEventMessage ( $langs->trans ( 'ErrorFieldRequired' , $langs->transnoentities ( 'ThirdParty' )), 'errors' );
 			$error ++;
 		}
 		
@@ -211,7 +216,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$contact->state_id = $state_id;
 				$contact->country_id = $objectcountry_id;
 				$contact->socid = ($socstatic->id > 0 ? $socstatic->id : $socid); // fk_soc
-				$contact->status = 1;
+				$contact->statut = 1;
 				$contact->email = $mail;
 				$contact->phone_pro = $tel1;
 				$contact->phone_mobile = $tel2;
@@ -404,12 +409,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="radio" id="create_thirdparty_cancel" name="create_thirdparty" ' . $checkedNo . ' value="-1"/> <label for="create_thirdparty_cancel">' . $langs->trans ( 'no' ) . '</label>';
 	print '</td>';
 	print '	</tr>';
-	print '<tr class="select_thirdparty_block"><td>' . $langs->trans ( "Company" ) . '</td><td colspan="3">';
+	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans ( "Company" ) . '</td><td colspan="3">';
 	print $form->select_company ( GETPOST ( 'societe', 'int' ), 'societe', '(s.client IN (1,3,2))', 1, 1 );
 	print '</td></tr>';
 	
 	print '<tr class="create_thirdparty_block"><td>' . $langs->trans ( "ThirdPartyName" ) . '</td>';
-	print '<td colspan="3"><input name="societe_name" class="flat" size="50" value="' . GETPOST ( 'societe_name', 'alpha' ) . '"></td></tr>';
+	print '<td colspan="3 ><input name="societe_name" class="flat" size="50" value="' . GETPOST ( 'societe_name', 'alpha' ) . '"></td></tr>';
 	
 	// Address
 	print '<tr class="create_thirdparty_block"><td valign="top">' . $langs->trans ( 'Address' ) . '</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
@@ -434,11 +439,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td colspan="3">' . $formcompany->select_civility ( GETPOST ( 'civilite_id' ) ) . '</td>';
 	print '</tr>';
 	
-	print '<tr><td><span class="fieldrequired">' . $langs->trans ( "Lastname" ) . '</span></td>';
-	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . GETPOST ( 'nom', 'alpha' ) . '"></td></tr>';
-	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans ( "Firstname" ) . '</span></td>';
 	print '<td colspan="3"><input name="prenom" class="flat" size="50" value="' . GETPOST ( 'prenom', 'alpha' ) . '"></td></tr>';
+	
+	print '<tr><td><span class="fieldrequired">' . $langs->trans ( "Lastname" ) . '</span></td>';
+	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . GETPOST ( 'nom', 'alpha' ) . '"></td></tr>';
 	
 	print '<tr><td>' . $langs->trans ( 'CreateANewContactFromTraineeForm' );
 	print img_picto ( $langs->trans ( "CreateANewContactFromTraineeFormInfo" ), 'help' );
@@ -553,11 +558,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				
 				// if contact trainee from contact then display contact inforamtion
 				if (empty ( $agf->fk_socpeople )) {
-					print '<tr><td>' . $langs->trans ( "Lastname" ) . '</td>';
-					print '<td><input name="nom" class="flat" size="50" value="' . strtoupper ( $agf->nom ) . '"></td></tr>';
-					
+				
 					print '<tr><td>' . $langs->trans ( "Firstname" ) . '</td>';
 					print '<td><input name="prenom" class="flat" size="50" value="' . ucfirst ( $agf->prenom ) . '"></td></tr>';
+					
+					print '<tr><td>' . $langs->trans ( "Lastname" ) . '</td>';
+					print '<td><input name="nom" class="flat" size="50" value="' . strtoupper ( $agf->nom ) . '"></td></tr>';
 					
 					print '<tr><td>' . $langs->trans ( "AgfCivilite" ) . '</td>';
 					
@@ -676,6 +682,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				print '<tr><td width="20%">' . $langs->trans ( "Ref" ) . '</td>';
 				print '<td>' . $form->showrefnav ( $agf, 'id	', '', 1, 'rowid', 'id' ) . '</td></tr>';
 				
+				print '<tr><td>' . $langs->trans ( "Firstname" ) . '</td>';
+				print '<td>' . ucfirst ( $agf->prenom ) . '</td></tr>';
+				
+				
 				if (! empty ( $agf->fk_socpeople )) {
 					print '<tr><td>' . $langs->trans ( "Lastname" ) . '</td>';
 					print '<td><a href="' . dol_buildpath ( '/contact/fiche.php', 1 ) . '?id=' . $agf->fk_socpeople . '">' . strtoupper ( $agf->nom ) . '</a></td></tr>';
@@ -684,8 +694,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<td>' . strtoupper ( $agf->nom ) . '</td></tr>';
 				}
 				
-				print '<tr><td>' . $langs->trans ( "Firstname" ) . '</td>';
-				print '<td>' . ucfirst ( $agf->prenom ) . '</td></tr>';
 				
 				print '<tr><td>' . $langs->trans ( "AgfCivilite" ) . '</td>';
 				

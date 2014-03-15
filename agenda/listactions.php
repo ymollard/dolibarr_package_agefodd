@@ -60,6 +60,7 @@ $filter_commercial = GETPOST ( 'commercial', 'int' );
 $filter_customer = GETPOST ( 'fk_soc', 'int' );
 $filter_contact = GETPOST ( 'contact', 'int' );
 $filter_trainer = GETPOST ( 'trainerid', 'int' );
+$filter_type_session = GETPOST ( 'type_session', 'int' );
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
 }
@@ -72,6 +73,9 @@ if ($filter_contact == - 1) {
 if ($filter_trainer == - 1) {
 	$filter_trainer = 0;
 }
+if ($filter_type_session == - 1) {
+	$filter_type_session = '';
+}
 $showbirthday = empty ( $conf->use_javascript_ajax ) ? GETPOST ( "showbirthday", "int" ) : 1;
 
 $sortfield = GETPOST ( "sortfield", 'alpha' );
@@ -83,14 +87,14 @@ if ($page == - 1) {
 $limit = $conf->liste_limit;
 $offset = $limit * $page;
 if (! $sortorder) {
-	$sortorder = "ASC";
+	$sortorder = "DESC";
 	if ($status == 'todo')
 		$sortorder = "ASC";
 	if ($status == 'done')
 		$sortorder = "DESC";
 }
 if (! $sortfield) {
-	$sortfield = "a.percent";
+	$sortfield = "a.datep,a.datep2";
 	if ($status == 'todo')
 		$sortfield = "a.datep";
 	if ($status == 'done')
@@ -183,6 +187,8 @@ if ($type)
 	$param .= "&type=" . $type;
 if ($actioncode)
 	$param .= "&actioncode=" . $actioncode;
+if ($filter_type_session!='')
+	$param .= '&type_session=' . $filter_type_session;
 
 if (! empty ( $filterdatestart ))
 	$param .= "&dt_start_filtermonth=" . GETPOST ( 'dt_start_filtermonth', 'int' ) . '&dt_start_filterday=' . GETPOST ( 'dt_start_filterday', 'int' ) . '&dt_start_filteryear=' . GETPOST ( 'dt_start_filteryear', 'int' );
@@ -276,8 +282,11 @@ if (! empty ( $filterdatestart )) {
 if (! empty ( $filterdatesend )) {
 	$sql .= ' AND a.datep2<=\'' . $db->idate ( $filterdatesend ) . '\'';
 }
-if (! empty ( $onlysession )) {
+if (! empty ( $onlysession ) && empty($filter_trainer)) {
 	$sql .= " AND ca.code='AC_AGF_SESS'";
+}
+if ($filter_type_session!='') {
+	$sql .= " AND agf.type_session=".$filter_type_session;
 }
 $sql .= $db->order ( $sortfield, $sortorder );
 $sql .= $db->plimit ( $limit + 1, $offset );
@@ -309,7 +318,7 @@ if ($resql) {
 	$head = calendars_prepare_head ( '' );
 	
 	dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
-	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession );
+	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session );
 	dol_fiche_end ();
 	
 	// Add link to show birthdays
@@ -337,7 +346,7 @@ if ($resql) {
 	print '<tr class="liste_titre">';
 	print_liste_field_titre ( $langs->trans ( "Action" ), $_SERVER ["PHP_SELF"], "a.label", $param, "", "", $sortfield, $sortorder );
 	// print_liste_field_titre($langs->trans("Title"),$_SERVER["PHP_SELF"],"a.label",$param,"","",$sortfield,$sortorder);
-	print_liste_field_titre ( $langs->trans ( "DateStart" ), $_SERVER ["PHP_SELF"], "a.datep", $param, '', 'align="center"', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "DateStart" ), $_SERVER ["PHP_SELF"], "a.datep,a.datep2", $param, '', 'align="center"', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "DateEnd" ), $_SERVER ["PHP_SELF"], "a.datep2", $param, '', 'align="center"', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ["PHP_SELF"], "s.nom", $param, "", "", $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "Contact" ), $_SERVER ["PHP_SELF"], "a.fk_contact", $param, "", "", $sortfield, $sortorder );

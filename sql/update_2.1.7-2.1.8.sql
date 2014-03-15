@@ -42,7 +42,14 @@ ALTER TABLE llx_agefodd_session ADD COLUMN fk_socpeople_requester int NULL AFTER
 ALTER TABLE llx_agefodd_session ADD INDEX fk_soc_requester_session (fk_soc_requester);
 
 ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN fk_soc_link integer NULL AFTER fk_agefodd_stagiaire_type;
+ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN fk_soc_requester integer NULL AFTER fk_soc_link;
 
+ALTER TABLE llx_agefodd_training_admlevel ADD COLUMN trigger_name varchar(150) NULL;
+ALTER TABLE llx_agefodd_session_admlevel ADD COLUMN trigger_name varchar(150) NULL;
+ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN trigger_name varchar(150) NULL;
+ALTER TABLE llx_agefodd_training_admlevel ADD INDEX idx_agefodd_training_admlevel_fk_parent_level (fk_parent_level);
+ALTER TABLE llx_agefodd_session_admlevel ADD INDEX idx_agefodd_session_admlevel_fk_parent_level (fk_parent_level);
+ALTER TABLE llx_agefodd_session_adminsitu ADD INDEX idx_agefodd_session_adminsitu_fk_parent_level (fk_parent_level);
 
  
 

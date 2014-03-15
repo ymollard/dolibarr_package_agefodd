@@ -96,7 +96,12 @@ class Agefodd_stagiaire extends CommonObject {
 			// Check parameters
 			// Put here code to add control on parameters value
 		$this->nom = mb_strtoupper ( $this->nom, 'UTF-8' );
-		$this->prenom = ucfirst ( mb_strtolower ( $this->prenom, 'UTF-8' ) );
+		if ((strpos($this->prenom,"-")!==false) || (strpos($this->prenom," ")!==false)) {
+			$this->prenom = ucwords(strtolower($this->prenom));
+			$this->prenom = preg_replace('#-(\w)#e', "'-'.strtoupper('$1')",$this->prenom);
+		}else {
+			$this->prenom = ucfirst ( mb_strtolower ( $this->prenom, 'UTF-8' ) );
+		}
 		
 		if (empty ( $this->civilite )) {
 			$error ++;
@@ -282,13 +287,13 @@ class Agefodd_stagiaire extends CommonObject {
 					$addcriteria = true;
 				} elseif ($key == 'civ.code') {
 					if ($addcriteria) {
-						$sql .= ' AND ';
+						$sqlwhere .= ' AND ';
 					}
 					$sqlwhere .= $key . ' = \'' . $this->db->escape ( $value ) . '\'';
 					$addcriteria = true;
 				} elseif ($key != 's.tel1') {
 					if ($addcriteria) {
-						$sql .= ' AND ';
+						$sqlwhere .= ' AND ';
 					}
 					$sqlwhere .= $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
 					$addcriteria = true;
@@ -558,8 +563,8 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
-		$sql .= " AND UPPER(s.nom)='" . strtoupper ( $lastname ) . "'";
-		$sql .= " AND UPPER(s.prenom)='" . strtoupper ( $firstname ) . "'";
+		$sql .= " AND UPPER(s.nom)='" . strtoupper ( trim($lastname) ) . "'";
+		$sql .= " AND UPPER(s.prenom)='" . strtoupper ( trim($firstname) ) . "'";
 		
 		$num = 0;
 		
@@ -585,13 +590,15 @@ class Agefodd_stagiaire extends CommonObject {
 		dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc sql=" . $sql );
 		$resql = $this->db->query ( $sql );
 		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
 			$num =+ $this->db->num_rows ( $resql );
+			}
 		} else {
 			$this->error = $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR );
 			return - 1;
 		}
-		
+		dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc num=" . $num);
 		return $num;
 	}
 }

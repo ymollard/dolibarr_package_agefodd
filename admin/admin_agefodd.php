@@ -1416,7 +1416,7 @@ print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">
 print '<input type="hidden" name="action" value="sessioncalendar_create">' . "\n";
 print '<tr>';
 print '<td><select id="newday" class="flat" name="newday">';
-for($i = 1; $i <= 10; $i ++) {
+for($i = 1; $i <= 200; $i ++) {
 	print '<option value="' . $i . '">' . $i . '</option>';
 }
 print '</select></td>';

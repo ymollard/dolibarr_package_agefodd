@@ -56,6 +56,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		$agfsta->id = GETPOST ( 'stagerowid', 'int' );
 		$agfsta->fk_session_agefodd = GETPOST ( 'sessid', 'int' );
 		$agfsta->fk_soc_link = GETPOST ( 'fk_soc_link', 'int' );
+		$agfsta->fk_soc_requester = GETPOST ( 'fk_soc_requester', 'int' );
 		$agfsta->fk_stagiaire = GETPOST ( 'stagiaire', 'int' );
 		$agfsta->fk_agefodd_stagiaire_type = GETPOST ( 'stagiaire_type', 'int' );
 		$agfsta->status_in_session = GETPOST ( 'stagiaire_session_status', 'int' );
@@ -122,6 +123,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		
 		$agf->fk_session_agefodd = GETPOST ( 'sessid', 'int' );
 		$agf->fk_soc_link = GETPOST ( 'fk_soc_link', 'int' );
+		$agf->fk_soc_requester = GETPOST ( 'fk_soc_requester', 'int' );
 		$agf->fk_stagiaire = GETPOST ( 'stagiaire', 'int' );
 		$agf->fk_agefodd_stagiaire_type = GETPOST ( 'stagiaire_type', 'int' );
 		$agf->status_in_session = GETPOST ( 'stagiaire_session_status', 'int' );
@@ -371,6 +373,8 @@ if (! empty ( $id )) {
 					
 					print '<br>' . $langs->trans ( 'AgfTraineeSocDocUse' ) . ' ';
 					print $form->select_company ( $stagiaires->lines [$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0 );
+					print '<br>' . $langs->trans ( 'AgfTypeRequester' ) . ' ';
+					print $form->select_company ( $stagiaires->lines [$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0 );
 					/*
 					 * Manage trainee Funding for inter-enterprise
 					* Display only if first of the thridparty list
@@ -543,6 +547,15 @@ if (! empty ( $id )) {
 					} else {
 						print '&nbsp;';
 					}
+					if (! empty ( $stagiaires->lines [$i]->fk_soc_requester )) {
+						$socstatic = new Societe ( $db );
+						$socstatic->fetch ( $stagiaires->lines [$i]->fk_soc_requester );
+						if (! empty ( $socstatic->id )) {
+							print '<br>'.$langs->trans ( 'AgfTypeRequester' ) . ':' . $socstatic->getNomUrl ( 1 );
+						}
+					} else {
+						print '&nbsp;';
+					}
 					print '</td>';
 					
 					print '<td>';
@@ -580,6 +593,8 @@ if (! empty ( $id )) {
 			
 			print '<br>' . $langs->trans ( 'AgfTraineeSocDocUse' ) . ' ';
 			print $form->select_company ( 0, 'fk_soc_link', '', 1, 1, 0 );
+			print '<br>' . $langs->trans ( 'AgfTypeRequester' ) . ' ';
+			print $form->select_company ( 0, 'fk_soc_requester', '', 1, 1, 0 );
 			
 			if ($user->rights->agefodd->modifier) {
 				print '</td><td><input type="image" src="' . dol_buildpath ( '/agefodd/img/save.png', 1 ) . '" border="0" align="absmiddle" name="stag_add" alt="' . $langs->trans ( "AgfModSave" ) . '" ">';
@@ -894,6 +909,15 @@ if (! empty ( $id )) {
 					$socstatic->fetch ( $stagiaires->lines [$i]->fk_soc_link );
 					if (! empty ( $socstatic->id )) {
 						print $langs->trans ( 'AgfTraineeSocDocUse' ) . ':' . $socstatic->getNomUrl ( 1 );
+					}
+				} else {
+					print '&nbsp;';
+				}
+				if (! empty ( $stagiaires->lines [$i]->fk_soc_requester)) {
+					$socstatic = new Societe ( $db );
+					$socstatic->fetch ( $stagiaires->lines [$i]->fk_soc_requester );
+					if (! empty ( $socstatic->id )) {
+						print '<br>'.$langs->trans ( 'AgfTypeRequester' ) . ':' . $socstatic->getNomUrl ( 1 );
 					}
 				} else {
 					print '&nbsp;';

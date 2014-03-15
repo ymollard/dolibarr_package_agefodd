@@ -23,3 +23,4 @@
 --
 ALTER TABLE llx_agefodd_training_admlevel ADD CONSTRAINT llx_agefodd_training_admlevel_ibfk_1 FOREIGN KEY (fk_training) REFERENCES llx_agefodd_formation_catalogue (rowid) ON DELETE CASCADE;
 ALTER TABLE llx_agefodd_training_admlevel ADD INDEX fk_agefodd_training_admlevel (fk_training);
+ALTER TABLE llx_agefodd_training_admlevel ADD INDEX idx_agefodd_training_admlevel_fk_parent_level (fk_parent_level);

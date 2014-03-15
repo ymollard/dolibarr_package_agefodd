@@ -37,6 +37,7 @@ require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 
 // Security check
@@ -50,15 +51,19 @@ $page = GETPOST ( 'page', 'int' );
 // Search criteria
 $search_orderid = GETPOST ( 'search_orderid', 'int' );
 $search_invoiceid = GETPOST ( 'search_invoiceid', 'int' );
+$search_fourninvoiceid = GETPOST ( 'search_fourninvoiceid', 'int' );
 $search_orderref = GETPOST ( 'search_orderref', 'alpha' );
 $search_invoiceref = GETPOST ( 'search_invoiceref', 'alpha' );
 $search_propalref = GETPOST ( 'search_propalref', 'alpha' );
 $search_propalid = GETPOST ( 'search_propalid', 'alpha' );
 
+$langs->load('bills');
+
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
 	$search_orderid = '';
 	$search_invoiceid = '';
+	$search_fourninvoiceid = '';
 	$search_orderref = '';
 	$search_invoiceref = '';
 	$search_propalref = '';
@@ -97,6 +102,12 @@ if (! empty ( $search_invoiceid )) {
 	$search_invoiceref = $invoice->ref;
 }
 
+if (! empty ( $search_fourninvoiceid )) {
+	$fourninvoice = new FactureFournisseur ( $db );
+	$fourninvoice->fetch ( $search_fourninvoiceid );
+	$search_fourninvoiceref = $fourninvoice->ref;
+}
+
 if (! empty ( $search_orderref )) {
 	$order = new Commande ( $db );
 	$order->fetch ( '', $search_orderref );
@@ -107,6 +118,12 @@ if (! empty ( $search_invoiceref )) {
 	$invoice = new Facture ( $db );
 	$invoice->fetch ( '', $search_invoiceref );
 	$search_invoiceid = $invoice->id;
+}
+
+if (! empty ( $search_fourninvoiceref )) {
+	$fourninvoice = new FactureFournisseur ( $db );
+	$fourninvoice->fetch ( '', $search_fourninvoiceref );
+	$search_fourninvoiceid = $fourninvoice->id;
 }
 
 if (! empty ( $search_propalref )) {
@@ -133,6 +150,12 @@ if (! empty ( $search_invoiceid ) || ! empty ( $search_invoiceref )) {
 	dol_fiche_head ( $head, 'tabAgefodd', $langs->trans ( 'AgfMenuSessByInvoiceOrder' ), 0, 'bill' );
 }
 
+if (! empty ( $search_fourninvoiceid ) || ! empty ( $search_fourninvoiceref )) {
+	require_once DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php';
+	$head = facturefourn_prepare_head ( $fourninvoice );
+	dol_fiche_head ( $head, 'tabAgefodd', $langs->trans ( 'AgfMenuSessByInvoiceOrder' ), 0, 'bill' );
+}
+
 if (! empty ( $search_propalref ) || ! empty ( $search_propalid )) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php';
 	$head = propal_prepare_head ( $propal );
@@ -140,18 +163,19 @@ if (! empty ( $search_propalref ) || ! empty ( $search_propalid )) {
 }
 
 $agf = new Agsession ( $db );
-$resql = $agf->fetch_all_by_order_invoice_propal ( $sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid );
+$resql = $agf->fetch_all_by_order_invoice_propal ( $sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid,$search_fourninvoiceid );
 
 if ($resql != - 1) {
 	$num = $resql;
 	
 	$menu = $langs->trans ( "AgfMenuSessAct" );
-	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid, $sortfield, $sortorder, '', $num );
+	
+	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid .'&search_fourninvoiceid='.$search_fourninvoiceid, $sortfield, $sortorder, '', $num );
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid;
+	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid.'&search_fourninvoiceid='.$search_fourninvoiceid;
 	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder );
 	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder );
@@ -162,6 +186,9 @@ if ($resql != - 1) {
 		print_liste_field_titre ( $langs->trans ( "AgfBonCommande" ), $_SERVEUR ['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder );
 	}
 	if (! (empty ( $search_invoiceref ))) {
+		print_liste_field_titre ( $langs->trans ( "AgfFacture" ), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder );
+	}
+	if (! (empty ( $search_fourninvoiceref ))) {
 		print_liste_field_titre ( $langs->trans ( "AgfFacture" ), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder );
 	}
 	if (! (empty ( $search_propalref ))) {
@@ -218,6 +245,11 @@ if ($resql != - 1) {
 		print '<input type="text" class="flat" name="search_invoiceref" value="' . $search_invoiceref . '" size="20">';
 		print '</td>';
 	}
+	if (! (empty ( $search_fourninvoiceref ))) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_fourninvoiceref" value="' . $search_fourninvoiceref . '" size="20">';
+		print '</td>';
+	}
 	if (! (empty ( $search_propalref ))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_propalref" value="' . $search_propalref . '" size="20">';
@@ -257,9 +289,13 @@ if ($resql != - 1) {
 		if (! (empty ( $search_invoiceref ))) {
 			print '<td>' . $line->invoiceref . '</td>';
 		}
+		if (! (empty ( $search_fourninvoiceref ))) {
+			print '<td>' . $line->fourninvoiceref . '</td>';
+		}
 		if (! (empty ( $search_propalref ))) {
 			print '<td>' . $line->propalref . '</td>';
 		}
+		print '<td></td>';
 		print "</tr>\n";
 		
 		$i ++;

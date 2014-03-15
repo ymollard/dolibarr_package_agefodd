@@ -305,6 +305,15 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 				setEventMessage ( $agf->error, 'errors' );
 			}
 			
+			if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+				dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+				$admintask=new Agefodd_sessadm($db);
+				$result=$admintask->updateByTriggerName($user,$id,'AGF_MOV_ORGANISE');
+				if ($result < 0) {
+					setEventMessage ( $admintask->error, 'errors' );
+				}
+			}
+			
 			header ( 'Location:' . $_SERVER ['SELF'] . '?id=' . $id );
 		}
 	}
@@ -390,7 +399,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 	$deleteobject = GETPOST ( 'deleteobject', 'int' );
 	if (! empty ( $deleteobject )) {
 		$obj_link = new FactureFournisseur ( $db );
-		$obj_link->id = $agf_fin->fk_element;
+		$obj_link->fetch($agf_fin->fk_element);
 		$resultdel = $obj_link->delete ( $agf_fin->fk_element );
 		
 		if ($resultdel < O) {

@@ -416,7 +416,7 @@ class Agefodd_convention {
 		global $langs;
 		
 		$sql = "SELECT";
-		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
+		$sql .= " c.rowid, c.fk_product, c.description,c.label, c.tva_tx, c.remise_percent,";
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "propaldet as c";
 		$sql .= " WHERE c.fk_propal = " . $propalid;
@@ -442,7 +442,12 @@ class Agefodd_convention {
 					if ($result < 0) {
 						dol_syslog ( get_class ( $this ) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR );
 					}
-					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
+					// $line->description = $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
+					if (!empty($obj->label) && $obj->label!=$prod_static->label) {
+						$line->description = $obj->label . '<BR>' . nl2br ( $obj->description );
+					} else {
+						$line->description = $prod_static->label . '<BR>' . nl2br ( $obj->description );
+					}
 				} else {
 					$line->description = $obj->description;
 				}

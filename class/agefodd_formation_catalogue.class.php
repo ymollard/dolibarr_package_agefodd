@@ -850,6 +850,7 @@ class Agefodd extends CommonObject {
 				$actions->archive = 0;
 				$actions->level_rank = $line->level_rank;
 				$actions->fk_parent_level = $line->fk_parent_level; // Treatement to calculate the new parent level is after
+				$actions->trigger_name = $line->trigger_name;
 				$result3 = $actions->create ( $user );
 				
 				if ($result3 < 0) {

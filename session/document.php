@@ -87,17 +87,17 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 	if (! empty ( $deleteobject )) {
 		if ($type_link == 'bc') {
 			$obj_link = new Commande ( $db );
-			$obj_link->id = $agf->fk_element;
+			$obj_link->fetch($agf->fk_element);
 			$resultdel = $obj_link->delete ( $user );
 		}
 		if ($type_link == 'fac') {
 			$obj_link = new Facture ( $db );
-			$obj_link->id = $agf->fk_element;
+			$obj_link->fetch($agf->fk_element);
 			$resultdel = $obj_link->delete ();
 		}
 		if ($type_link == 'prop') {
 			$obj_link = new Propal ( $db );
-			$obj_link->id = $agf->fk_element;
+			$obj_link->fetch($agf->fk_element);
 			$resultdel = $obj_link->delete ( $user );
 		}
 		
@@ -149,9 +149,10 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		$file = 'convention' . '_' . $id . '_' . $socid . '.pdf';
 	} elseif (! empty ( $socid )) {
 		$file = $model . '_' . $id . '_' . $socid . '.pdf';
-	} elseif ($model == 'fiche_pedago') {
+	} elseif (strpos($model,'fiche_pedago')!==false) {
 		$file = $model . '_' . $idform . '.pdf';
 		$id_tmp = $idform;
+		$cour=$id;
 	} else {
 		$file = $model . '_' . $id . '.pdf';
 	}
@@ -500,7 +501,15 @@ if (! empty ( $id )) {
 				
 				print '<tr class="liste_titre">' . "\n";
 				print '<td colspan=3>';
-				print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '" name="socid' . $agf->lines [$i]->socid . '" id="socid' . $agf->lines [$i]->socid . '">' . $agf->lines [$i]->code_client . ' - ' . $agf->lines [$i]->socname . '</a></td>' . "\n";
+				
+				if ($agf->lines[$i]->typeline=='customer') $type_link_label=$langs->trans ( 'ThirdParty' );
+				if ($agf->lines[$i]->typeline=='trainee_soc') $type_link_label=$langs->trans ( 'AgfParticipant' );
+				if ($agf->lines[$i]->typeline=='trainee_doc') $type_link_label=$langs->trans ( 'AgfTraineeSocDocUse' );
+				if ($agf->lines[$i]->typeline=='OPCA') $type_link_label=$langs->trans ( 'AgfMailTypeContactOPCA' );
+				if ($agf->lines[$i]->typeline=='trainee_OPCA') $type_link_label=$langs->trans ( 'AgfMailTypeContactOPCA' );
+				if ($agf->lines[$i]->typeline=='trainee_requester') $type_link_label=$langs->trans ( 'AgfTypeTraineeRequester' );
+				
+				print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '" name="socid' . $agf->lines [$i]->socid . '" id="socid' . $agf->lines [$i]->socid . '">' . $agf->lines [$i]->code_client . ' - ' . $agf->lines [$i]->socname . ' (' .$type_link_label.')</a></td>' . "\n";
 				print '</tr>' . "\n";
 				
 				// For OPCA just dispaly line Invoice

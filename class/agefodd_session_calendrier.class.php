@@ -118,6 +118,19 @@ class Agefodd_sesscalendar {
 			}
 		}
 		
+		if (! $error) {
+			if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+				dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+				$admintask=new Agefodd_sessadm($this->db);
+				$result=$admintask->updateByTriggerName($user,$this->sessid,'AGF_DT_CONFIRM');
+				if ($result < 0) {
+					$error ++;
+					$this->errors [] = "Error " . $admintask->error;
+				}
+			}
+		}
+		
+		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {

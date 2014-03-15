@@ -91,6 +91,21 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 	}
 }
 
+if ($action=='replicateconftraining') {
+	$agf_level = new Agefodd_sessadm ( $db );
+	$result = $agf_level->remove_all ( $id );
+	if ($result < 0) {
+		setEventMessage ( $agf_level->error, 'errors' );
+	}
+	
+	$agf_session = new Agsession ( $db );
+	$res = $agf_session->fetch ( $id );
+	$result = $agf_session->createAdmLevelForSession ( $user );
+	if ($result < 0) {
+		setEventMessage ( $agf_session->error, 'errors' );
+	}
+}
+
 if ($action == 'update_archive' && $user->rights->agefodd->creer) {
 	$agf = new Agefodd_sessadm ( $db );
 	
@@ -331,12 +346,15 @@ if ($user->rights->agefodd->creer) {
 						$bgcolor = 'red';
 						
 						// if end date is in the past adn task is mark as done , the task is done
-					if ((dol_now () > $line->datef) && (! empty ( $line->archive )))
+					if (! empty ( $line->archive ))
 						$bgcolor = 'green';
 						// if end date is in the past, the task is done
 					if ((dol_now () > $line->datef) && (empty ( $line->archive )))
 						$bgcolor = 'red';
 					
+					if ($sess_adm->has_child($line->id)) {
+						$bgcolor='';
+					}
 					print '<td width="10px" bgcolor="' . $bgcolor . '">&nbsp;</td>';
 					
 					print '<td style="border-right-style: none;"><a href="' . dol_buildpath ( '/agefodd/session/administrative.php', 1 ) . '?action=edit&id=' . $id . '&actid=' . $line->id . '">';
@@ -350,6 +368,7 @@ if ($user->rights->agefodd->creer) {
 					} else
 						print '<td style="border-left: 0px; width:auto;">&nbsp;</td>';
 						
+					if (!$sess_adm->has_child($line->id)) {
 						// Affichage des différentes dates
 					print '<td width="150px" align="center" valign="top">';
 					if ($bgcolor == 'red')
@@ -364,14 +383,16 @@ if ($user->rights->agefodd->creer) {
 					// Status Line
 					if ($line->archive) {
 						$txtalt = $langs->trans ( "AgfTerminatedNoPoint" );
-						$src_state = dol_buildpath ( '/agefodd/img/undo.png', 1 );
+							$src_state = dol_buildpath ( '/agefodd/img/ok.png', 1 );
 					} else {
 						$txtalt = $langs->trans ( "AgfTerminatedPoint" );
-						$src_state = dol_buildpath ( '/agefodd/img/ok.png', 1 );
+							$src_state = dol_buildpath ( '/agefodd/img/no.png', 1 );
 					}
 					
 					print '<td align="center" valign="top"><a href="' . $_SERVER ['PHP_SELF'] . '?action=update_archive&id=' . $id . '&actid=' . $line->id . '"><img alt="' . $txtalt . '" src="' . $src_state . '"/></a></td>';
-					
+					} else {
+						print '<td colspan="4"></td>';
+					}
 					print '</tr>';
 					
 					$i ++;
@@ -403,6 +424,7 @@ print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'update') {
 	if ($user->rights->agefodd->creer) {
 		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=create&id=' . $id . '">' . $langs->trans ( 'Create' ) . '</a>';
+		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconftraining&id=' . $id . '" title="'.$langs->trans('AgfReplaceByTrainingLevelHelp').'">' . $langs->trans ( 'AgfReplaceByTrainingLevel' ) . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'Modify' ) . '</a>';
 	}

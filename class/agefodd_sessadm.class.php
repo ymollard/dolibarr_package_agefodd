@@ -45,6 +45,7 @@ class Agefodd_sessadm extends CommonObject {
 	var $fk_user_mod;
 	var $tms = '';
 	var $lines = array ();
+	var $trigger_name;
 
 	/**
 	 * Constructor
@@ -76,7 +77,7 @@ class Agefodd_sessadm extends CommonObject {
 		$this->indice = trim ( $this->indice );
 		$this->notes = $this->db->escape ( trim ( $this->notes ) );
 		$this->fk_user_author = trim ( $this->fk_user_author );
-		
+		$this->trigger_name = trim ( $this->trigger_name );
 		// Check parameters
 		// Put here code to add control on parameters value
 		
@@ -84,6 +85,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_adminsitu (";
 		$sql .= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte, ";
 		$sql .= "indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_author,fk_user_mod, datec";
+		$sql .= ",trigger_name";
 		$sql .= ") VALUES (";
 		$sql .= "'" . $this->fk_agefodd_session_admlevel . "', ";
 		$sql .= "'" . $this->fk_agefodd_session . "', ";
@@ -99,7 +101,8 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= $this->archive . ',';
 		$sql .= " " . $user->id . ", ";
 		$sql .= " " . $user->id . ", ";
-		$sql .= $this->db->idate ( dol_now () );
+		$sql .= $this->db->idate ( dol_now () ). ", ";
+		$sql .= " " . (! isset ( $this->trigger_name ) ? 'NULL' : "'" . $this->trigger_name . "'");
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -157,7 +160,7 @@ class Agefodd_sessadm extends CommonObject {
 		$this->datef = trim ( $this->datef );
 		$this->datea = trim ( $this->datea );
 		$this->notes = $this->db->escape ( trim ( $this->notes ) );
-		
+		$this->trigger_name = $this->db->escape ( trim ( $this->trigger_name ) );
 		// Check parameters
 		// Put here code to add control on parameters values
 		
@@ -173,6 +176,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " notes='" . $this->notes . "',";
 		$sql .= " archive=" . $this->archive . ",";
 		$sql .= " level_rank=" . $this->level_rank . ",";
+		$sql .= " trigger_name=" . (isset ( $this->trigger_name ) ? "'" . $this->db->escape ( $this->trigger_name ) . "'" : "null") . ",";
 		$sql .= " fk_parent_level=" . $this->fk_parent_level;
 		$sql .= " WHERE rowid = " . $this->id;
 		
@@ -227,6 +231,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
+		$sql .= ',s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.rowid = '" . $id . "'";
 		
@@ -248,6 +253,7 @@ class Agefodd_sessadm extends CommonObject {
 				$this->datea = $this->db->jdate ( $obj->datea );
 				$this->notes = $obj->notes;
 				$this->archive = $obj->archive;
+				$this->trigger_name = $obj->trigger_name;
 			}
 			$this->db->free ( $resql );
 			return 1;
@@ -271,6 +277,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
+		$sql .= ',s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
@@ -300,6 +307,7 @@ class Agefodd_sessadm extends CommonObject {
 				$line->datea = $this->db->jdate ( $obj->datea );
 				$line->notes = $obj->notes;
 				$line->archive = $obj->archive;
+				$line->trigger_name = $obj->trigger_name;
 				
 				$this->lines [$i] = $line;
 				
@@ -373,6 +381,28 @@ class Agefodd_sessadm extends CommonObject {
 	}
 
 	/**
+	 * Delete object in database
+	 *
+	 * @param int $id delete
+	 * @return int if KO, >0 if OK
+	 */
+	function remove_all($id) {
+	
+		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
+		$sql .= " WHERE fk_agefodd_session = " . $id;
+	
+		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+	
+		if ($resql) {
+			return 1;
+		} else {
+			$this->error = $this->db->lasterror ();
+			return - 1;
+		}
+	}
+
+	/**
 	 * Load Date of session in memory
 	 *
 	 * @param int $id delete
@@ -401,6 +431,40 @@ class Agefodd_sessadm extends CommonObject {
 		} else {
 			$this->error = "Error " . $this->db->lasterror ();
 			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			return - 1;
+		}
+	}
+
+	/**
+	 * Load Date of session in memory
+	 *
+	 * @param int $id delete
+	 * @return int if KO, >0 if OK
+	 */
+	function has_child($id) {
+	
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql .= " s.rowid";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
+		$sql .= " WHERE s.fk_parent_level = " . $id;
+	
+		dol_syslog ( get_class ( $this ) . "::has_child sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
+				$retrun = 1;
+			} else {
+				$retrun = 0;
+			}
+			
+			$this->db->free ( $resql );
+				
+			return $retrun;
+		} else {
+			$this->error = "Error " . $this->db->lasterror ();
+			dol_syslog ( get_class ( $this ) . "::has_child " . $this->error, LOG_ERR );
 			return - 1;
 		}
 	}
@@ -456,6 +520,53 @@ class Agefodd_sessadm extends CommonObject {
 			return 1;
 		}
 	}
+	
+	/**
+	 * Update by trigger name
+	 *
+	 * @param $user int id that modify
+	 * @param $session_id int session to update
+	 * @param $trigger_name string name of the trigger to update
+	 * @param $status int status to set
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function updateByTriggerName($user, $session_id, $trigger_name, $status=1) {
+	
+		global $conf, $langs;
+		$error = 0;
+	
+		// Update request
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session_adminsitu';
+		$sql .= " SET archive=".$status.",  fk_user_mod=" . $user->id;
+		$sql .= ' WHERE fk_agefodd_session=' . $session_id;
+		$sql .= " AND trigger_name='" . $trigger_name."'";
+		
+	
+		// print $sql;
+		// exit;
+		$this->db->begin ();
+	
+		dol_syslog ( get_class ( $this ) . "::updateByTriggerName sql=" . $sql, LOG_DEBUG );
+		$resql = $this->db->query ( $sql );
+		if (! $resql) {
+			$error ++;
+			$this->errors [] = "Error " . $this->db->lasterror ();
+}
+
+		// Commit or rollback
+		if ($error) {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog ( get_class ( $this ) . "::updateByTriggerName " . $errmsg, LOG_ERR );
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback ();
+			return - 1 * $error;
+		} else {
+			$this->db->commit ();
+			return 1;
+		}
+	}
+	
 }
 
 /**
@@ -475,6 +586,7 @@ class AgfSessAdm {
 	var $datea;
 	var $notes;
 	var $archive;
+	var $trigger_name;
 
 	function __construct() {
 

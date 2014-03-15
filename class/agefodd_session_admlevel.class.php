@@ -44,6 +44,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	var $fk_user_mod;
 	var $tms = '';
 	var $lines = array ();
+	var $trigger_name;
 
 	/**
 	 * Constructor
@@ -80,6 +81,8 @@ class Agefodd_session_admlevel extends CommonObject {
 			$this->intitule = trim ( $this->intitule );
 		if (isset ( $this->delais_alerte ))
 			$this->delais_alerte = trim ( $this->delais_alerte );
+		if (isset ( $this->trigger_name ))
+			$this->trigger_name = trim ( $this->trigger_name );
 			
 			// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_admlevel(";
@@ -91,6 +94,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= "delais_alerte,";
 		$sql .= "fk_user_author,";
 		$sql .= "fk_user_mod,";
+		$sql .= "trigger_name,";
 		$sql .= "datec";
 		
 		$sql .= ") VALUES (";
@@ -102,6 +106,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= " " . (! isset ( $this->delais_alerte ) ? 'NULL' : "'" . $this->delais_alerte . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . $user->id . ",";
+		$sql .= " " . (! isset ( $this->trigger_name ) ? 'NULL' : "'" . $this->trigger_name . "'") . ",";
 		$sql .= " " . $this->db->idate ( dol_now () );
 		
 		$sql .= ")";
@@ -164,7 +169,8 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
+		$sql .= " t.tms,";
+		$sql .= " t.trigger_name";
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as t";
 		$sql .= " WHERE t.rowid = " . $id;
@@ -181,6 +187,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$this->fk_parent_level = $obj->fk_parent_level;
 				$this->indice = $obj->indice;
 				$this->intitule = $obj->intitule;
+				$this->trigger_name = $obj->trigger_name;
 				$this->delais_alerte = $obj->delais_alerte;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate ( $obj->datec );
@@ -215,7 +222,8 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
+		$sql .= " t.tms,";
+		$sql .= " t.trigger_name";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as t";
 		$sql .= " ORDER BY t.indice";
 		
@@ -238,6 +246,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$line->indice = $obj->indice;
 				$line->intitule = $obj->intitule;
 				$line->alerte = $obj->delais_alerte;
+				$line->trigger_name = $obj->trigger_name;
 				
 				$this->lines [$i] = $line;
 				$i ++;
@@ -275,6 +284,9 @@ class Agefodd_session_admlevel extends CommonObject {
 			$this->intitule = trim ( $this->intitule );
 		if (isset ( $this->delais_alerte ))
 			$this->delais_alerte = trim ( $this->delais_alerte );
+		if (isset ( $this->trigger_name ))
+			$this->trigger_name = trim ( $this->trigger_name );
+			
 			
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -286,6 +298,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= " fk_parent_level=" . (isset ( $this->fk_parent_level ) ? $this->fk_parent_level : "null") . ",";
 		$sql .= " indice=" . (isset ( $this->indice ) ? $this->indice : "null") . ",";
 		$sql .= " intitule=" . (isset ( $this->intitule ) ? "'" . $this->db->escape ( $this->intitule ) . "'" : "null") . ",";
+		$sql .= " trigger_name=" . (isset ( $this->trigger_name ) ? "'" . $this->db->escape ( $this->trigger_name ) . "'" : "null") . ",";
 		$sql .= " delais_alerte=" . (isset ( $this->delais_alerte ) ? $this->delais_alerte : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
 		$sql .= " WHERE rowid=" . $this->id;
@@ -602,6 +615,7 @@ class AgfSessionAdmlvlLine {
 	var $indice;
 	var $intitule;
 	var $alerte;
+	var $trigger_name;
 
 	function __construct() {
 

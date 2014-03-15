@@ -105,48 +105,53 @@ $pagenext = $page + 1;
 $formcompagny = new FormCompany ( $db );
 
 $agf = new Agefodd_stagiaire ( $db );
+
+// Count total nb of records
+$nbtotalofrecords = 0;
+
+if (empty ( $conf->global->MAIN_DISABLE_FULL_SCANLIST )) {
+	$nbtotalofrecords = $agf->fetch_all ( $sortorder, $sortfield, 0, 0, $filter);
+}
+
+
 $result = $agf->fetch_all ( $sortorder, $sortfield, $limit, $offset, $filter );
 
 if ($result >= 0) {
 	
-	print_barre_liste ( $langs->trans ( "AgfStagiaireList" ), $page, $_SERVER ['PHP_SELF'], "", $sortfield, $sortorder, '', $result );
+	
+	if (! empty ( $search_name ))
+		$option .= '&search_name=' . $search_name;
+	if (! empty ( $search_firstname ))
+		$option .= '&search_firstname=' . $search_name;
+	if (! empty ( $search_civ ))
+		$option .= '&search_civ=' . $search_civ;
+	if (! empty ( $search_soc ))
+		$option .= '&search_soc=' . $search_soc;
+	if (! empty ( $search_tel ))
+		$option .= '&search_tel=' . $search_tel;
+	if (! empty ( $search_mail ))
+		$option .= '&search_mail=' . $search_mail;
+	
+	print_barre_liste ( $langs->trans ( "AgfStagiaireList" ), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result,$nbtotalofrecords );
 	
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&page=' . $page . '&search_name=' . $search_name . '&search_firstname=' . $search_firstname . '&search_civ=' . $search_civ . '&search_soc=' . $search_soc . '&search_tel=' . $search_tel . '&search_mail=' . $search_mail;
-	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVER ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfNomPrenom" ), $_SERVER ['PHP_SELF'], "s.nom", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfCivilite" ), $_SERVER ['PHP_SELF'], "civ.code", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Phone" ), $_SERVER ['PHP_SELF'], "s.tel1", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Mail" ), $_SERVER ['PHP_SELF'], "s.mail", "", $arg_url, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfNomPrenom" ), $_SERVER ['PHP_SELF'], "s.nom", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "AgfCivilite" ), $_SERVER ['PHP_SELF'], "civ.code", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Phone" ), $_SERVER ['PHP_SELF'], "s.tel1", "", $option, '', $sortfield, $sortorder );
+	print_liste_field_titre ( $langs->trans ( "Mail" ), $_SERVER ['PHP_SELF'], "s.mail", "",$option, '', $sortfield, $sortorder );
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";
 	
-	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
-	$addcriteria = false;
-	if (! empty ( $sortorder )) {
-		$url_form .= '?sortorder=' . $sortorder;
-		$addcriteria = true;
-	}
-	if (! empty ( $sortfield )) {
-		if ($addcriteria) {
-			$url_form .= '&sortfield=' . $sortfield;
-		} else {
-			$url_form .= '?sortfield=' . $sortfield;
-		}
-		$addcriteria = true;
-	}
-	if (! empty ( $page )) {
-		if ($addcriteria) {
-			$url_form .= '&page=' . $page;
-		} else {
-			$url_form .= '?page=' . $page;
-		}
-	}
-	
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+	if (! empty ( $sortfield ))
+		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+	if (! empty ( $sortorder ))
+		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+	if (! empty ( $page ))
+		print '<input type="hidden" name="page" value="' . $page . '"/>';
 	print '<tr class="liste_titre">';
 	
 	print '<td>&nbsp;</td>';

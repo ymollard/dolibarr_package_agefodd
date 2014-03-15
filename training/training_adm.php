@@ -93,6 +93,22 @@ if ($action == 'sessionlevel_create') {
 	}
 }
 
+if ($action=='replicateconfadmin') {
+	$agf_adminlevel = new Agefodd_training_admlevel ( $db );
+	$agf_adminlevel->fk_training = $id;
+	$result = $agf_adminlevel->delete_training_task ( $user );
+	if ($result < 0) {
+		setEventMessage ( $agf_adminlevel->error, 'errors' );
+	}
+	
+	$agf = new Agefodd ( $db );
+	$result = $agf->fetch ( $trainingid );
+	$result = $agf->createAdmLevelForTraining ( $user );
+	if ($result < 0) {
+		setEventMessage ( $agf->error, 'errors' );
+	}
+}
+
 if ($action == 'sessionlevel_update') {
 	$agf = new Agefodd_training_admlevel ( $db );
 	
@@ -243,7 +259,8 @@ print '</tr>';
 print '</form>';
 print '</table><br>';
 
+print '<div class="tabsAction">';
 print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconfadmin&id=' . $trainingid . '" title="'.$langs->trans('AgfReplaceByAdminLevelHelp').'">' . $langs->trans ( 'AgfReplaceByAdminLevel' ) . '</a>';
-
+print '</div>';
 llxFooter ();
 $db->close ();

@@ -38,5 +38,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL,
-  archive smallint NOT NULL DEFAULT 0
+  archive smallint NOT NULL DEFAULT 0,
+  trigger_name varchar(150) NULL
 ) ENGINE=InnoDB;

@@ -49,6 +49,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	var $tms = '';
 	var $fk_agefodd_training_admlevel;
 	var $lines = array ();
+	var $trigger_name;
 
 	/**
 	 * Constructor
@@ -91,6 +92,8 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->fk_user_author = trim ( $this->fk_user_author );
 		if (isset ( $this->fk_user_mod ))
 			$this->fk_user_mod = trim ( $this->fk_user_mod );
+		if (isset ( $this->trigger_name ))
+			$this->trigger_name = trim ( $this->trigger_name );
 			
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -107,7 +110,8 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= "delais_alerte,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
-		$sql .= "fk_user_mod";
+		$sql .= "fk_user_mod,";
+		$sql .= "trigger_name";
 		
 		$sql .= ") VALUES (";
 		
@@ -120,7 +124,8 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " " . (empty ( $this->delais_alerte ) ? '0' : $this->delais_alerte) . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate ( dol_now () ) . "',";
-		$sql .= " " . $user->id;
+		$sql .= " " . $user->id. ",";
+		$sql .= " " . (! isset ( $this->trigger_name ) ? 'NULL' : "'" . $this->db->escape ( $this->trigger_name ) . "'");
 		$sql .= ")";
 		
 		$this->db->begin ();
@@ -184,7 +189,8 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms,";
-		$sql .= " t.fk_agefodd_training_admlevel";
+		$sql .= " t.fk_agefodd_training_admlevel,";
+		$sql .= " t.trigger_name";
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
 		$sql .= " WHERE t.rowid = " . $id;
@@ -208,6 +214,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate ( $obj->tms );
 				$this->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
+				$this->trigger_name = $obj->trigger_name;
 			}
 			$this->db->free ( $resql );
 			
@@ -241,6 +248,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms,";
+		$sql .= " t.trigger_name,";
 		$sql .= " t.fk_agefodd_training_admlevel";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
 		$sql .= " WHERE t.fk_training=" . $training_id;
@@ -267,6 +275,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$line->intitule = $obj->intitule;
 				$line->alerte = $obj->delais_alerte;
 				$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
+				$line->trigger_name = $obj->trigger_name;
 				
 				$this->lines [$i] = $line;
 				$i ++;
@@ -309,6 +318,9 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->delais_alerte = trim ( $this->delais_alerte );
 		if (isset ( $this->fk_user_mod ))
 			$this->fk_user_mod = trim ( $this->fk_user_mod );
+		if (isset ( $this->trigger_name ))
+			$this->trigger_name = trim ( $this->trigger_name );
+		
 			
 			// Check parameters
 			// Put here code to add a control on parameters values
@@ -322,6 +334,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " fk_parent_level=" . (isset ( $this->fk_parent_level ) ? $this->fk_parent_level : "null") . ",";
 		$sql .= " indice=" . (isset ( $this->indice ) ? $this->indice : "null") . ",";
 		$sql .= " intitule=" . (isset ( $this->intitule ) ? "'" . $this->db->escape ( $this->intitule ) . "'" : "null") . ",";
+		$sql .= " trigger_name=" . (isset ( $this->trigger_name ) ? "'" . $this->db->escape ( $this->trigger_name ) . "'" : "null") . ",";
 		$sql .= " delais_alerte=" . (isset ( $this->delais_alerte ) ? $this->delais_alerte : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
 		
@@ -408,6 +421,60 @@ class Agefodd_training_admlevel extends CommonObject {
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
 				dol_syslog ( get_class ( $this ) . "::delete " . $errmsg, LOG_ERR );
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback ();
+			return - 1 * $error;
+		} else {
+			$this->db->commit ();
+			return 1;
+		}
+	}
+
+	/**
+	 * Delete object in database
+	 *
+	 * @param User $user that deletes
+	 * @param int $notrigger triggers after, 1=disable triggers
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function delete_training_task($user, $notrigger = 0) {
+	
+		global $conf, $langs;
+		$error = 0;
+	
+		$this->db->begin ();
+	
+		if (! $error) {
+			if (! $notrigger) {
+				// Uncomment this and change MYOBJECT to your own tag if you
+				// want this action calls a trigger.
+	
+				// // Call triggers
+				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
+				// $interface=new Interfaces($this->db);
+				// $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
+				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// // End call triggers
+			}
+		}
+	
+		if (! $error) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel";
+			$sql .= " WHERE fk_training=" . $this->fk_training;
+				
+			dol_syslog ( get_class ( $this ) . "::delete_training_task sql=" . $sql );
+			$resql = $this->db->query ( $sql );
+			if (! $resql) {
+				$error ++;
+				$this->errors [] = "Error " . $this->db->lasterror ();
+			}
+		}
+	
+		// Commit or rollback
+		if ($error) {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog ( get_class ( $this ) . "::delete_training_task " . $errmsg, LOG_ERR );
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback ();
@@ -755,6 +822,7 @@ class AgfTrainingAdmlvlLine {
 	var $intitule;
 	var $alerte;
 	var $fk_agefodd_training_admlevel;
+	var $trigger_name;
 
 	function __construct() {
 

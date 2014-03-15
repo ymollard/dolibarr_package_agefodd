@@ -236,7 +236,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST ["stag_upda
 		if ($isdateresconfirmsite == 1 && $agf->date_res_confirm_site != '') {
 			$agf->is_date_res_confirm_site = 1;
 		} else {
-			$agf->is_date_res_site = 0;
+			$agf->is_date_res_confirm_site = 0;
 			$agf->date_res_confirm_site = '';
 		}
 		
@@ -546,10 +546,11 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 
 // Action clone object
 if ($action == 'confirm_clone' && $confirm == 'yes') {
-	$clone_content = GETPOST ( 'clone_content' );
+	/*$clone_content = GETPOST ( 'clone_content' );
+	print 'clone_content='.$clone_content;
 	if (empty ( $clone_content )) {
 		setEventMessage ( $langs->trans ( "NoCloneOptionsSpecified" ), 'errors' );
-	} else {
+	} else {*/
 		$agf = new Agsession ( $db );
 		if ($agf->fetch ( $id ) > 0) {
 			$result = $agf->createFromClone ( $id, $hookmanager );
@@ -616,7 +617,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 				$action = '';
 			}
 		}
-	}
+	//}
 }
 
 /*
@@ -780,6 +781,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		if ($result > 0) {
 			if (! (empty ( $agf->id ))) {
 				$head = session_prepare_head ( $agf );
+				
+				if ($agf->type_session==1) 
+					$styledisplay=' style="display:none" ';
+				
 				
 				dol_fiche_head ( $head, 'card', $langs->trans ( "AgfSessionDetail" ), 0, 'calendarday' );
 				
@@ -962,7 +967,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					// Date res trainer
 					print '<tr>
 					<td>' . $langs->trans ( "AgfDateResTrainer" ) . '</td><td><table class="nobordernopadding"><tr><td>';
-					if ($agf->is_date_res_site == 1) {
+					if ($agf->is_date_res_trainer == 1) {
 						$chkrestrainer = 'checked="checked"';
 					}
 					print '<input type="checkbox" name="isdaterestrainer" value="1" ' . $chkrestrainer . '/></td><td>';
@@ -1316,7 +1321,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					$cashed_cost += $agf->sell_price;
 					
 					print '<tr><td width="20%"><strong>' . $langs->trans ( "AgfCoutRevient" ) . '</strong></td>';
-					print '<td><strong>' . price ( $cashed_cost - $spend_cost ) . ' ' . $langs->trans ( 'Currency' . $conf->currency ) . '</strong></td></tr>';
+					if ($cashed_cost > 0) {
+						$percentmargin = price(((($cashed_cost - $spend_cost) * 100) / $cashed_cost),0,$langs,1,0,1).'%';
+					} else {
+						$percentmargin = "n/a";
+					}
+					
+					print '<td><strong>' . price ( $cashed_cost - $spend_cost ) . ' ' . $langs->trans ( 'Currency' . $conf->currency ) . '</strong> ('.$percentmargin.')</td></tr>';
 					
 					print '</table>';
 					

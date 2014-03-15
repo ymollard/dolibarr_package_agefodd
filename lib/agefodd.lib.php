@@ -497,19 +497,114 @@ function ebi_get_adm_lastFinishLevel($sessid) {
 
 	global $db;
 	
-	$sql = "SELECT COUNT(*) as level";
+	$totaldone=0;
+	
+	$sql = "SELECT rowid";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
-	$sql .= ' WHERE s.level_rank = 0 AND s.datef < \'' . $db->idate ( dol_now () ) . '\' ';
+	$sql .= ' WHERE s.level_rank =0 ';
 	$sql .= " AND fk_agefodd_session = " . $sessid;
 	
 	dol_syslog ( "ebi_get_adm_lastFinishLevel sql=" . $sql, LOG_DEBUG );
 	$result = $db->query ( $sql );
 	if ($result) {
 		$num = $db->num_rows ( $result );
-		$obj = $db->fetch_object ( $result );
+		if (!empty($num)) {
+			while ($obj = $db->fetch_object ( $result )) {
+				
+				$sqlinner = "SELECT count(*) as cnt";
+				$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
+				$sqlinner .= ' WHERE s.level_rank <>0 ';
+				$sqlinner .= " AND fk_parent_level = " . $obj->rowid. " AND fk_agefodd_session = " . $sessid;
+				$sqlinner .= " AND archive = 1";
+				
+				dol_syslog ( "ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG );
+				$resultinner = $db->query ( $sqlinner );
+				if ($resultinner) {
+					$objinner = $db->fetch_object ( $resultinner );
+					
+					$nbtaskdone = $objinner->cnt;
+					
+					$db->free ( $resultinner );
+				}
+				else {
+					$error = "Error " . $db->lasterror ();
+					// print $error;
+					return - 1;
+				}
+				
+				$sqlinner = "SELECT count(*) as cnt";
+				$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
+				$sqlinner .= ' WHERE s.level_rank <>0 ';
+				$sqlinner .= " AND fk_parent_level = " . $obj->rowid. " AND fk_agefodd_session = " . $sessid;
+				
+				dol_syslog ( "ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG );
+				$resultinner = $db->query ( $sqlinner );
+				if ($resultinner) {
+					$objinner = $db->fetch_object ( $resultinner );
+						
+					$nbtotaltask = $objinner->cnt;
+						
+					$db->free ( $resultinner );
+				}
+				else {
+					$error = "Error " . $db->lasterror ();
+					// print $error;
+					return - 1;
+				}
+				
+				dol_syslog ( "ebi_get_adm_lastFinishLevel nbtotaltask=" . $nbtotaltask, LOG_DEBUG );
+				//No child check status
+				if ($nbtotaltask==0) {
+					$sqlinner = "SELECT count(*) as cnt";
+					$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
+					$sqlinner .= " WHERE rowid=".$obj->rowid;
+					$sqlinner .= " AND archive = 1";
+					
+					dol_syslog ( "ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG );
+					$resultinner = $db->query ( $sqlinner );
+					if ($resultinner) {
+						$objinner = $db->fetch_object ( $resultinner );
+					
+						$nbtaskdone = $objinner->cnt;
+					
+						$db->free ( $resultinner );
+					}
+					else {
+						$error = "Error " . $db->lasterror ();
+						// print $error;
+						return - 1;
+					}
+					
+					$sqlinner = "SELECT count(*) as cnt";
+					$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
+					$sqlinner .= " WHERE rowid=".$obj->rowid;
+						
+					dol_syslog ( "ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG );
+					$resultinner = $db->query ( $sqlinner );
+					if ($resultinner) {
+						$objinner = $db->fetch_object ( $resultinner );
+							
+						$nbtotaltask = $objinner->cnt;
+							
+						$db->free ( $resultinner );
+					}
+					else {
+						$error = "Error " . $db->lasterror ();
+						// print $error;
+						return - 1;
+					}
+				}
+				
 		
+				dol_syslog ( "ebi_get_adm_lastFinishLevel nbtaskdone=" . $nbtaskdone . " nbtotaltask=".$nbtotaltask, LOG_DEBUG );
+				//If number task done = nb task to do or no child level
+				if (($nbtaskdone==$nbtotaltask))
+					$totaldone ++ ;
+			}
+		}
 		$db->free ( $result );
-		return $obj->level;
+		dol_syslog ( "ebi_get_adm_lastFinishLevel totaldone=" . $totaldone, LOG_DEBUG );
+		return $totaldone;
 	} else {
 		$error = "Error " . $db->lasterror ();
 		// print $error;
