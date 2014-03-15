@@ -886,3 +886,5 @@ AgfTypeTraineeRequester=Demandeur participant
 AgfMenuAgendaTrainerOnly=Agenda par formateur
 ExtraFieldsCursus=Attributs supplémentaires (Cursus)
 AgfLinkedDocumentsByTrainee=Documents pas participants
+AgfNumDossier=Num dossier
+AgfInTheNameOf=pour le compte de

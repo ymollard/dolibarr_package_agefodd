@@ -548,6 +548,10 @@ function document_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courrier =
 			print '<td style="border-left:0px; width:250px" align="left">' . show_conv ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
 		} elseif ($mdle == 'facopca') {
 			print '<td style="border-left:0px; width:250px" align="left">' . show_facopca ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
+		} elseif ($mdle == 'convocation_trainee') {
+			print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee ( $mdle, $socid) . '</td>' . "\n";
+		} elseif ($mdle == 'attestation_trainee') {
+			print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee ( $mdle, $socid) . '</td>' . "\n";
 		} else {
 			print '<td style="border-left:0px; width:250px"  align="left">' . show_doc ( $mdle, $socid, $nom_courrier ) . '</td>' . "\n";
 		}

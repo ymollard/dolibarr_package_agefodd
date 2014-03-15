@@ -487,29 +487,6 @@ if (! empty ( $id )) {
 		$agf->printSessionInfo ();
 		
 		print '&nbsp';
-		/*
-		print '<table class="border" width="100%">' . "\n";
-		
-		print '<tr class="liste_titre">' . "\n";
-		print '<td colspan=3>';
-		print $langs->trans ( "AgfCommonDocs" ) . '</td>' . "\n";
-		print '</tr>' . "\n";
-		
-		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans ( "AgfBeforeTraining" ) . '</td></tr>' . "\n";
-		document_line ( $langs->trans ( "AgfFichePedagogique" ), 2, 'fiche_pedago' );
-		document_line ( $langs->trans ( "AgfConseilsPratique" ), 2, 'conseils' );
-		
-		// During training
-		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans ( "AgfDuringTraining" ) . '</td></tr>' . "\n";
-		document_line ( $langs->trans ( "AgfFichePresence" ), 2, "fiche_presence" );
-		document_line ( $langs->trans ( "AgfFichePresenceEmpty" ), 2, "fiche_presence_empty" );
-		document_line ( $langs->trans ( "AgfFichePresenceTrainee" ), 2, "fiche_presence_trainee" );
-		document_line ( $langs->trans ( "AgfFichePresenceTraineeLandscape" ), 2, "fiche_presence_landscape" );
-		document_line ( $langs->trans ( "AgfFicheEval" ), 2, "fiche_evaluation" );
-		
-		print '</table>' . "\n";
-		print '&nbsp;' . "\n";
-		*/
 		
 		/*
 		 * Formulaire d'envoi des documents

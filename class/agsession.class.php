@@ -2161,7 +2161,7 @@ class Agsession extends CommonObject
 		}
 		
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid";
+		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,sorequester.nom";
 		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		if (! empty ( $limit )) {
 			$sql .= ' ' . $this->db->plimit ( $limit + 1, $offset );
@@ -3401,16 +3401,51 @@ class Agsession extends CommonObject
 				$order->lines [0]->qty = 1;
 				
 				if (! empty ( $this->intitule_custo )) {
-					$desc = $this->intitule_custo . "\n" . dol_print_date ( $this->dated, 'daytext' );
+					$desc = $this->intitule_custo . "\n";
 				} else {
-					$desc = $this->formintitule . "\n" . dol_print_date ( $this->dated, 'daytext' );
+					$desc = $this->formintitule . "\n";
 				}
+				$desc .= "\n" . dol_print_date ( $this->dated, 'day' );
 				if ($this->datef != $this->dated) {
-					$desc .= '-' . dol_print_date ( $this->datef, 'daytext' );
+					$desc .= '-' . dol_print_date ( $this->datef, 'day' );
+				}
+				if (! empty ( $this->duree_session )) {
+					$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour').'s';
+				}
+				if (! empty ( $this->placecode )) {
+					$desc .= "\n" . $langs->trans ( 'AgfLieu' ) . ': ' . $this->placecode;
 				}
 				$session_trainee = new Agefodd_session_stagiaire ( $this->db );
-				$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid );
-				$desc .= "\n" . count ( $session_trainee->lines ) . ' ' . $langs->trans ( 'AgfParticipant' ) . '/' . $langs->trans ( 'AgfParticipants' );
+				$session_trainee->fetch_stagiaire_per_session ( $this->id, $socid, 1 );
+				if (count ( $session_trainee->lines ) > 0) {
+					$desc_trainee = "\n" . count ( $session_trainee->lines ) . ' ';
+			        if (count ( $session_trainee->lines ) > 1) {
+						$desc_trainee .= $langs->trans ( 'AgfParticipants' );
+					} elseif (count ( $session_trainee->lines ) == 1) {
+						$desc_trainee .= $langs->trans ( 'AgfParticipant' );
+					}
+					if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
+						$desc_trainee .= "\n";
+						foreach ( $session_trainee->lines as $line ) {
+							
+							if ($line->status_in_session != 5 && $line->status_in_session != 6) {
+								$sessionOPCA = new Agsession ( $this->db );
+								if ($this->type_session == 1) {
+									$sessionOPCA->getOpcaForTraineeInSession ( $line->socid, $this->id );
+								} else {
+									$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
+								}
+								
+								if (! empty ( $sessionOPCA->num_OPCA_file )) {
+									$desc_trainee .= dol_strtoupper ( $line->nom ) . ' ' . $line->prenom . '(' . $sessionOPCA->num_OPCA_file . ')' . "\n";
+								} else {
+									$desc_trainee .= dol_strtoupper ( $line->nom ) . ' ' . $line->prenom . "\n";
+								}
+							}
+						}
+					}
+					$desc .= ' ' . $desc_trainee;
+				}
 				$order->lines [0]->desc = $desc;
 				
 				// Calculate price
@@ -3803,7 +3838,7 @@ class Agsession extends CommonObject
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 							}
 							if (! empty ( $sessionOPCA->num_OPCA_file )) {
-								$desc_OPCA = "\n" . 'Num dossier : ' . $sessionOPCA->num_OPCA_file . ' pour le compte de ' . $line->socname;
+								$desc_OPCA = "\n" . $langs->trans('AgfNumDossier').' : ' . $sessionOPCA->num_OPCA_file . ' '.$langs->trans('AgfInTheNameOf') .' '. $line->socname;
 							}
 							$desc_trainee .= dol_strtoupper ( $line->nom ) . ' ' . $line->prenom . "\n";
 						}

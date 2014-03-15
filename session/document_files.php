@@ -78,6 +78,14 @@ if ($result < 0) {
  * Actions
 */
 
+/*
+ * Actions
+*/
+
+include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
+
+
+/*
 // Post file
 if (GETPOST ( 'sendit' ) && ! empty ( $conf->global->MAIN_UPLOAD_DOC )) {
 	if ($object->id) {
@@ -99,6 +107,7 @@ if ($action == 'confirm_deletefile' && $confirm == 'yes') {
 		exit ();
 	}
 }
+*/
 
 /*
  * View
@@ -139,9 +148,14 @@ if ($object->id) {
 	print '&nbsp';
 	print '</div>';
 	
+	
+	$modulepart = 'agsession';
+	$permission = $user->rights->agefodd->creer;
+	$param = '&id=' . $object->id;
+	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
+	
+	
 	/*
-	 * Confirmation suppression fichier
-	*/
 	if ($action == 'delete') {
 		$ret = $form->form_confirm ( $_SERVER ["PHP_SELF"] . '?id=' . $object->id . '&urlfile=' . urlencode ( GETPOST ( "urlfile" ) ), $langs->trans ( 'DeleteFile' ), $langs->trans ( 'ConfirmDeleteFile' ), 'confirm_deletefile', '', 0, 1 );
 		if ($ret == 'html')
@@ -156,7 +170,7 @@ if ($object->id) {
 	// List of document
 	$formfile->list_of_documents ( $filearray, $object, 'agefodd' );
 	
-	print "<br><br>";
+	print "<br><br>";*/
 } else {
 	accessforbidden ( '', 0, 0 );
 }

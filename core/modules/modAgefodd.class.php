@@ -974,7 +974,7 @@ class modAgefodd extends DolibarrModules
 		'user'=>0);
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
+	/*	$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 		'type'=>'left',
 		'titre'=>'AgfMenuSessListOpeInter',
 		'url'=>'/agefodd/session/list_ope_inter.php',
@@ -984,7 +984,7 @@ class modAgefodd extends DolibarrModules
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
 		'user'=>0);
-		$r++;
+		$r++;*/
 
 
 		// 3

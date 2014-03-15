@@ -309,11 +309,6 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				// Pied de page
 				$this->_pagefoot ( $pdf, $agf, $outputlangs );
-				// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
-				if ( method_exists ($pdf, 'AliasNbPages') )
-				{
-					$pdf->AliasNbPages ();
-				}
 				
 				/*
 				 * Page 1
@@ -424,7 +419,6 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				// Pied de page
 				$this->_pagefoot ( $pdf, $agf, $outputlangs );
-				$pdf->AliasNbPages ();
 				
 				/*
 				 * Page 2
@@ -547,7 +541,6 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				// Pied de page
 				$this->_pagefoot ( $pdf, $agf, $outputlangs );
-				$pdf->AliasNbPages ();
 				
 				/*
 				 * Page 3
@@ -648,7 +641,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				// Pied de page
 				$this->_pagefoot ( $pdf, $agf, $outputlangs );
-				$pdf->AliasNbPages ();
+
 				
 				/*
 				 * Page 4 (Annexe 1)
@@ -677,7 +670,6 @@ class pdf_convention extends ModelePDFAgefodd {
 						$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 6 );
 						$pdf->SetXY ( $this->droite - 20, $this->page_hauteur - 10 );
 						$pdf->Cell ( 0, 3, 'page ' . $pdf->PageNo () . '/' . intval ( 5 + $this->count_page_anexe ), 0, 0, 'C' );
-						$pdf->AliasNbPages ();
 					}
 				}
 			} else {

@@ -880,3 +880,5 @@ AgfSendAttestationEnglish=Attestation English %s
 AgfTypeTraineeRequester=Trainee's requester
 ExtraFieldsCursus=Attributs supplémentaires (Cursus)
 AgfLinkedDocumentsByTrainee=Document by trainee
+AgfNumDossier=File number
+AgfInTheNameOf=pour le compte de

@@ -158,7 +158,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->socid = $socid;
-	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'standard' );
+	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'dayhourlog' );
 	
 	// Calculate time past in session
 	$trainer_calendar = new Agefoddsessionformateurcalendrier ( $db );
@@ -242,7 +242,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->socid = $socid;
-	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'standard' );
+	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'dayhourlog' );
 	
 	$suplier_invoice->libelle = $agf->formintitule . ' ' . dol_print_date ( $agf->dated, 'daytextshort' ) . ' ' . dol_print_date ( $agf->datef, 'daytextshort' );
 	$suplier_invoice->date = dol_now ();
@@ -323,7 +323,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty ( $islink )) {
 	
 	$suplier_invoice = new FactureFournisseur ( $db );
 	$suplier_invoice->socid = $socid;
-	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'standard' );
+	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date ( dol_now (), 'dayhourlog' );
 	
 	$suplier_invoice->libelle = $agf->formintitule . ' ' . dol_print_date ( $agf->dated, 'daytextshort' ) . ' ' . dol_print_date ( $agf->datef, 'daytextshort' );
 	$suplier_invoice->date = dol_now ();
@@ -764,13 +764,13 @@ if ($result < 0) {
 }
 
 print '<table class="border" width="100%">';
-foreach ( $agf_fin->lines as $line ) {
+foreach ( $agf_fin->lines as $line_fin ) {
 	print '<tr>';
 	
 	print '<td width="20%" valign="top">';
 	// Societe Info
 	$soc_missions = new Societe ( $db );
-	$result = $soc_missions->fetch ( $line->fk_soc );
+	$result = $soc_missions->fetch ( $line_fin->fk_soc );
 	if ($result < 0) {
 		setEventMessage ( $soc_missions->error, 'errors' );
 	}
@@ -786,17 +786,15 @@ foreach ( $agf_fin->lines as $line ) {
 	if ($soc_missions->fournisseur == 1) {
 		
 		if (count ( $agf_fin->lines ) > 0) {
-			
 			print '<td>';
-			
-			if ($action == 'addline' && $idelement == $line->id) {
+			if ($action == 'addline' && $idelement == $line_fin->id) {
 				
 				$suplier_invoice = new FactureFournisseur ( $db );
-				$suplier_invoice->fetch ( $line->fk_element );
+				$suplier_invoice->fetch ( $line_fin->fk_element );
 				
 				print '<input type="hidden" name="action" value="invoice_addline">';
 				print '<input type="hidden" name="id" value="' . $id . '">';
-				print '<input type="hidden" name="idelement" value="' . $line->fk_element . '">';
+				print '<input type="hidden" name="idelement" value="' . $line_fin->fk_element . '">';
 				print '<table class="nobordernopadding"><tr>';
 				
 				print '<td nowrap="nowrap">';
@@ -822,7 +820,7 @@ foreach ( $agf_fin->lines as $line ) {
 				print '</td></tr></table>';
 			} else {
 				$suplier_invoice = new FactureFournisseur ( $db );
-				$suplier_invoice->fetch ( $line->fk_element );
+				$suplier_invoice->fetch ( $line_fin->fk_element );
 				print '<table class="nobordernopadding">';
 				print '<tr>';
 				// Supplier Invoice inforamtion

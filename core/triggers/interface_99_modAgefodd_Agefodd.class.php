@@ -545,6 +545,7 @@ class InterfaceAgefodd {
 			$agf_fin->fetch_element_by_id ( $object->id, 'invoice_supplier' );
 			if (count ( $agf_fin->lines ) > 0) {
 				$agf_fin->id = $agf_fin->lines [0]->id;
+				$agf_fin->fk_session_agefodd=$agf_fin->lines [0]->fk_session_agefodd;
 				$agf_fin->delete ( $user );
 			}
 			
@@ -703,7 +704,7 @@ class InterfaceAgefodd {
 			$agf_fin->fetch_element_by_id ( $object->id, 'fac' );
 			
 			if (count ( $agf_fin->lines ) > 0) {
-
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->updateSellingPrice ( $user );
 				
 				if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
