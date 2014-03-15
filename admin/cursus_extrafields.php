@@ -48,7 +48,7 @@ foreach ( $tmptype2label as $key => $val )
 
 $action = GETPOST ( 'action', 'alpha' );
 $attrname = GETPOST ( 'attrname', 'alpha' );
-$elementtype = 'agefodd_session'; // Must be the $table_element of the class that manage extrafield
+$elementtype = 'agefodd_cursus'; // Must be the $table_element of the class that manage extrafield
 
 if (! $user->admin)
 	accessforbidden ();
@@ -72,9 +72,9 @@ print "<br>\n";
 
 $head = agefodd_admin_prepare_head ();
 
-dol_fiche_head ( $head, 'attributesession', $langs->trans ( "AgefoddSetupDesc" ) );
+dol_fiche_head ( $head, 'attributecursus', $langs->trans ( "AgefoddSetupDesc" ) );
 
-print $langs->trans ( "DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv ( "AgfMenuSess" ) ) . '<br>' . "\n";
+print $langs->trans ( "DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv ( "AgfMenuCursus" ) ) . '<br>' . "\n";
 print '<br>';
 
 // Load attribute_label

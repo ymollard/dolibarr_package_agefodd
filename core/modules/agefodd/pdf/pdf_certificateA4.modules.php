@@ -221,7 +221,11 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 					$posY = $pdf->GetY () + 8;
 					
 					// Pied de page
-					$pdf->AliasNbPages ();
+					// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
+					if ( method_exists ($pdf, 'AliasNbPages') )
+					{
+						$pdf->AliasNbPages ();
+					}
 				}
 			}
 			$pdf->Close ();

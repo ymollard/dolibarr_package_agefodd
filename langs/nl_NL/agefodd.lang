@@ -878,3 +878,5 @@ AgfFormateurStatus=Trainer status
 AgfLieuStatus=Place status
 AgfSendAttestationEnglish=Attestation English %s
 AgfTypeTraineeRequester=Trainee's requester
+ExtraFieldsCursus=Attributs supplémentaires (Cursus)
+AgfLinkedDocumentsByTrainee=Document by trainee

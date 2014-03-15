@@ -309,7 +309,11 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				// Pied de page
 				$this->_pagefoot ( $pdf, $agf, $outputlangs );
-				$pdf->AliasNbPages ();
+				// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
+				if ( method_exists ($pdf, 'AliasNbPages') )
+				{
+					$pdf->AliasNbPages ();
+				}
 				
 				/*
 				 * Page 1

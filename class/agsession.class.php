@@ -1979,7 +1979,7 @@ class Agsession extends CommonObject
 			}
 		}
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid";
+		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom";
 		if (! empty ( $sortfield )) {
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
@@ -2773,6 +2773,12 @@ class Agsession extends CommonObject
 		
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
+		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
+		require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
+		
+		$socstatic=new Societe($this->db);
+		$contactstatic=new Contact($this->db);
+		
 		$extrafields = new ExtraFields ( $this->db );
 		$extralabels = $extrafields->fetch_name_optionals_label ( $this->table_element );
 		
@@ -2822,7 +2828,12 @@ class Agsession extends CommonObject
 		print '<tr><td width="20%">' . $langs->trans ( "Customer" ) . '</td>';
 		print '	<td>';
 		if ((! empty ( $this->fk_soc )) && ($this->fk_soc > 0)) {
-			print $this->getElementUrl ( $this->fk_soc, 'societe', 1 );
+			
+			$result=$socstatic->fetch($this->fk_soc);
+			if ($result<0){
+				setEventMessage($socstatic->error,'errors');
+			}
+			print $socstatic->getNomUrl(1);
 		}
 		print '</td></tr>';
 		
@@ -2832,14 +2843,22 @@ class Agsession extends CommonObject
 		print '<tr><td width="20%">' . $langs->trans ( "AgfTypeRequester" ) . '</td>';
 		print '	<td>';
 		if ((! empty ( $this->fk_soc_requester )) && ($this->fk_soc_requester > 0)) {
-			print $this->getElementUrl ( $this->fk_soc_requester, 'societe', 1 );
+			$result=$socstatic->fetch($this->fk_soc_requester);
+			if ($result<0){
+				setEventMessage($socstatic->error,'errors');
+			}
+			print $socstatic->getNomUrl(1);
 		}
 		print '</td></tr>';
 		
 		print '<tr><td>' . $langs->trans ( "AgfTypeRequesterContact" ) . '</td>';
 		print '<td>';
 		if ((! empty ( $this->fk_socpeople_requester )) && ($this->fk_socpeople_requester > 0)) {
-			print $this->getElementUrl ( $this->fk_socpeople_requester, 'contact', 1 );
+			$result=$contactstatic->fetch($this->fk_socpeople_requester);
+			if ($result<0){
+				setEventMessage($contactstatic->error,'errors');
+			}
+			print $contactstatic->getNomUrl(1);
 		}
 		print '</td></tr>';
 		

@@ -150,6 +150,16 @@ class Agefodd_cursus extends CommonObject {
 				// // End call triggers
 			}
 		}
+		if (! $error) {
+			if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 			// For avoid conflicts if trigger used
+			{
+				$result = $this->insertExtraFields ();
+				if ($result < 0) {
+					$error ++;
+				}
+			}
+		}
+		
 		
 		// Commit or rollback
 		if ($error) {
@@ -213,6 +223,13 @@ class Agefodd_cursus extends CommonObject {
 				$this->tms = $this->db->jdate ( $obj->tms );
 			}
 			$this->db->free ( $resql );
+			
+			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+			$extrafields = new ExtraFields ( $this->db );
+			$extralabels = $extrafields->fetch_name_optionals_label ( $this->table_element, true );
+			if (count ( $extralabels ) > 0) {
+				$this->fetch_optionals ( $this->id, $extralabels );
+			}
 			
 			return 1;
 		} else {
@@ -294,6 +311,18 @@ class Agefodd_cursus extends CommonObject {
 			}
 		}
 		
+		if (! $error) {
+			if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 			// For avoid conflicts if trigger used
+			{
+				$result = $this->insertExtraFields ();	
+				if ($result < 0) {
+					$error ++;
+				}
+			}
+		}
+		
+		
+		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -345,6 +374,18 @@ class Agefodd_cursus extends CommonObject {
 			if (! $resql) {
 				$error ++;
 				$this->errors [] = "Error " . $this->db->lasterror ();
+			}
+		}
+		
+		if (! $error) {
+			// Removed extrafields
+			if (empty ( $conf->global->MAIN_EXTRAFIELDS_DISABLED )) 			// For avoid conflicts if trigger used
+			{
+				$result = $this->deleteExtraFields ();
+				if ($result < 0) {
+					$error ++;
+					dol_syslog ( get_class ( $this ) . "::delete erreur " . $error . " " . $this->error, LOG_ERR );
+				}
 			}
 		}
 		

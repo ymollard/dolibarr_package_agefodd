@@ -58,7 +58,8 @@ if (! $user->admin)
  * Actions
  */
 
-require DOL_DOCUMENT_ROOT . '/core/admin_extrafields.inc.php';
+require DOL_DOCUMENT_ROOT.'/core/actions_extrafields.inc.php';
+
 
 /*
  * View

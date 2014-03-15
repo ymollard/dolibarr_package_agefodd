@@ -306,7 +306,11 @@ class pdf_attestation extends ModelePDFAgefodd {
 					
 					// Pied de page $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
 					$this->_pagefoot ( $pdf, $agf, $outputlangs );
-					$pdf->AliasNbPages ();
+					// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
+					if ( method_exists ($pdf, 'AliasNbPages') )
+					{
+						$pdf->AliasNbPages ();
+					}
 					
 					// Mise en place du copyright
 					$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 8 );

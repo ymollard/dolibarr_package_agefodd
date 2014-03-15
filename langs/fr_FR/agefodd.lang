@@ -884,3 +884,5 @@ AgfSendAttestationSimple=Attestation de formation simple
 AgfSendAttestationSimpleEnglish=Attestation de formation simple anglaise
 AgfTypeTraineeRequester=Demandeur participant
 AgfMenuAgendaTrainerOnly=Agenda par formateur
+ExtraFieldsCursus=Attributs supplémentaires (Cursus)
+AgfLinkedDocumentsByTrainee=Documents pas participants

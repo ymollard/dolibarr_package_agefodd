@@ -34,6 +34,7 @@ require_once ('../class/agefodd_cursus.class.php');
 require_once ('../class/agefodd_formation_cursus.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -59,6 +60,10 @@ $limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
+
+$agf = new Agefodd_cursus ( $db );
+$extrafields = new ExtraFields ( $db );
+$extralabels = $extrafields->fetch_name_optionals_label ( $agf->table_element );
 
 /*
  * Actions delete
@@ -114,6 +119,8 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 			$agf->note_private = GETPOST ( 'note_private', 'alpha' );
 			$agf->note_public = GETPOST ( 'note_public', 'alpha' );
 			
+			$extrafields->setOptionalsFromPost ( $extralabels, $agf );
+			
 			$result = $agf->update ( $user );
 			
 			if ($result > 0) {
@@ -144,9 +151,13 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$agf->intitule = GETPOST ( 'intitule', 'alpha' );
 		$agf->note_private = GETPOST ( 'note_private', 'alpha' );
 		$agf->note_public = GETPOST ( 'note_public', 'alpha' );
+		
+		$extrafields->setOptionalsFromPost ( $extralabels, $agf );
+		
 		$result = $agf->create ( $user );
 		
 		if ($result > 0) {
+			
 			if ($url_return)
 				Header ( "Location: " . $url_return );
 			else
@@ -222,6 +233,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr><td valign="top">' . $langs->trans ( "NotePrivate" ) . '</td>';
 	print '<td><textarea name="note_private" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	
+	if (! empty ( $extrafields->attribute_label )) {
+		print $agf->showOptionals ( $extrafields, 'edit' );
+	}
+	
+	
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" name="importadress" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
@@ -262,6 +278,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				
 				print '<tr><td valign="top">' . $langs->trans ( "NotePrivate" ) . '</td>';
 				print '<td><textarea name="note_private" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->note_private . '</textarea></td></tr>';
+				
+				if (! empty ( $extrafields->attribute_label )) {
+					print $agf->showOptionals ( $extrafields, 'edit' );
+				}
 				
 				print '</table>';
 				print '</div>';
@@ -325,6 +345,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				
 				print '<tr><td valign="top">' . $langs->trans ( "NotePrivate" ) . '</td>';
 				print '<td>' . $agf->note_private . '</td></tr>';
+				
+				if (! empty ( $extrafields->attribute_label )) {
+					print $agf->showOptionals ( $extrafields);
+				}
 				
 				print "</table>";
 				

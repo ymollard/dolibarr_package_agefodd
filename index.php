@@ -46,7 +46,7 @@ llxHeader ( '', $langs->trans ( 'AgefoddShort' ) );
 
 print_barre_liste ( $langs->trans ( "AgfBilanGlobal" ), $page, "index.php", "&socid=$socid", $sortfield, $sortorder, '', $num );
 
-print '<table width="auto">';
+print '<table width="100%">';
 
 // colonne gauche
 print '<tr><td width=auto>';

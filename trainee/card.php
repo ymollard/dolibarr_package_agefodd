@@ -191,6 +191,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$socstatic->zip = $zip;
 				$socstatic->town = $town;
 				$socstatic->client = 1;
+				$socstatic->code_client=-1;
 				
 				$result = $socstatic->create ( $user );
 				
@@ -414,7 +415,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '</td></tr>';
 	
 	print '<tr class="create_thirdparty_block"><td>' . $langs->trans ( "ThirdPartyName" ) . '</td>';
-	print '<td colspan="3 ><input name="societe_name" class="flat" size="50" value="' . GETPOST ( 'societe_name', 'alpha' ) . '"></td></tr>';
+	print '<td colspan="3" ><input name="societe_name" class="flat" size="50" value="' . GETPOST ( 'societe_name', 'alpha' ) . '"></td></tr>';
 	
 	// Address
 	print '<tr class="create_thirdparty_block"><td valign="top">' . $langs->trans ( 'Address' ) . '</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
@@ -475,7 +476,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	print '<tr><td>' . $langs->trans ( "DateToBirth" ) . '</td>';
 	print '<td>';
-	print $form->select_date ( '', 'datebirth', '', '', 1, 'update',0,0,1 );
+	print $form->select_date( '', 'datebirth', '', '', 1, 'update');
 	print '</td></tr>';
 	
 	print '<tr><td>' . $langs->trans ( "AgfPlaceBirth" ) . '</td>';

@@ -380,6 +380,11 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [2] = 'attributesession';
 	$h ++;
 	
+	$head [$h] [0] = dol_buildpath ( "/agefodd/admin/cursus_extrafields.php", 1 );
+	$head [$h] [1] = $langs->trans ( "ExtraFieldsCursus" );
+	$head [$h] [2] = 'attributecursus';
+	$h ++;
+	
 	$head [$h] [0] = dol_buildpath ( "/agefodd/admin/about.php", 1 );
 	$head [$h] [1] = $langs->trans ( "About" );
 	$head [$h] [2] = 'about';
