@@ -104,6 +104,8 @@ class Agefodd extends CommonObject {
 			$this->programme = $this->db->escape ( trim ( $this->programme ) );
 		if (isset ( $this->certif_duration ))
 			$this->certif_duration = $this->db->escape ( trim ( $this->certif_duration ) );
+		if (isset ( $this->ref_interne ))
+			$this->ref_interne = $this->db->escape ( trim ( $this->ref_interne ) );
 		
 		if (empty ( $this->duree ))
 			$this->duree = 0;
