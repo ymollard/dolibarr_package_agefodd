@@ -3809,11 +3809,7 @@ class Agsession extends CommonObject
 			if (! empty ( $this->placecode )) {
 				$desc .= "\n" . $langs->trans ( 'AgfLieu' ) . ': ' . $this->placecode;
 			}
-			$session_trainee = new Agefodd_session_stagiaire ( $this->db );
-			if (is_array($this->array_options) && array_key_exists('options_use_subro_inter',$this->array_options) && !empty($this->array_options['options_use_subro_inter'])) {
-				// For inter entreprise you tkae only trainee link with this OPCA
-				$session_trainee->fetch_stagiaire_per_session_per_OPCA($this->id, $socid);
-			} elseif ($this->type_session == 0) {
+			if ($this->type_session == 0) {
 				// For Intra entreprise you take all trainne
 				$session_trainee->fetch_stagiaire_per_session ( $this->id );
 			} else {

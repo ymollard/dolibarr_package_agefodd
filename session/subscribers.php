@@ -65,10 +65,6 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 			$redirect = true;
 			if ($agf->fetch ( GETPOST ( 'sessid', 'int' ) )) {
 				
-				if (is_array ( $agf->array_options ) && key_exists ( 'options_use_subro_inter', $agf->array_options ) && ! empty ( $agf->array_options ['options_use_subro_inter'] )) {
-					$agf->type_session = 1;
-				}
-				
 				// TODO : si session inter => ajout des infos OPCA dans la table
 				if ($agf->type_session == 1) {
 					
@@ -702,13 +698,6 @@ if (! empty ( $id )) {
 				// Print biller choice;
 				$socbiller = new Societe ( $db );
 				$socbiller->fetch ( $agf->fk_soc );
-				// var_dump($socbiller);
-				if (! empty ( $socbiller->id ) && ! empty ( $socbiller->array_options ['options_ts_payeur'] )) {
-					$socbiller->fetch ( $socbiller->array_options ['options_ts_payeur'] );
-					if (! empty ( $socbiller->id )) {
-						print $langs->trans ( 'Payeur recommandé :' ) . $socbiller->getNomUrl ( 1 );
-					}
-				}
 				print '</td></tr>';
 				
 				print '<tr><td width="20%">' . $langs->trans ( "AgfOPCAContact" ) . '</td>';

@@ -954,12 +954,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						 		print strtoupper ( $line->lastname ) . ' ' . ucfirst ( $line->firstname ) .',';
 						 	}
 						 	
-						 }
-						 
-						 if (is_array ( $extralabels ) && key_exists ( 'ts_logistique', $extralabels )) {
-						 	print '&nbsp;'.$extralabels ['ts_logistique'] .':'.$extrafields->showOutputField( 'ts_logistique', $agf->array_options['options_ts_logistique'] );
-						 }
-						
+						 }						
 					}
 					print '</td></tr></table>';
 					print '</li></ul>';

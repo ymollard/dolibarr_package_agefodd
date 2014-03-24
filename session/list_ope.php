@@ -65,10 +65,6 @@ $search_sale = GETPOST ( 'search_sale', 'int' );
 $search_id = GETPOST ( 'search_id', 'int' );
 $search_soc_requester = GETPOST ( 'search_soc_requester', 'alpha' );
 
-$ts_logistique = GETPOST ( 'options_ts_logistique', 'int' );
-$ts_prospection = GETPOST ( 'options_ts_prospection', 'int' );
-$ts_interentreprises = GETPOST ( 'options_ts_interentreprises', 'int' );
-
 // Do we click on purge search criteria ?
 if (GETPOST ( "button_removefilter_x" )) {
 	$search_trainning_name = '';
