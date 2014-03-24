@@ -412,8 +412,8 @@ if ($resql != - 1) {
 			print '<td>' . $line->ref . '</td>';
 			print '<td>' . $line->training_ref_interne . '</td>';
 			print '<td>' . ($line->type_session ? $langs->trans ( 'AgfFormTypeSessionInter' ) : $langs->trans ( 'AgfFormTypeSessionIntra' )) . '</td>';
-			print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
-			print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
+			print '<td>' . dol_print_date ( $line->dated, 'daytextshort' ) . '</td>';
+			print '<td>' . dol_print_date ( $line->datef, 'daytextshort' ) . '</td>';
 			print '<td>';
 			print $line->status_lib;
 			print '</td>';

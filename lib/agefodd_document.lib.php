@@ -31,7 +31,7 @@ function show_conv($file, $socid, $nom_courrier) {
 	
 	$agf = new Agefodd_convention ( $db );
 	$result = $agf->fetch ( $id, $socid );
-	
+
 	$continue = true;
 	// Get proposal/order/invoice informations
 	$agf_comid = new Agefodd_session_element ( $db );
@@ -64,12 +64,16 @@ function show_conv($file, $socid, $nom_courrier) {
 				$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFactureFacNoBonHelp" ), 1, 'help' );
 				$continue = false;
 			}
-		}
+		} 
 	} else {
 		if (count ( $propal_array ) == 0) {
 			$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFacturePropalHelp" ), 1, 'help' );
 			$continue = false;
 		}
+	}
+	if ((count ( $propal_array ) == 0) && (count ( $order_array ) == 0) && (count ( $invoice_array ) == 0)) {
+		$mess = $form->textwithpicto ( '', $langs->trans ( "AgfFacturePropalHelp" ), 1, 'warning' );
+		$continue = false;
 	}
 	
 	// If convention contract have already been set (database records exists)

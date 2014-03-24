@@ -1,5 +1,7 @@
 ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN dt_acknowledgement timestamp NULL;
 
+ALTER TABLE llx_agefodd_session_element ADD COLUMN fk_soc integer NOT NULL AFTER fk_session_agefodd;
+
 INSERT INTO llx_agefodd_session_element (fk_session_agefodd, fk_soc ,element_type,fk_element,fk_user_author,datec,fk_user_mod,tms) SELECT llx_agefodd_facture.fk_session, llx_agefodd_facture.fk_societe,'propal',llx_agefodd_facture.fk_propal,llx_agefodd_facture.fk_user_author,llx_agefodd_facture.datec,llx_agefodd_facture.fk_user_mod,llx_agefodd_facture.tms FROM llx_agefodd_facture INNER JOIN llx_propal ON llx_agefodd_facture.fk_propal=llx_propal.rowid;
 
 INSERT INTO llx_agefodd_session_element (fk_session_agefodd, fk_soc ,element_type,fk_element,fk_user_author,datec,fk_user_mod,tms) SELECT llx_agefodd_facture.fk_session, llx_agefodd_facture.fk_societe,'order',llx_agefodd_facture.fk_commande,llx_agefodd_facture.fk_user_author,llx_agefodd_facture.datec,llx_agefodd_facture.fk_user_mod,llx_agefodd_facture.tms FROM llx_agefodd_facture INNER JOIN llx_commande ON llx_agefodd_facture.fk_commande=llx_commande.rowid;

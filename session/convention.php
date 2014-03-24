@@ -329,22 +329,21 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	// intro1
 	$statut = getFormeJuridiqueLabel ( $mysoc->forme_juridique_code );
-	$intro1 = $langs->trans ( 'AgfConvIntro1_1' ) . ' ' . $mysoc->name . ', ' . $statut . ' ' . $langs->trans ( 'AgfConvIntro1_2' ) . ' ';
+	$intro1 = $langs->trans ( 'AgfConvIntro1_1' ) . ' ' . $mysoc->name . ', ' . $statut;
 	if (! empty ( $mysoc->capital )) {
-		$capital_text = ' ' . $mysoc->capital . ' ' . $langs->trans ( "Currency" . $conf->currency );
-	} else {
-		$capital_text = '';
-	}
-	$intro1 .= $capital_text . ' ' . $langs->trans ( 'AgfConvIntro1_3' ) . ' ' . $mysoc->town;
-	$intro1 .= ' (' . $mysoc->zip . ') ';
-	if (! empty ( $mysoc->idprof4 )) {
-		$intro1 .= $langs->trans ( 'AgfConvIntro1_4' ) . ' ' . $mysoc->idprof4;
+		$intro1.=' '.$langs->trans('AgfConvIntro1_2');
+ 		$intro1.=' '.$mysoc->capital.' '.$langs->trans("Currency".$conf->currency);
+ 	}
+
+ 	$intro1.= ' '.$langs->trans('AgfConvIntro1_3').' '.$mysoc->address.' '.$mysoc->zip.' '.$mysoc->town;
+ 	if (!empty($mysoc->idprof1)) {
+ 		$intro1.= $langs->trans('AgfConvIntro1_4').' '.$mysoc->idprof1;
 	}
 	if (empty ( $conf->global->AGF_ORGANISME_NUM )) {
 		$intro1 .= ' ' . $langs->trans ( 'AgfConvIntro1_5' ) . ' ' . $conf->global->AGF_ORGANISME_PREF;
 	} else {
-		$intro1 .= $langs->trans ( 'AgfConvIntro1_6' );
-		$intro1 .= $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans ( 'AgfConvIntro1_7' ) . ' ' . $conf->global->AGF_ORGANISME_NUM;
+		$intro1.= ' '.$langs->trans('AgfConvIntro1_6');
+ 		$intro1.= ' '.$conf->global->AGF_ORGANISME_PREF.' '.$langs->trans('AgfConvIntro1_7').' '.$conf->global->AGF_ORGANISME_NUM;
 	}
 	if (! empty ( $conf->global->AGF_ORGANISME_REPRESENTANT )) {
 		$intro1 .= $langs->trans ( 'AgfConvIntro1_8' ) . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . $langs->trans ( 'AgfConvIntro1_9' );

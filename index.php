@@ -49,7 +49,7 @@ print_barre_liste ( $langs->trans ( "AgfBilanGlobal" ), $page, "index.php", "&so
 print '<table width="100%">';
 
 // colonne gauche
-print '<tr><td width=auto>';
+print '<tr><td  width="400px">';
 print '<table class="noborder" width="400px">';
 print '<tr class="liste_titre"><td colspan=4>' . $langs->trans ( "AgfIndexStatistique" ) . '</td></tr>';
 
@@ -98,8 +98,7 @@ for($i = 0; $i < $num; $i ++) {
 	print $langs->trans ( "AgfThereIsDay", $ilya ); // "il y a ".$ilya." j.";
 	print '</td></tr>';
 }
-
-print '<table></table>';
+	
 print '&nbsp;';
 print '<table class="noborder" width="400px">';
 

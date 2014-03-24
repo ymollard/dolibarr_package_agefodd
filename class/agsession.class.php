@@ -193,7 +193,7 @@ class Agsession extends CommonObject
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset ( $this->fk_soc ) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
 		$sql .= " " . (! isset ( $this->fk_soc_requester ) ? 'NULL' : "'" . $this->fk_soc_requester . "'") . ",";
-		$sql .= " " . (! isset ( $this->fk_socpeople_requester ) ? 'NULL' : "'" . $this->fk_socpeople_requester . "'") . ",";
+		$sql .= " " . (empty ( $this->fk_socpeople_requester ) ? 'NULL' : "'" . $this->fk_socpeople_requester . "'") . ",";
 		$sql .= " " . (! isset ( $this->fk_formation_catalogue ) ? 'NULL' : "'" . $this->fk_formation_catalogue . "'") . ",";
 		$sql .= " " . (! isset ( $this->fk_session_place ) ? 'NULL' : "'" . $this->fk_session_place . "'") . ",";
 		$sql .= " " . (! isset ( $this->nb_place ) ? 'NULL' : $this->nb_place) . ",";
