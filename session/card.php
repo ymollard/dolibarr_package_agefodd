@@ -1113,7 +1113,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							print '</form>' . "\n";
 							print '</tr>' . "\n";
 						}
-						if ((($agf->duree_session * 3600) != $duree) && (! empty ( $conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION ))) {
+						if ((($agf->duree_session * 3600) != $duree) && (empty ( $conf->global->AGF_NOT_DISPLAY_WARNING_TIME_SESSION ))) {
 							print '<tr><td colspan=5 align="center"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
 							if (($agf->duree_session * 3600) < $duree)
 								print $langs->trans ( "AgfCalendarSup" );
