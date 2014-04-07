@@ -250,20 +250,20 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 			$pdf->SetXY ( $this->marge_gauche + 1, $newY );
 			$pdf->Cell ( 0, 0, $outputlangs->transnoentities ( $this->str ), 0, 0, 'C', 0 );
 			
-			$newY = $newY + 5;
+			$newY = $pdf->GetY();
 			// Bloc objectifs pedagogiques
 			if (count ( $agf_op->lines ) > 0) {
 				
 				$this->str = $outputlangs->transnoentities ( 'AgfPDFAttestation7' );
 				$newY = $newY + 10;
 				$pdf->SetXY ( $this->marge_gauche + 1, $newY );
-				$pdf->Cell ( 0, 0, $outputlangs->transnoentities ( $this->str ), 0, 0, 'C', 0 );
+				$pdf->Cell ( 0, 0, $outputlangs->transnoentities ( $this->str ), 0, 1, 'C', 0 );
 				
 				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), 'I', 12 );
 				$hauteur = 0;
 				for($y = 0; $y < count ( $agf_op->lines ); $y ++) {
 					$newY = $newY + $hauteur;
-					$pdf->SetXY ( $this->marge_gauche + 62, $newY );
+					$pdf->SetXY ( $this->marge_gauche + 62, $pdf->GetY() );
 					$width = 160;
 					$StringWidth = $pdf->GetStringWidth ( $agf_op->lines [$y]->intitule );
 					if ($StringWidth > $width)

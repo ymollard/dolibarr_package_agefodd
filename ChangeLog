@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.9 compared to 2.1.8 *****
+-Fix : Attestation by trainnee with training objectives wrong output
+
 ***** ChangeLog for 2.1.8 compared to 2.1.7 *****
 -New : New permissions on Training catalogue, location (basic (old) permissions apply now sessions) all defaulted to yes (to avoid right problem)
 -New : New permission on session to limit session display in list regarding user customer sales affectation
