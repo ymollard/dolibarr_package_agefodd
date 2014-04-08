@@ -882,3 +882,5 @@ ExtraFieldsCursus=Attributs supplémentaires (Cursus)
 AgfLinkedDocumentsByTrainee=Document by trainee
 AgfNumDossier=File number
 AgfInTheNameOf=pour le compte de
+AgfCacherSessionArchives=Cacher les sessions archivées
+AgfAfficherSessionArchives=Afficher toute les sessions

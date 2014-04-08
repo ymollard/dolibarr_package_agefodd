@@ -90,7 +90,7 @@ class Agefodd_session_formateur {
 		$this->sessid = trim ( $this->sessid );
 		$this->formid = trim ( $this->formid );
 		if (isset ( $this->trainer_status ))
-			$this->trainer_cost = trim ( $this->trainer_status );
+			$this->trainer_status = trim ( $this->trainer_status );
 			
 			// Check parameters
 			
@@ -104,7 +104,7 @@ class Agefodd_session_formateur {
 		$sql .= " " . $user->id . ', ';
 		$sql .= " " . $user->id . ', ';
 		$sql .= "'" . $this->db->idate ( dol_now () ) . "',";
-		$sql .= " " . (! isset ( $this->trainer_status ) ? 'NULL' : $this->db->escape ( $this->trainer_status ));
+		$sql .= " " . (! isset ( $this->trainer_status ) ? '0' : $this->db->escape ( $this->trainer_status ));
 		$sql .= ")";
 		
 		$this->db->begin ();
