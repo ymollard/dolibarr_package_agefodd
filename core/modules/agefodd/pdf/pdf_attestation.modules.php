@@ -148,7 +148,7 @@ class pdf_attestation extends ModelePDFAgefodd
 			
 			if ($result) {
 				for ($i = 0; $i < count($agf2->lines); $i ++) {
-					if (($agf2->lines[$i]->status_in_session == 3 || $agf2->lines[$i]->status_in_session == 4)) {
+					if (($agf2->lines[$i]->status_in_session == 3 || $agf2->lines[$i]->status_in_session == 4) || ($agf2->lines[$i]->status_in_session == 2)) {
 						// New page
 						$pdf->AddPage();
 						$pagenb ++;

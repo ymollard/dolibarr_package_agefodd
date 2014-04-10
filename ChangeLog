@@ -3,6 +3,7 @@ English Dolibarr ChangeLog
 ***** ChangeLog for 2.1.9 compared to 2.1.8 *****
 -Fix : Attestation by trainnee with training objectives wrong output
 -New : Better trainer list and session trainer list
+-New : Attestation PDF is printed only if trainne is Cofrim/presetn or Part Present
 
 ***** ChangeLog for 2.1.8 compared to 2.1.7 *****
 -New : New permissions on Training catalogue, location (basic (old) permissions apply now sessions) all defaulted to yes (to avoid right problem)
