@@ -3783,6 +3783,8 @@ class Agsession extends CommonObject
 		
 		if (! empty ( $this->fk_product )) {
 			
+			$session_trainee=new Agefodd_session_stagiaire($this->db);
+			
 			$product = new Product ( $this->db );
 			$result = $product->fetch ( $this->fk_product );
 			if ($result < 0 || empty ( $product->id )) {
