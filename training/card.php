@@ -661,7 +661,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print "</td></tr>";
 				
 				print '<tr><td valign="top">' . $langs->trans ( "AgfPublic" ) . '</td><td colspan=2>';
-				print stripslashes ( nl2br ( $agf->public ) ) . '</td></tr>';
+				if (! empty ( $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING )) {
+					print $agf->public;
+				} else {
+					print stripslashes ( nl2br ( $agf->public ) );
+				}
+				print '</td></tr>';
 				
 				print '<tr><td valign="top">' . $langs->trans ( "AgfMethode" ) . '</td><td colspan=2>';
 				if (! empty ( $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING )) {
