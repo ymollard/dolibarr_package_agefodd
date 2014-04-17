@@ -216,6 +216,23 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer) {
 		}
 	}
 }
+if ($action=='updatetraineestatus') {
+	$agf = new Agsession ( $db );
+	$result=$agf->fetch($id);
+	if ($result<0){
+		setEventMessage ( $agf->error, 'errors' );
+	} else {
+		$stagiaires = new Agefodd_session_stagiaire ( $db );
+		$stagiaires->fk_session_agefodd=$agf->id;
+		$result=$stagiaires->update_status_by_soc ($user,1,0,GETPOST('statusinsession','int'));
+		if ($result<0){
+			setEventMessage ( $agf->error, 'errors' );
+		} else {
+			Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id );
+			exit;
+		}
+	}
+}
 
 /*
  * View
@@ -635,6 +652,12 @@ if (! empty ( $id )) {
 				}
 			}
 			
+			print '<br><br>';
+			foreach($stagiaires->labelstatut_short as $statuskey => $statuslabelshort) {
+				if ($statuskey==0 || $statuskey==2 || $statuskey==3 || $statuskey==5 || $statuskey==6) {
+					print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=updatetraineestatus&id=' . $id . '&statusinsession='.$statuskey.'" title="' . $langs->trans ( 'AgfSetTrainneStatusTo' ) .' ' .$statuslabelshort. '">' . $langs->trans ( 'AgfSetTrainneStatusTo' ) .' ' .$statuslabelshort. '</a>';
+				}
+			}
 			print '</td></tr>';
 			print '</form>';
 		} else {

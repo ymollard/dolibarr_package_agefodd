@@ -734,11 +734,12 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_stagiaire SET";
 		$sql .= " status_in_session=" . $status;
 		$sql .= " WHERE fk_session_agefodd = " . $this->fk_session_agefodd;
-		//For the same thirdparty as the trainee
-		$sql .= ' AND ((fk_stagiaire IN (SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire WHERE fk_soc=' . $socid . '))';
-		// For the trainne link with use trhidparty into doc
-		$sql .= ' OR (fk_soc_link =' . $socid . '))';
-	
+		if (!empty($socid)) {
+			//For the same thirdparty as the trainee
+			$sql .= ' AND ((fk_stagiaire IN (SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire WHERE fk_soc=' . $socid . '))';
+			// For the trainne link with use trhidparty into doc
+			$sql .= ' OR (fk_soc_link =' . $socid . '))';
+		}
 		
 		$this->db->begin ();
 		
