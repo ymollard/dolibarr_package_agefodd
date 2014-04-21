@@ -885,3 +885,6 @@ AgfInTheNameOf=pour le compte de
 AgfCacherSessionArchives=Cacher les sessions archivées
 AgfAfficherSessionArchives=Afficher toute les sessions
 AgfSetTrainneStatusTo=Update trainee status to
+AddAll=Add all
+RemoveAll=Remove all
+ItemsCount=Item(s)
