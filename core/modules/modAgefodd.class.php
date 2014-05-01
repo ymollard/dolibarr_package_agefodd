@@ -1142,7 +1142,6 @@ $r ++;
 		);
 		
 		$r ++;
-		
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
