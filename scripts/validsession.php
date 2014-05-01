@@ -42,9 +42,20 @@ dol_include_once('/core/modules/propale/modules_propale.php');
 
 $userlogin = GETPOST('login');
 $idpropal = GETPOST('idpropal');
+$key = GETPOST('key', 'alpha');
+
+// Security test
+if ($key != $conf->global->WEBSERVICES_KEY) {
+	print - 1;
+	exit();
+}
 
 $user = new User($db);
 $result = $user->fetch('', $userlogin);
+if (empty($user->id)) {
+	print - 1;
+	exit();
+}
 
 $propal = new Propal($db);
 $propal->fetch($idpropal);

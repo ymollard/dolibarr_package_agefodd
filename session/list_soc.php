@@ -208,6 +208,16 @@ print '</table>';
 
 print '</div>';
 
+print '<div class="tabsAction">';
+
+if ($user->rights->agefodd->creer) {
+	print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?mainmenu=agefodd&action=create&fk_soc=' . $object->id . '">' . $langs->trans('AgfMenuSessNew') . '</a>';
+} else {
+	print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfMenuSessNew') . '</a>';
+}
+
+print '</div>';
+
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
@@ -227,7 +237,7 @@ if ($result >= 0) {
 	$arg_url = '&socid=' . $socid . '&page=' . $page . '&search_type_affect=' . $search_type_affect . '&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "socpf.lastname", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder);

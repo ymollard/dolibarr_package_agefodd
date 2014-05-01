@@ -43,7 +43,7 @@ class pdf_attestation extends ModelePDFAgefodd {
 	 * \brief		Constructor
 	 * \param		db		Database handler
 	 */
-	function pdf_attestation($db) {
+	function __construct($db) {
 		global $conf, $langs, $mysoc;
 		
 		$this->db = $db;

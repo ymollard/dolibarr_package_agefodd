@@ -85,24 +85,30 @@ function session_prepare_head($object, $showconv = 0) {
 	$h = 0;
 	$head = array ();
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $object->id;
+	if ($showconv) {
+		$id = $object->sessid;
+	} else {
+		$id = $object->id;
+	}
+	
+	$head [$h] [0] = dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
 	$head [$h] [2] = 'subscribers';
 	$h ++;
 	
 	if ($conf->global->AGF_MANAGE_CERTIF) {
-		$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers_certif.php', 1) . '?id=' . $object->id;
+		$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers_certif.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfFormateur");
 	$head [$h] [2] = 'trainers';
 	$h ++;
@@ -113,33 +119,33 @@ function session_prepare_head($object, $showconv = 0) {
 	$h++;*/
 	// TODO fiche de presence
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfAdmSuivi");
 	$head [$h] [2] = 'administrative';
 	$h ++;
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/document.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/document.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfLinkedDocuments");
 	$head [$h] [2] = 'document';
 	$h ++;
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfLinkedDocumentsByTrainee");
 	$head [$h] [2] = 'document_trainee';
 	$h ++;
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfSendDocuments");
 	$head [$h] [2] = 'send_docs';
 	$h ++;
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Documents");
 	$head [$h] [2] = 'documentfiles';
 	$h ++;
 	
 	if ($showconv) {
-		$head [$h] [0] = dol_buildpath('/agefodd/session/convention.php', 1) . '?sessid=' . $object->id;
+		$head [$h] [0] = dol_buildpath('/agefodd/session/convention.php', 1) . '?id=' . $object->id . '&sessid=' . $object->sessid;
 		$head [$h] [1] = $langs->trans("AgfConvention");
 		$head [$h] [2] = 'convention';
 		$h ++;
@@ -147,13 +153,13 @@ function session_prepare_head($object, $showconv = 0) {
 	
 	if (! empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
 		
-		$head [$h] [0] = dol_buildpath('/agefodd/session/cost.php', 1) . '?id=' . $object->id;
+		$head [$h] [0] = dol_buildpath('/agefodd/session/cost.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCostManagement");
 		$head [$h] [2] = 'cost';
 		$h ++;
 	}
 	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/info.php', 1) . '?id=' . $object->id;
+	$head [$h] [0] = dol_buildpath('/agefodd/session/info.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;

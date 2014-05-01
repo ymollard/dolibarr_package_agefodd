@@ -164,7 +164,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			$town = GETPOST('town', 'alpha');
 			
 			$stagiaire_type = GETPOST('stagiaire_type', 'int');
-			
+
 			$date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
 			$place_birth = GETPOST('place_birth', 'alpha');
 			
@@ -480,7 +480,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
 	print '<td>';
-	print $form->select_date('', 'datebirth', '', '', 1, 'update');
+	print $form->select_date('', 'datebirth', '', '', 1, 'update', 0, 0, 1);
 	print '</td></tr>';
 	
 	print '<tr><td>' . $langs->trans("AgfPlaceBirth") . '</td>';

@@ -591,25 +591,21 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 				}
 			}
 			
-			/*if(GETPOST('clone_trainer') )
-				{
-					// Clone trainee information
-					$traineestat = new Agefodd_session_formateur($db);
-					$session_trainee = new Agefodd_session_formateur($db);
-					$session_trainee->fetch_formateur_per_session($id);
-					$blocNumber = count($session_trainee->lines);
-					if ($blocNumber > 0)
-					{
-						foreach ($session_trainee->lines as $line)
-						{
-							$traineestat->sessid=$id;
-							$traineestat->stagiaire=$line->id;
-							$traineestat->stagiaire_type=$line->fk_agefodd_stagiaire_type;
-								
-							$result1 = $traineestat->create($user);
-						}
+			if (GETPOST('clone_trainer')) {
+				// Clone trainer information
+				$trainerstat = new Agefodd_session_formateur($db);
+				$session_trainer = new Agefodd_session_formateur($db);
+				$session_trainer->fetch_formateur_per_session($id);
+				$blocNumber = count($session_trainer->lines);
+				if ($blocNumber > 0) {
+					foreach ( $session_trainer->lines as $line ) {
+						$trainerstat->sessid = $result;
+						$trainerstat->formid = $line->formid;
+						
+						$result1 = $trainerstat->create($user);
 					}
-				}*/
+				}
+			}
 			header("Location: " . $_SERVER ['PHP_SELF'] . '?id=' . $result);
 			exit();
 		} else {
@@ -1247,6 +1243,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										'type' => 'checkbox',
 										'name' => 'clone_trainee',
 										'label' => $langs->trans("AgfCloneSessionTrainee"),
+										'value' => 1 
+								),
+								array (
+										'type' => 'checkbox',
+										'name' => 'clone_trainer',
+										'label' => $langs->trans("AgfCloneSessionTrainer"),
 										'value' => 1 
 								) 
 						);

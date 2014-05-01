@@ -633,6 +633,7 @@ class InterfaceAgefodd {
 						// For inter entreprise you tkae only trainee link with this OPCA
 						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $socid);
 					}
+					
 					if (count($session_trainee->lines) > 0) {
 						
 						$desc_trainee = "\n" . count($session_trainee->lines) . ' ';

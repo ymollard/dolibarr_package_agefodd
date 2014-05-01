@@ -37,6 +37,7 @@ require_once ('../class/agefodd_session_formateur_calendrier.class.php');
 require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
+require_once ('../class/agefodd_session_element.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -46,6 +47,7 @@ $id = GETPOST('id', 'int');
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$optioncss = GETPOST('optioncss', 'alpha');
 $search_id = GETPOST('search_id', 'int');
 $search_intitule = GETPOST('search_intitule', 'alpha');
 $search_month = GETPOST('search_month', 'int');
@@ -172,7 +174,8 @@ if ($id) {
 		
 		print '</div>';
 		
-		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '" name="search_form">' . "\n";
+		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="search_form">' . "\n";
+		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";
 		
 		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords);
 		if (empty($search_archive)) {
@@ -183,6 +186,10 @@ if ($id) {
 		
 		$moreforfilter .= $langs->trans('SalesRepresentatives') . ': ';
 		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user);
+		
+		$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
+		$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
+		$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
 		
 		if ($moreforfilter) {
 			print '<div class="liste_titre">';
@@ -223,9 +230,6 @@ if ($id) {
 		print '</td>';
 		// Period date de debut
 		print '<td class="liste_titre">';
-		print $langs->trans('Period') . ': ';
-		print $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
-		print $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
 		print '</td>';
 		// Date de fin
 		print '<td class="liste_titre">';
@@ -250,7 +254,7 @@ if ($id) {
 			foreach ( $agf_session->lines as $line ) {
 				$duree = 0;
 				
-				if ($style == 'pair') {
+				if ($style != 'class="impair"') {
 					$style = 'class="impair"';
 				} else {
 					$style = 'class="pair"';

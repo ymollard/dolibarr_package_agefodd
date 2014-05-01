@@ -41,9 +41,20 @@ dol_include_once('/user/class/user.class.php');
 
 $userlogin = GETPOST('login');
 $id = GETPOST('id');
+$key = GETPOST('key', 'alpha');
+
+// Security test
+if ($key != $conf->global->WEBSERVICES_KEY) {
+	print - 1;
+	exit();
+}
 
 $user = new User($db);
 $result = $user->fetch('', $userlogin);
+if (empty($user->id)) {
+	print - 1;
+	exit();
+}
 
 $agf = new Agsession($db);
 $agf->fetch($id);
@@ -56,31 +67,4 @@ if (! empty($agf->id)) {
 		print 1;
 	}
 }
-
-
-
- //Use for data retreive from Akteos
-/*
-$sql = "SELECT s.rowid";
-$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-$sql .= " WHERE s.rowid NOT IN (select fk_agefodd_session FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)";
-$sql .= " AND s.status<>4";
-$resql = $db->query ( $sql );
-if ($resql) {
-
-		while ( $obj = $db->fetch_object ( $resql )) {
-			$agf = new Agsession($db);
-			$agf->fetch($obj->rowid);
-			if (!empty($agf->id)) {
-			
-				$result = $agf->createAdmLevelForSession($user);
-				if ($result>0) {
-					print -1;
-				} else {
-					print 1;
-				}
-			}
-		}
-}
-*/
 			

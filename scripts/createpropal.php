@@ -39,12 +39,30 @@ if (! $res)
 dol_include_once('/user/class/user.class.php');
 dol_include_once('/agefodd/class/agsession.class.php');
 
-$userlogin = GETPOST('login');
-$session_id = GETPOST('sessid');
-$socid = GETPOST('socid');
+$userlogin = GETPOST('login', 'alpha');
+$session_id = GETPOST('sessid', 'int');
+$socid = GETPOST('socid', 'int');
+$key = GETPOST('key', 'alpha');
+
+// Security test
+if ($key != $conf->global->WEBSERVICES_KEY) {
+	print - 1;
+	exit();
+}
 
 $user = new User($db);
 $result = $user->fetch('', $userlogin);
+if (empty($user->id)) {
+	print - 1;
+	exit();
+}
+
+$outputlangs = $langs;
+if (! empty($conf->global->MAIN_MULTILANGS)) {
+	$outputlangs = new Translate("", $conf);
+	$newlang = (GETPOST('lang_id') ? GETPOST('lang_id') : $object->client->default_lang);
+	$outputlangs->setDefaultLang($newlang);
+}
 
 $agf = new Agsession($db);
 $result = $agf->fetch($session_id);

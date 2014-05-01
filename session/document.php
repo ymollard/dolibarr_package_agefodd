@@ -142,11 +142,11 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		
 		$convention = new Agefodd_convention($db);
 		$convention->fetch(0, 0, GETPOST('convid', 'int'));
-		
+		$id_tmp = $convention->id;
 		$model = $convention->model_doc;
 		$model = str_replace('pdf_', '', $model);
 		
-		$file = 'convention' . '_' . $id . '_' . $socid . '.pdf';
+		$file = 'convention' . '_' . $id . '_' . $socid . '_' . $convention->id . '.pdf';
 	} elseif (! empty($socid)) {
 		$file = $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif (strpos($model, 'fiche_pedago') !== false) {
@@ -172,6 +172,8 @@ if (($action == 'createorder_confirm') && $confirm == 'yes' && $user->rights->ag
 			setEventMessage($agf->error, 'errors');
 		}
 	}
+	Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
+	exit();
 }
 
 // Confirm create propal
@@ -186,6 +188,8 @@ if (($action == 'createproposal') && $user->rights->agefodd->creer) {
 			setEventMessage($agf->error, 'errors');
 		}
 	}
+	Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
+	exit();
 }
 
 // Confirm create propal
@@ -202,6 +206,8 @@ if (($action == 'createinvoice_confirm') && $user->rights->agefodd->creer) {
 			setEventMessage($agf->error, 'errors');
 		}
 	}
+	Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
+	exit();
 }
 
 /*
@@ -212,15 +218,23 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 	$model = GETPOST('model', 'alpha');
 	$idform = GETPOST('idform', 'alpha');
 	
-	if (! empty($cour))
+	if (! empty($cour)) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '-' . $cour . '_' . $id . '_' . $socid . '.pdf';
-	elseif (! empty($socid))
+	} elseif ($model == 'convention') {
+		// For backwoard compatibilty check convention file name with id of convention
+		if (is_file($conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf')) {
+			$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
+		} else {
+			$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '_' . GETPOST('convid', 'int') . '.pdf';
+		}
+	} elseif (! empty($socid)) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
-	elseif ($model == 'fiche_pedago') {
+	} elseif ($model == 'fiche_pedago') {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
-	} else
+	} else {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '.pdf';
-	
+	}
+
 	if (is_file($file))
 		unlink($file);
 	else {

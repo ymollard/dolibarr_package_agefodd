@@ -384,7 +384,13 @@ if (! empty($id)) {
 			} elseif ($action == 'presend_pedago') {
 				$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 			} elseif ($action == 'presend_convention') {
-				$filename = 'convention_' . $agf->id . '_' . $socid . '.pdf';
+				$conv_id = GETPOST('convid', 'int');
+				// For backwoard compatibilty check convention file name with id of convention
+				if (is_file($conf->agefodd->dir_output . '/' . 'convention_' . $agf->id . '_' . $socid . '.pdf')) {
+					$filename = 'convention_' . $agf->id . '_' . $socid . '.pdf';
+				} elseif (is_file($conf->agefodd->dir_output . '/' . 'convention_' . $agf->id . '_' . $socid . '_' . $conv_id . '.pdf')) {
+					$filename = $conf->agefodd->dir_output . '/' . 'convention_' . $agf->id . '_' . $socid . '_' . $conv_id . '.pdf';
+				}
 			} elseif ($action == 'presend_attestation') {
 				$filename = 'attestation_' . $agf->id . '_' . $socid . '.pdf';
 			} elseif ($action == 'presend_convocation') {

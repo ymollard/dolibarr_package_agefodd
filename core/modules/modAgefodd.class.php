@@ -996,6 +996,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
@@ -1620,4 +1621,3 @@ class modAgefodd extends DolibarrModules {
 		return $ok;
 	}
 }
-				

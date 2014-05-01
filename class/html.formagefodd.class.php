@@ -1553,4 +1553,62 @@ class FormAgefodd extends Form {
 		
 		return $outselect;
 	}
+	
+	/**
+	 * Return multiselect list of entities.
+	 *
+	 * @param string $htmlname select
+	 * @param array $options_array to manage
+	 * @param array $selected_array to manage
+	 * @param int $showempty show empty
+	 * @return void
+	 */
+	function multiselectarray($htmlname, $options_array = array(), $selected_array = array(), $showempty = 0) {
+		global $conf, $langs;
+		
+		$return = '<script type="text/javascript" language="javascript">
+						$(document).ready(function() {
+							$.extend($.ui.multiselect.locale, {
+								addAll:\'' . $langs->transnoentities("AddAll") . '\',
+								removeAll:\'' . $langs->transnoentities("RemoveAll") . '\',
+								itemsCount:\'' . $langs->transnoentities("ItemsCount") . '\'
+							});
+						
+							$(function(){
+								$("#' . $htmlname . '").addClass("' . $htmlname . '").attr("multiple","multiple").attr("name","' . $htmlname . '[]");
+								$(".multiselect").multiselect({sortable: false, searchable: false});
+							});
+						});
+					</script>';
+		
+		$return .= '<select id="' . $htmlname . '" class="multiselect" multiple="multiple" name="' . $htmlname . '[]" style="display: none;">';
+		if ($showempty)
+			$return .= '<option value="">&nbsp;</option>';
+			
+			// Find if keys is in selected array value
+		if (is_array($selected_array) && count($selected_array) > 0) {
+			$intersect_array = array_intersect_key($options_array, array_flip($selected_array));
+		} else {
+			$intersect_array = array ();
+		}
+		
+		if (count($options_array) > 0) {
+			foreach ( $options_array as $keyoption => $valoption ) {
+				// If key is in intersect table then it have to e selected
+				if (count($intersect_array) > 0) {
+					if (array_key_exists($keyoption, $intersect_array)) {
+						$selected = ' selected="selected" ';
+					} else {
+						$selected = '';
+					}
+				}
+				
+				$return .= '<option ' . $selected . ' value="' . $keyoption . '">' . $valoption . '</option>';
+			}
+		}
+		
+		$return .= '</select>';
+		
+		return $return;
+	}
 }

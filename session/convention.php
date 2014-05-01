@@ -41,6 +41,7 @@ require_once ('../class/agefodd_place.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_stagiaire.class.php');
 require_once ('../core/modules/agefodd/modules_agefodd.php');
 require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
@@ -123,9 +124,9 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$model = $agf->model_doc;
 	$model = str_replace('pdf_', '', $model);
 	
-	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '.pdf';
+	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '_' . $agf->id . '.pdf';
 	
-	$result = agf_pdf_create($db, $agf->sessid, '', $model, $outputlangs, $file, $agf->socid);
+	$result = agf_pdf_create($db, $agf->id, '', $model, $outputlangs, $file, $agf->socid);
 	
 	if ($result > 0) {
 		Header("Location: " . dol_buildpath('/agefodd/session/document.php', 1) . "?id=" . $agf->sessid . '&socid=' . $agf->socid);
@@ -157,6 +158,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$sig = GETPOST('sig', 'alpha');
 		$notes = GETPOST('notes', 'alpha');
 		$model_doc = GETPOST('model_doc', 'alpha');
+		$traine_list = GETPOST('trainee_id', 'array');
 		
 		$idtypeelement = GETPOST('idtypelement', 'alpha');
 		if (! empty($idtypeelement)) {
@@ -196,6 +198,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$agf->notes = $notes;
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
+		$agf->line_trainee = $traine_list;
 		
 		$result = $agf->update($user);
 		
@@ -232,6 +235,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$sig = GETPOST('sig', 'alpha');
 		$notes = GETPOST('notes', 'alpha');
 		$model_doc = GETPOST('model_doc', 'alpha');
+		$traine_list = GETPOST('trainee_id', 'array');
 		
 		$idtypeelement = GETPOST('idtypelement', 'alpha');
 		if (! empty($idtypeelement)) {
@@ -277,6 +281,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$agf->model_doc = $model_doc;
 			$agf->socid = $socid;
 			$agf->sessid = $sessid;
+			$agf->line_trainee = $traine_list;
 			
 			$result = $agf->create($user);
 			
@@ -302,7 +307,15 @@ if ((empty($id)) && (empty($socid)) && (empty($action))) {
  * View
 */
 
-llxHeader('', $langs->trans("AgfConvention"));
+$extrajs = array (
+		'/agefodd/includes/multiselect/js/ui.multiselect.js' 
+);
+$extracss = array (
+		'/agefodd/includes/multiselect/css/ui.multiselect.css',
+		'/agefodd/css/agefodd.css' 
+);
+
+llxHeader('', $langs->trans("AgfConvention"), '', '', '', '', $extrajs, $extracss);
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
@@ -557,6 +570,21 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>';
 	print $formAgefodd->select_conv_model('', 'model_doc');
 	print '</td></tr>';
+
+    print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
+	print '<td>';
+	
+	$options_trainee_array = array ();
+	$options_trainee_array_id = array ();
+	
+	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid);
+	foreach ( $stagiaires->lines as $traine_line ) {
+		$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+		$options_trainee_array_id [] = $traine_line->stagerowid;
+	}
+	
+	print $formAgefodd->multiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_id);
+	print '</td></tr>';
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 	print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">' . $intro1 . '</textarea></td></tr>';
@@ -610,7 +638,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$agf_session = new Agsession($db);
 		$agf_session->fetch($agf->sessid);
 		
-		$head = session_prepare_head($agf_session, 1);
+		$head = session_prepare_head($agf, 1);
 		
 		$hselected = 'convention';
 		
@@ -675,6 +703,20 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<td>';
 			print $formAgefodd->select_conv_model($agf->model_doc, 'model_doc');
 			print '</td></tr>';
+
+			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
+			print '<td>';
+			
+			$options_trainee_array = array ();
+			$options_trainee_array_selected = $agf->line_trainee;
+			$stagiaires = new Agefodd_session_stagiaire($db);
+			$nbstag = $stagiaires->fetch_stagiaire_per_session($agf->sessid);
+			foreach ( $stagiaires->lines as $traine_line ) {
+				$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+			}
+			
+			print $formAgefodd->multiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected);
+			print '</td></tr>';
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 			print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->intro1 . '</textarea></td></tr>';
@@ -715,6 +757,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td align="center" colspan=2>';
 			print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 			print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
+			print '<a class="butActionDelete" href="convention.php?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 			print '</td></tr>';
 			print '</table>';
 			print '</form>';
@@ -802,6 +845,28 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				}
 			}
 			print print '</td></tr>';
+
+			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
+			print '<td>';
+			
+			$stagiaires_session = new Agefodd_session_stagiaire($db);
+			if (is_array($agf->line_trainee) && count($agf->line_trainee) > 0) {
+				foreach ( $agf->line_trainee as $trainee_session_id ) {
+					$result = $stagiaires_session->fetch($trainee_session_id);
+					if ($result < 0) {
+						setEventMessage($stagiaires->error, 'errors');
+					}
+					$stagiaire = new Agefodd_stagiaire($db);
+					$result = $stagiaire->fetch($stagiaires_session->fk_stagiaire);
+					if ($result < 0) {
+						setEventMessage($stagiaires->error, 'errors');
+					}
+					
+					print $stagiaire->nom . ' ' . $stagiaire->prenom . ' (' . $stagiaire->socname . ')<BR>';
+				}
+			}
+			
+			print '</td></tr>';
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 			print '<td>' . nl2br($agf->intro1) . '</td></tr>';
