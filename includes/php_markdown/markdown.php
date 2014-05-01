@@ -11,11 +11,11 @@
 // <http://daringfireball.net/projects/markdown/>
 //
 define('MARKDOWN_VERSION', "1.0.1o"); // Sun 8 Jan 2012
-                                         
+                                      
 //
-                                         // Global default settings:
-                                         //
-                                         
+                                      // Global default settings:
+                                      //
+                                      
 // Change to ">" for HTML output
 @define('MARKDOWN_EMPTY_ELEMENT_SUFFIX', " />");
 

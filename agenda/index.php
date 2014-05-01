@@ -169,13 +169,13 @@ if (empty($action) || $action == 'show_month') {
 	$next_month = $next ['month'];
 	
 	$max_day_in_prev_month = date("t", dol_mktime(0, 0, 0, $prev_month, 1, $prev_year)); // Nb of days in
-	                                                                                           // previous month
+	                                                                                     // previous month
 	$max_day_in_month = date("t", dol_mktime(0, 0, 0, $month, 1, $year)); // Nb of days in next month
-	                                                                            // tmpday is a negative or null
-	                                                                            // cursor to know how many days
-	                                                                            // before the 1 to show on month
-	                                                                            // view (if tmpday=0 we start on
-	                                                                            // monday)
+	                                                                      // tmpday is a negative or null
+	                                                                      // cursor to know how many days
+	                                                                      // before the 1 to show on month
+	                                                                      // view (if tmpday=0 we start on
+	                                                                      // monday)
 	$tmpday = - date("w", dol_mktime(0, 0, 0, $month, 1, $year)) + 2;
 	$tmpday += ((isset($conf->global->MAIN_START_WEEK) ? $conf->global->MAIN_START_WEEK : 1) - 1);
 	if ($tmpday >= 1)
@@ -344,14 +344,10 @@ if ($action == 'show_day') {
 } else {
 	// To limit array
 	$sql .= " AND (";
-	$sql .= " (datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; // Start
-	                                                                                                                  // 7 days
-	                                                                                                                  // before
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')"; // End 7
-	                                                                                                             // days after
-	                                                                                                             // + 3 to go
-	                                                                                                             // from 28 to
-	                                                                                                             // 31
+	// Start 7 days  before
+	$sql .= " (datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; 
+	// End 7 days after + 3 to go from 28 to 31
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
 	$sql .= " OR ";
 	$sql .= " (datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
 	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
@@ -407,7 +403,8 @@ if ($resql) {
 		// Create a new object action
 		$event = new ActionComm($db);
 		$event->id = $obj->id;
-		$event->datep = $db->jdate($obj->datep); // datep and datef are GMT date
+		// datep and datef are GMT date
+		$event->datep = $db->jdate($obj->datep); 
 		$event->datef = $db->jdate($obj->datep2);
 		$event->type_code = $obj->code;
 		$event->libelle = $obj->label;

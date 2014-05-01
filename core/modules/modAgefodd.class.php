@@ -35,7 +35,7 @@ class modAgefodd extends DolibarrModules {
 	var $error;
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param DoliDB		Database handler
 	 */
 	function __construct($db) {
@@ -430,7 +430,7 @@ class modAgefodd extends DolibarrModules {
 			$conf->agefodd->enabled = 0;
 		}
 		
-				// Dictionnaries
+		// Dictionnaries
 		$this->dictionnaries = array (
 				'langs' => 'agefodd@agefodd',
 				'tabname' => array (
@@ -486,7 +486,7 @@ class modAgefodd extends DolibarrModules {
 		$this->import_code [$r] = $this->rights_class . '_' . $r;
 		$this->import_label [$r] = 'ImportDataset_trainee';
 		$this->import_icon [$r] = 'contact';
-$this->import_entities_array [$r] = array (
+		$this->import_entities_array [$r] = array (
 				's.fk_soc' => 'company',
 				's.nom' => 'AgfNbreParticipants',
 				's.prenom' => 'AgfNbreParticipants',
@@ -543,7 +543,7 @@ $this->import_entities_array [$r] = array (
 				's.datec' => '1998-11-06' 
 		);
 		
-// Import certificate
+		// Import certificate
 		$r ++;
 		$this->import_code [$r] = $this->rights_class . '_' . $r;
 		$this->import_label [$r] = 'ImportDataset_agefoddcertificate';
@@ -703,13 +703,13 @@ $this->import_entities_array [$r] = array (
 				'certif.certif_dt_end' => 'AgfCertificate',
 				's.datec' => 'AgfNbreParticipants' 
 		);
-
+		
 		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
 		
-		//Session export
-		$r++;
+		// Session export
+		$r ++;
 		$this->export_code [$r] = $this->rights_class . '_' . $r;
 		$this->export_label [$r] = 'ExportDataset_session';
 		$this->export_icon [$r] = 'bill';
@@ -869,9 +869,8 @@ $this->import_entities_array [$r] = array (
 		// $this->boxes[$r][1] = "myboxa.php";
 		// $r++;
 		// $this->boxes[$r][1] = "myboxb.php";
-		//$r++;
-
-
+		// $r++;
+		
 		// Permissions
 		$this->rights = array ();
 		$r = 0;
@@ -924,7 +923,7 @@ $this->import_entities_array [$r] = array (
 		$this->rights [$r] [4] = 'agendatrainer';
 		$r ++;
 		
-$r ++;
+		$r ++;
 		$this->rights [$r] [0] = 103009;
 		$this->rights [$r] [1] = 'Voir les formations du catalogue';
 		$this->rights [$r] [2] = 'r';
@@ -1099,7 +1098,7 @@ $r ++;
 				'user' => 0 
 		);
 		
-		$r ++;		
+		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
@@ -1515,7 +1514,7 @@ $r ++;
 				$dir = $dirroot . $reldir;
 				$ok = 0;
 				
-			// Run llx_mytable.sql files
+				// Run llx_mytable.sql files
 				$handle = @opendir($dir);
 				// Dir may not exist
 				if (is_resource($handle)) {

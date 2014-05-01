@@ -811,6 +811,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * Return label of a status (draft, validated, .
 	 *
 	 *
+	 *
 	 * ..)
 	 *
 	 * @param int $statut

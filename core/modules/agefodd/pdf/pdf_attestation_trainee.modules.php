@@ -151,7 +151,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
-			                                      
+			                                   
 			// On met en place le cadre
 			$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 			$ep_line1 = 1;

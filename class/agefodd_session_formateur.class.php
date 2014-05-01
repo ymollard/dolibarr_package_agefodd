@@ -382,6 +382,7 @@ class Agefodd_session_formateur {
 	/**
 	 * Return label of a status (draft, validated, .
 	 *
+	 *
 	 * ..)
 	 *
 	 * @param int $statut
@@ -496,6 +497,7 @@ class AgfSessionTrainer {
 	
 	/**
 	 * Return label of a status (draft, validated, .
+	 *
 	 *
 	 * ..)
 	 *

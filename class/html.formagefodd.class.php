@@ -1458,9 +1458,9 @@ class FormAgefodd extends Form {
 					
 					if ($objp->quantity >= 1) {
 						$opt .= " (" . price($objp->unitprice) . ' ' . $currencytext . "/" . $langs->trans("Unit") . ")"; // Do not use strtolower because it breaks utf8
-						                                                                                                        // encoding
+						                                                                                                  // encoding
 						$outval .= " (" . price($objp->unitprice) . ' ' . $currencytextnoent . "/" . $langs->transnoentities("Unit") . ")"; // Do not use strtolower
-							                                                                                                                          // because it breaks utf8 encoding
+							                                                                                                                    // because it breaks utf8 encoding
 					}
 					if ($objp->remise_percent >= 1) {
 						$opt .= " - " . $langs->trans("Discount") . " : " . vatrate($objp->remise_percent) . ' %';

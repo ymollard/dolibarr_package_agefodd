@@ -134,7 +134,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$pdf->SetCompression(false);
 			
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
-			                                                                                   
+			                                                                                
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
@@ -166,7 +166,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 							$widthLogo = $tmp ['width'];
 						}
 						$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
-							                                                                                                                                                                                                 // (auto)
+							                                                                                                                                                                                              // (auto)
 					} else {
 						$pdf->SetTextColor(200, 0, 0);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 8);

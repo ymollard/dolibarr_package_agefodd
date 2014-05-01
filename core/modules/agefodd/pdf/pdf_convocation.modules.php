@@ -174,7 +174,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 								$widthLogo = $tmp ['width'];
 							}
 							$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
-								                                                                                                                                                                                                 // (auto)
+								                                                                                                                                                                                              // (auto)
 						} else {
 							$pdf->SetTextColor(200, 0, 0);
 							$pdf->SetFont('', 'B', pdf_getPDFFontSize($outputlangs) - 2);
