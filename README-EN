@@ -18,6 +18,7 @@ Then, and after downloading the latest version of the module on the Agefodd
 Dolistore site (http://www.dolistore.com/), you must install it as
 follows:
 
+For Dolibarr 3.4
 - In your  Dolibarr installation directory edit the file htdocs/conf/conf.php
 - Find the following lines:
 	#$=dolibarr_main_url_root_alt ...
@@ -36,6 +37,11 @@ example for a Windows system:
 	$dolibarr_main_document_root = 'C:/My Web Sites/Dolibarr/htdocs';
 	$dolibarr_main_url_root_alt = 'http://localhost/Dolibarr/htdocs/custom';
 	$dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
+
+For dolibarr 3.5
+
+$dolibarr_main_url_root_alt = '/custom';
+$dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
 
 For more information on the file conf.php file open it conf.php.example
 

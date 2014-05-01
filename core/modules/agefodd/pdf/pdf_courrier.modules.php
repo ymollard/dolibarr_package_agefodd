@@ -1,7 +1,7 @@
 <?php
-/**
+/*
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012-2013 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

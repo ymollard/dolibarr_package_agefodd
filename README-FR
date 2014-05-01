@@ -19,6 +19,7 @@ Ensuite, et après avoir télécharger la dernière version du module Agefodd su
 site Dolistore (http://www.dolistore.com/), vous devez l'installez de la manière
 suivante:
 
+Pour Dolibarr 3.4
 - Dans votre répertoire d'installation de Dolibarr ouvrer le fichier htdocs/conf/conf.php
 - Trouver les lignes suivantes : 
 	#$dolibarr_main_url_root_alt= ...
@@ -37,6 +38,10 @@ par exemple pour un systéme Windows:
 	$dolibarr_main_document_root='C:/My web sites/Dolibarr/htdocs';
 	$dolibarr_main_url_root_alt='http://localhost/Dolibarr/htdocs/custom';
 	$dolibarr_main_document_root_alt='C:/My web sites/Dolibarr/htdocs/custom';
+	
+Pour dolibarr 3.5
+    $dolibarr_main_url_root_alt='/custom';
+	$dolibarr_main_document_root_alt='/var/www/Dolibarr/htdocs/custom';
 	
 Pour plus d'information sur le fichier conf.php ouvrer le fichier conf.php.example
 

@@ -1,5 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2012 Florian Henry  <florian.henry@open-concept.pro>
+-- Copyright (C) 2012-2014 Florian Henry  <florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -39,4 +39,8 @@ CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_stagiaire_ce
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_certif_state FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_certificate_type FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_training_admlevel FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
-
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_convention_stagiaire FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_cursus FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_cursus_extrafields FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_formation_catalogue_extrafields FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_customer_modtime BEFORE UPDATE ON llx_agefodd_session_extrafields FOR EACH ROW EXECUTE PROCEDURE update_modified_column();

@@ -1,5 +1,6 @@
 <?php
 /* Copyright (C) 2006-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
+ * Copyright (C) 2013-2014 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +25,12 @@
 // This is to make Dolibarr working with Plesk
 set_include_path($_SERVER ['DOCUMENT_ROOT'] . '/htdocs');
 
-require_once ("../master.inc.php");
+$res = @include ("../../master.inc.php"); // For root directory
+if (! $res)
+	$res = @include ("../../../master.inc.php"); // For "custom" directory
+if (! $res)
+	die("Include of main fails");
+
 require_once (NUSOAP_PATH . '/nusoap.php'); // Include SOAP
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/ws.lib.php");
 require_once (DOL_DOCUMENT_ROOT . "/agefodd/class/agefodd.class.php");
