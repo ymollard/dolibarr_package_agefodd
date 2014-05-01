@@ -101,22 +101,22 @@ class modAgefodd extends DolibarrModules {
 				'modFournisseur',
 				'modService',
 				'modAgenda' 
-		); // List of modules id that must be enabled if this module is enabled
-		$this->requiredby = array (); // List of modules id to disable if this one is disabled
+		);
+		$this->requiredby = array ();
 		$this->phpmin = array (
 				4,
 				3 
-		); // Minimum version of PHP required by module
+		);
 		$this->need_dolibarr_version = array (
 				3,
 				4 
-		); // Minimum version of Dolibarr required by module
+		);
 		$this->langfiles = array (
 				'agefodd@agefodd' 
 		);
 		
 		// Constants
-		$this->const = array (); // List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 0 or 'allentities')
+		$this->const = array ();
 		$r = 0;
 		
 		$r ++;
@@ -427,65 +427,66 @@ class modAgefodd extends DolibarrModules {
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array ();
-			$conf->agefodd->enabled = 0; // This is to avoid warnings
+			$conf->agefodd->enabled = 0;
 		}
 		
-		// Dictionnaries
+				// Dictionnaries
 		$this->dictionnaries = array (
 				'langs' => 'agefodd@agefodd',
 				'tabname' => array (
 						MAIN_DB_PREFIX . "agefodd_stagiaire_type",
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type" 
-				), // List of tables we want to see into dictonnary editor
+				),
 				'tablib' => array (
 						"AgfTraineeType",
 						"AgfCertificateType",
 						"AgfTrainingCategTbl" 
-				), // Label of tables
+				),
 				'tabsql' => array (
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f' 
-				), // Request to select fields
+				),
 				'tabsqlsort' => array (
 						'sort ASC',
 						'sort ASC',
 						'sort ASC' 
-				), // Sort order
+				),
 				'tabfield' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort" 
-				), // List of fields (result of select to show dictionnary)
+				),
 				'tabfieldvalue' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort" 
-				), // List of fields (list of fields to edit a record)
+				),
 				'tabfieldinsert' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort" 
-				), // List of fields (list of fields for insert)
+				),
 				'tabrowid' => array (
 						"rowid",
 						"rowid",
 						"rowid" 
-				), // Name of columns with primary key (try to always name it 'rowid')
+				),
 				'tabcond' => array (
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled' 
-				)  // Condition to show each dictionnary
-		);// Condition to show each dictionnary
+				) 
+		);
 		
 		// Import list of trainee
+		$r = 0;
 		$r ++;
 		$this->import_code [$r] = $this->rights_class . '_' . $r;
 		$this->import_label [$r] = 'ImportDataset_trainee';
 		$this->import_icon [$r] = 'contact';
-		$this->import_entities_array [$r] = array (
+$this->import_entities_array [$r] = array (
 				's.fk_soc' => 'company',
 				's.nom' => 'AgfNbreParticipants',
 				's.prenom' => 'AgfNbreParticipants',
@@ -497,11 +498,9 @@ class modAgefodd extends DolibarrModules {
 				's.place_birth' => 'AgfNbreParticipants',
 				's.datec' => 'AgfNbreParticipants' 
 		);
-		// We define here only fields that use another icon that the one defined into import_icon
 		$this->import_tables_array [$r] = array (
 				's' => MAIN_DB_PREFIX . 'agefodd_stagiaire' 
-		); 
-		// List of tables to insert into (insert done in same order)
+		);
 		$this->import_fields_array [$r] = array (
 				's.fk_soc' => 'ThirdPartyName*',
 				's.nom' => 'AgfFamilyName',
@@ -517,7 +516,7 @@ class modAgefodd extends DolibarrModules {
 		$this->import_fieldshidden_array [$r] = array (
 				's.fk_user_author' => 'user->id',
 				's.fk_user_mod' => 'user->id' 
-		); // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
+		);
 		$this->import_convertvalue_array [$r] = array (
 				's.fk_soc' => array (
 						'rule' => 'fetchidfromref',
@@ -544,8 +543,8 @@ class modAgefodd extends DolibarrModules {
 				's.datec' => '1998-11-06' 
 		);
 		
-		// Import certificate
-		$r++;
+// Import certificate
+		$r ++;
 		$this->import_code [$r] = $this->rights_class . '_' . $r;
 		$this->import_label [$r] = 'ImportDataset_agefoddcertificate';
 		$this->import_icon [$r] = 'contact';
@@ -562,11 +561,10 @@ class modAgefodd extends DolibarrModules {
 				'certif.certif_dt_end' => 'AgfCertificate',
 				'certif.datec' => 'AgfCertificate' 
 		);
-		// We define here only fields that use another icon that the one defined into import_icon
 		$this->import_tables_array [$r] = array (
 				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire',
 				'certif' => MAIN_DB_PREFIX . 'agefodd_stagiaire_certif' 
-		); // List of tables to insert into (insert done in same order)
+		);
 		$this->import_fields_array [$r] = array (
 				's.fk_session_agefodd' => 'Id*',
 				's.fk_stagiaire' => 'Id*',
@@ -587,9 +585,8 @@ class modAgefodd extends DolibarrModules {
 				'certif.fk_user_author' => 'user->id',
 				'certif.fk_user_mod' => 'user->id',
 				'certif.fk_session_stagiaire' => 'lastrowid-' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire' 
-		); // aliastable.field => ('user->id' or 'lastrowid-'.tableparent)
+		);
 		$this->import_convertvalue_array [$r] = array ();
-		//$this->import_convertvalue_array[$r]=array('s.fk_soc'=>array('rule'=>'lastrowid',table='t');
 		$this->import_regex_array [$r] = array (
 				'certif.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
@@ -610,7 +607,7 @@ class modAgefodd extends DolibarrModules {
 				'certif.datec' => "2013-11-12" 
 		);
 		
-		//Trainee export
+		// Trainee export
 		$r = 0;
 		$r ++;
 		$this->export_code [$r] = $this->rights_class . '_' . $r;
@@ -654,15 +651,14 @@ class modAgefodd extends DolibarrModules {
 				's.place_birth' => "AgfNbreParticipants",
 				's.datec' => "AgfNbreParticipants" 
 		);
-
-		// We define here only fields that use another picto
+		
 		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as c ON s.fk_soc = c.rowid';
 		$this->export_sql_end [$r] .= ' WHERE c.entity IN (' . getEntity("societe", 1) . ')';
 		
-		//certificate export
-		$r++;
+		// certificate export
+		$r ++;
 		$this->export_code [$r] = $this->rights_class . '_' . $r;
 		$this->export_label [$r] = 'ExportDataset_certificate';
 		$this->export_icon [$r] = 'contact';
@@ -706,7 +702,7 @@ class modAgefodd extends DolibarrModules {
 				'certif.certif_dt_start' => 'AgfCertificate',
 				'certif.certif_dt_end' => 'AgfCertificate',
 				's.datec' => 'AgfNbreParticipants' 
-		); // We define here only fields that use another picto
+		);
 
 		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
@@ -819,7 +815,6 @@ class modAgefodd extends DolibarrModules {
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants' 
 		);
 		
-		
 		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
@@ -866,9 +861,8 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		// Boxes
-		// Boxes
-		$this->boxes = array (); // List of boxes
-		$r= 0;
+		$this->boxes = array ();
+		$r = 0;
 		
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
 		// Example:
@@ -930,94 +924,65 @@ class modAgefodd extends DolibarrModules {
 		$this->rights [$r] [4] = 'agendatrainer';
 		$r ++;
 		
-		$r ++;
-		$this->rights [$r] [0] = 103009; 
-		// id de la permission
-		$this->rights [$r] [1] = 'Voir les formations du catalogue'; 
-		// libelle de la permission
+$r ++;
+		$this->rights [$r] [0] = 103009;
+		$this->rights [$r] [1] = 'Voir les formations du catalogue';
 		$this->rights [$r] [2] = 'r';
-		// type de la permission (deprecie a ce jour)
-		$this->rights [$r] [3] = 1; 
-		// La permission est-elle une permission par defaut
+		$this->rights [$r] [3] = 1;
 		$this->rights [$r] [4] = 'agefodd_formation_catalogue';
 		$this->rights [$r] [5] = 'lire';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103010; 
-		// id de la permission
-		$this->rights [$r] [1] = 'Creer/Modifier les formations du catalogue'; 
-		// libelle de la permission
-		$this->rights [$r] [2] = 'r'; 
-		// type de la permission (deprecie a ce jour)
-		$this->rights [$r] [3] = 1; 
-		// La permission est-elle une permission par defaut
+		$this->rights [$r] [0] = 103010;
+		$this->rights [$r] [1] = 'Creer/Modifier les formations du catalogue';
+		$this->rights [$r] [2] = 'r';
+		$this->rights [$r] [3] = 1;
 		$this->rights [$r] [4] = 'agefodd_formation_catalogue';
 		$this->rights [$r] [5] = 'creer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103011; 
-		// id de la permission
-		$this->rights [$r] [1] = 'Supprimer les formations du catalogue'; 
-		// libelle de la permission
-		$this->rights [$r] [2] = 'r'; 
-		// type de la permission (deprecie a ce jour)
-		$this->rights [$r] [3] = 1; 
-		// La permission est-elle une permission par defaut
+		$this->rights [$r] [0] = 103011;
+		$this->rights [$r] [1] = 'Supprimer les formations du catalogue';
+		$this->rights [$r] [2] = 'r';
+		$this->rights [$r] [3] = 1;
 		$this->rights [$r] [4] = 'agefodd_formation_catalogue';
 		$this->rights [$r] [5] = 'supprimer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103012; 
-		// id de la permission
+		$this->rights [$r] [0] = 103012;
 		$this->rights [$r] [1] = 'Voir les sites (lieux)';
-		// libelle de la permission
 		$this->rights [$r] [2] = 'r';
-		// type de la permission (deprecie a ce jour)
-		$this->rights [$r] [3] = 1; 
-		// La permission est-elle une permission par defaut
+		$this->rights [$r] [3] = 1;
 		$this->rights [$r] [4] = 'agefodd_place';
 		$this->rights [$r] [5] = 'lire';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103013; 
-		// id de la permission
-		$this->rights [$r] [1] = 'Creer/Modifier les sites (lieux)'; 
-		// libelle de la permission
-		$this->rights [$r] [2] = 'r'; 
-		// type de la permission (deprecie a ce jour)
-		$this->rights [$r] [3] = 1; 
-		// La permission est-elle une permission par defaut
+		$this->rights [$r] [0] = 103013;
+		$this->rights [$r] [1] = 'Creer/Modifier les sites (lieux)';
+		$this->rights [$r] [2] = 'r';
+		$this->rights [$r] [3] = 1;
 		$this->rights [$r] [4] = 'agefodd_place';
 		$this->rights [$r] [5] = 'creer';
 		
 		$r ++;
 		$this->rights [$r] [0] = 103014;
-		// id de la permission
-		$this->rights [$r] [1] = 'Supprimer les sites (lieux)'; 
-		// libelle de la permission
-		$this->rights [$r] [2] = 'r'; 
-		// type de la permission (deprecie a ce jour)
-		$this->rights [$r] [3] = 1; 
-		// La permission est-elle une permission par defaut
+		$this->rights [$r] [1] = 'Supprimer les sites (lieux)';
+		$this->rights [$r] [2] = 'r';
+		$this->rights [$r] [3] = 1;
 		$this->rights [$r] [4] = 'agefodd_place';
 		$this->rights [$r] [5] = 'supprimer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103015; 
-		// id de la permission
-		$this->rights [$r] [1] = 'Visibilité transverse des session'; 
-		// libelle de la permission
+		$this->rights [$r] [0] = 103015;
+		$this->rights [$r] [1] = 'Visibilité transverse des session';
 		$this->rights [$r] [2] = 'r';
-		// type de la permission (deprecie a ce jour)
 		$this->rights [$r] [3] = 1;
-		// La permission est-elle une permission par defaut
 		$this->rights [$r] [4] = 'session';
 		$this->rights [$r] [5] = 'all';
 		
 		// Main menu entries
 		$this->menus = array ();
 		$r = 0;
-		
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
@@ -1046,8 +1011,8 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
-		$r ++;
 		
+		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 				'type' => 'left',
@@ -1061,8 +1026,8 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
-		$r ++;
 		
+		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 				'type' => 'left',
@@ -1076,6 +1041,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
@@ -1089,6 +1055,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
@@ -1103,6 +1070,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1116,6 +1084,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1129,6 +1098,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;		
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1142,6 +1112,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1155,6 +1126,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1168,6 +1140,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		
 		$this->menu [$r] = array (
@@ -1182,6 +1155,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1195,6 +1169,7 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
+		
 		$r ++;
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
@@ -1541,9 +1516,9 @@ class modAgefodd extends DolibarrModules {
 				$dir = $dirroot . $reldir;
 				$ok = 0;
 				
-				// Run llx_mytable.sql files
-				$handle = @opendir($dir); // Dir may not exists
-				// Dir may not exists
+			// Run llx_mytable.sql files
+				$handle = @opendir($dir);
+				// Dir may not exist
 				if (is_resource($handle)) {
 					while ( ($file = readdir($handle)) !== false ) {
 						if (preg_match('/\.sql$/i', $file) && ! preg_match('/\.key\.sql$/i', $file) && substr($file, 0, 4) == 'llx_' && substr($file, 0, 4) != 'data') {
@@ -1556,7 +1531,7 @@ class modAgefodd extends DolibarrModules {
 				}
 				
 				// Run llx_mytable.key.sql files (Must be done after llx_mytable.sql)
-				$handle = @opendir($dir); // Dir may not exist
+				$handle = @opendir($dir);
 				// Dir may not exist
 				if (is_resource($handle)) {
 					while ( ($file = readdir($handle)) !== false ) {
@@ -1570,7 +1545,7 @@ class modAgefodd extends DolibarrModules {
 				}
 				
 				// Run data_xxx.sql files (Must be done after llx_mytable.key.sql)
-				$handle = @opendir($dir); // Dir may not exist
+				$handle = @opendir($dir);
 				// Dir may not exist
 				if (is_resource($handle)) {
 					while ( ($file = readdir($handle)) !== false ) {
@@ -1584,7 +1559,7 @@ class modAgefodd extends DolibarrModules {
 				}
 				
 				// Run update_xxx.sql files
-				$handle = @opendir($dir); // Dir may not exist
+				$handle = @opendir($dir);
 				// Dir may not exist
 				if (is_resource($handle)) {
 					while ( ($file = readdir($handle)) !== false ) {
@@ -1592,7 +1567,7 @@ class modAgefodd extends DolibarrModules {
 						if (preg_match('/\.sql$/i', $file) && ! preg_match('/\.key\.sql$/i', $file) && substr($file, 0, 6) == 'update') {
 							dol_syslog(get_class($this) . "::_load_tables_agefodd analyse file:" . $file, LOG_DEBUG);
 							
-							//Special test to know what kind of update script to run
+							// Special test to know what kind of update script to run
 							$sql = "SELECT value FROM " . MAIN_DB_PREFIX . "const WHERE name='AGF_LAST_VERION_INSTALL'";
 							
 							dol_syslog(get_class($this) . "::_load_tables_agefodd sql:" . $sql, LOG_DEBUG);
@@ -1634,7 +1609,7 @@ class modAgefodd extends DolibarrModules {
 			}
 		}
 		
-		//DELETE AGF_LAST_VERION_INSTALL to update with the new one
+		// DELETE AGF_LAST_VERION_INSTALL to update with the new one
 		$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
 		dol_syslog(get_class($this) . "::_load_tables_agefodd sql:" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -1647,3 +1622,4 @@ class modAgefodd extends DolibarrModules {
 		return $ok;
 	}
 }
+				
