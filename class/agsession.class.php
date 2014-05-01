@@ -3656,7 +3656,7 @@ class Agsession extends CommonObject {
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 							}
 							
-							if (! empty($sessionOPCA->num_OPCA_file)) {
+							if (! empty($sessionOPCA->num_OPCA_file) && !empty($conf->global->AGF_MANAGE_OPCA)) {
 								$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . '(' . $sessionOPCA->num_OPCA_file . ')' . "\n";
 							} else {
 								$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
@@ -3833,7 +3833,7 @@ class Agsession extends CommonObject {
 				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
 			}
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
-			if ($this->type_session == 0) {
+			if ($this->type_session == 0 || empty($conf->global->AGF_MANAGE_OPCA)) {
 				// For Intra entreprise you take all trainne
 				$session_trainee->fetch_stagiaire_per_session($this->id);
 			} else {
@@ -3854,11 +3854,15 @@ class Agsession extends CommonObject {
 							$sessionOPCA = new Agsession($this->db);
 							if ($this->type_session == 1) {
 								$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id);
+								$soc_name=$line->socname;
 							} else {
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
+								$socsatic = new Societe($this->db);
+								$result = $socsatic->fetch($this->socid);
+								$soc_name=$socsatic->name;
 							}
-							if (! empty($sessionOPCA->num_OPCA_file)) {
-								$desc_OPCA = "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
+							if (! empty($sessionOPCA->num_OPCA_file) && !empty($conf->global->AGF_MANAGE_OPCA)) {
+								$desc_OPCA = "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $soc_name;
 							}
 							$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 						}
