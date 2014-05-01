@@ -38,6 +38,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 
 require_once '../lib/agefodd.lib.php';
 require_once '../class/html.formagefodd.class.php';
+require_once '../class/agefodd_session_formateur.class.php';
 
 if (! isset ( $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW ))
 	$conf->global->AGENDA_MAX_EVENTS_DAY_VIEW = 3;
@@ -275,7 +276,6 @@ $param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 // print 'x'.$param;
 
 $head = calendars_prepare_head ( '' );
-
 dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
 $formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session,$display_only_trainer_filter);
 dol_fiche_end ();
@@ -295,9 +295,15 @@ $sql .= ' a.datea2,';
 $sql .= ' a.percent,';
 $sql .= ' a.fk_user_author,a.fk_user_action,a.fk_user_done,';
 $sql .= ' a.priority, a.fulldayevent, a.location,';
-$sql .= ' a.fk_soc, a.fk_contact,';
+if (! empty ( $filter_trainer )) {
+	$sql .= ' socsess.rowid as fk_soc,';
+} else {
+	$sql .= ' a.fk_soc,';
+}
+$sql .= '  a.fk_contact,';
 $sql .= ' ca.code';
 $sql .= ' ,agf.rowid as sessionid';
+$sql .= ' ,agf.type_session as sessiontype';
 $sql .= ' ,agf_status.code as sessionstatus';
 if (! empty ( $filter_trainer )) {
 	$sql .= ' ,trainer_session.trainer_status';
@@ -319,7 +325,9 @@ if (! empty ( $filter_trainer )) {
 	if (! empty ( $conf->global->AGF_DOL_TRAINER_AGENDA )) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST'";
 	}
+	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
+
 
 $sql .= ' WHERE a.entity IN (' . getEntity () . ')';
 $sql .= ' AND a.elementtype=\'agefodd_agsession\'';
@@ -410,6 +418,7 @@ if ($resql) {
 		$event->userdone->id = $obj->fk_user_done;
 		
 		$event->sessionid = $obj->sessionid;
+		$event->sessiontype = $obj->sessiontype;
 		$event->sessionstatus = $obj->sessionstatus;
 		if (! empty ( $filter_trainer )) {
 			$event->trainer_status = $obj->trainer_status;
@@ -540,7 +549,7 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 				if ($iter_day == 6)
 					$style .= ' cal_other_month_right';
 				echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
-				show_day_events ( $db, $max_day_in_prev_month + $tmpday, $prev_month, $prev_year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam );
+				show_day_events ( $db, $max_day_in_prev_month + $tmpday, $prev_month, $prev_year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam,0, 60,$display_only_trainer_filter );
 				echo "  </td>\n";
 			} elseif ($tmpday <= $max_day_in_month) {
 				/* Show days of the current month */
@@ -558,7 +567,7 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 					$style .= ' cal_past';
 				
 				echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
-				show_day_events ( $db, $tmpday, $month, $year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam );
+				show_day_events ( $db, $tmpday, $month, $year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam,0, 60,$display_only_trainer_filter );
 				echo "  </td>\n";
 			} else {
 				/* Show days after the current month (next month) */
@@ -566,7 +575,7 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 				if ($iter_day == 6)
 					$style .= ' cal_other_month_right';
 				echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
-				show_day_events ( $db, $tmpday - $max_day_in_month, $next_month, $next_year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam );
+				show_day_events ( $db, $tmpday - $max_day_in_month, $next_month, $next_year, $month, $style, $eventarray, $maxprint, $maxnbofchar, $newparam,0, 60,$display_only_trainer_filter );
 				echo "</td>\n";
 			}
 			$tmpday ++;
@@ -616,14 +625,14 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 				$style = 'cal_today';
 			
 			echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
-			show_day_events ( $db, $tmpday, $month, $year, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300 );
+			show_day_events ( $db, $tmpday, $month, $year, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300, $display_only_trainer_filter);
 			echo "  </td>\n";
 		} else {
 			$style = 'cal_current_month';
 			if ($iter_day == 6)
 				$style .= ' cal_other_month_right';
 			echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
-			show_day_events ( $db, $tmpday - $max_day_in_month, $next_month, $next_year, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300 );
+			show_day_events ( $db, $tmpday - $max_day_in_month, $next_month, $next_year, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300, $display_only_trainer_filter );
 			echo "</td>\n";
 		}
 		$tmpday ++;
@@ -656,7 +665,7 @@ if (empty ( $action ) || $action == 'show_month') // View by month
 	echo " <tr>\n";
 	echo '  <td class="' . $style . ' nowrap" width="14%" valign="top">';
 	$maxnbofchar = 80;
-	show_day_events ( $db, $day, $month, $year, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300 );
+	show_day_events ( $db, $day, $month, $year, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300, $display_only_trainer_filter );
 	echo "</td>\n";
 	echo " </tr>\n";
 	echo '</table>';
@@ -683,12 +692,13 @@ llxFooter ();
  * @param int $minheight height for each event. 60px by default.
  * @return void
  */
-function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60) {
+function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60, $display_only_trainer_filter=0) {
 
 	global $user, $conf, $langs;
-	global $filter, $filtera, $filtert, $filterd, $status;
+	global $filter, $filtera, $filtert, $filterd, $status, $filter_trainer;
 	global $theme_datacolor;
 	global $cachethirdparties, $cachecontacts, $colorindexused;
+	
 	
 	print '<div id="dayevent_' . sprintf ( "%04d", $year ) . sprintf ( "%02d", $month ) . sprintf ( "%02d", $day ) . '" class="dayevent">' . "\n";
 	$curtime = dol_mktime ( 0, 0, 0, $month, $day, $year );
@@ -806,7 +816,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						if (empty ( $event->fulldayevent )) {
 							// print $event->getNomUrl(2).' ';
 						}
-						
+			
 						// Date
 						if (empty ( $event->fulldayevent )) {
 							// print '<strong>';
@@ -843,7 +853,33 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							if ($event->type_code != 'ICALEVENT') {
 								$savlabel = $event->libelle;
 								$event->libelle = $daterange;
+
+								if (!empty($display_only_trainer_filter)) {
+									if ($event->sessiontype==0) {
+										$event->libelle .='-'. $langs->trans('AgfFormTypeSessionIntra');
+									} else {
+										$event->libelle .='-'. $langs->trans('AgfFormTypeSessionInter');
+									}
+								}
+								if (empty($filter_trainer) && !empty($event->sessionid)) {
+									$agf_trainer = new Agefodd_session_formateur($db);
+									$result=$agf_trainer->fetch_formateur_per_session($event->sessionid);
+									if ($result<0) {
+										setEventMessage($agf->error,'errors');
+									}
+									
+									$event->libelle .='<BR>';
+									if (is_array($agf_trainer->lines) && count($agf_trainer->lines)>0) {
+										$event->libelle.= '&nbsp;'.$langs->trans('AgfFormateur').':';
+										foreach($agf_trainer->lines as $line) {
+											$event->libelle .=strtoupper ( $line->lastname ) . ' ' . ucfirst ( $line->firstname ) .',';
+										}
+									}
+								}
+								
 								print $event->getNomUrl ( 0 );
+								
+								
 								$event->libelle = $savlabel;
 							} else {
 								print $daterange;
@@ -901,6 +937,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							print $langs->trans ( "Location" ) . ': ' . $event->location;
 						}
 					}
+					
 					
 					print '</td>';
 					// Status - Percent

@@ -97,6 +97,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= "trigger_name,";
 		$sql .= "datec";
 		
+		
 		$sql .= ") VALUES (";
 		
 		$sql .= " " . (! isset ( $this->level_rank ) ? 'NULL' : "'" . $this->level_rank . "'") . ",";

@@ -145,7 +145,7 @@ class Agefodd_session_element extends CommonObject {
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);fetch_by_session sql=SELECT rowid, fk_element, element_type, fk_soc FROM
-			// llx_agefodd_session_element WHERE fk_session_agefodd=419
+				// llx_agefodd_session_element WHERE fk_session_agefodd=419
 				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
@@ -345,7 +345,7 @@ class Agefodd_session_element extends CommonObject {
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Return 1 if all invoice validated
 	 *
@@ -961,6 +961,24 @@ class Agefodd_session_element extends CommonObject {
 						return - 1;
 					}
 				}
+				
+				if ($obj->element_type == 'invoice_supplier_trainer' && $type_element=='invoice_supplier_trainer') {
+					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facture_fourn_det as ldet WHERE ldet.fk_facture_fourn=" . $obj->fk_element;
+					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
+					dol_syslog ( get_class ( $this ) . "::get_charges_amount sql=" . $sqlcharges, LOG_DEBUG );
+					$resqlcharges = $this->db->query ( $sqlcharges );
+					if ($resqlcharges) {
+						$objcharges = $this->db->fetch_object ( $sqlcharges );
+						$total_charges = $objcharges->totalcharges;
+						$this->db->free ( $resqlcharges );
+					} else {
+						$this->error = "Error " . $this->db->lasterror ();
+						dol_syslog ( get_class ( $this ) . "::get_charges_amount " . $this->error, LOG_ERR );
+						return - 1;
+					}
+				}
+				
+				
 			}
 			$this->db->free ( $resql );
 			return $total_charges;

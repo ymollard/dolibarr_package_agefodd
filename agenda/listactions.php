@@ -52,6 +52,7 @@ $status = GETPOST ( "status", 'alpha' );
 $type = GETPOST ( 'type' );
 $display_only_trainer_filter= GETPOST('displayonlytrainerfilter','int');
 
+
 $filterdatestart = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_start_filtermonth', 'int' ), GETPOST ( 'dt_start_filterday', 'int' ), GETPOST ( 'dt_start_filteryear', 'int' ) );
 $filterdatesend = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_end_filtermonth', 'int' ), GETPOST ( 'dt_end_filterday', 'int' ), GETPOST ( 'dt_end_filteryear', 'int' ) );
 $onlysession = GETPOST ( 'onlysession', 'int' );

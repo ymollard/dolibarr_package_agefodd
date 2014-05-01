@@ -235,7 +235,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
 		$sql .= " WHERE f.entity IN (" . getEntity ( 'agsession' ) . ")";
-			if ($arch == 0 || $arch == 1)
+		if ($arch == 0 || $arch == 1)
 			$sql .= " AND f.archive = " . $arch;
 		
 		// Manage filter
