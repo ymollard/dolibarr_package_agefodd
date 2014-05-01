@@ -431,8 +431,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	$art1 .= $langs->trans('AgfConvArt1_13') . "\n";
 	
-	$stagiaires = new Agefodd_session_stagiaire($db);
-	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid, $socid);
+	
 	$art1 .= $langs->trans('AgfConvArt1_14') . ' ' . $nbstag . ' ' . $langs->trans('AgfConvArt1_15');
 	if ($nbstag > 1)
 		$art1 .= $langs->trans('AgfConvArt1_16');
@@ -450,24 +449,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$art2 = $langs->trans('AgfConvArt2_1');
 	}
 	
-	// texte3
+	// texte3	
 	$art3 = $langs->trans('AgfConvArt3_1');
-	($nbstag > 1) ? $art3 .= $langs->trans('AgfConvArt3_2') . ' ' : $art3 .= ' ' . $langs->trans('AgfConvArt3_3') . ' ';
-	
-	for($i = 0; $i < $nbstag; $i ++) {
-		$art3 .= $stagiaires->lines [$i]->nom . ' ' . $stagiaires->lines [$i]->prenom;
-		if (! empty($stagiaires->lines [$i]->poste)) {
-			$art3 .= ' (' . $stagiaires->lines [$i]->poste . ')';
-		}
-		if ($i == $nbstag - 1)
-			$art3 .= '.';
-		else {
-			if ($i == $nbstag - 2)
-				$art3 .= ' ' . $langs->trans('AgfConvArt3_4') . ' ';
-			else
-				$art3 .= ', ';
-		}
-	}
 	
 	// texte 4
 	if ($conf->global->FACTURE_TVAOPTION == "franchise") {
@@ -577,6 +560,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$options_trainee_array = array ();
 	$options_trainee_array_id = array ();
 	
+	$stagiaires = new Agefodd_session_stagiaire($db);
 	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid);
 	foreach ( $stagiaires->lines as $traine_line ) {
 		$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
@@ -599,7 +583,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $art2 . '</textarea></td></tr>';
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt3") . '</td>';
-	print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">' . $art3 . '</textarea></td></tr>';
+	print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">' . $art3 . '</textarea>';
+	print img_picto($langs->trans('AgfExplainListTrainee'), 'info').$langs->trans('AgfExplainListTrainee');
+	print '</td></tr>';
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt4") . '</td>';
 	print '<td><textarea name="art4" rows="3" cols="0" class="flat" style="width:360px;">' . $art4 . '</textarea></td></tr>';
@@ -731,7 +717,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art2 . '</textarea></td></tr>';
 			
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt3") . '</td>';
-			print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art3 . '</textarea></td></tr>';
+			print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art3 . '</textarea>';
+			print img_picto($langs->trans('AgfExplainListTrainee'), 'info').$langs->trans('AgfExplainListTrainee');
+			print '</td></tr>';
 			
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt4") . '</td>';
 			print '<td><textarea name="art4" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art4 . '</textarea></td></tr>';

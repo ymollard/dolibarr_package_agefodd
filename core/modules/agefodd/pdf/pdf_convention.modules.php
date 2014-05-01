@@ -28,6 +28,8 @@ require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_contact.class.php');
 require_once ('../class/agefodd_convention.class.php');
+require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_stagiaire.class.php');
 require_once ('../class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
@@ -105,8 +107,11 @@ class pdf_convention extends ModelePDFAgefodd {
 		
 		if (! is_object($agf)) {
 			$id = $agf;
+			// On récupere le contenu de la convention
+			$agf_conv = new Agefodd_convention($this->db);
+			$result = $agf_conv->fetch(0, 0, $id);
 			$agf = new Agsession($this->db);
-			$ret = $agf->fetch($id);
+			$ret = $agf->fetch($agf_conv->sessid);
 		}
 		
 		// Definition of $dir and $file
@@ -142,10 +147,6 @@ class pdf_convention extends ModelePDFAgefodd {
 			
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
-			
-			// On récupere le contenu de la convention
-			$agf_conv = new Agefodd_convention($this->db);
-			$result = $agf_conv->fetch($id, $socid);
 			
 			$agf_comdetails = new Agefodd_convention($this->db);
 			if ($agf_conv->element_type == 'invoice') {
@@ -411,7 +412,37 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-				$this->str = $agf_conv->art3;
+				if (preg_match('/List_Participants/',$agf_conv->art3)) {
+					if (is_array($agf_conv->line_trainee) && count($agf_conv->line_trainee) > 0) {
+						$nbstag = count($agf_conv->line_trainee);
+						$stagiaires_session_conv = new Agefodd_session_stagiaire($this->db);
+
+						foreach ( $agf_conv->line_trainee as $trainee_session_id ) {
+							$result = $stagiaires_session_conv->fetch($trainee_session_id);
+							if ($result < 0) {
+								setEventMessage($stagiaires->error, 'errors');
+							}
+							$stagiaire_conv = new Agefodd_stagiaire($this->db);
+							$result = $stagiaire_conv->fetch($stagiaires_session_conv->fk_stagiaire);
+							if ($result < 0) {
+								setEventMessage($stagiaire_conv->error, 'errors');
+							}
+							$traine_list[] = $stagiaire_conv->nom . ' ' . $stagiaire_conv->prenom;
+						}	
+					}
+					if (count($traine_list)>0) {
+						if (count($traine_list)>1) { 
+							$trainee_list_str=' '.$langs->trans('AgfConvArt3_2').' '.implode(', ',$traine_list);
+						} else {
+							$trainee_list_str=' ' . $langs->trans('AgfConvArt3_3') . ' '.implode(', ',$traine_list);
+						}
+					}
+						
+					$art3 = str_replace('List_Participants', $trainee_list_str, $agf_conv->art3);
+				}else {
+					$art3 = $agf_conv->art3;
+				}
+				$this->str = $art3;
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 				

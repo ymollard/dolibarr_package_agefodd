@@ -51,6 +51,7 @@ function show_conv($file, $socid, $nom_courrier) {
 		}
 	}
 	
+	
 	if (! empty($conf->global->MAIN_MODULE_COMMANDE)) {
 		if (count($propal_array) > 0) {
 			if ((count($order_array) == 0) && (count($invoice_array) == 0) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
