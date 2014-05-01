@@ -3,7 +3,7 @@
  * Copyright (C) 2003      Eric Seigne          <erics@rycks.com>
  * Copyright (C) 2004-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2012 Regis Houssin        <regis.houssin@capnetworks.com>
- * Copyright (C) 2013 Florian HEnry		        <florian.henry@open-concept.pro>
+ * Copyright (C) 2013-2014 Florian HEnry		<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
@@ -37,32 +37,31 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once '../lib/agefodd.lib.php';
 require_once '../class/html.formagefodd.class.php';
 
-$langs->load ( "companies" );
-$langs->load ( "agenda" );
-$langs->load ( "commercial" );
-$langs->load ( "agefodd@agefodd" );
+$langs->load("companies");
+$langs->load("agenda");
+$langs->load("commercial");
+$langs->load("agefodd@agefodd");
 
-$action = GETPOST ( 'action', 'alpha' );
-$year = GETPOST ( "year", 'int' );
-$month = GETPOST ( "month", 'int' );
-$day = GETPOST ( "day", 'int' );
-$actioncode = GETPOST ( "actioncode", "alpha", 3 );
-$pid = GETPOST ( "projectid", 'int', 3 );
-$status = GETPOST ( "status", 'alpha' );
-$type = GETPOST ( 'type' );
-$display_only_trainer_filter= GETPOST('displayonlytrainerfilter','int');
+$action = GETPOST('action', 'alpha');
+$year = GETPOST("year", 'int');
+$month = GETPOST("month", 'int');
+$day = GETPOST("day", 'int');
+$actioncode = GETPOST("actioncode", "alpha", 3);
+$pid = GETPOST("projectid", 'int', 3);
+$status = GETPOST("status", 'alpha');
+$type = GETPOST('type');
+$display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 
+$filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth', 'int'), GETPOST('dt_start_filterday', 'int'), GETPOST('dt_start_filteryear', 'int'));
+$filterdatesend = dol_mktime(0, 0, 0, GETPOST('dt_end_filtermonth', 'int'), GETPOST('dt_end_filterday', 'int'), GETPOST('dt_end_filteryear', 'int'));
+$onlysession = GETPOST('onlysession', 'int');
 
-$filterdatestart = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_start_filtermonth', 'int' ), GETPOST ( 'dt_start_filterday', 'int' ), GETPOST ( 'dt_start_filteryear', 'int' ) );
-$filterdatesend = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_end_filtermonth', 'int' ), GETPOST ( 'dt_end_filterday', 'int' ), GETPOST ( 'dt_end_filteryear', 'int' ) );
-$onlysession = GETPOST ( 'onlysession', 'int' );
-
-$filter = GETPOST ( "filter", '', 3 );
-$filter_commercial = GETPOST ( 'commercial', 'int' );
-$filter_customer = GETPOST ( 'fk_soc', 'int' );
-$filter_contact = GETPOST ( 'contact', 'int' );
-$filter_trainer = GETPOST ( 'trainerid', 'int' );
-$filter_type_session = GETPOST ( 'type_session', 'int' );
+$filter = GETPOST("filter", '', 3);
+$filter_commercial = GETPOST('commercial', 'int');
+$filter_customer = GETPOST('fk_soc', 'int');
+$filter_contact = GETPOST('contact', 'int');
+$filter_trainer = GETPOST('trainerid', 'int');
+$filter_type_session = GETPOST('type_session', 'int');
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
 }
@@ -78,11 +77,11 @@ if ($filter_trainer == - 1) {
 if ($filter_type_session == - 1) {
 	$filter_type_session = '';
 }
-$showbirthday = empty ( $conf->use_javascript_ajax ) ? GETPOST ( "showbirthday", "int" ) : 1;
+$showbirthday = empty($conf->use_javascript_ajax) ? GETPOST("showbirthday", "int") : 1;
 
-$sortfield = GETPOST ( "sortfield", 'alpha' );
-$sortorder = GETPOST ( "sortorder", 'alpha' );
-$page = GETPOST ( "page", 'int' );
+$sortfield = GETPOST("sortfield", 'alpha');
+$sortorder = GETPOST("sortorder", 'alpha');
+$page = GETPOST("page", 'int');
 if ($page == - 1) {
 	$page = 0;
 }
@@ -106,7 +105,7 @@ if (! $sortfield) {
 $canedit = 1;
 // Security check
 if (! $user->rights->agefodd->agenda)
-	accessforbidden ();
+	accessforbidden();
 	
 	/*
 $socid = GETPOST("socid",'int');
@@ -128,26 +127,26 @@ if (! $user->rights->agenda->allactions->read || $filter=='mine')	// If no permi
 /*
  *	Actions
  */
-if (GETPOST ( "viewcal" ) || GETPOST ( "viewweek" ) || GETPOST ( "viewday" )) {
+if (GETPOST("viewcal") || GETPOST("viewweek") || GETPOST("viewday")) {
 	$param = '';
 	foreach ( $_POST as $key => $val ) {
-		$param .= '&' . $key . '=' . urlencode ( $val );
+		$param .= '&' . $key . '=' . urlencode($val);
 	}
 	// print $param;
-	header ( "Location: " . dol_buildpath ( '/agefodd/agenda/index.php', 1 ) . '?' . $param );
-	exit ();
+	header("Location: " . dol_buildpath('/agefodd/agenda/index.php', 1) . '?' . $param);
+	exit();
 }
 
 /*
  *  View
  */
 
-$now = dol_now ();
+$now = dol_now();
 
 $help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&omodulodulo_Agenda';
-llxHeader ( '', $langs->trans ( "Agenda" ), $help_url );
+llxHeader('', $langs->trans("Agenda"), $help_url);
 
-$form = new Form ( $db );
+$form = new Form($db);
 
 // Define list of all external calendars
 $listofextcals = array ();
@@ -189,14 +188,14 @@ if ($type)
 	$param .= "&type=" . $type;
 if ($actioncode)
 	$param .= "&actioncode=" . $actioncode;
-if ($filter_type_session!='')
+if ($filter_type_session != '')
 	$param .= '&type_session=' . $filter_type_session;
 
-if (! empty ( $filterdatestart ))
-	$param .= "&dt_start_filtermonth=" . GETPOST ( 'dt_start_filtermonth', 'int' ) . '&dt_start_filterday=' . GETPOST ( 'dt_start_filterday', 'int' ) . '&dt_start_filteryear=' . GETPOST ( 'dt_start_filteryear', 'int' );
-if (! empty ( $filterdatesend ))
-	$param .= "&dt_end_filtermonth=" . GETPOST ( 'dt_end_filtermonth', 'int' ) . '&dt_end_filterday=' . GETPOST ( 'dt_end_filterday', 'int' ) . '&dt_end_filteryear=' . GETPOST ( 'dt_end_filteryear', 'int' );
-if (! empty ( $onlysession ))
+if (! empty($filterdatestart))
+	$param .= "&dt_start_filtermonth=" . GETPOST('dt_start_filtermonth', 'int') . '&dt_start_filterday=' . GETPOST('dt_start_filterday', 'int') . '&dt_start_filteryear=' . GETPOST('dt_start_filteryear', 'int');
+if (! empty($filterdatesend))
+	$param .= "&dt_end_filtermonth=" . GETPOST('dt_end_filtermonth', 'int') . '&dt_end_filterday=' . GETPOST('dt_end_filterday', 'int') . '&dt_end_filteryear=' . GETPOST('dt_end_filteryear', 'int');
+if (! empty($onlysession))
 	$param .= "&onlysession=" . $onlysession;
 
 $sql = "SELECT s.nom as societe, s.rowid as socid, s.client,";
@@ -209,7 +208,7 @@ $sql .= " ud.login as logindone, ud.rowid as useriddone,";
 $sql .= " sp.lastname, sp.firstname";
 $sql .= ' ,agf.rowid as sessionid';
 $sql .= ' ,agf_status.code as sessionstatus';
-if (! empty ( $filter_trainer )) {
+if (! empty($filter_trainer)) {
 	$sql .= ' ,socsess.rowid as socid';
 	$sql .= ' ,socsess.nom as societe';
 	$sql .= ', socsess.client';
@@ -232,27 +231,27 @@ $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ut ON a.fk_user_action = ut.ro
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ud ON a.fk_user_done = ud.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session as agf ON agf.rowid = a.fk_element AND a.elementtype=\'agefodd_agsession\'';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON agf.status = agf_status.rowid';
-if (! empty ( $filter_commercial )) {
+if (! empty($filter_commercial)) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_commercial as salesman ON agf.rowid = salesman.fk_session_agefodd ';
 }
-if (! empty ( $filter_contact )) {
+if (! empty($filter_contact)) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_contact as contact_session ON agf.rowid = contact_session.fk_session_agefodd ';
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_contact as contact ON contact_session.fk_agefodd_contact = contact.rowid ';
 }
-if (! empty ( $filter_trainer )) {
+if (! empty($filter_trainer)) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-	if (! empty ( $conf->global->AGF_DOL_TRAINER_AGENDA )) {
+	if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST' ";
 	}
 	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
 $sql .= " WHERE c.id = a.fk_action";
 $sql .= ' AND a.fk_user_author = u.rowid';
-$sql .= ' AND a.entity IN (' . getEntity () . ')'; // To limit to entity
+$sql .= ' AND a.entity IN (' . getEntity() . ')'; // To limit to entity
 if ($actioncode)
-	$sql .= " AND c.code='" . $db->escape ( $actioncode ) . "'";
+	$sql .= " AND c.code='" . $db->escape($actioncode) . "'";
 if ($pid)
-	$sql .= " AND a.fk_project=" . $db->escape ( $pid );
+	$sql .= " AND a.fk_project=" . $db->escape($pid);
 if (! $user->rights->societe->client->voir && ! $socid)
 	$sql .= " AND (a.fk_soc IS NULL OR sc.fk_user = " . $user->id . ")";
 if ($socid)
@@ -260,18 +259,18 @@ if ($socid)
 if ($type)
 	$sql .= " AND c.id = " . $type;
 if ($status == 'done') {
-	$sql .= " AND (a.percent = 100 OR (a.percent = -1 AND a.datep2 <= '" . $db->idate ( $now ) . "'))";
+	$sql .= " AND (a.percent = 100 OR (a.percent = -1 AND a.datep2 <= '" . $db->idate($now) . "'))";
 }
 if ($status == 'todo') {
-	$sql .= " AND ((a.percent >= 0 AND a.percent < 100) OR (a.percent = -1 AND a.datep2 > '" . $db->idate ( $now ) . "'))";
+	$sql .= " AND ((a.percent >= 0 AND a.percent < 100) OR (a.percent = -1 AND a.datep2 > '" . $db->idate($now) . "'))";
 }
-if (! empty ( $filter_commercial )) {
+if (! empty($filter_commercial)) {
 	$sql .= " AND salesman.fk_user_com=" . $filter_commercial;
 }
-if (! empty ( $filter_customer )) {
+if (! empty($filter_customer)) {
 	$sql .= " AND agf.fk_soc=" . $filter_customer;
 }
-if (! empty ( $filter_contact )) {
+if (! empty($filter_contact)) {
 	
 	if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 		$sql .= " AND contact.fk_socpeople=" . $filter_contact;
@@ -279,7 +278,7 @@ if (! empty ( $filter_contact )) {
 		$sql .= " AND contact.rowid=" . $filter_contact;
 	}
 }
-if (! empty ( $filter_trainer )) {
+if (! empty($filter_trainer)) {
 	
 	if ($type == 'trainer') {
 		$sql .= " AND trainer.fk_user=" . $filter_trainer;
@@ -289,50 +288,50 @@ if (! empty ( $filter_trainer )) {
 } else {
 	$sql .= " AND ca.code<>'AC_AGF_SESST'";
 }
-if (! empty ( $filterdatestart )) {
-	$sql .= ' AND a.datep>=\'' . $db->idate ( $filterdatestart ) . '\'';
+if (! empty($filterdatestart)) {
+	$sql .= ' AND a.datep>=\'' . $db->idate($filterdatestart) . '\'';
 }
-if (! empty ( $filterdatesend )) {
-	$sql .= ' AND a.datep2<=\'' . $db->idate ( $filterdatesend ) . '\'';
+if (! empty($filterdatesend)) {
+	$sql .= ' AND a.datep2<=\'' . $db->idate($filterdatesend) . '\'';
 }
-if (! empty ( $onlysession ) && empty($filter_trainer)) {
+if (! empty($onlysession) && empty($filter_trainer)) {
 	$sql .= " AND ca.code='AC_AGF_SESS'";
 }
-if ($filter_type_session!='') {
-	$sql .= " AND agf.type_session=".$filter_type_session;
+if ($filter_type_session != '') {
+	$sql .= " AND agf.type_session=" . $filter_type_session;
 }
-$sql .= $db->order ( $sortfield, $sortorder );
-$sql .= $db->plimit ( $limit + 1, $offset );
+$sql .= $db->order($sortfield, $sortorder);
+$sql .= $db->plimit($limit + 1, $offset);
 // print $sql;
 
-dol_syslog ( "agefodd/agenda/listactions.php sql=" . $sql );
-$resql = $db->query ( $sql );
+dol_syslog("agefodd/agenda/listactions.php sql=" . $sql);
+$resql = $db->query($sql);
 if ($resql) {
-	$actionstatic = new ActionComm ( $db );
-	$societestatic = new Societe ( $db );
-	$formagefodd = new FormAgefodd ( $db );
+	$actionstatic = new ActionComm($db);
+	$societestatic = new Societe($db);
+	$formagefodd = new FormAgefodd($db);
 	
-	$num = $db->num_rows ( $resql );
+	$num = $db->num_rows($resql);
 	
-	$title = $langs->trans ( "DoneAndToDoActions" );
+	$title = $langs->trans("DoneAndToDoActions");
 	if ($status == 'done')
-		$title = $langs->trans ( "DoneActions" );
+		$title = $langs->trans("DoneActions");
 	if ($status == 'todo')
-		$title = $langs->trans ( "ToDoActions" );
+		$title = $langs->trans("ToDoActions");
 	
 	if ($socid) {
-		$societe = new Societe ( $db );
-		$societe->fetch ( $socid );
-		$newtitle = $langs->trans ( $title ) . ' ' . $langs->trans ( "For" ) . ' ' . $societe->nom;
+		$societe = new Societe($db);
+		$societe->fetch($socid);
+		$newtitle = $langs->trans($title) . ' ' . $langs->trans("For") . ' ' . $societe->nom;
 	} else {
-		$newtitle = $langs->trans ( $title );
+		$newtitle = $langs->trans($title);
 	}
 	
-	$head = calendars_prepare_head ( '' );
+	$head = calendars_prepare_head('');
 	
-	dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
-	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session,$display_only_trainer_filter );
-	dol_fiche_end ();
+	dol_fiche_head($head, 'card', $langs->trans('AgfMenuAgenda'), 0, $picto);
+	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter);
+	dol_fiche_end();
 	
 	// Add link to show birthdays
 	$link = '';
@@ -351,31 +350,31 @@ if ($resql) {
     }
     */
 	
-	print_barre_liste ( $newtitle, $page, $_SERVER ["PHP_SELF"], $param, $sortfield, $sortorder, $link, $num, 0, '' );
+	print_barre_liste($newtitle, $page, $_SERVER ["PHP_SELF"], $param, $sortfield, $sortorder, $link, $num, 0, '');
 	// print '<br>';
 	
 	$i = 0;
 	print '<table class="liste" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre ( $langs->trans ( "Action" ), $_SERVER ["PHP_SELF"], "a.label", $param, "", "", $sortfield, $sortorder );
+	print_liste_field_titre($langs->trans("Action"), $_SERVER ["PHP_SELF"], "a.label", $param, "", "", $sortfield, $sortorder);
 	// print_liste_field_titre($langs->trans("Title"),$_SERVER["PHP_SELF"],"a.label",$param,"","",$sortfield,$sortorder);
-	print_liste_field_titre ( $langs->trans ( "DateStart" ), $_SERVER ["PHP_SELF"], "a.datep,a.datep2", $param, '', 'align="center"', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "DateEnd" ), $_SERVER ["PHP_SELF"], "a.datep2", $param, '', 'align="center"', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ["PHP_SELF"], "s.nom", $param, "", "", $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Contact" ), $_SERVER ["PHP_SELF"], "a.fk_contact", $param, "", "", $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "ActionUserAsk" ), $_SERVER ["PHP_SELF"], "ua.login", $param, "", "", $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AffectedTo" ), $_SERVER ["PHP_SELF"], "ut.login", $param, "", "", $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "DoneBy" ), $_SERVER ["PHP_SELF"], "ud.login", $param, "", "", $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "Status" ), $_SERVER ["PHP_SELF"], "a.percent", $param, "", 'align="right"', $sortfield, $sortorder );
+	print_liste_field_titre($langs->trans("DateStart"), $_SERVER ["PHP_SELF"], "a.datep,a.datep2", $param, '', 'align="center"', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("DateEnd"), $_SERVER ["PHP_SELF"], "a.datep2", $param, '', 'align="center"', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Company"), $_SERVER ["PHP_SELF"], "s.nom", $param, "", "", $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Contact"), $_SERVER ["PHP_SELF"], "a.fk_contact", $param, "", "", $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("ActionUserAsk"), $_SERVER ["PHP_SELF"], "ua.login", $param, "", "", $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AffectedTo"), $_SERVER ["PHP_SELF"], "ut.login", $param, "", "", $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("DoneBy"), $_SERVER ["PHP_SELF"], "ud.login", $param, "", "", $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ["PHP_SELF"], "a.percent", $param, "", 'align="right"', $sortfield, $sortorder);
 	print "</tr>\n";
 	
-	$contactstatic = new Contact ( $db );
-	$now = dol_now ();
+	$contactstatic = new Contact($db);
+	$now = dol_now();
 	$delay_warning = $conf->global->MAIN_DELAY_ACTIONS_TODO * 24 * 60 * 60;
 	
 	$var = true;
-	while ( $i < min ( $num, $limit ) ) {
-		$obj = $db->fetch_object ( $resql );
+	while ( $i < min($num, $limit) ) {
+		$obj = $db->fetch_object($resql);
 		
 		$var = ! $var;
 		
@@ -396,22 +395,22 @@ if ($resql) {
 		// print '</td>';
 		
 		print '<td align="center" class="nowrap">';
-		print dol_print_date ( $db->jdate ( $obj->dp ), "day" );
+		print dol_print_date($db->jdate($obj->dp), "day");
 		$late = 0;
-		if ($obj->percent == 0 && $obj->dp && $db->jdate ( $obj->dp ) < ($now - $delay_warning))
+		if ($obj->percent == 0 && $obj->dp && $db->jdate($obj->dp) < ($now - $delay_warning))
 			$late = 1;
-		if ($obj->percent == 0 && ! $obj->dp && $obj->dp2 && $db->jdate ( $obj->dp ) < ($now - $delay_warning))
+		if ($obj->percent == 0 && ! $obj->dp && $obj->dp2 && $db->jdate($obj->dp) < ($now - $delay_warning))
 			$late = 1;
-		if ($obj->percent > 0 && $obj->percent < 100 && $obj->dp2 && $db->jdate ( $obj->dp2 ) < ($now - $delay_warning))
+		if ($obj->percent > 0 && $obj->percent < 100 && $obj->dp2 && $db->jdate($obj->dp2) < ($now - $delay_warning))
 			$late = 1;
-		if ($obj->percent > 0 && $obj->percent < 100 && ! $obj->dp2 && $obj->dp && $db->jdate ( $obj->dp ) < ($now - $delay_warning))
+		if ($obj->percent > 0 && $obj->percent < 100 && ! $obj->dp2 && $obj->dp && $db->jdate($obj->dp) < ($now - $delay_warning))
 			$late = 1;
 		if ($late)
-			print img_warning ( $langs->trans ( "Late" ) ) . ' ';
+			print img_warning($langs->trans("Late")) . ' ';
 		print '</td>';
 		
 		print '<td align="center" class="nowrap">';
-		print dol_print_date ( $db->jdate ( $obj->dp2 ), "day" );
+		print dol_print_date($db->jdate($obj->dp2), "day");
 		print '</td>';
 		
 		// Third party
@@ -420,7 +419,7 @@ if ($resql) {
 			$societestatic->id = $obj->socid;
 			$societestatic->client = $obj->client;
 			$societestatic->nom = $obj->societe;
-			print $societestatic->getNomUrl ( 1, '', 10 );
+			print $societestatic->getNomUrl(1, '', 10);
 		} else
 			print '&nbsp;';
 		print '</td>';
@@ -431,7 +430,7 @@ if ($resql) {
 			$contactstatic->lastname = $obj->lastname;
 			$contactstatic->firstname = $obj->firstname;
 			$contactstatic->id = $obj->fk_contact;
-			print $contactstatic->getNomUrl ( 1, '', 10 );
+			print $contactstatic->getNomUrl(1, '', 10);
 		} else {
 			print "&nbsp;";
 		}
@@ -440,10 +439,10 @@ if ($resql) {
 		// User author
 		print '<td align="left">';
 		if ($obj->useridauthor) {
-			$userstatic = new User ( $db );
+			$userstatic = new User($db);
 			$userstatic->id = $obj->useridauthor;
 			$userstatic->login = $obj->loginauthor;
-			print $userstatic->getLoginUrl ( 1 );
+			print $userstatic->getLoginUrl(1);
 		} else
 			print '&nbsp;';
 		print '</td>';
@@ -451,10 +450,10 @@ if ($resql) {
 		// User to do
 		print '<td align="left">';
 		if ($obj->useridtodo) {
-			$userstatic = new User ( $db );
+			$userstatic = new User($db);
 			$userstatic->id = $obj->useridtodo;
 			$userstatic->login = $obj->logintodo;
-			print $userstatic->getLoginUrl ( 1 );
+			print $userstatic->getLoginUrl(1);
 		} else
 			print '&nbsp;';
 		print '</td>';
@@ -462,25 +461,25 @@ if ($resql) {
 		// User did
 		print '<td align="left">';
 		if ($obj->useriddone) {
-			$userstatic = new User ( $db );
+			$userstatic = new User($db);
 			$userstatic->id = $obj->useriddone;
 			$userstatic->login = $obj->logindone;
-			print $userstatic->getLoginUrl ( 1 );
+			print $userstatic->getLoginUrl(1);
 		} else
 			print '&nbsp;';
 		print '</td>';
 		
 		// Status/Percent
-		print '<td align="right" class="nowrap">' . $langs->trans ( 'AgfStatusSession_' . $obj->sessionstatus ) . '</td>';
+		print '<td align="right" class="nowrap">' . $langs->trans('AgfStatusSession_' . $obj->sessionstatus) . '</td>';
 		
 		print "</tr>\n";
 		$i ++;
 	}
 	print "</table>";
-	$db->free ( $resql );
+	$db->free($resql);
 } else {
-	dol_print_error ( $db );
+	dol_print_error($db);
 }
 
-$db->close ();
-llxFooter ();
+$db->close();
+llxFooter();

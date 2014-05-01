@@ -22,7 +22,7 @@
  * \ingroup project
  * \brief Fichier contenant la classe du modele de numerotation de reference de projet Universal
  */
-dol_include_once ( '/agefodd/core/modules/agefodd/modules_agefodd.php' );
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 /**
  * Classe du modele de numerotation de reference de projet Universal
@@ -31,39 +31,38 @@ class mod_agefoddcertif_universal extends ModeleNumRefAgefodd {
 	var $version = 'dolibarr'; // 'development', 'experimental', 'dolibarr'
 	var $error = '';
 	var $nom = 'Universal';
-
+	
 	/**
 	 * Renvoi la description du modele de numerotation
 	 *
 	 * @return string Texte descripif
 	 */
 	function info() {
-
 		global $conf, $langs;
 		
-		$langs->load ( "agefodd@agefodd" );
-		$langs->load ( "admin" );
+		$langs->load("agefodd@agefodd");
+		$langs->load("admin");
 		
-		$form = new Form ( $this->db );
+		$form = new Form($this->db);
 		
-		$texte = $langs->trans ( 'GenericNumRefModelDesc' ) . "<br>\n";
+		$texte = $langs->trans('GenericNumRefModelDesc') . "<br>\n";
 		$texte .= '<form action="' . $_SERVER ["PHP_SELF"] . '" method="POST">';
 		$texte .= '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
 		$texte .= '<input type="hidden" name="action" value="updateMaskCertif">';
 		$texte .= '<input type="hidden" name="maskconstagefodd" value="AGF_CERTIF_UNIVERSAL_MASK">';
 		$texte .= '<table class="nobordernopadding" width="100%">';
 		
-		$tooltip = $langs->trans ( "GenericMaskCodes", $langs->transnoentities ( "AgfTraining" ), $langs->transnoentities ( "AgfTraining" ) );
-		$tooltip .= $langs->trans ( "GenericMaskCodes2" );
-		$tooltip .= $langs->trans ( "GenericMaskCodes3" );
-		$tooltip .= $langs->trans ( "GenericMaskCodes4a", $langs->transnoentities ( "AgfTraining" ), $langs->transnoentities ( "AgfTraining" ) );
-		$tooltip .= $langs->trans ( "GenericMaskCodes5" );
+		$tooltip = $langs->trans("GenericMaskCodes", $langs->transnoentities("AgfTraining"), $langs->transnoentities("AgfTraining"));
+		$tooltip .= $langs->trans("GenericMaskCodes2");
+		$tooltip .= $langs->trans("GenericMaskCodes3");
+		$tooltip .= $langs->trans("GenericMaskCodes4a", $langs->transnoentities("AgfTraining"), $langs->transnoentities("AgfTraining"));
+		$tooltip .= $langs->trans("GenericMaskCodes5");
 		
 		// Parametrage du prefix
-		$texte .= '<tr><td>' . $langs->trans ( "Mask" ) . ':</td>';
-		$texte .= '<td align="right">' . $form->textwithpicto ( '<input type="text" class="flat" size="24" name="maskagefoddcertif" value="' . $conf->global->AGF_CERTIF_UNIVERSAL_MASK . '">', $tooltip, 1, 1 ) . '</td>';
+		$texte .= '<tr><td>' . $langs->trans("Mask") . ':</td>';
+		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskagefoddcertif" value="' . $conf->global->AGF_CERTIF_UNIVERSAL_MASK . '">', $tooltip, 1, 1) . '</td>';
 		
-		$texte .= '<td align="left" rowspan="2">&nbsp; <input type="submit" class="button" value="' . $langs->trans ( "Modify" ) . '" name="Button"></td>';
+		$texte .= '<td align="left" rowspan="2">&nbsp; <input type="submit" class="button" value="' . $langs->trans("Modify") . '" name="Button"></td>';
 		
 		$texte .= '</tr>';
 		
@@ -72,27 +71,26 @@ class mod_agefoddcertif_universal extends ModeleNumRefAgefodd {
 		
 		return $texte;
 	}
-
+	
 	/**
 	 * Renvoi un exemple de numerotation
 	 *
 	 * @return string Example
 	 */
 	function getExample() {
-
 		global $conf, $langs, $mysoc;
 		
 		$old_code_client = $mysoc->code_client;
 		$mysoc->code_client = 'CCCCCCCCCC';
-		$numExample = $this->getNextValue ( $mysoc, '' );
+		$numExample = $this->getNextValue($mysoc, '');
 		$mysoc->code_client = $old_code_client;
 		
 		if (! $numExample) {
-			$numExample = $langs->trans ( 'NotConfigured' );
+			$numExample = $langs->trans('NotConfigured');
 		}
 		return $numExample;
 	}
-
+	
 	/**
 	 * Return next value
 	 *
@@ -101,7 +99,6 @@ class mod_agefoddcertif_universal extends ModeleNumRefAgefodd {
 	 * @return string if OK, 0 if KO
 	 */
 	function getNextValue($objtraining, $agf) {
-
 		global $db, $conf;
 		
 		require_once (DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
@@ -114,11 +111,11 @@ class mod_agefoddcertif_universal extends ModeleNumRefAgefodd {
 			return 0;
 		}
 		
-		$numFinal = get_next_value ( $db, $mask, 'agefodd_stagiaire_certif', 'certif_code', '', $objtraining->id, dol_now () );
+		$numFinal = get_next_value($db, $mask, 'agefodd_stagiaire_certif', 'certif_code', '', $objtraining->id, dol_now());
 		
 		return $numFinal;
 	}
-
+	
 	/**
 	 * Return next reference not yet used as a reference
 	 *
@@ -127,8 +124,7 @@ class mod_agefoddcertif_universal extends ModeleNumRefAgefodd {
 	 * @return string Next not used reference
 	 */
 	function agefodd_get_num($objtraining = 0, $agf = '') {
-
-		return $this->getNextValue ( $objsoc, $agf );
+		return $this->getNextValue($objsoc, $agf);
 	}
 }
 

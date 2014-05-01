@@ -28,27 +28,27 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agefodd_place.class.php');
 require_once ('../lib/agefodd.lib.php');
 
 // Security check
 if (! $user->rights->agefodd->agefodd_place->lire)
-	accessforbidden ();
+	accessforbidden();
 
-llxHeader ( '', $langs->trans ( "AgfSessPlace" ) );
+llxHeader('', $langs->trans("AgfSessPlace"));
 
-$sortorder = GETPOST ( 'sortorder', 'alpha' );
-$sortfield = GETPOST ( 'sortfield', 'alpha' );
-$page = GETPOST ( 'page', 'int' );
-$arch = GETPOST ( 'arch', 'int' );
+$sortorder = GETPOST('sortorder', 'alpha');
+$sortfield = GETPOST('sortfield', 'alpha');
+$page = GETPOST('page', 'int');
+$arch = GETPOST('arch', 'int');
 
-if (empty ( $sortorder ))
+if (empty($sortorder))
 	$sortorder = "ASC";
-if (empty ( $sortfield ))
+if (empty($sortfield))
 	$sortfield = "p.ref_interne";
-if (empty ( $arch ))
+if (empty($arch))
 	$arch = 0;
 
 if ($page == - 1) {
@@ -60,27 +60,27 @@ $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$agf = new Agefodd_place ( $db );
+$agf = new Agefodd_place($db);
 
-$result = $agf->fetch_all ( $sortorder, $sortfield, $limit, $offset, $arch );
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
-$linenum = count ( $agf->lines );
+$linenum = count($agf->lines);
 
-print_barre_liste ( $langs->trans ( "AgfSessPlace" ), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum );
+print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum);
 
 print '<div width="100%" align="right">';
 if ($arch == 2) {
-	print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=0">' . $langs->trans ( "AgfCacherPlaceArchives" ) . '</a>' . "\n";
+	print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=0">' . $langs->trans("AgfCacherPlaceArchives") . '</a>' . "\n";
 } else {
-	print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=2">' . $langs->trans ( "AgfAfficherPlaceArchives" ) . '</a>' . "\n";
+	print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=2">' . $langs->trans("AgfAfficherPlaceArchives") . '</a>' . "\n";
 }
 print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=' . $arch . '">' . $txt . '</a>' . "\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVER ['PHP_SELF'], "p.rowid", '', "&arch=" . $arch, '', $sortfield, $sortorder );
-print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVER ['PHP_SELF'], "p.ref_interne", '', "&arch=" . $arch, '', $sortfield, $sortorder );
-print_liste_field_titre ( $langs->trans ( "Company" ), $_SERVER ['PHP_SELF'], "s.nom", '', "&arch=" . $arch, '', $sortfield, $sortorder );
-print_liste_field_titre ( $langs->trans ( "Phone" ), $_SERVER ['PHP_SELF'], "s.tel", "", "&arch=" . $arch, '', $sortfield, $sortorder );
+print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "p.rowid", '', "&arch=" . $arch, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "p.ref_interne", '', "&arch=" . $arch, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "s.nom", '', "&arch=" . $arch, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel", "", "&arch=" . $arch, '', $sortfield, $sortorder);
 print "</tr>\n";
 
 if ($result > 0) {
@@ -91,29 +91,29 @@ if ($result > 0) {
 		$var = ! $var;
 		($agf->lines [$i]->archive == 1) ? $style = ' style="color:gray;"' : $style = '';
 		print "<tr $bc[$var]>";
-		print '<td><span style="background-color:' . $bgcolor . ';"><a href="card.php?id=' . $agf->lines [$i]->id . '"' . $style . '>' . img_object ( $langs->trans ( "AgfEditerFichePlace" ), "company" ) . ' ' . $agf->lines [$i]->id . '</a></span></td>' . "\n";
+		print '<td><span style="background-color:' . $bgcolor . ';"><a href="card.php?id=' . $agf->lines [$i]->id . '"' . $style . '>' . img_object($langs->trans("AgfEditerFichePlace"), "company") . ' ' . $agf->lines [$i]->id . '</a></span></td>' . "\n";
 		print '<td' . $style . '>' . $agf->lines [$i]->ref_interne . '</td>' . "\n";
-		print '<td><a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '"  alt="' . $langs->trans ( "AgfEditerFicheCompany" ) . '" title="' . $langs->trans ( "AgfEditerFicheCompany" ) . '"' . $style . '>' . $agf->lines [$i]->socname . '</td>' . "\n";
-		print '<td' . $style . '>' . dol_print_phone ( $agf->lines [$i]->tel ) . '</td>' . "\n";
+		print '<td><a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '"  alt="' . $langs->trans("AgfEditerFicheCompany") . '" title="' . $langs->trans("AgfEditerFicheCompany") . '"' . $style . '>' . $agf->lines [$i]->socname . '</td>' . "\n";
+		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->tel) . '</td>' . "\n";
 		print '</tr>' . "\n";
 		
 		$i ++;
 	}
 } else {
-	setEventMessage ( $agf->error, 'errors' );
+	setEventMessage($agf->error, 'errors');
 }
 print "</table>";
 
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit') {
 	if ($user->rights->agefodd->agefodd_place->creer) {
-		print '<a class="butAction" href="card.php?action=create">' . $langs->trans ( 'Create' ) . '</a>';
+		print '<a class="butAction" href="card.php?action=create">' . $langs->trans('Create') . '</a>';
 	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'Create' ) . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Create') . '</a>';
 	}
 }
 
 print '</div>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

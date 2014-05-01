@@ -32,7 +32,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
  */
 abstract class ModelePDFAgefodd extends CommonDocGenerator {
 	var $error = '';
-
+	
 	/**
 	 * Return list of active generation modules
 	 *
@@ -41,7 +41,6 @@ abstract class ModelePDFAgefodd extends CommonDocGenerator {
 	 * @return array of templates
 	 */
 	static function liste_modeles($db, $maxfilenamelength = 0) {
-
 		global $conf;
 		
 		$type = 'agefodd';
@@ -58,41 +57,38 @@ abstract class ModelePDFAgefodd extends CommonDocGenerator {
  */
 abstract class ModeleNumRefAgefodd {
 	var $error = '';
-
+	
 	/**
 	 * Return if a module can be used or not
 	 *
 	 * @return boolean true if module can be used
 	 */
 	function isEnabled() {
-
 		return true;
 	}
-
+	
 	/**
 	 * Renvoi la description par defaut du modele de numerotation
 	 *
 	 * @return string Texte descripif
 	 */
 	function info() {
-
 		global $langs;
-		$langs->load ( "agefodd@agefodd" );
-		return $langs->trans ( "AgfNoDescription" );
+		$langs->load("agefodd@agefodd");
+		return $langs->trans("AgfNoDescription");
 	}
-
+	
 	/**
 	 * Renvoi un exemple de numerotation
 	 *
 	 * @return string Example
 	 */
 	function getExample() {
-
 		global $langs;
-		$langs->load ( "agefodd@agefodd" );
-		return $langs->trans ( "AgfNoExample" );
+		$langs->load("agefodd@agefodd");
+		return $langs->trans("AgfNoExample");
 	}
-
+	
 	/**
 	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
 	 * de conflits qui empechera cette numerotation de fonctionner.
@@ -100,10 +96,9 @@ abstract class ModeleNumRefAgefodd {
 	 * @return boolean false si conflit, true si ok
 	 */
 	function canBeActivated() {
-
 		return true;
 	}
-
+	
 	/**
 	 * Renvoi prochaine valeur attribuee
 	 *
@@ -112,28 +107,26 @@ abstract class ModeleNumRefAgefodd {
 	 * @return string
 	 */
 	function getNextValue($objsoc, $project) {
-
 		global $langs;
-		return $langs->trans ( "NotAvailable" );
+		return $langs->trans("NotAvailable");
 	}
-
+	
 	/**
 	 * Renvoi version du module numerotation
 	 *
 	 * @return string Valeur
 	 */
 	function getVersion() {
-
 		global $langs;
-		$langs->load ( "admin" );
+		$langs->load("admin");
 		
 		if ($this->version == 'development')
-			return $langs->trans ( "VersionDevelopment" );
+			return $langs->trans("VersionDevelopment");
 		if ($this->version == 'experimental')
-			return $langs->trans ( "VersionExperimental" );
+			return $langs->trans("VersionExperimental");
 		if ($this->version == 'dolibarr')
 			return DOL_VERSION;
-		return $langs->trans ( "NotAvailable" );
+		return $langs->trans("NotAvailable");
 	}
 }
 
@@ -146,35 +139,34 @@ abstract class ModeleNumRefAgefodd {
  * \return int <0 if KO, >0 if OK
  */
 function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '') {
-
 	global $conf, $langs;
-	$langs->load ( 'agefodd@agefodd' );
-	$langs->load ( 'bills' );
+	$langs->load('agefodd@agefodd');
+	$langs->load('bills');
 	
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
 	
-	if (file_exists ( $nomModele )) {
+	if (file_exists($nomModele)) {
 		require_once ($nomModele);
 		
 		$classname = "pdf_" . $typeModele;
 		
-		$obj = new $classname ( $db );
+		$obj = new $classname($db);
 		$obj->message = $message;
 		
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
-		if ($obj->write_file ( $id, $outputlangs, $file, $socid, $courrier ) > 0) {
+		if ($obj->write_file($id, $outputlangs, $file, $socid, $courrier) > 0) {
 			$outputlangs->charset_output = $sav_charset_output;
 			return 1;
 		} else {
 			$outputlangs->charset_output = $sav_charset_output;
-			dol_print_error ( $db, "pdf_create Error: " . $obj->error );
+			dol_print_error($db, "pdf_create Error: " . $obj->error);
 			return - 1;
 		}
 	} else {
-		dol_print_error ( '', $langs->trans ( "Error" ) . " " . $langs->trans ( "ErrorFileDoesNotExists", $nomModele ) );
+		dol_print_error('', $langs->trans("Error") . " " . $langs->trans("ErrorFileDoesNotExists", $nomModele));
 		return - 1;
 	}
 }

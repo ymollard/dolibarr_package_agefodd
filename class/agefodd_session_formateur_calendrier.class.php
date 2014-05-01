@@ -50,18 +50,17 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	var $fk_user_mod;
 	var $tms = '';
 	var $lines = array ();
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
-
 		$this->db = $db;
 		return 1;
 	}
-
+	
 	/**
 	 * Create object into database
 	 *
@@ -70,33 +69,32 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
 		
-		if (isset ( $this->fk_agefodd_session_formateur ))
-			$this->fk_agefodd_session_formateur = trim ( $this->fk_agefodd_session_formateur );
-		if (isset ( $this->trainer_cost ))
-			$this->trainer_cost = trim ( $this->trainer_cost );
-		if (isset ( $this->trainer_status ))
-			$this->trainer_cost = trim ( $this->trainer_status );
-		if (isset ( $this->fk_actioncomm ))
-			$this->fk_actioncomm = trim ( $this->fk_actioncomm );
-		if (isset ( $this->fk_user_author ))
-			$this->fk_user_author = trim ( $this->fk_user_author );
-		if (isset ( $this->fk_user_mod ))
-			$this->fk_user_mod = trim ( $this->fk_user_mod );
+		if (isset($this->fk_agefodd_session_formateur))
+			$this->fk_agefodd_session_formateur = trim($this->fk_agefodd_session_formateur);
+		if (isset($this->trainer_cost))
+			$this->trainer_cost = trim($this->trainer_cost);
+		if (isset($this->trainer_status))
+			$this->trainer_cost = trim($this->trainer_status);
+		if (isset($this->fk_actioncomm))
+			$this->fk_actioncomm = trim($this->fk_actioncomm);
+		if (isset($this->fk_user_author))
+			$this->fk_user_author = trim($this->fk_user_author);
+		if (isset($this->fk_user_mod))
+			$this->fk_user_mod = trim($this->fk_user_mod);
 			
 			// Check parameters
 			// Put here code to add control on parameters values
 		
-		if (! empty ( $conf->global->AGF_DOL_TRAINER_AGENDA )) {
-			$result = $this->createAction ( $user );
+		if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+			$result = $this->createAction($user);
 			if ($result <= 0) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			} else {
 				$this->fk_actioncomm = $result;
 			}
@@ -118,29 +116,29 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= ") VALUES (";
 		
 		$sql .= " '" . $conf->entity . "',";
-		$sql .= " " . (! isset ( $this->fk_agefodd_session_formateur ) ? 'NULL' : "'" . $this->fk_agefodd_session_formateur . "'") . ",";
-		$sql .= " " . (! isset ( $this->date_session ) || dol_strlen ( $this->date_session ) == 0 ? 'NULL' : $this->db->idate ( $this->date_session )) . ",";
-		$sql .= " " . (! isset ( $this->heured ) || dol_strlen ( $this->heured ) == 0 ? 'NULL' : $this->db->escape ( $this->db->idate ( $this->heured ) )) . ",";
-		$sql .= " " . (! isset ( $this->heuref ) || dol_strlen ( $this->heuref ) == 0 ? 'NULL' : $this->db->escape ( $this->db->idate ( $this->heuref ) )) . ",";
-		$sql .= " " . (! isset ( $this->trainer_cost ) ? 'NULL' : "'" . $this->db->escape ( $this->trainer_cost ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->trainer_status ) ? 'NULL' : $this->db->escape ( $this->trainer_status )) . ",";
-		$sql .= " " . (! isset ( $this->fk_actioncomm ) ? 'NULL' : "'" . $this->fk_actioncomm . "'") . ",";
-		$sql .= " " . (! isset ( $this->fk_user_author ) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
-		$sql .= " " . (! isset ( $this->datec ) || dol_strlen ( $this->datec ) == 0 ? $this->db->idate ( dol_now () ) : $this->db->idate ( $this->datec )) . ",";
-		$sql .= " " . (! isset ( $this->fk_user_mod ) ? $user->id : "'" . $this->fk_user_mod . "'") . "";
+		$sql .= " " . (! isset($this->fk_agefodd_session_formateur) ? 'NULL' : "'" . $this->fk_agefodd_session_formateur . "'") . ",";
+		$sql .= " " . (! isset($this->date_session) || dol_strlen($this->date_session) == 0 ? 'NULL' : $this->db->idate($this->date_session)) . ",";
+		$sql .= " " . (! isset($this->heured) || dol_strlen($this->heured) == 0 ? 'NULL' : $this->db->escape($this->db->idate($this->heured))) . ",";
+		$sql .= " " . (! isset($this->heuref) || dol_strlen($this->heuref) == 0 ? 'NULL' : $this->db->escape($this->db->idate($this->heuref))) . ",";
+		$sql .= " " . (! isset($this->trainer_cost) ? 'NULL' : "'" . $this->db->escape($this->trainer_cost) . "'") . ",";
+		$sql .= " " . (! isset($this->trainer_status) ? 'NULL' : $this->db->escape($this->trainer_status)) . ",";
+		$sql .= " " . (! isset($this->fk_actioncomm) ? 'NULL' : "'" . $this->fk_actioncomm . "'") . ",";
+		$sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
+		$sql .= " " . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . ",";
+		$sql .= " " . (! isset($this->fk_user_mod) ? $user->id : "'" . $this->fk_user_mod . "'") . "";
 		
 		$sql .= ")";
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
-			$this->id = $this->db->last_insert_id ( MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier" );
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier");
 			
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -158,17 +156,17 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::create " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return $this->id;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from the database
 	 *
@@ -176,7 +174,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id) {
-
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -196,36 +193,36 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as t";
 		$sql .= " WHERE t.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				
 				$this->id = $obj->rowid;
 				
 				$this->fk_agefodd_session_formateur = $obj->fk_agefodd_session_formateur;
-				$this->date_session = $this->db->jdate ( $obj->date_session );
-				$this->heured = $this->db->jdate ( $obj->heured );
-				$this->heuref = $this->db->jdate ( $obj->heuref );
+				$this->date_session = $this->db->jdate($obj->date_session);
+				$this->heured = $this->db->jdate($obj->heured);
+				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->trainer_cost = $obj->trainer_cost;
 				$this->trainer_status = $obj->trainer_status;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 				$this->fk_user_author = $obj->fk_user_author;
-				$this->datec = $this->db->jdate ( $obj->datec );
+				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
-				$this->tms = $this->db->jdate ( $obj->tms );
+				$this->tms = $this->db->jdate($obj->tms);
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -233,7 +230,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_by_action($actionid) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -241,31 +237,31 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_by_action sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_by_action sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->fk_agefodd_session_formateur = $obj->fk_agefodd_session_formateur;
-				$this->date_session = $this->db->jdate ( $obj->date_session );
-				$this->heured = $this->db->jdate ( $obj->heured );
-				$this->heuref = $this->db->jdate ( $obj->heuref );
+				$this->date_session = $this->db->jdate($obj->date_session);
+				$this->heured = $this->db->jdate($obj->heured);
+				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->trainer_cost = $obj->trainer_cost;
 				$this->trainer_status = $obj->trainer_status;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_by_action " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_by_action " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -273,7 +269,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all($id) {
-
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -292,22 +287,22 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " WHERE s.fk_agefodd_session_formateur = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			for($i = 0; $i < $num; $i ++) {
-				$line = new AgefoddcalendrierformateurLines ();
+				$line = new AgefoddcalendrierformateurLines();
 				
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
 				$line->id = $obj->rowid;
-				$line->date_session = $this->db->jdate ( $obj->date_session );
+				$line->date_session = $this->db->jdate($obj->date_session);
 				$line->fk_agefodd_session_formateur = $obj->fk_agefodd_session_formateur;
-				$line->heured = $this->db->jdate ( $obj->heured );
-				$line->heuref = $this->db->jdate ( $obj->heuref );
+				$line->heured = $this->db->jdate($obj->heured);
+				$line->heuref = $this->db->jdate($obj->heuref);
 				$line->trainer_cost = $obj->trainer_cost;
 				$line->trainer_status = $obj->trainer_status;
 				$line->fk_actioncomm = $obj->fk_actioncomm;
@@ -316,15 +311,15 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				
 				$this->lines [$i] = $line;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -332,7 +327,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all_by_trainer($id) {
-
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -352,22 +346,22 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " WHERE trainer.rowid = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_all_by_trainer sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_all_by_trainer sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			for($i = 0; $i < $num; $i ++) {
-				$line = new AgefoddcalendrierformateurLines ();
+				$line = new AgefoddcalendrierformateurLines();
 				
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
 				$line->id = $obj->rowid;
-				$line->date_session = $this->db->jdate ( $obj->date_session );
+				$line->date_session = $this->db->jdate($obj->date_session);
 				$line->fk_agefodd_session_formateur = $obj->fk_agefodd_session_formateur;
-				$line->heured = $this->db->jdate ( $obj->heured );
-				$line->heuref = $this->db->jdate ( $obj->heuref );
+				$line->heured = $this->db->jdate($obj->heured);
+				$line->heuref = $this->db->jdate($obj->heuref);
 				$line->trainer_cost = $obj->trainer_cost;
 				$line->trainer_status = $obj->trainer_status;
 				$line->fk_actioncomm = $obj->fk_actioncomm;
@@ -376,15 +370,15 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				
 				$this->lines [$i] = $line;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all_by_trainer " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all_by_trainer " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Update object into database
 	 *
@@ -393,24 +387,23 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user = 0, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
 		
-		if (isset ( $this->fk_agefodd_session_formateur ))
-			$this->fk_agefodd_session_formateur = trim ( $this->fk_agefodd_session_formateur );
-		if (isset ( $this->trainer_cost ))
-			$this->trainer_cost = trim ( $this->trainer_cost );
-		if (isset ( $this->trainer_status ))
-			$this->trainer_status = trim ( $this->trainer_status );
-		if (isset ( $this->fk_actioncomm ))
-			$this->fk_actioncomm = trim ( $this->fk_actioncomm );
-		if (isset ( $this->fk_user_author ))
-			$this->fk_user_author = trim ( $this->fk_user_author );
-		if (isset ( $this->fk_user_mod ))
-			$this->fk_user_mod = trim ( $this->fk_user_mod );
+		if (isset($this->fk_agefodd_session_formateur))
+			$this->fk_agefodd_session_formateur = trim($this->fk_agefodd_session_formateur);
+		if (isset($this->trainer_cost))
+			$this->trainer_cost = trim($this->trainer_cost);
+		if (isset($this->trainer_status))
+			$this->trainer_status = trim($this->trainer_status);
+		if (isset($this->fk_actioncomm))
+			$this->fk_actioncomm = trim($this->fk_actioncomm);
+		if (isset($this->fk_user_author))
+			$this->fk_user_author = trim($this->fk_user_author);
+		if (isset($this->fk_user_mod))
+			$this->fk_user_mod = trim($this->fk_user_mod);
 			
 			// Check parameters
 			// Put here code to add a control on parameters values
@@ -418,27 +411,27 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier SET";
 		
-		$sql .= " fk_agefodd_session_formateur=" . (isset ( $this->fk_agefodd_session_formateur ) ? $this->fk_agefodd_session_formateur : "null") . ",";
-		$sql .= " date_session=" . (dol_strlen ( $this->date_session ) != 0 ? "'" . $this->db->idate ( $this->date_session ) . "'" : 'null') . ",";
-		$sql .= " heured=" . (dol_strlen ( $this->heured ) != 0 ? "'" . $this->db->idate ( $this->heured ) . "'" : 'null') . ",";
-		$sql .= " heuref=" . (dol_strlen ( $this->heuref ) != 0 ? "'" . $this->db->idate ( $this->heuref ) . "'" : 'null') . ",";
-		$sql .= " trainer_cost='" . (isset ( $this->trainer_cost ) ? $this->trainer_cost : "null") . "',";
-		$sql .= " trainer_status=" . (isset ( $this->trainer_status ) ? $this->trainer_status : "null") . ",";
-		$sql .= " fk_actioncomm=" . (isset ( $this->fk_actioncomm ) ? $this->fk_actioncomm : "null") . ",";
-		$sql .= " fk_user_author=" . (isset ( $this->fk_user_author ) ? $this->fk_user_author : "null") . ",";
-		$sql .= " datec=" . (dol_strlen ( $this->datec ) != 0 ? "'" . $this->db->idate ( $this->datec ) . "'" : 'null') . ",";
-		$sql .= " fk_user_mod=" . (isset ( $this->fk_user_mod ) ? $this->fk_user_mod : "null") . ",";
-		$sql .= " tms=" . (dol_strlen ( $this->tms ) != 0 ? "'" . $this->db->idate ( $this->tms ) . "'" : 'null') . "";
+		$sql .= " fk_agefodd_session_formateur=" . (isset($this->fk_agefodd_session_formateur) ? $this->fk_agefodd_session_formateur : "null") . ",";
+		$sql .= " date_session=" . (dol_strlen($this->date_session) != 0 ? "'" . $this->db->idate($this->date_session) . "'" : 'null') . ",";
+		$sql .= " heured=" . (dol_strlen($this->heured) != 0 ? "'" . $this->db->idate($this->heured) . "'" : 'null') . ",";
+		$sql .= " heuref=" . (dol_strlen($this->heuref) != 0 ? "'" . $this->db->idate($this->heuref) . "'" : 'null') . ",";
+		$sql .= " trainer_cost='" . (isset($this->trainer_cost) ? $this->trainer_cost : "null") . "',";
+		$sql .= " trainer_status=" . (isset($this->trainer_status) ? $this->trainer_status : "null") . ",";
+		$sql .= " fk_actioncomm=" . (isset($this->fk_actioncomm) ? $this->fk_actioncomm : "null") . ",";
+		$sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
+		$sql .= " datec=" . (dol_strlen($this->datec) != 0 ? "'" . $this->db->idate($this->datec) . "'" : 'null') . ",";
+		$sql .= " fk_user_mod=" . (isset($this->fk_user_mod) ? $this->fk_user_mod : "null") . ",";
+		$sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . "";
 		
 		$sql .= " WHERE rowid=" . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -458,17 +451,17 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Delete object in database
 	 *
@@ -476,30 +469,29 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function remove($id) {
-
-		$result = $this->fetch ( $id );
-		if (! empty ( $this->fk_actioncomm )) {
-			dol_include_once ( '/comm/action/class/actioncomm.class.php' );
+		$result = $this->fetch($id);
+		if (! empty($this->fk_actioncomm)) {
+			dol_include_once('/comm/action/class/actioncomm.class.php');
 			
-			$action = new ActionComm ( $this->db );
+			$action = new ActionComm($this->db);
 			$action->id = $this->fk_actioncomm;
-			$action->delete ();
+			$action->delete();
 		}
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
 			return 1;
 		} else {
-			$this->error = $this->db->lasterror ();
+			$this->error = $this->db->lasterror();
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Create Action in Dolibarr Agenda
 	 *
@@ -507,26 +499,25 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param User $user that modify
 	 */
 	function createAction($user) {
-
 		global $conf, $langs;
 		
 		$error = 0;
 		
-		dol_include_once ( '/comm/action/class/actioncomm.class.php' );
-		dol_include_once ( '/agefodd/class/agsession.class.php' );
-		dol_include_once ( '/agefodd/class/agsession.class.php' );
+		dol_include_once('/comm/action/class/actioncomm.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
 		
 		require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 		
-		$action = new ActionComm ( $this->db );
-		$session = new Agsession ( $this->db );
+		$action = new ActionComm($this->db);
+		$session = new Agsession($this->db);
 		
-		$formateur = new Agefodd_teacher ( $this->db );
-		$formateur->fetch ( $this->fk_agefodd_session_formateur );
+		$formateur = new Agefodd_teacher($this->db);
+		$formateur->fetch($this->fk_agefodd_session_formateur);
 		
-		$result = $session->fetch ( $this->sessid );
+		$result = $session->fetch($this->sessid);
 		if ($result < 0) {
 			$error ++;
 		}
@@ -543,19 +534,19 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		// Si le formateur est un contact alors sur l'évenement : « Evénement concernant la société » = fournisseur
 		// Sinon si le formateur est un user alors « Action affectée » = user correspondant.
 		if ($formateur->fk_user) {
-			$userstat = new User ( $this->db );
-			$ret = $userstat->fetch ( $formateur->fk_user );
+			$userstat = new User($this->db);
+			$ret = $userstat->fetch($formateur->fk_user);
 			if ($ret) {
 				$action->usertodo = $userstat;
 			}
 		} else {
-			$contactstat = new Contact ( $this->db );
-			$ret = $contactstat->fetch ( $formateur->fk_socpeople );
+			$contactstat = new Contact($this->db);
+			$ret = $contactstat->fetch($formateur->fk_socpeople);
 			if ($ret) {
 				$action->contact = $contactstat;
 				
-				$companystat = new Societe ( $this->db );
-				$ret = $companystat->fetch ( $contactstat->socid );
+				$companystat = new Societe($this->db);
+				$ret = $companystat->fetch($contactstat->socid);
 				if ($ret)
 					$action->societe = $companystat;
 			}
@@ -563,44 +554,43 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		
 		if ($error == 0) {
 			
-			$result = $action->add ( $user );
+			$result = $action->add($user);
 			
 			if ($result < 0) {
 				$error ++;
-				dol_syslog ( get_class ( $this ) . "::createAction " . $action->error, LOG_ERR );
+				dol_syslog(get_class($this) . "::createAction " . $action->error, LOG_ERR);
 				return - 1;
 			} else {
 				return $result;
 			}
 		} else {
-			dol_syslog ( get_class ( $this ) . "::createAction " . $action->error, LOG_ERR );
+			dol_syslog(get_class($this) . "::createAction " . $action->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * update Action in Dolibarr Agenda
 	 *
 	 * @param User $user that modify
 	 */
 	function updateAction($user) {
-
 		global $conf, $langs;
 		
 		$error = 0;
 		
-		dol_include_once ( '/comm/action/class/actioncomm.class.php' );
-		dol_include_once ( '/agefodd/class/agsession.class.php' );
+		dol_include_once('/comm/action/class/actioncomm.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
 		
-		$action = new ActionComm ( $this->db );
-		$session = new Agsession ( $this->db );
+		$action = new ActionComm($this->db);
+		$session = new Agsession($this->db);
 		
-		$result = $session->fetch ( $this->sessid );
+		$result = $session->fetch($this->sessid);
 		if ($result < 0) {
 			$error ++;
 		}
 		
-		$result = $action->fetch ( $this->fk_actioncomm );
+		$result = $action->fetch($this->fk_actioncomm);
 		if ($result < 0) {
 			$error ++;
 		}
@@ -615,25 +605,25 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$action->datef = $this->heuref;
 				$action->type_code = 'AC_AGF_SESST';
 				
-				$result = $action->update ( $user );
+				$result = $action->update($user);
 			} else {
-				$result = $this->createAction ( $user );
+				$result = $this->createAction($user);
 			}
 			
 			if ($result < 0) {
 				$error ++;
 				
-				dol_syslog ( get_class ( $this ) . "::updateAction " . $action->error, LOG_ERR );
+				dol_syslog(get_class($this) . "::updateAction " . $action->error, LOG_ERR);
 				return - 1;
 			} else {
 				return 1;
 			}
 		} else {
-			dol_syslog ( get_class ( $this ) . "::updateAction " . $action->error, LOG_ERR );
+			dol_syslog(get_class($this) . "::updateAction " . $action->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load an object from its id and create a new one in database
 	 *
@@ -641,17 +631,16 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return int id of clone
 	 */
 	function createFromClone($fromid) {
-
 		global $user, $langs;
 		
 		$error = 0;
 		
-		$object = new Agefoddsessionformateurcalendrier ( $this->db );
+		$object = new Agefoddsessionformateurcalendrier($this->db);
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
 		// Load source object
-		$object->fetch ( $fromid );
+		$object->fetch($fromid);
 		$object->id = 0;
 		$object->statut = 0;
 		
@@ -659,7 +648,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		// ...
 		
 		// Create clone
-		$result = $object->create ( $user );
+		$result = $object->create($user);
 		
 		// Other options
 		if ($result < 0) {
@@ -672,14 +661,14 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		
 		// End
 		if (! $error) {
-			$this->db->commit ();
+			$this->db->commit();
 			return $object->id;
 		} else {
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -687,7 +676,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @return void
 	 */
 	function initAsSpecimen() {
-
 		$this->id = 0;
 		
 		$this->fk_agefodd_session_formateur = '';
@@ -702,7 +690,6 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$this->tms = '';
 	}
 }
-
 class AgefoddcalendrierformateurLines {
 	var $id;
 	var $date_session;

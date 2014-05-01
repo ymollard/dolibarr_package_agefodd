@@ -50,18 +50,17 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	var $certif_dt_warning = '';
 	var $lines = array ();
 	var $lines_state = array ();
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
-
 		$this->db = $db;
 		return 1;
 	}
-
+	
 	/**
 	 * Create object into database
 	 *
@@ -70,21 +69,20 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->fk_stagiaire ))
-			$this->fk_stagiaire = trim ( $this->fk_stagiaire );
-		if (isset ( $this->fk_session_agefodd ))
-			$this->fk_session_agefodd = trim ( $this->fk_session_agefodd );
-		if (isset ( $this->fk_session_stagiaire ))
-			$this->fk_session_stagiaire = trim ( $this->fk_session_stagiaire );
-		if (isset ( $this->certif_code ))
-			$this->certif_code = trim ( $this->certif_code );
-		if (isset ( $this->certif_label ))
-			$this->certif_label = trim ( $this->certif_label );
+		if (isset($this->fk_stagiaire))
+			$this->fk_stagiaire = trim($this->fk_stagiaire);
+		if (isset($this->fk_session_agefodd))
+			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
+		if (isset($this->fk_session_stagiaire))
+			$this->fk_session_stagiaire = trim($this->fk_session_stagiaire);
+		if (isset($this->certif_code))
+			$this->certif_code = trim($this->certif_code);
+		if (isset($this->certif_label))
+			$this->certif_label = trim($this->certif_label);
 			
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -110,29 +108,29 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " '" . $user->id . "',";
 		$sql .= " '" . $user->id . "',";
-		$sql .= "'" . $this->db->idate ( dol_now () ) . "',";
-		$sql .= " " . (! isset ( $this->fk_stagiaire ) ? 'NULL' : "'" . $this->fk_stagiaire . "'") . ",";
-		$sql .= " " . (! isset ( $this->fk_session_agefodd ) ? 'NULL' : "'" . $this->fk_session_agefodd . "'") . ",";
-		$sql .= " " . (! isset ( $this->fk_session_stagiaire ) ? 'NULL' : "'" . $this->fk_session_stagiaire . "'") . ",";
-		$sql .= " " . (! isset ( $this->certif_code ) ? 'NULL' : "'" . $this->db->escape ( $this->certif_code ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->certif_label ) ? 'NULL' : "'" . $this->db->escape ( $this->certif_label ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->certif_dt_start ) || dol_strlen ( $this->certif_dt_start ) == 0 ? 'NULL' : "'" . $this->db->idate ( $this->certif_dt_start ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->certif_dt_end ) || dol_strlen ( $this->certif_dt_end ) == 0 ? 'NULL' : "'" . $this->db->idate ( $this->certif_dt_end ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->certif_dt_warning ) || dol_strlen ( $this->certif_dt_warning ) == 0 ? 'NULL' : "'" . $this->db->idate ( $this->certif_dt_warning ) . "'") . "";
+		$sql .= "'" . $this->db->idate(dol_now()) . "',";
+		$sql .= " " . (! isset($this->fk_stagiaire) ? 'NULL' : "'" . $this->fk_stagiaire . "'") . ",";
+		$sql .= " " . (! isset($this->fk_session_agefodd) ? 'NULL' : "'" . $this->fk_session_agefodd . "'") . ",";
+		$sql .= " " . (! isset($this->fk_session_stagiaire) ? 'NULL' : "'" . $this->fk_session_stagiaire . "'") . ",";
+		$sql .= " " . (! isset($this->certif_code) ? 'NULL' : "'" . $this->db->escape($this->certif_code) . "'") . ",";
+		$sql .= " " . (! isset($this->certif_label) ? 'NULL' : "'" . $this->db->escape($this->certif_label) . "'") . ",";
+		$sql .= " " . (! isset($this->certif_dt_start) || dol_strlen($this->certif_dt_start) == 0 ? 'NULL' : "'" . $this->db->idate($this->certif_dt_start) . "'") . ",";
+		$sql .= " " . (! isset($this->certif_dt_end) || dol_strlen($this->certif_dt_end) == 0 ? 'NULL' : "'" . $this->db->idate($this->certif_dt_end) . "'") . ",";
+		$sql .= " " . (! isset($this->certif_dt_warning) || dol_strlen($this->certif_dt_warning) == 0 ? 'NULL' : "'" . $this->db->idate($this->certif_dt_warning) . "'") . "";
 		
 		$sql .= ")";
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
-			$this->id = $this->db->last_insert_id ( MAIN_DB_PREFIX . "agefodd_stagiaire_certif" );
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_stagiaire_certif");
 			
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -150,17 +148,17 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::create " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return $this->id;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -171,7 +169,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id = 0, $id_trainee = 0, $id_session = 0, $id_sess_trainee = 0) {
-
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -192,61 +189,61 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 		
-		if (! empty ( $id )) {
+		if (! empty($id)) {
 			$sql .= " WHERE t.rowid = " . $id;
 		} else {
 			$sqlwhere = array ();
 			
-			if (! empty ( $id_trainee )) {
+			if (! empty($id_trainee)) {
 				$sqlwhere [] = "  t.fk_stagiaire = " . $id_trainee;
 			}
-			if (! empty ( $id_session )) {
+			if (! empty($id_session)) {
 				$sqlwhere [] = " t.fk_session_agefodd = " . $id_session;
 			}
-			if (! empty ( $id_sess_trainee )) {
+			if (! empty($id_sess_trainee)) {
 				$sqlwhere [] = " t.fk_session_stagiaire = " . $id_sess_trainee;
 			}
 			
-			if (count ( $sqlwhere > 0 )) {
-				$sql .= " WHERE " . implode ( ' AND ', $sqlwhere );
+			if (count($sqlwhere > 0)) {
+				$sql .= " WHERE " . implode(' AND ', $sqlwhere);
 			}
 		}
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				
 				$this->id = $obj->rowid;
 				
 				$this->entity = $obj->entity;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->fk_user_mod = $obj->fk_user_mod;
-				$this->datec = $this->db->jdate ( $obj->datec );
-				$this->tms = $this->db->jdate ( $obj->tms );
+				$this->datec = $this->db->jdate($obj->datec);
+				$this->tms = $this->db->jdate($obj->tms);
 				$this->fk_stagiaire = $obj->fk_stagiaire;
 				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->fk_session_stagiaire = $obj->fk_session_stagiaire;
 				$this->certif_code = $obj->certif_code;
 				$this->certif_label = $obj->certif_label;
-				$this->certif_dt_start = $this->db->jdate ( $obj->certif_dt_start );
-				$this->certif_dt_end = $this->db->jdate ( $obj->certif_dt_end );
-				$this->certif_dt_warning = $this->db->jdate ( $obj->certif_dt_warning );
+				$this->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
+				$this->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$this->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 				
-				$this->fetch_certif_state ( $this->id );
+				$this->fetch_certif_state($this->id);
 			}
 			
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -259,7 +256,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter = array()) {
-
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -289,39 +285,39 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as stasess ON sta.rowid = stasess.fk_stagiaire AND stasess.fk_session_agefodd=s.rowid  AND certif.fk_session_stagiaire=stasess.rowid";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = sta.fk_soc";
 		
-		$sql .= " WHERE s.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
 		
 		// Manage filter
-		if (count ( $filter ) > 0) {
+		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if (strpos ( $key, 'date' )) 				// To allow $filter['YEAR(s.dated)']=>$year
+				if (strpos($key, 'date')) 				// To allow $filter['YEAR(s.dated)']=>$year
 				{
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
-					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
 		}
 		
 		$sql .= ' AND soc.rowid=' . $socid;
 		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
-		if (! empty ( $limit )) {
-			$sql .= ' ' . $this->db->plimit ( $limit + 1, $offset );
+		if (! empty($limit)) {
+			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_certif_customer sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_certif_customer sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new Agefodd_CertifExpire_line ();
+				$line = new Agefodd_CertifExpire_line();
 				
 				$line->id_session = $obj->fk_session_agefodd;
 				$line->fromintitule = $obj->fromintitule;
@@ -332,9 +328,9 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$line->trainee_firstname = $obj->trainee_firstname;
 				$line->certif_code = $obj->certif_code;
 				$line->certif_label = $obj->certif_label;
-				$line->certif_dt_end = $this->db->jdate ( $obj->certif_dt_end );
-				$line->certif_dt_start = $this->db->jdate ( $obj->certif_dt_start );
-				$line->certif_dt_warning = $this->db->jdate ( $obj->certif_dt_warning );
+				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 				$line->customer_name = $obj->customer_name;
 				$line->customer_id = $obj->customer_id;
 				$line->dated = $obj->dated;
@@ -344,15 +340,15 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_certif_customer " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_certif_customer " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load Certificateion state
 	 *
@@ -360,14 +356,13 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return array State Array
 	 */
 	function fetch_certif_state($id) {
-
 		global $langs;
 		
-		$certif_type_array = $this->get_certif_type ();
+		$certif_type_array = $this->get_certif_type();
 		
-		if (is_array ( $certif_type_array ) && count ( $certif_type_array ) > 0) {
+		if (is_array($certif_type_array) && count($certif_type_array) > 0) {
 			foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
-				$line = new AgfStagiaireCertifLineState ();
+				$line = new AgfStagiaireCertifLineState();
 				
 				$line->certif_type = $certif_type_label;
 				$line->fk_certif_type = $certif_type_id;
@@ -381,21 +376,21 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlinner .= " WHERE t.fk_certif_type=" . $line->fk_certif_type;
 				$sqlinner .= " AND  t.fk_certif =" . $line->fk_certif;
 				
-				dol_syslog ( get_class ( $this ) . "::fetch_certif_state sqlinner=" . $sqlinner, LOG_DEBUG );
-				$resqlinner = $this->db->query ( $sqlinner );
+				dol_syslog(get_class($this) . "::fetch_certif_state sqlinner=" . $sqlinner, LOG_DEBUG);
+				$resqlinner = $this->db->query($sqlinner);
 				if ($resqlinner) {
-					$numinner = $this->db->num_rows ( $resqlinner );
-					if (! empty ( $numinner )) {
-						$objinner = $this->db->fetch_object ( $resqlinner );
+					$numinner = $this->db->num_rows($resqlinner);
+					if (! empty($numinner)) {
+						$objinner = $this->db->fetch_object($resqlinner);
 						$line->certif_state = $objinner->certif_state;
 						
-						dol_syslog ( get_class ( $this ) . "::fetch_certif_state objinner->certif_state=" . $objinner->certif_state, LOG_DEBUG );
+						dol_syslog(get_class($this) . "::fetch_certif_state objinner->certif_state=" . $objinner->certif_state, LOG_DEBUG);
 						
 						$line->id = $objinner->rowid;
 					}
 				} else {
-					$this->error = "Error " . $this->db->lasterror ();
-					dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 					return - 1;
 				}
 				
@@ -404,15 +399,15 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$i ++;
 			}
 			
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} elseif ($certif_type_array == - 1) {
-			dol_syslog ( get_class ( $this ) . "::fetch_certif_state " . $this->error, LOG_ERR );
+			dol_syslog(get_class($this) . "::fetch_certif_state " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object Certificate type
 	 *
@@ -420,7 +415,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 *        
 	 */
 	function get_certif_type() {
-
 		global $langs;
 		
 		$return_array = array ();
@@ -434,21 +428,21 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " WHERE t.active=1";
 		$sql .= " ORDER BY t.sort";
 		
-		dol_syslog ( get_class ( $this ) . "::get_certif_type sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::get_certif_type sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			while ( $obj = $this->db->fetch_object ( $resql ) ) {
+			while ( $obj = $this->db->fetch_object($resql) ) {
 				$return_array [$obj->rowid] = $obj->intitule;
 			}
 			
 			return $return_array;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::get_certif_type " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::get_certif_type " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Set Certificate State
 	 *
@@ -460,8 +454,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 *        
 	 */
 	function set_certif_state($user, $certif_id, $certif_type_id, $certif_state) {
-
-		if (empty ( $certif_state )) {
+		if (empty($certif_state)) {
 			$certif_state = 0;
 		}
 		
@@ -472,13 +465,13 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " WHERE t.fk_certif_type=" . $certif_type_id;
 		$sql .= " AND  t.fk_certif =" . $certif_id;
 		
-		dol_syslog ( get_class ( $this ) . "::set_certif_state sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::set_certif_state sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			
 			// Certificate state exists = > We update
-			if (! empty ( $num )) {
+			if (! empty($num)) {
 				$sqlop = "UPDATE " . MAIN_DB_PREFIX . "agefodd_certif_state SET ";
 				$sqlop .= " certif_state=" . $certif_state;
 				$sqlop .= ", fk_user_mod=" . $user->id;
@@ -486,11 +479,11 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlop .= " WHERE fk_certif_type=" . $certif_type_id;
 				$sqlop .= " AND  fk_certif =" . $certif_id;
 				
-				dol_syslog ( get_class ( $this ) . "::set_certif_state sql=" . $sqlop, LOG_DEBUG );
-				$resql = $this->db->query ( $sqlop );
+				dol_syslog(get_class($this) . "::set_certif_state sql=" . $sqlop, LOG_DEBUG);
+				$resql = $this->db->query($sqlop);
 				if (! $resql) {
-					$this->error = "Error " . $this->db->lasterror ();
-					dol_syslog ( get_class ( $this ) . "::set_certif_state " . $this->error, LOG_ERR );
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::set_certif_state " . $this->error, LOG_ERR);
 					return - 1;
 				}
 			} else {
@@ -499,26 +492,26 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlop .= " VALUES (";
 				$sqlop .= $user->id . ",";
 				$sqlop .= $user->id . ",";
-				$sqlop .= "'" . $this->db->idate ( dol_now () ) . "',";
+				$sqlop .= "'" . $this->db->idate(dol_now()) . "',";
 				$sqlop .= $certif_id . ",";
 				$sqlop .= $certif_type_id . ",";
 				$sqlop .= $certif_state . ")";
 				
-				dol_syslog ( get_class ( $this ) . "::set_certif_state sql=" . $sqlop, LOG_DEBUG );
-				$resql = $this->db->query ( $sqlop );
+				dol_syslog(get_class($this) . "::set_certif_state sql=" . $sqlop, LOG_DEBUG);
+				$resql = $this->db->query($sqlop);
 				if (! $resql) {
-					$this->error = "Error " . $this->db->lasterror ();
-					dol_syslog ( get_class ( $this ) . "::set_certif_state " . $this->error, LOG_ERR );
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::set_certif_state " . $this->error, LOG_ERR);
 					return - 1;
 				}
 			}
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::set_certif_state " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::set_certif_state " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -529,7 +522,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all_by_trainee($idtrainee) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -550,55 +542,55 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " t.certif_dt_warning";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 		
-		$sql .= " WHERE t.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " AND t.fk_stagiaire='" . $idtrainee . "'";
 		
 		$sql .= " ORDER BY t.datec desc";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_all_by_trainee sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_all_by_trainee sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			
 			$i = 0;
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfStagiaireCertifLine ();
+				$line = new AgfStagiaireCertifLine();
 				
 				$line->id = $obj->rowid;
 				
 				$line->entity = $obj->entity;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->fk_user_mod = $obj->fk_user_mod;
-				$line->datec = $this->db->jdate ( $obj->datec );
-				$line->tms = $this->db->jdate ( $obj->tms );
+				$line->datec = $this->db->jdate($obj->datec);
+				$line->tms = $this->db->jdate($obj->tms);
 				$line->fk_stagiaire = $obj->fk_stagiaire;
 				$line->fk_session_agefodd = $obj->fk_session_agefodd;
 				$line->fk_session_stagiaire = $obj->fk_session_stagiaire;
 				$line->certif_code = $obj->certif_code;
 				$line->certif_label = $obj->certif_label;
-				$line->certif_dt_start = $this->db->jdate ( $obj->certif_dt_start );
-				$line->certif_dt_end = $this->db->jdate ( $obj->certif_dt_end );
-				$line->certif_dt_warning = $this->db->jdate ( $obj->certif_dt_warning );
+				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
+				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 				
-				$this->fetch_certif_state ( $obj->rowid );
+				$this->fetch_certif_state($obj->rowid);
 				$line->lines_state = $this->lines_state;
 				
 				$this->lines [$i] = $line;
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return $num;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all_by_trainee " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all_by_trainee " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -609,7 +601,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all($sortorder, $sortfield, $limit, $offset) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -630,51 +621,51 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " t.certif_dt_warning";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 		
-		$sql .= " WHERE t.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('agsession') . ")";
 		
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit ( $limit + 1, $offset );
+		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			
 			$i = 0;
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfStagiaireCertifLine ();
+				$line = new AgfStagiaireCertifLine();
 				
 				$line->id = $obj->rowid;
 				
 				$line->entity = $obj->entity;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->fk_user_mod = $obj->fk_user_mod;
-				$line->datec = $this->db->jdate ( $obj->datec );
-				$line->tms = $this->db->jdate ( $obj->tms );
+				$line->datec = $this->db->jdate($obj->datec);
+				$line->tms = $this->db->jdate($obj->tms);
 				$line->fk_stagiaire = $obj->fk_stagiaire;
 				$line->fk_session_agefodd = $obj->fk_session_agefodd;
 				$line->fk_session_stagiaire = $obj->fk_session_stagiaire;
 				$line->certif_code = $obj->certif_code;
 				$line->certif_label = $obj->certif_label;
-				$line->certif_dt_start = $this->db->jdate ( $obj->certif_dt_start );
-				$line->certif_dt_end = $this->db->jdate ( $obj->certif_dt_end );
-				$line->certif_dt_warning = $this->db->jdate ( $obj->certif_dt_warning );
+				$line->certif_dt_start = $this->db->jdate($obj->certif_dt_start);
+				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
+				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 				
 				$this->line [$i] = $line;
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return $num;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Update object into database
 	 *
@@ -683,21 +674,20 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user = 0, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->fk_stagiaire ))
-			$this->fk_stagiaire = trim ( $this->fk_stagiaire );
-		if (isset ( $this->fk_session_agefodd ))
-			$this->fk_session_agefodd = trim ( $this->fk_session_agefodd );
-		if (isset ( $this->fk_session_stagiaire ))
-			$this->fk_session_stagiaire = trim ( $this->fk_session_stagiaire );
-		if (isset ( $this->certif_code ))
-			$this->certif_code = trim ( $this->certif_code );
-		if (isset ( $this->certif_label ))
-			$this->certif_label = trim ( $this->certif_label );
+		if (isset($this->fk_stagiaire))
+			$this->fk_stagiaire = trim($this->fk_stagiaire);
+		if (isset($this->fk_session_agefodd))
+			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
+		if (isset($this->fk_session_stagiaire))
+			$this->fk_session_stagiaire = trim($this->fk_session_stagiaire);
+		if (isset($this->certif_code))
+			$this->certif_code = trim($this->certif_code);
+		if (isset($this->certif_label))
+			$this->certif_label = trim($this->certif_label);
 			
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -707,24 +697,24 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		
 		$sql .= " entity=" . $conf->entity . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
-		$sql .= " fk_stagiaire=" . (isset ( $this->fk_stagiaire ) ? $this->fk_stagiaire : "null") . ",";
-		$sql .= " fk_session_agefodd=" . (isset ( $this->fk_session_agefodd ) ? $this->fk_session_agefodd : "null") . ",";
-		$sql .= " fk_session_stagiaire=" . (isset ( $this->fk_session_stagiaire ) ? $this->fk_session_stagiaire : "null") . ",";
-		$sql .= " certif_code=" . (isset ( $this->certif_code ) ? "'" . $this->db->escape ( $this->certif_code ) . "'" : "null") . ",";
-		$sql .= " certif_label=" . (isset ( $this->certif_label ) ? "'" . $this->db->escape ( $this->certif_label ) . "'" : "null") . ",";
-		$sql .= " certif_dt_start=" . (dol_strlen ( $this->certif_dt_start ) != 0 ? "'" . $this->db->idate ( $this->certif_dt_start ) . "'" : 'null') . ",";
-		$sql .= " certif_dt_end=" . (dol_strlen ( $this->certif_dt_end ) != 0 ? "'" . $this->db->idate ( $this->certif_dt_end ) . "'" : 'null') . ",";
-		$sql .= " certif_dt_warning=" . (dol_strlen ( $this->certif_dt_warning ) != 0 ? "'" . $this->db->idate ( $this->certif_dt_warning ) . "'" : 'null') . "";
+		$sql .= " fk_stagiaire=" . (isset($this->fk_stagiaire) ? $this->fk_stagiaire : "null") . ",";
+		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";
+		$sql .= " fk_session_stagiaire=" . (isset($this->fk_session_stagiaire) ? $this->fk_session_stagiaire : "null") . ",";
+		$sql .= " certif_code=" . (isset($this->certif_code) ? "'" . $this->db->escape($this->certif_code) . "'" : "null") . ",";
+		$sql .= " certif_label=" . (isset($this->certif_label) ? "'" . $this->db->escape($this->certif_label) . "'" : "null") . ",";
+		$sql .= " certif_dt_start=" . (dol_strlen($this->certif_dt_start) != 0 ? "'" . $this->db->idate($this->certif_dt_start) . "'" : 'null') . ",";
+		$sql .= " certif_dt_end=" . (dol_strlen($this->certif_dt_end) != 0 ? "'" . $this->db->idate($this->certif_dt_end) . "'" : 'null') . ",";
+		$sql .= " certif_dt_warning=" . (dol_strlen($this->certif_dt_warning) != 0 ? "'" . $this->db->idate($this->certif_dt_warning) . "'" : 'null') . "";
 		
 		$sql .= " WHERE rowid=" . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -744,17 +734,17 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Delete object in database
 	 *
@@ -763,11 +753,10 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function delete($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
 		if (! $error) {
 			if (! $notrigger) {
@@ -787,38 +776,38 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif";
 			$sql .= " WHERE rowid=" . $this->id;
 			
-			dol_syslog ( get_class ( $this ) . "::delete sql=" . $sql );
-			$resql = $this->db->query ( $sql );
+			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			}
 			
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_certif_state";
 			$sql .= " WHERE fk_certif=" . $this->id;
 			
-			dol_syslog ( get_class ( $this ) . "::delete sql=" . $sql );
-			$resql = $this->db->query ( $sql );
+			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			}
 		}
 		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::delete " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Give information on the object
 	 *
@@ -826,7 +815,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function info($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -834,26 +822,26 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as p";
 		$sql .= " WHERE p.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date_creation = $this->db->jdate ( $obj->datec );
-				$this->date_modification = $this->db->jdate ( $obj->tms );
+				$this->date_creation = $this->db->jdate($obj->datec);
+				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
 				$this->user_creation = $obj->fk_user_author;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -861,7 +849,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return void
 	 */
 	function initAsSpecimen() {
-
 		$this->id = 0;
 		
 		$this->entity = '';
@@ -895,9 +882,7 @@ class AgfStagiaireCertifLine {
 	var $certif_dt_end = '';
 	var $certif_dt_warning = '';
 	var $lines_state = array ();
-
 	function __construct() {
-
 		return 1;
 	}
 }
@@ -911,9 +896,7 @@ class AgfStagiaireCertifLineState {
 	var $fk_certif_type;
 	var $certif_state;
 	var $certif_type;
-
 	function __construct() {
-
 		return 1;
 	}
 }

@@ -28,26 +28,26 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
-dol_include_once ( '/agefodd/lib/agefodd.lib.php' );
-dol_include_once ( '/agefodd/class/agefodd_formation_catalogue.class.php' );
+	die("Include of main fails");
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-$langs->load ( "companies" );
-$langs->load ( "bills" );
-$langs->load ( "orders" );
+$langs->load("companies");
+$langs->load("bills");
+$langs->load("orders");
 
-$id = GETPOST ( 'id', 'int' );
-$ref = GETPOST ( 'ref', 'alpha' );
-$action = GETPOST ( 'action', 'alpha' );
+$id = GETPOST('id', 'int');
+$ref = GETPOST('ref', 'alpha');
+$action = GETPOST('action', 'alpha');
 
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$object = new Agefodd ( $db );
-$result = $object->fetch ( $id, $ref );
+$object = new Agefodd($db);
+$result = $object->fetch($id, $ref);
 if ($result < 0) {
-	setEventMessage ( $object->error, 'errors' );
+	setEventMessage($object->error, 'errors');
 }
 
 // Manage note right on this objects
@@ -59,37 +59,37 @@ $user->rights->agefodd_formation_catalogue->creer = $user->rights->agefodd->agef
 */
 
 if ($action == 'setnote_public' && $user->rights->commande->creer) {
-	$object->fetch ( $id );
-	$result = $object->update_note ( dol_html_entity_decode ( GETPOST ( 'note_public' ), ENT_QUOTES ), '_public' );
+	$object->fetch($id);
+	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_public'), ENT_QUOTES), '_public');
 	if ($result < 0)
-		setEventMessage ( $object->error, 'errors' );
+		setEventMessage($object->error, 'errors');
 } 
 
 else if ($action == 'setnote_private' && $user->rights->commande->creer) {
-	$object->fetch ( $id );
-	$result = $object->update_note ( dol_html_entity_decode ( GETPOST ( 'note_private' ), ENT_QUOTES ), '_private' );
+	$object->fetch($id);
+	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_private'), ENT_QUOTES), '_private');
 	if ($result < 0)
-		setEventMessage ( $object->error, 'errors' );
+		setEventMessage($object->error, 'errors');
 }
 
 /*
  * View
 */
 
-$title = $langs->trans ( "AgfCatalogNote" );
-llxHeader ( '', $title );
+$title = $langs->trans("AgfCatalogNote");
+llxHeader('', $title);
 
-$form = new Form ( $db );
+$form = new Form($db);
 
-if ($id > 0 || ! empty ( $ref )) {
+if ($id > 0 || ! empty($ref)) {
 	
-	$head = training_prepare_head ( $object );
+	$head = training_prepare_head($object);
 	
-	dol_fiche_head ( $head, 'notes', $langs->trans ( "AgfCatalogNote" ), 0, 'label' );
+	dol_fiche_head($head, 'notes', $langs->trans("AgfCatalogNote"), 0, 'label');
 	
 	print '<table class="border" width="100%">';
 	
-	$object->printFormationInfo ();
+	$object->printFormationInfo();
 	
 	print '<br>';
 	
@@ -98,5 +98,5 @@ if ($id > 0 || ! empty ( $ref )) {
 	print '</div>';
 }
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

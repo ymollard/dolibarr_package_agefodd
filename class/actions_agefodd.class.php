@@ -31,19 +31,18 @@ class ActionsAgefodd {
 	var $error;
 	var $errors = array ();
 	var $resprints = '';
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDB $db
 	 */
 	function __construct($db) {
-
 		$this->db = $db;
 		$this->error = 0;
 		$this->errors = array ();
 	}
-
+	
 	/**
 	 * printSearchForm Method Hook Call
 	 *
@@ -54,16 +53,15 @@ class ActionsAgefodd {
 	 * @return void
 	 */
 	function printSearchForm($parameters, &$object, &$action, $hookmanager) {
-
 		global $langs;
-		$langs->load ( 'agefodd@agefodd' );
+		$langs->load('agefodd@agefodd');
 		
-		$out = printSearchForm ( dol_buildpath ( '/agefodd/session/list.php', 1 ), dol_buildpath ( '/agefodd/session/list.php', 1 ), img_object ( '', 'agefodd@agefodd' ) . ' ' . $langs->trans ( "AgfSessionId" ), 'agefodd', 'search_id' );
-		$out .= printSearchForm ( dol_buildpath ( '/agefodd/trainee/list.php', 1 ), dol_buildpath ( '/agefodd/trainee/list.php', 1 ), img_object ( '', 'contact' ) . ' ' . $langs->trans ( "AgfMenuActStagiaire" ), 'agefodd', 'search_namefirstname' );
+		$out = printSearchForm(dol_buildpath('/agefodd/session/list.php', 1), dol_buildpath('/agefodd/session/list.php', 1), img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"), 'agefodd', 'search_id');
+		$out .= printSearchForm(dol_buildpath('/agefodd/trainee/list.php', 1), dol_buildpath('/agefodd/trainee/list.php', 1), img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"), 'agefodd', 'search_namefirstname');
 		
 		$this->resprints = $out;
 	}
-
+	
 	/**
 	 * formObjectOptions Method Hook Call
 	 *
@@ -74,14 +72,13 @@ class ActionsAgefodd {
 	 * @return void
 	 */
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager) {
-
 		global $langs, $conf, $user;
 		
 		// dol_syslog(get_class($this).':: formObjectOptions',LOG_DEBUG);
 		
 		return 0;
 	}
-
+	
 	/**
 	 * DoAction Method Hook Call
 	 *

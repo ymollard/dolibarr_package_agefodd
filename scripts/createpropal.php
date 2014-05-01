@@ -19,39 +19,39 @@
  * \file /agefodd/scripts/createtaskadmin.php
  * \brief Generate script
  */
-if (! defined ( 'NOTOKENRENEWAL' ))
-	define ( 'NOTOKENRENEWAL', '1' ); // Disables token renewal
-if (! defined ( 'NOREQUIREMENU' ))
-	define ( 'NOREQUIREMENU', '1' );
-if (! defined ( 'NOREQUIREHTML' ))
-	define ( 'NOREQUIREHTML', '1' );
-if (! defined ( 'NOREQUIREAJAX' ))
-	define ( 'NOREQUIREAJAX', '1' );
-if (! defined ( 'NOLOGIN' ))
-	define ( 'NOLOGIN', '1' );
+if (! defined('NOTOKENRENEWAL'))
+	define('NOTOKENRENEWAL', '1'); // Disables token renewal
+if (! defined('NOREQUIREMENU'))
+	define('NOREQUIREMENU', '1');
+if (! defined('NOREQUIREHTML'))
+	define('NOREQUIREHTML', '1');
+if (! defined('NOREQUIREAJAX'))
+	define('NOREQUIREAJAX', '1');
+if (! defined('NOLOGIN'))
+	define('NOLOGIN', '1');
 
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
-dol_include_once ( '/user/class/user.class.php' );
-dol_include_once ( '/agefodd/class/agsession.class.php' );
+dol_include_once('/user/class/user.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 
-$userlogin = GETPOST ( 'login' );
-$session_id = GETPOST ( 'sessid' );
-$socid = GETPOST ( 'socid' );
+$userlogin = GETPOST('login');
+$session_id = GETPOST('sessid');
+$socid = GETPOST('socid');
 
-$user = new User ( $db );
-$result = $user->fetch ( '', $userlogin );
+$user = new User($db);
+$result = $user->fetch('', $userlogin);
 
-$agf = new Agsession ( $db );
-$result = $agf->fetch ( $session_id );
+$agf = new Agsession($db);
+$result = $agf->fetch($session_id);
 if ($result < 0) {
 	print - 1;
 } else {
-	$result = $agf->createProposal ( $user, $socid );
+	$result = $agf->createProposal($user, $socid);
 	if ($result < 0) {
 		print - 1;
 	} else {

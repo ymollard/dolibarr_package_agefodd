@@ -56,18 +56,17 @@ class Agefodd_convention {
 	var $contatcdoc;
 	var $lines = array ();
 	var $line_trainee = array ();
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
-
 		$this->db = $db;
 		return 1;
 	}
-
+	
 	/**
 	 * Create object into database
 	 *
@@ -76,41 +75,40 @@ class Agefodd_convention {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->intro1 ))
-			$this->intro1 = $this->db->escape ( trim ( $this->intro1 ) );
-		if (isset ( $this->intro2 ))
-			$this->intro2 = $this->db->escape ( trim ( $this->intro2 ) );
-		if (isset ( $this->art1 ))
-			$this->art1 = $this->db->escape ( trim ( $this->art1 ) );
-		if (isset ( $this->art2 ))
-			$this->art2 = $this->db->escape ( trim ( $this->art2 ) );
-		if (isset ( $this->art3 ))
-			$this->art3 = $this->db->escape ( trim ( $this->art3 ) );
-		if (isset ( $this->art4 ))
-			$this->art4 = $this->db->escape ( trim ( $this->art4 ) );
-		if (isset ( $this->art5 ))
-			$this->art5 = $this->db->escape ( trim ( $this->art5 ) );
-		if (isset ( $this->art6 ))
-			$this->art6 = $this->db->escape ( trim ( $this->art6 ) );
-		if (isset ( $this->art7 ))
-			$this->art7 = $this->db->escape ( trim ( $this->art7 ) );
-		if (isset ( $this->art8 ))
-			$this->art8 = $this->db->escape ( trim ( $this->art8 ) );
-		if (isset ( $this->sig ))
-			$this->sig = $this->db->escape ( trim ( $this->sig ) );
-		if (isset ( $this->notes ))
-			$this->notes = $this->db->escape ( trim ( $this->notes ) );
-		if (empty ( $this->fk_element ))
+		if (isset($this->intro1))
+			$this->intro1 = $this->db->escape(trim($this->intro1));
+		if (isset($this->intro2))
+			$this->intro2 = $this->db->escape(trim($this->intro2));
+		if (isset($this->art1))
+			$this->art1 = $this->db->escape(trim($this->art1));
+		if (isset($this->art2))
+			$this->art2 = $this->db->escape(trim($this->art2));
+		if (isset($this->art3))
+			$this->art3 = $this->db->escape(trim($this->art3));
+		if (isset($this->art4))
+			$this->art4 = $this->db->escape(trim($this->art4));
+		if (isset($this->art5))
+			$this->art5 = $this->db->escape(trim($this->art5));
+		if (isset($this->art6))
+			$this->art6 = $this->db->escape(trim($this->art6));
+		if (isset($this->art7))
+			$this->art7 = $this->db->escape(trim($this->art7));
+		if (isset($this->art8))
+			$this->art8 = $this->db->escape(trim($this->art8));
+		if (isset($this->sig))
+			$this->sig = $this->db->escape(trim($this->sig));
+		if (isset($this->notes))
+			$this->notes = $this->db->escape(trim($this->notes));
+		if (empty($this->fk_element))
 			$this->fk_element = 0;
-		if (isset ( $this->element_type ))
-			$this->element_type = $this->db->escape ( trim ( $this->element_type ) );
-		if (isset ( $this->model_doc ))
-			$this->model_doc = $this->db->escape ( trim ( $this->model_doc ) );
+		if (isset($this->element_type))
+			$this->element_type = $this->db->escape(trim($this->element_type));
+		if (isset($this->model_doc))
+			$this->model_doc = $this->db->escape(trim($this->model_doc));
 			
 			// Check parameters
 			// Put here code to add control on parameters value
@@ -139,22 +137,22 @@ class Agefodd_convention {
 		$sql .= "'" . $this->notes . "', ";
 		$sql .= $user->id . ', ';
 		$sql .= $user->id . ', ';
-		$sql .= "'" . $this->db->idate ( dol_now () ) . "'";
+		$sql .= "'" . $this->db->idate(dol_now()) . "'";
 		$sql .= ",'" . $this->element_type . "'";
 		$sql .= "," . $this->fk_element;
-		$sql .= "," . (! isset ( $this->model_doc ) ? 'NULL' : "'" . $this->db->escape ( $this->model_doc ) . "'");
+		$sql .= "," . (! isset($this->model_doc) ? 'NULL' : "'" . $this->db->escape($this->model_doc) . "'");
 		$sql .= ")";
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
-			$this->id = $this->db->last_insert_id ( MAIN_DB_PREFIX . "agefodd_convention" );
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_convention");
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
@@ -167,8 +165,8 @@ class Agefodd_convention {
 				// // End call triggers
 			}
 		}
-		if (! $error && count($this->line_trainee)>0) {
-			foreach($this->line_trainee as $line) {
+		if (! $error && count($this->line_trainee) > 0) {
+			foreach ( $this->line_trainee as $line ) {
 				$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire(";
 				$sql .= "fk_agefodd_convention,";
 				$sql .= "fk_agefodd_session_stagiaire,";
@@ -176,18 +174,18 @@ class Agefodd_convention {
 				$sql .= "fk_user_mod,";
 				$sql .= "datec";
 				$sql .= ") VALUES (";
-				$sql .=  $this->id . ", ";
+				$sql .= $this->id . ", ";
 				$sql .= $line . ", ";
 				$sql .= $user->id . ', ';
 				$sql .= $user->id . ', ';
-				$sql .= "'" . $this->db->idate ( dol_now () ) . "'";
+				$sql .= "'" . $this->db->idate(dol_now()) . "'";
 				$sql .= ")";
 				
-				dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-				$resql = $this->db->query ( $sql );
+				dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror ();
+					$this->errors [] = "Error " . $this->db->lasterror();
 				}
 			}
 		}
@@ -195,17 +193,17 @@ class Agefodd_convention {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::create " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return $this->id;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -213,7 +211,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($sessid, $socid, $id = 0) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -231,12 +228,12 @@ class Agefodd_convention {
 			$sql .= " AND c.fk_societe = " . $socid;
 		}
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->socid = $obj->fk_societe;
@@ -257,34 +254,34 @@ class Agefodd_convention {
 				$this->fk_element = $obj->fk_element;
 				$this->model_doc = $obj->model_doc;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
-			if (!empty($this->id)) {
-				$this->line_trainee=array();
-
+			if (! empty($this->id)) {
+				$this->line_trainee = array ();
+				
 				$sql = "SELECT";
 				$sql .= " convtrainee.fk_agefodd_session_stagiaire";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire as convtrainee ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as s ON s.rowid=convtrainee.fk_agefodd_session_stagiaire";
 				$sql .= " WHERE convtrainee.fk_agefodd_convention = " . $this->id;
 				
-				dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-				$resql = $this->db->query ( $sql );
+				dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
 				
 				if ($resql) {
-					if ($this->db->num_rows ( $resql )) {
-						while ($obj = $this->db->fetch_object ( $resql )) {
-							$this->line_trainee[]=$obj->fk_agefodd_session_stagiaire;
+					if ($this->db->num_rows($resql)) {
+						while ( $obj = $this->db->fetch_object($resql) ) {
+							$this->line_trainee [] = $obj->fk_agefodd_session_stagiaire;
 						}
 					}
 				}
-				$this->db->free ( $resql );			
+				$this->db->free($resql);
 			}
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -295,10 +292,9 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sessid, $socid=0) {
-	
+	function fetch_all($sessid, $socid = 0) {
 		global $langs;
-	
+		
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
 		$sql .= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.sig, notes, s.nom as socname";
@@ -308,19 +304,19 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid=c.fk_societe";
 		$sql .= " WHERE c.fk_agefodd_session = " . $sessid;
-		if (!empty($socid)) {
+		if (! empty($socid)) {
 			$sql .= " AND c.fk_societe = " . $socid;
 		}
-	
-		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
-	
+		
+		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
+			if ($this->db->num_rows($resql)) {
 				
-				$this->lines=array();
+				$this->lines = array ();
 				
-				while ($obj = $this->db->fetch_object ( $resql )) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
 					$line = new Agefodd_convention($this->db);
 					
 					$line->id = $obj->rowid;
@@ -343,7 +339,7 @@ class Agefodd_convention {
 					$line->fk_element = $obj->fk_element;
 					$line->model_doc = $obj->model_doc;
 					
-					$line->line_trainee=array();
+					$line->line_trainee = array ();
 					
 					$sql_trainee = "SELECT";
 					$sql_trainee .= " convtrainee.fk_agefodd_session_stagiaire";
@@ -351,38 +347,35 @@ class Agefodd_convention {
 					$sql_trainee .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as s ON s.rowid=convtrainee.fk_agefodd_session_stagiaire";
 					$sql_trainee .= " WHERE convtrainee.fk_agefodd_convention = " . $line->id;
 					
-					dol_syslog ( get_class ( $this ) . "::fetch_all sql_trainee=" . $sql_trainee, LOG_DEBUG );
-					$resqltrainee = $this->db->query ( $sql_trainee );
+					dol_syslog(get_class($this) . "::fetch_all sql_trainee=" . $sql_trainee, LOG_DEBUG);
+					$resqltrainee = $this->db->query($sql_trainee);
 					if ($resqltrainee) {
-						if ($this->db->num_rows ( $resqltrainee )) {
+						if ($this->db->num_rows($resqltrainee)) {
 							
-							while ($objtrainee = $this->db->fetch_object ( $resqltrainee )) {
-								$line->line_trainee[]=$objtrainee->fk_agefodd_session_stagiaire;
-								
+							while ( $objtrainee = $this->db->fetch_object($resqltrainee) ) {
+								$line->line_trainee [] = $objtrainee->fk_agefodd_session_stagiaire;
 							}
 						}
-					}else {
-						$this->error = "Error " . $this->db->lasterror ();
-						dol_syslog ( get_class ( $this ) . "::fetch_all " . $this->error, LOG_ERR );
+					} else {
+						$this->error = "Error " . $this->db->lasterror();
+						dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 						return - 1;
 					}
-					$this->db->free ( $resqltrainee );
-
+					$this->db->free($resqltrainee);
 					
-					$this->lines[]=$line;
-					
+					$this->lines [] = $line;
 				}
 			}
-			$this->db->free ( $resql );
-				
+			$this->db->free($resql);
+			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -390,7 +383,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_last_conv_per_socity($socid) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -399,23 +391,23 @@ class Agefodd_convention {
 		$sql .= " WHERE c.fk_societe = " . $socid;
 		$sql .= " GROUP BY c.rowid";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_last_conv_per_socity sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_last_conv_per_socity sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->sessid = $obj->sessid;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_last_conv_per_socity " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_last_conv_per_socity " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load order lines object in memory from database
 	 *
@@ -423,7 +415,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_order_lines($comid) {
-
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -434,28 +425,28 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "commandedet as c";
 		$sql .= " WHERE c.fk_commande = " . $comid;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_commande_lines sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_commande_lines sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
 			$this->line = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfConventionLine ();
+				$line = new AgfConventionLine();
 				
 				$line->rowid = $obj->rowid;
 				$line->fk_product = $obj->fk_product;
-				if (! empty ( $line->fk_product )) {
-					$prod_static = new Product ( $this->db );
-					$result = $prod_static->fetch ( $line->fk_product );
+				if (! empty($line->fk_product)) {
+					$prod_static = new Product($this->db);
+					$result = $prod_static->fetch($line->fk_product);
 					if ($result < 0) {
-						dol_syslog ( get_class ( $this ) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR );
+						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
-					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
+					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br($obj->description);
 				} else {
 					$line->description = $obj->description;
 				}
@@ -472,15 +463,15 @@ class Agefodd_convention {
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_commande_lines " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_commande_lines " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load Invoice lines object in memory from database
 	 *
@@ -488,7 +479,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_invoice_lines($factid) {
-
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -499,28 +489,28 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facturedet as c";
 		$sql .= " WHERE c.fk_facture = " . $factid;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_invoice_lines sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_invoice_lines sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
 			$this->line = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfConventionLine ();
+				$line = new AgfConventionLine();
 				
 				$line->rowid = $obj->rowid;
 				$line->fk_product = $obj->fk_product;
-				if (! empty ( $line->fk_product )) {
-					$prod_static = new Product ( $this->db );
-					$result = $prod_static->fetch ( $line->fk_product );
+				if (! empty($line->fk_product)) {
+					$prod_static = new Product($this->db);
+					$result = $prod_static->fetch($line->fk_product);
 					if ($result < 0) {
-						dol_syslog ( get_class ( $this ) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR );
+						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
-					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
+					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br($obj->description);
 				} else {
 					$line->description = $obj->description;
 				}
@@ -537,15 +527,15 @@ class Agefodd_convention {
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_invoice_lines " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_invoice_lines " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load Proposal lines object in memory from database
 	 *
@@ -553,7 +543,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_propal_lines($propalid) {
-
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -564,32 +553,32 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "propaldet as c";
 		$sql .= " WHERE c.fk_propal = " . $propalid;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_propal_lines sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_propal_lines sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
 			$this->line = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfConventionLine ();
+				$line = new AgfConventionLine();
 				
 				$line->rowid = $obj->rowid;
 				$line->fk_product = $obj->fk_product;
-				if (! empty ( $line->fk_product )) {
-					$prod_static = new Product ( $this->db );
-					$result = $prod_static->fetch ( $line->fk_product );
+				if (! empty($line->fk_product)) {
+					$prod_static = new Product($this->db);
+					$result = $prod_static->fetch($line->fk_product);
 					if ($result < 0) {
-						dol_syslog ( get_class ( $this ) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR );
+						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
 					// $line->description = $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
-					if (!empty($obj->label) && $obj->label!=$prod_static->label) {
-						$line->description = $obj->label . '<BR>' . nl2br ( $obj->description );
+					if (! empty($obj->label) && $obj->label != $prod_static->label) {
+						$line->description = $obj->label . '<BR>' . nl2br($obj->description);
 					} else {
-						$line->description = $prod_static->label . '<BR>' . nl2br ( $obj->description );
+						$line->description = $prod_static->label . '<BR>' . nl2br($obj->description);
 					}
 				} else {
 					$line->description = $obj->description;
@@ -607,15 +596,15 @@ class Agefodd_convention {
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_propal_lines " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_propal_lines " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Give information on the object
 	 *
@@ -623,7 +612,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function info($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -631,27 +619,27 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " WHERE f.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::info sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->datec = $this->db->jdate ( $obj->datec );
-				$this->date_modification = $this->db->jdate ( $obj->tms );
+				$this->datec = $this->db->jdate($obj->datec);
+				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->fk_userc = $obj->fk_user_author;
 				$this->fk_userm = $obj->fk_user_mod;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::info " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::info " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Update object into database
 	 *
@@ -660,44 +648,43 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->intro1 ))
-			$this->intro1 = $this->db->escape ( trim ( $this->intro1 ) );
-		if (isset ( $this->intro2 ))
-			$this->intro2 = $this->db->escape ( trim ( $this->intro2 ) );
-		if (isset ( $this->art1 ))
-			$this->art1 = $this->db->escape ( trim ( $this->art1 ) );
-		if (isset ( $this->art2 ))
-			$this->art2 = $this->db->escape ( trim ( $this->art2 ) );
-		if (isset ( $this->art3 ))
-			$this->art3 = $this->db->escape ( trim ( $this->art3 ) );
-		if (isset ( $this->art4 ))
-			$this->art4 = $this->db->escape ( trim ( $this->art4 ) );
-		if (isset ( $this->art5 ))
-			$this->art5 = $this->db->escape ( trim ( $this->art5 ) );
-		if (isset ( $this->art6 ))
-			$this->art6 = $this->db->escape ( trim ( $this->art6 ) );
-		if (isset ( $this->art7 ))
-			$this->art7 = $this->db->escape ( trim ( $this->art7 ) );
-		if (isset ( $this->art8 ))
-			$this->art8 = $this->db->escape ( trim ( $this->art8 ) );
-		if (isset ( $this->sig ))
-			$this->sig = $this->db->escape ( trim ( $this->sig ) );
-		if (isset ( $this->notes ))
-			$this->notes = $this->db->escape ( trim ( $this->notes ) );
-		if (empty ( $this->fk_element ))
+		if (isset($this->intro1))
+			$this->intro1 = $this->db->escape(trim($this->intro1));
+		if (isset($this->intro2))
+			$this->intro2 = $this->db->escape(trim($this->intro2));
+		if (isset($this->art1))
+			$this->art1 = $this->db->escape(trim($this->art1));
+		if (isset($this->art2))
+			$this->art2 = $this->db->escape(trim($this->art2));
+		if (isset($this->art3))
+			$this->art3 = $this->db->escape(trim($this->art3));
+		if (isset($this->art4))
+			$this->art4 = $this->db->escape(trim($this->art4));
+		if (isset($this->art5))
+			$this->art5 = $this->db->escape(trim($this->art5));
+		if (isset($this->art6))
+			$this->art6 = $this->db->escape(trim($this->art6));
+		if (isset($this->art7))
+			$this->art7 = $this->db->escape(trim($this->art7));
+		if (isset($this->art8))
+			$this->art8 = $this->db->escape(trim($this->art8));
+		if (isset($this->sig))
+			$this->sig = $this->db->escape(trim($this->sig));
+		if (isset($this->notes))
+			$this->notes = $this->db->escape(trim($this->notes));
+		if (empty($this->fk_element))
 			$this->fk_element = 0;
-		if (isset ( $this->element_type ))
-			$this->element_type = $this->db->escape ( trim ( $this->element_type ) );
-		if (isset ( $this->model_doc ))
-			$this->model_doc = $this->db->escape ( trim ( $this->model_doc ) );
+		if (isset($this->element_type))
+			$this->element_type = $this->db->escape(trim($this->element_type));
+		if (isset($this->model_doc))
+			$this->model_doc = $this->db->escape(trim($this->model_doc));
 			
 			// Update request
-		if (! isset ( $this->archive ))
+		if (! isset($this->archive))
 			$this->archive = 0;
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_convention SET";
 		$sql .= " intro1='" . $this->intro1 . "',";
@@ -717,16 +704,16 @@ class Agefodd_convention {
 		$sql .= " fk_societe=" . $this->socid . ",";
 		$sql .= " fk_agefodd_session=" . $this->sessid . ",";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
-		$sql .= " model_doc=" . (isset ( $this->model_doc ) ? "'" . $this->db->escape ( $this->model_doc ) . "'" : "null");
+		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -744,17 +731,17 @@ class Agefodd_convention {
 		
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
-			$sql .= " WHERE fk_agefodd_convention = ".$this->id;
-	
-			dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-			$resql = $this->db->query ( $sql );
+			$sql .= " WHERE fk_agefodd_convention = " . $this->id;
+			
+			dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			}
 			
-			if (! $error && count($this->line_trainee)>0) {
-				foreach($this->line_trainee as $line) {
+			if (! $error && count($this->line_trainee) > 0) {
+				foreach ( $this->line_trainee as $line ) {
 					$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire(";
 					$sql .= "fk_agefodd_convention,";
 					$sql .= "fk_agefodd_session_stagiaire,";
@@ -762,18 +749,18 @@ class Agefodd_convention {
 					$sql .= "fk_user_mod,";
 					$sql .= "datec";
 					$sql .= ") VALUES (";
-					$sql .=  $this->id . ", ";
+					$sql .= $this->id . ", ";
 					$sql .= $line . ", ";
 					$sql .= $user->id . ', ';
 					$sql .= $user->id . ', ';
-					$sql .= "'" . $this->db->idate ( dol_now () ) . "'";
+					$sql .= "'" . $this->db->idate(dol_now()) . "'";
 					$sql .= ")";
-			
-					dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-					$resql = $this->db->query ( $sql );
+					
+					dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+					$resql = $this->db->query($sql);
 					if (! $resql) {
 						$error ++;
-						$this->errors [] = "Error " . $this->db->lasterror ();
+						$this->errors [] = "Error " . $this->db->lasterror();
 					}
 				}
 			}
@@ -782,17 +769,17 @@ class Agefodd_convention {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Delete object in database
 	 *
@@ -801,63 +788,62 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function remove($id) {
+		global $conf, $langs;
 		
-		global $conf,$langs;
-		
-		$this->fetch(0,0,$id);
-		$file='';
-		//For backwoard compatibilty check convention file name with id of convention
-		if (is_file ( $conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid .'.pdf')) {
-			$file=$conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid .'.pdf';
-		} elseif (is_file ( $conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid . '_' . $this->id . '.pdf')) {
+		$this->fetch(0, 0, $id);
+		$file = '';
+		// For backwoard compatibilty check convention file name with id of convention
+		if (is_file($conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid . '.pdf')) {
+			$file = $conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid . '.pdf';
+		} elseif (is_file($conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid . '_' . $this->id . '.pdf')) {
 			$file = $conf->agefodd->dir_output . '/convention_' . $this->sessid . '_' . $this->socid . '_' . $this->id . '.pdf';
 		}
-
-		$this->db->begin ();
+		
+		$this->db->begin();
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
-		$sql .= " WHERE fk_agefodd_convention = ".$id;
+		$sql .= " WHERE fk_agefodd_convention = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
-
+		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
-		if (!$error && !empty($file)) {
-			require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-			$result=dol_delete_file($file);
-			if (!$result) {
+		if (! $error && ! empty($file)) {
+			require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+			$result = dol_delete_file($file);
+			if (! $result) {
 				$error ++;
-				$this->errors [] = $file . ' : ' . $langs->trans ( "AgfDocDelError" );
+				$this->errors [] = $file . ' : ' . $langs->trans("AgfDocDelError");
 			}
 		}
 		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::remove " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::remove " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Load contact info from object in memory from database
 	 *
@@ -865,7 +851,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_contact($contactsource, $contacttype) {
-
 		require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
 		
 		global $langs;
@@ -878,36 +863,35 @@ class Agefodd_convention {
 		$sql .= ' AND code="' . $contacttype . '")';
 		$sql .= " AND elmentcontact.element_id = " . $this->fk_element;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_contact sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_contact sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			if ($num > 0) {
 				
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$contact = new Contact ( $this->db );
-				$result = $contact->fetch ( $obj->contactid );
+				$contact = new Contact($this->db);
+				$result = $contact->fetch($obj->contactid);
 				if ($result < 0) {
 					$this->error = $contact->error;
 					return - 1;
 				}
 				
-				if (! empty ( $contact->id )) {
+				if (! empty($contact->id)) {
 					$this->contatcdoc = $contact;
 				}
 				
 				return $num;
 			}
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_contact " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_contact " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
 }
-
 class AgfConventionLine {
 	var $rowid;
 	var $fk_product;
@@ -920,9 +904,7 @@ class AgfConventionLine {
 	var $total_ht;
 	var $total_tva;
 	var $total_ttc;
-
 	function __construct() {
-
 		return 1;
 	}
 }

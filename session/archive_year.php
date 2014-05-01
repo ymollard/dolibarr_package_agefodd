@@ -29,7 +29,7 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
 require_once ('../lib/agefodd.lib.php');
@@ -38,12 +38,12 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/html.formother.class.php");
 
 // Security check
 if (! $user->rights->agefodd->lire)
-	accessforbidden ();
+	accessforbidden();
 if ($user->societe_id)
-	accessforbidden ();
+	accessforbidden();
 
-$action = GETPOST ( "action", "alpha" );
-$year = GETPOST ( "year", "int" );
+$action = GETPOST("action", "alpha");
+$year = GETPOST("year", "int");
 
 /*
  * Actions archive
@@ -51,9 +51,9 @@ $year = GETPOST ( "year", "int" );
 
 if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
 	
-	$agf = new Agsession ( $db );
+	$agf = new Agsession($db);
 	
-	$result = $agf->updateArchiveByYear ( $year, $user );
+	$result = $agf->updateArchiveByYear($year, $user);
 	
 	if ($result > 0) {
 		
@@ -63,13 +63,13 @@ if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
 		if(is_file($filename)) unlink("$filename");
 		}
 		*/
-		setEventMessage ( $langs->trans ( 'AgfArchiveByYearComplete' ), 'mesgs' );
+		setEventMessage($langs->trans('AgfArchiveByYearComplete'), 'mesgs');
 		
-		Header ( "Location: " . $_SERVER ['PHP_SELF'] );
-		exit ();
+		Header("Location: " . $_SERVER ['PHP_SELF']);
+		exit();
 	} else {
-		dol_syslog ( "agefodd:session:archive_year error=" . $agf->error, LOG_ERR );
-		setEventMessage ( $agf->error );
+		dol_syslog("agefodd:session:archive_year error=" . $agf->error, LOG_ERR);
+		setEventMessage($agf->error);
 	}
 }
 
@@ -77,12 +77,12 @@ if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
  * View
 */
 
-llxHeader ( '', $langs->trans ( "AgfSessionArchive" ) );
+llxHeader('', $langs->trans("AgfSessionArchive"));
 
-$agf = new Agsession ( $db );
-$formother = new FormOther ( $db );
+$agf = new Agsession($db);
+$formother = new FormOther($db);
 
-print_fiche_titre ( $langs->trans ( "AgfSessionArchive" ) );
+print_fiche_titre($langs->trans("AgfSessionArchive"));
 
 print '<table width="100%" class="border">';
 
@@ -91,12 +91,12 @@ print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '" 
 print '<input type="hidden" name="id" value="' . $object->id . '" />';
 print '<input type="hidden" name="action" value="search_year" />';
 // Year
-print '<tr><td align="left" width="30%">' . $langs->trans ( "AgfSelectYearForArchive" ) . '</td><td align="left">';
-print $formother->select_year ( $year, 'year', 1, 3, - 1 );
+print '<tr><td align="left" width="30%">' . $langs->trans("AgfSelectYearForArchive") . '</td><td align="left">';
+print $formother->select_year($year, 'year', 1, 3, - 1);
 print '</td>';
 
 print '<td colspan="6">';
-print '<input type="submit" name="filter_year" value="' . $langs->trans ( 'Search' ) . '" />';
+print '<input type="submit" name="filter_year" value="' . $langs->trans('Search') . '" />';
 print '</td>';
 
 print '</tr>';
@@ -105,11 +105,11 @@ print '</table>';
 
 // Search form submitted
 if ($action == 'search_year') {
-	if (empty ( $sortorder ))
+	if (empty($sortorder))
 		$sortorder = "ASC";
-	if (empty ( $sortfield ))
+	if (empty($sortfield))
 		$sortfield = "s.dated";
-	if (empty ( $arch ))
+	if (empty($arch))
 		$arch = 0;
 	
 	if ($page == - 1) {
@@ -119,33 +119,33 @@ if ($action == 'search_year') {
 	$filter ['YEAR(s.dated)'] = $year;
 	$filter ['!s.status'] = 4;
 	
-	$agf = new Agsession ( $db );
-	$resql = $agf->fetch_all ( $sortorder, $sortfield, 0, 0, $filter );
+	$agf = new Agsession($db);
+	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
 	
-	print_fiche_titre ( $langs->trans ( 'AgfSearchResults' ) );
+	print_fiche_titre($langs->trans('AgfSearchResults'));
 	
 	if ($resql != - 1) {
 		$num = $resql;
 		if ($num > 0) {
 			
-			print $langs->trans ( 'AgfNumSessionToArchiveForSelectedYear', $num );
+			print $langs->trans('AgfNumSessionToArchiveForSelectedYear', $num);
 			
 			print '<ul>';
 			foreach ( $agf->lines as $session ) {
-				print '<li>' . $session->ref . ' ' . $session->intitule . ' ' . dol_print_date ( $session->dated, 'day' ) . '</li>';
+				print '<li>' . $session->ref . ' ' . $session->intitule . ' ' . dol_print_date($session->dated, 'day') . '</li>';
 			}
 			print '</ul>';
 			
 			print '<div class="tabsAction">';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=confirm_archive&year=' . $year . '">' . $langs->trans ( 'AgfArchiveConfirm' ) . '</a>';
+			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=confirm_archive&year=' . $year . '">' . $langs->trans('AgfArchiveConfirm') . '</a>';
 			print '</div>';
 		} else {
-			print $langs->trans ( 'AgfNoSessionToArchive', $num );
+			print $langs->trans('AgfNoSessionToArchive', $num);
 		}
 	}
 }
 
 print '</div>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

@@ -25,7 +25,7 @@
  * \brief File with class to manage the numbering module Simple for agefodd references
  * \version $Id$
  */
-dol_include_once ( '/agefodd/core/modules/agefodd/modules_agefodd.php' );
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 /**
  * Class to manage the numbering module Simple for project references
@@ -35,28 +35,26 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	var $prefix = 'FOR_';
 	var $error = '';
 	var $nom = "Simple";
-
+	
 	/**
 	 * Return description of numbering module
 	 *
 	 * @return string Text with description
 	 */
 	function info() {
-
 		global $langs;
-		return $langs->trans ( "AgfSimpleNumRefModelDesc", $this->prefix );
+		return $langs->trans("AgfSimpleNumRefModelDesc", $this->prefix);
 	}
-
+	
 	/**
 	 * Return an example of numbering module values
 	 *
 	 * @return string Example
 	 */
 	function getExample() {
-
 		return $this->prefix . "0501-0001";
 	}
-
+	
 	/**
 	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
 	 * de conflits qui empechera cette numerotation de fonctionner.
@@ -64,7 +62,6 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	 * @return boolean false si conflit, true si ok
 	 */
 	function canBeActivated() {
-
 		global $conf, $langs;
 		
 		$coyymm = '';
@@ -75,23 +72,23 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE ref LIKE '" . $this->prefix . "____-%'";
 		// $sql.= " AND entity = ".$conf->entity;
-		$resql = $db->query ( $sql );
+		$resql = $db->query($sql);
 		if ($resql) {
-			$row = $db->fetch_row ( $resql );
+			$row = $db->fetch_row($resql);
 			if ($row) {
-				$coyymm = substr ( $row [0], 0, 6 );
+				$coyymm = substr($row [0], 0, 6);
 				$max = $row [0];
 			}
 		}
-		if (! $coyymm || preg_match ( '/' . $this->prefix . '[0-9][0-9][0-9][0-9]/i', $coyymm )) {
+		if (! $coyymm || preg_match('/' . $this->prefix . '[0-9][0-9][0-9][0-9]/i', $coyymm)) {
 			return true;
 		} else {
-			$langs->load ( "errors" );
-			$this->error = $langs->trans ( 'ErrorNumRefModel', $max );
+			$langs->load("errors");
+			$this->error = $langs->trans('ErrorNumRefModel', $max);
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Return next value
 	 *
@@ -100,40 +97,38 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	 * @return string if OK, 0 if KO
 	 */
 	function getNextValue($objsoc, $agf) {
-
 		global $db, $conf;
 		
-		$date = empty ( $agf->date_c ) ? dol_now () : $agf->date_c;
+		$date = empty($agf->date_c) ? dol_now() : $agf->date_c;
 		
 		// $yymm = strftime("%y%m",time());
-		$yymm = strftime ( "%y%m", $date );
+		$yymm = strftime("%y%m", $date);
 		
 		// D'abord on recupere la valeur max
 		$posindice = 10;
 		$sql = "SELECT MAX(SUBSTRING(ref FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
-		$sql .= " WHERE ref like '" . $this->prefix . $yymm ."-%'";
+		$sql .= " WHERE ref like '" . $this->prefix . $yymm . "-%'";
 		
-		$resql = $db->query ( $sql );
-		dol_syslog ( "mod_agefodd_simple::getNextValue sql=" . $sql );
+		$resql = $db->query($sql);
+		dol_syslog("mod_agefodd_simple::getNextValue sql=" . $sql);
 		if ($resql) {
-			$obj = $db->fetch_object ( $resql );
+			$obj = $db->fetch_object($resql);
 			if ($obj)
-				$max = intval ( $obj->max );
+				$max = intval($obj->max);
 			else
 				$max = 0;
 		} else {
-			dol_syslog ( "mod_agefodd_simple::getNextValue sql=" . $sql );
+			dol_syslog("mod_agefodd_simple::getNextValue sql=" . $sql);
 			return - 1;
 		}
 		
+		$num = sprintf("%04s", $max + 1);
 		
-		$num = sprintf ( "%04s", $max + 1 );
-		
-		dol_syslog ( "mod_agefodd_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num );
+		dol_syslog("mod_agefodd_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num);
 		return $this->prefix . $yymm . "-" . $num;
 	}
-
+	
 	/**
 	 * Return next reference not yet used as a reference
 	 *
@@ -142,8 +137,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	 * @return string Next not used reference
 	 */
 	function project_get_num($objsoc = 0, $agf = '') {
-
-		return $this->getNextValue ( $objsoc, $agf );
+		return $this->getNextValue($objsoc, $agf);
 	}
 }
 

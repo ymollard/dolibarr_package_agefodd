@@ -34,126 +34,126 @@ require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php");
 
-$langs->load ( "admin" );
-$langs->load ( 'agefodd@agefodd' );
+$langs->load("admin");
+$langs->load('agefodd@agefodd');
 
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$action = GETPOST ( 'action', 'alpha' );
-$confirm = GETPOST ( 'confirm', 'alpha' );
-$id = GETPOST ( 'id', 'int' );
-$trainingid = GETPOST ( 'trainingid', 'int' );
-$parent_level = GETPOST ( 'parent_level', 'int' );
+$action = GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
+$id = GETPOST('id', 'int');
+$trainingid = GETPOST('trainingid', 'int');
+$parent_level = GETPOST('parent_level', 'int');
 
-if (empty ( $trainingid )) {
+if (empty($trainingid)) {
 	$trainingid = $id;
 }
 
 if ($action == 'sessionlevel_create') {
-	$agf = new Agefodd_training_admlevel ( $db );
+	$agf = new Agefodd_training_admlevel($db);
 	
-	if (! empty ( $parent_level )) {
+	if (! empty($parent_level)) {
 		$agf->fk_parent_level = $parent_level;
 		
-		$agf_static = new Agefodd_training_admlevel ( $db );
-		$result_stat = $agf_static->fetch ( $agf->fk_parent_level );
+		$agf_static = new Agefodd_training_admlevel($db);
+		$result_stat = $agf_static->fetch($agf->fk_parent_level);
 		
 		if ($result_stat > 0) {
-			if (! empty ( $agf_static->id )) {
+			if (! empty($agf_static->id)) {
 				$agf->level_rank = $agf_static->level_rank + 1;
-				$agf->indice = ebi_get_adm_training_get_next_indice_action ( $agf_static->id );
+				$agf->indice = ebi_get_adm_training_get_next_indice_action($agf_static->id);
 			} else { // no parent : This case may not occur but we never know
-				$agf->indice = (ebi_get_adm_training_level_number () + 1) . '00';
+				$agf->indice = (ebi_get_adm_training_level_number() + 1) . '00';
 				$agf->level_rank = 0;
 			}
 		} else {
-			setEventMessage ( $agf_static->error, 'errors' );
+			setEventMessage($agf_static->error, 'errors');
 		}
 	} else {
 		// no parent
 		$agf->fk_parent_level = 0;
-		$agf->indice = (ebi_get_adm_training_level_number () + 1) . '00';
+		$agf->indice = (ebi_get_adm_training_level_number() + 1) . '00';
 		$agf->level_rank = 0;
 	}
 	
 	$agf->fk_training = $trainingid;
-	$agf->intitule = GETPOST ( 'intitule', 'alpha' );
-	$agf->delais_alerte = GETPOST ( 'delai', 'int' );
+	$agf->intitule = GETPOST('intitule', 'alpha');
+	$agf->delais_alerte = GETPOST('delai', 'int');
 	
 	if ($agf->level_rank > 3) {
-		setEventMessage ( $langs->trans ( "AgfAdminNoMoreThan3Level" ), 'errors' );
+		setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
 	} else {
-		$result = $agf->create ( $user );
+		$result = $agf->create($user);
 		
 		if ($result1 != 1) {
-			setEventMessage ( $agf->error, 'errors' );
+			setEventMessage($agf->error, 'errors');
 		}
 	}
 }
 
-if ($action=='replicateconfadmin') {
-	$agf_adminlevel = new Agefodd_training_admlevel ( $db );
+if ($action == 'replicateconfadmin') {
+	$agf_adminlevel = new Agefodd_training_admlevel($db);
 	$agf_adminlevel->fk_training = $id;
-	$result = $agf_adminlevel->delete_training_task ( $user );
+	$result = $agf_adminlevel->delete_training_task($user);
 	if ($result < 0) {
-		setEventMessage ( $agf_adminlevel->error, 'errors' );
+		setEventMessage($agf_adminlevel->error, 'errors');
 	}
 	
-	$agf = new Agefodd ( $db );
-	$result = $agf->fetch ( $trainingid );
-	$result = $agf->createAdmLevelForTraining ( $user );
+	$agf = new Agefodd($db);
+	$result = $agf->fetch($trainingid);
+	$result = $agf->createAdmLevelForTraining($user);
 	if ($result < 0) {
-		setEventMessage ( $agf->error, 'errors' );
+		setEventMessage($agf->error, 'errors');
 	}
 }
 
 if ($action == 'sessionlevel_update') {
-	$agf = new Agefodd_training_admlevel ( $db );
+	$agf = new Agefodd_training_admlevel($db);
 	
-	$result = $agf->fetch ( $id );
+	$result = $agf->fetch($id);
 	
 	if ($result > 0) {
 		
 		// Up level of action
-		if (GETPOST ( 'sesslevel_up_x' )) {
-			$result2 = $agf->shift_indice ( $user, 'less' );
+		if (GETPOST('sesslevel_up_x')) {
+			$result2 = $agf->shift_indice($user, 'less');
 			if ($result1 != 1) {
-				setEventMessage ( $agf->error, 'errors' );
+				setEventMessage($agf->error, 'errors');
 			}
 		}
 		
 		// Down level of action
-		if (GETPOST ( 'sesslevel_down_x' )) {
-			$result1 = $agf->shift_indice ( $user, 'more' );
+		if (GETPOST('sesslevel_down_x')) {
+			$result1 = $agf->shift_indice($user, 'more');
 			if ($result1 != 1) {
-				setEventMessage ( $agf->error, 'errors' );
+				setEventMessage($agf->error, 'errors');
 			}
 		}
 		
 		// Update action
-		if (GETPOST ( 'sesslevel_update_x' )) {
-			$agf->intitule = GETPOST ( 'intitule', 'alpha' );
-			$agf->delais_alerte = GETPOST ( 'delai', 'int' );
+		if (GETPOST('sesslevel_update_x')) {
+			$agf->intitule = GETPOST('intitule', 'alpha');
+			$agf->delais_alerte = GETPOST('delai', 'int');
 			
-			if (! empty ( $parent_level )) {
+			if (! empty($parent_level)) {
 				if ($parent_level != $agf->fk_parent_level) {
 					$agf->fk_parent_level = $parent_level;
 					
-					$agf_static = new Agefodd_training_admlevel ( $db );
-					$result_stat = $agf_static->fetch ( $agf->fk_parent_level );
+					$agf_static = new Agefodd_training_admlevel($db);
+					$result_stat = $agf_static->fetch($agf->fk_parent_level);
 					
 					if ($result_stat > 0) {
-						if (! empty ( $agf_static->id )) {
+						if (! empty($agf_static->id)) {
 							$agf->level_rank = $agf_static->level_rank + 1;
-							$agf->indice = ebi_get_adm_training_get_next_indice_action ( $agf_static->id );
+							$agf->indice = ebi_get_adm_training_get_next_indice_action($agf_static->id);
 						} else { // no parent : This case may not occur but we never know
-							$agf->indice = (ebi_get_adm_training_level_number () + 1) . '00';
+							$agf->indice = (ebi_get_adm_training_level_number() + 1) . '00';
 							$agf->level_rank = 0;
 						}
 					} else {
-						setEventMessage ( $agf_static->error, 'errors' );
+						setEventMessage($agf_static->error, 'errors');
 					}
 				}
 			} else {
@@ -163,56 +163,56 @@ if ($action == 'sessionlevel_update') {
 			}
 			
 			if ($agf->level_rank > 3) {
-				setEventMessage ( $langs->trans ( "AgfAdminNoMoreThan3Level" ), 'errors' );
+				setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
 			} else {
-				$result1 = $agf->update ( $user );
+				$result1 = $agf->update($user);
 				if ($result1 != 1) {
-					setEventMessage ( $agf_static->error, 'errors' );
+					setEventMessage($agf_static->error, 'errors');
 				}
 			}
 		}
 		
 		// Delete action
-		if (GETPOST ( 'sesslevel_remove_x' )) {
+		if (GETPOST('sesslevel_remove_x')) {
 			
-			$result = $agf->delete ( $user );
+			$result = $agf->delete($user);
 			if ($result != 1) {
-				setEventMessage ( $agf_static->error, 'errors' );
+				setEventMessage($agf_static->error, 'errors');
 			}
 		}
 	} else {
-		setEventMessage ( 'This action do not exists', 'errors' );
+		setEventMessage('This action do not exists', 'errors');
 	}
 }
 
 /*
  * View
 */
-$title = $langs->trans ( "AgfCatalogAdminTask" );
-llxHeader ( '', $title );
+$title = $langs->trans("AgfCatalogAdminTask");
+llxHeader('', $title);
 
-$form = new Form ( $db );
-$formAgefodd = new FormAgefodd ( $db );
+$form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
-$agf = new Agefodd ( $db );
-$result = $agf->fetch ( $trainingid );
+$agf = new Agefodd($db);
+$result = $agf->fetch($trainingid);
 
-$head = training_prepare_head ( $agf );
+$head = training_prepare_head($agf);
 
-dol_fiche_head ( $head, 'trainingadmtask', $langs->trans ( "AgfCatalogDetail" ), 0, 'label' );
+dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
-$admlevel = new Agefodd_training_admlevel ( $db );
-$result0 = $admlevel->fetch_all ( $trainingid );
+$admlevel = new Agefodd_training_admlevel($db);
+$result0 = $admlevel->fetch_all($trainingid);
 
-print_titre ( $langs->trans ( "AgfAdminTrainingLevel" ) );
+print_titre($langs->trans("AgfAdminTrainingLevel"));
 
 if ($result0 > 0) {
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	print '<td width="10px"></td>';
-	print '<td>' . $langs->trans ( "AgfIntitule" ) . '</td>';
-	print '<td>' . $langs->trans ( "AgfParentLevel" ) . '</td>';
-	print '<td>' . $langs->trans ( "AgfDelaiSessionLevel" ) . '</td>';
+	print '<td>' . $langs->trans("AgfIntitule") . '</td>';
+	print '<td>' . $langs->trans("AgfParentLevel") . '</td>';
+	print '<td>' . $langs->trans("AgfDelaiSessionLevel") . '</td>';
 	print '<td></td>';
 	print "</tr>\n";
 	
@@ -228,19 +228,19 @@ if ($result0 > 0) {
 		print '<tr ' . $bc [$var] . '>';
 		
 		print '<td>';
-		if ($line->indice != ebi_get_adm_training_indice_per_rank ( $line->level_rank, $line->fk_parent_level, 'MIN' )) {
-			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1uparrow.png" border="0" name="sesslevel_up" alt="' . $langs->trans ( "Save" ) . '">';
+		if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MIN')) {
+			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1uparrow.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Save") . '">';
 		}
-		if ($line->indice != ebi_get_adm_training_indice_per_rank ( $line->level_rank, $line->fk_parent_level, 'MAX' )) {
-			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1downarrow.png" border="0" name="sesslevel_down" alt="' . $langs->trans ( "Save" ) . '">';
+		if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MAX')) {
+			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1downarrow.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Save") . '">';
 		}
 		print '</td>';
 		
-		print '<td>' . str_repeat ( '&nbsp;&nbsp;&nbsp;', $line->level_rank ) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
-		print '<td>' . $formAgefodd->select_action_training_adm ( $line->fk_parent_level, 'parent_level', $line->rowid ) . '</td>';
+		print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
+		print '<td>' . $formAgefodd->select_action_training_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
 		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
-		print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans ( "Save" ) . '">';
-		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans ( "Delete" ) . '"></td>';
+		print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
+		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
 		print '</tr>';
 		print '</form>';
 	}
@@ -252,15 +252,15 @@ print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\
 print '<tr>';
 print '<td></td>';
 print '<td><input type="text" name="intitule" value="" size="30"/></td>';
-print '<td>' . $formAgefodd->select_action_training_adm ( '', 'parent_level' ) . '</td>';
+print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level') . '</td>';
 print '<td><input type="text" name="delai" value=""/></td>';
-print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans ( "Save" ) . '"></td>';
+print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
 print '</tr>';
 print '</form>';
 print '</table><br>';
 
 print '<div class="tabsAction">';
-print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconfadmin&id=' . $trainingid . '" title="'.$langs->trans('AgfReplaceByAdminLevelHelp').'">' . $langs->trans ( 'AgfReplaceByAdminLevel' ) . '</a>';
+print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconfadmin&id=' . $trainingid . '" title="' . $langs->trans('AgfReplaceByAdminLevelHelp') . '">' . $langs->trans('AgfReplaceByAdminLevel') . '</a>';
 print '</div>';
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

@@ -25,7 +25,7 @@
  * \brief Manage location object
  */
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
-dol_include_once ( '/agefodd/class/agefodd_reginterieur.class.php' );
+dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
 
 /**
  * Location Class
@@ -56,18 +56,17 @@ class Agefodd_place extends CommonObject {
 	var $fk_user_mod;
 	var $tms = '';
 	var $lines = array ();
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
-
 		$this->db = $db;
 		return 1;
 	}
-
+	
 	/**
 	 * Create object into database
 	 *
@@ -76,36 +75,35 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
 		
-		if (isset ( $this->ref_interne ))
-			$this->ref_interne = trim ( $this->ref_interne );
-		if (isset ( $this->adresse ))
-			$this->adresse = trim ( $this->adresse );
-		if (isset ( $this->cp ))
-			$this->cp = trim ( $this->cp );
-		if (isset ( $this->ville ))
-			$this->ville = trim ( $this->ville );
-		if (isset ( $this->fk_pays ))
-			$this->fk_pays = trim ( $this->fk_pays );
-		if (isset ( $this->tel ))
-			$this->tel = trim ( $this->tel );
-		if (isset ( $this->fk_societe ))
-			$this->fk_societe = trim ( $this->fk_societe );
-		if (isset ( $this->notes ))
-			$this->notes = trim ( $this->notes );
-		if (isset ( $this->acces_site ))
-			$this->acces_site = trim ( $this->acces_site );
-		if (isset ( $this->note1 ))
-			$this->note1 = trim ( $this->note1 );
-		if (isset ( $this->archive ))
-			$this->archive = trim ( $this->archive );
-		if (isset ( $this->fk_reg_interieur ))
-			$this->fk_reg_interieur = trim ( $this->fk_reg_interieur );
+		if (isset($this->ref_interne))
+			$this->ref_interne = trim($this->ref_interne);
+		if (isset($this->adresse))
+			$this->adresse = trim($this->adresse);
+		if (isset($this->cp))
+			$this->cp = trim($this->cp);
+		if (isset($this->ville))
+			$this->ville = trim($this->ville);
+		if (isset($this->fk_pays))
+			$this->fk_pays = trim($this->fk_pays);
+		if (isset($this->tel))
+			$this->tel = trim($this->tel);
+		if (isset($this->fk_societe))
+			$this->fk_societe = trim($this->fk_societe);
+		if (isset($this->notes))
+			$this->notes = trim($this->notes);
+		if (isset($this->acces_site))
+			$this->acces_site = trim($this->acces_site);
+		if (isset($this->note1))
+			$this->note1 = trim($this->note1);
+		if (isset($this->archive))
+			$this->archive = trim($this->archive);
+		if (isset($this->fk_reg_interieur))
+			$this->fk_reg_interieur = trim($this->fk_reg_interieur);
 			
 			// Check parameters
 			// Put here code to add control on parameters value
@@ -130,31 +128,31 @@ class Agefodd_place extends CommonObject {
 		$sql .= ") VALUES (";
 		
 		$sql .= " " . $conf->entity . ",";
-		$sql .= " " . (! isset ( $this->ref_interne ) ? 'NULL' : "'" . $this->db->escape ( $this->ref_interne ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->adresse ) ? 'NULL' : "'" . $this->db->escape ( $this->adresse ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->cp ) ? 'NULL' : "'" . $this->db->escape ( $this->cp ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->ville ) ? 'NULL' : "'" . $this->db->escape ( $this->ville ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->fk_pays ) ? 'NULL' : "'" . $this->fk_pays . "'") . ",";
-		$sql .= " " . (! isset ( $this->tel ) ? 'NULL' : "'" . $this->db->escape ( $this->tel ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->fk_societe ) ? 'NULL' : "'" . $this->fk_societe . "'") . ",";
-		$sql .= " " . (! isset ( $this->notes ) ? 'NULL' : "'" . $this->db->escape ( $this->notes ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->acces_site ) ? 'NULL' : "'" . $this->db->escape ( $this->acces_site ) . "'") . ",";
-		$sql .= " " . (! isset ( $this->note1 ) ? 'NULL' : "'" . $this->db->escape ( $this->note1 ) . "'") . ",";
+		$sql .= " " . (! isset($this->ref_interne) ? 'NULL' : "'" . $this->db->escape($this->ref_interne) . "'") . ",";
+		$sql .= " " . (! isset($this->adresse) ? 'NULL' : "'" . $this->db->escape($this->adresse) . "'") . ",";
+		$sql .= " " . (! isset($this->cp) ? 'NULL' : "'" . $this->db->escape($this->cp) . "'") . ",";
+		$sql .= " " . (! isset($this->ville) ? 'NULL' : "'" . $this->db->escape($this->ville) . "'") . ",";
+		$sql .= " " . (! isset($this->fk_pays) ? 'NULL' : "'" . $this->fk_pays . "'") . ",";
+		$sql .= " " . (! isset($this->tel) ? 'NULL' : "'" . $this->db->escape($this->tel) . "'") . ",";
+		$sql .= " " . (! isset($this->fk_societe) ? 'NULL' : "'" . $this->fk_societe . "'") . ",";
+		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
+		$sql .= " " . (! isset($this->acces_site) ? 'NULL' : "'" . $this->db->escape($this->acces_site) . "'") . ",";
+		$sql .= " " . (! isset($this->note1) ? 'NULL' : "'" . $this->db->escape($this->note1) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . $user->id . ",";
-		$sql .= "'" . $this->db->idate ( dol_now () ) . "'";
+		$sql .= "'" . $this->db->idate(dol_now()) . "'";
 		$sql .= ")";
 		
 		// Insert request
-		dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
-			$this->id = $this->db->last_insert_id ( MAIN_DB_PREFIX . "agefodd_place" );
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_place");
 			
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -172,17 +170,17 @@ class Agefodd_place extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::create " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return $this->id;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -190,7 +188,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -200,42 +197,42 @@ class Agefodd_place extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_pays as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.rowid = " . $id;
-		$sql .= " AND p.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " AND p.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->ref = $obj->rowid; // Use for next prev control
 				$this->ref_interne = $obj->ref_interne;
-				$this->adresse = stripslashes ( $obj->adresse );
+				$this->adresse = stripslashes($obj->adresse);
 				$this->cp = $obj->cp;
-				$this->ville = stripslashes ( $obj->ville );
+				$this->ville = stripslashes($obj->ville);
 				$this->fk_pays = $obj->fk_pays;
 				$this->country = $obj->country;
 				$this->country_code = $obj->country_code;
-				$this->tel = stripslashes ( $obj->tel );
+				$this->tel = stripslashes($obj->tel);
 				$this->fk_societe = $obj->fk_societe;
-				$this->notes = stripslashes ( $obj->notes );
+				$this->notes = stripslashes($obj->notes);
 				$this->socid = $obj->socid;
-				$this->socname = stripslashes ( $obj->socname );
+				$this->socname = stripslashes($obj->socname);
 				$this->archive = $obj->archive;
 				$this->acces_site = $obj->acces_site;
 				$this->note1 = $obj->note1;
 				$this->fk_reg_interieur = $obj->fk_reg_interieur;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -247,7 +244,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -256,38 +252,38 @@ class Agefodd_place extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_pays as pays ON pays.rowid = p.fk_pays";
-		$sql .= " WHERE p.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " WHERE p.entity IN (" . getEntity('agsession') . ")";
 		
 		if ($arch == 0 || $arch == 1)
 			$sql .= " AND p.archive = " . $arch;
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit ( $limit + 1, $offset );
+		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			
 			$this->line = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			
 			$i = 0;
 			while ( $i < $num ) {
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
-				$line = new AgfPlaceLine ();
+				$line = new AgfPlaceLine();
 				
 				$line->id = $obj->rowid;
-				$line->ref_interne = stripslashes ( $obj->ref_interne );
-				$line->adresse = stripslashes ( $obj->adresse );
+				$line->ref_interne = stripslashes($obj->ref_interne);
+				$line->adresse = stripslashes($obj->adresse);
 				$line->cp = $obj->cp;
-				$line->ville = stripslashes ( $obj->ville );
+				$line->ville = stripslashes($obj->ville);
 				$line->pays_id = $obj->fk_pays;
 				$line->country = $obj->country;
 				$line->country_code = $obj->country_code;
-				$line->tel = stripslashes ( $obj->tel );
+				$line->tel = stripslashes($obj->tel);
 				$line->fk_societe = $obj->fk_societe;
-				$line->notes = stripslashes ( $obj->notes );
+				$line->notes = stripslashes($obj->notes);
 				$line->socid = $obj->socid;
-				$line->socname = stripslashes ( $obj->socname );
+				$line->socname = stripslashes($obj->socname);
 				$line->archive = $obj->archive;
 				$line->acces_site = $obj->acces_site;
 				$line->note1 = $obj->note1;
@@ -296,15 +292,15 @@ class Agefodd_place extends CommonObject {
 				
 				$i ++;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return $num;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Give information on the object
 	 *
@@ -312,7 +308,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function info($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -320,26 +315,26 @@ class Agefodd_place extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " WHERE p.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::info sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date_creation = $this->db->jdate ( $obj->datec );
-				$this->date_modification = $this->db->jdate ( $obj->tms );
+				$this->date_creation = $this->db->jdate($obj->datec);
+				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
 				$this->user_creation = $obj->fk_user_author;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::info " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::info " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Update object into database
 	 *
@@ -348,37 +343,36 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->ref_interne ))
-			$this->ref_interne = trim ( $this->ref_interne );
-		if (isset ( $this->adresse ))
-			$this->adresse = trim ( $this->adresse );
-		if (isset ( $this->cp ))
-			$this->cp = trim ( $this->cp );
-		if (isset ( $this->ville ))
-			$this->ville = trim ( $this->ville );
-		if (isset ( $this->fk_pays ))
-			$this->fk_pays = trim ( $this->fk_pays );
-		if (isset ( $this->tel ))
-			$this->tel = trim ( $this->tel );
-		if (isset ( $this->fk_societe ))
-			$this->fk_societe = trim ( $this->fk_societe );
-		if (isset ( $this->notes ))
-			$this->notes = trim ( $this->notes );
-		if (isset ( $this->acces_site ))
-			$this->acces_site = trim ( $this->acces_site );
-		if (isset ( $this->note1 ))
-			$this->note1 = trim ( $this->note1 );
-		if (isset ( $this->archive ))
-			$this->archive = trim ( $this->archive );
-		if (isset ( $this->fk_reg_interieur ))
-			$this->fk_reg_interieur = trim ( $this->fk_reg_interieur );
+		if (isset($this->ref_interne))
+			$this->ref_interne = trim($this->ref_interne);
+		if (isset($this->adresse))
+			$this->adresse = trim($this->adresse);
+		if (isset($this->cp))
+			$this->cp = trim($this->cp);
+		if (isset($this->ville))
+			$this->ville = trim($this->ville);
+		if (isset($this->fk_pays))
+			$this->fk_pays = trim($this->fk_pays);
+		if (isset($this->tel))
+			$this->tel = trim($this->tel);
+		if (isset($this->fk_societe))
+			$this->fk_societe = trim($this->fk_societe);
+		if (isset($this->notes))
+			$this->notes = trim($this->notes);
+		if (isset($this->acces_site))
+			$this->acces_site = trim($this->acces_site);
+		if (isset($this->note1))
+			$this->note1 = trim($this->note1);
+		if (isset($this->archive))
+			$this->archive = trim($this->archive);
+		if (isset($this->fk_reg_interieur))
+			$this->fk_reg_interieur = trim($this->fk_reg_interieur);
 		
-		if (! isset ( $this->archive ))
+		if (! isset($this->archive))
 			$this->archive = 0;
 			
 			// Check parameters
@@ -386,30 +380,30 @@ class Agefodd_place extends CommonObject {
 			
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_place SET";
-		$sql .= " ref_interne=" . (isset ( $this->ref_interne ) ? "'" . $this->db->escape ( $this->ref_interne ) . "'" : "null") . ",";
-		$sql .= " adresse=" . (isset ( $this->adresse ) ? "'" . $this->db->escape ( $this->adresse ) . "'" : "null") . ",";
-		$sql .= " cp=" . (isset ( $this->cp ) ? "'" . $this->db->escape ( $this->cp ) . "'" : "null") . ",";
-		$sql .= " ville=" . (isset ( $this->ville ) ? "'" . $this->db->escape ( $this->ville ) . "'" : "null") . ",";
-		$sql .= " fk_pays=" . (isset ( $this->fk_pays ) ? $this->fk_pays : "null") . ",";
-		$sql .= " tel=" . (isset ( $this->tel ) ? "'" . $this->db->escape ( $this->tel ) . "'" : "null") . ",";
-		$sql .= " fk_societe=" . (isset ( $this->fk_societe ) ? $this->fk_societe : "null") . ",";
-		$sql .= " notes=" . (isset ( $this->notes ) ? "'" . $this->db->escape ( $this->notes ) . "'" : "null") . ",";
-		$sql .= " acces_site=" . (isset ( $this->acces_site ) ? "'" . $this->db->escape ( $this->acces_site ) . "'" : "null") . ",";
-		$sql .= " note1=" . (isset ( $this->note1 ) ? "'" . $this->db->escape ( $this->note1 ) . "'" : "null") . ",";
+		$sql .= " ref_interne=" . (isset($this->ref_interne) ? "'" . $this->db->escape($this->ref_interne) . "'" : "null") . ",";
+		$sql .= " adresse=" . (isset($this->adresse) ? "'" . $this->db->escape($this->adresse) . "'" : "null") . ",";
+		$sql .= " cp=" . (isset($this->cp) ? "'" . $this->db->escape($this->cp) . "'" : "null") . ",";
+		$sql .= " ville=" . (isset($this->ville) ? "'" . $this->db->escape($this->ville) . "'" : "null") . ",";
+		$sql .= " fk_pays=" . (isset($this->fk_pays) ? $this->fk_pays : "null") . ",";
+		$sql .= " tel=" . (isset($this->tel) ? "'" . $this->db->escape($this->tel) . "'" : "null") . ",";
+		$sql .= " fk_societe=" . (isset($this->fk_societe) ? $this->fk_societe : "null") . ",";
+		$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
+		$sql .= " acces_site=" . (isset($this->acces_site) ? "'" . $this->db->escape($this->acces_site) . "'" : "null") . ",";
+		$sql .= " note1=" . (isset($this->note1) ? "'" . $this->db->escape($this->note1) . "'" : "null") . ",";
 		$sql .= " archive=" . $this->archive . ",";
-		if (! empty ( $this->fk_reg_interieur )) {
-			$sql .= " fk_reg_interieur=" . (isset ( $this->fk_reg_interieur ) ? $this->fk_reg_interieur : "null") . ",";
+		if (! empty($this->fk_reg_interieur)) {
+			$sql .= " fk_reg_interieur=" . (isset($this->fk_reg_interieur) ? $this->fk_reg_interieur : "null") . ",";
 		}
 		$sql .= " fk_user_mod=" . $user->id;
 		$sql .= " WHERE rowid=" . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -428,17 +422,17 @@ class Agefodd_place extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Delete object in database
 	 *
@@ -447,7 +441,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function remove($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
@@ -473,35 +466,35 @@ class Agefodd_place extends CommonObject {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 			$sql .= " WHERE p.rowid = " . $this->id;
 			
-			$this->db->begin ();
+			$this->db->begin();
 			
-			dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-			$resql = $this->db->query ( $sql );
+			dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			}
 			
 			if (! $error) {
-				if ($this->db->num_rows ( $resql )) {
-					$obj = $this->db->fetch_object ( $resql );
+				if ($this->db->num_rows($resql)) {
+					$obj = $this->db->fetch_object($resql);
 					$fk_reg_interieur = $obj->fk_reg_interieur;
 				}
 				
 				$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_place";
 				$sql .= " WHERE rowid = " . $this->id;
 				
-				dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-				$resql = $this->db->query ( $sql );
+				dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror ();
+					$this->errors [] = "Error " . $this->db->lasterror();
 				}
 				
-				if ((! $error) && ! (empty ( $fk_reg_interieur ))) {
-					$agf_regint = new Agefodd_reg_interieur ( $this->db );
+				if ((! $error) && ! (empty($fk_reg_interieur))) {
+					$agf_regint = new Agefodd_reg_interieur($this->db);
 					$agf_regint->id = $fk_reg_interieur;
-					$result = $agf_regint->delete ( $user );
+					$result = $agf_regint->delete($user);
 					
 					if ($result < 0) {
 						$error ++;
@@ -514,17 +507,17 @@ class Agefodd_place extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::delete " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Update reg int to null for this place
 	 *
@@ -532,36 +525,35 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function remove_reg_int($user) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_place as p SET fk_reg_interieur=NULL, fk_user_mod=\'' . $user->id . '\'';
 		$sql .= " WHERE rowid = " . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::remove_reg_int sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::remove_reg_int sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::remove_reg_int " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::remove_reg_int " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Import customer adress
 	 *
@@ -569,7 +561,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function import_customer_adress($user) {
-
 		global $conf, $langs;
 		$error = 0;
 		
@@ -578,54 +569,53 @@ class Agefodd_place extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "societe as s";
 		$sql .= " WHERE s.rowid = " . $this->fk_societe;
 		
-		dol_syslog ( get_class ( $this ) . "::import_customer_adress sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::import_customer_adress sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->adresse = $obj->address;
 				$this->cp = $obj->zip;
 				$this->fk_pays = $obj->fk_pays;
 				$this->ville = $obj->town;
 				$this->tel = $obj->phone;
-				$result = $this->update ( $user );
+				$result = $this->update($user);
 				if ($result > 0) {
-					$this->db->free ( $resql );
+					$this->db->free($resql);
 					return 1;
 				} else {
-					$this->error = "Error " . $this->db->lasterror ();
-					dol_syslog ( get_class ( $this ) . "::import_customer_adress::update error=" . $agf->error, LOG_ERR );
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::import_customer_adress::update error=" . $agf->error, LOG_ERR);
 					return - 1;
 				}
 			}
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::import_customer_adress " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::import_customer_adress " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Return information of Place
 	 *
 	 * @return void
 	 */
 	function printPlaceInfo() {
-
 		global $langs, $form;
 		
 		print '<table class="border" width="100%">';
 		
-		print '<tr><td width="20%">' . $langs->trans ( "Id" ) . '</td>';
+		print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 		print '<td>' . $this->ref . '</td></tr>';
 		
-		print '<tr><td>' . $langs->trans ( "AgfSessPlaceCode" ) . '</td>';
+		print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 		print '<td>' . $this->ref_interne . '</td></tr>';
 		
-		print '<tr><td valign="top">' . $langs->trans ( "Company" ) . '</td><td>';
+		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 		if ($this->socid) {
 			print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $this->socid . '">';
-			print img_object ( $langs->trans ( "ShowCompany" ), "company" ) . ' ' . dol_trunc ( $this->socname, 20 ) . '</a>';
+			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($this->socname, 20) . '</a>';
 		} else {
 			print '&nbsp;';
 		}
@@ -633,7 +623,6 @@ class Agefodd_place extends CommonObject {
 		print '</table>';
 	}
 }
-
 class AgfPlaceLine {
 	var $id;
 	var $ref_interne;
@@ -651,9 +640,7 @@ class AgfPlaceLine {
 	var $archive;
 	var $acces_site;
 	var $note1;
-
 	function __construct() {
-
 		return 1;
 	}
 }

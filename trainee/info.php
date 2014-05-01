@@ -28,7 +28,7 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agefodd_stagiaire.class.php');
 require_once ('../lib/agefodd.lib.php');
@@ -36,29 +36,29 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$id = GETPOST ( 'id', 'int' );
+$id = GETPOST('id', 'int');
 
 /*
  * View
 */
 
-llxHeader ( '', $langs->trans ( "AgfStagiaireDetail" ) );
+llxHeader('', $langs->trans("AgfStagiaireDetail"));
 
-$agf = new Agefodd_stagiaire ( $db );
-$result = $agf->info ( $id );
+$agf = new Agefodd_stagiaire($db);
+$result = $agf->info($id);
 if ($result < 0) {
-	setEventMessage ( $agf->error, 'errors' );
+	setEventMessage($agf->error, 'errors');
 }
 
-$head = trainee_prepare_head ( $agf );
+$head = trainee_prepare_head($agf);
 
-dol_fiche_head ( $head, 'info', $langs->trans ( "AgfStagiaireDetail" ), 0, 'user' );
+dol_fiche_head($head, 'info', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
 print '<table width="100%"><tr><td>';
-dol_print_object_info ( $agf );
+dol_print_object_info($agf);
 print '</td></tr></table>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

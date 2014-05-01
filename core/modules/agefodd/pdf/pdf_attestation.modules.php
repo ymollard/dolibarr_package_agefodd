@@ -31,22 +31,19 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-
-class pdf_attestation extends ModelePDFAgefodd
-{
+class pdf_attestation extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
-
+	
 	/**
 	 * \brief		Constructor
 	 * \param		db		Database handler
 	 */
-	function pdf_attestation($db)
-	{
+	function pdf_attestation($db) {
 		global $conf, $langs, $mysoc;
 		
 		$this->db = $db;
@@ -56,11 +53,11 @@ class pdf_attestation extends ModelePDFAgefodd
 		// Dimension page pour format A4 en paysage
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
-		$this->page_largeur = $formatarray['height'];
-		$this->page_hauteur = $formatarray['width'];
-		$this->format = array(
-			$this->page_largeur,
-			$this->page_hauteur
+		$this->page_largeur = $formatarray ['height'];
+		$this->page_hauteur = $formatarray ['width'];
+		$this->format = array (
+				$this->page_largeur,
+				$this->page_hauteur 
 		);
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
@@ -80,7 +77,7 @@ class pdf_attestation extends ModelePDFAgefodd
 		if (! $this->emetteur->country_code)
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
 	}
-
+	
 	/**
 	 * \brief Fonction generant le document sur le disque
 	 * \param agf		Objet document a generer (ou id si ancienne methode)
@@ -88,8 +85,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	 * file		Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($agf, $outputlangs, $file, $socid)
-	{
+	function write_file($agf, $outputlangs, $file, $socid) {
 		global $user, $langs, $conf, $mysoc;
 		
 		if (! is_object($outputlangs))
@@ -147,17 +143,17 @@ class pdf_attestation extends ModelePDFAgefodd
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 			
 			if ($result) {
-				for ($i = 0; $i < count($agf2->lines); $i ++) {
-					if (($agf2->lines[$i]->status_in_session == 3 || $agf2->lines[$i]->status_in_session == 4) || ($agf2->lines[$i]->status_in_session == 2)) {
+				for($i = 0; $i < count($agf2->lines); $i ++) {
+					if (($agf2->lines [$i]->status_in_session == 3 || $agf2->lines [$i]->status_in_session == 4) || ($agf2->lines [$i]->status_in_session == 2)) {
 						// New page
 						$pdf->AddPage();
 						$pagenb ++;
 						$this->_pagehead($pdf, $agf, 1, $outputlangs);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 						$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
-						                                      
+						                                   
 						// On met en place le cadre
-						$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+						$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 						$ep_line1 = 1;
 						$pdf->SetLineWidth($ep_line1);
 						// Haut
@@ -192,7 +188,7 @@ class pdf_attestation extends ModelePDFAgefodd
 						if ($conf->global->AGF_USE_LOGO_CLIENT) {
 							$staticsoc = new Societe($this->db);
 							$staticsoc->fetch($agf->socid);
-							$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
+							$dir = $conf->societe->multidir_output [$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 							if (! empty($staticsoc->logo)) {
 								$logo_client = $dir . $staticsoc->logo;
 								if (file_exists($logo_client) && is_readable($logo_client))
@@ -202,23 +198,23 @@ class pdf_attestation extends ModelePDFAgefodd
 						
 						$newY = $this->marge_haute + 30;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+						$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 20);
 						$pdf->Cell(0, 0, $outputlangs->transnoentities('AgfPDFAttestation1'), 0, 0, 'C', 0);
 						
 						$newY = $newY + 10;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+						$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						
 						$contact_static = new Contact($this->db);
-						$contact_static->civilite_id = $agf2->lines[$i]->civilite;
+						$contact_static->civilite_id = $agf2->lines [$i]->civilite;
 						
 						$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2') . " " . ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ';
 						$this->width1 = $pdf->GetStringWidth($this->str1);
 						
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 16);
-						$this->str2 = $outputlangs->transnoentities($agf2->lines[$i]->prenom . ' ' . $agf2->lines[$i]->nom);
+						$this->str2 = $outputlangs->transnoentities($agf2->lines [$i]->prenom . ' ' . $agf2->lines [$i]->nom);
 						$this->width2 = $pdf->GetStringWidth($this->str2);
 						
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
@@ -263,18 +259,18 @@ class pdf_attestation extends ModelePDFAgefodd
 							
 							$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 12);
 							$hauteur = 0;
-							for ($y = 0; $y < count($agf_op->lines); $y ++) {
+							for($y = 0; $y < count($agf_op->lines); $y ++) {
 								$newY = $newY + $hauteur;
 								$pdf->SetXY($this->marge_gauche + 62, $newY);
 								$width = 160;
-								$StringWidth = $pdf->GetStringWidth($agf_op->lines[$y]->intitule);
+								$StringWidth = $pdf->GetStringWidth($agf_op->lines [$y]->intitule);
 								if ($StringWidth > $width)
 									$nblines = ceil($StringWidth / $width);
 								else
 									$nblines = 1;
 								$hauteur = $nblines * 5;
-								$pdf->Cell(10, 5, $agf_op->lines[$y]->priorite . '. ', 0, 0, 'R', 0);
-								$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->lines[$y]->intitule), 0, 'L', 0);
+								$pdf->Cell(10, 5, $agf_op->lines [$y]->priorite . '. ', 0, 0, 'R', 0);
+								$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->lines [$y]->intitule), 0, 'L', 0);
 							}
 						}
 						
@@ -340,7 +336,7 @@ class pdf_attestation extends ModelePDFAgefodd
 		$this->error = $langs->trans("ErrorUnknown");
 		return 0; // Erreur par defaut
 	}
-
+	
 	/**
 	 * \brief Show header of page
 	 * \param pdf Object PDF
@@ -348,15 +344,14 @@ class pdf_attestation extends ModelePDFAgefodd
 	 * \param showaddress 0=no, 1=yes
 	 * \param outputlangs		Object lang for output
 	 */
-	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs)
-	{
+	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs) {
 		global $conf, $langs;
 		
 		$outputlangs->load("main");
 		
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}
-
+	
 	/**
 	 * \brief		Show footer of page
 	 * \param		pdf PDF factory
@@ -364,8 +359,7 @@ class pdf_attestation extends ModelePDFAgefodd
 	 * \param		outputlang		Object lang for output
 	 * \remarks	Need this->emetteur object
 	 */
-	function _pagefoot(&$pdf, $object, $outputlangs)
-	{
+	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
 		
 		$this->str = $mysoc->name;
@@ -379,7 +373,7 @@ class pdf_attestation extends ModelePDFAgefodd
 		
 		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 8);
-		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
 		$pdf->Cell(0, 6, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
 	}
 }

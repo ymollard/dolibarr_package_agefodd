@@ -28,7 +28,7 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agefodd_place.class.php');
 require_once ('../class/agefodd_reginterieur.class.php');
@@ -36,34 +36,34 @@ require_once ('../lib/agefodd.lib.php');
 
 // Security check
 if (! $user->rights->agefodd->agefodd_place->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$action = GETPOST ( 'action', 'alpha' );
-$confirm = GETPOST ( 'confirm', 'alpha' );
-$id = GETPOST ( 'id', 'int' );
-$idreg = GETPOST ( 'idreg', 'int' );
+$action = GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
+$id = GETPOST('id', 'int');
+$idreg = GETPOST('idreg', 'int');
 
 /*
  * Actions delete
 */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_place->creer) {
-	$agf = new Agefodd_reg_interieur ( $db );
+	$agf = new Agefodd_reg_interieur($db);
 	$agf->id = $idreg;
-	$result = $agf->delete ( $user );
+	$result = $agf->delete($user);
 	
 	if ($result > 0) {
-		$agf_place = new Agefodd_place ( $db );
+		$agf_place = new Agefodd_place($db);
 		$agf_place->id = $id;
-		$result = $agf_place->remove_reg_int ( $user );
+		$result = $agf_place->remove_reg_int($user);
 		
 		if ($result > 0) {
-			Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id );
-			exit ();
+			Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
+			exit();
 		} else {
-			setEventMessage ( $agf_place->error, 'errors' );
+			setEventMessage($agf_place->error, 'errors');
 		}
 	} else {
-		setEventMessage ( $langs->trans ( "AgfDeleteErr" ) . ':' . $agf_place->error, 'errors' );
+		setEventMessage($langs->trans("AgfDeleteErr") . ':' . $agf_place->error, 'errors');
 	}
 }
 
@@ -72,26 +72,26 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 */
 if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 	if (! $_POST ["cancel"]) {
-		$agf = new Agefodd_reg_interieur ( $db );
+		$agf = new Agefodd_reg_interieur($db);
 		
-		$result = $agf->fetch ( $idreg );
+		$result = $agf->fetch($idreg);
 		if ($result > 0) {
-			$agf->reg_int = GETPOST ( 'reg_int' );
-			$agf->notes = GETPOST ( 'notes' );
-			$result = $agf->update ( $user );
+			$agf->reg_int = GETPOST('reg_int');
+			$agf->notes = GETPOST('notes');
+			$result = $agf->update($user);
 			
 			if ($result > 0) {
-				Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id );
-				exit ();
+				Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+				exit();
 			} else {
-				setEventMessage ( $agf->error, 'errors' );
+				setEventMessage($agf->error, 'errors');
 			}
 		} else {
-			setEventMessage ( $agf->error, 'errors' );
+			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id );
-		exit ();
+		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		exit();
 	}
 }
 
@@ -101,31 +101,31 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 
 if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer) {
 	if (! $_POST ["cancel"]) {
-		$agf = new Agefodd_reg_interieur ( $db );
+		$agf = new Agefodd_reg_interieur($db);
 		
-		$agf->reg_int = GETPOST ( 'reg_int' );
-		$agf->notes = GETPOST ( 'notes' );
-		$result = $agf->create ( $user );
+		$agf->reg_int = GETPOST('reg_int');
+		$agf->notes = GETPOST('notes');
+		$result = $agf->create($user);
 		
 		if ($result > 0) {
 			
-			$agf_place = new Agefodd_place ( $db );
-			$result_place = $agf_place->fetch ( $id );
+			$agf_place = new Agefodd_place($db);
+			$result_place = $agf_place->fetch($id);
 			$agf_place->fk_reg_interieur = $result;
-			$result = $agf_place->update ( $user );
+			$result = $agf_place->update($user);
 			
 			if ($result > 0) {
-				Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id );
-				exit ();
+				Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+				exit();
 			} else {
-				setEventMessage ( $agf_place->error, 'errors' );
+				setEventMessage($agf_place->error, 'errors');
 			}
 		} else {
-			setEventMessage ( $agf->error, 'errors' );
+			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header ( "Location: list.php" );
-		exit ();
+		Header("Location: list.php");
+		exit();
 	}
 }
 
@@ -133,29 +133,29 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
  * View
 */
 
-llxHeader ( '', $langs->trans ( "AgfRegInt" ) );
+llxHeader('', $langs->trans("AgfRegInt"));
 
-$form = new Form ( $db );
+$form = new Form($db);
 
-$agf_place = new Agefodd_place ( $db );
-$result_place = $agf_place->fetch ( $id );
+$agf_place = new Agefodd_place($db);
+$result_place = $agf_place->fetch($id);
 if ($result_place < 0) {
-	setEventMessage ( $agf_place->error, 'errors' );
+	setEventMessage($agf_place->error, 'errors');
 }
 
 if ($agf_place->fk_reg_interieur) {
-	$agf = new Agefodd_reg_interieur ( $db );
-	$result_regint = $agf->fetch ( $agf_place->fk_reg_interieur );
+	$agf = new Agefodd_reg_interieur($db);
+	$result_regint = $agf->fetch($agf_place->fk_reg_interieur);
 	if ($result_regint < 0) {
-		setEventMessage ( $agf->error, 'errors' );
+		setEventMessage($agf->error, 'errors');
 	}
 } else {
 	$action = 'create';
 }
 
-$head = site_prepare_head ( $agf_place );
+$head = site_prepare_head($agf_place);
 
-dol_fiche_head ( $head, 'reg_int', $langs->trans ( "AgfRegInt" ), 0, 'address' );
+dol_fiche_head($head, 'reg_int', $langs->trans("AgfRegInt"), 0, 'address');
 
 /*
  * Action create
@@ -168,16 +168,16 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	
 	print '<table class="border" width="100%">';
 	
-	print '<tr><td width="20%">' . $langs->trans ( "Id" ) . '</td>';
-	print '<td>' . $form->showrefnav ( $agf_place, 'id	', '', 1, 'rowid', 'id' ) . '</td></tr>';
+	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
+	print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 	
-	print '<tr><td>' . $langs->trans ( "AgfSessPlaceCode" ) . '</td>';
+	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 	print '<td>' . $agf_place->ref_interne . '</td></tr>';
 	
-	print '<tr><td valign="top">' . $langs->trans ( "AgfRegInt" ) . '</td>';
+	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
 	print '<td><textarea name="reg_int" rows="10" cols="0" class="flat" style="width:560px;"></textarea></td></tr>';
 	
-	print '<tr><td valign="top">' . $langs->trans ( "AgfNote" ) . '</td>';
+	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	
 	print '</table>';
@@ -185,8 +185,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
-	print '<input type="submit" name="importadress" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
-	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans ( "Cancel" ) . '">';
+	print '<input type="submit" name="importadress" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
+	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
@@ -204,24 +204,24 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			
 			print '<table class="border" width="100%">';
 			
-			print '<tr><td width="20%">' . $langs->trans ( "Id" ) . '</td>';
-			print '<td>' . $form->showrefnav ( $agf_place, 'id	', '', 1, 'rowid', 'id' ) . '</td></tr>';
+			print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
+			print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 			
-			print '<tr><td>' . $langs->trans ( "AgfSessPlaceCode" ) . '</td>';
+			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 			print '<td>' . $agf_place->ref_interne . '</td></tr>';
 			
-			print '<tr><td valign="top">' . $langs->trans ( "AgfRegInt" ) . '</td>';
+			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
 			print '<td><textarea name="reg_int" rows="10" cols="0" class="flat" style="width:560px;">' . $agf->reg_int . '</textarea></td></tr>';
 			
-			print '<tr><td valign="top">' . $langs->trans ( "AgfNote" ) . '</td>';
+			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';
 			
 			print '</table>';
 			print '</div>';
 			print '<table style=noborder align="right">';
 			print '<tr><td align="center" colspan=2>';
-			print '<input type="submit" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
-			print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans ( "Cancel" ) . '">';
+			print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
+			print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 			print '</td></tr>';
 			print '</table>';
 			
@@ -235,23 +235,23 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			 * Delete confirm
 			*/
 			if ($action == 'delete') {
-				$ret = $form->form_confirm ( $_SERVER ['PHP_SELF'] . "?id=" . $id . '&idreg=' . $agf_place->fk_reg_interieur, $langs->trans ( "AgfDeleteRegint" ), $langs->trans ( "AgfConfirmRegInt" ), "confirm_delete", '', '', 1 );
+				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id . '&idreg=' . $agf_place->fk_reg_interieur, $langs->trans("AgfDeleteRegint"), $langs->trans("AgfConfirmRegInt"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
 			
 			print '<table class="border" width="100%">';
 			
-			print '<tr><td width="20%">' . $langs->trans ( "Id" ) . '</td>';
-			print '<td>' . $form->showrefnav ( $agf_place, 'id	', '', 1, 'rowid', 'id' ) . '</td></tr>';
+			print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
+			print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 			
-			print '<tr><td>' . $langs->trans ( "AgfSessPlaceCode" ) . '</td>';
+			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 			print '<td>' . $agf_place->ref_interne . '</td></tr>';
 			
-			print '<tr><td valign="top">' . $langs->trans ( "AgfRegInt" ) . '</td>';
+			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
 			print '<td>' . $agf->reg_int . '</td></tr>';
 			
-			print '<tr><td valign="top">' . $langs->trans ( "AgfNote" ) . '</td>';
+			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 			print '<td>' . $agf->notes . '</td></tr>';
 			
 			print '</table>';
@@ -270,18 +270,18 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 	if ($user->rights->agefodd->agefodd_place->creer) {
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans ( 'Modify' ) . '</a>';
+		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'Modify' ) . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 	}
 	if ($user->rights->agefodd->agefodd_place->creer) {
-		print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans ( 'Delete' ) . '</a>';
+		print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'Delete' ) . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 }
 
 print '</div>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

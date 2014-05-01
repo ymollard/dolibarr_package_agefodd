@@ -28,33 +28,33 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agefodd_formateur.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 
-$action = GETPOST ( 'action', 'alpha' );
-$confirm = GETPOST ( 'confirm', 'alpha' );
-$id = GETPOST ( 'id', 'int' );
-$arch = GETPOST ( 'arch', 'int' );
+$action = GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
+$id = GETPOST('id', 'int');
+$arch = GETPOST('arch', 'int');
 
 // Security check
 if (! $user->rights->agefodd->lire)
-	accessforbidden ();
+	accessforbidden();
 	
 	/*
  * Actions delete
 */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
-	$agf = new Agefodd_teacher ( $db );
-	$result = $agf->remove ( $id );
+	$agf = new Agefodd_teacher($db);
+	$result = $agf->remove($id);
 	
 	if ($result > 0) {
-		Header ( "Location: list.php" );
-		exit ();
+		Header("Location: list.php");
+		exit();
 	} else {
-		setEventMessage ( $langs->trans ( "AgfDeleteFormErr" ) . ':' . $agf->error, 'errors' );
+		setEventMessage($langs->trans("AgfDeleteFormErr") . ':' . $agf->error, 'errors');
 	}
 }
 
@@ -62,18 +62,18 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
  * Actions archive/active
 */
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confirm == "yes") {
-	$agf = new Agefodd_teacher ( $db );
+	$agf = new Agefodd_teacher($db);
 	
-	$result = $agf->fetch ( $id );
+	$result = $agf->fetch($id);
 	
 	$agf->archive = $arch;
-	$result = $agf->update ( $user );
+	$result = $agf->update($user);
 	
 	if ($result > 0) {
-		Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id );
-		exit ();
+		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		exit();
 	} else {
-		setEventMessage ( $agf->error, 'errors' );
+		setEventMessage($agf->error, 'errors');
 	}
 }
 
@@ -83,21 +83,21 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
 
 if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer) {
 	if (! $_POST ["cancel"]) {
-		$agf = new Agefodd_teacher ( $db );
+		$agf = new Agefodd_teacher($db);
 		
-		$agf->spid = GETPOST ( 'spid' );
+		$agf->spid = GETPOST('spid');
 		$agf->type_trainer = $agf->type_trainer_def [1];
-		$result = $agf->create ( $user );
+		$result = $agf->create($user);
 		
 		if ($result > 0) {
-			Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $result );
-			exit ();
+			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $result);
+			exit();
 		} else {
-			setEventMessage ( $agf->error, 'errors' );
+			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header ( "Location: list.php" );
-		exit ();
+		Header("Location: list.php");
+		exit();
 	}
 }
 
@@ -107,70 +107,70 @@ if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer) {
 
 if ($action == 'create_confirm_user' && $user->rights->agefodd->creer) {
 	if (! $_POST ["cancel"]) {
-		$agf = new Agefodd_teacher ( $db );
+		$agf = new Agefodd_teacher($db);
 		
-		$agf->fk_user = GETPOST ( 'fk_user', 'int' );
+		$agf->fk_user = GETPOST('fk_user', 'int');
 		$agf->type_trainer = $agf->type_trainer_def [0];
-		$result = $agf->create ( $user );
+		$result = $agf->create($user);
 		
 		if ($result > 0) {
-			Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $result );
-			exit ();
+			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $result);
+			exit();
 		} else {
-			setEventMessage ( $agf->error, 'errors' );
+			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header ( "Location: list.php" );
-		exit ();
+		Header("Location: list.php");
+		exit();
 	}
 }
 
 /*
  * View
 */
-$title = ($action == 'create' ? $langs->trans ( "AgfFormateurAdd" ) : $langs->trans ( "AgfTeacher" ));
-llxHeader ( '', $title );
+$title = ($action == 'create' ? $langs->trans("AgfFormateurAdd") : $langs->trans("AgfTeacher"));
+llxHeader('', $title);
 
-$form = new Form ( $db );
-$formAgefodd = new FormAgefodd ( $db );
+$form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
 /*
  * Action create
 */
 if ($action == 'create' && $user->rights->agefodd->creer) {
-	print_fiche_titre ( $langs->trans ( "AgfFormateurAdd" ) );
+	print_fiche_titre($langs->trans("AgfFormateurAdd"));
 	
 	print '<form name="create_contact" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm_contact">' . "\n";
 	
-	print '<div class="warning">' . $langs->trans ( "AgfFormateurAddContactHelp" );
-	print '<br>' . $langs->trans ( "AgfFormateurAddContactHelp1" ) . ' <a href="' . DOL_URL_ROOT . '/contact/fiche.php?action=create">' . $langs->trans ( "AgfFormateurAddContactHelp2" ) . '</a>. ' . $langs->trans ( "AgfFormateurAddContactHelp3" ) . '</div>';
+	print '<div class="warning">' . $langs->trans("AgfFormateurAddContactHelp");
+	print '<br>' . $langs->trans("AgfFormateurAddContactHelp1") . ' <a href="' . DOL_URL_ROOT . '/contact/fiche.php?action=create">' . $langs->trans("AgfFormateurAddContactHelp2") . '</a>. ' . $langs->trans("AgfFormateurAddContactHelp3") . '</div>';
 	
 	print '<table class="border" width="100%">' . "\n";
 	
-	print '<tr><td>' . $langs->trans ( "AgfContact" ) . '</td>';
+	print '<tr><td>' . $langs->trans("AgfContact") . '</td>';
 	print '<td>';
 	
-	$agf_static = new Agefodd_teacher ( $db );
-	$agf_static->fetch_all ( 'ASC', 's.lastname, s.firstname', '', 0 );
+	$agf_static = new Agefodd_teacher($db);
+	$agf_static->fetch_all('ASC', 's.lastname, s.firstname', '', 0);
 	$exclude_array = array ();
-	if (is_array ( $agf_static->lines ) && count ( $agf_static->lines ) > 0) {
+	if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
 		foreach ( $agf_static->lines as $line ) {
-			if (! empty ( $line->fk_socpeople )) {
+			if (! empty($line->fk_socpeople)) {
 				$exclude_array [] = $line->fk_socpeople;
 			}
 		}
 	}
-	$form->select_contacts ( 0, '', 'spid', 1, $exclude_array, '', 1, '', 1 );
+	$form->select_contacts(0, '', 'spid', 1, $exclude_array, '', 1, '', 1);
 	print '</td></tr>';
 	
 	print '</table>';
 	
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
-	print '<input type="submit" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
-	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans ( "Cancel" ) . '">';
+	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
+	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
@@ -183,33 +183,33 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm_user">' . "\n";
 	
-	print '<div class="warning">' . $langs->trans ( "AgfFormateurAddUserHelp" );
-	print '<br>' . $langs->trans ( "AgfFormateurAddUserHelp1" ) . ' <a href="' . DOL_URL_ROOT . '/user/fiche.php?action=create">' . $langs->trans ( "AgfFormateurAddUserHelp2" ) . '</a>. ' . $langs->trans ( "AgfFormateurAddUserHelp3" ) . '</div>';
+	print '<div class="warning">' . $langs->trans("AgfFormateurAddUserHelp");
+	print '<br>' . $langs->trans("AgfFormateurAddUserHelp1") . ' <a href="' . DOL_URL_ROOT . '/user/fiche.php?action=create">' . $langs->trans("AgfFormateurAddUserHelp2") . '</a>. ' . $langs->trans("AgfFormateurAddUserHelp3") . '</div>';
 	
 	print '<table class="border" width="100%">' . "\n";
 	
-	print '<tr><td>' . $langs->trans ( "AgfUser" ) . '</td>';
+	print '<tr><td>' . $langs->trans("AgfUser") . '</td>';
 	print '<td>';
 	
-	$agf_static = new Agefodd_teacher ( $db );
-	$agf_static->fetch_all ( 'ASC', 's.lastname, s.firstname', '', 0 );
+	$agf_static = new Agefodd_teacher($db);
+	$agf_static->fetch_all('ASC', 's.lastname, s.firstname', '', 0);
 	$exclude_array = array ();
-	if (is_array ( $agf_static->lines ) && count ( $agf_static->lines ) > 0) {
+	if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
 		foreach ( $agf_static->lines as $line ) {
-			if ((! empty ( $line->fk_user )) && (! in_array ( $line->fk_user, $exclude_array ))) {
+			if ((! empty($line->fk_user)) && (! in_array($line->fk_user, $exclude_array))) {
 				$exclude_array [] = $line->fk_user;
 			}
 		}
 	}
-	$form->select_users ( '', 'fk_user', 1, $exclude_array );
+	$form->select_users('', 'fk_user', 1, $exclude_array);
 	print '</td></tr>';
 	
 	print '</table>';
 	
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
-	print '<input type="submit" class="butAction" value="' . $langs->trans ( "Save" ) . '"> &nbsp; ';
-	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans ( "Cancel" ) . '">';
+	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
+	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
@@ -218,8 +218,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 } else {
 	// Display trainer card
 	if ($id) {
-		$agf = new Agefodd_teacher ( $db );
-		$result = $agf->fetch ( $id );
+		$agf = new Agefodd_teacher($db);
+		$result = $agf->fetch($id);
 		
 		if ($result) {
 			if ($mesg)
@@ -227,15 +227,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				
 				// View mode
 			
-			$head = trainer_prepare_head ( $agf );
+			$head = trainer_prepare_head($agf);
 			
-			dol_fiche_head ( $head, 'card', $langs->trans ( "AgfTeacher" ), 0, 'user' );
+			dol_fiche_head($head, 'card', $langs->trans("AgfTeacher"), 0, 'user');
 			
 			/*
 			 * Delete confirm
 			*/
 			if ($action == 'delete') {
-				$ret = $form->form_confirm ( $_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans ( "AgfDeleteTeacher" ), $langs->trans ( "AgfConfirmDeleteTeacher" ), "confirm_delete", '', '', 1 );
+				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteTeacher"), $langs->trans("AgfConfirmDeleteTeacher"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
@@ -249,24 +249,24 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				if ($action == 'active')
 					$value = 0;
 				
-				$ret = $form->form_confirm ( $_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans ( "AgfFormationArchiveChange" ), $langs->trans ( "AgfConfirmArchiveChange" ), "arch_confirm_delete", '', '', 1 );
+				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
 			
 			print '<table class="border" width="100%">';
 			
-			print '<tr><td width="20%">' . $langs->trans ( "Ref" ) . '</td>';
-			print '<td>' . $form->showrefnav ( $agf, 'id', '', 1, 'rowid', 'id' ) . '</td></tr>';
+			print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
+			print '<td>' . $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
 			
-			print '<tr><td>' . $langs->trans ( "Name" ) . '</td>';
-			print '<td>' . ucfirst ( strtolower ( $agf->civilite ) ) . ' ' . strtoupper ( $agf->name ) . ' ' . ucfirst ( strtolower ( $agf->firstname ) ) . '</td></tr>';
+			print '<tr><td>' . $langs->trans("Name") . '</td>';
+			print '<td>' . ucfirst(strtolower($agf->civilite)) . ' ' . strtoupper($agf->name) . ' ' . ucfirst(strtolower($agf->firstname)) . '</td></tr>';
 			
 			print "</table>";
 			
 			print '</div>';
 		} else {
-			setEventMessage ( $agf->error, 'errors' );
+			setEventMessage($agf->error, 'errors');
 		}
 	}
 }
@@ -281,36 +281,36 @@ print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 	if ($agf->type_trainer == $agf->type_trainer_def [1]) {
 		if ($user->rights->societe->contact->creer) {
-			print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/fiche.php?id=' . $agf->spid . '">' . $langs->trans ( 'AgfModifierFicheContact' ) . '</a>';
+			print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/fiche.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 		} else {
-			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'AgfModifierFicheContact' ) . '</a>';
+			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 		}
 	} elseif ($agf->type_trainer == $agf->type_trainer_def [0]) {
 		if ($user->rights->user->user->creer) {
-			print '<a class="butAction" href="' . DOL_URL_ROOT . '/user/fiche.php?id=' . $agf->fk_user . '">' . $langs->trans ( 'AgfModifierFicheUser' ) . '</a>';
+			print '<a class="butAction" href="' . DOL_URL_ROOT . '/user/fiche.php?id=' . $agf->fk_user . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
 		} else {
-			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'AgfModifierFicheUser' ) . '</a>';
+			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
 		}
 	}
 	
 	if ($user->rights->agefodd->creer) {
-		print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans ( 'Delete' ) . '</a>';
+		print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'Delete' ) . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 	
 	if ($user->rights->agefodd->modifier) {
 		if ($agf->archive == 0) {
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=archive&id=' . $id . '">' . $langs->trans ( 'AgfArchiver' ) . '</a>';
+			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=archive&id=' . $id . '">' . $langs->trans('AgfArchiver') . '</a>';
 		} else {
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=active&id=' . $id . '">' . $langs->trans ( 'AgfActiver' ) . '</a>';
+			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=active&id=' . $id . '">' . $langs->trans('AgfActiver') . '</a>';
 		}
 	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag ( $langs->trans ( "NotAllowed" ) ) . '">' . $langs->trans ( 'AgfArchiver' ) . '/' . $langs->trans ( 'AgfActiver' ) . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfArchiver') . '/' . $langs->trans('AgfActiver') . '</a>';
 	}
 }
 
 print '</div>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

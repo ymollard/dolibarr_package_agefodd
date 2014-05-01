@@ -42,18 +42,17 @@ class Agefodd_sesscalendar {
 	var $sessid;
 	var $fk_actioncomm;
 	var $lines = array ();
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
 	function __construct($DB) {
-
 		$this->db = $DB;
 		return 1;
 	}
-
+	
 	/**
 	 * Create object into database
 	 *
@@ -62,7 +61,6 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
@@ -72,10 +70,10 @@ class Agefodd_sesscalendar {
 		// Put here code to add control on parameters value
 		
 		if ($conf->global->AGF_DOL_AGENDA) {
-			$result = $this->createAction ( $user );
+			$result = $this->createAction($user);
 			if ($result <= 0) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			} else {
 				$this->fk_actioncomm = $result;
 			}
@@ -86,25 +84,25 @@ class Agefodd_sesscalendar {
 		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->sessid . ", ";
-		$sql .= "'" . $this->db->idate ( $this->date_session ) . "', ";
-		$sql .= "'" . $this->db->idate ( $this->heured ) . "', ";
-		$sql .= "'" . $this->db->idate ( $this->heuref ) . "', ";
-		$sql .= " " . (! isset ( $this->fk_actioncomm ) ? 'NULL' : "'" . $this->db->escape ( $this->fk_actioncomm ) . "'") . ",";
+		$sql .= "'" . $this->db->idate($this->date_session) . "', ";
+		$sql .= "'" . $this->db->idate($this->heured) . "', ";
+		$sql .= "'" . $this->db->idate($this->heuref) . "', ";
+		$sql .= " " . (! isset($this->fk_actioncomm) ? 'NULL' : "'" . $this->db->escape($this->fk_actioncomm) . "'") . ",";
 		$sql .= ' ' . $user->id . ', ';
 		$sql .= ' ' . $user->id . ', ';
-		$sql .= "'" . $this->db->idate ( dol_now () ) . "'";
+		$sql .= "'" . $this->db->idate(dol_now()) . "'";
 		$sql .= ")";
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
-			$this->id = $this->db->last_insert_id ( MAIN_DB_PREFIX . "agefodd_session_calendrier" );
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_calendrier");
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
@@ -119,10 +117,10 @@ class Agefodd_sesscalendar {
 		}
 		
 		if (! $error) {
-			if (!empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
+			if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
 				dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
-				$admintask=new Agefodd_sessadm($this->db);
-				$result=$admintask->updateByTriggerName($user,$this->sessid,'AGF_DT_CONFIRM');
+				$admintask = new Agefodd_sessadm($this->db);
+				$result = $admintask->updateByTriggerName($user, $this->sessid, 'AGF_DT_CONFIRM');
 				if ($result < 0) {
 					$error ++;
 					$this->errors [] = "Error " . $admintask->error;
@@ -130,21 +128,20 @@ class Agefodd_sesscalendar {
 			}
 		}
 		
-		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::create " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return $this->id;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -152,7 +149,6 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -160,28 +156,28 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date_session = $this->db->jdate ( $obj->date_session );
-				$this->heured = $this->db->jdate ( $obj->heured );
-				$this->heuref = $this->db->jdate ( $obj->heuref );
+				$this->date_session = $this->db->jdate($obj->date_session);
+				$this->heured = $this->db->jdate($obj->heured);
+				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -189,7 +185,6 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_by_action($actionid) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -197,28 +192,28 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_by_action sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_by_action sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date_session = $this->db->jdate ( $obj->date_session );
-				$this->heured = $this->db->jdate ( $obj->heured );
-				$this->heuref = $this->db->jdate ( $obj->heuref );
+				$this->date_session = $this->db->jdate($obj->date_session);
+				$this->heured = $this->db->jdate($obj->heured);
+				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_by_action " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_by_action " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -226,7 +221,6 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -235,34 +229,34 @@ class Agefodd_sesscalendar {
 		$sql .= " WHERE s.fk_agefodd_session = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			for($i = 0; $i < $num; $i ++) {
-				$line = new Agefodd_sesscalendar_line ();
+				$line = new Agefodd_sesscalendar_line();
 				
-				$obj = $this->db->fetch_object ( $resql );
+				$obj = $this->db->fetch_object($resql);
 				
 				$line->id = $obj->rowid;
-				$line->date_session = $this->db->jdate ( $obj->date_session );
-				$line->heured = $this->db->jdate ( $obj->heured );
-				$line->heuref = $this->db->jdate ( $obj->heuref );
+				$line->date_session = $this->db->jdate($obj->date_session);
+				$line->heured = $this->db->jdate($obj->heured);
+				$line->heuref = $this->db->jdate($obj->heuref);
 				$line->sessid = $obj->sessid;
 				
 				$this->lines [$i] = $line;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Give information on the object
 	 *
@@ -270,7 +264,6 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function info($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -278,27 +271,27 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date_creation = $this->db->jdate ( $obj->datec );
+				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->tms = $obj->tms;
 				$this->user_creation = $obj->fk_user_author;
 				$this->user_modification = $obj->fk_user_mod;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Update object into database
 	 *
@@ -307,7 +300,6 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
@@ -318,19 +310,19 @@ class Agefodd_sesscalendar {
 		
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_calendrier SET";
-		$sql .= " date_session='" . $this->db->idate ( $this->date_session ) . "',";
-		$sql .= " heured='" . $this->db->idate ( $this->heured ) . "',";
-		$sql .= " heuref='" . $this->db->idate ( $this->heuref ) . "',";
+		$sql .= " date_session='" . $this->db->idate($this->date_session) . "',";
+		$sql .= " heured='" . $this->db->idate($this->heured) . "',";
+		$sql .= " heuref='" . $this->db->idate($this->heuref) . "',";
 		$sql .= " fk_user_mod=" . $user->id . " ";
 		$sql .= " WHERE rowid = " . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -338,11 +330,11 @@ class Agefodd_sesscalendar {
 				// want this action call a trigger.
 				
 				// Update Action is needed
-				if (! empty ( $this->fk_actioncomm ) && $conf->global->AGF_DOL_AGENDA) {
-					$result = $this->updateAction ( $user );
+				if (! empty($this->fk_actioncomm) && $conf->global->AGF_DOL_AGENDA) {
+					$result = $this->updateAction($user);
 					if ($result == - 1) {
 						$error ++;
-						$this->errors [] = "Error " . $this->db->lasterror ();
+						$this->errors [] = "Error " . $this->db->lasterror();
 					}
 				}
 				
@@ -358,17 +350,17 @@ class Agefodd_sesscalendar {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Delete object in database
 	 *
@@ -376,30 +368,29 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function remove($id) {
-
-		$result = $this->fetch ( $id );
-		if (! empty ( $this->fk_actioncomm )) {
-			dol_include_once ( '/comm/action/class/actioncomm.class.php' );
+		$result = $this->fetch($id);
+		if (! empty($this->fk_actioncomm)) {
+			dol_include_once('/comm/action/class/actioncomm.class.php');
 			
-			$action = new ActionComm ( $this->db );
+			$action = new ActionComm($this->db);
 			$action->id = $this->fk_actioncomm;
-			$action->delete ();
+			$action->delete();
 		}
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
 			return 1;
 		} else {
-			$this->error = $this->db->lasterror ();
+			$this->error = $this->db->lasterror();
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Create Action in Dolibarr Agenda
 	 *
@@ -407,19 +398,18 @@ class Agefodd_sesscalendar {
 	 * @param User $user that modify
 	 */
 	function createAction($user) {
-
 		global $conf, $langs;
 		
 		$error = 0;
 		
-		dol_include_once ( '/comm/action/class/actioncomm.class.php' );
-		dol_include_once ( '/agefodd/class/agsession.class.php' );
-		dol_include_once ( '/agefodd/class/agsession.class.php' );
+		dol_include_once('/comm/action/class/actioncomm.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
 		
-		$action = new ActionComm ( $this->db );
-		$session = new Agsession ( $this->db );
+		$action = new ActionComm($this->db);
+		$session = new Agsession($this->db);
 		
-		$result = $session->fetch ( $this->sessid );
+		$result = $session->fetch($this->sessid);
 		if ($result < 0) {
 			$error ++;
 		}
@@ -432,49 +422,48 @@ class Agefodd_sesscalendar {
 		$action->fk_element = $session->id;
 		$action->elementtype = $session->element;
 		$action->type_code = 'AC_AGF_SESS';
-		if (! empty ( $session->fk_soc )) {
+		if (! empty($session->fk_soc)) {
 			$action->societe->id = $session->fk_soc;
 		}
 		
 		if ($error == 0) {
-			$result = $action->add ( $user );
+			$result = $action->add($user);
 			
 			if ($result < 0) {
 				$error ++;
-				dol_syslog ( get_class ( $this ) . "::createAction " . $action->error, LOG_ERR );
+				dol_syslog(get_class($this) . "::createAction " . $action->error, LOG_ERR);
 				return - 1;
 			} else {
 				return $result;
 			}
 		} else {
-			dol_syslog ( get_class ( $this ) . "::createAction " . $action->error, LOG_ERR );
+			dol_syslog(get_class($this) . "::createAction " . $action->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * update Action in Dolibarr Agenda
 	 *
 	 * @param User $user that modify
 	 */
 	function updateAction($user) {
-
 		global $conf, $langs;
 		
 		$error = 0;
 		
-		dol_include_once ( '/comm/action/class/actioncomm.class.php' );
-		dol_include_once ( '/agefodd/class/agsession.class.php' );
+		dol_include_once('/comm/action/class/actioncomm.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
 		
-		$action = new ActionComm ( $this->db );
-		$session = new Agsession ( $this->db );
+		$action = new ActionComm($this->db);
+		$session = new Agsession($this->db);
 		
-		$result = $session->fetch ( $this->sessid );
+		$result = $session->fetch($this->sessid);
 		if ($result < 0) {
 			$error ++;
 		}
 		
-		$result = $action->fetch ( $this->fk_actioncomm );
+		$result = $action->fetch($this->fk_actioncomm);
 		if ($result < 0) {
 			$error ++;
 		}
@@ -489,35 +478,32 @@ class Agefodd_sesscalendar {
 				$action->datef = $this->heuref;
 				$action->type_code = 'AC_AGF_SESS';
 				
-				$result = $action->update ( $user );
+				$result = $action->update($user);
 			} else {
-				$result = $this->createAction ( $user );
+				$result = $this->createAction($user);
 			}
 			
 			if ($result < 0) {
 				$error ++;
 				
-				dol_syslog ( get_class ( $this ) . "::updateAction " . $action->error, LOG_ERR );
+				dol_syslog(get_class($this) . "::updateAction " . $action->error, LOG_ERR);
 				return - 1;
 			} else {
 				return 1;
 			}
 		} else {
-			dol_syslog ( get_class ( $this ) . "::updateAction " . $action->error, LOG_ERR );
+			dol_syslog(get_class($this) . "::updateAction " . $action->error, LOG_ERR);
 			return - 1;
 		}
 	}
 }
-
 class Agefodd_sesscalendar_line {
 	var $id;
 	var $date_session;
 	var $heured;
 	var $heuref;
 	var $sessid;
-
 	function __construct() {
-
 		return 1;
 	}
 }

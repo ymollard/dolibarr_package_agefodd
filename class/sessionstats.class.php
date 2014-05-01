@@ -27,7 +27,7 @@
 require_once DOL_DOCUMENT_ROOT . "/core/class/stats.class.php";
 require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
 
-dol_include_once ( "/agefodd/class/agsession.class.php" );
+dol_include_once("/agefodd/class/agsession.class.php");
 
 /**
  * \class SessionStats
@@ -40,7 +40,7 @@ class SessionStats extends Stats {
 	var $from;
 	var $field;
 	var $where;
-
+	
 	/**
 	 * Constructor
 	 *
@@ -51,7 +51,6 @@ class SessionStats extends Stats {
 	 * @return SessionStats
 	 */
 	function SessionStats($db, $socid = 0, $mode = '', $userid = 0, $training_id = 0) {
-
 		global $conf;
 		
 		$this->db = $db;
@@ -59,7 +58,7 @@ class SessionStats extends Stats {
 		$this->userid = $userid;
 		$this->training_id = $training_id;
 		
-		$object = new Agsession ( $this->db );
+		$object = new Agsession($this->db);
 		$this->from = MAIN_DB_PREFIX . $object->table_element;
 		$this->field = 'sell_price';
 		
@@ -76,27 +75,26 @@ class SessionStats extends Stats {
 		if ($this->training_id > 0)
 			$this->where .= ' AND main.fk_formation_catalogue=' . $this->training_id;
 	}
-
+	
 	/**
 	 * Renvoie le nombre de facture par annee
 	 *
 	 * @return array of values
 	 */
 	function getNbByYear() {
-
 		$sql = "SELECT YEAR(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql .= " FROM " . $this->from . " as main";
 		
-		if (strpos ( $this->where, 'com.fk_user_com' ) !== false) {
+		if (strpos($this->where, 'com.fk_user_com') !== false) {
 			$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		}
 		$sql .= " WHERE " . $this->where;
 		$sql .= " GROUP BY dm";
-		$sql .= $this->db->order ( 'dm', 'DESC' );
+		$sql .= $this->db->order('dm', 'DESC');
 		
-		return $this->_getNbByYear ( $sql );
+		return $this->_getNbByYear($sql);
 	}
-
+	
 	/**
 	 * Renvoie le nombre de facture par mois pour une annee donnee
 	 *
@@ -104,22 +102,21 @@ class SessionStats extends Stats {
 	 * @return array of values
 	 */
 	function getNbByMonth($year) {
-
 		$sql = "SELECT MONTH(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql .= " FROM " . $this->from . " as main";
-		if (strpos ( $this->where, 'com.fk_user_com' ) !== false) {
+		if (strpos($this->where, 'com.fk_user_com') !== false) {
 			$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		}
-		$sql .= " WHERE datef BETWEEN '" . $this->db->idate ( dol_get_first_day ( $year ) ) . "' AND '" . $this->db->idate ( dol_get_last_day ( $year ) ) . "'";
+		$sql .= " WHERE datef BETWEEN '" . $this->db->idate(dol_get_first_day($year)) . "' AND '" . $this->db->idate(dol_get_last_day($year)) . "'";
 		$sql .= " AND " . $this->where;
 		$sql .= " GROUP BY dm";
-		$sql .= $this->db->order ( 'dm', 'DESC' );
+		$sql .= $this->db->order('dm', 'DESC');
 		
-		$res = $this->_getNbByMonth ( $year, $sql );
+		$res = $this->_getNbByMonth($year, $sql);
 		// var_dump($res);print '<br>';
 		return $res;
 	}
-
+	
 	/**
 	 * Renvoie le montant de facture par mois pour une annee donnee
 	 *
@@ -127,22 +124,21 @@ class SessionStats extends Stats {
 	 * @return array of values
 	 */
 	function getAmountByMonth($year) {
-
 		$sql = "SELECT date_format(main.datef,'%m') as dm, SUM(" . $this->field . ")";
 		$sql .= " FROM " . $this->from . " as main";
-		if (strpos ( $this->where, 'com.fk_user_com' ) !== false) {
+		if (strpos($this->where, 'com.fk_user_com') !== false) {
 			$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		}
 		$sql .= " WHERE date_format(main.datef,'%Y') = '" . $year . "'";
 		$sql .= " AND " . $this->where;
 		$sql .= " GROUP BY dm";
-		$sql .= $this->db->order ( 'dm', 'DESC' );
+		$sql .= $this->db->order('dm', 'DESC');
 		
-		$res = $this->_getAmountByMonth ( $year, $sql );
+		$res = $this->_getAmountByMonth($year, $sql);
 		// var_dump($res);print '<br>';
 		return $res;
 	}
-
+	
 	/**
 	 * Return average amount
 	 *
@@ -150,36 +146,34 @@ class SessionStats extends Stats {
 	 * @return array of values
 	 */
 	function getAverageByMonth($year) {
-
 		$sql = "SELECT date_format(main.datef,'%m') as dm, AVG(" . $this->field . ")";
 		$sql .= " FROM " . $this->from . " as main";
-		if (strpos ( $this->where, 'com.fk_user_com' ) !== false) {
+		if (strpos($this->where, 'com.fk_user_com') !== false) {
 			$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		}
-		$sql .= " WHERE datef BETWEEN '" . $this->db->idate ( dol_get_first_day ( $year ) ) . "' AND '" . $this->db->idate ( dol_get_last_day ( $year ) ) . "'";
+		$sql .= " WHERE datef BETWEEN '" . $this->db->idate(dol_get_first_day($year)) . "' AND '" . $this->db->idate(dol_get_last_day($year)) . "'";
 		$sql .= " AND " . $this->where;
 		$sql .= " GROUP BY dm";
-		$sql .= $this->db->order ( 'dm', 'DESC' );
+		$sql .= $this->db->order('dm', 'DESC');
 		
-		return $this->_getAverageByMonth ( $year, $sql );
+		return $this->_getAverageByMonth($year, $sql);
 	}
-
+	
 	/**
 	 * Return nb, total and average
 	 *
 	 * @return array of values
 	 */
 	function getAllByYear() {
-
 		$sql = "SELECT date_format(main.datef,'%Y') as year, COUNT(DISTINCT main.rowid) as nb, SUM(" . $this->field . ") as total, AVG(" . $this->field . ") as avg";
 		$sql .= " FROM " . $this->from . " as main";
-		if (strpos ( $this->where, 'com.fk_user_com' ) !== false) {
+		if (strpos($this->where, 'com.fk_user_com') !== false) {
 			$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as com ON main.rowid=com.fk_session_agefodd";
 		}
 		$sql .= " WHERE " . $this->where;
 		$sql .= " GROUP BY year";
-		$sql .= $this->db->order ( 'year', 'DESC' );
+		$sql .= $this->db->order('year', 'DESC');
 		
-		return $this->_getAllByYear ( $sql );
+		return $this->_getAllByYear($sql);
 	}
 }

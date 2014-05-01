@@ -51,18 +51,17 @@ class Agefodd_stagiaire extends CommonObject {
 	var $socname;
 	var $fk_socpeople;
 	var $lines = array ();
-
+	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($DB) {
-
-		$this->db = $DB;
+	function __construct($db) {
+		$this->db = $db;
 		return 1;
 	}
-
+	
 	/**
 	 * Create object into database
 	 *
@@ -71,41 +70,40 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	function create($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->nom ))
-			$this->nom = $this->db->escape ( trim ( $this->nom ) );
-		if (isset ( $this->prenom ))
-			$this->prenom = $this->db->escape ( trim ( $this->prenom ) );
-		if (isset ( $this->fonction ))
-			$this->fonction = $this->db->escape ( trim ( $this->fonction ) );
-		if (isset ( $this->tel1 ))
-			$this->tel1 = $this->db->escape ( trim ( $this->tel1 ) );
-		if (isset ( $this->tel2 ))
-			$this->tel2 = $this->db->escape ( trim ( $this->tel2 ) );
-		if (isset ( $this->mail ))
-			$this->mail = $this->db->escape ( trim ( $this->mail ) );
-		if (isset ( $this->note ))
-			$this->note = $this->db->escape ( trim ( $this->note ) );
-		if (isset ( $this->place_birth ))
-			$this->place_birth = $this->db->escape ( trim ( $this->place_birth ) );
+		if (isset($this->nom))
+			$this->nom = $this->db->escape(trim($this->nom));
+		if (isset($this->prenom))
+			$this->prenom = $this->db->escape(trim($this->prenom));
+		if (isset($this->fonction))
+			$this->fonction = $this->db->escape(trim($this->fonction));
+		if (isset($this->tel1))
+			$this->tel1 = $this->db->escape(trim($this->tel1));
+		if (isset($this->tel2))
+			$this->tel2 = $this->db->escape(trim($this->tel2));
+		if (isset($this->mail))
+			$this->mail = $this->db->escape(trim($this->mail));
+		if (isset($this->note))
+			$this->note = $this->db->escape(trim($this->note));
+		if (isset($this->place_birth))
+			$this->place_birth = $this->db->escape(trim($this->place_birth));
 			
 			// Check parameters
 			// Put here code to add control on parameters value
-		$this->nom = mb_strtoupper ( $this->nom, 'UTF-8' );
-		if ((strpos($this->prenom,"-")!==false) || (strpos($this->prenom," ")!==false)) {
+		$this->nom = mb_strtoupper($this->nom, 'UTF-8');
+		if ((strpos($this->prenom, "-") !== false) || (strpos($this->prenom, " ") !== false)) {
 			$this->prenom = ucwords(strtolower($this->prenom));
-			$this->prenom = preg_replace('#-(\w)#e', "'-'.strtoupper('$1')",$this->prenom);
-		}else {
-			$this->prenom = ucfirst ( mb_strtolower ( $this->prenom, 'UTF-8' ) );
+			$this->prenom = preg_replace('#-(\w)#e', "'-'.strtoupper('$1')", $this->prenom);
+		} else {
+			$this->prenom = ucfirst(mb_strtolower($this->prenom, 'UTF-8'));
 		}
 		
-		if (empty ( $this->civilite )) {
+		if (empty($this->civilite)) {
 			$error ++;
-			$this->errors [] = $langs->trans ( "AgfCiviliteMandatory" );
+			$this->errors [] = $langs->trans("AgfCiviliteMandatory");
 		}
 		
 		// Insert request
@@ -117,35 +115,35 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= ",place_birth";
 		$sql .= ") VALUES (";
 		
-		$sql .= " " . (isset ( $this->nom ) ? "'" . $this->nom . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->prenom ) ? "'" . $this->prenom . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->civilite ) ? "'" . $this->civilite . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->nom) ? "'" . $this->nom . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->prenom) ? "'" . $this->prenom . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->civilite) ? "'" . $this->civilite . "'" : "null") . ", ";
 		$sql .= ' ' . $user->id . ", ";
 		$sql .= ' ' . $user->id . ", ";
-		$sql .= "'" . $this->db->idate ( dol_now () ) . "', ";
-		$sql .= " " . (isset ( $this->socid ) ? $this->db->escape ( $this->socid ) : "null") . ", ";
-		$sql .= " " . (isset ( $this->fonction ) ? "'" . $this->fonction . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->tel1 ) ? "'" . $this->tel1 . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->tel2 ) ? "'" . $this->tel2 . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->mail ) ? "'" . $this->mail . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->note ) ? "'" . $this->note . "'" : "null") . ", ";
-		$sql .= " " . (isset ( $this->fk_socpeople ) ? $this->db->escape ( $this->fk_socpeople ) : "null") . ", ";
+		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
+		$sql .= " " . (isset($this->socid) ? $this->db->escape($this->socid) : "null") . ", ";
+		$sql .= " " . (isset($this->fonction) ? "'" . $this->fonction . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->tel1) ? "'" . $this->tel1 . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->tel2) ? "'" . $this->tel2 . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->mail) ? "'" . $this->mail . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->note) ? "'" . $this->note . "'" : "null") . ", ";
+		$sql .= " " . (isset($this->fk_socpeople) ? $this->db->escape($this->fk_socpeople) : "null") . ", ";
 		$sql .= " " . $conf->entity . ",";
-		$sql .= " " . (! isset ( $this->date_birth ) || dol_strlen ( $this->date_birth ) == 0 ? 'NULL' : "'" . $this->db->idate ( $this->date_birth ) . "'") . ", ";
-		$sql .= " " . (isset ( $this->place_birth ) ? "'" . $this->place_birth . "'" : "null");
+		$sql .= " " . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_birth) . "'") . ", ";
+		$sql .= " " . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null");
 		$sql .= ")";
 		
 		if (! $error) {
-			$this->db->begin ();
+			$this->db->begin();
 			
-			dol_syslog ( get_class ( $this ) . "::create sql=" . $sql, LOG_DEBUG );
-			$resql = $this->db->query ( $sql );
+			dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror ();
+				$this->errors [] = "Error " . $this->db->lasterror();
 			}
 			
-			$this->id = $this->db->last_insert_id ( MAIN_DB_PREFIX . "agefodd_stagiaire" );
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_stagiaire");
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
@@ -162,17 +160,17 @@ class Agefodd_stagiaire extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::create " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return $this->id;
 		}
 	}
-
+	
 	/**
 	 * Load object in memory from database
 	 *
@@ -180,7 +178,6 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -194,17 +191,17 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.rowid = " . $id;
-		$sql .= " AND s.entity IN (" . getEntity ( 'agsession' ) . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				
-				if (! (empty ( $obj->fk_socpeople ))) {
-					$contact = new Contact ( $this->db );
-					$result = $contact->fetch ( $obj->fk_socpeople );
+				if (! (empty($obj->fk_socpeople))) {
+					$contact = new Contact($this->db);
+					$result = $contact->fetch($obj->fk_socpeople);
 					
 					if ($result > 0) {
 						
@@ -240,19 +237,19 @@ class Agefodd_stagiaire extends CommonObject {
 					$this->note = $obj->note;
 					$this->place_birth = $obj->place_birth;
 					$this->fk_socpeople = 0;
-					$this->date_birth = $this->db->jdate ( $obj->date_birth );
+					$this->date_birth = $this->db->jdate($obj->date_birth);
 				}
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Load all objects in memory from database
 	 *
@@ -264,7 +261,6 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -279,56 +275,56 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " ON s.civilite = civ.code";
 		
 		// Manage filter
-		if (! empty ( $filter )) {
+		if (! empty($filter)) {
 			$addcriteria = false;
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'naturalsearch') {
-					$sqlwhere .= '(s.nom LIKE \'%' . $this->db->escape ( $value ) . '%\' OR s.prenom LIKE \'%' . $this->db->escape ( $value ) . '%\')';
+					$sqlwhere .= '(s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
 					$addcriteria = true;
 				} elseif ($key == 'civ.code') {
 					if ($addcriteria) {
 						$sqlwhere .= ' AND ';
 					}
-					$sqlwhere .= $key . ' = \'' . $this->db->escape ( $value ) . '\'';
+					$sqlwhere .= $key . ' = \'' . $this->db->escape($value) . '\'';
 					$addcriteria = true;
 				} elseif ($key != 's.tel1') {
 					if ($addcriteria) {
 						$sqlwhere .= ' AND ';
 					}
-					$sqlwhere .= $key . ' LIKE \'%' . $this->db->escape ( $value ) . '%\'';
+					$sqlwhere .= $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 					$addcriteria = true;
 				}
 			}
-			if (! empty ( $sqlwhere )) {
+			if (! empty($sqlwhere)) {
 				$sql .= ' WHERE ' . $sqlwhere;
 			}
 		} else {
-			$sql .= " WHERE s.entity IN (" . getEntity ( 'agsession' ) . ")";
+			$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
 		}
 		
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
-		if (! empty ( $limit )) {
-			$sql .= $this->db->plimit ( $limit + 1, $offset );
+		if (! empty($limit)) {
+			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog ( get_class ( $this ) . "::fetch_all sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 			$i = 0;
 			
 			if ($num) {
 				while ( $i < $num ) {
-					$obj = $this->db->fetch_object ( $resql );
+					$obj = $this->db->fetch_object($resql);
 					
-					$line = new AgfTraineeLine ();
+					$line = new AgfTraineeLine();
 					
 					// Manage filter for telephone to remove all space from result to filter correctly
-					if (! empty ( $filter )) {
-						if (array_key_exists ( 's.tel1', $filter )) {
+					if (! empty($filter)) {
+						if (array_key_exists('s.tel1', $filter)) {
 							$value = $filter ['s.tel1'];
-							if (! empty ( $value )) {
+							if (! empty($value)) {
 								if ($pos !== false) {
 									$line->socid = $obj->socid;
 									$line->socname = $obj->socname;
@@ -345,7 +341,7 @@ class Agefodd_stagiaire extends CommonObject {
 									$line->note = $obj->note;
 									$line->place_birth = $obj->place_birth;
 									$line->fk_socpeople = $obj->fk_socpeople;
-									$line->date_birth = $this->db->jdate ( $obj->date_birth );
+									$line->date_birth = $this->db->jdate($obj->date_birth);
 								}
 							}
 						} else {
@@ -363,7 +359,7 @@ class Agefodd_stagiaire extends CommonObject {
 							$line->mail = $obj->mail;
 							$line->note = $obj->note;
 							$line->fk_socpeople = $obj->fk_socpeople;
-							$line->date_birth = $this->db->jdate ( $obj->date_birth );
+							$line->date_birth = $this->db->jdate($obj->date_birth);
 							$line->place_birth = $obj->place_birth;
 						}
 					} else {
@@ -381,7 +377,7 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->mail = $obj->mail;
 						$line->note = $obj->note;
 						$line->fk_socpeople = $obj->fk_socpeople;
-						$line->date_birth = $this->db->jdate ( $obj->date_birth );
+						$line->date_birth = $this->db->jdate($obj->date_birth);
 						$line->place_birth = $obj->place_birth;
 					}
 					
@@ -390,15 +386,15 @@ class Agefodd_stagiaire extends CommonObject {
 					$i ++;
 				}
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			return $num;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch_all " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Give information on the object
 	 *
@@ -406,7 +402,6 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function info($id) {
-
 		global $langs;
 		
 		$sql = "SELECT";
@@ -414,27 +409,27 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-				$obj = $this->db->fetch_object ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->date_creation = $this->db->jdate ( $obj->datec );
-				$this->date_modification = $this->db->jdate ( $obj->tms );
+				$this->date_creation = $this->db->jdate($obj->datec);
+				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
 				$this->user_creation = $obj->fk_user_author;
 			}
-			$this->db->free ( $resql );
+			$this->db->free($resql);
 			
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::fetch " . $this->error, LOG_ERR );
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Update object into database
 	 *
@@ -443,55 +438,54 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function update($user, $notrigger = 0) {
-
 		global $conf, $langs;
 		$error = 0;
 		
 		// Clean parameters
-		if (isset ( $this->nom ))
-			$this->nom = $this->db->escape ( trim ( $this->nom ) );
-		if (isset ( $this->prenom ))
-			$this->prenom = $this->db->escape ( trim ( $this->prenom ) );
-		if (isset ( $this->fonction ))
-			$this->fonction = $this->db->escape ( trim ( $this->fonction ) );
-		if (isset ( $this->tel1 ))
-			$this->tel1 = $this->db->escape ( trim ( $this->tel1 ) );
-		if (isset ( $this->tel2 ))
-			$this->tel2 = $this->db->escape ( trim ( $this->tel2 ) );
-		if (isset ( $this->mail ))
-			$this->mail = $this->db->escape ( trim ( $this->mail ) );
-		if (isset ( $this->note ))
-			$this->note = $this->db->escape ( trim ( $this->note ) );
-		if (isset ( $this->place_birth ))
-			$this->place_birth = $this->db->escape ( trim ( $this->place_birth ) );
+		if (isset($this->nom))
+			$this->nom = $this->db->escape(trim($this->nom));
+		if (isset($this->prenom))
+			$this->prenom = $this->db->escape(trim($this->prenom));
+		if (isset($this->fonction))
+			$this->fonction = $this->db->escape(trim($this->fonction));
+		if (isset($this->tel1))
+			$this->tel1 = $this->db->escape(trim($this->tel1));
+		if (isset($this->tel2))
+			$this->tel2 = $this->db->escape(trim($this->tel2));
+		if (isset($this->mail))
+			$this->mail = $this->db->escape(trim($this->mail));
+		if (isset($this->note))
+			$this->note = $this->db->escape(trim($this->note));
+		if (isset($this->place_birth))
+			$this->place_birth = $this->db->escape(trim($this->place_birth));
 			
 			// Check parameters
 			// Put here code to add control on parameters values
 			
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_stagiaire SET";
-		$sql .= " nom=" . (isset ( $this->nom ) ? "'" . $this->nom . "'" : "null") . ",";
-		$sql .= " prenom=" . (isset ( $this->prenom ) ? "'" . $this->prenom . "'" : "null") . ",";
-		$sql .= " civilite=" . (isset ( $this->civilite ) ? "'" . $this->civilite . "'" : "null") . ",";
+		$sql .= " nom=" . (isset($this->nom) ? "'" . $this->nom . "'" : "null") . ",";
+		$sql .= " prenom=" . (isset($this->prenom) ? "'" . $this->prenom . "'" : "null") . ",";
+		$sql .= " civilite=" . (isset($this->civilite) ? "'" . $this->civilite . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
-		$sql .= " fk_soc=" . (isset ( $this->socid ) ? $this->socid : "null") . ",";
-		$sql .= " fonction=" . (isset ( $this->fonction ) ? "'" . $this->fonction . "'" : "null") . ",";
-		$sql .= " tel1=" . (isset ( $this->tel1 ) ? "'" . $this->tel1 . "'" : "null") . ",";
-		$sql .= " tel2=" . (isset ( $this->tel2 ) ? "'" . $this->tel2 . "'" : "null") . ",";
-		$sql .= " mail=" . (isset ( $this->mail ) ? "'" . $this->mail . "'" : "null") . ",";
-		$sql .= " note=" . (isset ( $this->note ) ? "'" . $this->note . "'" : "null") . ",";
-		$sql .= " fk_socpeople=" . (isset ( $this->fk_socpeople ) ? $this->fk_socpeople : "null") . ", ";
-		$sql .= " date_birth=" . (! isset ( $this->date_birth ) || dol_strlen ( $this->date_birth ) == 0 ? "null" : "'" . $this->db->idate ( $this->date_birth ) . "'");
-		$sql .= " ,place_birth=" . (isset ( $this->place_birth ) ? "'" . $this->place_birth . "'" : "null");
+		$sql .= " fk_soc=" . (isset($this->socid) ? $this->socid : "null") . ",";
+		$sql .= " fonction=" . (isset($this->fonction) ? "'" . $this->fonction . "'" : "null") . ",";
+		$sql .= " tel1=" . (isset($this->tel1) ? "'" . $this->tel1 . "'" : "null") . ",";
+		$sql .= " tel2=" . (isset($this->tel2) ? "'" . $this->tel2 . "'" : "null") . ",";
+		$sql .= " mail=" . (isset($this->mail) ? "'" . $this->mail . "'" : "null") . ",";
+		$sql .= " note=" . (isset($this->note) ? "'" . $this->note . "'" : "null") . ",";
+		$sql .= " fk_socpeople=" . (isset($this->fk_socpeople) ? $this->fk_socpeople : "null") . ", ";
+		$sql .= " date_birth=" . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? "null" : "'" . $this->db->idate($this->date_birth) . "'");
+		$sql .= " ,place_birth=" . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::update sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror ();
+			$this->errors [] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -510,17 +504,17 @@ class Agefodd_stagiaire extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog ( get_class ( $this ) . "::update " . $errmsg, LOG_ERR );
+				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
-			$this->db->rollback ();
+			$this->db->rollback();
 			return - 1 * $error;
 		} else {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		}
 	}
-
+	
 	/**
 	 * Delete object in database
 	 *
@@ -529,26 +523,25 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function remove($id) {
-
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire";
 		$sql .= " WHERE rowid = " . $id;
 		
-		$this->db->begin ();
+		$this->db->begin();
 		
-		dol_syslog ( get_class ( $this ) . "::remove sql=" . $sql, LOG_DEBUG );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if ($resql) {
-			$this->db->commit ();
+			$this->db->commit();
 			return 1;
 		} else {
-			$this->error = $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::remove " . $this->error, LOG_ERR );
-			$this->db->rollback ();
+			$this->error = $this->db->lasterror();
+			dol_syslog(get_class($this) . "::remove " . $this->error, LOG_ERR);
+			$this->db->rollback();
 			return - 1;
 		}
 	}
-
+	
 	/**
 	 * Search trainee
 	 *
@@ -558,51 +551,49 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function searchByLastNameFirstNameSoc($lastname, $firstname, $socid) {
-
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
-		$sql .= " AND UPPER(s.nom)='" . strtoupper ( trim($lastname) ) . "'";
-		$sql .= " AND UPPER(s.prenom)='" . strtoupper ( trim($firstname) ) . "'";
+		$sql .= " AND UPPER(s.nom)='" . strtoupper(trim($lastname)) . "'";
+		$sql .= " AND UPPER(s.prenom)='" . strtoupper(trim($firstname)) . "'";
 		
 		$num = 0;
 		
-		dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc sql=" . $sql );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc sql=" . $sql);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			$num = $this->db->num_rows ( $resql );
+			$num = $this->db->num_rows($resql);
 		} else {
-			$this->error = $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR );
+			$this->error = $this->db->lasterror();
+			dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR);
 			return - 1;
 		}
 		
-		$this->db->free ( $resql );
+		$this->db->free($resql);
 		
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
-		$sql .= " AND UPPER(s.lastname)='" . strtoupper ( $lastname ) . "'";
-		$sql .= " AND UPPER(s.firstname)='" . strtoupper ( $firstname ) . "'";
+		$sql .= " AND UPPER(s.lastname)='" . strtoupper($lastname) . "'";
+		$sql .= " AND UPPER(s.firstname)='" . strtoupper($firstname) . "'";
 		
-		dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc sql=" . $sql );
-		$resql = $this->db->query ( $sql );
+		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc sql=" . $sql);
+		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows ( $resql )) {
-			$num =+ $this->db->num_rows ( $resql );
+			if ($this->db->num_rows($resql)) {
+				$num = + $this->db->num_rows($resql);
 			}
 		} else {
-			$this->error = $this->db->lasterror ();
-			dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR );
+			$this->error = $this->db->lasterror();
+			dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc " . $this->error, LOG_ERR);
 			return - 1;
 		}
-		dol_syslog ( get_class ( $this ) . "::searchByLastNameFirstNameSoc num=" . $num);
+		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc num=" . $num);
 		return $num;
 	}
 }
-
 class AgfTraineeLine {
 	var $socid;
 	var $socname;
@@ -620,9 +611,7 @@ class AgfTraineeLine {
 	var $fk_socpeople;
 	var $date_birth;
 	var $place_birth;
-
 	function __construct() {
-
 		return 1;
 	}
 }

@@ -28,7 +28,7 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
@@ -42,25 +42,25 @@ require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$sortorder = GETPOST ( 'sortorder', 'alpha' );
-$sortfield = GETPOST ( 'sortfield', 'alpha' );
-$page = GETPOST ( 'page', 'int' );
+$sortorder = GETPOST('sortorder', 'alpha');
+$sortfield = GETPOST('sortfield', 'alpha');
+$page = GETPOST('page', 'int');
 
 // Search criteria
-$search_orderid = GETPOST ( 'search_orderid', 'int' );
-$search_invoiceid = GETPOST ( 'search_invoiceid', 'int' );
-$search_fourninvoiceid = GETPOST ( 'search_fourninvoiceid', 'int' );
-$search_orderref = GETPOST ( 'search_orderref', 'alpha' );
-$search_invoiceref = GETPOST ( 'search_invoiceref', 'alpha' );
-$search_propalref = GETPOST ( 'search_propalref', 'alpha' );
-$search_propalid = GETPOST ( 'search_propalid', 'alpha' );
+$search_orderid = GETPOST('search_orderid', 'int');
+$search_invoiceid = GETPOST('search_invoiceid', 'int');
+$search_fourninvoiceid = GETPOST('search_fourninvoiceid', 'int');
+$search_orderref = GETPOST('search_orderref', 'alpha');
+$search_invoiceref = GETPOST('search_invoiceref', 'alpha');
+$search_propalref = GETPOST('search_propalref', 'alpha');
+$search_propalid = GETPOST('search_propalid', 'alpha');
 
 $langs->load('bills');
 
 // Do we click on purge search criteria ?
-if (GETPOST ( "button_removefilter_x" )) {
+if (GETPOST("button_removefilter_x")) {
 	$search_orderid = '';
 	$search_invoiceid = '';
 	$search_fourninvoiceid = '';
@@ -70,9 +70,9 @@ if (GETPOST ( "button_removefilter_x" )) {
 	$search_propalid = '';
 }
 
-if (empty ( $sortorder ))
+if (empty($sortorder))
 	$sortorder = "DESC";
-if (empty ( $sortfield ))
+if (empty($sortfield))
 	$sortfield = "s.rowid";
 
 if ($page == - 1) {
@@ -84,115 +84,115 @@ $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$form = new Form ( $db );
-$formAgefodd = new FormAgefodd ( $db );
+$form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
-$title = $langs->trans ( "AgfMenuSessByInvoiceOrder" );
-llxHeader ( '', $title );
+$title = $langs->trans("AgfMenuSessByInvoiceOrder");
+llxHeader('', $title);
 
-if (! empty ( $search_orderid )) {
-	$order = new Commande ( $db );
-	$order->fetch ( $search_orderid );
+if (! empty($search_orderid)) {
+	$order = new Commande($db);
+	$order->fetch($search_orderid);
 	$search_orderref = $order->ref;
 }
 
-if (! empty ( $search_invoiceid )) {
-	$invoice = new Facture ( $db );
-	$invoice->fetch ( $search_invoiceid );
+if (! empty($search_invoiceid)) {
+	$invoice = new Facture($db);
+	$invoice->fetch($search_invoiceid);
 	$search_invoiceref = $invoice->ref;
 }
 
-if (! empty ( $search_fourninvoiceid )) {
-	$fourninvoice = new FactureFournisseur ( $db );
-	$fourninvoice->fetch ( $search_fourninvoiceid );
+if (! empty($search_fourninvoiceid)) {
+	$fourninvoice = new FactureFournisseur($db);
+	$fourninvoice->fetch($search_fourninvoiceid);
 	$search_fourninvoiceref = $fourninvoice->ref;
 }
 
-if (! empty ( $search_orderref )) {
-	$order = new Commande ( $db );
-	$order->fetch ( '', $search_orderref );
+if (! empty($search_orderref)) {
+	$order = new Commande($db);
+	$order->fetch('', $search_orderref);
 	$search_orderid = $order->id;
 }
 
-if (! empty ( $search_invoiceref )) {
-	$invoice = new Facture ( $db );
-	$invoice->fetch ( '', $search_invoiceref );
+if (! empty($search_invoiceref)) {
+	$invoice = new Facture($db);
+	$invoice->fetch('', $search_invoiceref);
 	$search_invoiceid = $invoice->id;
 }
 
-if (! empty ( $search_fourninvoiceref )) {
-	$fourninvoice = new FactureFournisseur ( $db );
-	$fourninvoice->fetch ( '', $search_fourninvoiceref );
+if (! empty($search_fourninvoiceref)) {
+	$fourninvoice = new FactureFournisseur($db);
+	$fourninvoice->fetch('', $search_fourninvoiceref);
 	$search_fourninvoiceid = $fourninvoice->id;
 }
 
-if (! empty ( $search_propalref )) {
-	$propal = new Propal ( $db );
-	$propal->fetch ( '', $search_propalref );
+if (! empty($search_propalref)) {
+	$propal = new Propal($db);
+	$propal->fetch('', $search_propalref);
 	$search_propalid = $propal->id;
 }
 
-if (! empty ( $search_propalid )) {
-	$propal = new Propal ( $db );
-	$propal->fetch ( $search_propalid, '' );
+if (! empty($search_propalid)) {
+	$propal = new Propal($db);
+	$propal->fetch($search_propalid, '');
 	$search_propalref = $propal->ref;
 }
 
-if (! empty ( $search_orderid ) || ! empty ( $search_orderref )) {
+if (! empty($search_orderid) || ! empty($search_orderref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php';
-	$head = commande_prepare_head ( $order );
-	dol_fiche_head ( $head, 'tabAgefodd', $langs->trans ( "AgfMenuSessByInvoiceOrder" ), 0, 'order' );
+	$head = commande_prepare_head($order);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans("AgfMenuSessByInvoiceOrder"), 0, 'order');
 }
 
-if (! empty ( $search_invoiceid ) || ! empty ( $search_invoiceref )) {
+if (! empty($search_invoiceid) || ! empty($search_invoiceref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php';
-	$head = facture_prepare_head ( $invoice );
-	dol_fiche_head ( $head, 'tabAgefodd', $langs->trans ( 'AgfMenuSessByInvoiceOrder' ), 0, 'bill' );
+	$head = facture_prepare_head($invoice);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'bill');
 }
 
-if (! empty ( $search_fourninvoiceid ) || ! empty ( $search_fourninvoiceref )) {
+if (! empty($search_fourninvoiceid) || ! empty($search_fourninvoiceref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php';
-	$head = facturefourn_prepare_head ( $fourninvoice );
-	dol_fiche_head ( $head, 'tabAgefodd', $langs->trans ( 'AgfMenuSessByInvoiceOrder' ), 0, 'bill' );
+	$head = facturefourn_prepare_head($fourninvoice);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'bill');
 }
 
-if (! empty ( $search_propalref ) || ! empty ( $search_propalid )) {
+if (! empty($search_propalref) || ! empty($search_propalid)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php';
-	$head = propal_prepare_head ( $propal );
-	dol_fiche_head ( $head, 'tabAgefodd', $langs->trans ( 'AgfMenuSessByInvoiceOrder' ), 0, 'propal' );
+	$head = propal_prepare_head($propal);
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'propal');
 }
 
-$agf = new Agsession ( $db );
-$resql = $agf->fetch_all_by_order_invoice_propal ( $sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid,$search_fourninvoiceid );
+$agf = new Agsession($db);
+$resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid);
 
 if ($resql != - 1) {
 	$num = $resql;
 	
-	$menu = $langs->trans ( "AgfMenuSessAct" );
+	$menu = $langs->trans("AgfMenuSessAct");
 	
-	print_barre_liste ( $menu, $page, $_SERVEUR ['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid .'&search_fourninvoiceid='.$search_fourninvoiceid, $sortfield, $sortorder, '', $num );
+	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid.'&search_fourninvoiceid='.$search_fourninvoiceid;
-	print_liste_field_titre ( $langs->trans ( "Id" ), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfIntitule" ), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfRefInterne" ), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfDateDebut" ), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfDateFin" ), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder );
-	print_liste_field_titre ( $langs->trans ( "AgfLieu" ), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder );
-	if (! (empty ( $search_orderref ))) {
-		print_liste_field_titre ( $langs->trans ( "AgfBonCommande" ), $_SERVEUR ['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder );
+	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
+	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
+	if (! (empty($search_orderref))) {
+		print_liste_field_titre($langs->trans("AgfBonCommande"), $_SERVEUR ['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
-	if (! (empty ( $search_invoiceref ))) {
-		print_liste_field_titre ( $langs->trans ( "AgfFacture" ), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder );
+	if (! (empty($search_invoiceref))) {
+		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
 	}
-	if (! (empty ( $search_fourninvoiceref ))) {
-		print_liste_field_titre ( $langs->trans ( "AgfFacture" ), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder );
+	if (! (empty($search_fourninvoiceref))) {
+		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
 	}
-	if (! (empty ( $search_propalref ))) {
-		print_liste_field_titre ( $langs->trans ( "Proposal" ), $_SERVEUR ['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder );
+	if (! (empty($search_propalref))) {
+		print_liste_field_titre($langs->trans("Proposal"), $_SERVEUR ['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";
@@ -200,11 +200,11 @@ if ($resql != - 1) {
 	// Search bar
 	$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
-	if (! empty ( $sortorder )) {
+	if (! empty($sortorder)) {
 		$url_form .= '?sortorder=' . $sortorder;
 		$addcriteria = true;
 	}
-	if (! empty ( $sortfield )) {
+	if (! empty($sortfield)) {
 		if ($addcriteria) {
 			$url_form .= '&sortfield=' . $sortfield;
 		} else {
@@ -212,7 +212,7 @@ if ($resql != - 1) {
 		}
 		$addcriteria = true;
 	}
-	if (! empty ( $page )) {
+	if (! empty($page)) {
 		if ($addcriteria) {
 			$url_form .= '&page=' . $page;
 		} else {
@@ -235,29 +235,29 @@ if ($resql != - 1) {
 	print '<td>&nbsp;</td>';
 	
 	print '<td>&nbsp;</td>';
-	if (! (empty ( $search_orderref ))) {
+	if (! (empty($search_orderref))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_orderref" value="' . $search_orderref . '" size="20">';
 		print '</td>';
 	}
-	if (! (empty ( $search_invoiceref ))) {
+	if (! (empty($search_invoiceref))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_invoiceref" value="' . $search_invoiceref . '" size="20">';
 		print '</td>';
 	}
-	if (! (empty ( $search_fourninvoiceref ))) {
+	if (! (empty($search_fourninvoiceref))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_fourninvoiceref" value="' . $search_fourninvoiceref . '" size="20">';
 		print '</td>';
 	}
-	if (! (empty ( $search_propalref ))) {
+	if (! (empty($search_propalref))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_propalref" value="' . $search_propalref . '" size="20">';
 		print '</td>';
 	}
-	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "Search" ) ) . '">';
+	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag ( $langs->trans ( "RemoveFilter" ) ) . '" title="' . dol_escape_htmltag ( $langs->trans ( "RemoveFilter" ) ) . '">';
+	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
 	
 	print "</tr>\n";
@@ -272,27 +272,27 @@ if ($resql != - 1) {
 		// Calcul de la couleur du lien en fonction de la couleur définie sur la session
 		// http://www.w3.org/TR/AERT#color-contrast
 		// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS AFFICHER DU BLANC (#FFF)
-		$couleur_rgb = agf_hex2rgb ( $line->color );
+		$couleur_rgb = agf_hex2rgb($line->color);
 		$color_a = '';
 		if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
 		
-		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object ( $langs->trans ( "AgfShowDetails" ), "service" ) . ' ' . $line->rowid . '</a></td>';
-		print '<td>' . stripslashes ( dol_trunc ( $line->intitule, 60 ) ) . '</td>';
+		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
-		print '<td>' . dol_print_date ( $line->dated, 'daytext' ) . '</td>';
-		print '<td>' . dol_print_date ( $line->datef, 'daytext' ) . '</td>';
-		print '<td>' . stripslashes ( $line->ref_interne ) . '</td>';
-		if (! (empty ( $search_orderref ))) {
+		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
+		print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
+		print '<td>' . stripslashes($line->ref_interne) . '</td>';
+		if (! (empty($search_orderref))) {
 			print '<td>' . $line->orderref . '</td>';
 		}
-		if (! (empty ( $search_invoiceref ))) {
+		if (! (empty($search_invoiceref))) {
 			print '<td>' . $line->invoiceref . '</td>';
 		}
-		if (! (empty ( $search_fourninvoiceref ))) {
+		if (! (empty($search_fourninvoiceref))) {
 			print '<td>' . $line->fourninvoiceref . '</td>';
 		}
-		if (! (empty ( $search_propalref ))) {
+		if (! (empty($search_propalref))) {
 			print '<td>' . $line->propalref . '</td>';
 		}
 		print '<td></td>';
@@ -303,8 +303,8 @@ if ($resql != - 1) {
 	
 	print "</table>";
 } else {
-	setEventMessage ( $agf->error, 'errors' );
+	setEventMessage($agf->error, 'errors');
 }
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

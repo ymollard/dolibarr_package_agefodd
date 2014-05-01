@@ -28,35 +28,35 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
-dol_include_once ( '/agefodd/class/agefodd_formation_catalogue.class.php' );
-dol_include_once ( '/agefodd/lib/agefodd.lib.php' );
-dol_include_once ( '/core/lib/functions2.lib.php' );
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/core/lib/functions2.lib.php');
 
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$id = GETPOST ( 'id', 'int' );
+$id = GETPOST('id', 'int');
 
 /*
  * View
 */
 
-llxHeader ( '', $langs->trans ( "AgfCatalogDetail" ) );
+llxHeader('', $langs->trans("AgfCatalogDetail"));
 
-$agf = new Agefodd ( $db );
-$agf->info ( $id );
+$agf = new Agefodd($db);
+$agf->info($id);
 
-$head = training_prepare_head ( $agf );
+$head = training_prepare_head($agf);
 
-dol_fiche_head ( $head, 'info', $langs->trans ( "AgfCatalogDetail" ), 0, 'bill' );
+dol_fiche_head($head, 'info', $langs->trans("AgfCatalogDetail"), 0, 'bill');
 
 print '<table width="100%"><tr><td>';
-dol_print_object_info ( $agf );
+dol_print_object_info($agf);
 print '</td></tr></table>';
 print '</div>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();

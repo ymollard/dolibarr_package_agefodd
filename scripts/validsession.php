@@ -19,38 +19,38 @@
  * \file /agefodd/scripts/createtaskadmin.php
  * \brief Generate script
  */
-if (! defined ( 'NOTOKENRENEWAL' ))
-	define ( 'NOTOKENRENEWAL', '1' ); // Disables token renewal
-if (! defined ( 'NOREQUIREMENU' ))
-	define ( 'NOREQUIREMENU', '1' );
-if (! defined ( 'NOREQUIREHTML' ))
-	define ( 'NOREQUIREHTML', '1' );
-if (! defined ( 'NOREQUIREAJAX' ))
-	define ( 'NOREQUIREAJAX', '1' );
-if (! defined ( 'NOLOGIN' ))
-	define ( 'NOLOGIN', '1' );
+if (! defined('NOTOKENRENEWAL'))
+	define('NOTOKENRENEWAL', '1'); // Disables token renewal
+if (! defined('NOREQUIREMENU'))
+	define('NOREQUIREMENU', '1');
+if (! defined('NOREQUIREHTML'))
+	define('NOREQUIREHTML', '1');
+if (! defined('NOREQUIREAJAX'))
+	define('NOREQUIREAJAX', '1');
+if (! defined('NOLOGIN'))
+	define('NOLOGIN', '1');
 
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
-dol_include_once ( '/user/class/user.class.php' );
-dol_include_once ( '/comm/propal/class/propal.class.php' );
-dol_include_once ( '/core/modules/propale/modules_propale.php' );
+dol_include_once('/user/class/user.class.php');
+dol_include_once('/comm/propal/class/propal.class.php');
+dol_include_once('/core/modules/propale/modules_propale.php');
 
-$userlogin = GETPOST ( 'login' );
-$idpropal = GETPOST ( 'idpropal' );
+$userlogin = GETPOST('login');
+$idpropal = GETPOST('idpropal');
 
-$user = new User ( $db );
-$result = $user->fetch ( '', $userlogin );
+$user = new User($db);
+$result = $user->fetch('', $userlogin);
 
-$propal = new Propal ( $db );
-$propal->fetch ( $idpropal );
-if (! empty ( $propal->id )) {
+$propal = new Propal($db);
+$propal->fetch($idpropal);
+if (! empty($propal->id)) {
 	
-	$result = $propal->cloture ( $user, 2, 'From Extranet RH' );
+	$result = $propal->cloture($user, 2, 'From Extranet RH');
 	
 	if ($result < 0) {
 		print - 1;

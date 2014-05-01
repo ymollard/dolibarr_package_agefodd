@@ -31,59 +31,59 @@ $posY = 110;
 */
 
 // Recuperation des dates de formation
-$agf = new Agsession ( $this->db );
-$ret = $agf->fetch ( $id );
+$agf = new Agsession($this->db);
+$ret = $agf->fetch($id);
 if ($agf->dated == $agf->datef)
-	$this->date .= $outputlangs->transnoentities ( 'AgfPDFFichePres8' ) . " " . dol_print_date ( $agf->datef );
+	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef);
 else
-	$this->date .= $outputlangs->transnoentities ( 'AgfPDFFichePres9' ) . " " . dol_print_date ( $agf->dated ) . ' ' . $outputlangs->transnoentities ( 'AgfPDFFichePres10' ) . ' ' . dol_print_date ( $agf->datef );
+	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef);
 
-$pdf->SetXY ( $posX - 77, $posY );
-$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), 'B', 11 );
-$pdf->Cell ( 30, 6, $outputlangs->transnoentities ( 'AgfPDFCourrierAcceuil1' ), 0, 0, "R", 0 );
+$pdf->SetXY($posX - 77, $posY);
+$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
+$pdf->Cell(30, 6, $outputlangs->transnoentities('AgfPDFCourrierAcceuil1'), 0, 0, "R", 0);
 
-$pdf->SetXY ( $posX - 47, $posY );
-$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 11 );
-$this->str = $outputlangs->transnoentities ( 'AgfPDFCourrierAcceuil2' ) . " " . $this->date;
-$pdf->Cell ( 0, 6, $outputlangs->convToOutputCharset ( $this->str ), 0, 0, "L", 0 );
+$pdf->SetXY($posX - 47, $posY);
+$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil2') . " " . $this->date;
+$pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str), 0, 0, "L", 0);
 $posY += 6;
 
 /*
  *  Rubrique "Pièces jointes"
 */
 
-$pdf->SetXY ( $posX - 77, $posY );
-$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), 'B', 11 );
-$pdf->Cell ( 30, 5, $outputlangs->transnoentities ( 'AgfPDFCourrierAcceuil3' ), 0, 0, "R", 0 );
+$pdf->SetXY($posX - 77, $posY);
+$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
+$pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'), 0, 0, "R", 0);
 
-$pdf->SetXY ( $posX - 47, $posY );
-$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 11 );
-$this->str = $outputlangs->transnoentities ( 'AgfConvention' );
-$pdf->MultiCell ( 0, 5, $outputlangs->convToOutputCharset ( $this->str ), 0, 'L' );
+$pdf->SetXY($posX - 47, $posY);
+$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
+$this->str = $outputlangs->transnoentities('AgfConvention');
+$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 $posY += 16;
 
 /*
  *  Corps de lettre
 */
 
-$pdf->SetXY ( $posX - 80, $posY );
+$pdf->SetXY($posX - 80, $posY);
 
-$this->str = $outputlangs->transnoentities ( 'AgfPDFCourrierAcceuil4' ) . "\n\n\n";
+$this->str = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4') . "\n\n\n";
 
-$this->str .= $outputlangs->transnoentities ( 'AgfPDFCourrierConv1' ) . "\n";
+$this->str .= $outputlangs->transnoentities('AgfPDFCourrierConv1') . "\n";
 $this->str .= '« ';
-if (! empty ( $agf->intitule_custo )) {
+if (! empty($agf->intitule_custo)) {
 	$this->str .= $agf->intitule_custo;
 } else {
 	$this->str .= $agf->formintitule;
 }
-$this->str .= " » " . $outputlangs->transnoentities ( 'AgfPDFCourrierConv2' ) . " " . $this->date . ".\n\n";
-$this->str .= $outputlangs->transnoentities ( 'AgfPDFCourrierConv3' ) . "\n\n";
+$this->str .= " » " . $outputlangs->transnoentities('AgfPDFCourrierConv2') . " " . $this->date . ".\n\n";
+$this->str .= $outputlangs->transnoentities('AgfPDFCourrierConv3') . "\n\n";
 
-$this->str .= $outputlangs->transnoentities ( 'AgfPDFCourrierAcceuil11' ) . "\n\n";
-$this->str .= $outputlangs->transnoentities ( 'AgfPDFCourrierAcceuil13' );
-$pdf->MultiCell ( 0, 4, $outputlangs->convToOutputCharset ( $this->str ) );
+$this->str .= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11') . "\n\n";
+$this->str .= $outputlangs->transnoentities('AgfPDFCourrierAcceuil13');
+$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str));
 
-$hauteur = dol_nboflines_bis ( $this->str, 50 ) * 4;
+$hauteur = dol_nboflines_bis($this->str, 50) * 4;
 
 $posY += $hauteur + 6;

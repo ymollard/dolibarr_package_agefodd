@@ -28,7 +28,7 @@ $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
-	die ( "Include of main fails" );
+	die("Include of main fails");
 
 require_once ('../class/agefodd_cursus.class.php');
 require_once ('../lib/agefodd.lib.php');
@@ -36,27 +36,27 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
-	accessforbidden ();
+	accessforbidden();
 
-$id = GETPOST ( 'id', 'int' );
+$id = GETPOST('id', 'int');
 
 /*
  * View
 */
 
-llxHeader ( '', $langs->trans ( "AgfMenuCursus" ) );
+llxHeader('', $langs->trans("AgfMenuCursus"));
 
-$agf = new Agefodd_cursus ( $db );
-$agf->info ( $id );
+$agf = new Agefodd_cursus($db);
+$agf->info($id);
 
-$head = cursus_prepare_head ( $agf );
+$head = cursus_prepare_head($agf);
 
-dol_fiche_head ( $head, 'info', $langs->trans ( "AgfMenuCursus" ), 0, 'document' );
+dol_fiche_head($head, 'info', $langs->trans("AgfMenuCursus"), 0, 'document');
 
 print '<table width="100%"><tr><td>';
-dol_print_object_info ( $agf );
+dol_print_object_info($agf);
 print '</td></tr></table>';
 print '</div>';
 
-llxFooter ();
-$db->close ();
+llxFooter();
+$db->close();
