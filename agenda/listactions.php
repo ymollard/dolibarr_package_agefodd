@@ -50,6 +50,7 @@ $actioncode = GETPOST ( "actioncode", "alpha", 3 );
 $pid = GETPOST ( "projectid", 'int', 3 );
 $status = GETPOST ( "status", 'alpha' );
 $type = GETPOST ( 'type' );
+$display_only_trainer_filter= GETPOST('displayonlytrainerfilter','int');
 
 $filterdatestart = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_start_filtermonth', 'int' ), GETPOST ( 'dt_start_filterday', 'int' ), GETPOST ( 'dt_start_filteryear', 'int' ) );
 $filterdatesend = dol_mktime ( 0, 0, 0, GETPOST ( 'dt_end_filtermonth', 'int' ), GETPOST ( 'dt_end_filterday', 'int' ), GETPOST ( 'dt_end_filteryear', 'int' ) );
@@ -207,6 +208,16 @@ $sql .= " ud.login as logindone, ud.rowid as useriddone,";
 $sql .= " sp.lastname, sp.firstname";
 $sql .= ' ,agf.rowid as sessionid';
 $sql .= ' ,agf_status.code as sessionstatus';
+if (! empty ( $filter_trainer )) {
+	$sql .= ' ,socsess.rowid as socid';
+	$sql .= ' ,socsess.nom as societe';
+	$sql .= ', socsess.client';
+} else {
+	$sql .= ' ,s.rowid as socid';
+	$sql .= ' ,s.nom as societe';
+	$sql .= ' ,s.client';
+}
+
 $sql .= " FROM " . MAIN_DB_PREFIX . "c_actioncomm as c,";
 $sql .= " " . MAIN_DB_PREFIX . 'user as u,';
 $sql .= " " . MAIN_DB_PREFIX . "actioncomm as a";
@@ -232,6 +243,7 @@ if (! empty ( $filter_trainer )) {
 	if (! empty ( $conf->global->AGF_DOL_TRAINER_AGENDA )) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST' ";
 	}
+	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
 $sql .= " WHERE c.id = a.fk_action";
 $sql .= ' AND a.fk_user_author = u.rowid';
@@ -318,7 +330,7 @@ if ($resql) {
 	$head = calendars_prepare_head ( '' );
 	
 	dol_fiche_head ( $head, 'card', $langs->trans ( 'AgfMenuAgenda' ), 0, $picto );
-	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session );
+	$formagefodd->agenda_filter ( $form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session,$display_only_trainer_filter );
 	dol_fiche_end ();
 	
 	// Add link to show birthdays
@@ -374,7 +386,7 @@ if ($resql) {
 		$actionstatic->id = $obj->id;
 		$actionstatic->type_code = $obj->acode;
 		$actionstatic->libelle = $obj->label;
-		print $actionstatic->getNomUrl ( 1, 28 );
+		print $actionstatic->getNomUrl(1);
 		print '</td>';
 		
 		// Titre
