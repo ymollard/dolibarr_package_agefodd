@@ -389,7 +389,7 @@ if (! empty($id)) {
 				if (is_file($conf->agefodd->dir_output . '/' . 'convention_' . $agf->id . '_' . $socid . '.pdf')) {
 					$filename = 'convention_' . $agf->id . '_' . $socid . '.pdf';
 				} elseif (is_file($conf->agefodd->dir_output . '/' . 'convention_' . $agf->id . '_' . $socid . '_' . $conv_id . '.pdf')) {
-					$filename = $conf->agefodd->dir_output . '/' . 'convention_' . $agf->id . '_' . $socid . '_' . $conv_id . '.pdf';
+					$filename = 'convention_' . $agf->id . '_' . $socid . '_' . $conv_id . '.pdf';
 				}
 			} elseif ($action == 'presend_attestation') {
 				$filename = 'attestation_' . $agf->id . '_' . $socid . '.pdf';
