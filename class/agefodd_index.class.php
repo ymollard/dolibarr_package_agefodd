@@ -343,7 +343,7 @@ class Agefodd_index {
 		if (empty($archive)) {
 			$sql .= " WHERE status <> 4";
 		} else {
-			$sql .= " WHERE status=" . $archive;
+			$sql .= " WHERE status=4";
 		}
 		
 		$sql .= " AND entity IN (" . getEntity('agsession') . ")";
