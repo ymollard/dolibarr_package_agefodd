@@ -1050,6 +1050,7 @@ class FormAgefodd extends Form {
 		global $bc;
 		
 		require_once (DOL_DOCUMENT_ROOT . "/comm/action/class/actioncomm.class.php");
+		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
 		
 		$action_arr = ActionComm::getActions($this->db, $socid, $object->id, $typeelement);
 		$num = count($action_arr);
@@ -1078,7 +1079,15 @@ class FormAgefodd extends Form {
 				$userstatic->id = $action->author->id;
 				$userstatic->firstname = $action->author->firstname;
 				$userstatic->lastname = $action->author->lastname;
-				print '<td>' . $userstatic->getElementUrl($action->socid, 'societe', 1) . '</td>';
+				
+				$socurl='';
+				$socstatic=new Societe($this->db);
+				if (!empty($action->socid)) {
+					$socstatic->fetch($action->socid);
+					$socurl=$socstatic->getNomUrl(1);
+				}
+				
+				print '<td>' . $socurl . '</td>';
 				print '<td>' . $userstatic->getNomUrl(1) . '</td>';
 				print '</tr>';
 			}
