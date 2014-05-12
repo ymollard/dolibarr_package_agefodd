@@ -3161,13 +3161,13 @@ class Agsession extends CommonObject {
 		
 		$sql .= ") VALUES (";
 		
-		$sql .= " " . (! isset($this->fk_soc_trainee) ? 'NULL' : "'" . $this->fk_soc_trainee . "'") . ",";
-		$sql .= " " . (! isset($this->fk_session_agefodd) ? 'NULL' : "'" . $this->fk_session_agefodd . "'") . ",";
+		$sql .= " " . (! isset($this->fk_soc_trainee) ? 'NULL' : $this->fk_soc_trainee ) . ",";
+		$sql .= " " . (! isset($this->fk_session_agefodd) ? 'NULL' : $this->fk_session_agefodd ) . ",";
 		$sql .= " " . (! isset($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_ask_OPCA) . "'") . ",";
-		$sql .= " " . (! isset($this->is_date_ask_OPCA) ? 'NULL' : "'" . $this->is_date_ask_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->is_OPCA) ? 'NULL' : "'" . $this->is_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->fk_soc_OPCA) ? 'NULL' : "'" . $this->fk_soc_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->fk_socpeople_OPCA) ? 'NULL' : "'" . $this->fk_socpeople_OPCA . "'") . ",";
+		$sql .= " " . (empty($this->is_date_ask_OPCA) ? '0' :$this->is_date_ask_OPCA ) . ",";
+		$sql .= " " . (empty($this->is_OPCA) ? '0' : $this->is_OPCA ) . ",";
+		$sql .= " " . (! isset($this->fk_soc_OPCA) ? 'NULL' :  $this->fk_soc_OPCA ) . ",";
+		$sql .= " " . (empty($this->fk_socpeople_OPCA) ? 'NULL' :  $this->fk_socpeople_OPCA ) . ",";
 		$sql .= " " . (! isset($this->num_OPCA_soc) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_soc) . "'") . ",";
 		$sql .= " " . (! isset($this->num_OPCA_file) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_file) . "'") . ",";
 		$sql .= " " . $user->id . ",";
@@ -3175,6 +3175,7 @@ class Agsession extends CommonObject {
 		$sql .= " " . $user->id . "";
 		
 		$sql .= ")";
+		
 		
 		$this->db->begin();
 		
@@ -3254,10 +3255,10 @@ class Agsession extends CommonObject {
 		$sql .= " fk_soc_trainee=" . (isset($this->fk_soc_trainee) ? $this->fk_soc_trainee : "null") . ",";
 		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";
 		$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
-		$sql .= " is_date_ask_OPCA=" . (isset($this->is_date_ask_OPCA) ? "'" . $this->db->escape($this->is_date_ask_OPCA) . "'" : "null") . ",";
-		$sql .= " is_OPCA=" . (isset($this->is_OPCA) ? "'" . $this->db->escape($this->is_OPCA) . "'" : "null") . ",";
-		$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) ? "'" . $this->db->escape($this->fk_soc_OPCA) . "'" : "null") . ",";
-		$sql .= " fk_socpeople_OPCA=" . (isset($this->fk_socpeople_OPCA) ? "'" . $this->db->escape($this->fk_socpeople_OPCA) . "'" : "null") . ",";
+		$sql .= " is_date_ask_OPCA=" . (!empty($this->is_date_ask_OPCA) ?  $this->db->escape($this->is_date_ask_OPCA)  : "0") . ",";
+		$sql .= " is_OPCA=" . (!empty($this->is_OPCA) ?  $this->db->escape($this->is_OPCA)  : "0") . ",";
+		$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) ? $this->db->escape($this->fk_soc_OPCA) : "null") . ",";
+		$sql .= " fk_socpeople_OPCA=" . (!empty($this->fk_socpeople_OPCA) ? $this->db->escape($this->fk_socpeople_OPCA) : "null") . ",";
 		$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";
 		$sql .= " num_OPCA_file=" . (isset($this->num_OPCA_file) ? "'" . $this->db->escape($this->num_OPCA_file) . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . "";

@@ -45,6 +45,18 @@ $id = GETPOST('id', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $stag_update_x = GETPOST('stag_update_x', 'alpha');
 $stag_add_x = GETPOST('stag_add_x', 'alpha');
+$stag_remove_x = GETPOST('stag_remove', 'alpha');
+$modstagid = GETPOST('modstagid', 'int');
+$newstag = GETPOST('newstag');
+
+$fk_soc_requester=GETPOST('fk_soc_requester', 'int');
+if ($fk_soc_requester<0) {
+	$fk_soc_requester=0;
+}
+$fk_soc_link=GETPOST('fk_soc_link', 'int');
+if ($fk_soc_link<0) {
+	$fk_soc_link=0;
+}
 
 if ($action == 'edit' && $user->rights->agefodd->creer) {
 	
@@ -55,15 +67,16 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		
 		$agfsta->id = GETPOST('stagerowid', 'int');
 		$agfsta->fk_session_agefodd = GETPOST('sessid', 'int');
-		$agfsta->fk_soc_link = GETPOST('fk_soc_link', 'int');
-		$agfsta->fk_soc_requester = GETPOST('fk_soc_requester', 'int');
+		$agfsta->fk_soc_link = $fk_soc_link;
+		$agfsta->fk_soc_requester = $fk_soc_requester;
 		$agfsta->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agfsta->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
 		
 		if ($agfsta->update($user) > 0) {
 			$redirect = true;
-			if ($agf->fetch(GETPOST('sessid', 'int'))) {
+			$result = $agf->fetch(GETPOST('sessid', 'int'));
+			if ($result > 0) {
 				
 				// TODO : si session inter => ajout des infos OPCA dans la table
 				if ($agf->type_session == 1) {
@@ -86,14 +99,16 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 					$agf->num_OPCA_file = GETPOST('numOPCAFile', 'alpha');
 					
 					if ($agf->id_opca_trainee > 0) {
-						if ($agf->updateInfosOpca($user)) {
+						$result = $agf->updateInfosOpca($user);
+						if ($result > 0) {
 							setEventMessage($langs->trans('Save'), 'mesgs');
 						} else {
 							setEventMessage($agf->error, 'errors');
 							$redirect = false;
 						}
 					} else {
-						if ($agf->saveInfosOpca($user)) {
+						$result = $agf->saveInfosOpca($user);
+						if ($result > 0) {
 							setEventMessage($langs->trans('Save'), 'mesgs');
 						} else {
 							setEventMessage($agf->error, 'errors');
@@ -105,7 +120,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 				setEventMessage($agf->error, 'errors');
 			}
 			if ($redirect) {
-				Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&msg=1&id=" . $id);
+				Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 				exit();
 			}
 		} else {
@@ -117,9 +132,11 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		
 		$agf = new Agefodd_session_stagiaire($db);
 		
+		
+		
 		$agf->fk_session_agefodd = GETPOST('sessid', 'int');
-		$agf->fk_soc_link = GETPOST('fk_soc_link', 'int');
-		$agf->fk_soc_requester = GETPOST('fk_soc_requester', 'int');
+		$agf->fk_soc_link = $fk_soc_link;
+		$agf->fk_soc_requester = $fk_soc_requester;
 		$agf->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agf->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agf->status_in_session = GETPOST('stagiaire_session_status', 'int');
@@ -127,7 +144,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		$result = $agf->create($user);
 		
 		if ($result > 0) {
-			Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -147,7 +164,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 	$result = $agf->delete($user);
 	
 	if ($result > 0) {
-		Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 		exit();
 	} else {
 		setEventMessage($agf->error, 'errors');
@@ -158,7 +175,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
  * Action update info OPCA
 */
 if ($action == 'update_subrogation' && $user->rights->agefodd->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$error = 0;
 		
 		$agf = new Agsession($db);
@@ -194,18 +211,18 @@ if ($action == 'update_subrogation' && $user->rights->agefodd->creer) {
 				$result = $agf->update($user);
 				if ($result > 0) {
 					setEventMessage($langs->trans('Save'), 'mesgs');
-					if ($_POST ['saveandclose'] != '') {
+					if ($_POST['saveandclose'] != '') {
 						
-						Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+						Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 					} else {
-						Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
+						Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 					}
 					exit();
 				} else {
 					setEventMessage($agf->error, 'errors');
 				}
 			} else {
-				if ($_POST ['saveandclose'] != '') {
+				if ($_POST['saveandclose'] != '') {
 					$action = '';
 				} else {
 					$action = 'edit_subrogation';
@@ -228,7 +245,7 @@ if ($action == 'updatetraineestatus') {
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		} else {
-			Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
 		}
 	}
@@ -256,12 +273,30 @@ if (! empty($id)) {
 	if ($action == 'edit') {
 		
 		// Put user on the right action block after reload
-		if (! empty($_POST ["modstagid"]) && $action == 'edit') {
+		if (! empty($modstagid) && $action == 'edit') {
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
 							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;
-		    				 $(documentBody).animate({scrollTop: $("#modstagid' . $_POST ["modstagid"] . '").offset().top}, 500,\'easeInOutCubic\');
+							$(documentBody).animate({scrollTop: $("#modstagid' . $modstagid . '").offset().top}, 500,\'easeInOutCubic\');
+						});
+					});
+					</script> ';
+		} elseif (! empty($newstag)) {
+			print '<script type="text/javascript">
+					jQuery(document).ready(function () {
+						jQuery(function() {
+							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;
+							$(documentBody).animate({scrollTop: $("#newstag").offset().top}, 500,\'easeInOutCubic\');
+						});
+					});
+					</script> ';
+		} else {
+			print '<script type="text/javascript">
+					jQuery(document).ready(function () {
+						jQuery(function() {
+							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;
+							$(documentBody).animate({scrollTop: $("#modsta").offset().top}, 500,\'easeInOutCubic\');
 						});
 					});
 					</script> ';
@@ -270,9 +305,9 @@ if (! empty($id)) {
 		/*
 		 * Confirm delete
 		*/
-		if (GETPOST('stag_remove_x')) {
+		if ($stag_remove_x) {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -285,7 +320,7 @@ if (! empty($id)) {
 		$agf->printSessionInfo();
 		
 		print '&nbsp';
-		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options ['options_use_subro_inter'])) {
+		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
 			$agf->type_session = 1;
 		}
 		
@@ -340,6 +375,7 @@ if (! empty($id)) {
 		}
 		
 		print '<div class="tabBar">';
+		print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
 		print '<table class="border" width="100%">';
 		
 		/*
@@ -354,47 +390,46 @@ if (! empty($id)) {
 			for($i = 0; $i < $nbstag; $i ++) {
 				$show_subrogation = '';
 				// Check if it's first consult of fk_soc
-				if (! in_array($stagiaires->lines [$i]->socid, $fk_soc_used)) {
-					$fk_soc_used [$i] = $stagiaires->lines [$i]->socid;
+				if (! in_array($stagiaires->lines[$i]->socid, $fk_soc_used)) {
+					$fk_soc_used[$i] = $stagiaires->lines[$i]->socid;
 					$show_subrogation = true;
 				}
-				if ($stagiaires->lines [$i]->id == $_POST ["modstagid"] && $_POST ["stag_remove_x"])
+				if ($stagiaires->lines[$i]->id == $modstagid && ! empty($stag_remove_x))
 					print '<tr bgcolor="#d5baa8">';
 				else
 					print '<tr>';
-				print '<a name="modstagid' . $stagiaires->lines [$i]->id . '" id="modstagid' . $stagiaires->lines [$i]->id . '"/>';
-				print '<form name="obj_update_' . $i . '" action="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
-				print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
-				print '<input type="hidden" name="sessid" value="' . $stagiaires->lines [$i]->sessid . '">' . "\n";
-				print '<input type="hidden" name="stagerowid" value="' . $stagiaires->lines [$i]->stagerowid . '">' . "\n";
-				print '<input type="hidden" name="modstagid" value="' . $stagiaires->lines [$i]->id . '">' . "\n";
-				print '<input type="hidden" name="fk_soc_trainee" value="' . $stagiaires->lines [$i]->socid . '">' . "\n";
-				print '<td width="3%" align="center">' . ($i + 1) . '</td>';
 				
-				if ($stagiaires->lines [$i]->id == $_POST ["modstagid"] && ! $_POST ["stag_remove_x"]) {
+				print '<td width="3%" align="center"><a name="modsta" id="modsta"></a><a name="modstagid' . $stagiaires->lines[$i]->id . '" id="modstagid' . $stagiaires->lines[$i]->id . '"></a>' . ($i + 1) . '</td>';
+				
+				if ($stagiaires->lines[$i]->id == $modstagid && empty($stag_remove_x)) {
 					print '<td colspan="2" >';
+					print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+					print '<input type="hidden" name="sessid" value="' . $stagiaires->lines[$i]->sessid . '">' . "\n";
+					print '<input type="hidden" name="stagerowid" value="' . $stagiaires->lines[$i]->stagerowid . '">' . "\n";
+					print '<input type="hidden" name="modstagid" value="' . $stagiaires->lines[$i]->id . '">' . "\n";
+					print '<input type="hidden" name="fk_soc_trainee" value="' . $stagiaires->lines[$i]->socid . '">' . "\n";
 					print '<label for="' . $htmlname . '" style="width:45%; display: inline-block;margin-left:5px;">' . $langs->trans('AgfSelectStagiaire') . '</label>';
 					
-					print $formAgefodd->select_stagiaire($stagiaires->lines [$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')) OR (s.rowid=' . $stagiaires->lines [$i]->id . ')');
+					print $formAgefodd->select_stagiaire($stagiaires->lines[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')) OR (s.rowid=' . $stagiaires->lines[$i]->id . ')');
 					
 					if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
-						print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', $stagiaires->lines [$i]->status_in_session);
+						print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', $stagiaires->lines[$i]->status_in_session);
 					} else {
-						print $stagiaires->LibStatut($stagiaires->lines [$i]->status_in_session, 4);
-						print '<input type="hidden" name="stagiaire_session_status" value="' . $stagiaires->lines [$i]->status_in_session . '">';
+						print $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
+						print '<input type="hidden" name="stagiaire_session_status" value="' . $stagiaires->lines[$i]->status_in_session . '">';
 					}
 					
 					print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';
-					print $form->select_company($stagiaires->lines [$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0);
+					print $form->select_company($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0);
 					print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
-					print $form->select_company($stagiaires->lines [$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0);
+					print $form->select_company($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0);
 					/*
 					 * Manage trainee Funding for inter-enterprise
 					* Display only if first of the thridparty list
 					*
 					*/
-					if ($agf->type_session == 1 && ! $_POST ['cancel'] && $show_subrogation && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-						$agf->getOpcaForTraineeInSession($stagiaires->lines [$i]->socid, $agf->id);
+					if ($agf->type_session == 1 && ! $_POST['cancel'] && $show_subrogation && ! empty($conf->global->AGF_MANAGE_OPCA)) {
+						$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid, $agf->id);
 						print '<table class="noborder noshadow" width="100%" id="form_subrogation">';
 						print '<tr class="noborder"><td  class="noborder" width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
 						if ($agf->is_OPCA == 1) {
@@ -407,7 +442,7 @@ if (! empty($id)) {
 						print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 						print '	<td>';
 						$events = array ();
-						$events [] = array (
+						$events[] = array (
 								'method' => 'getContacts',
 								'url' => dol_buildpath('/core/ajax/contacts.php', 1),
 								'htmlname' => 'fksocpeopleOPCA',
@@ -416,17 +451,6 @@ if (! empty($id)) {
 								) 
 						);
 						print $form->select_company($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 1, 1, 0, $events);
-						
-						// Print biller choice;
-						$socbiller = new Societe($db);
-						$socbiller->fetch($stagiaires->lines [$i]->socid);
-						// var_dump($socbiller);
-						if (! empty($socbiller->id) && ! empty($socbiller->array_options ['options_ts_payeur'])) {
-							$socbiller->fetch($socbiller->array_options ['options_ts_payeur']);
-							if (! empty($socbiller->id)) {
-								print $langs->trans('Payeur recommandé :') . $socbiller->getNomUrl(1);
-							}
-						}
 						print '</td></tr>';
 						
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
@@ -467,7 +491,7 @@ if (! empty($id)) {
 						print '<div class="info">' . $langs->trans('AgfInfoEditSubrogation') . '</div>';
 					
 					if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
-						print '</td><td valign="top">' . $formAgefodd->select_type_stagiaire($stagiaires->lines [$i]->typeid, 'stagiaire_type', '', 1);
+						print '</td><td valign="top">' . $formAgefodd->select_type_stagiaire($stagiaires->lines[$i]->typeid, 'stagiaire_type', '', 1);
 					}
 					if ($user->rights->agefodd->modifier) {
 						print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="stag_update" alt="' . $langs->trans("AgfModSave") . '" ">';
@@ -476,22 +500,22 @@ if (! empty($id)) {
 				} else {
 					print '<td width="30%">';
 					// info trainee
-					if (strtolower($stagiaires->lines [$i]->nom) == "undefined") {
+					if (strtolower($stagiaires->lines[$i]->nom) == "undefined") {
 						print $langs->trans("AgfUndefinedStagiaire");
 					} else {
-						$trainee_info = '<a href="' . dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $stagiaires->lines [$i]->id . '">';
+						$trainee_info = '<a href="' . dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $stagiaires->lines[$i]->id . '">';
 						$trainee_info .= img_object($langs->trans("ShowContact"), "contact") . ' ';
-						$trainee_info .= strtoupper($stagiaires->lines [$i]->nom) . ' ' . ucfirst($stagiaires->lines [$i]->prenom) . '</a>';
+						$trainee_info .= strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom) . '</a>';
 						$contact_static = new Contact($db);
-						$contact_static->civilite_id = $stagiaires->lines [$i]->civilite;
+						$contact_static->civilite_id = $stagiaires->lines[$i]->civilite;
 						$trainee_info .= ' (' . $contact_static->getCivilityLabel() . ')';
 						
 						if ($agf->type_session == 1 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 							print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
-							print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines [$i]->status_in_session, 4);
+							print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 							print '</td></tr>';
 							
-							$agf->getOpcaForTraineeInSession($stagiaires->lines [$i]->socid, $agf->id);
+							$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid, $agf->id);
 							print '<tr class="noborder"><td  class="noborder" width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
 							if ($agf->is_OPCA == 1) {
 								$chckisOPCA = 'checked="checked"';
@@ -532,40 +556,40 @@ if (! empty($id)) {
 							
 							print '</table>';
 						} else {
-							print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines [$i]->status_in_session, 4);
+							print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 						}
 					}
 					print '</td>';
 					print '<td width="20%" style="border-left: 0px;">';
 					// Display thridparty link with trainee
-					if ($stagiaires->lines [$i]->socid) {
-						print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $stagiaires->lines [$i]->socid . '">';
+					if ($stagiaires->lines[$i]->socid) {
+						print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $stagiaires->lines[$i]->socid . '">';
 						print img_object($langs->trans("ShowCompany"), "company");
-						if (! empty($stagiaires->lines [$i]->soccode))
-							print ' ' . $stagiaires->lines [$i]->soccode . '-';
-						print ' ' . dol_trunc($stagiaires->lines [$i]->socname, 20) . '</a>';
+						if (! empty($stagiaires->lines[$i]->soccode))
+							print ' ' . $stagiaires->lines[$i]->soccode . '-';
+						print ' ' . dol_trunc($stagiaires->lines[$i]->socname, 20) . '</a>';
 					} else {
 						print '&nbsp;';
 					}
 					if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
-						print '</td><td width="20%" style="border-left: 0px;">' . stripslashes($stagiaires->lines [$i]->type);
+						print '</td><td width="20%" style="border-left: 0px;">' . stripslashes($stagiaires->lines[$i]->type);
 					}
 					print '</td>';
 					
 					// Infos thirdparty linked for doc
 					print '<td style="border-left: 0px;">';
-					if (! empty($stagiaires->lines [$i]->fk_soc_link)) {
+					if (! empty($stagiaires->lines[$i]->fk_soc_link)) {
 						$socstatic = new Societe($db);
-						$socstatic->fetch($stagiaires->lines [$i]->fk_soc_link);
+						$socstatic->fetch($stagiaires->lines[$i]->fk_soc_link);
 						if (! empty($socstatic->id)) {
 							print $langs->trans('AgfTraineeSocDocUse') . ':' . $socstatic->getNomUrl(1);
 						}
 					} else {
 						print '&nbsp;';
 					}
-					if (! empty($stagiaires->lines [$i]->fk_soc_requester)) {
+					if (! empty($stagiaires->lines[$i]->fk_soc_requester)) {
 						$socstatic = new Societe($db);
-						$socstatic->fetch($stagiaires->lines [$i]->fk_soc_requester);
+						$socstatic->fetch($stagiaires->lines[$i]->fk_soc_requester);
 						if (! empty($socstatic->id)) {
 							print '<br>' . $langs->trans('AgfTypeRequester') . ':' . $socstatic->getNomUrl(1);
 						}
@@ -576,27 +600,26 @@ if (! empty($id)) {
 					
 					print '<td>';
 					if ($user->rights->agefodd->modifier) {
-						print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="stag_edit" alt="' . $langs->trans("AgfModSave") . '">';
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modstagid=' . $stagiaires->lines[$i]->id . '">' . img_picto($langs->trans("Save"), 'edit') . '</a>';
 					}
 					print '&nbsp;';
 					if ($user->rights->agefodd->creer) {
-						print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="stag_remove" alt="' . $langs->trans("AgfModSave") . '">';
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modstagid=' . $stagiaires->lines[$i]->id . '&stag_remove=1&stagerowid=' . $stagiaires->lines[$i]->stagerowid . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
 					}
 					print '</td>' . "\n";
 				}
-				print '</form>' . "\n";
+				
 				print '</tr>' . "\n";
 			}
 		}
 		
 		// New trainee
-		if (isset($_POST ["newstag"])) {
+		if (! empty($newstag)) {
 			print '<tr>';
-			print '<form name="obj_update_' . ($i + 1) . '" action="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
-			print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
-			print '<input type="hidden" name="stagerowid" value="' . $stagiaires->lines [$i]->stagerowid . '">' . "\n";
-			print '<td width="20px" align="center">' . ($i + 1) . '</td>';
+			print '<input type="hidden" name="stagerowid" value="' . $stagiaires->lines[$i]->stagerowid . '">' . "\n";
+			print '<td width="20px" align="center"><a name="newstag" id="newstag"></a>' . ($i + 1) . '</td>';
 			print '<td colspan="2" width="500px">';
 			print $formAgefodd->select_stagiaire('', 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')', 1);
 			
@@ -627,13 +650,14 @@ if (! empty($id)) {
 		}
 		
 		print '</table>';
-		if (! isset($_POST ["newstag"])) {
+		print '</form>' . "\n";
+		if (empty($newstag)) {
 			print '</div>';
 			print '<br>';
+			print '<form name="newstag" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
-			print '<form name="newstag" action="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
-			print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="action" value="edit">' . "\n";
 			print '<input type="hidden" name="newstag" value="1">' . "\n";
 			print '<input type="submit" class="butAction" value="' . $langs->trans("AgfStagiaireAdd") . '">';
@@ -643,11 +667,11 @@ if (! empty($id)) {
 			} else {
 				$param_socid = '';
 			}
-			print '<a class="butAction" href="../trainee/card.php?action=create' . $param_socid . '&session_id=' . $id . '&url_back=' . urlencode($_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id) . '" title="' . $langs->trans('AgfNewParticipantLinkInfo') . '">' . $langs->trans('AgfNewParticipant') . '</a>';
+			print '<a class="butAction" href="../trainee/card.php?action=create' . $param_socid . '&session_id=' . $id . '&url_back=' . urlencode($_SERVER['PHP_SELF'] . '?action=edit&id=' . $id) . '" title="' . $langs->trans('AgfNewParticipantLinkInfo') . '">' . $langs->trans('AgfNewParticipant') . '</a>';
 			
 			if ($conf->global->AGF_MANAGE_OPCA) {
 				if ($user->rights->agefodd->creer && ! $agf->type_session > 0) {
-					print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit_subrogation&id=' . $id . '">' . $langs->trans('AgfModifySubrogation') . '</a>';
+					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit_subrogation&id=' . $id . '">' . $langs->trans('AgfModifySubrogation') . '</a>';
 				} else {
 					if ($agf->type_session)
 						$title = ' / ' . $langs->trans('AgfAvailableForIntraOnly');
@@ -658,21 +682,20 @@ if (! empty($id)) {
 			print '<br><br>';
 			foreach ( $stagiaires->labelstatut_short as $statuskey => $statuslabelshort ) {
 				if ($statuskey == 0 || $statuskey == 2 || $statuskey == 3 || $statuskey == 5 || $statuskey == 6) {
-					print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=updatetraineestatus&id=' . $id . '&statusinsession=' . $statuskey . '" title="' . $langs->trans('AgfSetTrainneStatusTo') . ' ' . $statuslabelshort . '">' . $langs->trans('AgfSetTrainneStatusTo') . ' ' . $statuslabelshort . '</a>';
+					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=updatetraineestatus&id=' . $id . '&statusinsession=' . $statuskey . '" title="' . $langs->trans('AgfSetTrainneStatusTo') . ' ' . $statuslabelshort . '">' . $langs->trans('AgfSetTrainneStatusTo') . ' ' . $statuslabelshort . '</a>';
 				}
 			}
 			print '</td></tr>';
-			print '</form>';
 		} else {
 			print '<br>';
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
-			print '<a class="butAction" href="../trainee/card.php?action=create' . $param_socid . '&session_id=' . $id . '&url_back=' . urlencode($_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id) . '" title="' . $langs->trans('AgfNewParticipantLinkInfo') . '">' . $langs->trans('AgfNewParticipant') . '</a>';
+			print '<a class="butAction" href="../trainee/card.php?action=create' . $param_socid . '&session_id=' . $id . '&url_back=' . urlencode($_SERVER['PHP_SELF'] . '?action=edit&id=' . $id) . '" title="' . $langs->trans('AgfNewParticipantLinkInfo') . '">' . $langs->trans('AgfNewParticipant') . '</a>';
 			print '</td></tr>';
 			print '</table>';
 		}
-		
 		print '</table>';
+		print '</form>';
 		print '</div>';
 	} else {
 		// Display View mode
@@ -686,7 +709,7 @@ if (! empty($id)) {
 		
 		print '&nbsp';
 		
-		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options ['options_use_subro_inter'])) {
+		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
 			$agf->type_session = 1;
 		}
 		
@@ -700,8 +723,8 @@ if (! empty($id)) {
 				print_barre_liste($langs->trans("AgfGestSubrocation"), "", "", "", "", "", '', 0);
 				print '<div class="tabBar">';
 				
-				print '<form name="add" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-				print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
+				print '<form name="add" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+				print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 				print '<input type="hidden" name="action" value="update_subrogation">';
 				print '<input type="hidden" name="id" value="' . $agf->id . '">';
 				print '<table class="border" width="100%">';
@@ -714,7 +737,7 @@ if (! empty($id)) {
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 				print '	<td>';
 				$events = array ();
-				$events [] = array (
+				$events[] = array (
 						'method' => 'getContacts',
 						'url' => dol_buildpath('/core/ajax/contacts.php', 1),
 						'htmlname' => 'fksocpeopleOPCA',
@@ -841,22 +864,22 @@ if (! empty($id)) {
 				print '<td witdth="20px" align="center">' . ($i + 1) . '</td>';
 				print '<td width="400px"style="border-right: 0px;">';
 				// Infos stagiaires
-				if (strtolower($stagiaires->lines [$i]->nom) == "undefined") {
+				if (strtolower($stagiaires->lines[$i]->nom) == "undefined") {
 					print $langs->trans("AgfUndefinedStagiaire");
 				} else {
-					$trainee_info = '<a href="' . dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $stagiaires->lines [$i]->id . '">';
+					$trainee_info = '<a href="' . dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $stagiaires->lines[$i]->id . '">';
 					$trainee_info .= img_object($langs->trans("ShowContact"), "contact") . ' ';
-					$trainee_info .= strtoupper($stagiaires->lines [$i]->nom) . ' ' . ucfirst($stagiaires->lines [$i]->prenom) . '</a>';
+					$trainee_info .= strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom) . '</a>';
 					$contact_static = new Contact($db);
-					$contact_static->civilite_id = $stagiaires->lines [$i]->civilite;
+					$contact_static->civilite_id = $stagiaires->lines[$i]->civilite;
 					$trainee_info .= ' (' . $contact_static->getCivilityLabel() . ')';
 					
 					if ($agf->type_session == 1 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 						print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
-						print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines [$i]->status_in_session, 4);
+						print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 						print '</td></tr>';
 						
-						$agf->getOpcaForTraineeInSession($stagiaires->lines [$i]->socid, $agf->id);
+						$agf->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid, $agf->id);
 						print '<tr class="noborder"><td  class="noborder" width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
 						if ($agf->is_OPCA == 1) {
 							$chckisOPCA = 'checked="checked"';
@@ -893,28 +916,28 @@ if (! empty($id)) {
 						
 						print '</table>';
 					} else {
-						print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines [$i]->status_in_session, 4);
+						print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 					}
 				}
 				print '</td>';
 				print '<td style="border-left: 0px; border-right: 0px;">';
 				// Infos organisme de rattachement
-				if ($stagiaires->lines [$i]->socid) {
-					print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $stagiaires->lines [$i]->socid . '">';
+				if ($stagiaires->lines[$i]->socid) {
+					print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $stagiaires->lines[$i]->socid . '">';
 					print img_object($langs->trans("ShowCompany"), "company");
-					if (! empty($stagiaires->lines [$i]->soccode))
-						print ' ' . $stagiaires->lines [$i]->soccode . '-';
-					print ' ' . dol_trunc($stagiaires->lines [$i]->socname, 20) . '</a>';
+					if (! empty($stagiaires->lines[$i]->soccode))
+						print ' ' . $stagiaires->lines[$i]->soccode . '-';
+					print ' ' . dol_trunc($stagiaires->lines[$i]->socname, 20) . '</a>';
 				} else {
 					print '&nbsp;';
 				}
 				print '</td>';
 				print '<td style="border-left: 0px;">';
 				// Infos mode de financement
-				if (($stagiaires->lines [$i]->type) && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
+				if (($stagiaires->lines[$i]->type) && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 					print '<div class=adminaction>';
 					print $langs->trans("AgfStagiaireModeFinancement");
-					print '-<span>' . stripslashes($stagiaires->lines [$i]->type) . '</span></div>';
+					print '-<span>' . stripslashes($stagiaires->lines[$i]->type) . '</span></div>';
 				} else {
 					print '&nbsp;';
 				}
@@ -922,18 +945,18 @@ if (! empty($id)) {
 				
 				// Infos thirdparty linked for doc
 				print '<td style="border-left: 0px;">';
-				if (! empty($stagiaires->lines [$i]->fk_soc_link)) {
+				if (!empty($stagiaires->lines[$i]->fk_soc_link)) {
 					$socstatic = new Societe($db);
-					$socstatic->fetch($stagiaires->lines [$i]->fk_soc_link);
+					$socstatic->fetch($stagiaires->lines[$i]->fk_soc_link);
 					if (! empty($socstatic->id)) {
 						print $langs->trans('AgfTraineeSocDocUse') . ':' . $socstatic->getNomUrl(1);
 					}
 				} else {
 					print '&nbsp;';
 				}
-				if (! empty($stagiaires->lines [$i]->fk_soc_requester)) {
+				if (!empty($stagiaires->lines[$i]->fk_soc_requester)) {
 					$socstatic = new Societe($db);
-					$socstatic->fetch($stagiaires->lines [$i]->fk_soc_requester);
+					$socstatic->fetch($stagiaires->lines[$i]->fk_soc_requester);
 					if (! empty($socstatic->id)) {
 						print '<br>' . $langs->trans('AgfTypeRequester') . ':' . $socstatic->getNomUrl(1);
 					}
@@ -958,13 +981,13 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" && (! empty($agf->id))) {
 	if ($user->rights->agefodd->creer && $agf->status != 4) {
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	}
 	
 	if ($user->rights->agefodd->creer && ! $agf->type_session > 0) {
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit_subrogation&id=' . $id . '">' . $langs->trans('AgfModifySubrogation') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit_subrogation&id=' . $id . '">' . $langs->trans('AgfModifySubrogation') . '</a>';
 	} else {
 		if ($agf->type_session)
 			$title = ' / ' . $langs->trans('AgfAvailableForIntraOnly');
