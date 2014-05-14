@@ -392,7 +392,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
 	foreach ( $obj_peda->lines as $line ) {
-		$art1 .= "##	" . $line->intitule . "\n";
+		$art1 .= "-	" . $line->intitule . "\n";
 	}
 	$art1 .= $langs->trans('AgfConvArt1_5') . "\n";
 	$art1 .= $langs->trans('AgfConvArt1_6') . "\n";
@@ -561,13 +561,22 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$options_trainee_array_id = array ();
 	
 	$stagiaires = new Agefodd_session_stagiaire($db);
-	$nbstag = $stagiaires->fetch_stagiaire_per_session($sessid);
+	//Trainee link to thhe company convention
+	$stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
 	foreach ( $stagiaires->lines as $traine_line ) {
-		$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
-		$options_trainee_array_id [] = $traine_line->stagerowid;
+		//$options_trainee_array_selected [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+		$options_trainee_array_selected_id [] = $traine_line->stagerowid;
 	}
 	
-	print $formAgefodd->multiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_id);
+	$stagiaires->fetch_stagiaire_per_session($sessid);
+	foreach ( $stagiaires->lines as $traine_line ) {
+		//if (!array_key_exists($traine_line->stagerowid,$options_trainee_array_selected)) {
+		$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+		//$options_trainee_array_id [] = $traine_line->stagerowid;
+		//}
+	}
+	
+	print $formAgefodd->multiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected_id);
 	print '</td></tr>';
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';

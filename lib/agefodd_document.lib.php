@@ -17,13 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 /**
  * \file agefodd/lib/agefodd_document.lib.php
  * \ingroup agefodd
  * \brief Some display function
  */
 function show_conv($file, $socid, $nom_courrier) {
+	
 	global $langs, $conf, $db, $id, $form;
+	
+	require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
+	require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
+	require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 	
 	$model = $file;
 	$filename = $file;
@@ -41,19 +48,30 @@ function show_conv($file, $socid, $nom_courrier) {
 	$invoice_array = array ();
 	foreach ( $agf_comid->lines as $line ) {
 		if ($line->element_type == 'order' && ! empty($line->comref)) {
-			$order_array [$line->fk_element] = $line->comref;
+			$order = new Commande($db);
+			$order->fetch($line->fk_element);
+			if (($order->statut != - 1) && ($order->statut != 0)) { 
+				$order_array [$line->fk_element] = $line->comref;
+			}
 		}
 		if ($line->element_type == 'propal' && ! empty($line->propalref)) {
-			$propal_array [$line->fk_element] = $line->propalref;
+			$propal = new Propal($db);
+			$propal->fetch($line->fk_element);
+			if (($propal->statut != 3) && ($propal->statut != 0)) {
+				$propal_array [$line->fk_element] = $line->propalref;
+			}
 		}
 		if ($line->element_type == 'invoice' && ! empty($line->facnumber)) {
-			$invoice_array [$line->fk_element] = $line->facnumber;
+			$invoice = new Facture($db);
+			$invoice->fetch($line->fk_element);
+			if ($invoice->statut != 0) {
+				$invoice_array [$line->fk_element] = $line->facnumber;
+			}
 		}
 	}
-	
-	
-	if (! empty($conf->global->MAIN_MODULE_COMMANDE)) {
-		if (count($propal_array) > 0) {
+
+	//If order module is enabled, then we check if use is required
+	if (! empty($conf->global->MAIN_MODULE_COMMANDE) && count($propal_array)==0) {
 			if ((count($order_array) == 0) && (count($invoice_array) == 0) && empty($conf->global->AGF_USE_FAC_WITHOUT_ORDER)) {
 				$mess = $form->textwithpicto('', $langs->trans("AgfFactureFacNoBonHelp"), 1, 'help');
 				$continue = false;
@@ -64,9 +82,8 @@ function show_conv($file, $socid, $nom_courrier) {
 				$mess = $form->textwithpicto('', $langs->trans("AgfFactureFacNoBonHelp"), 1, 'help');
 				$continue = false;
 			}
-		}
 	} else {
-		if (count($propal_array) == 0) {
+		if (count($propal_array) == 0 && count($invoice_array)==0) {
 			$mess = $form->textwithpicto('', $langs->trans("AgfFacturePropalHelp"), 1, 'help');
 			$continue = false;
 		}
