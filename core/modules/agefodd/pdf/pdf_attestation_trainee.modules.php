@@ -260,7 +260,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 12);
 				$hauteur = 0;
 				for($y = 0; $y < count($agf_op->lines); $y ++) {
-					$newY = $newY + $hauteur;
+					$newY = $pdf->getY() + 1;
 					$pdf->SetXY($this->marge_gauche + 62, $pdf->GetY());
 					$width = 160;
 					$StringWidth = $pdf->GetStringWidth($agf_op->lines [$y]->intitule);

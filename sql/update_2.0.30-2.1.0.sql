@@ -25,11 +25,11 @@ UPDATE llx_agefodd_training_admlevel as upd SET fk_parent_level=ori.rowid FROM l
 --MySQL
 UPDATE llx_agefodd_training_admlevel as ori, llx_agefodd_training_admlevel as upd SET upd.fk_parent_level=ori.rowid WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training;
 
-ALTER TABLE llx_agefodd_stagiaire ADD COLUMN import_key	varchar(14);
-ALTER TABLE llx_agefodd_stagiaire_certif ADD COLUMN import_key	varchar(14);
-ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN import_key	varchar(14);
+ALTER TABLE llx_agefodd_stagiaire ADD COLUMN import_key varchar(14);
+ALTER TABLE llx_agefodd_stagiaire_certif ADD COLUMN import_key varchar(14);
+ALTER TABLE llx_agefodd_session_stagiaire ADD COLUMN import_key varchar(14);
 ALTER TABLE llx_agefodd_stagiaire ADD COLUMN date_birth datetime default NULL AFTER mail;
-ALTER TABLE llx_agefodd_stagiaire ADD COLUMN place_birth  varchar(100) default NULL AFTER date_birth;
+ALTER TABLE llx_agefodd_stagiaire ADD COLUMN place_birth varchar(100) default NULL AFTER date_birth;
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_certificate_type (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
