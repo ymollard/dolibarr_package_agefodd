@@ -48,6 +48,8 @@ $arch = GETPOST('arch', 'int');
 
 $url_return = GETPOST('url_return', 'alpha');
 
+$same_adress_customer=GETPOST('same_adress_customer','int');
+
 /*
  * Actions delete
 */
@@ -143,6 +145,9 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 */
 
 if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer) {
+	
+	$error=0;
+	
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_place($db);
 		
@@ -151,14 +156,40 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 		$agf->notes = GETPOST('notes', 'alpha');
 		$agf->acces_site = GETPOST('acces_site', 'alpha');
 		$agf->note1 = GETPOST('note1', 'alpha');
+		if ($same_adress_customer==-1) {
+			$agf->adresse = GETPOST('adresse', 'alpha');
+			$agf->cp = GETPOST('zipcode', 'alpha');
+			$agf->ville = GETPOST('town', 'alpha');
+			$agf->fk_pays = GETPOST('country_id', 'int');
+			$agf->tel = GETPOST('phone', 'alpha');
+		}
 		$result = $agf->create($user);
+		$idplace=$result;
+		
 		
 		if ($result > 0) {
-			if ($url_return)
-				Header("Location: " . $url_return);
-			else
-				Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $result);
-			exit();
+			if ($same_adress_customer==1) {
+				$result = $agf->fetch($idplace);
+				$result = $agf->import_customer_adress($user);
+				if ($result<0) {
+					setEventMessage($agf->error,'errors');
+					$error++;
+				}
+			}
+				
+			if (empty($error)) {
+				if ($url_return) {
+					if (preg_match('/session\/card.php\?action=create$/', $url_return)) {
+						$url_return.='&place='.$idplace;
+						Header("Location: " . $url_return);
+					} else {
+						Header("Location: " . $url_return);
+					}
+				} else {
+					Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $result);
+				}
+				exit();
+			}
 		} else {
 			setEventMessage($agf->error, 'errors');
 		}
@@ -181,6 +212,27 @@ $form = new Form($db);
  * Action create
 */
 if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
+
+	if ($conf->use_javascript_ajax)
+	{
+		print "\n" . '<script type="text/javascript">
+		$(document).ready(function () {
+	
+			$(".specific_adress").hide();
+	
+			$("input[type=radio][name=same_adress_customer]").change(function() {
+				if($(this).val()==1) {
+					$(".specific_adress").hide();
+				}else {
+					$(".specific_adress").show();
+				}
+			});
+		});
+		';
+		print "\n" . "</script>\n";
+	}
+	
+	
 	$formcompany = new FormCompany($db);
 	print_fiche_titre($langs->trans("AgfCreatePlace"));
 	
@@ -196,7 +248,34 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Company") . '</span></td>';
-	print '<td>' . $form->select_company('', 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 1, 1, 0) . '</td></tr>';
+	print '<td>' . $form->select_company('', 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 1, 1, 0).'</td></tr>';
+	
+	print '<tr><td>'.$langs->trans('AgfImportCustomerAdress').'</td><td>';
+	print '<input type="radio" id="same_adress_customer_yes" name="same_adress_customer" value="1" checked="checked"/> <label for="same_adress_customer_yes">' . $langs->trans('Yes') . '</label>';
+	print '<input type="radio" id="same_adress_customer_no" name="same_adress_customer" value="-1"/> <label for="same_adress_customer_no">' . $langs->trans('no') . '</label>';
+	print '</td></tr>';
+	
+	
+	print '<tr class="specific_adress"><td>' . $langs->trans("Address") . '</td>';
+	print '<td><input name="adresse" class="flat" size="50" value="' . GETPOST('adresse', 'alpha') . '"></td></tr>';
+	
+	print '<tr class="specific_adress"><td>' . $langs->trans('Zip') . '</td><td>';
+	print $formcompany->select_ziptown(GETPOST('zipcode', 'alpha'), 'zipcode', array (
+			'town',
+			'selectcountry_id'
+	), 6) . '</tr>';
+	print '<tr class="specific_adress"><td>' . $langs->trans('Town') . '</td><td>';
+	print $formcompany->select_ziptown(GETPOST('town', 'alpha'), 'town', array (
+			'zipcode',
+			'selectcountry_id'
+	)) . '</td></tr>';
+	
+	print '<tr class="specific_adress"><td>' . $langs->trans("Country") . '</td>';
+	print '<td>' . $form->select_country(GETPOST('country_id', 'int'), 'country_id') . '</td></tr>';
+	
+	print '<tr class="specific_adress"><td>' . $langs->trans("Phone") . '</td>';
+	print '<td><input name="phone" class="flat" size="50" value="' . GETPOST('phone', 'alpha') . '"></td></tr>';
+	
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -229,6 +308,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			
 			// Card in edit mode
 			if ($action == 'edit') {
+				
 				$formcompany = new FormCompany($db);
 				
 				print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '" method="post">' . "\n";
