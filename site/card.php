@@ -186,7 +186,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 						Header("Location: " . $url_return);
 					}
 				} else {
-					Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $result);
+					Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $idplace);
 				}
 				exit();
 			}
