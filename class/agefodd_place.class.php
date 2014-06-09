@@ -564,36 +564,39 @@ class Agefodd_place extends CommonObject {
 		global $conf, $langs;
 		$error = 0;
 		
-		$sql = "SELECT";
-		$sql .= " s.address, s.zip, s.phone, s.town, s.fk_departement, s.fk_pays";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "societe as s";
-		$sql .= " WHERE s.rowid = " . $this->fk_societe;
-		
-		dol_syslog(get_class($this) . "::import_customer_adress sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				$obj = $this->db->fetch_object($resql);
-				$this->adresse = $obj->address;
-				$this->cp = $obj->zip;
-				$this->fk_pays = $obj->fk_pays;
-				$this->ville = $obj->town;
-				$this->tel = $obj->phone;
-				$result = $this->update($user);
-				if ($result > 0) {
-					$this->db->free($resql);
-					return 1;
-				} else {
-					$this->error = "Error " . $this->db->lasterror();
-					dol_syslog(get_class($this) . "::import_customer_adress::update error=" . $agf->error, LOG_ERR);
-					return - 1;
+		if (!empty($this->fk_societe)) {
+			$sql = "SELECT";
+			$sql .= " s.address, s.zip, s.phone, s.town, s.fk_departement, s.fk_pays";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "societe as s";
+			$sql .= " WHERE s.rowid = " . $this->fk_societe;
+			
+			dol_syslog(get_class($this) . "::import_customer_adress sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					$obj = $this->db->fetch_object($resql);
+					$this->adresse = $obj->address;
+					$this->cp = $obj->zip;
+					$this->fk_pays = $obj->fk_pays;
+					$this->ville = $obj->town;
+					$this->tel = $obj->phone;
+					$result = $this->update($user);
+					if ($result<0) {
+						$this->error = "Error " . $this->db->lasterror();
+						dol_syslog(get_class($this) . "::import_customer_adress::update error=" . $agf->error, LOG_ERR);
+						return - 1;
+					}
 				}
+				$this->db->free($resql);
+			
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::import_customer_adress " . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::import_customer_adress " . $this->error, LOG_ERR);
-			return - 1;
 		}
+
+		return 1;
 	}
 	
 	/**
