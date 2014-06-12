@@ -9,6 +9,7 @@ English Dolibarr ChangeLog
 -New : Clone trainer on session clone
 -Fix : [bugs_agefodd #1433] Retreive document attached into session
 -Fix : PDF Attestation by trainee Objectif pédagogique strange output
+-Fix : bugs_agefodd #1453 - Erreur lors de l'attachement d'un OPCA sur un participant
 
 ***** ChangeLog for 2.1.8 compared to 2.1.7 *****
 -New : New permissions on Training catalogue, location (basic (old) permissions apply now sessions) all defaulted to yes (to avoid right problem)

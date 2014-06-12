@@ -3166,7 +3166,7 @@ class Agsession extends CommonObject {
 		$sql .= " " . (! isset($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_ask_OPCA) . "'") . ",";
 		$sql .= " " . (empty($this->is_date_ask_OPCA) ? '0' :$this->is_date_ask_OPCA ) . ",";
 		$sql .= " " . (empty($this->is_OPCA) ? '0' : $this->is_OPCA ) . ",";
-		$sql .= " " . (! isset($this->fk_soc_OPCA) ? 'NULL' :  $this->fk_soc_OPCA ) . ",";
+		$sql .= " " . (empty($this->fk_soc_OPCA) ? 'NULL' :  $this->fk_soc_OPCA ) . ",";
 		$sql .= " " . (empty($this->fk_socpeople_OPCA) ? 'NULL' :  $this->fk_socpeople_OPCA ) . ",";
 		$sql .= " " . (! isset($this->num_OPCA_soc) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_soc) . "'") . ",";
 		$sql .= " " . (! isset($this->num_OPCA_file) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_file) . "'") . ",";
@@ -3205,7 +3205,7 @@ class Agsession extends CommonObject {
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::saveInfosOpca " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
