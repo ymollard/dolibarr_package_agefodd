@@ -94,48 +94,56 @@ if (! empty($search_orderid)) {
 	$order = new Commande($db);
 	$order->fetch($search_orderid);
 	$search_orderref = $order->ref;
+	$object_socid=$order->socid;
 }
 
 if (! empty($search_invoiceid)) {
 	$invoice = new Facture($db);
 	$invoice->fetch($search_invoiceid);
 	$search_invoiceref = $invoice->ref;
+	$object_socid=$invoice->socid;
 }
 
 if (! empty($search_fourninvoiceid)) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch($search_fourninvoiceid);
 	$search_fourninvoiceref = $fourninvoice->ref;
+	$object_socid=$fourninvoice->socid;
 }
 
 if (! empty($search_orderref)) {
 	$order = new Commande($db);
 	$order->fetch('', $search_orderref);
 	$search_orderid = $order->id;
+	$object_socid=$order->socid;
 }
 
 if (! empty($search_invoiceref)) {
 	$invoice = new Facture($db);
 	$invoice->fetch('', $search_invoiceref);
 	$search_invoiceid = $invoice->id;
+	$object_socid=$invoice->socid;
 }
 
 if (! empty($search_fourninvoiceref)) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch('', $search_fourninvoiceref);
 	$search_fourninvoiceid = $fourninvoice->id;
+	$object_socid=$fourninvoice->socid;
 }
 
 if (! empty($search_propalref)) {
 	$propal = new Propal($db);
 	$propal->fetch('', $search_propalref);
 	$search_propalid = $propal->id;
+	$object_socid=$propal->socid;
 }
 
 if (! empty($search_propalid)) {
 	$propal = new Propal($db);
 	$propal->fetch($search_propalid, '');
 	$search_propalref = $propal->ref;
+	$object_socid=$propal->socid;
 }
 
 if (! empty($search_orderid) || ! empty($search_orderref)) {
@@ -277,7 +285,7 @@ if ($resql != - 1) {
 		if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
 		
-		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid="'.$line->socid.'>' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid='.$object_socid.'">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
 		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
