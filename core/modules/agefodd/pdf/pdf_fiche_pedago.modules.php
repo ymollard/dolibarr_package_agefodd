@@ -41,7 +41,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 	 * \brief		Constructor
 	 * \param		db		Database handler
 	 */
-	function pdf_fiche_pedago($db) {
+	function __construct($db) {
 		global $conf, $langs, $mysoc;
 		
 		$langs->load("agefodd@agefodd");
@@ -100,6 +100,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			$id = $agf;
 			$agf = new Agefodd($this->db);
 			$agf->fetch($id);
+			
+			// Vilain hack si !empty($courrier) alors c'est un id de session
+			$agf_session = new Agsession($this->db);
+			if (! empty($courrier)) {
+				$agf_session->fetch($courrier);
+			}
 		}
 		
 		// Definition of $dir and $file
@@ -125,8 +131,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			$pdf->Open();
 			$pagenb = 0;
 			
-			$pdf->SetTitle($outputlangs->convToOutputCharset("Fiche pédagogique " . $agf->ref_interne));
-			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
+			$pdf->SetTitle($outputlangs->convToOutputCharset("AgfFichePedagogique " . $agf->ref_interne));
+			$pdf->SetSubject($outputlangs->transnoentities("AgfFichePedagogique"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref_interne) . " " . $outputlangs->transnoentities("Document"));
@@ -423,12 +429,19 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', '9');
 				// calcul de la duree en nbre de jours
-				$jour = $agf->duree / 7;
+				
+				if (empty($agf_session->duree_session)) {
+					$duree = $agf->duree;
+				} else {
+					$duree = $agf_session->duree_session;
+				}
+				$jour = $duree / 7;
+				
 				// $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
 				if ($jour < 1)
-					$this->str = $agf->duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . '.';
+					$this->str = $duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . '.';
 				else {
-					$this->str = $agf->duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . ' (' . ceil($jour) . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda3');
+					$this->str = $duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . ' (' . ceil($jour) . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda3');
 					if (ceil($jour) > 1)
 						$this->str .= 's';
 					$this->str .= ').';
