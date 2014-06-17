@@ -404,10 +404,15 @@ function show_fac($file, $socid, $mdle) {
 			}
 			
 			foreach ( $order_array as $key => $val ) {
-				$legende = $langs->trans("AgfFactureAddFacFromOrder") . ' ' . $val;
 				$commande_static = new Commande($db);
-				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$commande_static->fetch($key);
+				if ($commande_static->statut == 1) {
+					$legende = $langs->trans("AgfFactureAddFacFromOrder") . ' ' . $val;
+					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
+					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				}else {
+					$mess .= img_picto($langs->trans("AgfFactureFacNoOrderValidHelp"), 'warning');
+				}
 			}
 			// link existing invoice
 			$legende = $langs->trans("AgfFactureSelectFac");

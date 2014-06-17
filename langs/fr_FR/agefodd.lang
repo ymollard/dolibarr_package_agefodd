@@ -897,3 +897,4 @@ RemoveAll=Enlever tout
 ItemsCount=Elément(s)
 AgfConvTrainees=Participant(s) associé(s) à cette convention
 AgfExplainListTrainee=List_Participants sera remplacé par les participants séléctionné ci dessus au moment de la génération du PDF
+AgfFactureFacNoOrderValidHelp=La commande doit être validée avant de crée la facture
