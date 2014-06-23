@@ -300,7 +300,7 @@ class pdf_attestation extends ModelePDFAgefodd {
 							$dir = $conf->agefodd->dir_output . '/images/';
 							$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 							if (file_exists($img_tampon))
-								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY + 5, 50);
+								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY+5, 50);
 						}
 						
 						// Pied de page $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
@@ -368,7 +368,7 @@ class pdf_attestation extends ModelePDFAgefodd {
 			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot10') . ' ' . $conf->global->AGF_ORGANISME_PREF;
 		}
 		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot11') . ' ' . $conf->global->AGF_ORGANISME_NUM;
+			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot11',$conf->global->AGF_ORGANISME_NUM);
 		}
 		
 		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse);

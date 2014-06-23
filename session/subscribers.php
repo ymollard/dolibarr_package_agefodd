@@ -745,7 +745,7 @@ if (! empty($id)) {
 								'add-customer-contact' => 'disabled' 
 						) 
 				);
-				print $form->select_company($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 1, 1, 0, $events);
+				print $form->select_company($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))', 1, 1, 0, $events);
 				
 				// Print biller choice;
 				$socbiller = new Societe($db);

@@ -187,7 +187,14 @@ class pdf_convention extends ModelePDFAgefodd {
 						if ($tmp ['width']) {
 							$widthLogo = $tmp ['width'];
 						}
-						$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
+						
+						if ($conf->global->AGF_USE_LOGO_CLIENT) {
+							$decal=70;
+						} else {
+							$decal=50;
+						}
+						
+						$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - $decal, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
 							                                                                                                                                                                                              // (auto)
 					} else {
 						$pdf->SetTextColor(200, 0, 0);
@@ -203,16 +210,16 @@ class pdf_convention extends ModelePDFAgefodd {
 				}
 				
 				// Affichage du logo commanditaire (optionnel)
-				/*if ($conf->global->AGF_USE_LOGO_CLIENT) {
+				if ($conf->global->AGF_USE_LOGO_CLIENT) {
 					$staticsoc = new Societe($this->db);
 					$staticsoc->fetch($agf_conv->socid);
 					$dir = $conf->societe->multidir_output [$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 					if (! empty($staticsoc->logo)) {
 						$logo_client = $dir . $staticsoc->logo;
 						if (file_exists($logo_client) && is_readable($logo_client))
-							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
+							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
 					}
-				}*/
+				}
 				
 				// $posX += $this->page_largeur - $this->marge_droite - 65;
 				
@@ -400,7 +407,15 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-				$this->str = $this->liste_a_puce($agf_conv->art1);
+				$this->str = $agf_conv->art1;
+				
+				if (preg_match('/Nb_participants/',$this->str)) {
+					if (is_array($agf_conv->line_trainee) && count($agf_conv->line_trainee) > 0) {
+						$nbstag = count($agf_conv->line_trainee);
+						$nbstag .= ' '. $langs->trans('AgfConvArt1_15');
+						$this->str = str_replace('Nb_participants', $nbstag, $this->str);
+					}
+				}
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 				
@@ -837,32 +852,5 @@ class pdf_convention extends ModelePDFAgefodd {
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
 		$pdf->SetXY($this->droite - 20, $this->page_hauteur - 10);
 		$pdf->Cell(0, 3, 'page ' . $pdf->PageNo() . '/' . intval(5 + $this->count_page_anexe), 0, 0, 'C');
-	}
-	
-	/**
-	 * \brief		Formatage d'une liste à puce hierarchisée
-	 * \param		pdf PDF factory
-	 * \param		outputlang		Object lang for output
-	 */
-	function liste_a_puce($text) {
-		// - 1er niveau: remplacement de '# ' en debut de ligne par une puce de niv 1 (petit rond noir)
-		// - 2éme niveau: remplacement de '## ' en début de ligne par une puce de niv 2 (tiret)
-		// - 3éme niveau: remplacement de '### ' en début de ligne par une puce de niv 3 (>)
-		// Pour annuler le formatage (début de ligne sur la mage gauche : '!#'
-		$str = "";
-		$line = explode("\n", $text);
-		foreach ( $line as $row ) {
-			if (preg_match('/^\!# /', $row))
-				$str .= preg_replace('/^\!# /', '', $row) . "\n";
-			elseif (preg_match('/^# /', $row))
-				$str .= chr(149) . ' ' . preg_replace('/^#/', '', $row) . "\n";
-			elseif (preg_match('/^## /', $row))
-				$str .= '   ' . '-' . preg_replace('/^##/', '', $row) . "\n";
-			elseif (preg_match('/^### /', $row))
-				$str .= '   ' . '  ' . chr(155) . ' ' . preg_replace('/^###/', '', $row) . "\n";
-			else
-				$str .= '   ' . $row . "\n";
-		}
-		return $str;
 	}
 }

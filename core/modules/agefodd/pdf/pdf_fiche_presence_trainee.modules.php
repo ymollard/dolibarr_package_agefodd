@@ -217,7 +217,14 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd {
 				if ($tmp ['width']) {
 					$widthLogo = $tmp ['width'];
 				}
-				$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
+				
+				if ($conf->global->AGF_USE_LOGO_CLIENT) {
+					$decal=70;
+				} else {
+					$decal=50;
+				}
+				
+				$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - $decal, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
 					                                                                                                                                                                                              // (auto)
 			} else {
 				$pdf->SetTextColor(200, 0, 0);
@@ -240,7 +247,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd {
 			if (! empty($staticsoc->logo)) {
 				$logo_client = $dir . $staticsoc->logo;
 				if (file_exists($logo_client) && is_readable($logo_client))
-					$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute + 10, 40);
+					$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
 			}
 		}
 		
@@ -541,6 +548,8 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd {
 			}
 		}
 		$posY = $pdf->GetY() + 8;
+		
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		
 		// Incrustation image tampon
 		if ($conf->global->AGF_INFO_TAMPON) {

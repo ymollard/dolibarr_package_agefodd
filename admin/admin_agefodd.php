@@ -798,7 +798,7 @@ if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
 }
 
 // Image supplémentaire (tampon / signature)
-print '<tr class="pair"><td>' . $langs->trans("AgfImageSupp") . ' (png,jpg)</td><td>';
+print '<tr class="pair"><td>' . $langs->trans("AgfImageSupp") . ' (png,jpg) (H max 178px, L max 194px)</td><td>';
 print '<table width="100%" class="nocellnopadd"><tr class="nocellnopadd"><td valign="middle" class="nocellnopadd">';
 print '<input type="file" class="flat" name="imagesup" size="40">';
 print '</td><td valign="middle" align="right">';

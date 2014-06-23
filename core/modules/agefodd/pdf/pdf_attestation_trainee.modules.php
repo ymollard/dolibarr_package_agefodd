@@ -362,7 +362,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot10') . ' ' . $conf->global->AGF_ORGANISME_PREF;
 		}
 		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot11') . ' ' . $conf->global->AGF_ORGANISME_NUM;
+			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot11',$conf->global->AGF_ORGANISME_NUM);
 		}
 		
 		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse);

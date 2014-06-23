@@ -173,7 +173,14 @@ class pdf_convocation extends ModelePDFAgefodd {
 							if ($tmp ['width']) {
 								$widthLogo = $tmp ['width'];
 							}
-							$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
+							
+							if ($conf->global->AGF_USE_LOGO_CLIENT) {
+								$decal=70;
+							} else {
+								$decal=50;
+							}
+							
+							$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - $decal, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
 								                                                                                                                                                                                              // (auto)
 						} else {
 							$pdf->SetTextColor(200, 0, 0);
@@ -186,6 +193,19 @@ class pdf_convocation extends ModelePDFAgefodd {
 						$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
 						$pdf->MultiCell(150, 3, $outputlangs->convToOutputCharset($text), 0, 'R');
+					}
+					
+
+					// Affichage du logo commanditaire (optionnel)
+					if ($conf->global->AGF_USE_LOGO_CLIENT) {
+						$staticsoc = new Societe($this->db);
+						$staticsoc->fetch($agf->socid);
+						$dir = $conf->societe->multidir_output [$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
+						if (! empty($staticsoc->logo)) {
+							$logo_client = $dir . $staticsoc->logo;
+							if (file_exists($logo_client) && is_readable($logo_client))
+								$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
+						}
 					}
 					
 					// $posX += $this->page_largeur - $this->marge_droite - 65;

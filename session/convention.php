@@ -432,9 +432,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$art1 .= $langs->trans('AgfConvArt1_13') . "\n";
 	
 	
-	$art1 .= $langs->trans('AgfConvArt1_14') . ' ' . $nbstag . ' ' . $langs->trans('AgfConvArt1_15');
-	if ($nbstag > 1)
-		$art1 .= $langs->trans('AgfConvArt1_16');
+	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
 	$art1 .= $langs->trans('AgfConvArt1_17') . "\n";
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);
@@ -586,7 +584,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td><textarea name="intro2" rows="3" cols="0" class="flat" style="width:360px;">' . $intro2 . '</textarea></td></tr>';
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt1") . '</td>';
-	print '<td><textarea name="art1" rows="3" cols="0" class="flat" style="width:360px;">' . $art1 . '</textarea></td></tr>';
+	print '<td><textarea name="art1" rows="3" cols="0" class="flat" style="width:360px;">' . $art1 . '</textarea>';
+	print img_picto($langs->trans('AgfExplainNbparticipants'), 'info').$langs->trans('AgfExplainNbparticipants');
+	print '</td></tr>';
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt2") . '</td>';
 	print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $art2 . '</textarea></td></tr>';

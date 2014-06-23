@@ -174,8 +174,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 			$num = $this->db->num_rows($resql);
 			
 			$i = 0;
-			while ( $i < $num ) {
-				$obj = $this->db->fetch_object($resql);
+			while ($obj = $this->db->fetch_object($resql)) {
 				
 				if (! empty($searchAsLink)) {
 					$linesadded [] = $obj->rowid;
@@ -220,8 +219,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 				
 				$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
 				
-				$this->lines [$i] = $line;
-				
+				$this->lines[$i] = $line;
+				//dol_syslog(get_class($this) . "::fetch_stagiaire_per_session line=".var_export($line,true));
 				$i ++;
 			}
 			$this->db->free($resql);
@@ -268,8 +267,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 					$num = + $this->db->num_rows($resql);
 					
 					$i = 0;
-					while ( $i < $num ) {
-						$obj = $this->db->fetch_object($resql);
+					while ($obj = $this->db->fetch_object($resql)) {
 						
 						if (! in_array($obj->rowid, $linesadded)) {
 							$line = new AgfTraineeSessionLine();
