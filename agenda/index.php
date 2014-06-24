@@ -48,6 +48,7 @@ $filter_customer = GETPOST('fk_soc', 'int');
 $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
+$filter_location = GETPOST('location', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 
 if ($filter_commercial == - 1) {
@@ -64,6 +65,9 @@ if ($filter_trainer == - 1) {
 }
 if ($filter_type_session == - 1) {
 	$filter_type_session = '';
+}
+if ($filter_location == - 1) {
+	$filter_location = '';
 }
 $type = GETPOST('type');
 $sortfield = GETPOST("sortfield", 'alpha');
@@ -277,7 +281,7 @@ $param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 
 $head = calendars_prepare_head('');
 dol_fiche_head($head, 'card', $langs->trans('AgfMenuAgenda'), 0, $picto);
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location);
 dol_fiche_end();
 
 $link = '';
@@ -386,6 +390,9 @@ if (! empty($onlysession) && empty($filter_trainer)) {
 }
 if ($filter_type_session != '') {
 	$sql .= " AND agf.type_session=" . $filter_type_session;
+}
+if (! empty($filter_location)) {
+	$sql .= " AND agf.fk_session_place=" . $filter_location;
 }
 
 // Sort on date

@@ -258,6 +258,28 @@ if (! empty($id)) {
 				if (is_numeric($agf_certif->certif_code) && $agf_certif->certif_code <= 0)
 					$agf_certif->certif_code = '';
 				
+				// Start date in the end of session ot now if not set yet
+				if (empty($agf_certif->certif_dt_start)) $agf_certif->certif_dt_start=$agf->dated;
+				$agf_training = new Agefodd($db);
+				$agf_training->fetch($id);
+				
+				// End date is end of session more the time set in session
+				if (! empty($agf_training->certif_duration)) {
+					require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
+					$duration_array = explode(':', $agf_training->certif_duration);
+					$year = $duration_array [0];
+					$month = $duration_array [1];
+					$day = $duration_array [2];
+					$certif_dt_end = dol_time_plus_duree($agf_certif->certif_dt_start, $year, 'y');
+					$certif_dt_end = dol_time_plus_duree($certif_dt_end, $month, 'm');
+					$certif_dt_end = dol_time_plus_duree($certif_dt_end, $day, 'd');
+				} else {
+					$certif_dt_end = $certif_dt_start;
+				}
+					
+				$agf_certif->certif_dt_end = $certif_dt_end;
+				$agf_certif->certif_dt_warning = dol_time_plus_duree($certif_dt_end, - 6, 'm');
+						
 				print '<tr><td>' . $langs->trans('AgfCertifCode') . '</td><td><input type="hidden" name="certif_code" value="' . $agf_certif->certif_code . '">' . $agf_certif->certif_code . '</td></tr>' . "\n";
 				print '<tr><td>' . $langs->trans('AgfCertifLabel') . '</td><td><input type="text" size="10" name="certif_label"  value="' . $agf_certif->certif_label . '"></td></tr>' . "\n";
 				print '<tr><td>' . $langs->trans('AgfCertifDateSt') . '</td><td>';

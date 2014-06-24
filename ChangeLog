@@ -11,7 +11,11 @@ English Dolibarr ChangeLog
 -Fix : PDF Attestation by trainee Objectif pédagogique strange output
 -Fix : bugs_agefodd #1453 - Erreur lors de l'attachement d'un OPCA sur un participant
 -Fix : On Training program generated from session time was not correct.
--Fix : PDF output, global reveiw on logo and other things
+-Fix : PDF output, global review on logo and other things
+-New : New field on create trainee
+-New : Better management of certification date according configuration
+-New : Add location filter on agenda 
+-Fix : Cost management create supplier invoice with product with no buying price wasn't ok
 
 ***** ChangeLog for 2.1.8 compared to 2.1.7 *****
 -New : New permissions on Training catalogue, location (basic (old) permissions apply now sessions) all defaulted to yes (to avoid right problem)

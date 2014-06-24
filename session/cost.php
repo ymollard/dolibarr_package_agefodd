@@ -49,6 +49,7 @@ $action = GETPOST('action', 'alpha');
 $opsid = GETPOST('opsid', 'int');
 $socid = GETPOST('socid', 'int');
 $product_fourn = GETPOST('product_fourn', 'int');
+$product_fourn_ref = GETPOST('search_product_fourn', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
 $islink = GETPOST('link_x', 'int');
@@ -179,7 +180,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 	
 	// Find product description
 	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn);
+	$result = $prod->fetch($product_fourn,$product_fourn_ref);
 	if ($result < 0) {
 		setEventMessage($prod->error, 'errors');
 	}
@@ -194,7 +195,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 		$suplier_invoice->lines [0]->pu_ht = GETPOST('pricetrainer');
 		$suplier_invoice->lines [0]->tva_tx = GETPOST('tva_tx');
 		$suplier_invoice->lines [0]->qty = GETPOST('qtytrainer');
-		$suplier_invoice->lines [0]->fk_product = $product_fourn;
+		$suplier_invoice->lines [0]->fk_product = $prod->id;
 		$suplier_invoice->lines [0]->product_type = $prod->type;
 		
 		$result = $suplier_invoice->create($user);
@@ -252,7 +253,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	
 	// Find product description
 	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn);
+	$result = $prod->fetch($product_fourn,$product_fourn_ref);
 	if ($result < 0) {
 		setEventMessage($prod->error, 'errors');
 	}
@@ -267,7 +268,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 		$suplier_invoice->lines [0]->pu_ht = GETPOST('pricemission');
 		$suplier_invoice->lines [0]->tva_tx = GETPOST('tva_tx');
 		$suplier_invoice->lines [0]->qty = GETPOST('qtymission');
-		$suplier_invoice->lines [0]->fk_product = $product_fourn;
+		$suplier_invoice->lines [0]->fk_product = $prod->id;
 		$suplier_invoice->lines [0]->product_type = $prod->type;
 		
 		$result = $suplier_invoice->create($user);
@@ -333,7 +334,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	
 	// Find product description
 	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn);
+	$result = $prod->fetch($product_fourn,$product_fourn_ref);
 	if ($result < 0) {
 		setEventMessage($prod->error, 'errors');
 	}
@@ -348,7 +349,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 		$suplier_invoice->lines [0]->pu_ht = GETPOST('priceroom');
 		$suplier_invoice->lines [0]->tva_tx = GETPOST('tva_tx');
 		$suplier_invoice->lines [0]->qty = GETPOST('qtyroom');
-		$suplier_invoice->lines [0]->fk_product = $product_fourn;
+		$suplier_invoice->lines [0]->fk_product = $prod->id;
 		$suplier_invoice->lines [0]->product_type = $prod->type;
 		
 		$result = $suplier_invoice->create($user);

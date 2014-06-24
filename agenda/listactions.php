@@ -62,6 +62,7 @@ $filter_customer = GETPOST('fk_soc', 'int');
 $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
+$filter_location = GETPOST('location', 'int');
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
 }
@@ -76,6 +77,9 @@ if ($filter_trainer == - 1) {
 }
 if ($filter_type_session == - 1) {
 	$filter_type_session = '';
+}
+if ($filter_location == - 1) {
+	$filter_location = '';
 }
 $showbirthday = empty($conf->use_javascript_ajax) ? GETPOST("showbirthday", "int") : 1;
 
@@ -300,6 +304,9 @@ if (! empty($onlysession) && empty($filter_trainer)) {
 if ($filter_type_session != '') {
 	$sql .= " AND agf.type_session=" . $filter_type_session;
 }
+if (! empty($filter_location)) {
+	$sql .= " AND agf.fk_session_place=" . $filter_location;
+}
 $sql .= $db->order($sortfield, $sortorder);
 $sql .= $db->plimit($limit + 1, $offset);
 // print $sql;
@@ -330,7 +337,7 @@ if ($resql) {
 	$head = calendars_prepare_head('');
 	
 	dol_fiche_head($head, 'card', $langs->trans('AgfMenuAgenda'), 0, $picto);
-	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter);
+	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter,$filter_location);
 	dol_fiche_end();
 	
 	// Add link to show birthdays

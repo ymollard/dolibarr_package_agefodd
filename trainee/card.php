@@ -243,13 +243,16 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 					$sessionstat->fk_session_agefodd = GETPOST('session_id', 'int');
 					$sessionstat->fk_stagiaire = $agf->id;
 					$sessionstat->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
+					$sessionstat->fk_soc_link = GETPOST('fk_soc_link', 'int');
+					$sessionstat->status_in_session = GETPOST('status_in_session', 'int');
+					$sessionstat->fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 					$result = $sessionstat->create($user);
 					
 					if ($result > 0) {
 						setEventMessage($langs->trans('SuccessCreateStagInSession'), 'mesgs');
 						$url_back = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $session_id;
 					} else {
-						setEventMessage($agf->error, 'errors');
+						setEventMessage($sessionstat->error, 'errors');
 					}
 				}
 				
@@ -525,6 +528,17 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		print '<tr class="agelfoddline"><td>' . $langs->trans("AgfPublic") . '</td><td colspan="3">';
 		print $formAgefodd->select_type_stagiaire($stagiaire_type, 'stagiaire_type', '', 1);
 		print '</td></tr>';
+		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTraineeSocDocUse') . '</td><td colspan="3">';
+		print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
+		print '</td></tr>';
+		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTypeRequester') . '</td><td colspan="3">';
+		print $form->select_company(0, 'fk_soc_requester', '', 1, 1, 0);
+		print '</td></tr>';
+		if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
+			print '<tr class="agelfoddline"><td>' . $langs->trans('Status') . '</td><td colspan="3">';
+			print $formAgefodd->select_stagiaire_session_status('status_in_session', 0);
+			print '</td></tr>';
+		}
 	}
 	
 	print '</table>';

@@ -524,7 +524,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 			$dir = $conf->agefodd->dir_output . '/images/';
 			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 			if (file_exists($img_tampon))
-				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
+				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY+5, 50);
 		}
 		
 		// Cachet et signature

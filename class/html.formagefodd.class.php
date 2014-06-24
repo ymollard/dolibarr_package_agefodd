@@ -1186,7 +1186,7 @@ class FormAgefodd extends Form {
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0) {
+	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location='') {
 		global $conf, $langs;
 		
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER ["PHP_SELF"] . '" method="POST">';
@@ -1256,6 +1256,14 @@ class FormAgefodd extends Form {
 			print ' &nbsp;</td><td class="nowrap">';
 			print $this->select_formateur($filter_trainer, "trainerid", '', 1);
 			print '</td></tr>';
+			
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans("or") . ' ' . $langs->trans("AgfLieu");
+			print ' &nbsp;</td><td class="nowrap">';
+			print $this->select_site_forma($filter_location, 'location', 1);
+			print '</td></tr>';
+				
 			
 			// Filter by periode only on list view
 			if (strpos($_SERVER ["PHP_SELF"], 'listactions.php') !== false) {

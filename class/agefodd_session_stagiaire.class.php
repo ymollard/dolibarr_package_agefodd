@@ -465,8 +465,33 @@ class Agefodd_session_stagiaire extends CommonObject {
 		}
 		if (empty($this->status_in_session))
 			$this->status_in_session = 0;
+		
+		//Determine for trainne subscrition if there already a propospal link with the customer signed
+		if ($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) {
+			$sql = "SELECT propal.rowid ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "propal as propal ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselem ";
+			$sql .= " ON propal.rowid=sesselem.fk_element AND sesselem.element_type='propal' AND sesselem.fk_session_agefodd=".$this->fk_session_agefodd." AND propal.fk_statut=2 ";
+			$sql .= " WHERE (propal.fk_soc=".$this->fk_soc_link." OR propal.fk_soc IN (SELECT trainee.fk_soc FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee WHERE trainee.rowid=".$this->fk_stagiaire."))";
 			
-			// Insert request
+			dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				$this->lines = array ();
+				$num = $this->db->num_rows($resql);
+				if ($num>0) {
+					$obj = $this->db->fetch_object($resql);
+					if (!empty($obj->rowid)) {
+						$this->status_in_session = 2;
+					}
+				}
+			}else {
+				$this->error= "Error " . $this->db->lasterror();
+				return -1;
+			}
+		}
+		
+		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_stagiaire (";
 		$sql .= "fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, status_in_session,fk_user_author,fk_user_mod, datec";
 		$sql .= " ,fk_soc_link";

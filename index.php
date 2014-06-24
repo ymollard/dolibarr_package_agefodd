@@ -49,7 +49,7 @@ print_barre_liste($langs->trans("AgfBilanGlobal"), $page, "index.php", "&socid=$
 print '<table width="100%">';
 
 // colonne gauche
-print '<tr><td  width="400px">';
+print '<tr><td  width="400px" valign="top">';
 print '<table class="noborder" width="400px">';
 print '<tr class="liste_titre"><td colspan=4>' . $langs->trans("AgfIndexStatistique") . '</td></tr>';
 

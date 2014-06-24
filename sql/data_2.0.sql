@@ -1,8 +1,8 @@
 INSERT INTO llx_agefodd_stagiaire_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
-(1,'financement par l''employeur (contrat pro.)', 3, now(), now(), 0, 0),
-(2,'financement par l''employeur (autre)', 4, now(), now(), 0, 0),
-(3,'demandeur d''emploi avec financement public', 5, now(), now(), 0, 0),
-(4,'autre', 6, now(), now(), 0, 0),
+(1,'Financement par l''employeur (contrat pro.)', 3, now(), now(), 0, 0),
+(2,'Financement par l''employeur (autre)', 4, now(), now(), 0, 0),
+(3,'Demandeur d''emploi avec financement public', 5, now(), now(), 0, 0),
+(4,'Autre', 6, now(), now(), 0, 0),
 (5,'DIF', 1, now(), now(), 0, 0),
 (6,'Période PRO', 2, now(), now(), 0, 0);
 
@@ -13,10 +13,10 @@ INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, ind
 (4, 1, 3, 201, 'Impression convention et vérification', -31, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (5, 1, 3, 202, 'Envoi convention (VP ou numérique avec AC)', -30, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (6, 0, 0, 300, 'Envoi des convocations', -15, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
-(7, 1, 6, 301, 'Preparation du dossier<br>(convoc., rég. intérieur, programme, fiche péda, conseils pratiques)', -15, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
+(7, 1, 6, 301, 'Préparation du dossier<br>(convoc., rég. intérieur, programme, fiche péda, conseils pratiques)', -15, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (8, 1, 6, 302, 'Envoi du dossier à chaque stagiaire (inter) ou au respo. formation (intra)', -15, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (9, 0, 0, 400, 'Vérifications et mise en place des moyens', -10, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
-(10, 1, 9, 401, 'Verification du retour de la convention signée', -10, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
+(10, 1, 9, 401, 'Vérification du retour de la convention signée', -10, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (11, 0, 0, 500, 'Execution de la prestation', 0, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (12, 0, 0, 600, 'Cloture administrative', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (13, 1, 12, 601, 'Impression des attestations', 8, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
