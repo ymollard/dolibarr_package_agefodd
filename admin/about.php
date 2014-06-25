@@ -62,6 +62,11 @@ dol_fiche_head($head, 'about', $langs->trans("Module103000Name"), 0, "agefodd@ag
 print 'Version : ' . $conf->global->AGF_LAST_VERION_INSTALL;
 print '<BR><a href="' . dol_buildpath('/agefodd/ChangeLog', 1) . '">Change Log</a>';
 
+print '<BR><BR><BR><BR>--------------------------------';
+print '<BR><a href="https://doliforge.org/plugins/docman/?group_id=116" target="_blanck">Lien Documentation Utilisateur Français</a>';
+print '<BR>--------------------------------';
+
+
 $buffer .= file_get_contents(dol_buildpath('/agefodd/README-FR', 0));
 $buffer .= "\n------------------------------------------\n";
 $buffer .= file_get_contents(dol_buildpath('/agefodd/README-EN', 0));
