@@ -243,7 +243,7 @@ if ($action == 'updatetraineestatus') {
 		$stagiaires->fk_session_agefodd = $agf->id;
 		$result = $stagiaires->update_status_by_soc($user, 1, 0, GETPOST('statusinsession', 'int'));
 		if ($result < 0) {
-			setEventMessage($agf->error, 'errors');
+			setEventMessage($stagiaires->error, 'errors');
 		} else {
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
