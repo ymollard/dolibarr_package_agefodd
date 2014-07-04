@@ -1215,7 +1215,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					* Confirm delete
 					*/
 					if ($action == 'delete') {
-						$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
+						$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
 						if ($ret == 'html')
 							print '<br>';
 					}
