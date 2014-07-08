@@ -31,6 +31,7 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
+
 class pdf_attestation extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
