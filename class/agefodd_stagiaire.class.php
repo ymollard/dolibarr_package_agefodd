@@ -577,6 +577,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
+		$sql .= " AND s.entity IN (" . getEntity('agsession').')';
 		$sql .= " AND UPPER(s.lastname)='" . strtoupper($lastname) . "'";
 		$sql .= " AND UPPER(s.firstname)='" . strtoupper($firstname) . "'";
 		
