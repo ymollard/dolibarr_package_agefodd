@@ -483,7 +483,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
 	print '<td>';
-	print $form->select_date('', 'datebirth', '', '', 1, 'update', 0, 0, 1);
+	print $form->select_date('', 'datebirth', '', '', 1);
 	print '</td></tr>';
 	
 	print '<tr><td>' . $langs->trans("AgfPlaceBirth") . '</td>';
