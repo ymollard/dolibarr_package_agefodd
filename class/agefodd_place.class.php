@@ -240,10 +240,10 @@ class Agefodd_place extends CommonObject {
 	 * @param string $sortfield Sort field
 	 * @param int $limit offset limit
 	 * @param int $offset offset limit
-	 * @param int $arch archive
+	 * @param array $filter filter array
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
+	function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -254,8 +254,12 @@ class Agefodd_place extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_pays as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.entity IN (" . getEntity('agsession') . ")";
 		
-		if ($arch == 0 || $arch == 1)
-			$sql .= " AND p.archive = " . $arch;
+		// Manage filter
+		if (count($filter)>0) {
+			foreach ( $filter as $key => $value ) {
+				$sql .= ' AND '. $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+			}
+		}
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 		
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);

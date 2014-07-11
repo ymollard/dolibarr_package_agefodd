@@ -44,12 +44,34 @@ $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 $arch = GETPOST('arch', 'int');
 
+$search_soc = GETPOST("search_soc");
+$search_ref_interne = GETPOST("search_ref_interne");
+
+// Do we click on purge search criteria ?
+if (GETPOST("button_removefilter_x")) {
+	$search_soc = '';
+	$search_ref_interne = '';
+}
+
+$filter = array ();
+if (! empty($search_soc)) {
+	$filter ['s.nom'] = $search_soc;
+	$option .= "&search_soc=" . $search_soc;
+}
+if (! empty($search_ref_interne)) {
+	$filter ['p.ref_interne'] = $search_ref_interne;
+	$option .= "&search_ref_interne=" . $search_ref_interne;
+}
+if ($arch != '') {
+	$filter ['p.archive'] = $arch;
+	$option .= "&arch=" . $arch;
+}
+
 if (empty($sortorder))
 	$sortorder = "ASC";
 if (empty($sortfield))
 	$sortfield = "p.ref_interne";
-if (empty($arch))
-	$arch = 0;
+
 
 if ($page == - 1) {
 	$page = 0;
@@ -62,7 +84,7 @@ $pagenext = $page + 1;
 
 $agf = new Agefodd_place($db);
 
-$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 $linenum = count($agf->lines);
 
@@ -74,14 +96,47 @@ if ($arch == 2) {
 } else {
 	print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=2">' . $langs->trans("AgfAfficherPlaceArchives") . '</a>' . "\n";
 }
+
 print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=' . $arch . '">' . $txt . '</a>' . "\n";
+
+
+print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+if (! empty($sortfield))
+	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+if (! empty($sortorder))
+	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+if (! empty($page))
+	print '<input type="hidden" name="page" value="' . $page . '"/>';
+
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "p.rowid", '', "&arch=" . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "p.ref_interne", '', "&arch=" . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "s.nom", '', "&arch=" . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel", "", "&arch=" . $arch, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "p.rowid", '',  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "p.ref_interne", '',  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "s.nom", '',  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "p.tel", "",  $option, '', $sortfield, $sortorder);
 print "</tr>\n";
+
+
+//Filter
+print '<tr class="liste_titre">';
+
+print '<td>&nbsp;</td>';
+
+print '<td class="liste_titre">';
+print '<input type="text" class="flat" name="search_ref_interne" value="' . $search_ref_interne . '" size="20">';
+print '</td>';
+
+print '<td class="liste_titre">';
+print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
+print '</td>';
+
+print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+print '&nbsp; ';
+print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+print '</td>';
+
+print "</tr>\n";
+
 
 if ($result > 0) {
 	$var = true;
@@ -103,6 +158,7 @@ if ($result > 0) {
 	setEventMessage($agf->error, 'errors');
 }
 print "</table>";
+print '</form>';
 
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit') {
