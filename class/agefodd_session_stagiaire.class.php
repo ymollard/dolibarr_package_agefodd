@@ -472,7 +472,13 @@ class Agefodd_session_stagiaire extends CommonObject {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "propal as propal ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselem ";
 			$sql .= " ON propal.rowid=sesselem.fk_element AND sesselem.element_type='propal' AND sesselem.fk_session_agefodd=".$this->fk_session_agefodd." AND propal.fk_statut=2 ";
-			$sql .= " WHERE (propal.fk_soc=".$this->fk_soc_link." OR propal.fk_soc IN (SELECT trainee.fk_soc FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee WHERE trainee.rowid=".$this->fk_stagiaire."))";
+			
+			$sql_fk_soc_link='';
+			if (!empty($this->fk_soc_link)) {
+				$sql_fk_soc_link=' propal.fk_soc='.$this->fk_soc_link.' OR ';
+			}
+			
+			$sql .= " WHERE (".$sql_fk_soc_link." propal.fk_soc IN (SELECT trainee.fk_soc FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee WHERE trainee.rowid=".$this->fk_stagiaire."))";
 			
 			dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
 			$resql = $this->db->query($sql);

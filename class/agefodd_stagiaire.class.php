@@ -273,34 +273,20 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " ON s.fk_soc = so.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";
 		$sql .= " ON s.civilite = civ.code";
+		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
 		
 		// Manage filter
 		if (! empty($filter)) {
-			$addcriteria = false;
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'naturalsearch') {
-					$sqlwhere .= '(s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
-					$addcriteria = true;
-				} elseif ($key == 'civ.code') {
-					if ($addcriteria) {
-						$sqlwhere .= ' AND ';
-					}
-					$sqlwhere .= $key . ' = \'' . $this->db->escape($value) . '\'';
-					$addcriteria = true;
+					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
 				} elseif ($key != 's.tel1') {
-					if ($addcriteria) {
-						$sqlwhere .= ' AND ';
-					}
-					$sqlwhere .= $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
-					$addcriteria = true;
+					$sql .= ' AND '. $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+				} else {
+					$sql .= ' AND '. $key . ' = \'' . $this->db->escape($value) . '\'';
 				}
 			}
-			if (! empty($sqlwhere)) {
-				$sql .= ' WHERE ' . $sqlwhere;
-			}
-		} else {
-			$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
-		}
+		} 
 		
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
 		if (! empty($limit)) {

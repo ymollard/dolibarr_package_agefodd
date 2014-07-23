@@ -4,6 +4,7 @@ English Dolibarr ChangeLog
 -Fix : French spelling (thank to  Joël Pastré)
 -Fix : Multicompany trainee creation can be block if trainee exist for another entity
 -New : Add filter on site list
+-Fix : Fix create trainne and add to session without linked to extra thirdparty
 
 ***** ChangeLog for 2.1.9 compared to 2.1.8 *****
 -Fix : Attestation by trainnee with training objectives wrong output
