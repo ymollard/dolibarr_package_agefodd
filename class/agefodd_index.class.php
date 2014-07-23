@@ -582,12 +582,14 @@ class Agefodd_index {
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = sta.fk_soc";
 		
 		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
-		
+		$sql.= ' GROUP BY c.intitule,c.ref,soc.rowid ';
 		if ($this->db->type == 'pgsql') {
-			$sql .= " AND certif.certif_dt_end < ( NOW() + INTERVAL '" . $month_expiration . " MONTHS') ";
+			$sql .= " HAVING MAX(certif.certif_dt_end) < ( NOW() + INTERVAL '" . $month_expiration . " MONTHS') ";
 		} else {
-			$sql .= " AND certif.certif_dt_end < ( NOW() + INTERVAL " . $month_expiration . " MONTH) ";
+			$sql .= " HAVING MAX(certif.certif_dt_end) < ( NOW() + INTERVAL " . $month_expiration . " MONTH) ";
 		}
+		
+		
 		
 		dol_syslog(get_class($this) . "::fetch_certif_expire sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);

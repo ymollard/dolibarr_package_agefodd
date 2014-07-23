@@ -127,7 +127,7 @@ print '<td width="50px" align="right">' . $langs->trans("AgfNumber") . '</td></t
 print '<tr class="liste"><td width="10px">' . img_object($langs->trans("AgfShowDetails"), "generic") . '</td>';
 $resql = $agf->fetch_session(0);
 print '<td colspan="2" >' . $langs->trans("AgfRunningSession") . '</td><td align="right">';
-print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '">' . $agf->total . '</a>&nbsp;</td></tr>';
+print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '?status=2">' . $agf->total . '</a>&nbsp;</td></tr>';
 
 // tâches en retard
 print '<tr class="liste"><td width="10px">&nbsp;</td><td bgcolor="red">' . img_object($langs->trans("AgfShowDetails"), "task") . '</td>';
@@ -166,7 +166,7 @@ print '</td></tr>';
 print '<tr class="liste"><td width="10px">&nbsp;</td><td width="10px">' . img_object($langs->trans("AgfShowDetails"), "task") . '</td>';
 $resql = $agf->fetch_tache_en_cours();
 print '<td>' . $langs->trans("AgfAlertLevel3") . '</td><td align="right">';
-print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '">' . $agf->total . '</a>&nbsp;</td></tr>';
+print '<a href="' . dol_buildpath('/agefodd/session/list_ope.php', 1) . '">' . $agf->total . '</a>&nbsp;</td></tr>';
 
 // sessions à archiver
 print '<tr class="liste"><td width="10px" valign="top">' . img_object($langs->trans("AgfShowDetails"), "generic") . '</td>';
@@ -183,7 +183,7 @@ print '<tr class="liste"><td width="10px">' . img_object($langs->trans("AgfShowD
 $resql = $agf->fetch_session(1);
 if ($resql) {
 	print '<td colspan="2" >' . $langs->trans("AgfMenuSessArchList") . '</td><td align="right">';
-	print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '?arch=1">' . $agf->total . '</a>&nbsp;</td></tr>';
+	print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '?status=4">' . $agf->total . '</a>&nbsp;</td></tr>';
 	// $db->free($resql);
 } else {
 	print '<td colspan="3">&nbsp;</td></tr>';
