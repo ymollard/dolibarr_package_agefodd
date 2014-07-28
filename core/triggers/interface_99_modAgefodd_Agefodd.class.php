@@ -636,14 +636,10 @@ class InterfaceAgefodd {
 					
 					if (count($session_trainee->lines) > 0) {
 						
-						$desc_trainee = "\n" . count($session_trainee->lines) . ' ';
-						if (count($session_trainee->lines) >= 1) {
-							$desc_trainee .= $langs->trans('AgfParticipant');
-						} else {
-							$desc_trainee .= $langs->trans('AgfParticipants');
-						}
+						
 						if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
-							$desc_trainee .= "\n";
+							$desc_trainee = "\n";
+							$nbtrainee=0;
 							foreach ( $session_trainee->lines as $line ) {
 								
 								// Do not output not present or cancelled trainee
@@ -659,10 +655,19 @@ class InterfaceAgefodd {
 										$desc_OPCA = "\n" . 'Num dossier : ' . $sessionOPCA->num_OPCA_file . ' pour ' . $line->socname;
 									}
 									$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
+									$nbtrainee++;
 								}
 							}
 						}
-						$desc .= ' ' . $desc_OPCA . $desc_trainee;
+						
+						$desc_trainee_head = "\n" . $nbtrainee . ' ';
+						if ($nbtrainee >= 1) {
+							$desc_trainee_head .= $langs->trans('AgfParticipant');
+						} else {
+							$desc_trainee_head .= $langs->trans('AgfParticipants');
+						}
+						
+						$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
 					}
 					
 					$object->desc = $desc;
