@@ -33,9 +33,12 @@ require_once '../includes/php_markdown/markdown.php';
 // Translations
 $langs->load("agefodd@agefodd");
 
+
 // Access control
-if (! $user->admin)
-	accessforbidden();
+if (empty($conf->global->AGF_DEMO_MODE)) {
+	if (! $user->admin)
+		accessforbidden();
+}
 	
 	// Parameters
 $action = GETPOST('action', 'alpha');
