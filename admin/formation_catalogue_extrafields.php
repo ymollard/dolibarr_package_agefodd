@@ -29,8 +29,10 @@ require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
-if (! $user->admin)
-	accessforbidden();
+if (empty($conf->global->AGF_DEMO_MODE)) {
+	if (! $user->admin)
+		accessforbidden();
+}
 
 $langs->load("admin");
 $langs->load("other");
@@ -50,11 +52,8 @@ foreach ( $tmptype2label as $key => $val )
 $action = GETPOST('action', 'alpha');
 $attrname = GETPOST('attrname', 'alpha');
 $elementtype = 'agefodd_formation_catalogue'; // Must be the $table_element of the class that manage extrafield
-
-if (! $user->admin)
-	accessforbidden();
 	
-	/*
+/*
  * Actions
  */
 

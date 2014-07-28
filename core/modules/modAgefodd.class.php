@@ -1408,31 +1408,31 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 0 
 		);
-		$r ++;
 		
-		/*$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
+		$r ++;
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
 		'type'=>'left',
 		'titre'=>'AgfMenuDemoAdmin',
 		'leftmenu'=>'AgfMenuDemoAdmin',
 		'url'=>'/agefodd/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>701,
-		'enabled'=>1,
+		'enabled'=>'$conf->global->AGF_DEMO_MODE',
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
 		'user'=>0);
+		
 		$r++;
-
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuDemoAdmin',
 		'type'=>'left',
 		'titre'=>'AgfMenuDemoAdminDetail',
 		'url'=>'/agefodd/admin/admin_agefodd.php',
 		'langs'=>'agefodd@agefodd',
 		'position'=>702,
-		'enabled'=>1,
+		'enabled'=>'$conf->global->AGF_DEMO_MODE',
 		'perms'=>'$user->rights->agefodd->lire',
 		'target'=>'',
-		'user'=>0);*/
+		'user'=>0);
 	}
 	
 	/**

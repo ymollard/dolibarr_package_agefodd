@@ -28,8 +28,10 @@ require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
-if (! $user->admin)
-	accessforbidden();
+if (empty($conf->global->AGF_DEMO_MODE)) {
+	if (! $user->admin)
+		accessforbidden();
+}
 
 $langs->load("admin");
 $langs->load("other");

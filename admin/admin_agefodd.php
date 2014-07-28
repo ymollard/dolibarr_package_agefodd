@@ -37,8 +37,10 @@ require_once (DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php");
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
 
-if (! $user->admin)
-	accessforbidden();
+if (empty($conf->global->AGF_DEMO_MODE)) {
+	if (! $user->admin)
+		accessforbidden();
+}
 
 $action = GETPOST('action', 'alpha');
 
