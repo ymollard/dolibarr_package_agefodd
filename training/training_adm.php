@@ -237,7 +237,7 @@ if ($result0 > 0) {
 		print '</td>';
 		
 		print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
-		print '<td>' . $formAgefodd->select_action_training_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
+		print '<td>' . $formAgefodd->select_action_training_adm($line->fk_parent_level, 'parent_level', $line->rowid, $trainingid) . '</td>';
 		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
 		print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
 		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
@@ -252,7 +252,7 @@ print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\
 print '<tr>';
 print '<td></td>';
 print '<td><input type="text" name="intitule" value="" size="30"/></td>';
-print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level') . '</td>';
+print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level',0,$trainingid) . '</td>';
 print '<td><input type="text" name="delai" value=""/></td>';
 print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
 print '</tr>';

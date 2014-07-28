@@ -223,10 +223,13 @@ class FormAgefodd extends Form {
 	 * @param int $selectid à preselectionner
 	 * @param string $htmlname select field
 	 * @param string $excludeid est necessaire d'exclure une valeur de sortie
+	 * @param string $fk_training
 	 * @return string select field
 	 */
-	function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
+	function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training=0) {
 		global $conf, $langs;
+		
+		$sqlwhere=array();
 		
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -234,7 +237,13 @@ class FormAgefodd extends Form {
 		$sql .= " t.intitule";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
 		if ($excludeid != '') {
-			$sql .= ' WHERE t.rowid<>\'' . $excludeid . '\'';
+			$sqlwhere[] = ' t.rowid<>\'' . $excludeid . '\'';
+		}
+		if (!empty($fk_training)) {
+			$sqlwhere[] = ' fk_training='.$fk_training;
+		}
+		if (count($sqlwhere)>0){
+			$sql .= ' WHERE '. implode(' AND ', $sqlwhere);
 		}
 		$sql .= " ORDER BY t.indice";
 		
