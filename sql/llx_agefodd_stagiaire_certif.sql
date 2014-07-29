@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_certif (
   certif_dt_start datetime NOT NULL,
   certif_dt_end datetime NOT NULL,
   certif_dt_warning datetime DEFAULT NULL,
+  mark varchar(20) DEFAULT NULL,
   import_key		varchar(14)
 ) ENGINE=InnoDB;
 

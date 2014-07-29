@@ -9,6 +9,7 @@ English Dolibarr ChangeLog
 -Fix : Certificate Box show wrong result
 -Fix : Edit administrative task into trainning show select parent task with multiples values
 -New : New form to add trainee (from contact from simple creation are now mix in the same screen)
+-New : Certificate A4 PDF with relevant data
 
 ***** ChangeLog for 2.1.9 compared to 2.1.8 *****
 -Fix : Attestation by trainnee with training objectives wrong output

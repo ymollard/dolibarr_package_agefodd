@@ -76,6 +76,23 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 	
 	$file = $model . '_' . $session_trainee_id . '.pdf';
 	
+	//this configuration variable is designed like
+	//standard_model_name:new_model_name&standard_model_name:new_model_name&....
+	if (!empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+		$modelarray=explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+		if (is_array($modelarray) && count($modelarray)>0){
+			foreach($modelarray as $modeloveride) {
+				$modeloverridearray=explode(':',$modeloveride);
+				if (is_array($modeloverridearray) && count($modeloverridearray)>0){
+					if ($modeloverridearray[0]==$model) {
+						$model=$modeloverridearray[1];
+					}
+				}
+			}
+				
+		}
+	}
+	
 	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour);
 }
 

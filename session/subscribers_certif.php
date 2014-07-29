@@ -59,6 +59,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 	$certif_dt_start = dol_mktime(0, 0, 0, GETPOST('dt_startmonth', 'int'), GETPOST('dt_startday', 'int'), GETPOST('dt_startyear', 'int'));
 	$certif_dt_end = dol_mktime(0, 0, 0, GETPOST('dt_endmonth', 'int'), GETPOST('dt_endday', 'int'), GETPOST('dt_endyear', 'int'));
 	$certif_dt_warning = dol_mktime(0, 0, 0, GETPOST('dt_warningmonth', 'int'), GETPOST('dt_warningday', 'int'), GETPOST('dt_warningyear', 'int'));
+	$mark=GETPOST('mark','alpha');
 	
 	if (! empty($certif_save_x)) {
 		$agf_certif = new Agefodd_stagiaire_certif($db);
@@ -72,6 +73,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 			$agf_certif->certif_dt_start = $certif_dt_start;
 			$agf_certif->certif_dt_end = $certif_dt_end;
 			$agf_certif->certif_dt_warning = $certif_dt_warning;
+			$agf_certif->mark=$mark;
 			
 			// Existing certification
 			if (! empty($agf_certif->id)) {
@@ -101,6 +103,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 				$agf_certif->fk_session_agefodd = $id;
 				$agf_certif->fk_session_stagiaire = $certif_session_sta_id;
 				$agf_certif->fk_stagiaire = $certif_sta_id;
+				$agf_certif->mark=$mark;
 				
 				$resultcertif = $agf_certif->create($user);
 				if ($resultcertif < 0) {
@@ -274,11 +277,11 @@ if (! empty($id)) {
 					$certif_dt_end = dol_time_plus_duree($certif_dt_end, $month, 'm');
 					$certif_dt_end = dol_time_plus_duree($certif_dt_end, $day, 'd');
 				} else {
-					$certif_dt_end = $certif_dt_start;
+					$certif_dt_end = $agf_certif->certif_dt_start;
 				}
-					
+
 				$agf_certif->certif_dt_end = $certif_dt_end;
-				$agf_certif->certif_dt_warning = dol_time_plus_duree($certif_dt_end, - 6, 'm');
+				$agf_certif->certif_dt_warning = dol_time_plus_duree($certif_dt_end, -6, 'm');
 						
 				print '<tr><td>' . $langs->trans('AgfCertifCode') . '</td><td><input type="hidden" name="certif_code" value="' . $agf_certif->certif_code . '">' . $agf_certif->certif_code . '</td></tr>' . "\n";
 				print '<tr><td>' . $langs->trans('AgfCertifLabel') . '</td><td><input type="text" size="10" name="certif_label"  value="' . $agf_certif->certif_label . '"></td></tr>' . "\n";
@@ -290,6 +293,9 @@ if (! empty($id)) {
 				print '</td></tr>' . "\n";
 				print '<tr><td>' . $langs->trans('AgfCertifDateWarning') . '</td><td>';
 				print $form->select_date($agf_certif->certif_dt_warning, 'dt_warning', '', '', 1, 'obj_update_' . $i, 1, 1);
+				print '</td></tr>' . "\n";
+				print '<tr><td>' . $langs->trans('AgfCertifMark') . '</td><td>';
+				print '<input type="text" size="10" name="mark"  value="' . $agf_certif->mark . '">';
 				print '</td></tr>' . "\n";
 				
 				if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state) > 0) {
@@ -327,8 +333,11 @@ if (! empty($id)) {
 					print '<tr class="impair"><td>' . $langs->trans('AgfCertifDateEnd') . ':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_end, 'daytext');
 					print '</td></tr>' . "\n";
-					print '<tr class="impair"><td>' . $langs->trans('AgfCertifDateWarning') . ':</td><td>';
+					print '<tr class="pair"><td>' . $langs->trans('AgfCertifDateWarning') . ':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_warning, 'daytext');
+					print '</td></tr>' . "\n";
+					print '<tr class="impair"><td>' . $langs->trans('AgfCertifMark') . ':</td><td>';
+					print $agf_certif->mark;
 					print '</td></tr>' . "\n";
 					
 					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state) > 0) {
@@ -369,8 +378,11 @@ if (! empty($id)) {
 					print '<tr class="impair"><td>' . $langs->trans('AgfCertifDateEnd') . ':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_end, 'daytext');
 					print '</td></tr>' . "\n";
-					print '<tr class="impair"><td>' . $langs->trans('AgfCertifDateWarning') . ':</td><td>';
+					print '<tr class="pair"><td>' . $langs->trans('AgfCertifDateWarning') . ':</td><td>';
 					print dol_print_date($agf_certif->certif_dt_warning, 'daytext');
+					print '</td></tr>' . "\n";
+					print '<tr class="impair"><td>' . $langs->trans('AgfCertifMark') . ':</td><td>';
+					print $agf_certif->mark;
 					print '</td></tr>' . "\n";
 					
 					if (is_array($agf_certif->lines_state) && count($agf_certif->lines_state) > 0) {
