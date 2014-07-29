@@ -300,8 +300,9 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				}
 			}
 		}
-		
-		$sql .= ' AND soc.rowid=' . $socid;
+		if (!empty($socid)) {
+			$sql .= ' AND soc.rowid=' . $socid;
+		}
 		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);

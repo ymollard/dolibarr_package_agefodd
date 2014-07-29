@@ -537,7 +537,7 @@ if (! empty($id)) {
 				print '&nbsp;';
 				print $formateurs->lines [$i]->getLibStatut(2);
 				
-				if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+				if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 					print '&nbsp;';
 					// Calculate time past in session
 					$trainer_calendar = new Agefoddsessionformateurcalendrier($db);

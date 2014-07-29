@@ -261,7 +261,7 @@ if (! empty($id)) {
 				// Start date in the end of session ot now if not set yet
 				if (empty($agf_certif->certif_dt_start)) $agf_certif->certif_dt_start=$agf->dated;
 				$agf_training = new Agefodd($db);
-				$agf_training->fetch($id);
+				$agf_training->fetch($agf->formid);
 				
 				// End date is end of session more the time set in session
 				if (! empty($agf_training->certif_duration)) {

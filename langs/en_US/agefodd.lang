@@ -894,3 +894,4 @@ AgfConvTrainees=Trainee(s) link to this convention
 AgfExplainListTrainee=List_Participants will be replace by list of trainee selected upper
 AgfFactureFacNoOrderValidHelp=Order must be signed for create invoice
 AgfExplainNbparticipants=Nb_Participants will be replace by list of numbers of trainee selected upper
+AgfSelectTraineeCreationForm=Select creation trainee method

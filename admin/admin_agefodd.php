@@ -1402,7 +1402,7 @@ if ($result0 > 0) {
 		print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
 		print '<td>' . $formAgefodd->select_action_session_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
 		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
-		print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
+		print '<td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png', 1).'" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
 		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
 		print '</tr>';
 		print '</form>';
