@@ -610,7 +610,7 @@ if (! empty($id)) {
 					document_line($langs->trans("AgfCourrierCloture"), 2, "courrier", $agf->lines [$i]->socid, 'cloture');
 					if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 						document_line($langs->trans("AgfPDFCertificateA4"), 2, "certificateA4", $agf->lines [$i]->socid);
-						document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
+						//document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
 					}
 				} else {
 					document_line($langs->trans("AgfFacture"), 2, "facopca", $agf->lines [$i]->socid);
