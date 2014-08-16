@@ -40,6 +40,7 @@ class Agefodd_session_formateur {
 	var $lastname;
 	var $firstname;
 	var $trainer_status;
+	var $trainer_type;
 	var $lines = array ();
 	var $labelstatut;
 	var $labelstatut_short;
@@ -87,6 +88,8 @@ class Agefodd_session_formateur {
 		// Clean parameters
 		$this->sessid = trim($this->sessid);
 		$this->formid = trim($this->formid);
+		if (isset($this->trainer_type))
+			$this->trainer_type = trim($this->trainer_type);
 		if (isset($this->trainer_status))
 			$this->trainer_status = trim($this->trainer_status);
 			
@@ -96,13 +99,15 @@ class Agefodd_session_formateur {
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_formateur(";
 		$sql .= "fk_session,fk_agefodd_formateur, fk_user_author,fk_user_mod, datec";
 		$sql .= ",trainer_status";
+		$sql .= ",fk_agefodd_formateur_type";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->sessid . ", ";
 		$sql .= " " . $this->formid . ', ';
 		$sql .= " " . $user->id . ', ';
 		$sql .= " " . $user->id . ', ';
 		$sql .= "'" . $this->db->idate(dol_now()) . "',";
-		$sql .= " " . (! isset($this->trainer_status) ? '0' : $this->db->escape($this->trainer_status));
+		$sql .= " " . (! isset($this->trainer_status) ? '0' : $this->db->escape($this->trainer_status)). ",";
+		$sql .= " " . (empty($this->trainer_type) ? 'NULL' : $this->db->escape($this->trainer_type));
 		$sql .= ")";
 		
 		$this->db->begin();
@@ -156,6 +161,7 @@ class Agefodd_session_formateur {
 		$sql .= " f.fk_socpeople,";
 		$sql .= " sp.lastname, sp.firstname";
 		$sql .= " ,sf.trainer_status";
+		$sql .= " ,sf.fk_agefodd_formateur_type";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -174,6 +180,7 @@ class Agefodd_session_formateur {
 				$this->lastname = $obj->lastname;
 				$this->firstname = $obj->firstname;
 				$this->trainer_status = $obj->trainer_status;
+				$this->trainer_type = $obj->trainer_type;
 			}
 			$this->db->free($resql);
 			
@@ -200,6 +207,7 @@ class Agefodd_session_formateur {
 		$sql .= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
 		$sql .= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user";
 		$sql .= " ,sf.trainer_status";
+		$sql .= " ,st.rowid as trainertype, st.intitule as trainertypelabel";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -207,6 +215,8 @@ class Agefodd_session_formateur {
 		$sql .= " ON f.fk_socpeople = sp.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u";
 		$sql .= " ON f.fk_user = u.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur_type as st";
+		$sql .= " ON st.rowid = sf.fk_agefodd_formateur_type";
 		$sql .= " WHERE sf.fk_session = " . $id;
 		$sql .= " ORDER BY sf.rowid ASC";
 		
@@ -240,6 +250,8 @@ class Agefodd_session_formateur {
 					$line->formid = $obj->formid;
 					$line->sessid = $obj->fk_session;
 					$line->trainer_status = $obj->trainer_status;
+					$line->trainer_type = $obj->trainertype;
+					$line->trainer_type_label = $obj->trainertypelabel;
 					
 					$this->lines [$i] = $line;
 					
@@ -269,6 +281,8 @@ class Agefodd_session_formateur {
 		// Clean parameters
 		$this->opsid = trim($this->opsid);
 		$this->formid = trim($this->formid);
+		if (isset($this->trainer_type))
+			$this->trainer_type = trim($this->trainer_type);
 		
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -277,6 +291,7 @@ class Agefodd_session_formateur {
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_formateur SET";
 		$sql .= " fk_agefodd_formateur=" . $this->formid . ",";
 		$sql .= " trainer_status=" . (isset($this->trainer_status) ? $this->trainer_status : "null") . ",";
+		$sql .= " fk_agefodd_formateur_type=" . (!empty($this->trainer_type) ? $this->trainer_type : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . " ";
 		$sql .= " WHERE rowid = " . $this->opsid;
 		
@@ -484,6 +499,8 @@ class AgfSessionTrainer {
 	var $formid;
 	var $sessid;
 	var $trainer_status;
+	var $trainer_type;
+	var $trainer_type_label;
 	
 	/**
 	 * Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)

@@ -6,6 +6,11 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid,intitule, sort, datec, tms, fk_use
 (5,'DIF', 1, now(), now(), 0, 0),
 (6,'Période PRO', 2, now(), now(), 0, 0);
 
+INSERT INTO llx_agefodd_formateur_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
+(1,'Formateur interne', 0, now(), now(), 0, 0),
+(2,'Formateur externe - Indépendant', 1, now(), now(), 0, 0),
+(3,'Formateur externe - Salarié', 2, now(), now(), 0, 0);
+
 INSERT INTO llx_agefodd_session_admlevel(rowid, level_rank, fk_parent_level, indice, intitule, delais_alerte, fk_user_author, datec, fk_user_mod, tms) VALUES
 (1, 0, 0, 100, 'Préparation de l''action', -40, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),
 (2, 1, 1, 101, 'Inscription des stagiaires', -31, 1, '2012-01-01 00:00:00', 0, '2012-01-01 00:00:00'),

@@ -33,6 +33,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
+require_once ('../class/agefodd_opca.class.php');
 require_once ('../class/agefodd_sessadm.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_convention.class.php');
@@ -542,15 +543,16 @@ if (! empty($id)) {
 				
 				// feuille de présence peut être envoyé à l'opca
 				if ($agf->type_session && $socid) {
-					$result_opca = $agf->getOpcaForTraineeInSession($socid, $id);
+					$agf_opca = new Agefodd_opca($db);
+					$result_opca = $agf_opca->getOpcaForTraineeInSession($socid, $id);
 					if (! $result_opca) {
 						$mesg = $langs->trans('AgfSendWarningNoMailOpca');
 						$style_mesg = 'warnings';
 					} else {
 						$contactstatic = new Contact($db);
-						$contactstatic->fetch($agf->fk_socpeople_OPCA);
+						$contactstatic->fetch($agf_opca->fk_socpeople_OPCA);
 						if (! empty($contactstatic->email)) {
-							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
+							$withto [$agf_opca->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
 						} else {
 							$mesg = $langs->trans('AgfSendWarningNoMailOpca');
 							$style_mesg = 'warnings';
@@ -606,7 +608,26 @@ if (! empty($id)) {
 				$withto = array ();
 				
 				// Convention peut être envoyé à l'opca ou au commanditaire
-				if (! empty($agf->fk_socpeople_OPCA)) {
+				
+				
+				// feuille de présence peut être envoyé à l'opca
+				if ($agf->type_session && $socid) {
+					$agf_opca = new Agefodd_opca($db);
+					$result_opca = $agf_opca->getOpcaForTraineeInSession($socid, $id);
+					if (! $result_opca) {
+						$mesg = $langs->trans('AgfSendWarningNoMailOpca');
+						$style_mesg = 'warnings';
+					} else {
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($agf_opca->fk_socpeople_OPCA);
+						if (! empty($contactstatic->email)) {
+							$withto [$agf_opca->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
+						} else {
+							$mesg = $langs->trans('AgfSendWarningNoMailOpca');
+							$style_mesg = 'warnings';
+						}
+					}
+				} else {
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($agf->fk_socpeople_OPCA);
 					if (! empty($contactstatic->email)) {
@@ -666,14 +687,15 @@ if (! empty($id)) {
 				
 				// Attestation peut être envoyé à l'opca ou au commanditaire if inter-entreprise
 				if ($agf->type_session && $socid) {
-					$result_opca = $agf->getOpcaForTraineeInSession($socid, $id);
+					$agf_opca = new Agefodd_opca($db);
+					$result_opca = $agf_opca->getOpcaForTraineeInSession($socid, $id);
 					if (! $result_opca) {
 						setEventMessage($langs->trans('AgfSendWarningNoMailOpca'), 'warnings');
-					} elseif ($agf->is_OPCA) {
+					} elseif ($agf_opca->is_OPCA) {
 						$contactstatic = new Contact($db);
-						$contactstatic->fetch($agf->fk_socpeople_OPCA);
+						$contactstatic->fetch($agf_opca->fk_socpeople_OPCA);
 						if (! empty($contactstatic->email)) {
-							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
+							$withto [$agf_opca->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
 						} else {
 							$mesg = $langs->trans('AgfSendWarningNoMailOpca');
 							$style_mesg = 'warnings';
@@ -753,14 +775,15 @@ if (! empty($id)) {
 				
 				// Dossier de cloture peut être envoyé au participant ou à l'opca ou au commanditaire
 				if ($agf->type_session && $socid) {
-					$result_opca = $agf->getOpcaForTraineeInSession($socid, $id);
+					$agf_opca = new Agefodd_opca($db);
+					$result_opca = $agf_opca->getOpcaForTraineeInSession($socid, $id);
 					if (! $result_opca) {
 						setEventMessage($langs->trans('AgfSendWarningNoMailOpca'), 'warnings');
-					} elseif ($agf->is_OPCA) {
+					} elseif ($agf_opca->is_OPCA) {
 						$contactstatic = new Contact($db);
-						$contactstatic->fetch($agf->fk_socpeople_OPCA);
+						$contactstatic->fetch($agf_opca->fk_socpeople_OPCA);
 						if (! empty($contactstatic->email)) {
-							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
+							$withto [$agf_opca->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
 						} else {
 							$mesg = $langs->trans('AgfSendWarningNoMailOpca');
 							$style_mesg = 'warnings';
@@ -830,14 +853,15 @@ if (! empty($id)) {
 				
 				// Dossier de cloture peut être envoyé au participant ou à l'opca ou au commanditaire
 				if ($agf->type_session && $socid) {
-					$result_opca = $agf->getOpcaForTraineeInSession($socid, $id);
+					$agf_opca = new Agefodd_opca($db);
+					$result_opca = $agf_opca->getOpcaForTraineeInSession($socid, $id);
 					if (! $result_opca) {
 						setEventMessage($langs->trans('AgfSendWarningNoMailOpca'), 'warnings');
-					} elseif ($agf->is_OPCA) {
+					} elseif ($agf_opca->is_OPCA) {
 						$contactstatic = new Contact($db);
-						$contactstatic->fetch($agf->fk_socpeople_OPCA);
+						$contactstatic->fetch($agf_opca->fk_socpeople_OPCA);
 						if (! empty($contactstatic->email)) {
-							$withto [$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
+							$withto [$agf_opca->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
 						} else {
 							$mesg = $langs->trans('AgfSendWarningNoMailOpca');
 							$style_mesg = 'warnings';

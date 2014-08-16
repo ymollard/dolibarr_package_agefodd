@@ -76,6 +76,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		$agf->opsid = GETPOST('opsid', 'int');
 		$agf->formid = GETPOST('formid', 'int');
 		$agf->trainer_status = GETPOST('trainerstatus', 'int');
+		$agf->trainer_type = GETPOST('trainertype', 'int');
 		$result = $agf->update($user);
 		
 		if ($result > 0) {
@@ -92,6 +93,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 		$agf->sessid = GETPOST('sessid', 'int');
 		$agf->formid = GETPOST('formid', 'int');
 		$agf->trainer_status = GETPOST('trainerstatus', 'int');
+		$agf->trainer_type = GETPOST('trainertype', 'int');
 		$result = $agf->create($user);
 		
 		if ($result > 0) {
@@ -381,9 +383,14 @@ if (! empty($id)) {
 				
 				print '<td width="20px" align="center">' . ($i + 1) . '</td>';
 				
+				//Edit line
 				if ($formateurs->lines [$i]->opsid == $_POST ["opsid"] && ! $_POST ["form_remove_x"]) {
-					print '<td width="400px" style="border-right: 0px">';
+					print '<td width="600px" style="border-right: 0px">';
 					print $formAgefodd->select_formateur($formateurs->lines [$i]->formid, "formid");
+					if (!empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
+						print '&nbsp;';
+						print $formAgefodd->select_type_formateur($formateurs->lines [$i]->trainer_type, "trainertype", ' active=1 ');
+					}
 					print '&nbsp;';
 					print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines [$i]->trainer_status);
 					
@@ -392,18 +399,22 @@ if (! empty($id)) {
 					}
 					print '</td>';
 				} else {
-					print '<td width="400px"style="border-right: 0px;">';
+					print '<td width="400px" style="border-right: 0px;">';
 					// trainer info
 					if (strtolower($formateurs->lines [$i]->lastname) == "undefined") {
 						print $langs->trans("AgfUndefinedTrainer");
 					} else {
-						print '<table class="nobordernopadding">';
+						print '<table width="100%" class="nobordernopadding">';
 						print '<tr><td width="50%">';
 						
 						print '<a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $formateurs->lines [$i]->formid . '">';
 						print img_object($langs->trans("ShowContact"), "contact") . ' ';
 						print strtoupper($formateurs->lines [$i]->lastname) . ' ' . ucfirst($formateurs->lines [$i]->firstname) . '</a>';
-						print '&nbsp;';
+						if (!empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
+							print '<BR>';
+							print $formateurs->lines [$i]->trainer_type_label;
+						}
+						print '<BR>';
 						print $formateurs->lines [$i]->getLibStatut(2);
 						print '</td>';
 						
@@ -476,6 +487,10 @@ if (! empty($id)) {
 			print '<td width="20px" align="center">' . ($i + 1) . '</td>';
 			print '<td nowrap="nowrap">';
 			print $formAgefodd->select_formateur($formateurs->lines [$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . ')', 1);
+			if (!empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
+				print '&nbsp;';
+				print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, "trainertype", ' active=1 ');
+			}
 			print '&nbsp;';
 			print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines [$i]->trainer_status);
 			if ($user->rights->agefodd->modifier) {

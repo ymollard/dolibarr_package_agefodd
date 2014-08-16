@@ -424,6 +424,22 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
+		$r ++;
+		$this->const [$r] [0] = "AGF_USE_FORMATEUR_TYPE";
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
+		$this->const [$r] [3] = 'Use trainer type';
+		$this->const [$r] [4] = 0;
+		$this->const [$r] [5] = 0;
+		
+		$r ++;
+		$this->const [$r] [0] = "AGF_DEFAULT_FORMATEUR_TYPE";
+		$this->const [$r] [1] = "chaine";
+		$this->const [$r] [2] = '1';
+		$this->const [$r] [3] = 'Type of  trainer funding';
+		$this->const [$r] [4] = 0;
+		$this->const [$r] [5] = 0;
+		
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array ();
@@ -435,20 +451,24 @@ class modAgefodd extends DolibarrModules {
 				'langs' => 'agefodd@agefodd',
 				'tabname' => array (
 						MAIN_DB_PREFIX . "agefodd_stagiaire_type",
+						MAIN_DB_PREFIX . "agefodd_formateur_type",
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type" 
 				),
 				'tablib' => array (
 						"AgfTraineeType",
+						"AgfTrainerTypeDict",
 						"AgfCertificateType",
 						"AgfTrainingCategTbl" 
 				),
 				'tabsql' => array (
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
+						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f' 
 				),
 				'tabsqlsort' => array (
+						'sort ASC',
 						'sort ASC',
 						'sort ASC',
 						'sort ASC' 
@@ -456,9 +476,11 @@ class modAgefodd extends DolibarrModules {
 				'tabfield' => array (
 						"intitule,sort",
 						"intitule,sort",
+						"intitule,sort",
 						"code,intitule,sort" 
 				),
 				'tabfieldvalue' => array (
+						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort" 
@@ -466,14 +488,17 @@ class modAgefodd extends DolibarrModules {
 				'tabfieldinsert' => array (
 						"intitule,sort",
 						"intitule,sort",
+						"intitule,sort",
 						"code,intitule,sort" 
 				),
 				'tabrowid' => array (
 						"rowid",
 						"rowid",
+						"rowid",
 						"rowid" 
 				),
 				'tabcond' => array (
+						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled' 
@@ -720,7 +745,7 @@ class modAgefodd extends DolibarrModules {
 				) 
 		);
 		$this->export_fields_array [$r] = array (
-				'c.rowid' => 'Id',
+				's.rowid' => 'Id',
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfFormTypeSession',
 				's.dated' => 'AgfDateDebut',
 				's.datef' => 'AgfDateFin',
@@ -754,6 +779,7 @@ class modAgefodd extends DolibarrModules {
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.civilite ELSE fp.civilite END as trainerciv' => 'AgfTrainerCiv',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.lastname ELSE fp.lastname END as trainerlastname' => 'AgfTrainerLastname',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.firstname ELSE fp.firstname END as trainerfirstname' => 'AgfTrainerCivFirstname',
+				'trainerdicttype.intitule as trainertype' => 'AgfTrainerType',
 				'so.nom as cust_name' => 'Customer',
 				'sta.civilite as traineeciv' => 'AgfCivilite',
 				'sta.nom as traineelastname' => 'AgfStaLastname',
@@ -766,10 +792,12 @@ class modAgefodd extends DolibarrModules {
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfOPCAStaContactFirstName' 
 		);
 		$this->export_TypeFields_array [$r] = array (
-				'c.rowid' => "Text" 
+				's.rowid' => "Text" ,
+				's.dated' => 'Date',
+				's.datef' => 'Date',
 		);
 		$this->export_entities_array [$r] = array (
-				'c.rowid' => "Id",
+				's.rowid' => "Id",
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
 				's.dated' => 'AgfSessionDetail',
 				's.datef' => 'AgfSessionDetail',
@@ -803,6 +831,7 @@ class modAgefodd extends DolibarrModules {
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.civilite ELSE fp.civilite END as trainerciv' => 'AgfTeacher',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.lastname ELSE fp.lastname END as trainerlastname' => 'AgfTeacher',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.firstname ELSE fp.firstname END as trainerfirstname' => 'AgfTeacher',
+				'trainerdicttype.intitule as trainertype' => 'AgfTeacher',
 				'so.nom as cust_name' => 'AgfSessionDetail',
 				'sta.civilite as traineeciv' => 'AgfNbreParticipants',
 				'sta.nom as traineelastname' => 'AgfNbreParticipants',
@@ -824,6 +853,7 @@ class modAgefodd extends DolibarrModules {
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as ssdicttype ON ssdicttype.rowid = ss.fk_agefodd_stagiaire_type';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as so ON so.rowid = s.fk_soc';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur as sf ON sf.fk_session = s.rowid';
+		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as trainerdicttype ON trainerdicttype.rowid = sf.fk_agefodd_formateur_type';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'user as fu ON fu.rowid = f.fk_user';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as fp ON fp.rowid = f.fk_socpeople';
@@ -832,7 +862,7 @@ class modAgefodd extends DolibarrModules {
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product as product ON product.rowid = c.fk_product';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND staopca.fk_soc_trainee=sta.fk_soc';
+		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND (staopca.fk_soc_trainee=sta.fk_soc OR staopca.fk_session_trainee=ss.rowid)';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';

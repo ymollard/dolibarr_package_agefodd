@@ -121,7 +121,7 @@ class InterfaceAgefodd {
 						if ($result != - 1) {
 							
 							$dt_array = getdate($action->datep);
-							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array ['mon'], $dt_array ['mday'], $dt_array ['year']);
+							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
 							$agf_cal->heured = $action->datep;
 							$agf_cal->heuref = $action->datef;
 							
@@ -149,7 +149,7 @@ class InterfaceAgefodd {
 						if ($result != - 1) {
 							
 							$dt_array = getdate($action->datep);
-							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array ['mon'], $dt_array ['mday'], $dt_array ['year']);
+							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
 							$agf_cal->heured = $action->datep;
 							$agf_cal->heuref = $action->datef;
 							$agf_cal->trainer_cost = $agf_cal->trainer_cost;
@@ -369,7 +369,7 @@ class InterfaceAgefodd {
 		// Update action label if training is change on a session
 		if ($action == 'AGSESSION_UPDATE') {
 			// Change Trainning session actino if needed
-			require_once (DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php');
+			require_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 			
 			$actioncomm = new ActionComm($this->db);
 			$actioncomm->getActions(0, $object->id, 'agefodd_agsession');
@@ -458,11 +458,11 @@ class InterfaceAgefodd {
 			
 			foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
 				
-				if ($objectslinked [0]->element == 'propal' || $objectslinked [0]->element == 'commande') {
+				if ($objectslinked[0]->element == 'propal' || $objectslinked[0]->element == 'commande') {
 					
 					$agf_fin = new Agefodd_session_element($this->db);
 					
-					$result = $agf_fin->add_invoice($user, $objectslinked [0]->id, $objectslinked [0]->element, $object->id);
+					$result = $agf_fin->add_invoice($user, $objectslinked[0]->id, $objectslinked[0]->element, $object->id);
 					
 					if ($result < 0) {
 						$error = "Failed to add agefodd invoice link : " . $agf_fin->error . " ";
@@ -487,11 +487,11 @@ class InterfaceAgefodd {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 				
 				$session_sta = new Agefodd_session_stagiaire($this->db);
-				$session_sta->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				// Set trainee status to confirm
 				$session_sta->update_status_by_soc($user, 0, $object->socid, 2);
 				
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
 				$agf_fin->updateSellingPrice($user);
 			}
@@ -509,7 +509,7 @@ class InterfaceAgefodd {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 				
 				$session_sta = new Agefodd_session_stagiaire($this->db);
-				$session_sta->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$session_sta->update_status_by_soc($user, 0, $object->socid, 6);
 			}
 			
@@ -526,7 +526,7 @@ class InterfaceAgefodd {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 				
 				$session_sta = new Agefodd_session_stagiaire($this->db);
-				$session_sta->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$session_sta->update_status_by_soc($user, 0, $object->socid, 0);
 			}
 			
@@ -538,8 +538,8 @@ class InterfaceAgefodd {
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->id, 'invoice_supplier');
 			if (count($agf_fin->lines) > 0) {
-				$agf_fin->id = $agf_fin->lines [0]->id;
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->id = $agf_fin->lines[0]->id;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->delete($user);
 			}
 			
@@ -552,8 +552,8 @@ class InterfaceAgefodd {
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->id, 'prop');
 			if (count($agf_fin->lines) > 0) {
-				$agf_fin->id = $agf_fin->lines [0]->id;
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->id = $agf_fin->lines[0]->id;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->delete($user);
 			}
 			
@@ -566,8 +566,8 @@ class InterfaceAgefodd {
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->id, 'fac');
 			if (count($agf_fin->lines) > 0) {
-				$agf_fin->id = $agf_fin->lines [0]->id;
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->id = $agf_fin->lines[0]->id;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->delete($user);
 			}
 			
@@ -580,8 +580,8 @@ class InterfaceAgefodd {
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->id, 'bc');
 			if (count($agf_fin->lines) > 0) {
-				$agf_fin->id = $agf_fin->lines [0]->id;
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->id = $agf_fin->lines[0]->id;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->delete($user);
 			}
 			
@@ -596,11 +596,12 @@ class InterfaceAgefodd {
 			$agf_fin->fetch_element_by_id($object->fk_facture, 'fac');
 			if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
 				dol_include_once('/agefodd/class/agsession.class.php');
+				dol_include_once('/agefodd/class/agefodd_opca.class.php');
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 				$agfsession = new Agsession($this->db);
-				$agfsession->fetch($agf_fin->lines [0]->fk_session_agefodd);
-				
-				if ($object->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
+				$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
+
+				if ($object->fk_product == $agfsession->fk_product && (! empty($agfsession->id)) && !empty($invoice->id)) {
 					$desc = '';
 					if (! empty($agfsession->intitule_custo)) {
 						$desc = $agfsession->intitule_custo . "\n";
@@ -618,44 +619,62 @@ class InterfaceAgefodd {
 						$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $agfsession->placecode;
 					}
 					$session_trainee = new Agefodd_session_stagiaire($this->db);
-					/*if ($this->type_session == 0) {
-						// For Intra entreprise you take all trainne
-						$session_trainee->fetch_stagiaire_per_session ( $agfsession->id );
-					} else {
-						// For inter entreprise you tkae only trainee link with this OPCA
-						$session_trainee->fetch_stagiaire_per_session_per_OPCA ( $agfsession->id, $object->socid );
-					}*/
 					
-					if ($agfsession->type_session == 0) {
+					//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
+					// For Intra entreprise you take all trainne
+					$sessionOPCA = new Agefodd_opca($this->db);
+					if (empty($conf->global->AGF_MANAGE_OPCA || $agf->type_session == 0)) {
 						// For Intra entreprise you take all trainne
-						$session_trainee->fetch_stagiaire_per_session($agfsession->id);
-					} else {
+						$find_trainee_by_OPCA=false;
+						$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
+						
+					} elseif ($agf->type_session == 1) {
+						
 						// For inter entreprise you tkae only trainee link with this OPCA
-						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $socid);
+						dol_include_once('/compta/facture/class/facture.class.php');
+						$invoice= new Facture($this->db);
+						$result=$invoice->fetch($object->fk_facture);
+						
+						
+						$result = $sessionOPCA->getOpcaSession($agf_fin->lines[0]->fk_session_agefodd);
+						if ($result<0) {
+							$this->error = $sessionOPCA->error;
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+							return - 1;
+						}
+						if (is_array($sessionOPCA->lines) && count($sessionOPCA->lines)>0) {
+							foreach($sessionOPCA->lines as $line) {
+								if ($line->fk_soc_OPCA==$invoice->socid) {
+									$find_trainee_by_OPCA=true;
+									break;
+								}
+							}
+						}
+					}
+					
+					if ($find_trainee_by_OPCA) {
+						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
+					} else {
+						$session_trainee->fetch_stagiaire_per_session($agfsession->id);
 					}
 					
 					if (count($session_trainee->lines) > 0) {
 						
-						
 						if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 							$desc_trainee = "\n";
-							$nbtrainee=0;
+							$nbtrainee = 0;
 							foreach ( $session_trainee->lines as $line ) {
 								
 								// Do not output not present or cancelled trainee
 								if ($line->status_in_session != 5 && $line->status_in_session != 6) {
-									$sessionOPCA = new Agsession($this->db);
-									if ($this->type_session == 1) {
-										$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id);
-									} else {
-										$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
+									if ($find_trainee_by_OPCA) {
+										$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id,$line->stagerowid);
 									}
-									
 									if (! empty($sessionOPCA->num_OPCA_file)) {
-										$desc_OPCA = "\n" . 'Num dossier : ' . $sessionOPCA->num_OPCA_file . ' pour ' . $line->socname;
+										$desc_OPCA = "\n" . $langs->trans('AgfNumDossier') . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
 									}
 									$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
-									$nbtrainee++;
+									$nbtrainee ++;
 								}
 							}
 						}
@@ -690,7 +709,7 @@ class InterfaceAgefodd {
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->id, 'invoice_supplier');
 			if (count($agf_fin->lines) > 0) {
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->updateSellingPrice($user);
 			}
 			
@@ -704,15 +723,15 @@ class InterfaceAgefodd {
 			$agf_fin->fetch_element_by_id($object->id, 'fac');
 			
 			if (count($agf_fin->lines) > 0) {
-				$agf_fin->fk_session_agefodd = $agf_fin->lines [0]->fk_session_agefodd;
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 				$agf_fin->updateSellingPrice($user);
 				
 				if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
-					$result = $agf_fin->check_all_invoice_validate($agf_fin->lines [0]->fk_session_agefodd);
+					$result = $agf_fin->check_all_invoice_validate($agf_fin->lines[0]->fk_session_agefodd);
 					if ($result == 1) {
 						dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 						$admintask = new Agefodd_sessadm($this->db);
-						$admintask->updateByTriggerName($user, $agf_fin->lines [0]->fk_session_agefodd, 'AGF_INV_CUST_VALID');
+						$admintask->updateByTriggerName($user, $agf_fin->lines[0]->fk_session_agefodd, 'AGF_INV_CUST_VALID');
 					}
 				}
 			}
@@ -730,7 +749,7 @@ class InterfaceAgefodd {
 				if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
 					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 					$admintask = new Agefodd_sessadm($this->db);
-					$admintask->updateByTriggerName($user, $agf_fin->lines [0]->fk_session_agefodd, 'AGF_INV_TRAINER_VALID');
+					$admintask->updateByTriggerName($user, $agf_fin->lines[0]->fk_session_agefodd, 'AGF_INV_TRAINER_VALID');
 				}
 			}
 			
@@ -739,7 +758,7 @@ class InterfaceAgefodd {
 				if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
 					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 					$admintask = new Agefodd_sessadm($this->db);
-					$admintask->updateByTriggerName($user, $agf_fin->lines [0]->fk_session_agefodd, 'AGF_INV_ROOM_VALID');
+					$admintask->updateByTriggerName($user, $agf_fin->lines[0]->fk_session_agefodd, 'AGF_INV_ROOM_VALID');
 				}
 			}
 			
@@ -748,7 +767,7 @@ class InterfaceAgefodd {
 				if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
 					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 					$admintask = new Agefodd_sessadm($this->db);
-					$admintask->updateByTriggerName($user, $agf_fin->lines [0]->fk_session_agefodd, 'AGF_INV_TRIP_VALID');
+					$admintask->updateByTriggerName($user, $agf_fin->lines[0]->fk_session_agefodd, 'AGF_INV_TRIP_VALID');
 				}
 			}
 			

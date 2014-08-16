@@ -798,6 +798,63 @@ class FormAgefodd extends Form {
 	}
 	
 	/**
+	 * affiche un champs select contenant la liste des type de formateur
+	 *
+	 * @param int $selectid Id de la session selectionner
+	 * @param string $htmlname Name of HTML control
+	 * @param string $filter SQL part for filter
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	function select_type_formateur($selectid, $htmlname = 'trainertype', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+		global $conf, $langs;
+	
+		$sql = "SELECT t.rowid, t.intitule";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur_type as t";
+		if (! empty($filter)) {
+			$sql .= ' WHERE ' . $filter;
+		}
+		$sql .= " ORDER BY t.sort";
+	
+		dol_syslog(get_class($this) . "::select_type_formateur sql=" . $sql, LOG_DEBUG);
+		$result = $this->db->query($sql);
+		if ($result) {
+				
+			if ($conf->use_javascript_ajax && $conf->global->AGF_STAGTYPE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+				$out .= ajax_combobox($htmlname, $event);
+			}
+				
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value="-1"></option>';
+			$num = $this->db->num_rows($result);
+			$i = 0;
+			if ($num) {
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object($result);
+					$label = stripslashes($obj->intitule);
+						
+					if ($selectid > 0 && $selectid == $obj->rowid) {
+						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+			$this->db->free($result);
+			return $out;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::select_type_formateur " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+	
+	/**
 	 * Display select of session status from dictionnary
 	 *
 	 * @param int $selectid Id

@@ -1,7 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
--- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+-- Copyright (C) 2012-2014		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,18 +16,18 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
---
--- Structure de la table llx_agefodd_session_formateur
---
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur (
-  rowid integer NOT NULL auto_increment PRIMARY KEY,
-  fk_session integer NOT NULL,
-  fk_agefodd_formateur integer NOT NULL,
-  fk_agefodd_formateur_type integer,
-  trainer_status integer NULL,
-  fk_user_author integer NOT NULL,
-  datec datetime NOT NULL,
-  fk_user_mod integer NOT NULL,
-  tms timestamp NOT NULL
-) ENGINE=InnoDB;
 
+--
+-- Structure de la table llx_agefodd_formateur_type
+--
+
+CREATE TABLE IF NOT EXISTS llx_agefodd_formateur_type (
+  rowid integer NOT NULL auto_increment PRIMARY KEY,
+  intitule varchar(80) NOT NULL,
+  sort smallint NOT NULL,
+  active integer NULL,
+  datec datetime,
+  tms timestamp NOT NULL,
+  fk_user_author integer NOT NULL,
+  fk_user_mod integer NOT NULL
+) ENGINE=InnoDB;

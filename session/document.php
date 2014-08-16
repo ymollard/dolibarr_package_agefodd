@@ -30,6 +30,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
+require_once ('../class/agefodd_opca.class.php');
 require_once ('../class/agefodd_sessadm.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_convention.class.php');
@@ -588,14 +589,14 @@ if (! empty($id)) {
 					
 					$text_fac = $langs->trans("AgfFacture");
 					if ($agf->lines [$i]->type_session && (! empty($conf->global->AGF_MANAGE_OPCA))) { // session inter
-						$agfstat = new Agsession($db);
+						$agfstat = new Agefodd_opca($db);
 						// load les infos OPCA pour la session
 						$agfstat->getOpcaForTraineeInSession($agf->lines [$i]->socid, $agf->lines [$i]->sessid);
 						// invocie to OPCA if funding thridparty
 						$soc_to_select = ($agfstat->is_OPCA ? $agfstat->fk_soc_OPCA : $agf->lines [$i]->socid);
 						
 						// If funding is fill
-						if ($soc_to_select > 0 && $agfstat->is_OPCA) {
+					/*	if ($soc_to_select > 0 && $agfstat->is_OPCA) {
 							$text_fac .= ' ' . $langs->trans("AgfOPCASub1");
 						} elseif (! $agfstat->is_OPCA) 						// No funding
 						{
@@ -603,7 +604,7 @@ if (! empty($id)) {
 						} else 						// No funding trhirdparty filled
 						{
 							$text_fac .= ' <span class="error">' . $langs->trans("AgfOPCASubErr") . ' <a href="' . dol_buildpath("/agefodd/session/subscribers.php", 1) . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifySubscribersAndSubrogation') . '</a></span>';
-						}
+						}*/
 					}
 					document_line($text_fac, 2, "fac", $agf->lines [$i]->socid);
 					

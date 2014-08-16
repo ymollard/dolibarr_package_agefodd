@@ -44,6 +44,7 @@ require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
+require_once ('../class/agefodd_opca.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -1469,8 +1470,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									print '<table class="nobordernopadding" width="100%"><tr><td colspan="2">';
 									print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines [$i]->status_in_session, 4);
 									print '</td></tr>';
+									$opca=new Agefodd_opca($db);
 									
-									$agf->getOpcaForTraineeInSession($stagiaires->lines [$i]->socid, $agf->id);
+									$opca->getOpcaForTraineeInSession($stagiaires->lines [$i]->socid, $agf->id, $stagiaires->lines[$i]->stagerowid );
 									print '<tr><td width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
 									if ($agf->is_OPCA == 1) {
 										$chckisOPCA = 'checked="checked"';

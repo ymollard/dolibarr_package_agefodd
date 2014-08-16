@@ -19,6 +19,7 @@
 CREATE TABLE IF NOT EXISTS llx_agefodd_opca
 (
 	rowid integer NOT NULL auto_increment PRIMARY KEY,
+	fk_session_trainee integer	NOT NULL,
 	fk_soc_trainee	integer	NOT NULL,
 	fk_session_agefodd integer NOT NULL,
 	date_ask_OPCA datetime DEFAULT NULL,

@@ -11,6 +11,8 @@ English Dolibarr ChangeLog
 -New : New form to add trainee (from contact from simple creation are now mix in the same screen)
 -New : Certificate A4 PDF with relevant data
 -Fix : Remove certificate Credit card PDF  because not usefull
+-New : Add trainer type on session. Usefull for french admnistrative document (Tools,Export)
+-New : Can have different OPCA for one session/thirdparty in inter-company session
 
 ***** ChangeLog for 2.1.9 compared to 2.1.8 *****
 -Fix : Attestation by trainnee with training objectives wrong output

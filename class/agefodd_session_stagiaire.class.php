@@ -335,9 +335,10 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 *
 	 * @param int $id of session
 	 * @param int $socid of OPCA
+	 * @param int $trainee_seesion_id Trainee session ID
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_stagiaire_per_session_per_OPCA($id, $socid = null) {
+	function fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id=0) {
 		global $langs;
 		
 		$linesadded = array ();
@@ -362,7 +363,13 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_opca as staopca";
-		$sql .= " ON s.rowid = staopca.fk_session_agefodd AND staopca.fk_soc_OPCA=" . $socid;
+		$sql .= " ON s.rowid = staopca.fk_session_agefodd ";
+		if (!empty($socid)) {
+			$sql .= " AND staopca.fk_soc_OPCA=" . $socid .' AND staopca.fk_session_trainee=ss.rowid';
+		}
+		if (!empty($trainee_seesion_id)) {
+			$sql .= " AND staopca.fk_session_trainee=" . $trainee_seesion_id;
+		}
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sa";
 		$sql .= " ON sa.rowid = ss.fk_stagiaire AND sa.fk_soc=staopca.fk_soc_trainee";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";

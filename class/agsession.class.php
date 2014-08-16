@@ -102,6 +102,7 @@ class Agsession extends CommonObject {
 	var $fk_soc_requester;
 	var $fk_socpeople_requester;
 	var $socname;
+	var $fk_session_trainee;
 	
 	/**
 	 * Constructor
@@ -1706,73 +1707,6 @@ class Agsession extends CommonObject {
 	}
 	
 	/**
-	 * Update OPCA info for a trainee in a session (used if session type is 'inter')
-	 *
-	 * @param User $user that modify
-	 * @param int $notrigger triggers after, 1=disable triggers
-	 * @return int <0 if KO, >0 if OK
-	 */
-	function updateInfosOpcaForTrainee() {
-		global $conf, $langs;
-		$error = 0;
-		
-		// Clean parameters
-		$this->date_ask_OPCA = addslashes(trim($this->date_ask_OPCA));
-		$this->is_date_ask_OPCA = addslashes(trim($this->is_date_ask_OPCA));
-		$this->is_OPCA = addslashes(trim($this->is_OPCA));
-		$this->fk_soc_OPCA = addslashes(trim($this->fk_soc_OPCA));
-		$this->soc_OPCA_name = addslashes(trim($this->soc_OPCA_name));
-		$this->OPCA_adress = addslashes(trim($this->OPCA_adress));
-		$this->fk_socpeople_OPCA = addslashes(trim($this->fk_socpeople_OPCA));
-		$this->contact_name_OPCA = addslashes(trim($this->contact_name_OPCA));
-		$this->num_OPCA_soc = addslashes(trim($this->num_OPCA_soc));
-		$this->num_OPCA_file = addslashes(trim($this->num_OPCA_file));
-		
-		// Update request
-		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_opca SET";
-		$sql .= " fk_session_agefodd=" . $this->sessid . ",";
-		$sql .= " fk_stagiaire=" . $this->stagiaire . ",";
-		$sql .= " fk_user_mod=" . $user->id . ",";
-		$sql .= " fk_agefodd_stagiaire_type='" . $this->stagiaire_type . "',";
-		$sql .= " WHERE rowid = " . $this->id;
-		
-		$this->db->begin();
-		
-		dol_syslog(get_class($this) . "::updateInfosOpcaForTrainee sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if (! $resql) {
-			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
-		}
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-				
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-		
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::updateInfosOpcaForTrainee " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return 1;
-		}
-	}
-	
-	/**
 	 * Delete object in database
 	 *
 	 * @param int $id to delete
@@ -3029,280 +2963,6 @@ class Agsession extends CommonObject {
 	}
 	
 	/**
-	 * Load object in memory from database
-	 *
-	 * @param int $id_trainee trainee in session
-	 * @param int $id_session session
-	 * @return int <0 if KO, >0 if OK (rowid)
-	 */
-	function getOpcaForTraineeInSession($fk_soc_trainee, $id_session) {
-		global $langs;
-		$sql = "SELECT";
-		$sql .= " t.rowid,";
-		$sql .= " t.fk_soc_trainee,";
-		$sql .= " t.fk_session_agefodd,";
-		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
-		$sql .= " t.is_OPCA as is_opca,";
-		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
-		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
-		$sql .= " concactOPCA.lastname as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
-		$sql .= " t.num_OPCA_soc as num_opca_soc,";
-		$sql .= " t.num_OPCA_file as num_opca_file,";
-		$sql .= " t.fk_user_author,";
-		$sql .= " t.datec,";
-		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
-		
-		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_opca as t";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
-		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
-		
-		$sql .= " WHERE t.fk_soc_trainee = " . $fk_soc_trainee;
-		$sql .= " AND t.fk_session_agefodd = " . $id_session;
-		
-		dol_syslog(get_class($this) . "::getOpcaForTraineeInSession sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				$obj = $this->db->fetch_object($resql);
-				
-				$this->opca_rowid = $obj->rowid;
-				$this->fk_soc_trainee = $obj->fk_soc_trainee;
-				$this->fk_session_agefodd = $obj->fk_session_agefodd;
-				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_opca;
-				$this->is_OPCA = $obj->is_opca;
-				$this->fk_soc_OPCA = $obj->fk_soc_opca;
-				$this->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
-				$this->num_OPCA_soc = $obj->num_opca_soc;
-				$this->num_OPCA_file = $obj->num_opca_file;
-				$this->fk_user_author = $obj->fk_user_author;
-				$this->datec = $this->db->jdate($obj->datec);
-				$this->fk_user_mod = $obj->fk_user_mod;
-				$this->tms = $this->db->jdate($obj->tms);
-				
-				$this->soc_OPCA_name = $this->getValueFrom('societe', $this->fk_soc_OPCA, 'nom');
-				$this->contact_name_OPCA = $obj->concact_opca_name . ' ' . $obj->concact_opca_firstname;
-			} else {
-				$this->opca_rowid = '';
-				$this->fk_soc_trainee = '';
-				$this->fk_session_agefodd = '';
-				$this->date_ask_OPCA = '';
-				$this->is_date_ask_OPCA = 0;
-				$this->is_OPCA = 0;
-				$this->fk_soc_OPCA = '';
-				$this->fk_socpeople_OPCA = '';
-				$this->num_OPCA_soc = '';
-				$this->num_OPCA_file = '';
-				$this->fk_user_author = '';
-				$this->datec = '';
-				$this->fk_user_mod = '';
-				$this->tms = '';
-				$this->soc_OPCA_name = '';
-				$this->contact_name_OPCA = '';
-			}
-			$this->db->free($resql);
-			
-			return $this->opca_rowid;
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
-			return - 1;
-		}
-	}
-	
-	/**
-	 * Create line into database about OPCA infos
-	 *
-	 * @param User $user that create
-	 * @param int $notrigger triggers after, 1=disable triggers
-	 * @return int <0 if KO, Id of created object if OK
-	 */
-	function saveInfosOpca($user, $notrigger = 0) {
-		global $conf, $langs;
-		$error = 0;
-		
-		// Clean parameters
-		if (isset($this->fk_soc_trainee))
-			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
-		if (isset($this->fk_session_agefodd))
-			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
-		if (isset($this->date_ask_OPCA))
-			$this->date_ask_OPCA = trim($this->date_ask_OPCA);
-		if (isset($this->is_date_ask_OPCA))
-			$this->is_date_ask_OPCA = trim($this->is_date_ask_OPCA);
-		if (isset($this->is_OPCA))
-			$this->is_OPCA = trim($this->is_OPCA);
-		if (isset($this->fk_soc_OPCA))
-			$this->fk_soc_OPCA = trim($this->fk_soc_OPCA);
-		if (isset($this->fk_socpeople_OPCA))
-			$this->fk_socpeople_OPCA = trim($this->fk_socpeople_OPCA);
-		if (isset($this->num_OPCA_soc))
-			$this->num_OPCA_soc = trim($this->num_OPCA_soc);
-		if (isset($this->num_OPCA_file))
-			$this->num_OPCA_file = trim($this->num_OPCA_file);
-			
-			// Insert request
-		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_opca(";
-		
-		$sql .= "fk_soc_trainee,";
-		$sql .= "fk_session_agefodd,";
-		$sql .= "date_ask_OPCA,";
-		$sql .= "is_date_ask_OPCA,";
-		$sql .= "is_OPCA,";
-		$sql .= "fk_soc_OPCA,";
-		$sql .= "fk_socpeople_OPCA,";
-		$sql .= "num_OPCA_soc,";
-		$sql .= "num_OPCA_file,";
-		$sql .= "fk_user_author,";
-		$sql .= "datec,";
-		$sql .= "fk_user_mod";
-		
-		$sql .= ") VALUES (";
-		
-		$sql .= " " . (! isset($this->fk_soc_trainee) ? 'NULL' : $this->fk_soc_trainee ) . ",";
-		$sql .= " " . (! isset($this->fk_session_agefodd) ? 'NULL' : $this->fk_session_agefodd ) . ",";
-		$sql .= " " . (! isset($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_ask_OPCA) . "'") . ",";
-		$sql .= " " . (empty($this->is_date_ask_OPCA) ? '0' :$this->is_date_ask_OPCA ) . ",";
-		$sql .= " " . (empty($this->is_OPCA) ? '0' : $this->is_OPCA ) . ",";
-		$sql .= " " . (empty($this->fk_soc_OPCA) ? 'NULL' :  $this->fk_soc_OPCA ) . ",";
-		$sql .= " " . (empty($this->fk_socpeople_OPCA) ? 'NULL' :  $this->fk_socpeople_OPCA ) . ",";
-		$sql .= " " . (! isset($this->num_OPCA_soc) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_soc) . "'") . ",";
-		$sql .= " " . (! isset($this->num_OPCA_file) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_file) . "'") . ",";
-		$sql .= " " . $user->id . ",";
-		$sql .= " '" . $this->db->idate(dol_now()) . "',";
-		$sql .= " " . $user->id . "";
-		
-		$sql .= ")";
-		
-		
-		$this->db->begin();
-		
-		dol_syslog(get_class($this) . "::saveInfosOpca sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if (! $resql) {
-			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
-		}
-		
-		if (! $error) {
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_opca");
-			
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-				
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-		
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::saveInfosOpca " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return $this->id;
-		}
-	}
-	
-	/**
-	 * Update OPCA info into database for the thirparty of trainee in agefodd session
-	 *
-	 * @param User $user that modify
-	 * @param int $notrigger triggers after, 1=disable triggers
-	 * @return int <0 if KO, >0 if OK
-	 */
-	function updateInfosOpca($user = 0, $notrigger = 0) {
-		global $conf, $langs;
-		$error = 0;
-		
-		// Clean parameters
-		
-		if (isset($this->fk_soc_trainee))
-			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
-		if (isset($this->fk_session_agefodd))
-			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
-		if (isset($this->is_date_ask_OPCA))
-			$this->is_date_ask_OPCA = trim($this->is_date_ask_OPCA);
-		if (isset($this->is_OPCA))
-			$this->is_OPCA = trim($this->is_OPCA);
-		if (isset($this->fk_soc_OPCA))
-			$this->fk_soc_OPCA = trim($this->fk_soc_OPCA);
-		if (isset($this->fk_socpeople_OPCA))
-			$this->fk_socpeople_OPCA = trim($this->fk_socpeople_OPCA);
-		if (isset($this->num_OPCA_soc))
-			$this->num_OPCA_soc = trim($this->num_OPCA_soc);
-		if (isset($this->num_OPCA_file))
-			$this->num_OPCA_file = trim($this->num_OPCA_file);
-			
-			// Check parameters
-			// Put here code to add control on parameters values
-			
-		// Update request
-		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_opca SET";
-		
-		$sql .= " fk_soc_trainee=" . (isset($this->fk_soc_trainee) ? $this->fk_soc_trainee : "null") . ",";
-		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";
-		$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
-		$sql .= " is_date_ask_OPCA=" . (!empty($this->is_date_ask_OPCA) ?  $this->db->escape($this->is_date_ask_OPCA)  : "0") . ",";
-		$sql .= " is_OPCA=" . (!empty($this->is_OPCA) ?  $this->db->escape($this->is_OPCA)  : "0") . ",";
-		$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) ? $this->db->escape($this->fk_soc_OPCA) : "null") . ",";
-		$sql .= " fk_socpeople_OPCA=" . (!empty($this->fk_socpeople_OPCA) ? $this->db->escape($this->fk_socpeople_OPCA) : "null") . ",";
-		$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";
-		$sql .= " num_OPCA_file=" . (isset($this->num_OPCA_file) ? "'" . $this->db->escape($this->num_OPCA_file) . "'" : "null") . ",";
-		$sql .= " fk_user_mod=" . $user->id . "";
-		
-		$sql .= " WHERE rowid=" . $this->id_opca_trainee;
-		
-		$this->db->begin();
-		
-		dol_syslog(get_class($this) . "::updateInfosOpca sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if (! $resql) {
-			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
-		}
-		
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-				
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-		
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::updateInfosOpca " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return 1;
-		}
-	}
-	
-	/**
 	 * Set archive flag to 1 to session according to selected year
 	 *
 	 * @param int $year year
@@ -3376,6 +3036,7 @@ class Agsession extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 		require_once ('agefodd_session_element.class.php');
 		require_once ('agefodd_session_stagiaire.class.php');
+		require_once ('agefodd_opca.class.php');
 		
 		global $langs, $mysoc, $conf;
 		
@@ -3458,7 +3119,7 @@ class Agsession extends CommonObject {
 						foreach ( $session_trainee->lines as $line ) {
 							
 							if ($line->status_in_session != 5 && $line->status_in_session != 6) {
-								$sessionOPCA = new Agsession($this->db);
+								$sessionOPCA = new Agefodd_opca($this->db);
 								if ($this->type_session == 1) {
 									$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id);
 								} else {
@@ -3577,6 +3238,7 @@ class Agsession extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 		require_once ('agefodd_session_element.class.php');
 		require_once ('agefodd_session_stagiaire.class.php');
+		require_once ('agefodd_opca.class.php');
 		
 		global $langs, $mysoc, $conf;
 		
@@ -3650,7 +3312,7 @@ class Agsession extends CommonObject {
 					foreach ( $session_trainee->lines as $line ) {
 						
 						if ($line->status_in_session != 5 && $line->status_in_session != 6) {
-							$sessionOPCA = new Agsession($this->db);
+							$sessionOPCA = new Agefodd_opca($this->db);
 							if ($this->type_session == 1) {
 								$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id);
 							} else {
@@ -3776,6 +3438,7 @@ class Agsession extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 		require_once ('agefodd_session_element.class.php');
 		require_once ('agefodd_session_stagiaire.class.php');
+		require_once ('agefodd_opca.class.php');
 		
 		global $langs, $mysoc, $conf;
 		
@@ -3833,28 +3496,50 @@ class Agsession extends CommonObject {
 			if (! empty($this->placecode)) {
 				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
 			}
-			$session_trainee = new Agefodd_session_stagiaire($this->db);
-			if ($this->type_session == 0 || empty($conf->global->AGF_MANAGE_OPCA)) {
+			
+			//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
+			// For Intra entreprise you take all trainne
+			$sessionOPCA = new Agefodd_opca($this->db);
+			if (empty($conf->global->AGF_MANAGE_OPCA || $this->type_session == 0)) {
 				// For Intra entreprise you take all trainne
-				$session_trainee->fetch_stagiaire_per_session($this->id);
-			} else {
-				// For inter entreprise you tkae only trainee link with this OPCA
-				$session_trainee->fetch_stagiaire_per_session_per_OPCA($this->id, $socid);
+				$find_trainee_by_OPCA=false;
+				$sessionOPCA->num_OPCA_file = $agf->num_OPCA_file;
+			
+			} elseif ($this->type_session == 1) {
+			
+				$result = $sessionOPCA->getOpcaSession($this->id);
+				if ($result<0) {
+					$this->error = $sessionOPCA->error;
+					return - 1;
+				}
+				if (is_array($sessionOPCA->lines) && count($sessionOPCA->lines)>0) {
+					foreach($sessionOPCA->lines as $line) {
+						if ($line->fk_soc_OPCA==$invoice->socid) {
+							$find_trainee_by_OPCA=true;
+							break;
+						}
+					}
+				}
 			}
+			
+			$session_trainee = new Agefodd_session_stagiaire($this->db);
+			if ($find_trainee_by_OPCA) {
+				$session_trainee->fetch_stagiaire_per_session_per_OPCA($this->id, $invoice->socid);
+			} else {
+				$session_trainee->fetch_stagiaire_per_session($this->id);
+			}
+			
 			if (count($session_trainee->lines) > 0) {
+			
 				
-				/*
-				 * $desc_trainee = "\n" . count ( $session_trainee->lines ) . ' '; if (count ( $session_trainee->lines ) >= 1) { $desc_trainee .= $langs->trans ( 'AgfParticipant' ); } else { $desc_trainee .= $langs->trans ( 'AgfParticipants' ); }
-				 */
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
 					foreach ( $session_trainee->lines as $line ) {
-						
+			
 						// Do not output not present or cancelled trainee
 						if ($line->status_in_session != 5 && $line->status_in_session != 6) {
-							$sessionOPCA = new Agsession($this->db);
 							if ($this->type_session == 1) {
-								$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id);
+								$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id, $line->stagerowid);
 								$soc_name=$line->socname;
 							} else {
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
@@ -3872,6 +3557,8 @@ class Agsession extends CommonObject {
 				$desc .= ' ' . $desc_OPCA . $desc_trainee;
 			}
 			$invoice->lines [0]->desc = $desc;
+			
+			
 			
 			// For session inter set the quantity to number of trainee
 			if ($this->type_session == 1 && count($session_trainee->lines) >= 1 && empty($amount)) {

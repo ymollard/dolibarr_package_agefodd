@@ -26,18 +26,19 @@
 
 // Put here all includes required by your class file
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
-require_once ('agefodd_session.php');
+require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
+require_once ('agsession.class.php');
 
 /**
  * Put here description of your class
  */
-class Agefodd_opca // extends CommonObject
+class Agefodd_opca extends CommonObject
 {
 	var $db; // !< To store db handler
 	var $error; // !< To return error code (or message)
 	var $errors = array (); // !< To return several error codes (or messages)
-	                        // var $element='agefoddopca'; //!< Id that identify managed objects
-	                        // var $table_element='agefoddopca'; //!< Name of table without prefix where object is stored
+	var $element='agefodd_opca'; //!< Id that identify managed objects
+	var $table_element='agefodd_opca'; //!< Name of table without prefix where object is stored
 	var $id;
 	var $fk_soc_trainee;
 	var $fk_session_agefodd;
@@ -52,6 +53,8 @@ class Agefodd_opca // extends CommonObject
 	var $datec = '';
 	var $fk_user_mod;
 	var $tms = '';
+	
+	var $lines=array();
 	
 	/**
 	 * Constructor
@@ -75,7 +78,8 @@ class Agefodd_opca // extends CommonObject
 		$error = 0;
 		
 		// Clean parameters
-		
+		if (isset($this->fk_session_trainee))
+			$this->fk_session_trainee = trim($this->fk_session_trainee);
 		if (isset($this->fk_soc_trainee))
 			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
 		if (isset($this->fk_session_agefodd))
@@ -103,6 +107,7 @@ class Agefodd_opca // extends CommonObject
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_opca(";
 		
+		$sql .= "fk_session_trainee,";
 		$sql .= "fk_soc_trainee,";
 		$sql .= "fk_session_agefodd,";
 		$sql .= "date_ask_OPCA,";
@@ -114,19 +119,20 @@ class Agefodd_opca // extends CommonObject
 		$sql .= "num_OPCA_file,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
-		$sql .= "fk_user_mod,";
+		$sql .= "fk_user_mod";
 		
 		$sql .= ") VALUES (";
 		
-		$sql .= " " . (! isset($this->fk_soc_trainee) ? 'NULL' : "'" . $this->fk_soc_trainee . "'") . ",";
-		$sql .= " " . (! isset($this->fk_session_agefodd) ? 'NULL' : "'" . $this->fk_session_agefodd . "'") . ",";
-		$sql .= " " . (! isset($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : $this->db->idate($this->date_ask_OPCA)) . ",";
-		$sql .= " " . (! isset($this->is_date_ask_OPCA) ? 'NULL' : "'" . $this->is_date_ask_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->is_OPCA) ? 'NULL' : "'" . $this->is_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->fk_soc_OPCA) ? 'NULL' : "'" . $this->fk_soc_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->fk_socpeople_OPCA) ? 'NULL' : "'" . $this->fk_socpeople_OPCA . "'") . ",";
-		$sql .= " " . (! isset($this->num_OPCA_soc) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_soc) . "'") . ",";
-		$sql .= " " . (! isset($this->num_OPCA_file) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_file) . "'") . ",";
+		$sql .= " " . (empty($this->fk_session_trainee) ? 'NULL' : $this->fk_session_trainee ) . ",";
+		$sql .= " " . (empty($this->fk_soc_trainee) ? 'NULL' : $this->fk_soc_trainee ) . ",";
+		$sql .= " " . (empty($this->fk_session_agefodd) ? 'NULL' :  $this->fk_session_agefodd ) . ",";
+		$sql .= " " . (empty($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : "'" .$this->db->idate($this->date_ask_OPCA)."'" ) . ",";
+		$sql .= " " . (empty($this->is_date_ask_OPCA) ? '0' :  $this->is_date_ask_OPCA) . ",";
+		$sql .= " " . (empty($this->is_OPCA) ? 'NULL' :  $this->is_OPCA ) . ",";
+		$sql .= " " . (empty($this->fk_soc_OPCA) ? 'NULL' :  $this->fk_soc_OPCA ) . ",";
+		$sql .= " " . (empty($this->fk_socpeople_OPCA) ? 'NULL' :  $this->fk_socpeople_OPCA ) . ",";
+		$sql .= " " . (empty($this->num_OPCA_soc) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_soc) . "'") . ",";
+		$sql .= " " . (empty($this->num_OPCA_file) ? 'NULL' : "'" . $this->db->escape($this->num_OPCA_file) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
@@ -245,6 +251,8 @@ class Agefodd_opca // extends CommonObject
 		
 		// Clean parameters
 		
+		if (isset($this->fk_session_trainee))
+			$this->fk_session_trainee = trim($this->fk_session_trainee);
 		if (isset($this->fk_soc_trainee))
 			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
 		if (isset($this->fk_session_agefodd))
@@ -272,13 +280,14 @@ class Agefodd_opca // extends CommonObject
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_opca SET";
 		
+		$sql .= " fk_session_trainee=" . (!empty($this->fk_session_trainee) ? $this->fk_session_trainee : "null") . ",";
 		$sql .= " fk_soc_trainee=" . (isset($this->fk_soc_trainee) ? $this->fk_soc_trainee : "null") . ",";
 		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";
 		$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
 		$sql .= " is_date_ask_OPCA=" . (isset($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "null") . ",";
-		$sql .= " is_OPCA=" . (isset($this->is_OPCA) ? $this->is_OPCA : "null") . ",";
+		$sql .= " is_OPCA=" . (!empty($this->is_OPCA) ? $this->is_OPCA : "null") . ",";
 		$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) ? $this->fk_soc_OPCA : "null") . ",";
-		$sql .= " fk_socpeople_OPCA=" . (isset($this->fk_socpeople_OPCA) ? $this->fk_socpeople_OPCA : "null") . ",";
+		$sql .= " fk_socpeople_OPCA=" . (!empty($this->fk_socpeople_OPCA) ? $this->fk_socpeople_OPCA : "null") . ",";
 		$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";
 		$sql .= " num_OPCA_file=" . (isset($this->num_OPCA_file) ? "'" . $this->db->escape($this->num_OPCA_file) . "'" : "null") . ",";
 		$sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
@@ -446,5 +455,194 @@ class Agefodd_opca // extends CommonObject
 		$this->fk_user_mod = '';
 		$this->tms = '';
 	}
+	
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $id_trainee soc trainee in session
+	 * @param int $id_session session
+	 * * @param int $fk_trainee_session trainee in session
+	 * @return int <0 if KO, >0 if OK (rowid)
+	 */
+	function getOpcaForTraineeInSession($fk_soc_trainee, $id_session,$fk_trainee_session=0) {
+
+		global $langs;
+		
+		$sql = "SELECT";
+		$sql .= " t.rowid,";
+		$sql .= " t.fk_session_trainee,";
+		$sql .= " t.fk_soc_trainee,";
+		$sql .= " t.fk_session_agefodd,";
+		$sql .= " t.date_ask_OPCA as date_ask_opca,";
+		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
+		$sql .= " t.is_OPCA as is_opca,";
+		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
+		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
+		$sql .= " concactOPCA.lastname as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
+		$sql .= " t.num_OPCA_soc as num_opca_soc,";
+		$sql .= " t.num_OPCA_file as num_opca_file,";
+		$sql .= " t.fk_user_author,";
+		$sql .= " t.datec,";
+		$sql .= " t.fk_user_mod,";
+		$sql .= " t.tms";
+	
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_opca as t";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
+		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
+	
+		$sql .= " WHERE t.fk_soc_trainee = " . $fk_soc_trainee;
+		$sql .= " AND t.fk_session_agefodd = " . $id_session;
+		if (!empty($fk_trainee_session)) {
+			$sql .= " AND (t.fk_session_trainee=" . $fk_trainee_session . ' OR t.fk_session_trainee IS NULL)';
+			$sql .= ' ORDER BY t.fk_session_trainee';
+		}
+		
+	
+		dol_syslog(get_class($this) . "::getOpcaForTraineeInSession sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
+	
+				$this->opca_rowid = $obj->rowid;
+				$this->fk_session_trainee = $obj->fk_session_trainee;
+				$this->fk_soc_trainee = $obj->fk_soc_trainee;
+				$this->fk_session_agefodd = $obj->fk_session_agefodd;
+				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
+				$this->is_date_ask_OPCA = $obj->is_date_ask_opca;
+				$this->is_OPCA = $obj->is_opca;
+				$this->fk_soc_OPCA = $obj->fk_soc_opca;
+				$this->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
+				$this->num_OPCA_soc = $obj->num_opca_soc;
+				$this->num_OPCA_file = $obj->num_opca_file;
+				$this->fk_user_author = $obj->fk_user_author;
+				$this->datec = $this->db->jdate($obj->datec);
+				$this->fk_user_mod = $obj->fk_user_mod;
+				$this->tms = $this->db->jdate($obj->tms);
+	
+				$this->soc_OPCA_name = $this->getValueFrom('societe', $this->fk_soc_OPCA, 'nom');
+				$this->contact_name_OPCA = $obj->concact_opca_name . ' ' . $obj->concact_opca_firstname;
+			} else {
+				$this->opca_rowid = '';
+				$this->fk_soc_trainee = '';
+				$this->fk_session_agefodd = '';
+				$this->date_ask_OPCA = '';
+				$this->is_date_ask_OPCA = 0;
+				$this->is_OPCA = 0;
+				$this->fk_soc_OPCA = '';
+				$this->fk_socpeople_OPCA = '';
+				$this->num_OPCA_soc = '';
+				$this->num_OPCA_file = '';
+				$this->fk_user_author = '';
+				$this->datec = '';
+				$this->fk_user_mod = '';
+				$this->tms = '';
+				$this->soc_OPCA_name = '';
+				$this->contact_name_OPCA = '';
+			}
+			$this->db->free($resql);
+				
+			return $this->opca_rowid;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::getOpcaForTraineeInSession " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+	
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $id_trainee soc trainee in session
+	 * @param int $id_session session
+	 * * @param int $fk_trainee_session trainee in session
+	 * @return int <0 if KO, >0 if OK (rowid)
+	 */
+	function getOpcaSession($id_session) {
+	
+		global $langs;
+	
+		$sql = "SELECT";
+		$sql .= " t.rowid,";
+		$sql .= " t.fk_session_trainee,";
+		$sql .= " t.fk_soc_trainee,";
+		$sql .= " t.fk_session_agefodd,";
+		$sql .= " t.date_ask_OPCA as date_ask_opca,";
+		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
+		$sql .= " t.is_OPCA as is_opca,";
+		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
+		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
+		$sql .= " concactOPCA.lastname as concact_opca_name, concactOPCA.firstname as concact_opca_firstname,";
+		$sql .= " t.num_OPCA_soc as num_opca_soc,";
+		$sql .= " t.num_OPCA_file as num_opca_file,";
+		$sql .= " t.fk_user_author,";
+		$sql .= " t.datec,";
+		$sql .= " t.fk_user_mod,";
+		$sql .= " t.tms";
+	
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_opca as t";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
+		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
+	
+		$sql .= " WHERE t.fk_session_agefodd = " . $id_session;
+		dol_syslog(get_class($this) . "::getOpcaSession sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ($obj = $this->db->fetch_object($resql)) {
+					
+					$line= new AgefoddOpcaLine();
+					
+					$line->opca_rowid = $obj->rowid;
+					$line->fk_session_trainee = $obj->fk_session_trainee;
+					$line->fk_soc_trainee = $obj->fk_soc_trainee;
+					$line->fk_session_agefodd = $obj->fk_session_agefodd;
+					$line->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
+					$line->is_date_ask_OPCA = $obj->is_date_ask_opca;
+					$line->is_OPCA = $obj->is_opca;
+					$line->fk_soc_OPCA = $obj->fk_soc_opca;
+					$line->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
+					$line->num_OPCA_soc = $obj->num_opca_soc;
+					$line->num_OPCA_file = $obj->num_opca_file;
+					$line->fk_user_author = $obj->fk_user_author;
+					$line->datec = $this->db->jdate($obj->datec);
+					$line->fk_user_mod = $obj->fk_user_mod;
+					$line->tms = $this->db->jdate($obj->tms);
+					
+					$line->soc_OPCA_name = $this->getValueFrom('societe', $line->fk_soc_OPCA, 'nom');
+					$line->contact_name_OPCA = $obj->concact_opca_name . ' ' . $obj->concact_opca_firstname;
+					
+					$this->lines[]=$line;
+					
+				}
+	
+				
+			} 
+			$this->db->free($resql);
+	
+			return 1;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::getOpcaSession " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+}
+
+class AgefoddOpcaLine {
+	var $id;
+	var $fk_soc_trainee;
+	var $fk_session_agefodd;
+	var $date_ask_OPCA = '';
+	var $is_date_ask_OPCA;
+	var $is_OPCA;
+	var $fk_soc_OPCA;
+	var $fk_socpeople_OPCA;
+	var $num_OPCA_soc;
+	var $num_OPCA_file;
+	var $fk_user_author;
+	var $datec = '';
+	var $fk_user_mod;
+	var $tms = '';
 }
 ?>

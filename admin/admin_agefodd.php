@@ -148,6 +148,18 @@ if ($action == 'setvar') {
 			$error ++;
 	}
 	
+	$use_typetrainer = GETPOST('AGF_USE_FORMATEUR_TYPE', 'int');
+	$res = dolibarr_set_const($db, 'AGF_USE_FORMATEUR_TYPE', $use_typetrainer, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+	
+	$def_typetrainer = GETPOST('AGF_DEFAULT_FORMATEUR_TYPE', 'int');
+	if (! empty($def_typetrainer)) {
+		$res = dolibarr_set_const($db, 'AGF_DEFAULT_FORMATEUR_TYPE', $def_typetrainer, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+	}
+	
 	$pref_val = GETPOST('AGF_ORGANISME_PREF', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_PREF', $pref_val, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
@@ -788,11 +800,37 @@ print $form->textwithpicto('', $langs->trans("AgfUseStagTypeHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 
+
 if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
 	// Type de stagaire par defaut
 	print '<tr class="impair"><td>' . $langs->trans("AgfUseStagTypeDefault") . '</td>';
 	print '<td align="left">';
-	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE');
+	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE',' active=1 ');
+	print '</td>';
+	print '<td align="center">';
+	print '</td>';
+	print '</tr>';
+}
+
+// Utilisation d'un type de formateur
+print '<tr class="impair"><td>' . $langs->trans("AgfUseTrainerType") . '</td>';
+print '<td align="left">';
+$arrval = array (
+		'0' => $langs->trans("No"),
+		'1' => $langs->trans("Yes")
+);
+print $form->selectarray("AGF_USE_FORMATEUR_TYPE", $arrval, $conf->global->AGF_USE_FORMATEUR_TYPE);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfUseTrainerTypeHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+if (! empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
+	// Type de stagaire par defaut
+	print '<tr class="impair"><td>' . $langs->trans("AgfUseTrainerTypeDefault") . '</td>';
+	print '<td align="left">';
+	print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, 'AGF_DEFAULT_FORMATEUR_TYPE',' active=1 ');
 	print '</td>';
 	print '<td align="center">';
 	print '</td>';
@@ -1012,6 +1050,7 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE) {
 	print '<td>&nbsp;</td>';
 	print '</tr>';
 }
+
 
 // Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
 print '<tr class="impair"><td>' . $langs->trans("AgfAgendaModuleUse") . '</td>';
