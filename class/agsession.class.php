@@ -1843,6 +1843,7 @@ class Agsession extends CommonObject {
 		$sql .= " ,s.cost_site";
 		$sql .= " ,s.cost_trip";
 		$sql .= " ,s.fk_soc_requester";
+		$sql .= " ,s.fk_socpeople_requester";
 		$sql .= " ,sa.archive as closesessionstatus";
 		$sql .= " ,sorequester.nom as socrequestername,";
 		// Avoid perf problem with too many trainnee into archive sessions
@@ -1933,8 +1934,23 @@ class Agsession extends CommonObject {
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc ';
 					$sql .= ' WHERE insersoc.nom LIKE \'%' . $this->db->escape($value) . '%\' )))';
 				} elseif ($key == 'so.parent|sorequester.parent') {
-					$sql .= ' AND (so.parent=' . $this->db->escape($value) . ' OR sorequester.parent=' . $this->db->escape($value);
+					
+					$sql .= ' AND (';
+					$sql .= '	(so.parent=' . $this->db->escape($value) . ' OR sorequester.parent=' . $this->db->escape($value);
 					$sql .= ' OR so.rowid=' . $this->db->escape($value) . ' OR sorequester.rowid=' . $this->db->escape($value) . ')';
+					// Parent company of trainnee into inter session
+					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM llx_agefodd_session as innersess';
+					$sql .= ' INNER JOIN llx_agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+					$sql .= ' INNER JOIN llx_agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
+					$sql .= ' INNER JOIN llx_societe as insersoc ON insersoc.rowid = insersta.fk_soc';
+					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . '))';
+					// Parent company of trainnee soc requester
+					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM llx_agefodd_session as innersess';
+					$sql .= ' INNER JOIN llx_agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+					$sql .= ' INNER JOIN llx_agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
+					$sql .= ' INNER JOIN llx_societe as insersoc ON insersoc.rowid = innersess.fk_soc_requester';
+					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . ')) ';
+					$sql .= ')';
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
@@ -1970,6 +1986,7 @@ class Agsession extends CommonObject {
 					$line->socname = $obj->socname;
 					$line->socrequesterid = $obj->fk_soc_requester;
 					$line->socrequestername = $obj->socrequestername;
+					$line->fk_socpeople_requester=$obj->fk_socpeople_requester;
 					$line->trainerrowid = $obj->trainerrowid;
 					$line->type_session = $obj->type_session;
 					$line->is_date_res_site = $obj->is_date_res_site;
@@ -2248,12 +2265,19 @@ class Agsession extends CommonObject {
 			foreach ( $filter as $key => $value ) {
 				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
+				} elseif ($key == 's.dated>') {
+					if ($this->db->type == 'pgsql') {
+						$intervalday = "'" . $value . " DAYS'";
+					} else {
+						$intervalday = $value . ' DAY';
+					}
+					$sql .= ' AND s.dated >= DATE_ADD(NOW(), INTERVAL -' . $intervalday . ')';
 				} elseif (strpos($key, 'date')) {
 					// To allow $filter['YEAR(s.dated)']=>$year
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 				} elseif ($key == '!s.status') {
 					$sql .= ' AND s.status NOT IN ' . $value;
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.status')) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.status') || ($key == 'sf.fk_agefodd_formateur' ) || ($key == 'sf.trainer_status' )) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
@@ -3243,6 +3267,7 @@ class Agsession extends CommonObject {
 		global $langs, $mysoc, $conf;
 		
 		$langs->load('agefodd@agefodd');
+		$langs->load('main');
 		
 		// Define new propal
 		$propal = new Propal($this->db);
@@ -3542,6 +3567,7 @@ class Agsession extends CommonObject {
 								$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id, $line->stagerowid);
 								$soc_name=$line->socname;
 							} else {
+								// For Intra entreprise get OPCA and customer of trainning
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 								$socsatic = new Societe($this->db);
 								$result = $socsatic->fetch($this->socid);
@@ -3855,6 +3881,7 @@ class AgfSessionLine {
 	var $cost_other;
 	var $socrequesterid;
 	var $socrequestername;
+	var $fk_socpeople_requester;
 	var $admin_task_close_session;
 	function __construct() {
 		return 1;

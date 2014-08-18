@@ -540,8 +540,11 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
-		$sql .= " WHERE s.fk_soc=" . $socid;
-		$sql .= " AND s.entity IN (" . getEntity('agsession').')';
+		$sql .= " WHERE (s.fk_soc=" . $socid;
+		//contact is in a company witch child $socid
+		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent=" . $socid. "))";
+		//contact is in a company witch share the same mother company than $socid
+		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid. "))))";
 		$sql .= " AND UPPER(s.nom)='" . strtoupper(trim($lastname)) . "'";
 		$sql .= " AND UPPER(s.prenom)='" . strtoupper(trim($firstname)) . "'";
 		
