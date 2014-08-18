@@ -194,6 +194,9 @@ if ($actioncode)
 	$param .= "&actioncode=" . $actioncode;
 if ($filter_type_session != '')
 	$param .= '&type_session=' . $filter_type_session;
+if ($filter_location != - 1) {
+	$param .= '&location=' . $filter_location;
+}
 
 if (! empty($filterdatestart))
 	$param .= "&dt_start_filtermonth=" . GETPOST('dt_start_filtermonth', 'int') . '&dt_start_filterday=' . GETPOST('dt_start_filterday', 'int') . '&dt_start_filteryear=' . GETPOST('dt_start_filteryear', 'int');
