@@ -561,6 +561,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	//Trainee link to thhe company convention
 	$stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
+	
 	foreach ( $stagiaires->lines as $traine_line ) {
 		//$options_trainee_array_selected [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
 		$options_trainee_array_selected_id [] = $traine_line->stagerowid;

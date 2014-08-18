@@ -37,12 +37,15 @@ if (! $res)
 	die("Include of main fails");
 
 dol_include_once('/user/class/user.class.php');
+dol_include_once('/societe/class/societe.class.php');
 dol_include_once('/agefodd/class/agsession.class.php');
 
 $userlogin = GETPOST('login', 'alpha');
 $session_id = GETPOST('sessid', 'int');
 $socid = GETPOST('socid', 'int');
 $key = GETPOST('key', 'alpha');
+
+$error=0;
 
 // Security test
 if ($key != $conf->global->WEBSERVICES_KEY) {
@@ -57,21 +60,38 @@ if (empty($user->id)) {
 	exit();
 }
 
-$outputlangs = $langs;
-if (! empty($conf->global->MAIN_MULTILANGS)) {
-	$outputlangs = new Translate("", $conf);
-	$newlang = (GETPOST('lang_id') ? GETPOST('lang_id') : $object->client->default_lang);
-	$outputlangs->setDefaultLang($newlang);
-}
-
 $agf = new Agsession($db);
 $result = $agf->fetch($session_id);
 if ($result < 0) {
 	print - 1;
-} else {
+	print 'Session ERROR='.$agf->error;
+	$error ++;
+}
+
+if (!empty($socid)) {
+	$thridparty=new Societe($db);
+	$result= $thridparty->fetch($socid);
+	if ($result < 0) {
+		print - 1;
+		print 'Thridparty ERROR='.$thridparty->error;
+		$error ++;
+	}
+	
+	
+	if (! empty($conf->global->MAIN_MULTILANGS)) {
+		$langs = new Translate("", $conf);
+		$new_tranlaste=$thridparty->default_lang;
+		if (empty($new_tranlaste)) $new_tranlaste = 'fr_FR';
+		$langs->setDefaultLang($new_tranlaste);
+	}
+	
+}
+
+if (empty($error)) {
 	$result = $agf->createProposal($user, $socid);
 	if ($result < 0) {
 		print - 1;
+		print 'Session Create Propal ERROR='.$agf->error;
 	} else {
 		print $result;
 	}

@@ -422,9 +422,6 @@ if (! empty($id)) {
 				if ($line->element_type == 'propal') {
 					$propal_array [$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
 				}
-				/*if ($line->element_type == 'order') {
-					$propal_array [$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
-				}*/
 			}
 			
 			$form_question = array ();

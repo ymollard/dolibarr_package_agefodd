@@ -486,6 +486,10 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		
 		$agf->fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 		$agf->fk_socpeople_requester = GETPOST('fk_socpeople_requester', 'int');
+		//If customer and requester are the same and contact requester is empty and contact is not empty then contact request is the same as contact
+		if ($agf->fk_soc_requester==$custid && (empty($agf->fk_socpeople_requester) || $agf->fk_socpeople_requester==-1) && (!empty($contactclientid) || $contactclientid!=-1)) {
+			$agf->fk_socpeople_requester=$contactclientid;
+		}
 		
 		$agf->fk_formation_catalogue = $training_id;
 		$agf->fk_session_place = $fk_session_place;
@@ -684,6 +688,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				'method' => 'getContacts',
 				'url' => dol_buildpath('/core/ajax/contacts.php', 1),
 				'htmlname' => 'contact',
+				'showempty' => '1',
 				'params' => array (
 						'add-customer-contact' => 'disabled' 
 				) 
@@ -721,6 +726,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			'method' => 'getContacts',
 			'url' => dol_buildpath('/core/ajax/contacts.php', 1),
 			'htmlname' => 'fk_socpeople_requester',
+			'showempty' => '1',
 			'params' => array (
 					'add-customer-contact' => 'disabled' 
 			) 

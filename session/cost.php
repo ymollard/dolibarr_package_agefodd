@@ -159,7 +159,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 	
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->socid = $socid;
-	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date(dol_now(), 'dayhourlog');
+	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date(dol_now(), 'standard');
 	
 	// Calculate time past in session
 	$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
@@ -243,7 +243,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->socid = $socid;
-	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date(dol_now(), 'dayhourlog');
+	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date(dol_now(), 'standard');
 	
 	$suplier_invoice->libelle = $agf->formintitule . ' ' . dol_print_date($agf->dated, 'daytextshort') . ' ' . dol_print_date($agf->datef, 'daytextshort');
 	$suplier_invoice->date = dol_now();
@@ -324,7 +324,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->socid = $socid;
-	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date(dol_now(), 'dayhourlog');
+	$suplier_invoice->ref_supplier = $agf->formintitule . ' ' . dol_print_date(dol_now(), 'standard');
 	
 	$suplier_invoice->libelle = $agf->formintitule . ' ' . dol_print_date($agf->dated, 'daytextshort') . ' ' . dol_print_date($agf->datef, 'daytextshort');
 	$suplier_invoice->date = dol_now();

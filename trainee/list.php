@@ -116,7 +116,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result >= 0) {
-	
+	$option='';
 	if (! empty($search_name))
 		$option .= '&search_name=' . $search_name;
 	if (! empty($search_firstname))
@@ -132,6 +132,14 @@ if ($result >= 0) {
 	
 	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result, $nbtotalofrecords);
 	
+	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+	if (! empty($sortfield))
+		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+	if (! empty($sortorder))
+		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+	if (! empty($page))
+		print '<input type="hidden" name="page" value="' . $page . '"/>';
+	
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
@@ -143,13 +151,7 @@ if ($result >= 0) {
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";
 	
-	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
-	if (! empty($sortfield))
-		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
-	if (! empty($sortorder))
-		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
-	if (! empty($page))
-		print '<input type="hidden" name="page" value="' . $page . '"/>';
+
 	print '<tr class="liste_titre">';
 	
 	print '<td>&nbsp;</td>';
@@ -181,7 +183,6 @@ if ($result >= 0) {
 	print '</td>';
 	
 	print "</tr>\n";
-	print '</form>';
 	
 	$var = true;
 	foreach ( $agf->lines as $line ) {
@@ -211,6 +212,7 @@ if ($result >= 0) {
 	}
 	
 	print "</table>";
+	print '</form>';
 } else {
 	setEventMessage($agf->error, 'errors');
 }
