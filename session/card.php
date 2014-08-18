@@ -1304,6 +1304,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
 						if ($agf->is_date_ask_OPCA == 1) {
 							$chckisDtOPCA = 'checked="checked"';
+						} else {
+							$chckisDtOPCA = '';
 						}
 						print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' />';
 						print dol_print_date($agf->date_ask_OPCA, 'daytext');
@@ -1474,38 +1476,42 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									
 									$opca->getOpcaForTraineeInSession($stagiaires->lines [$i]->socid, $agf->id, $stagiaires->lines[$i]->stagerowid );
 									print '<tr><td width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
-									if ($agf->is_OPCA == 1) {
+									if ($opca->is_OPCA == 1) {
 										$chckisOPCA = 'checked="checked"';
+									} else {
+										$chckisOPCA = '';
 									}
 									print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" ' . $chckisOPCA . '" disabled="disabled" readonly="readonly"/></td></tr>';
 									
 									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 									print '	<td>';
-									print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+									print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
 									print '</td></tr>';
 									
 									print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 									print '	<td>';
-									print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
+									print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $opca->fk_socpeople_OPCA . '">' . $opca->contact_name_OPCA . '</a>';
 									print '</td></tr>';
 									
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
-									print '<td>' . $agf->num_OPCA_soc . '</td></tr>';
+									print '<td>' . $opca->num_OPCA_soc . '</td></tr>';
 									
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-									if ($agf->is_date_ask_OPCA == 1) {
+									if ($opca->is_date_ask_OPCA == 1) {
 										$chckisDtOPCA = 'checked="checked"';
+									} else {
+										$chckisDtOPCA = '';
 									}
 									print '<td><table class="nobordernopadding"><tr><td>';
 									print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" ' . $chckisDtOPCA . ' /></td>';
 									print '<td>';
-									print dol_print_date($agf->date_ask_OPCA, 'daytext');
+									print dol_print_date($opca->date_ask_OPCA, 'daytext');
 									print '</td><td>';
 									print '</td></tr></table>';
 									print '</td></tr>';
 									
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCANumFile") . '</td>';
-									print '<td>' . $agf->num_OPCA_file . '</td></tr>';
+									print '<td>' . $opca->num_OPCA_file . '</td></tr>';
 									
 									print '</table>';
 								} else {
