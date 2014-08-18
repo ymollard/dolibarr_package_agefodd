@@ -921,7 +921,7 @@ class Agefodd_session_element extends CommonObject {
 					$resqlcharges = $this->db->query($sqlcharges);
 					if ($resqlcharges) {
 						$objcharges = $this->db->fetch_object($sqlcharges);
-						$total_charges = $objcharges->totalcharges;
+						$total_charges += $objcharges->totalcharges;
 						$this->db->free($resqlcharges);
 					} else {
 						$this->error = "Error " . $this->db->lasterror();
@@ -937,7 +937,7 @@ class Agefodd_session_element extends CommonObject {
 					$resqlcharges = $this->db->query($sqlcharges);
 					if ($resqlcharges) {
 						$objcharges = $this->db->fetch_object($sqlcharges);
-						$total_charges = $objcharges->totalcharges;
+						$total_charges += $objcharges->totalcharges;
 						$this->db->free($resqlcharges);
 					} else {
 						$this->error = "Error " . $this->db->lasterror();
@@ -953,7 +953,7 @@ class Agefodd_session_element extends CommonObject {
 					$resqlcharges = $this->db->query($sqlcharges);
 					if ($resqlcharges) {
 						$objcharges = $this->db->fetch_object($sqlcharges);
-						$total_charges = $objcharges->totalcharges;
+						$total_charges += $objcharges->totalcharges;
 						$this->db->free($resqlcharges);
 					} else {
 						$this->error = "Error " . $this->db->lasterror();
@@ -963,6 +963,9 @@ class Agefodd_session_element extends CommonObject {
 				}
 			}
 			$this->db->free($resql);
+			
+			if (empty($total_charges)) $total_charges=0;
+			
 			return $total_charges;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
