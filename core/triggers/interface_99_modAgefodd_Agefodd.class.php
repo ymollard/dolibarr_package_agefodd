@@ -623,7 +623,7 @@ class InterfaceAgefodd {
 					//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
 					// For Intra entreprise you take all trainne
 					$sessionOPCA = new Agefodd_opca($this->db);
-					if (empty($conf->global->AGF_MANAGE_OPCA || $agf->type_session == 0)) {
+					if (empty($conf->global->AGF_MANAGE_OPCA) || $agf->type_session == 0) {
 						// For Intra entreprise you take all trainne
 						$find_trainee_by_OPCA=false;
 						$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
