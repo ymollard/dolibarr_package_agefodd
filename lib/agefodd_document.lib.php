@@ -268,6 +268,42 @@ function show_attestation_trainee($file, $session_traineeid) {
 	}
 	return $mess;
 }
+
+function show_trainer_mission($session_trainerid) {
+	global $langs, $conf, $id, $form, $idform;
+
+	$model = 'mission_trainer';
+	$file = $model . '_' . $session_trainerid . '.pdf';
+
+	if (is_file($conf->agefodd->dir_output . '/' . $file)) {
+		// afficher
+		$legende = $langs->trans("AgfDocOpen");
+		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+		// Regenerer
+		$legende = $langs->trans("AgfDocRefresh");
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+		// Supprimer
+		$legende = $langs->trans("AgfDocDel");
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+	} else {
+		// Génereration des documents
+		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
+			$legende = $langs->trans("AgfDocCreate");
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontrainerid=' . $session_trainerid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		} else {
+			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
+		}
+	}
+	return $mess;
+}
+
 function show_fac($file, $socid, $mdle) {
 	global $langs, $conf, $db, $id, $form;
 	
@@ -572,41 +608,47 @@ function show_facopca($file, $socid, $mdle) {
 	
 	return $mess;
 }
-function document_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courrier = '') {
+/**
+ * Dispaly Document line
+ * 
+ * @param string $intitule label
+ * @param string $mdle model name
+ * @param number $socid
+ * @param string $nom_courrier
+ */
+function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	print '<tr style="height:14px">' . "\n";
-	if ($level == 2) {
-		// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
-		if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
-			print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle) . '</td>' . "\n";
-		} elseif ($mdle == 'convention') {
-			print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier) . '</td>' . "\n";
-		} elseif ($mdle == 'facopca') {
-			print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier) . '</td>' . "\n";
-		} elseif ($mdle == 'convocation_trainee') {
-			print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid) . '</td>' . "\n";
-		} elseif ($mdle == 'attestation_trainee') {
-			print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid) . '</td>' . "\n";
-		} else {
-			print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier) . '</td>' . "\n";
-		}
-		print '<td style="border-right:0px;">';
-	} else
-		print '<td colspan="2" style="border-right:0px;">';
+
+	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
+	if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
+		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle) . '</td>' . "\n";
+	} elseif ($mdle == 'convention') {
+		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+	} elseif ($mdle == 'facopca') {
+		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+	} elseif ($mdle == 'convocation_trainee') {
+		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid) . '</td>' . "\n";
+	} elseif ($mdle == 'attestation_trainee') {
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid) . '</td>' . "\n";
+	} elseif ($mdle == 'mission_trainer') {
+		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid).'</td>' . "\n";
+	} else {
+		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+	}
+	print '<td style="border-right:0px;">';
+
 	print $intitule;
 	
 	print '</td>' . "\n";
 	
 	print '</tr>';
 }
-function document_send_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courrier = '') {
+function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	global $conf, $langs, $id, $idform, $db;
 	$langs->load('mails');
 	print '<tr style="height:14px">' . "\n";
-	if ($level == 2) {
-		print '<td style="border:0px; width:10px">&nbsp;</td>' . "\n";
-		print '<td style="border-right:0px;">';
-	} else
-		print '<td colspan="2" style="border-right:0px;">';
+	print '<td style="border:0px; width:10px">&nbsp;</td>' . "\n";
+	print '<td style="border-right:0px;">';
 	print $intitule . '</td>' . "\n";
 	if ($mdle == 'bc' || $mdle == 'fac') {
 		print '<td style="border-left:0px;" align="right">' . show_fac($mdle, $socid, $mdle) . '</td></tr>' . "\n";
@@ -715,6 +757,16 @@ function document_send_line($intitule, $level = 2, $mdle, $socid = 0, $nom_courr
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
 			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_pedago&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+		} else
+			print $langs->trans('AgfDocNotDefined');
+		print '</td></tr>' . "\n";
+	}elseif ($mdle == 'mission_trainer') {
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		$filename = 'mission_trainer_' . $socid . '.pdf';
+		$file = $conf->agefodd->dir_output . '/' . $filename;
+		if (file_exists($file)) {
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_mission_trainer&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";

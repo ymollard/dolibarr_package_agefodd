@@ -42,6 +42,7 @@ INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, pos
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030008, 'AC_AGF_CONSE', 'agefodd', 'Send Advise document by mail', 'agefodd', 1, NULL, 80);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030009, 'AC_AGF_ACCUE', 'agefodd', 'Send welcome document by mail', 'agefodd', 1, NULL, 90);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030010, 'AC_AGF_SESST', 'agefodd', 'Link to Training for trainer', 'agefodd', 1, NULL, 15);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030011, 'AC_AGF_MISTR', 'agefodd', 'Send mission trainer', 'agefodd', 1, NULL, 100);
 
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (1, 1, 1, '08:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(2, 1, 1, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');

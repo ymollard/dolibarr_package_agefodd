@@ -634,11 +634,11 @@ if (! empty($id)) {
 					
 					// Before training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
-					document_line($langs->trans("AgfPDFConvocation"), 2, 'convocation_trainee', $agf_trainee->lines [$i]->stagerowid);
+					document_line($langs->trans("AgfPDFConvocation"), 'convocation_trainee', $agf_trainee->lines [$i]->stagerowid);
 					
 					// After training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfAfterTraining") . '</td></tr>' . "\n";
-					document_line($langs->trans("AgfSendAttestation"), 2, "attestation_trainee", $agf_trainee->lines [$i]->stagerowid);
+					document_line($langs->trans("AgfSendAttestation"), "attestation_trainee", $agf_trainee->lines [$i]->stagerowid);
 					
 					print '</table>';
 					if ($i < $linecount)

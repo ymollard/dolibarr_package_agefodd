@@ -19,22 +19,24 @@
  */
 
 /**
- * \file agefodd/core/modules/agefodd/pdf/pdf_convocation.modules.php
+ * \file agefodd/core/modules/agefodd/pdf/pdf_mission_trainer.modules.php
  * \ingroup agefodd
- * \brief PDF for convocation
+ * \brief PDF for trainer mission
  */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_stagiaire.class.php');
+require_once ('../class/agefodd_formateur.class.php');
+require_once ('../class/agefodd_session_formateur_calendrier.class.php');
 require_once ('../class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-class pdf_convocation_trainee extends ModelePDFAgefodd {
+require_once ('../class/agefodd_session_formateur.class.php');
+
+class pdf_mission_trainer extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
@@ -52,8 +54,8 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 		$langs->load("agefodd@agefodd");
 		
 		$this->db = $db;
-		$this->name = $langs->trans('AgfModPDFConvocationTrainee');
-		$this->description = $langs->trans('AgfModPDFConvocationTrainee');
+		$this->name = $langs->trans('AgfTrainerMissionLetter');
+		$this->description = $langs->trans('AgfTrainerMissionLetter');
 		
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -68,7 +70,7 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 		$this->marge_droite = 15;
 		$this->marge_haute = 10;
 		$this->marge_basse = 10;
-		$this->defaultFontSize = 13;
+		$this->defaultFontSize = 9;
 		$this->unit = 'mm';
 		$this->oriantation = 'P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
@@ -85,14 +87,17 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
 	}
 	
+
 	/**
-	 * \brief Fonction generant le document sur le disque
-	 * \param agf		Objet document a generer (ou id si ancienne methode)
-	 * outputlangs	Lang object for output language
-	 * file		Name of file to generate
-	 * \return int 1=ok, 0=ko
+	 * Create PDF File
+	 * 
+	 * @param Session $agf Current Session or Id
+	 * @param langs $outputlangs langs to outpur document
+	 * @param string $file file name to save
+	 * @param int $session_trainer_id trainer session id
+	 * @return number 1=ok, 0=ko
 	 */
-	function write_file($agf, $outputlangs, $file, $session_trainee_id) {
+	function write_file($agf, $outputlangs, $file, $session_trainer_id) {
 		global $user, $langs, $conf, $mysoc;
 		
 		if (! is_object($outputlangs))
@@ -106,14 +111,24 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 				$agf_calendrier = new Agefodd_sesscalendar($this->db);
 				$agf_calendrier->fetch_all($id);
 				
+				if (!empty($agf->socid)) {
+					$customer=new Societe($this->db);
+					$customer->fetch($agf->socid);
+				}
+				
 				$agf_place = new Agefodd_place($this->db);
 				$agf_place->fetch($agf->placeid);
 				
-				$agf_session_trainee = new Agefodd_session_stagiaire($this->db);
-				$agf_session_trainee->fetch($session_trainee_id);
+				$agf_session_trainer = new Agefodd_session_formateur($this->db);
+				$agf_session_trainer->fetch($session_trainer_id);
 				
-				$agf_trainee = new Agefodd_stagiaire($this->db);
-				$agf_trainee->fetch($agf_session_trainee->fk_stagiaire);
+				if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+					$agf_session_trainer_calendar = new Agefoddsessionformateurcalendrier($this->db);
+					$agf_session_trainer_calendar->fetch_all($session_trainer_id);
+				}
+				
+				$agf_trainer = new Agefodd_teacher($this->db);
+				$agf_trainer->fetch($agf_session_trainer->formid);
 			}
 		}
 		
@@ -140,10 +155,10 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pagenb = 0;
 			
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
-			$pdf->SetSubject($outputlangs->transnoentities("AgfModPDFConvocationTrainee"));
+			$pdf->SetSubject($outputlangs->transnoentities("AgfTrainerMissionLetter"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
-			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref_interne) . " " . $outputlangs->transnoentities("Document"));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->id) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
 				$pdf->SetCompression(false);
 			
@@ -248,61 +263,62 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 15);
 			$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 			$pdf->SetXY($posX, $posY);
-			$this->str = $outputlangs->transnoentities('AgfPDFConvocation');
+			$training = $agf->formintitule;
+			if (! empty($agf->intitule_custo))
+				$training = $agf->intitule_custo;
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF1').' ' . $training;
 			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
 			$posY += 14;
 			
 			/**
-			 * *** Text Convocation ****
+			 * *** Text mission lettter ****
 			 */
 			
 			$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = $mysoc->name . ' ' . $outputlangs->transnoentities('AgfPDFConvocation1');
+			$this->str = ucfirst(strtolower($agf_trainer->civilite)) . " ". $agf_trainer->firstname .' '. $agf_trainer->name.',';
 			$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0);
 			$posY += 8;
 			
-			$pdf->SetXY($posX + 10, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-			$this->str = ucfirst(strtolower($agf_trainee->civilite)) . " " . $outputlangs->transnoentities($agf_trainee->prenom . ' ' . $agf_trainee->nom);
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
-			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = $outputlangs->transnoentities('AgfPDFConvocation2');
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF2', $training);
 			$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
-			$pdf->SetXY($posX + 10, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
-			
-			$this->str = $agf->formintitule;
-			if (! empty($agf->intitule_custo))
-				$this->str = $agf->intitule_custo;
-			$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str), 0, 'L');
-			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation3') . ' ';
+			$this->str = ' ' . $outputlangs->transnoentities('AgfTrainerMissionLetterPDF3') . ' ';
 			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 3;
 			
-			foreach ( $agf_calendrier->lines as $line ) {
-				$pdf->SetXY($posX + 10, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-				$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
-				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 2;
+			if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
+				foreach ( $agf_session_trainer_calendar->lines as $line ) {
+					$pdf->SetXY($posX + 10, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 2;
+				}
+			} else {
+				foreach ( $agf_calendrier->lines as $line ) {
+					$pdf->SetXY($posX + 10, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 2;
+				}
 			}
+			
 			
 			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation6') . ' ';
+			$this->str = ' ' . $outputlangs->transnoentities('AgfTrainerMissionLetterPDF6') . ' ';
 			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 3;
 			
@@ -332,15 +348,48 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = $outputlangs->transnoentities('AgfPDFConvocation7');
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF7');
 			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = $outputlangs->transnoentities('AgfPDFConvocation8');
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF8');
 			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
+			
+			//For intraenterprise
+			if ($agf->type_session==0) {
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+				$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF9', $customer->name, $conf->global->AGF_ORGANISME_REPRESENTANT);
+				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 8;
+			}
+			
+			
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF14').' '.$mysoc->name. ','.dol_print_date(dol_now(),'daytext','tzserver',$outputlangs);
+			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			//$posY = $pdf->GetY() + 8;
+			// Incrustation image tampon
+			if ($conf->global->AGF_INFO_TAMPON) {
+				$dir = $conf->agefodd->dir_output . '/images/';
+				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+				if (file_exists($img_tampon))
+					$pdf->Image($img_tampon, $posX + $this->marge_gauche, $pdf->GetY() + 6, 50);
+			}
+			
+			$pdf->SetXY($posX+($this->page_largeur/2), $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF10')."\n";
+			$this->str .=$outputlangs->transnoentities('AgfTrainerMissionLetterPDF11')."\n";
+			$this->str .=$outputlangs->transnoentities('AgfTrainerMissionLetterPDF12')."\n";
+			$this->str .=$outputlangs->transnoentities('AgfTrainerMissionLetterPDF13')."\n";
+			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			
+			
 			
 			// Pied de page
 			$this->_pagefoot($pdf, $agf, $outputlangs);

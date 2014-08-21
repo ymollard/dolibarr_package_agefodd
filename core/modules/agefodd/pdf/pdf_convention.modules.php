@@ -700,12 +700,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetXY($this->milieu, $posY);
 				if (! empty($agf_conv->sig))
 					$this->str = $agf_conv->sig;
-				else {
-					// if agefodd contact exist
-					$this->str = $agf_soc->nom . "\n";
-					$this->str .= $langs->transnoentities('AgfConvArtSig') . ' ';
-					$this->str .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->name . " (*)";
-				}
+			
 				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'C');
 				$hauteurB = dol_nboflines_bis($this->str, 50) * 3;
 				$hauteur = max($hauteurA, $hauteurB);
