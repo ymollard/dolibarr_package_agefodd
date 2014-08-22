@@ -326,8 +326,9 @@ if (! empty($filter_contact)) {
 }
 if (! empty($filter_trainer)) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ";
 	if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid AND ca.code='AC_AGF_SESST'";
+		$sql .= " AND ca.code='AC_AGF_SESST' ";
 	}
 	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
