@@ -1,9 +1,5 @@
 English Dolibarr ChangeLog
 
-***** ChangeLog for 2.1.11 compared to 2.1.10 *****
--Fix : Bug when do not use OPCA (Manage OPCA off in module configuration)
--New : Add trainer lettre mission
--Fix : Fix bug on Trainer agenda when trainer session calendar is not active
 
 ***** ChangeLog for 2.1.10 compared to 2.1.9 *****
 -Fix : French spelling (thank to  Joël Pastré)
@@ -18,6 +14,7 @@ English Dolibarr ChangeLog
 -Fix : Remove certificate Credit card PDF  because not usefull
 -New : Add trainer type on session. Usefull for french admnistrative document (Tools,Export)
 -New : Can have different OPCA for one session/thirdparty in inter-company session
+
 
 ***** ChangeLog for 2.1.9 compared to 2.1.8 *****
 -Fix : Attestation by trainnee with training objectives wrong output
