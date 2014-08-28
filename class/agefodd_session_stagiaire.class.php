@@ -208,7 +208,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				if (empty($obj->stamail)) {
 					$line->email = $obj->socpemail;
 				} else {
-					$line->email = $obj->mail;
+					$line->email = $obj->stamail;
 				}
 				
 				if (empty($obj->poste)) {
