@@ -258,7 +258,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$this->str = $outputlangs->transnoentities('AgfUndefinedPrerequis');
 				
 				$pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
@@ -280,7 +280,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->str = ucfirst($agf->public);
 				
 				$pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
@@ -297,7 +297,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', '9');
 				$this->str = $agf->programme;
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				// store starting values
 				$start_y = $pdf->GetY();
 				$start_page = $pdf->getPage();
@@ -355,7 +355,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', '9');
 				$this->str = $agf->programme;
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				$pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
 				
@@ -391,7 +391,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->str = $agf->methode;
 				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
 				$pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				
 				$pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + $this->espace_apres_corps_text;
@@ -612,7 +612,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		//Determine if jump pages is needed
 		$pdf->startTransaction(); 
 		
-		$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+		$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 		// store starting values
 		$start_y = $pdf->GetY();
 		$start_page = $pdf->getPage();
