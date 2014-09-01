@@ -394,7 +394,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print "</td></tr>";
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfProgramme") . '</td><td>';
-	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->FCKEDITOR_ENABLE_SOCIETE, 4, 90);
+	$doleditor = new DolEditor('programme', GETPOST('programme'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 	
