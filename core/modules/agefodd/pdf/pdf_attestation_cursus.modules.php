@@ -212,7 +212,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$newY = $newY + 6;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestationCursus3');
-				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
+				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
 				$newY = $newY + 10;
@@ -250,7 +250,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$this->str = $outputlangs->transnoentities('AgfPDFAttestationCursus4') . " ";
 				$this->str .= implode(',', $training_array);
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
-				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
+				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 				
 				$min = floor($dureetotal / 60);
 				$rmin = sprintf("%02d", $min % 60);
@@ -259,18 +259,18 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$newY = $newY + 10;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$this->str = $outputlangs->transnoentities('AgfPDFAttestationCursus5') . " " . $hour . $outputlangs->transnoentities('AgfPDFAttestationCursus6');
-				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
+				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 				$newY = $newY + 20;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$this->str = $outputlangs->transnoentities('AgfPDFAttestationCursus8') . " " . $mysoc->name . ",";
-				$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
+				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 				
 				$newY = $newY + 20;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$this->str = $outputlangs->transnoentities('AgfPDFConv20') . " " . $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
-				$pdf->Cell(80, 0, $outputlangs->transnoentities($this->str), 0, 0, 'R', 0);
+				$pdf->Cell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 				$this->str = date("d/m/Y");
@@ -360,6 +360,6 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 8);
 		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$pdf->Cell(0, 6, $outputlangs->transnoentities($this->str), 0, 0, 'C', 0);
+		$pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 	}
 }

@@ -278,21 +278,21 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ucfirst(strtolower($agf_trainer->civilite)) . " ". $agf_trainer->firstname .' '. $agf_trainer->name.',';
-			$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0);
+			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0);
 			$posY += 8;
 			
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF2', $training);
-			$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfTrainerMissionLetterPDF3') . ' ';
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 3;
 			
 			if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
@@ -300,7 +300,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 					$pdf->SetXY($posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 					$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
-					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $pdf->GetY() + 2;
 				}
 			} else {
@@ -308,7 +308,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 					$pdf->SetXY($posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 					$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
-					$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $pdf->GetY() + 2;
 				}
 			}
@@ -319,43 +319,43 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfTrainerMissionLetterPDF6') . ' ';
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 3;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = $agf_place->ref_interne;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = $agf_place->adresse;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = $agf_place->cp;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = $agf_place->ville;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 10;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF7');
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF8');
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 			
 			//For intraenterprise
@@ -363,7 +363,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 				$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF9', $customer->name, $conf->global->AGF_ORGANISME_REPRESENTANT);
-				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 8;
 			}
 			
@@ -371,7 +371,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF14').' '.$mysoc->name. ','.dol_print_date(dol_now(),'daytext','tzserver',$outputlangs);
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			//$posY = $pdf->GetY() + 8;
 			// Incrustation image tampon
 			if ($conf->global->AGF_INFO_TAMPON) {
@@ -387,7 +387,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$this->str .=$outputlangs->transnoentities('AgfTrainerMissionLetterPDF11')."\n";
 			$this->str .=$outputlangs->transnoentities('AgfTrainerMissionLetterPDF12')."\n";
 			$this->str .=$outputlangs->transnoentities('AgfTrainerMissionLetterPDF13')."\n";
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			
 			
 			

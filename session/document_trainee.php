@@ -116,15 +116,22 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 			$sendto = array (
 					$send_to 
 			);
-			$sendtoid = 0;
-		} elseif (is_array($receiver)) {
-			$receiver = $receiver;
-			foreach ( $receiver as $socpeople_id ) {
+		} elseif (is_array($receiver) && count($receiver)>0) {
+			foreach ( $receiver as $id_receiver ) {
 				// Initialisation donnees
-				$contactstatic = new Contact($db);
-				$contactstatic->fetch($socpeople_id);
-				if ($contactstatic->email != '') {
-					$sendto [$socpeople_id] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+				 
+				if (preg_match ( "/_third/", $id_receiver )) {
+					$id_receiver= preg_replace('/_third/', '', $id_receiver);
+					$societe = new Societe($db);
+					$societe->fetch($id_receiver);
+					$sendto[$id_receiver.'_third'] = $societe->name . " <" . $societe->email . ">";
+				} elseif (preg_match ( "/_socp/", $id_receiver )) {
+					$id= preg_replace('/_socp/', '', $id_receiver);
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($id_receiver);
+					if ($contactstatic->email != '') {
+						$sendto[$id_receiver.'_socp'] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+					}
 				}
 			}
 		}
@@ -139,14 +146,27 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 			
 			// Envoi du mail + trigger pour chaque contact
 			$i = 0;
-			foreach ( $sendto as $send_contact_id => $send_email ) {
+			foreach ( $sendto as $send_id => $send_email ) {
 				
 				$models = GETPOST('models', 'alpha');
 				
 				$subject = GETPOST('subject');
-				// Initialisation donnees
-				$contactstatic = new Contact($db);
-				$contactstatic->fetch($send_contact_id);
+								
+				//Usefull for trigger actioncomm
+				if (preg_match ( "/_third/", $send_id )) {
+					$send_id= preg_replace('/_third/', '', $send_id);
+					$societe = new Societe($db);
+					$societe->fetch($send_id);
+					$object->socid = $send_id;
+					$object->sendtoid=0;
+				} elseif (preg_match ( "/_socp/", $send_id )) {
+					$send_id= preg_replace('/_socp/', '', $send_id);
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($send_id);
+					$contactstatic->fetch_thirdparty();
+					$object->socid = $contactstatic->thirdparty->id;
+					$object->sendtoid=$send_id;
+				}
 				
 				if ($models == 'attestation_trainee') {
 					if (empty($subject))
@@ -191,9 +211,6 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 						setEventMessage($langs->trans('MailSuccessfulySent', $mailfile->getValidAddress($from, 2), $mailfile->getValidAddress($send_email, 2)), 'mesgs');
 						
 						$error = 0;
-						$socid_action = ($contactstatic->socid > 0 ? $contactstatic->socid : ($socid > 0 ? $socid : $object->fk_soc));
-						$object->socid = $socid_action;
-						$object->sendtoid = $send_contact_id;
 						$object->actiontypecode = $actiontypecode;
 						$object->actionmsg = $actionmsg;
 						$object->actionmsg2 = $actionmsg2;
@@ -262,10 +279,20 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 		$agf_trainee = new Agefodd_stagiaire($db);
 		$agf_trainee->fetch($line->id);
 		
-		$send_email = $agf_trainee->mail;
-		
 		$contact_trainee = new Contact($db);
 		$contact_trainee->fetch($agf_trainee->fk_socpeople);
+		// Send email to company rather then trainee
+		
+		$companyid=$contact_trainee->socid;
+		if (!empty($agf_trainee->fk_socpeople)) {
+			$contactid = $agf_trainee->fk_socpeople;
+		} else {
+			$contactid=0;
+		}
+		
+		//Perapre data for trigeer action comm
+		$object->socid = $companyid;
+		$object->sendtoid = $contactid;
 		
 		$sendmail_check = true;
 		
@@ -336,6 +363,12 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			include_once (DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php');
 			$formmail = new FormMail($db);
 			
+			if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+				$message = str_replace("\n", "<BR>", $message);
+			}
+			
+			$message .= $user->signature;
+			
 			// Envoi de la fiche
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
 			$mailfile = new CMailFile($subject, $send_email, $from, $message, $filepath, $mimetype, $filename, $sendtocc, '', 1, - 1);
@@ -347,9 +380,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 					setEventMessage($langs->trans('MailSuccessfulySent', $mailfile->getValidAddress($from, 2), $mailfile->getValidAddress($send_email, 2)), 'mesgs');
 					
 					$error = 0;
-					$socid_action = $contact_trainee->socid;
-					$object->socid = $socid_action;
-					$object->sendtoid = $agf_trainee->fk_socpeople;
+
 					$object->actiontypecode = $actiontypecode;
 					$object->actionmsg = $actionmsg;
 					$object->actionmsg2 = $actionmsg2;
@@ -415,7 +446,24 @@ if ($action == 'generateall' && $user->rights->agefodd->creer) {
 		if (($typemodel == 'attestation_trainee' && ($line->status_in_session == 3 || $line->status_in_session == 4) || ($typemodel == 'convocation_trainee'))) {
 			$file = $typemodel . '_' . $line->stagerowid . '.pdf';
 			
-			$result = agf_pdf_create($db, $id, '', $typemodel, $outputlangs, $file, $line->stagerowid, $cour);
+			$typemodel_override = $typemodel;
+			// this configuration variable is designed like
+			// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+			if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($typemodel != 'convention')) {
+				$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+				if (is_array($modelarray) && count($modelarray) > 0) {
+					foreach ( $modelarray as $modeloveride ) {
+						$modeloverridearray = explode(':', $modeloveride);
+						if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+							if ($modeloverridearray[0] == $typemodel) {
+								$typemodel_override = $modeloverridearray[1];
+							}
+						}
+					}
+				}
+			}
+			
+			$result = agf_pdf_create($db, $id, '', $typemodel_override, $outputlangs, $file, $line->stagerowid, $cour);
 		} elseif ($typemodel == 'attestation_trainee') {
 			setEventMessage($langs->trans('AgfOnlyPresentTraineeGetAttestation', $line->nom . ' ' . $line->prenom), 'warnings');
 		}
@@ -564,6 +612,10 @@ if (! empty($id)) {
 				$formmail->param ['pre_action'] = 'presend_convocation_trainee';
 			}
 			
+			if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+				$formmail->withbody = str_replace('\n', '<BR>', $formmail->withbody);
+			}
+			
 			$withto = array ();
 			
 			// Trainee List
@@ -573,18 +625,37 @@ if (! empty($id)) {
 			$agf_trainee = new Agefodd_stagiaire($db);
 			$agf_trainee->fetch($agf_trainnees->fk_stagiaire);
 			
-			$withto [$agf_trainee->fk_socpeople] = $agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail;
-			
 			$contact_trainee = new Contact($db);
 			$contact_trainee->fetch($agf_trainee->fk_socpeople);
 			
+			// Send to company
+			$thirdpartyid = 0;
+			if (! empty($agf_trainee->socid)) {
+				$agf_trainee->fetch_thirdparty();
+				$thirdpartyid = $agf_trainee->thirdparty->id;
+				$send_email = $agf_trainee->thirdparty->email;
+				$companyname = $agf_trainee->thirdparty->name;
+			} else {
+				$contact_trainee->fetch_thirdparty();
+				if (! empty($contact_trainee->thirdparty->id)) {
+					$thirdpartyid = $contact_trainee->thirdparty->id;
+					$send_email = $contact_trainee->thirdparty->email;
+					$companyname = $contact_trainee->thirdparty->name;
+				}
+			}
+			if (! empty($thirdpartyid)) {
+				$withto[$thirdpartyid . '_third'] = $companyname . ' - ' . $send_email;
+			}
+				
+			$withto[$agf_trainee->fk_socpeople . '_socp'] = $agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail;
+				
 			if (! empty($withto)) {
 				$formmail->withto = $withto;
 			}
 			
 			$formmail->withdeliveryreceipt = 1;
 			
-			$formmail->withbody .= "\n\n--\n__SIGNATURE__\n";
+			$formmail->withbody .= "\n\n\n__SIGNATURE__\n";
 			
 			// Tableau des substitutions
 			$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;

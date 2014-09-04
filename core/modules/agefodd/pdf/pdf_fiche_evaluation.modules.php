@@ -336,7 +336,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval5');
-				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'C', 0);
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 				$posY = $pdf->GetY() + 1;
 				
 				$col_larg = $this->espaceH_dispo / 5;

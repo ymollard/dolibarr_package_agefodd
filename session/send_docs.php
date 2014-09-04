@@ -1066,7 +1066,11 @@ if (! empty($id)) {
 			
 			$formmail->withdeliveryreceipt = 1;
 			
-			$formmail->withbody .= "\n\n--\n__SIGNATURE__\n";
+			$formmail->withbody .= "\n\n__SIGNATURE__\n";
+			
+			if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+				$formmail->withbody = str_replace('\n', '<BR>', $formmail->withbody);
+			}
 			
 			// Tableau des substitutions
 			$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;

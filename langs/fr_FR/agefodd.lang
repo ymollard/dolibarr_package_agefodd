@@ -942,3 +942,4 @@ ActionAC_AGF_MISTR=Envoi lettre de mission formateur par mail
 AgfMissionTrainerSentByEMail=Envoi lettre de mission formateur par mail
 AgfSendFicheMissionTrainer=Lettre de mission %s
 AgfSendFicheMissionTrainerBody=Bonjour,\n\nVeuillez trouver ci-joint la lettre de mission pour la formation « %s ».
+AgfSendDoc=Envoie document par email

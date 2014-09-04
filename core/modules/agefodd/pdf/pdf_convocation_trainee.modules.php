@@ -33,7 +33,7 @@ require_once ('../class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
+
 class pdf_convocation_trainee extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
@@ -260,19 +260,19 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $mysoc->name . ' ' . $outputlangs->transnoentities('AgfPDFConvocation1');
-			$pdf->Cell(0, 0, $outputlangs->transnoentities($this->str), 0, 0);
+			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0);
 			$posY += 8;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = ucfirst(strtolower($agf_trainee->civilite)) . " " . $outputlangs->transnoentities($agf_trainee->prenom . ' ' . $agf_trainee->nom);
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfPDFConvocation2');
-			$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			$pdf->SetXY($posX + 10, $posY);
@@ -281,20 +281,20 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$this->str = $agf->formintitule;
 			if (! empty($agf->intitule_custo))
 				$this->str = $agf->intitule_custo;
-			$pdf->MultiCell(0, 5, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation3') . ' ';
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 3;
 			
 			foreach ( $agf_calendrier->lines as $line ) {
 				$pdf->SetXY($posX + 10, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 				$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
-				$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + 2;
 			}
 			
@@ -303,44 +303,46 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation6') . ' ';
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 3;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = $agf_place->ref_interne;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
 			$this->str = $agf_place->adresse;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-			$this->str = $agf_place->cp;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
-			$posY = $pdf->GetY() + 2;
-			
-			$pdf->SetXY($posX + 10, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-			$this->str = $agf_place->ville;
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$this->str = $agf_place->cp. ' '.$agf_place->ville;
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 10;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfPDFConvocation7');
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = $outputlangs->transnoentities('AgfPDFConvocation8');
-			$pdf->MultiCell(0, 4, $outputlangs->transnoentities($this->str), 0, 'L');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
+			
+			// Incrustation image tampon
+			if ($conf->global->AGF_INFO_TAMPON) {
+				$dir = $conf->agefodd->dir_output . '/images/';
+				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+				if (file_exists($img_tampon))
+					$pdf->Image($img_tampon, 120, $posY, 50);
+			}
 			
 			// Pied de page
 			$this->_pagefoot($pdf, $agf, $outputlangs);
