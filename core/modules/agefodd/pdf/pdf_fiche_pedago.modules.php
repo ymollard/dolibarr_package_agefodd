@@ -163,7 +163,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				*/
 				
 				$posX = $this->marge_gauche;
-				$posY = $this->pdf->GetY()+3;
+				$posY = $this->pdf->GetY()+5;
 				
 				/**
 				 * *** Titre ****
@@ -173,7 +173,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfFichePedagogique');
 				$this->pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
-				$posY += 10;
+				$posY = $this->pdf->GetY()+10;
 				
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 				$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
@@ -295,6 +295,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				//Determine if jump pages is needed
 				$height = $this->getRealHeightLine($agf->programme);
+				//print 'Real $height='.$height;
+				//print '<BR>';
 				
 				$height_left = $this->page_hauteur-$this->marge_basse - $posY;
 				
@@ -306,28 +308,37 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$header_height=$this->hearder_height_custom;
 					
 					//Check if needed to reduce text font size to fitt all in one page
-					$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs);
+					$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs, $fontsize);
+					/*print 'TOTAL $height='.$height;
+					print '<BR>';
+					print ' $fontsize='.$fontsize;
+					print '<BR>';*/
 					
 					$total_height_left = $this->page_hauteur - $header_height - 80;
+					
+					//print ' $$total_height_left='.$total_height_left;
+					//print '<BR>';
 					if ($height>$total_height_left)	{
 						$allin_a_page=false;
 						
-						while ($allin_a_page!==true) {
+						while ($allin_a_page!==true && $fontsize>0) {
 							$fontsize--;
-							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
-							$height = $this->getRealHeightLine($agf->programme,$agf, $outputlangs);
+							
+							$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs,$fontsize);
+							/*print '$fontsize='.$fontsize;
+							print '$height='.$height;
+							print '<BR>';*/
 							if ($height<=$total_height_left)	{
 								$allin_a_page=true;
 							} 							
 						}
 					}
-
 					$this->hearder_height_custom=$header_height;
 					
 					$this->_pagefoot($agf, $outputlangs);
 					$this->pdf->AddPage();
 					$this->_pagehead($agf, $outputlangs);
-					$posY = $this->pdf->GetY()+3;
+					$posY = $this->pdf->GetY()+5;
 				} else {
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
@@ -347,7 +358,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				$this->pdf->SetXY($posX, $posY);
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize+2);
 				$this->str = $agf->programme;
 				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
@@ -356,14 +367,14 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				// Methode pedago ****
 				
-				$height = $this->getRealHeightLine($agf->methode);
+				$height = $this->getTotalHeightLine($agf->methode,$agf, $outputlangs,$fontsize);
 					
 				$height_left = $this->page_hauteur-$this->marge_basse - $posY;
 				if ($height > $height_left) {
 					$this->_pagefoot($agf, $outputlangs);
 					$this->pdf->AddPage();
 					$this->_pagehead($agf, $outputlangs);
-					$posY = $this->pdf->GetY()+3;
+					$posY = $this->pdf->GetY()+5;
 				} else {
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
@@ -521,7 +532,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		
 		$this->pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		
-		$posY = $this->pdf->getY()+3;
+		$posY = $this->pdf->getY()+5;
 		
 		$this->pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 		$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
@@ -604,7 +615,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 		// store starting values
 		$start_y = $this->pdf->GetY();
+		//print '$start_y='.$start_y;
+		
 		$start_page = $this->pdf->getPage();
+		//print '$start_page='.$start_page;
 		// call your printing functions with your parameters
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		$this->pdf->MultiCell(0, 5, $txt, 0, 'L', '', '2', '', '', '', '', $ishtml);
@@ -613,6 +627,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$end_y = $this->pdf->GetY();
 		$end_page = $this->pdf->getPage()-1;
 		// calculate height
+		//print '$end_y='.$end_y;
+		//print '$end_page='.$end_page;
+		
 		
 		$height = 0;
 		if ($end_page == $start_page) {
@@ -625,19 +642,21 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$height = $this->page_hauteur - $start_y - $this->marge_basse;
 				} elseif ($page == $end_page) {
 					// last page
-					$height = $end_y - $this->marge_haute;
+					$height += $end_y - $this->marge_haute;
 				} else {
-					$height = $this->page_hauteur - $this->marge_haute - $this->marge_basse;
+					$height += $this->page_hauteur - $this->marge_haute - $this->marge_basse;
 				}
 			}
 		} // restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
-	
+		//print '$height='.$height;
+		
+		//exit;
 		return $height;
 	}
 	
 	
-	public function getTotalHeightLine($txt,$object,$outputlangs) {
+	public function getTotalHeightLine($txt,$object,$outputlangs, $fontsize=8) {
 	
 		global $conf;
 		//Determine if jump pages is needed
@@ -645,11 +664,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		
 		$this->pdf->AddPage();
 		$this->_pagehead($object, $outputlangs);
-		$this->_pagefoot($object, $outputlangs);
-		/*print '$start_y='.$start_y.'<BR>';
-		 print '$$start_page='.$start_page.'<BR>';
-		print '$$end_y='.$end_y.'<BR>';
-		print '$$end_page='.$end_page.'<BR>';*/
+		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
+		//$this->_pagefoot($object, $outputlangs);
 	
 		$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 		// store starting values
@@ -664,6 +680,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$end_page = $this->pdf->getPage();
 		// calculate height
 	
+		/*print '$start_y='.$start_y.'<BR>';
+		 print '$$start_page='.$start_page.'<BR>';
+		print '$$end_y='.$end_y.'<BR>';
+		print '$$end_page='.$end_page.'<BR>';*/
+		
+		
 		$height = 0;
 		if ($end_page == $start_page) {
 			$height = $end_y - $start_y;
@@ -675,9 +697,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$height = $this->page_hauteur - $start_y - $this->marge_basse;
 				} elseif ($page == $end_page) {
 					// last page
-					$height = $end_y - $this->marge_haute;
+					$height += $end_y - $this->marge_haute;
 				} else {
-					$height = $this->page_hauteur - $this->marge_haute - $this->marge_basse;
+					$height += $this->page_hauteur - $this->marge_haute - $this->marge_basse;
 				}
 			}
 		} // restore previous object
