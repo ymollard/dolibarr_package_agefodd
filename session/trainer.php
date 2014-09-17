@@ -208,12 +208,16 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
 			$error_message = $agf_cal->error;
 		} else {
 			foreach ( $agf_cal->lines as $line ) {
-				
-				if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $id) {
-					$error ++;
-					$error_message .= $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
-				}
+				if (!empty($line->trainer_status) && $line->trainer_status!=6) {
+					if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) 
+							|| ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) 
+							|| ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) 
+							|| ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $id) {
+						$error ++;
+						$error_message .= $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+					}
 			}
+		}
 		}
 		
 		if (! $error) {
@@ -271,9 +275,14 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
 				}
 				
 				foreach ( $agf_cal->lines as $line ) {
-					if (($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) {
-						$error ++;
-						$error_message .= $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+					if (!empty($line->trainer_status) && $line->trainer_status!=6) {
+						if (($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) 
+								|| ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) 
+								|| ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) 
+								|| ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) {
+							$error ++;
+							$error_message .= $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+						}
 					}
 				}
 				if (! $error) {
