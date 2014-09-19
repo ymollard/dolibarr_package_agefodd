@@ -144,8 +144,11 @@ class pdf_attestation extends ModelePDFAgefodd {
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 			
 			if ($result) {
+				$trainee_output=0;
 				for($i = 0; $i < count($agf2->lines); $i ++) {
 					if (($agf2->lines [$i]->status_in_session == 3 || $agf2->lines [$i]->status_in_session == 4) || ($agf2->lines [$i]->status_in_session == 2)) {
+
+						$trainee_output++;
 						// New page
 						$pdf->AddPage();
 						$pagenb ++;
@@ -323,6 +326,16 @@ class pdf_attestation extends ModelePDFAgefodd {
 						$baseline_width = $this->width;
 					}
 				}
+			}
+			
+			if (empty($trainee_output)) {
+				$outputlangs->load('companies');
+				$pdf->AddPage();
+				$pagenb ++;
+				$this->_pagehead($pdf, $agf, 1, $outputlangs);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$this->str=$outputlangs->transnoentities('AgfOnlyPresentTraineeGetAttestation', $outputlangs->transnoentities('PL_NONE'));
+				$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C'); // Set interline to 3
 			}
 			$pdf->Close();
 			$pdf->Output($file, 'F');
