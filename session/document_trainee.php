@@ -301,6 +301,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			// Do not send attestation if status is not present
 			if ($line->status_in_session != 3 && $line->status_in_session != 4) {
 				$sendmail_check = false;
+				setEventMessage($langs->trans('AgfOnlyPresentTraineeGetAttestation', $line->nom . ' ' . $line->prenom), 'errors');
 			}
 			$subject = $langs->transnoentities('AgfSendAttestation', $object->formintitule);
 			$message = str_replace('\n', "\n", $langs->transnoentities('AgfSendAttestationBody', $object->formintitule));
