@@ -273,13 +273,23 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			
 			// Inscrire dans la session
 			if ($session_id > 0) {
+				
+				$fk_soc_requester=GETPOST('fk_soc_requester', 'int');
+				if ($fk_soc_requester<0) {
+					$fk_soc_requester=0;
+				}
+				$fk_soc_link=GETPOST('fk_soc_link', 'int');
+				if ($fk_soc_link<0) {
+					$fk_soc_link=0;
+				}
+				
 				$sessionstat = new Agefodd_session_stagiaire($db);
 				$sessionstat->fk_session_agefodd = GETPOST('session_id', 'int');
 				$sessionstat->fk_stagiaire = $agf->id;
 				$sessionstat->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
-				$sessionstat->fk_soc_link = GETPOST('fk_soc_link', 'int');
+				$sessionstat->fk_soc_link = $fk_soc_link;
 				$sessionstat->status_in_session = GETPOST('status_in_session', 'int');
-				$sessionstat->fk_soc_requester = GETPOST('fk_soc_requester', 'int');
+				$sessionstat->fk_soc_requester = $fk_soc_requester;
 				$result = $sessionstat->create($user);
 				
 				if ($result > 0) {
