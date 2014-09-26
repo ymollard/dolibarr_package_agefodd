@@ -126,7 +126,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 					$societe->fetch($id_receiver);
 					$sendto[$id_receiver.'_third'] = $societe->name . " <" . $societe->email . ">";
 				} elseif (preg_match ( "/_socp/", $id_receiver )) {
-					$id= preg_replace('/_socp/', '', $id_receiver);
+					$id_receiver= preg_replace('/_socp/', '', $id_receiver);
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($id_receiver);
 					if ($contactstatic->email != '') {
