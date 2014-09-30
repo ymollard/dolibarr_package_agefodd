@@ -642,18 +642,21 @@ class InterfaceAgefodd {
 					//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
 					// For Intra entreprise you take all trainne
 					$sessionOPCA = new Agefodd_opca($this->db);
-					if (empty($conf->global->AGF_MANAGE_OPCA) || $agf->type_session == 0) {
+					if (empty($conf->global->AGF_MANAGE_OPCA) || $agfsession->type_session == 0) {
 						// For Intra entreprise you take all trainne
 						$find_trainee_by_OPCA=false;
 						$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
 						
-					} elseif ($agf->type_session == 1) {
-						
+					} elseif ($agfsession->type_session == 1) {
 						// For inter entreprise you tkae only trainee link with this OPCA
 						dol_include_once('/compta/facture/class/facture.class.php');
 						$invoice= new Facture($this->db);
 						$result=$invoice->fetch($object->fk_facture);
-						
+						if ($result<0) {
+							$this->error = $invoice->error;
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+							return - 1;
+						}
 						
 						$result = $sessionOPCA->getOpcaSession($agf_fin->lines[0]->fk_session_agefodd);
 						if ($result<0) {
@@ -674,7 +677,7 @@ class InterfaceAgefodd {
 					if ($find_trainee_by_OPCA) {
 						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
 					} else {
-						$session_trainee->fetch_stagiaire_per_session($agfsession->id);
+						$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid);
 					}
 					
 					if (count($session_trainee->lines) > 0) {
