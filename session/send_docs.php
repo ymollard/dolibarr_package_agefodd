@@ -526,7 +526,9 @@ if (! empty($id)) {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 				}
 			}
-			
+			if (!empty($socid)) {
+				$formmail->param['socid']=$socid;
+			}
 			$formmail->fromtype = 'user';
 			$formmail->fromid = $user->id;
 			$formmail->fromname = $user->getFullName($langs);
@@ -822,7 +824,7 @@ if (! empty($id)) {
 				
 				// Envoi de fichier libre
 				$formmail->withfile = 2;
-				
+					
 				// Dossier de cloture peut être envoyé au participant ou à l'opca ou au commanditaire
 				if ($agf->type_session && $socid) {
 					$agf_opca = new Agefodd_opca($db);
@@ -884,7 +886,6 @@ if (! empty($id)) {
 						}
 					}
 				}
-				
 				if (! empty($withto)) {
 					$formmail->withto = $withto;
 				}
