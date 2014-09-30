@@ -444,7 +444,8 @@ if ($action == 'generateall' && $user->rights->agefodd->creer) {
 	
 	foreach ( $agf_trainee->lines as $line ) {
 		
-		if (($typemodel == 'attestation_trainee' && ($line->status_in_session == 3 || $line->status_in_session == 4) || ($typemodel == 'convocation_trainee'))) {
+		if (($typemodel == 'attestation_trainee' && ($line->status_in_session == 3 || $line->status_in_session == 4)) 
+				|| ($typemodel == 'convocation_trainee')) {
 			$file = $typemodel . '_' . $line->stagerowid . '.pdf';
 			
 			$typemodel_override = $typemodel;
