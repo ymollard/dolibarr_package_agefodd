@@ -677,7 +677,7 @@ class InterfaceAgefodd {
 					if ($find_trainee_by_OPCA) {
 						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
 					} else {
-						$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid);
+						$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid, 1);
 					}
 					
 					if (count($session_trainee->lines) > 0) {
