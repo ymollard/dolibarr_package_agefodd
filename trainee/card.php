@@ -189,7 +189,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 					$socstatic = new Societe($db);
 					
 					$socstatic->name = $societe_name;
-					$socstatic->tel = $tel1;
+					$socstatic->phone = $tel1;
 					$socstatic->email = $mail;
 					$socstatic->address = $address;
 					$socstatic->zip = $zip;
