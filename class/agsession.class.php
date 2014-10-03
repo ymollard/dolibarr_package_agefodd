@@ -3326,14 +3326,9 @@ class Agsession extends CommonObject {
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
 			if (count($session_trainee->lines) > 0) {
-				$desc_trainee = "\n" . count($session_trainee->lines) . ' ';
-				if (count($session_trainee->lines) > 1) {
-					$desc_trainee .= $langs->trans('AgfParticipants');
-				} elseif (count($session_trainee->lines) == 1) {
-					$desc_trainee .= $langs->trans('AgfParticipant');
-				}
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
+					$nbtrainee = 0;
 					foreach ( $session_trainee->lines as $line ) {
 						
 						if ($line->status_in_session != 5 && $line->status_in_session != 6) {
@@ -3349,10 +3344,19 @@ class Agsession extends CommonObject {
 							} else {
 								$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 							}
+							$nbtrainee ++;
 						}
 					}
+					
+					$desc_trainee_head = "\n" . $nbtrainee . ' ';
+					if ($nbtrainee > 1) {
+						$desc_trainee_head .= $langs->trans('AgfParticipants');
+					} else {
+						$desc_trainee_head .= $langs->trans('AgfParticipant');
+					}
+					
 				}
-				$desc .= ' ' . $desc_trainee;
+				$desc .= ' ' .$desc_trainee_head. ' '. $desc_trainee;
 			}
 			
 			// For session inter set the quantity to number of trainee
