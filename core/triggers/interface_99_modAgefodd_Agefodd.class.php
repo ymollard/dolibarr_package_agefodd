@@ -702,10 +702,10 @@ class InterfaceAgefodd {
 						}
 						
 						$desc_trainee_head = "\n" . $nbtrainee . ' ';
-						if ($nbtrainee >= 1) {
-							$desc_trainee_head .= $langs->trans('AgfParticipant');
-						} else {
+						if ($nbtrainee > 1) {
 							$desc_trainee_head .= $langs->trans('AgfParticipants');
+						} else {
+							$desc_trainee_head .= $langs->trans('AgfParticipant');
 						}
 						
 						$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
