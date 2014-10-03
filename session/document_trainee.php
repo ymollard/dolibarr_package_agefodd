@@ -281,7 +281,6 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 		
 		$contact_trainee = new Contact($db);
 		$contact_trainee->fetch($agf_trainee->fk_socpeople);
-		// Send email to company rather then trainee
 		
 		$companyid=$contact_trainee->socid;
 		if (!empty($agf_trainee->fk_socpeople)) {
@@ -293,6 +292,8 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 		//Perapre data for trigeer action comm
 		$object->socid = $companyid;
 		$object->sendtoid = $contactid;
+		
+		$send_email = $agf_trainee->mail;
 		
 		$sendmail_check = true;
 		
