@@ -109,7 +109,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		$this->need_dolibarr_version = array (
 				3,
-				5 
+				6 
 		);
 		$this->langfiles = array (
 				'agefodd@agefodd' 
