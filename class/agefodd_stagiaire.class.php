@@ -210,7 +210,7 @@ class Agefodd_stagiaire extends CommonObject {
 						
 						$this->nom = $contact->lastname;
 						$this->prenom = $contact->firstname;
-						$this->civilite = $contact->civilite_id;
+						$this->civilite = $contact->civility_id;
 						$this->socid = $contact->socid;
 						$this->socname = $contact->socname;
 						$this->fonction = $contact->poste;

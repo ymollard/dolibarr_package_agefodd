@@ -172,7 +172,7 @@ if ($id) {
 		print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
 		
 		$contact_static = new Contact($db);
-		$contact_static->civilite_id = $agf->civilite;
+		$contact_static->civility_id = $agf->civilite;
 		
 		print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
 		

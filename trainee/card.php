@@ -86,7 +86,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		
 		$agf->nom = GETPOST('nom', 'alpha');
 		$agf->prenom = GETPOST('prenom', 'alpha');
-		$agf->civilite = GETPOST('civilite_id', 'alpha');
+		$agf->civilite = GETPOST('civility_id', 'alpha');
 		$agf->socid = GETPOST('societe', 'int');
 		$agf->fonction = GETPOST('fonction', 'alpha');
 		$agf->tel1 = GETPOST('tel1', 'alpha');
@@ -125,14 +125,14 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			
 			$name = GETPOST('nom', 'alpha');
 			$firstname = GETPOST('prenom', 'alpha');
-			$civilite_id = GETPOST('civilite_id', 'alpha');
+			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
 			
 			if (empty($name) || empty($firstname)) {
 				setEventMessage($langs->trans('AgfNameRequiredForParticipant'), 'errors');
 				$error ++;
 			}
-			if (empty($civilite_id)) {
+			if (empty($civility_id)) {
 				setEventMessage($langs->trans('AgfCiviliteMandatory'), 'errors');
 				$error ++;
 			}
@@ -174,7 +174,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				
 				$agf->nom = $name;
 				$agf->prenom = $firstname;
-				$agf->civilite = $civilite_id;
+				$agf->civilite = $civility_id;
 				$agf->socid = $socid;
 				$agf->fonction = $fonction;
 				$agf->tel1 = $tel1;
@@ -212,7 +212,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 					
 					$contact = new Contact($db);
 					
-					$contact->civilite_id = $civilite_id;
+					$contact->civility_id = $civility_id;
 					$contact->lastname = $name;
 					$contact->firstname = $firstname;
 					$contact->address = $address;
@@ -252,7 +252,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				
 				$agf->nom = $contact->lastname;
 				$agf->prenom = $contact->firstname;
-				$agf->civilite = $contact->civilite_id;
+				$agf->civilite = $contact->civility_id;
 				$agf->socid = $contact->socid;
 				$agf->fonction = $contact->poste;
 				$agf->tel1 = $contact->phone_pro;
@@ -475,7 +475,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr class="liste_titre"><td colspan="4"><strong>' . $langs->trans("AgfMailTypeContactTrainee") . '</strong></td>';
 	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfCivilite") . '</span></td>';
-	print '<td colspan="3">' . $formcompany->select_civility(GETPOST('civilite_id')) . '</td>';
+	print '<td colspan="3">' . $formcompany->select_civility(GETPOST('civility_id')) . '</td>';
 	print '</tr>';
 	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Firstname") . '</span></td>';
@@ -658,10 +658,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
 					
 					$contact_static = new Contact($db);
-					$contact_static->civilite_id = $agf->civilite;
+					$contact_static->civility_id = $agf->civilite;
 					
 					print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-					print '<input type="hidden" name="civilite_id" value="' . $agf->civilite . '">';
+					print '<input type="hidden" name="civility_id" value="' . $agf->civilite . '">';
 					
 					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 					if ($agf->socid) {
@@ -749,7 +749,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
 				
 				$contact_static = new Contact($db);
-				$contact_static->civilite_id = $agf->civilite;
+				$contact_static->civility_id = $agf->civilite;
 				
 				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
 				

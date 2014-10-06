@@ -194,7 +194,7 @@ if ($result >= 0) {
 		print '<td>' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</td>';
 		
 		$contact_static = new Contact($db);
-		$contact_static->civilite_id = $line->civilite;
+		$contact_static->civility_id = $line->civilite;
 		
 		print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 		print '<td>';

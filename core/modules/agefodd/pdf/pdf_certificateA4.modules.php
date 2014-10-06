@@ -234,7 +234,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						
 						$newY = $pdf->getY() + 5;
 						$contact_static = new Contact($this->db);
-						$contact_static->civilite_id = $agf2->lines[$i]->civilite;
+						$contact_static->civility_id = $agf2->lines[$i]->civilite;
 						$text = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf2->lines[$i]->prenom . ' ' . $agf2->lines[$i]->nom;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 13);
@@ -243,7 +243,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 
 						$newY = $pdf->getY();
 						$contact_static = new Contact($this->db);
-						$contact_static->civilite_id = $agf2->lines[$i]->civilite;
+						$contact_static->civility_id = $agf2->lines[$i]->civilite;
 						$text = $outputlangs->transnoentities('AgfPDFCertificate12') . ' ' . $agf2->lines[$i]->socname;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);

@@ -226,7 +226,7 @@ if (! empty($id)) {
 				$trainee_info .= img_object($langs->trans("ShowContact"), "contact") . ' ';
 				$trainee_info .= strtoupper($stagiaires->lines [$i]->nom) . ' ' . ucfirst($stagiaires->lines [$i]->prenom) . '</a>';
 				$contact_static = new Contact($db);
-				$contact_static->civilite_id = $stagiaires->lines [$i]->civilite;
+				$contact_static->civility_id = $stagiaires->lines [$i]->civilite;
 				$trainee_info .= ' (' . $contact_static->getCivilityLabel() . ')' . $socinfo;
 				
 				print '<label for="' . $htmlname . '" style="width:45%; display: inline-block;margin-left:5px;">' . $trainee_info . '</label>';

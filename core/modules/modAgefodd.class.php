@@ -1288,7 +1288,7 @@ class modAgefodd extends DolibarrModules {
 				'type' => 'left',
 				'titre' => 'AgfMenuLogistique',
 				'leftmenu' => 'AgfMenuLogistique',
-				'url' => '/agefodd/trainee/list.php',
+				'url' => '/agefodd/site/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 401,
 				'enabled' => '$user->rights->agefodd->lire',

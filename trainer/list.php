@@ -164,7 +164,7 @@ if ($result > 0) {
 		print '<td' . $style . '>' . $agf->lines [$i]->name . '</td>';
 		print '<td' . $style . '>' . $agf->lines [$i]->firstname . '</td>';
 		$contact_static = new Contact($db);
-		$contact_static->civilite_id = $agf->lines [$i]->civilite;
+		$contact_static->civility_id = $agf->lines [$i]->civilite;
 		print '<td' . $style . '>' . $contact_static->getCivilityLabel() . '</td>';
 		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->phone) . '</td>';
 		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->phone_mobile) . '</td>';

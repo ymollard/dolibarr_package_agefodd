@@ -277,7 +277,7 @@ if (! empty($id)) {
 			print '<td><a href="../trainee/card.php?id=' . $line->starowid . '">' . img_object($langs->trans("AgfShowDetails"), "user") . ' ' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</a></td>';
 			
 			$contact_static = new Contact($db);
-			$contact_static->civilite_id = $line->civilite;
+			$contact_static->civility_id = $line->civilite;
 			
 			print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 			print '<td>';
