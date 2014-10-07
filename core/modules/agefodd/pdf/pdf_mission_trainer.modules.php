@@ -336,15 +336,9 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			
 			$pdf->SetXY($posX + 10, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-			$this->str = $agf_place->cp;
+			$this->str = $agf_place->cp. ' '. $agf_place->ville;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
-			
-			$pdf->SetXY($posX + 10, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-			$this->str = $agf_place->ville;
-			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posY = $pdf->GetY() + 10;
 			
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
