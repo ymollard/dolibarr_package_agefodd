@@ -339,7 +339,7 @@ class modAgefodd extends DolibarrModules {
 		$r ++;
 		$this->const [$r] [0] = "AGF_SESSION_TRAINEE_STATUS_AUTO";
 		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [2] = '0';
 		$this->const [$r] [3] = 'Manage subcription status by propal/order status';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
@@ -354,72 +354,72 @@ class modAgefodd extends DolibarrModules {
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_DEFAULT_SESSION_STATUS";
-		$this->const [$r] [1] = "1";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = 'Defaut status session';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR";
-		$this->const [$r] [1] = "0";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = 'Add trainnee name when create order/proposal';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_MANAGE_CURSUS";
-		$this->const [$r] [1] = "1";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'MAnage cursus';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
+		$this->const [$r] [3] = 'Manage cursus';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_CURSUS_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "1";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = 'Display combobox for cursus select';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_ADVANCE_COST_MANAGEMENT";
-		$this->const [$r] [1] = "0";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = 'Advanced session cost management';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_NOT_DISPLAY_WARNING_TIME_SESSION";
-		$this->const [$r] [1] = "0";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
 		$this->const [$r] [3] = 'Do not display warning betwenn training and session time';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_NO_MANUAL_CREATION_DOC";
-		$this->const [$r] [1] = "0";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
 		$this->const [$r] [3] = 'Do not display manual propal/order/invoice creation';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_NEW_BROWSER_WINDOWS_ON_LINK";
-		$this->const [$r] [1] = "0";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
 		$this->const [$r] [3] = 'open new browser window/tab on link click';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
 		$this->const [$r] [0] = "AGF_CONTACT_NOT_MANDATORY_ON_SESSION";
-		$this->const [$r] [1] = "1";
-		$this->const [$r] [2] = '';
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
 		$this->const [$r] [3] = 'Contact is not mandatory on session';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
