@@ -889,9 +889,13 @@ class Agefodd_session_element extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function get_charges_amount($id, $catid = 0, $type_element = '') {
-		global $langs;
+		global $langs,$conf;
 		
 		$total_charges = 0;
+		
+		if (empty($catid)) {
+			$catid = $conf->global->AGF_CAT_PRODUCT_CHARGES;
+		}
 		
 		$sql = "SELECT";
 		$sql .= " rowid, fk_element, element_type, fk_soc ";
