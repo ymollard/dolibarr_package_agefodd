@@ -5,6 +5,7 @@ English Dolibarr ChangeLog
 -Fix : Break pages on training program PDF
 -Fix : Link Logistique go on location management
 -New : Only for Dolibarr 3.6.x
+-New : Trainer Misson letter
 
 ***** ChangeLog for 2.1.10 compared to 2.1.9 *****
 -Fix : French spelling (thank to  Joël Pastré)
