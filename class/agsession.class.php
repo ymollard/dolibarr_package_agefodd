@@ -1326,11 +1326,11 @@ class Agsession extends CommonObject {
 			$sql .= " date_res_confirm_site=" . (dol_strlen($this->date_res_confirm_site) != 0 ? "'" . $this->db->idate($this->date_res_confirm_site) . "'" : 'null') . ",";
 			$sql .= " date_res_trainer=" . (dol_strlen($this->date_res_trainer) != 0 ? "'" . $this->db->idate($this->date_res_trainer) . "'" : 'null') . ",";
 			$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
-			$sql .= " is_OPCA=" . (isset($this->is_OPCA) ? $this->is_OPCA : "0") . ",";
-			$sql .= " is_date_res_site=" . (isset($this->is_date_res_site) ? $this->is_date_res_site : "0") . ",";
-			$sql .= " is_date_res_confirm_site=" . (isset($this->is_date_res_confirm_site) ? $this->is_date_res_confirm_site : "0") . ",";
-			$sql .= " is_date_res_trainer=" . (isset($this->is_date_res_trainer) ? $this->is_date_res_trainer : "0") . ",";
-			$sql .= " is_date_ask_OPCA=" . (isset($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "0") . ",";
+			$sql .= " is_OPCA=" . (!empty($this->is_OPCA) ? $this->is_OPCA : "0") . ",";
+			$sql .= " is_date_res_site=" . (!empty($this->is_date_res_site) ? $this->is_date_res_site : "0") . ",";
+			$sql .= " is_date_res_confirm_site=" . (!empty($this->is_date_res_confirm_site) ? $this->is_date_res_confirm_site : "0") . ",";
+			$sql .= " is_date_res_trainer=" . (!empty($this->is_date_res_trainer) ? $this->is_date_res_trainer : "0") . ",";
+			$sql .= " is_date_ask_OPCA=" . (!empty($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "0") . ",";
 			$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) && $this->fk_soc_OPCA != - 1 ? $this->fk_soc_OPCA : "null") . ",";
 			$sql .= " fk_socpeople_OPCA=" . (isset($this->fk_socpeople_OPCA) && $this->fk_socpeople_OPCA != 0 ? $this->fk_socpeople_OPCA : "null") . ",";
 			$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";
@@ -3280,7 +3280,6 @@ class Agsession extends CommonObject {
 		}
 		
 		$propal->client = $soc;
-		
 		$propal->socid = $socid;
 		$propal->date = dol_now();
 		if (! empty($soc->cond_reglement_id)) {
@@ -3317,6 +3316,9 @@ class Agsession extends CommonObject {
 			if ($this->datef != $this->dated) {
 				$desc .= '-' . dol_print_date($this->datef, 'day');
 			}
+			
+			$propal->ref_client=$desc;
+			
 			if (! empty($this->duree_session)) {
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
 			}
@@ -3533,6 +3535,7 @@ class Agsession extends CommonObject {
 				// For Intra entreprise you take all trainne
 				$find_trainee_by_OPCA = false;
 				$sessionOPCA->num_OPCA_file = $agf->num_OPCA_file;
+				$invoice_soc_id=null;
 			} elseif ($this->type_session == 1) {
 				
 				$result = $sessionOPCA->getOpcaSession($this->id);
@@ -3548,13 +3551,15 @@ class Agsession extends CommonObject {
 						}
 					}
 				}
+				
+				$invoice_soc_id=$invoice->socid;
 			}
 			
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			if ($find_trainee_by_OPCA) {
-				$session_trainee->fetch_stagiaire_per_session_per_OPCA($this->id, $invoice->socid);
+				$session_trainee->fetch_stagiaire_per_session_per_OPCA($this->id, $invoice_soc_id);
 			} else {
-				$session_trainee->fetch_stagiaire_per_session($this->id,$invoice->socid,1);
+				$session_trainee->fetch_stagiaire_per_session($this->id,$invoice_soc_id,1);
 			}
 			
 			if (count($session_trainee->lines) > 0) {

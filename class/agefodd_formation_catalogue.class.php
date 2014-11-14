@@ -449,8 +449,8 @@ class Agefodd extends CommonObject {
 		$sql .= "fk_formation_catalogue, intitule, priorite, fk_user_author,fk_user_mod,datec";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->fk_formation_catalogue . ', ';
-		$sql .= "'" . $this->intitule . "', ";
-		$sql .= " " . $this->priorite . ", ";
+		$sql .= "'" . $this->db->escape($this->intitule) . "', ";
+		$sql .= " " . $this->db->escape($this->priorite) . ", ";
 		$sql .= " " . $user->id . ',';
 		$sql .= " " . $user->id . ',';
 		$sql .= "'" . $this->db->idate(dol_now()) . "'";
@@ -860,6 +860,94 @@ class Agefodd extends CommonObject {
 		
 		return $error;
 	}
+	
+	/**
+	 * Load an object from its id and create a new one in database
+	 *
+	 * @param int $fromid of object to clone
+	 * @return int id of clone
+	 */
+	function createFromClone($fromid) {
+		global $user, $langs, $conf;
+	
+		$error = 0;
+	
+		$object = new Agefodd($this->db);
+	
+		$this->db->begin();
+	
+		// Load source object
+		$object->fetch($fromid);
+		if ($result < 0) {
+			$this->error = $object->error;
+			$error ++;
+		}
+		
+		$defaultref = '';
+		$obj = empty($conf->global->AGF_ADDON) ? 'mod_agefodd_simple' : $conf->global->AGF_ADDON;
+		$path_rel = dol_buildpath('/agefodd/core/modules/agefodd/' . $conf->global->AGF_ADDON . '.php');
+		if (! empty($conf->global->AGF_ADDON) && is_readable($path_rel)) {
+			dol_include_once('/agefodd/core/modules/agefodd/' . $conf->global->AGF_ADDON . '.php');
+			$modAgefodd = new $obj();
+			$defaultref = $modAgefodd->getNextValue($soc, $this);
+		}
+
+		if (is_numeric($defaultref) && $defaultref <= 0)
+			$defaultref = '';
+	
+		$object->ref_obj=$defaultref;
+		
+		// Create clone
+		$result = $object->create($user);
+		// Other options
+		if ($result < 0) {
+			$this->errors[] = $object->error;
+			$error ++;
+		}
+		
+		$newid= $object->id;
+		
+		$result = $object->createAdmLevelForTraining($user);
+		// Other options
+		if ($result < 0) {
+			$this->errors[] = $object->error;
+			$error ++;
+		}
+		
+		$source = new Agefodd($this->db);
+		$result_peda = $source->fetch_objpeda_per_formation($fromid);
+		if ($result_peda<0) {
+			$this->errors[] = $source->error;
+			$error ++;
+		}
+		foreach($source->lines as $line) {
+			
+			$object->intitule = $line->intitule;
+			$object->priorite = $line->priorite;
+			$object->fk_formation_catalogue = $newid;
+				
+			$result_peda = $object->create_objpeda($user);
+			if ($result_peda<0) {
+				$this->errors[] = $object->error;
+				$error ++;
+			}
+		}
+		
+		// End
+		if (empty($error)) {
+			$this->db->commit();
+			return $newid;
+		} else {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::createFromClone " . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return - 1;
+		}
+	}
+	
+	
 }
 class AgfObjPedaLine {
 	var $id;

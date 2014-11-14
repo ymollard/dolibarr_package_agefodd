@@ -936,3 +936,5 @@ ActionAC_AGF_MISTR=Send trainer mission letter by mail
 AgfMissionTrainerSentByEMail=Send trainer mission letter by mail
 AgfSendFicheMissionTrainer=Lettre de mission %s
 AgfSendFicheMissionTrainerBody=Bonjour,\n\nVeuillez trouver ci-joint la letter de mission pour la foramtion « %s ».AgfSendDoc=Send document by mail
+CloneTraining=Clone training
+ConfirmCloneTraining=Are you sure to clone training

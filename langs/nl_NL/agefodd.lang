@@ -936,3 +936,5 @@ AgfMissionTrainerSentByEMail=Send trainer mission letter by mail
 AgfSendFicheMissionTrainer=Lettre de mission %s
 AgfSendFicheMissionTrainerBody=Bonjour,\n\nVeuillez trouver ci-joint la letter de mission pour la foramtion « %s ».AgfSendDoc=Send document by mail
 AgfConfirmDeleteSession=All event link to this session will be deleted. Are you sure to delete this session ?
+CloneTraining=Clone training
+ConfirmCloneTraining=Are you sure to clone training

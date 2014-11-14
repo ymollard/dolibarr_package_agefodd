@@ -269,6 +269,20 @@ if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalog
 	}
 }
 
+if ($action == 'confirm_clone' && $confirm == 'yes') {
+	$agf = new Agefodd($db);
+	if ($agf->fetch($id) > 0) {
+		$result = $agf->createFromClone($id);
+		if ($result < 0) {
+			setEventMessage($agf->error, 'errors');
+			$action = '';
+		} else {
+			header("Location: " . $_SERVER ['PHP_SELF'] . '?id=' . $result);
+			exit();
+		}
+	}
+}
+
 /*
  * Action generate fiche pédagogique
 */
@@ -621,6 +635,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 						print '<br>';
 				}
 				
+				// Confirm clone
+				if ($action == 'clone') {
+					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
+					if ($ret == 'html')
+						print '<br>';
+				}
+				
 				// confirm archive
 				if ($action == 'archive' || $action == 'active') {
 					if ($action == 'archive')
@@ -810,8 +831,10 @@ print '<div class="tabsAction">';
 if ($_GET ["action"] != 'create' && $_GET ["action"] != 'edit') {
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
 		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('ToClone') . '</a>';
 	}
 	
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {

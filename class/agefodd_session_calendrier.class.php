@@ -422,6 +422,7 @@ class Agefodd_sesscalendar {
 		$action->fk_element = $session->id;
 		$action->elementtype = $session->element;
 		$action->type_code = 'AC_AGF_SESS';
+		$action->percentage=-1;
 		if (! empty($session->fk_soc)) {
 			$action->societe->id = $session->fk_soc;
 		}
