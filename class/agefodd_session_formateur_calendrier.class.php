@@ -505,7 +505,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		
 		dol_include_once('/comm/action/class/actioncomm.class.php');
 		dol_include_once('/agefodd/class/agsession.class.php');
-		dol_include_once('/agefodd/class/agsession.class.php');
+		dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 		
 		require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
@@ -514,8 +514,17 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$action = new ActionComm($this->db);
 		$session = new Agsession($this->db);
 		
+		$$formateur_session = new Agefodd_session_formateur($this->db);
+		$result=$formateur_session->fetch($this->fk_agefodd_session_formateur);
+		if ($result < 0) {
+			$error ++;
+		}
+		
 		$formateur = new Agefodd_teacher($this->db);
-		$formateur->fetch($this->fk_agefodd_session_formateur);
+		$result=$formateur->fetch($formateur_session->formid);
+		if ($result < 0) {
+			$error ++;
+		}
 		
 		$result = $session->fetch($this->sessid);
 		if ($result < 0) {
