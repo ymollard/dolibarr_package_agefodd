@@ -605,7 +605,7 @@ if (! empty($id)) {
 						$old_date = 0;
 						$duree = 0;
 						for($j = 0; $j < $blocNumber; $j ++) {
-							if ($calendrier->lines [$i]->id == $_POST ["modperiod"] && $_POST ["period_remove_x"])
+							if ($calendrier->lines [$j]->id == $_POST ["modperiod"] && $_POST ["period_remove_x"])
 								print '<tr bgcolor="#d5baa8">' . "\n";
 							else
 								print '<tr>' . "\n";
