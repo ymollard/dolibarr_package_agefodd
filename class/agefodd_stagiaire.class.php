@@ -537,6 +537,9 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function searchByLastNameFirstNameSoc($lastname, $firstname, $socid) {
+		
+		global $conf;
+		
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
@@ -547,6 +550,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid. "))))";
 		$sql .= " AND UPPER(s.nom)='" . strtoupper(trim($lastname)) . "'";
 		$sql .= " AND UPPER(s.prenom)='" . strtoupper(trim($firstname)) . "'";
+		$sql .= " AND s.entity IN (".$conf->entity.')';
 		
 		$num = 0;
 		

@@ -99,8 +99,6 @@ V - CE QU'AGEFODD NE PEUT PAS FAIRE (TACHES A FAIRE)
 Voici un liste de fonctionnalites pas encore gerees par Agefodd:
 - Pas de gestion logistique (reservation des salles et des moyens).
 - Agefodd ne gére qu'un seul centre de formation (et donc un seul catalogue).
-- Agefodd ne gére pas les formations longues.
-- Agefodd ne fait pas le cafe (comme Dolibarr d'ailleurs).
 
 VI - Contact developpeur
 -----------------------
