@@ -606,7 +606,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 					foreach ( $session_trainer->lines as $line ) {
 						$trainerstat->sessid = $result;
 						$trainerstat->formid = $line->formid;
-						
+						$trainerstat->trainer_type=$line->trainer_type;
 						$result1 = $trainerstat->create($user);
 					}
 				}
