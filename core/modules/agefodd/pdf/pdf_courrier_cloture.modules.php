@@ -58,17 +58,29 @@ $pdf->Cell(30, 5, $outputlangs->transnoentities('AgfPDFCourrierAcceuil3'), 0, 0,
 
 // Recuperation de la réference de la facture
 $agf_fac = new Agefodd_session_element($this->db);
-$ret = $agf_fac->fetch($id, $socid);
-$facnum = $agf_fac->facnumber;
+$ret = $agf_fac->fetch_by_session_by_thirdparty($id, $socid,'invoice');
+$facnum='';
+$facnum_array=array();
+foreach($agf_fac->lines as $line) {
+	$facnum_array[]= $line->facnumber;
+}
+$facnum=implode(',',$facnum_array);
 
-$pdf->SetXY($posX - 47, $posY);
-$this->str = $outputlangs->transnoentities('AgfPDFCourrierCloture1') . ' ' . $facnum . "\n";
-
+if (!empty($facnum)) {
+	$pdf->SetXY($posX - 47, $posY);
+	$this->str = $outputlangs->transnoentities('AgfPDFCourrierCloture1') . ' ' . $facnum . "\n";
+}
 // Recuperation des stagiaires participant à la formation
 $agf_stag = new Agefodd_session_stagiaire($this->db);
 $result = $agf_stag->fetch_stagiaire_per_session($id, $socid);
 $stagiaires = "";
-$num = count($agf_stag->lines);
+$num=0;
+foreach($agf_stag->lines as $line) {
+	if ($line->status_in_session==3) {
+		$num ++;
+	}
+}
+
 
 ($num > 1) ? $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture2') . $num . ")" : $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture3');
 $this->str .= "\n";
