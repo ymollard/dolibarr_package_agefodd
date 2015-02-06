@@ -259,8 +259,8 @@ class pdf_courrier extends ModelePDFAgefodd {
 				// Date
 				$posY = $posY + 50;
 				$this->str = ucfirst(strtolower($mysoc->town)) . ', ' . $outputlangs->transnoentities('AgfPDFFichePres8') . ' ' . dol_print_date(dol_now(), 'daytext');
-				$pdf->SetXY($this->marge_gauche, $posY + 6);
-				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, "R", 0);
+				$pdf->SetXY($posX + 20, $posY);
+				$pdf->MultiCell(96, 4, $outputlangs->convToOutputCharset($this->str), 0, "L");
 				
 				// Corps du courrier
 				$posY = $this->_body($pdf, $agf, $outputlangs, $courrier, $id, $socid);

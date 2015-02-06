@@ -34,9 +34,9 @@ $posY = 110;
 $agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
 if ($agf->dated == $agf->datef)
-	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef);
+	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
 else
-	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef);
+	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
