@@ -726,10 +726,10 @@ class InterfaceAgefodd {
 					
 					$result = $object->update($user, 1);
 					if ($result < 0) {
-						$error = "Failed to update invoice line : " . $invoiceline_current->error . " ";
+						$error = "Failed to update invoice line : " . $object->error . " ";
 						$this->error = $error;
 						
-						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $invoiceline_current->error, LOG_ERR);
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
 						return - 1;
 					}
 				}
@@ -805,6 +805,104 @@ class InterfaceAgefodd {
 			}
 			
 			return 1;
+		} elseif ($action =='LINEPROPAL_UPDATE') {
+			
+			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+
+			if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->oldline->fk_propal, 'prop');
+				if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agsession.class.php');
+					$agfsession = new Agsession($this->db);
+					$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
+				
+					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
+						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+						if ($result < 0) {
+							$error ++;
+						}
+						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
+					}
+					
+					$result = $object->update($user, 1);
+					if ($result < 0) {
+						$error = "Failed to update propal line : " . $object->error . " ";
+						$this->error = $error;
+					
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
+						return - 1;
+					}
+				}
+			}
+		} elseif ($action =='LINEORDER_UPDATE') {
+			
+			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+			
+			if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->oldline->fk_commande, 'bc');
+				if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agsession.class.php');
+					$agfsession = new Agsession($this->db);
+					$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
+				
+					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
+						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+						if ($result < 0) {
+							$error ++;
+						}
+						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
+					}
+						
+					$result = $object->update($user, 1);
+					if ($result < 0) {
+						$error = "Failed to update propal line : " . $object->error . " ";
+						$this->error = $error;
+					
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
+						return - 1;
+					}
+				}
+			}
+		}elseif ($action =='LINEBILL_UPDATE') {
+			
+			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+			
+			if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->oldline->fk_facture, 'fac');
+				if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agsession.class.php');
+					dol_include_once('/agefodd/class/agefodd_opca.class.php');
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+					$agfsession = new Agsession($this->db);
+					$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
+				
+					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
+						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+						if ($result < 0) {
+							$error ++;
+						}
+						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
+					}
+					
+					$result = $object->update($user, 1);
+					if ($result < 0) {
+						$error = "Failed to update propal line : " . $object->error . " ";
+						$this->error = $error;
+					
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
+						return - 1;
+					}
+				}
+			}
 		}
 		
 		return 0;

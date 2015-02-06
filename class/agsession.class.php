@@ -3811,7 +3811,7 @@ class Agsession extends CommonObject {
 		$min = floor($duree / 60);
 		$rmin = sprintf("%02d", $min % 60);
 		$hour = floor($min / 60);
-		
+
 		$this->avgpricedesc = '';
 		if (! empty($hour)) {
 			$this->avgpricedesc = "\n" . $langs->trans('AgfTaxHourHT') . ':' . price($priceht / $hour, 0, $langs, 1, - 1, 2). $langs->getCurrencySymbol($conf->currency);

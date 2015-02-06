@@ -5,7 +5,7 @@ English Dolibarr ChangeLog
 -Fix : OPCA managemnt on intra
 -New : Add trinee name into Document linked tabs (limit to 7 by company)
 -New : Add more inforamtion into linked manually docuement by thridparty on Docuement linked tab
--New : Add option t add avg cost on propal/invoice
+-New : Add option t add avg cost on propal/order/invoice (also on update lines)
 
 ***** ChangeLog for 2.1.11 compared to 2.1.10 *****
 -Fix : Priority in objectif training can be new updated 
