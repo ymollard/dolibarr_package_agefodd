@@ -43,7 +43,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 	 * \brief		Constructor
 	 * \param		db		Database handler
 	 */
-	function pdf_fiche_evaluation($db) {
+	function __construct($db) {
 		global $conf, $langs, $mysoc;
 		
 		$this->db = $db;
