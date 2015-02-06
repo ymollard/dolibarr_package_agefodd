@@ -19,7 +19,7 @@
  */
 
 /**
- * \file agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_empty.module.php
+ * \file agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_empty.modules.php
  * \ingroup agefodd
  * \brief PDF for empty training attendees session sheet
  */
@@ -392,39 +392,76 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		);
 		$h_ligne = 6;
 		
-		$larg_col1 = 10;
-		$larg_col2 = 29;
-		$larg_col3 = 120;
-		$larg_col4 = 60;
+		$larg_col1 = 44;
+		$larg_col2 = 140;
 		$haut_col2 = 0;
-		$haut_col4 = 0;
+		$haut_col3 = 0;
+		$h_ligne = 7;
+		$haut_cadre = 0;
+		
+		// Entête
+		// Cadre
+		$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne + 8);
+		// Nom
+		$pdf->SetXY($posX, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
+		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+		// Signature
+		$pdf->SetXY($posX + $larg_col1, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+		
+		$pdf->SetXY($posX + $larg_col1, $posY + 3);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres13');
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+		$posY += $h_ligne;
+		
+		//Date
+		$this->str = '';
+		$largeur_date = 24;
+		for($y = 0; $y < 6; $y ++) {
+			// Jour
+			$pdf->SetXY($posX + $larg_col1 + (20 * $y), $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+			$pdf->SetXY($posX + $larg_col1 + ($largeur_date * $y) - ($largeur_date * ($same_day)), $posY);
+			$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
+			
+			// horaires
+			$pdf->SetXY($posX + $larg_col1 + ($largeur_date * $y), $posY + 4);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+			$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
+		}
+		$posY = $pdf->GetY();
 		
 		$formateurs = new Agefodd_session_formateur($this->db);
 		$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-		
-		for($i = 0; $i < $nbform; $i ++) {
-			// Nom
-			$pdf->SetXY($posX, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 5);
-			$this->str = strtoupper($formateurs->lines [$i]->lastname) . ' ' . ucfirst($formateurs->lines [$i]->firstname);
-			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-			
-			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 5);
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres13');
-			$pdf->Cell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-			
-			$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 5);
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres14') . " ";
-			$pdf->Cell($larg_col4, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		foreach($formateurs->lines as $trainerlines) {
 			
 			// Cadre
-			($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
-			$pdf->Rect($cadre_tableau [0], $cadre_tableau [1], $this->espaceH_dispo, $h_ligne);
+			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 			
-			$cadre_tableau [1] += 6;
-			$posY += + 6;
+			// Nom
+			$pdf->SetXY($posX - 2, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+			$this->str = strtoupper($trainerlines->lastname) . ' ' . ucfirst($trainerlines->firstname);
+			$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
+				
+			
+			for($i = 0; $i < 5; $i ++) {
+				$pdf->Rect($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
+			}
+				
+			$posY = $pdf->GetY();
+			if ($posY > $this->page_hauteur - 20) {
+				
+				$pdf->AddPage();
+				$pagenb ++;
+				$posY = $this->marge_haute;
+			}
+			
 		}
 		
 		$posY = $pdf->GetY() + 4;
@@ -437,7 +474,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres15');
 		$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY += 4;
+		$posY = $pdf->GetY() + 4;
 		
 		$cadre_tableau = array (
 				$posX - 2,
@@ -493,13 +530,21 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
 			$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
 		}
-		$posY += 8;
+		$posY = $pdf->GetY();
 		
 		// ligne
 		$h_ligne = 7;
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		
-		for($y = 0; $y <= 13; $y ++) {
+		$predefline=13;
+		if ($conf->global->AGF_INFO_TAMPON) {
+			$dir = $conf->agefodd->dir_output . '/images/';
+			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+			if (file_exists($img_tampon))
+				$predefline=10;
+		}
+		
+		for($y = 0; $y <= $predefline; $y ++) {
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 			
@@ -519,13 +564,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 			$posY = $pdf->GetY();
 		}
 		
-		// Incrustation image tampon
-		if ($conf->global->AGF_INFO_TAMPON) {
-			$dir = $conf->agefodd->dir_output . '/images/';
-			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-			if (file_exists($img_tampon))
-				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY+5, 50);
-		}
+		
 		
 		// Cachet et signature
 		$posY += 2;
@@ -541,6 +580,16 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetXY($posX + 92, $posY);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres22');
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		
+		$posY = $pdf->GetY();
+		
+		// Incrustation image tampon
+		if ($conf->global->AGF_INFO_TAMPON) {
+			$dir = $conf->agefodd->dir_output . '/images/';
+			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+			if (file_exists($img_tampon))
+				$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
+		}
 		
 		// Pied de page
 		$this->_pagefoot($pdf, $agf, $outputlangs);
