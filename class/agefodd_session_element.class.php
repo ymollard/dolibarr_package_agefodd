@@ -240,16 +240,23 @@ class Agefodd_session_element extends CommonObject {
 		
 		$sql = "SELECT";
 		if ($type == 'bc') {
-			$sql .= " c.rowid, c.fk_soc, c.ref";
+			$sql .= " c.rowid, c.fk_soc, c.ref, c.date_creation as datec, c.total_ttc as amount";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "commande as c";
+			
+			require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 		}
 		if ($type == 'fac') {
-			$sql .= " f.rowid, f.fk_soc, f.facnumber";
+			$sql .= " f.rowid, f.fk_soc, f.facnumber as ref, f.datec, f.total_ttc as amount";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
+			
+			require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
+			
 		}
 		if ($type == 'prop') {
-			$sql .= " f.rowid, f.fk_soc, f.ref";
+			$sql .= " f.rowid, f.fk_soc, f.ref, f.datec, f.total as amount";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "propal as f";
+			
+			require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		}
 		$sql .= " WHERE fk_soc = " . $socid;
 		
@@ -265,10 +272,27 @@ class Agefodd_session_element extends CommonObject {
 				$obj = $this->db->fetch_object($resql);
 				$line->id = $obj->rowid;
 				$line->socid = $obj->fk_soc;
-				if ($type == 'bc' || $type == 'prop') {
-					$line->ref = $obj->ref;
-				} else {
-					$line->ref = $obj->facnumber;
+				$line->ref = $obj->ref;
+				$line->date=$this->db->jdate($obj->datec);
+				$line->amount=$obj->amount;
+				
+				
+				if ($type == 'fac') {
+					$facture = new Facture($this->db);
+					$facture->fetch($obj->rowid);
+					$line->status=$facture->getLibStatut(1);
+				}
+				
+				if ($type == 'bc') {
+					$order = new Commande($this->db);
+					$order->fetch($obj->rowid);
+					$line->status=$order->getLibStatut(1);
+				}
+				
+				if ($type == 'prop') {
+					$proposal = new Propal($this->db);
+					$proposal->fetch($obj->rowid);
+					$line->status=$proposal->getLibStatut(1);
 				}
 				
 				$this->lines [$i] = $line;
@@ -1115,6 +1139,9 @@ class AgefoddElementLine {
 	var $socid;
 	var $fk_session_agefodd;
 	var $ref;
+	var $date;
+	var $amount;
+	public $status;
 }
 class AgefoddElementInvoiceLine {
 	var $id;

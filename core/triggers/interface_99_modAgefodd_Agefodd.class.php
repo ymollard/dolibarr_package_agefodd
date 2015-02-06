@@ -711,6 +711,17 @@ class InterfaceAgefodd {
 						$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
 					}
 					
+					
+					// Add average price on all line concern by session training product
+					if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+						if ($result < 0) {
+							$error ++;
+						}
+						$desc .= $agfsession->avgpricedesc;
+					}
+					
+					
 					$object->desc = $desc;
 					
 					$result = $object->update($user, 1);

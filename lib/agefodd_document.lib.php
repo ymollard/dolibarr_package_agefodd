@@ -342,6 +342,7 @@ function show_fac($file, $socid, $mdle) {
 				$order = new Commande($db);
 				$order->fetch($line->fk_element);
 				$mess .= $order->getLibStatut(2);
+				$mess .= ' (' . price($order->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 				
 				$mess .= '</td></tr>';
 			}

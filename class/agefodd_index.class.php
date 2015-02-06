@@ -583,7 +583,7 @@ class Agefodd_index {
 		
 		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " AND sta.rowid NOT IN (SELECT stasessinner.fk_stagiaire FROM llx_agefodd_session_stagiaire as stasessinner INNER JOIN llx_agefodd_session as sinner ON sinner.rowid=stasessinner.fk_session_agefodd ";
-		$sql .= " AND stasessinner.status_in_session IN (2,3) WHERE sinner.dated<certif.certif_dt_end)";
+		$sql .= " AND stasessinner.status_in_session IN (2,3) WHERE sinner.dated<certif.certif_dt_end AND sinner.fk_formation_catalogue=s.fk_formation_catalogue AND sinner.entity IN (" . getEntity('agsession') . "))";
 		$sql.= ' GROUP BY c.intitule,c.ref,soc.rowid ';
 		if ($this->db->type == 'pgsql') {
 			$sql .= " HAVING MAX(certif.certif_dt_end) < ( NOW() + INTERVAL '" . $month_expiration . " MONTHS') ";

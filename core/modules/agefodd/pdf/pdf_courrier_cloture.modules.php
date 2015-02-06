@@ -92,18 +92,19 @@ $posY += 36;
 /*
  *  Corps de lettre
 */
-
 if ($num > 6) {
 	$stagiaires .= $num . ' ' . $outputlangs->transnoentities('AgfPDFCourrierCloture5') . " ";
 } else {
-	for($i = 0; $i < $num; $i ++) {
-		if ($i < ($num - 1) && $i > 0)
+	for($i = 0; $i < count($agf_stag->lines); $i ++) {
+		if ($agf_stag->lines [$i]->status_in_session==3) {
+		if ($i < (count($agf_stag->lines) - 1) && $i > 0)
 			$stagiaires .= ', ';
-		if ($i == ($num - 1) && $i > 0)
+		if ($i == (count($agf_stag->lines) - 1) && $i > 0)
 			$stagiaires .= ' ' . $outputlangs->transnoentities('AgfPDFCourrierCloture6') . ' ';
 		$stagiaires .= ucfirst(strtolower($agf_stag->lines [$i]->civilitel)) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;
-		if ($i == ($num - 1))
+		if ($i == (count($agf_stag->lines) - 1))
 			$stagiaires .= '.';
+		}
 	}
 }
 $stagiaires .= "\n\n";

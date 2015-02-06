@@ -55,7 +55,7 @@ $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $socid = GETPOST('socid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
-$sessiontrainerid=GETPOST('sessiontrainerid','int');
+$sessiontrainerid = GETPOST('sessiontrainerid', 'int');
 
 $type_link = GETPOST('type', 'alpha');
 $idelement = GETPOST('idelement', 'int');
@@ -114,7 +114,7 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 		$result2 = $agf->delete($user);
 	}
 	if ($result2 > 0) {
-		Header('Location: ' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $agf->fk_soc);
+		Header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&socid=' . $agf->fk_soc);
 		exit();
 	} else {
 		setEventMessage($agf->error, 'errors');
@@ -128,8 +128,6 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 	$cour = GETPOST('cour', 'alpha');
 	$model = GETPOST('model', 'alpha');
 	$idform = GETPOST('idform', 'alpha');
-	
-	
 	
 	// Define output language
 	$outputlangs = $langs;
@@ -162,24 +160,23 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		$file = $model . '_' . $sessiontrainerid . '.pdf';
 		$socid = $sessiontrainerid;
 		$id_tmp = $id;
-	}else {
+	} else {
 		$file = $model . '_' . $id . '.pdf';
 	}
 	
-	//this configuration variable is designed like
-	//standard_model_name:new_model_name&standard_model_name:new_model_name&....
-	if (!empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
-		$modelarray=explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
-		if (is_array($modelarray) && count($modelarray)>0){
-			foreach($modelarray as $modeloveride) {
-				$modeloverridearray=explode(':',$modeloveride);
-				if (is_array($modeloverridearray) && count($modeloverridearray)>0){
-					if ($modeloverridearray[0]==$model) {
-						$model=$modeloverridearray[1];
+	// this configuration variable is designed like
+	// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+	if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+		$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+		if (is_array($modelarray) && count($modelarray) > 0) {
+			foreach ( $modelarray as $modeloveride ) {
+				$modeloverridearray = explode(':', $modeloveride);
+				if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+					if ($modeloverridearray[0] == $model) {
+						$model = $modeloverridearray[1];
 					}
 				}
 			}
-			
 		}
 	}
 	
@@ -199,7 +196,7 @@ if (($action == 'createorder_confirm') && $confirm == 'yes' && $user->rights->ag
 			setEventMessage($agf->error, 'errors');
 		}
 	}
-	Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
+	Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
 	exit();
 }
 
@@ -215,7 +212,7 @@ if (($action == 'createproposal') && $user->rights->agefodd->creer) {
 			setEventMessage($agf->error, 'errors');
 		}
 	}
-	Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
+	Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
 	exit();
 }
 
@@ -233,7 +230,7 @@ if (($action == 'createinvoice_confirm') && $user->rights->agefodd->creer) {
 			setEventMessage($agf->error, 'errors');
 		}
 	}
-	Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
+	Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id . '&socid=' . $socid);
 	exit();
 }
 
@@ -260,10 +257,10 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
 	} elseif (strpos($model, 'mission_trainer') !== false) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $sessiontrainerid . '.pdf';
-	}else {
+	} else {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '.pdf';
 	}
-
+	
 	if (is_file($file))
 		unlink($file);
 	else {
@@ -314,7 +311,7 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 	$num = count($agf_liste->lines);
 	if ($num > 0) {
 		print '<form name="fact_link" action="document.php?action=link_confirm&id=' . $id . '"  method="post">' . "\n";
-		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 		print '<input type="hidden" name="socid" value="' . $socid . '">' . "\n";
 		print '<input type="hidden" name="type" value="' . $type_link . '">' . "\n";
 		
@@ -322,7 +319,8 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 		$options = '<option value=""></option>' . "\n";
 		;
 		for($i = 0; $i < $num; $i ++) {
-			$options .= '<option value="' . $agf_liste->lines [$i]->id . '">' . $agf_liste->lines [$i]->ref . '</option>' . "\n";
+			$options .= '<option value="' . $agf_liste->lines[$i]->id . '">' . $agf_liste->lines[$i]->ref .'-'. dol_print_date($agf_liste->lines[$i]->date).'-';
+			$options .= $langs->trans('TotalTTC').':'.price($agf_liste->lines[$i]->amount).'-'.$agf_liste->lines[$i]->status.'</option>' . "\n";
 		}
 		$select = '<select class="flat" name="select">' . "\n" . $options . "\n" . '</select>' . "\n";
 		
@@ -356,25 +354,23 @@ if (! empty($id)) {
 	
 	$result = $agf->fetch_societe_per_session($id);
 	
-	if ($result) {
-		$idform = $agf->formid;
-		
-		// Display View mode
-		$head = session_prepare_head($agf);
-		
-		dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
-		
+	$idform = $agf->formid;
+	
+	// Display View mode
+	$head = session_prepare_head($agf);
+	
+	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	if ($result > 0) {
 		// Put user on the right action block after reload
-		if ((! empty($socid) || !empty($sessiontrainerid)) && $action != 'unlink' && $action != 'createorder' && $action != 'createinvoice') {
+		if ((! empty($socid) || ! empty($sessiontrainerid)) && $action != 'unlink' && $action != 'createorder' && $action != 'createinvoice') {
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
 							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;';
-			if (!empty($sessiontrainerid)) {
+			if (! empty($sessiontrainerid)) {
 				print '				 $(documentBody).animate({scrollTop: $("#trainerid' . $sessiontrainerid . '").offset().top}, 500,\'easeInOutCubic\');';
-			}
-			elseif (!empty($socid)) {
-		    	print '				 $(documentBody).animate({scrollTop: $("#socid' . $socid . '").offset().top}, 500,\'easeInOutCubic\');';
+			} elseif (! empty($socid)) {
+				print '				 $(documentBody).animate({scrollTop: $("#socid' . $socid . '").offset().top}, 500,\'easeInOutCubic\');';
 			}
 			
 			print '			});
@@ -386,7 +382,7 @@ if (! empty($id)) {
 		 * Confirm delete
 		*/
 		if ($action == 'delete') {
-			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -404,19 +400,19 @@ if (! empty($id)) {
 			
 			foreach ( $agf_liste->lines as $line ) {
 				if ($line->element_type == 'propal') {
-					$propal_array [$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
+					$propal_array[$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
 				}
 			}
 			
 			$form_question = array ();
-			$form_question [] = array (
+			$form_question[] = array (
 					'label' => $langs->trans("AgfCreateOrderFromPropal"),
 					'type' => 'radio',
 					'values' => $propal_array,
 					'name' => 'propalid' 
 			);
 			
-			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateOrderFromSession"), '', "createorder_confirm", $form_question, '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateOrderFromSession"), '', "createorder_confirm", $form_question, '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -434,25 +430,25 @@ if (! empty($id)) {
 			
 			foreach ( $agf_liste->lines as $line ) {
 				if ($line->element_type == 'propal') {
-					$propal_array [$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
+					$propal_array[$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
 				}
 			}
 			
 			$form_question = array ();
-			$form_question [] = array (
+			$form_question[] = array (
 					'label' => $langs->trans("AgfCreateInvoiceFromPropal"),
 					'type' => 'radio',
 					'values' => $propal_array,
 					'name' => 'propalid' 
 			);
-			$form_question [] = array (
+			$form_question[] = array (
 					'label' => $langs->trans("Amount"),
 					'type' => 'text',
 					'values' => '',
 					'name' => 'amount' 
 			);
 			
-			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateInvoiceOPCAFromSession"), '', "createinvoice_confirm", $form_question, '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateInvoiceOPCAFromSession"), '', "createinvoice_confirm", $form_question, '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -475,7 +471,7 @@ if (! empty($id)) {
 			}
 			if (! empty($agf_liste->id)) {
 				$form_question = array ();
-				$form_question [] = array (
+				$form_question[] = array (
 						'label' => $langs->trans("AgfDeleteObjectAlso", $ref),
 						'type' => 'radio',
 						'values' => array (
@@ -485,7 +481,7 @@ if (! empty($id)) {
 						'name' => 'deleteobject' 
 				);
 			}
-			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -508,7 +504,7 @@ if (! empty($id)) {
 		
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
 		document_line($langs->trans("AgfFichePedagogique"), 'fiche_pedago');
-		document_line($langs->trans("AgfConseilsPratique"),'conseils');
+		document_line($langs->trans("AgfConseilsPratique"), 'conseils');
 		
 		// During training
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfDuringTraining") . '</td></tr>' . "\n";
@@ -528,14 +524,14 @@ if (! empty($id)) {
 			$array_soc = array ();
 			if (is_array($agf->lines) && count($agf->lines) > 0) {
 				foreach ( $agf->lines as $line ) {
-					$array_soc [] = $line->socid;
+					$array_soc[] = $line->socid;
 				}
 			}
 			// Build doc list
 			$doclinkwithoutcust = array ();
 			foreach ( $agf_fin->lines as $linedoc ) {
 				if (! in_array($linedoc->fk_soc, $array_soc) && ! empty($linedoc->urllink)) {
-					$doclinkwithoutcust [] = $linedoc->urllink;
+					$doclinkwithoutcust[] = $linedoc->urllink;
 				}
 			}
 		}
@@ -557,57 +553,87 @@ if (! empty($id)) {
 		$linecount = count($agf->lines);
 		
 		for($i = 0; $i < $linecount; $i ++) {
-			if (! empty($agf->lines [$i]->socid)) {
+			if (! empty($agf->lines[$i]->socid)) {
 				print '<table class="border" width="100%">' . "\n";
 				
 				print '<tr class="liste_titre">' . "\n";
 				print '<td colspan=3>';
 				
-				if ($agf->lines [$i]->typeline == 'customer')
+				if ($agf->lines[$i]->typeline == 'customer')
 					$type_link_label = $langs->trans('ThirdParty');
-				if ($agf->lines [$i]->typeline == 'trainee_soc')
+				if ($agf->lines[$i]->typeline == 'trainee_soc')
 					$type_link_label = $langs->trans('AgfParticipant');
-				if ($agf->lines [$i]->typeline == 'trainee_doc')
+				if ($agf->lines[$i]->typeline == 'trainee_doc')
 					$type_link_label = $langs->trans('AgfTraineeSocDocUse');
-				if ($agf->lines [$i]->typeline == 'OPCA')
+				if ($agf->lines[$i]->typeline == 'OPCA')
 					$type_link_label = $langs->trans('AgfMailTypeContactOPCA');
-				if ($agf->lines [$i]->typeline == 'trainee_OPCA')
+				if ($agf->lines[$i]->typeline == 'trainee_OPCA')
 					$type_link_label = $langs->trans('AgfMailTypeContactOPCA');
-				if ($agf->lines [$i]->typeline == 'trainee_requester')
+				if ($agf->lines[$i]->typeline == 'trainee_requester')
 					$type_link_label = $langs->trans('AgfTypeTraineeRequester');
 				
-				print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '" name="socid' . $agf->lines [$i]->socid . '" id="socid' . $agf->lines [$i]->socid . '">' . $agf->lines [$i]->code_client . ' - ' . $agf->lines [$i]->socname . ' (' . $type_link_label . ')</a></td>' . "\n";
-				print '</tr>' . "\n";
+				$societe = new Societe($db);
+				$societe->fetch($agf->lines[$i]->socid);
 				
+				// print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '" name="socid' . $agf->lines [$i]->socid . '" id="socid' . $agf->lines [$i]->socid . '">' . $agf->lines [$i]->code_client . ' - ' . $agf->lines [$i]->socname . ' (' . $type_link_label . ')</a></td>' . "\n";
+				print $societe->getNomUrl(1) . ' (' . $type_link_label . ')';
+				// Anchor
+				print '<a name="socid' . $agf->lines[$i]->socid . '" id="socid' . $agf->lines[$i]->socid . '"></a>';
+				print '</td>';
+				
+				print '</tr>' . "\n";
+				if (is_array($agf->lines[$i]->trainee_array) && count($agf->lines[$i]->trainee_array) > 0) {
+					$trainee_string = array ();
+					print '<tr class="liste_titre">' . "\n";
+					print '<td colspan=3>';
+					if (count($agf->lines[$i]->trainee_array) > 1) {
+						print $langs->trans('AgfParticipants');
+					} else {
+						print $langs->trans('AgfParticipant');
+					}
+					print ' : ';
+					$k = 0;
+					foreach ( $agf->lines[$i]->trainee_array as $trainee_ar ) {
+						$trainee_string[] = $trainee_ar['lastname'] . ' ' . $trainee_ar['firstname'];
+						$k ++;
+						if ($k > 7) {
+							$trainee_string[] = '...';
+							break;
+						}
+					}
+					print implode(',', $trainee_string);
+					print '</td>';
+					print '</tr>' . "\n";
+				}
 				// For OPCA just dispaly line Invoice
-				if (strpos($agf->lines [$i]->typeline, 'OPCA') === false) {
+				if (strpos($agf->lines[$i]->typeline, 'OPCA') === false) {
 					// Before training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
 					if (! empty($conf->global->MAIN_MODULE_PROPALE)) {
-						document_line($langs->trans("Proposal"),"prop", $agf->lines [$i]->socid);
+						document_line($langs->trans("Proposal"), "prop", $agf->lines[$i]->socid);
 					}
 					if (! empty($conf->global->MAIN_MODULE_COMMANDE)) {
-						document_line($langs->trans("AgfBonCommande"), "bc", $agf->lines [$i]->socid);
+						document_line($langs->trans("AgfBonCommande"), "bc", $agf->lines[$i]->socid);
 					}
-					document_line($langs->trans("AgfConvention"), "convention", $agf->lines [$i]->socid);
-					document_line($langs->trans("AgfPDFConvocation"), 'convocation', $agf->lines [$i]->socid);
-					document_line($langs->trans("AgfCourrierConv"), "courrier", $agf->lines [$i]->socid, 'convention');
-					document_line($langs->trans("AgfCourrierAcceuil"),"courrier", $agf->lines [$i]->socid, 'accueil');
+					document_line($langs->trans("AgfConvention"), "convention", $agf->lines[$i]->socid);
+					document_line($langs->trans("AgfPDFConvocation"), 'convocation', $agf->lines[$i]->socid);
+					document_line($langs->trans("AgfCourrierConv"), "courrier", $agf->lines[$i]->socid, 'convention');
+					document_line($langs->trans("AgfCourrierAcceuil"), "courrier", $agf->lines[$i]->socid, 'accueil');
 					
 					// After training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfAfterTraining") . '</td></tr>' . "\n";
-					document_line($langs->trans("AgfSendAttestation"), "attestation", $agf->lines [$i]->socid);
+					document_line($langs->trans("AgfSendAttestation"), "attestation", $agf->lines[$i]->socid);
 					
 					$text_fac = $langs->trans("AgfFacture");
-					if ($agf->lines [$i]->type_session && (! empty($conf->global->AGF_MANAGE_OPCA))) { // session inter
+					if ($agf->lines[$i]->type_session && (! empty($conf->global->AGF_MANAGE_OPCA))) { // session inter
 						$agfstat = new Agefodd_opca($db);
 						// load les infos OPCA pour la session
-						$agfstat->getOpcaForTraineeInSession($agf->lines [$i]->socid, $agf->lines [$i]->sessid);
+						$agfstat->getOpcaForTraineeInSession($agf->lines[$i]->socid, $agf->lines[$i]->sessid);
 						// invocie to OPCA if funding thridparty
-						$soc_to_select = ($agfstat->is_OPCA ? $agfstat->fk_soc_OPCA : $agf->lines [$i]->socid);
+						$soc_to_select = ($agfstat->is_OPCA ? $agfstat->fk_soc_OPCA : $agf->lines[$i]->socid);
 						
 						// If funding is fill
-					/*	if ($soc_to_select > 0 && $agfstat->is_OPCA) {
+						/*	if ($soc_to_select > 0 && $agfstat->is_OPCA) {
 							$text_fac .= ' ' . $langs->trans("AgfOPCASub1");
 						} elseif (! $agfstat->is_OPCA) 						// No funding
 						{
@@ -617,15 +643,15 @@ if (! empty($id)) {
 							$text_fac .= ' <span class="error">' . $langs->trans("AgfOPCASubErr") . ' <a href="' . dol_buildpath("/agefodd/session/subscribers.php", 1) . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifySubscribersAndSubrogation') . '</a></span>';
 						}*/
 					}
-					document_line($text_fac, "fac", $agf->lines [$i]->socid);
+					document_line($text_fac, "fac", $agf->lines[$i]->socid);
 					
-					document_line($langs->trans("AgfCourrierCloture"), "courrier", $agf->lines [$i]->socid, 'cloture');
+					document_line($langs->trans("AgfCourrierCloture"), "courrier", $agf->lines[$i]->socid, 'cloture');
 					if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
-						document_line($langs->trans("AgfPDFCertificateA4"), "certificateA4", $agf->lines [$i]->socid);
-						//document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
+						document_line($langs->trans("AgfPDFCertificateA4"), "certificateA4", $agf->lines[$i]->socid);
+						// document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
 					}
 				} else {
-					document_line($langs->trans("AgfFacture"), "facopca", $agf->lines [$i]->socid);
+					document_line($langs->trans("AgfFacture"), "facopca", $agf->lines[$i]->socid);
 				}
 				print '</table>';
 				if ($i < $linecount)
@@ -637,18 +663,19 @@ if (! empty($id)) {
 		$agf_trainer->fetch_formateur_per_session($id);
 		if (is_array($agf_trainer->lines) && count($agf_trainer->lines) > 0) {
 			print '<table class="border" width="100%">' . "\n";
-			foreach($agf_trainer->lines as $line) {
+			foreach ( $agf_trainer->lines as $line ) {
 				print '<tr class="liste_titre">' . "\n";
 				print '<td colspan=3>';
-				print '<a href="' . dol_buildpath('/agefodd/trainer/session.php',1) . '?id=' . $line->formid . '" name="trainerid' . $line->opsid . '" id="trainerid' . $line->opsid . '">' . $line->lastname. ' '. $line->fullname.'</a>';
+				print '<a href="' . dol_buildpath('/agefodd/trainer/session.php', 1) . '?id=' . $line->formid . '" name="trainerid' . $line->opsid . '" id="trainerid' . $line->opsid . '">' . $line->lastname . ' ' . $line->fullname . '</a>';
 				print '</td>' . "\n";
 				print '</tr>' . "\n";
 				document_line($langs->trans("AgfTrainerMissionLetter"), "mission_trainer", $line->opsid);
-				
 			}
 			print '</table>';
 		}
 		print '</div>' . "\n";
+	} else {
+		setEventMessage($agf->error, 'errors');
 	}
 }
 

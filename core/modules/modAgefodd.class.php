@@ -369,6 +369,14 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
+		$this->const [$r] [0] = "AGF_ADD_AVGPRICE_DOCPROPODR";
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
+		$this->const [$r] [3] = 'Add average price on create order/proposal';
+		$this->const [$r] [4] = 0;
+		$this->const [$r] [5] = 0;
+		
+		$r ++;
 		$this->const [$r] [0] = "AGF_MANAGE_CURSUS";
 		$this->const [$r] [1] = "yesno";
 		$this->const [$r] [2] = '0';

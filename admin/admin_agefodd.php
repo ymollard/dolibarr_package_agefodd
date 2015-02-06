@@ -180,23 +180,23 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 	
-	if ($_FILES ["imagesup"] ["tmp_name"]) {
-		if (preg_match('/([^\\/:]+)$/i', $_FILES ["imagesup"] ["name"], $reg)) {
-			$original_file = $reg [1];
+	if ($_FILES["imagesup"]["tmp_name"]) {
+		if (preg_match('/([^\\/:]+)$/i', $_FILES["imagesup"]["name"], $reg)) {
+			$original_file = $reg[1];
 			
 			$isimage = image_format_supported($original_file);
 			if ($isimage >= 0) {
-				dol_syslog("Move file " . $_FILES ["imagesup"] ["tmp_name"] . " to " . $conf->agefodd->dir_output . '/logos/' . $original_file);
+				dol_syslog("Move file " . $_FILES["imagesup"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/logos/' . $original_file);
 				if (! is_dir($conf->agefodd->dir_output . '/images/')) {
 					dol_mkdir($conf->agefodd->dir_output . '/images/');
 				}
-				$result = dol_move_uploaded_file($_FILES ["imagesup"] ["tmp_name"], $conf->agefodd->dir_output . '/images/' . $original_file, 1, 0, $_FILES ['imagesup'] ['error']);
+				$result = dol_move_uploaded_file($_FILES["imagesup"]["tmp_name"], $conf->agefodd->dir_output . '/images/' . $original_file, 1, 0, $_FILES['imagesup']['error']);
 				if ($result > 0) {
 					dolibarr_set_const($db, "AGF_INFO_TAMPON", $original_file, 'chaine', 0, '', $conf->entity);
 				} else if (preg_match('/^ErrorFileIsInfectedWithAVirus/', $result)) {
 					$langs->load("errors");
 					$tmparray = explode(':', $result);
-					setEventMessage($langs->trans('ErrorFileIsInfectedWithAVirus', $tmparray [1]), 'errors');
+					setEventMessage($langs->trans('ErrorFileIsInfectedWithAVirus', $tmparray[1]), 'errors');
 					$error ++;
 				} else {
 					setEventMessage($langs->trans("ErrorFailedToSaveFile"), 'errors');
@@ -320,6 +320,11 @@ if ($action == 'setvarother') {
 	
 	$usesessiontraineeauto = GETPOST('AGF_SESSION_TRAINEE_STATUS_AUTO', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_SESSION_TRAINEE_STATUS_AUTO', $usesessiontraineeauto, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+	
+	$useavgcost = GETPOST('AGF_ADD_AVGPRICE_DOCPROPODR', 'alpha');
+	$res = dolibarr_set_const($db, 'AGF_ADD_AVGPRICE_DOCPROPODR', $useavgcost, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 	
@@ -547,7 +552,7 @@ foreach ( $dirmodels as $reldir ) {
 			
 			while ( ($file = readdir($handle)) !== false ) {
 				if (preg_match('/^(mod_.*)\.php$/i', $file, $reg)) {
-					$file = $reg [1];
+					$file = $reg[1];
 					$classname = substr($file, 4);
 					
 					require_once ($dir . $file . ".php");
@@ -562,7 +567,7 @@ foreach ( $dirmodels as $reldir ) {
 					
 					if ($module->isEnabled()) {
 						$var = ! $var;
-						print '<tr ' . $bc [$var] . '><td>' . $module->nom . "</td><td>\n";
+						print '<tr ' . $bc[$var] . '><td>' . $module->nom . "</td><td>\n";
 						print $module->info();
 						print '</td>';
 						
@@ -582,7 +587,7 @@ foreach ( $dirmodels as $reldir ) {
 						if ($conf->global->AGF_ADDON == 'mod_' . $classname) {
 							print img_picto($langs->trans("Activated"), 'switch_on');
 						} else {
-							print '<a href="' . $_SERVER ["PHP_SELF"] . '?action=updateMaskType&amp;value=mod_' . $classname . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
+							print '<a href="' . $_SERVER["PHP_SELF"] . '?action=updateMaskType&amp;value=mod_' . $classname . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
 						}
 						print '</td>';
 						
@@ -593,8 +598,8 @@ foreach ( $dirmodels as $reldir ) {
 						$htmltooltip = '';
 						$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 						$nextval = $module->getNextValue($mysoc, $agf);
-						if ("$nextval" != $langs->trans("AgfNotAvailable")) 						// Keep " on nextval
-						{
+						if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
+{
 							$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 							if ($nextval) {
 								$htmltooltip .= $nextval . '<br>';
@@ -650,7 +655,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 				
 				while ( ($file = readdir($handle)) !== false ) {
 					if (preg_match('/^(mod_.*)\.php$/i', $file, $reg)) {
-						$file = $reg [1];
+						$file = $reg[1];
 						$classname = substr($file, 4);
 						
 						require_once ($dir . $file . ".php");
@@ -665,7 +670,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 						
 						if ($module->isEnabled()) {
 							$var = ! $var;
-							print '<tr ' . $bc [$var] . '><td>' . $module->nom . "</td><td>\n";
+							print '<tr ' . $bc[$var] . '><td>' . $module->nom . "</td><td>\n";
 							print $module->info();
 							print '</td>';
 							
@@ -685,7 +690,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 							if ($conf->global->AGF_CERTIF_ADDON == 'mod_' . $classname) {
 								print img_picto($langs->trans("Activated"), 'switch_on');
 							} else {
-								print '<a href="' . $_SERVER ["PHP_SELF"] . '?action=updateMaskCertifType&amp;value=mod_' . $classname . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
+								print '<a href="' . $_SERVER["PHP_SELF"] . '?action=updateMaskCertifType&amp;value=mod_' . $classname . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
 							}
 							print '</td>';
 							
@@ -696,8 +701,8 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 							$htmltooltip = '';
 							$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 							$nextval = $module->getNextValue($mysoc, $agf);
-							if ("$nextval" != $langs->trans("AgfNotAvailable")) 							// Keep " on nextval
-							{
+							if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
+{
 								$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 								if ($nextval) {
 									$htmltooltip .= $nextval . '<br>';
@@ -727,8 +732,8 @@ print_titre($langs->trans("AgfAdmVar"));
 
 print '<table class="noborder" width="100%">';
 
-print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" enctype="multipart/form-data" >';
-print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
+print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 print '<input type="hidden" name="action" value="setvar">';
 
 print '<tr class="liste_titre">';
@@ -800,12 +805,11 @@ print $form->textwithpicto('', $langs->trans("AgfUseStagTypeHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 
-
 if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
 	// Type de stagaire par defaut
 	print '<tr class="impair"><td>' . $langs->trans("AgfUseStagTypeDefault") . '</td>';
 	print '<td align="left">';
-	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE',' active=1 ');
+	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE', ' active=1 ');
 	print '</td>';
 	print '<td align="center">';
 	print '</td>';
@@ -817,7 +821,7 @@ print '<tr class="impair"><td>' . $langs->trans("AgfUseTrainerType") . '</td>';
 print '<td align="left">';
 $arrval = array (
 		'0' => $langs->trans("No"),
-		'1' => $langs->trans("Yes")
+		'1' => $langs->trans("Yes") 
 );
 print $form->selectarray("AGF_USE_FORMATEUR_TYPE", $arrval, $conf->global->AGF_USE_FORMATEUR_TYPE);
 print '</td>';
@@ -830,7 +834,7 @@ if (! empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
 	// Type de stagaire par defaut
 	print '<tr class="impair"><td>' . $langs->trans("AgfUseTrainerTypeDefault") . '</td>';
 	print '<td align="left">';
-	print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, 'AGF_DEFAULT_FORMATEUR_TYPE',' active=1 ');
+	print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, 'AGF_DEFAULT_FORMATEUR_TYPE', ' active=1 ');
 	print '</td>';
 	print '<td align="center">';
 	print '</td>';
@@ -846,7 +850,7 @@ if ($conf->global->AGF_INFO_TAMPON) {
 	if (file_exists($conf->agefodd->dir_output . '/images/' . $conf->global->AGF_INFO_TAMPON)) {
 		print ' &nbsp; ';
 		print '<img src="' . DOL_URL_ROOT . '/viewimage.php?modulepart=agefodd&amp;file=' . urlencode('/images/' . $conf->global->AGF_INFO_TAMPON) . '" alt="AGF_INFO_TAMPON" />';
-		print '<a href="' . $_SERVER ["PHP_SELF"] . '?action=removeimagesup">' . img_delete($langs->trans("Delete")) . '</a>';
+		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removeimagesup">' . img_delete($langs->trans("Delete")) . '</a>';
 	}
 } else {
 	print '<img height="30" src="' . DOL_URL_ROOT . '/theme/common/nophoto.jpg">';
@@ -875,8 +879,8 @@ print '</form>';
 print '<table class="noborder" width="100%">';
 
 if (! $conf->use_javascript_ajax) {
-	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" enctype="multipart/form-data" >';
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
+	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="setvarother">';
 }
 
@@ -1050,7 +1054,6 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE) {
 	print '<td>&nbsp;</td>';
 	print '</tr>';
 }
-
 
 // Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
 print '<tr class="impair"><td>' . $langs->trans("AgfAgendaModuleUse") . '</td>';
@@ -1334,8 +1337,26 @@ print $form->textwithpicto('', $langs->trans("AgfAddTraineeNameIntoDocHelp"), 1,
 print '</td>';
 print '</tr>';
 
+// Update global variable AGF_ADD_AVGPRICE_DOCPROPODR
+print '<tr class="pair"><td>' . $langs->trans("AgfDisplayAvgPricePropalInvoice") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_AVGPRICE_DOCPROPODR');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes") 
+	);
+	print $form->selectarray("AGF_ADD_AVGPRICE_DOCPROPODR", $arrval, $conf->global->AGF_ADD_AVGPRICE_DOCPROPODR);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfContacCustMandatoryHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
 // Update global variable AGF_MANAGE_CURSUS
-print '<tr class="pair"><td>' . $langs->trans("AgfManageCursus") . '</td>';
+print '<tr class="impair"><td>' . $langs->trans("AgfManageCursus") . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff('AGF_MANAGE_CURSUS');
@@ -1353,7 +1374,7 @@ print '</td>';
 print '</tr>';
 
 // Update global variable AGF_ADVANCE_COST_MANAGEMENT
-print '<tr class="impair"><td>' . $langs->trans("AgfManageCost") . '</td>';
+print '<tr class="pair"><td>' . $langs->trans("AgfManageCost") . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
 	$input_array = array (
@@ -1377,7 +1398,7 @@ print '</td>';
 print '</tr>';
 
 // Update global variable AGF_CONTACT_NOT_MANDATORY_ON_SESSION
-print '<tr class="pair"><td>' . $langs->trans("AgfContacCustMandatory") . '</td>';
+print '<tr class="impair"><td>' . $langs->trans("AgfContacCustMandatory") . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff('AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $input_array);
@@ -1423,11 +1444,11 @@ if ($result0 > 0) {
 	foreach ( $admlevel->lines as $line ) {
 		$var = ! $var;
 		$toplevel = '';
-		print '<form name="SessionLevel_update_' . $line->rowid . '" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+		print '<form name="SessionLevel_update_' . $line->rowid . '" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 		print '<input type="hidden" name="id" value="' . $line->rowid . '">' . "\n";
 		print '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
-		print '<tr ' . $bc [$var] . '>';
+		print '<tr ' . $bc[$var] . '>';
 		
 		print '<td>';
 		if ($line->indice != ebi_get_adm_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MIN')) {
@@ -1441,14 +1462,14 @@ if ($result0 > 0) {
 		print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
 		print '<td>' . $formAgefodd->select_action_session_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
 		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
-		print '<td><input type="image" src="'.dol_buildpath('/agefodd/img/save.png', 1).'" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
+		print '<td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
 		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
 		print '</tr>';
 		print '</form>';
 	}
 }
-print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+print '<form name="SessionLevel_create" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
 print '<tr>';
 print '<td></td>';
@@ -1479,8 +1500,8 @@ $tmpl_calendar = new Agefoddcalendrier($db);
 $tmpl_calendar->fetch_all();
 foreach ( $tmpl_calendar->lines as $line ) {
 	
-	print '<form name="SessionCalendar_' . $line->id . '" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+	print '<form name="SessionCalendar_' . $line->id . '" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="sessioncalendar_delete">' . "\n";
 	print '<input type="hidden" name="id" value="' . $line->id . '">' . "\n";
 	print '<tr>';
@@ -1492,8 +1513,8 @@ foreach ( $tmpl_calendar->lines as $line ) {
 	print '</form>';
 }
 
-print '<form name="SessionCalendar_new" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+print '<form name="SessionCalendar_new" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 print '<input type="hidden" name="action" value="sessioncalendar_create">' . "\n";
 print '<tr>';
 print '<td><select id="newday" class="flat" name="newday">';
