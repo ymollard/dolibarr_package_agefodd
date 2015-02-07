@@ -60,8 +60,11 @@ $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-if (empty($arch))
+if (empty($arch)) {
 	$arch = 0;
+} else {
+	$option .= '&arch=' . $arch;
+}
 	
 	// Search criteria
 $search_intitule = GETPOST("search_intitule");
@@ -100,24 +103,31 @@ $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, tru
 $filter = array ();
 if (! empty($search_intitule)) {
 	$filter ['c.intitule'] = $db->escape($search_intitule);
+	$option .= '&search_intitule=' . $search_intitule;
 }
 if (! empty($search_ref)) {
 	$filter ['c.ref'] = $search_ref;
+	$option .= '&search_ref=' . $search_ref;
 }
 if (! empty($search_ref_interne)) {
 	$filter ['c.ref_interne'] = $search_ref_interne;
+	$option .= '&search_ref_interne=' . $search_ref_interne;
 }
 if (! empty($search_datec)) {
 	$filter ['c.datec'] = $db->idate($search_datec);
+	$option .= '&search_datecmonth=' . dol_print_date($search_datec,'%m').'&search_datecday='.dol_print_date($search_datec,'%d').'&search_datecyear='.dol_print_date($search_datec,'%Y');
 }
 if (! empty($search_duree)) {
 	$filter ['c.duree'] = $search_duree;
+	$option .= '&search_duree=' . $search_duree;
 }
 if (! empty($search_id)) {
 	$filter ['c.rowid'] = $search_id;
+	$option .= '&search_id=' . $search_id;
 }
 if (! empty($search_categ)) {
 	$filter ['c.fk_c_category'] = $search_categ;
+	$option .= '&search_categ=' . $search_categ;
 }
 
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
@@ -125,21 +135,30 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter
 print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER ['PHP_SELF'], '&arch=' . $arch, $sortfield, $sortorder, '', $resql);
 
 $i = 0;
-print '<table class="noborder" width="100%">';
-print "<tr class=\"liste_titre\">";
-print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "c.rowid", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVER ['PHP_SELF'], "dictcat.code", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfDateC"), $_SERVER ['PHP_SELF'], "c.datec", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER ['PHP_SELF'], "c.duree", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVER ['PHP_SELF'], "a.dated", "", '&arch=' . $arch, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVER ['PHP_SELF'], '', '&arch=' . $arch, '', $sortfield, $sortorder);
-print "</tr>\n";
 
 print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 print '<input type="hidden" name="arch" value="' . $arch . '" >';
+if (! empty($sortfield))
+	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+if (! empty($sortorder))
+	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+if (! empty($page))
+	print '<input type="hidden" name="page" value="' . $page . '"/>';
+
+print '<table class="noborder" width="100%">';
+print "<tr class=\"liste_titre\">";
+print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVER ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfDateC"), $_SERVER ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVER ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVER ['PHP_SELF'], '', $option, '', $sortfield, $sortorder);
+print "</tr>\n";
+
+
 print '<tr class="liste_titre">';
 
 print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
