@@ -82,6 +82,22 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$model = 'attestation_cursus';
 	$file = $model . '_' . $cursus_id . '_' . $id . '.pdf';
 	
+	// this configuration variable is designed like
+	// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+	if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+		$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+		if (is_array($modelarray) && count($modelarray) > 0) {
+			foreach ( $modelarray as $modeloveride ) {
+				$modeloverridearray = explode(':', $modeloveride);
+				if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+					if ($modeloverridearray[0] == $model) {
+						$model = $modeloverridearray[1];
+					}
+				}
+			}
+		}
+	}
+	
 	$agf_cursus = new Agefodd_cursus($db);
 	$result = $agf_cursus->fetch($cursus_id);
 	if ($result < 0) {
