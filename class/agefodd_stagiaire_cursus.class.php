@@ -531,12 +531,18 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		$sql .= " c.ref,";
 		$sql .= " c.ref_interne,";
 		$sql .= " s.color,";
-		$sql .= " ss.status_in_session";
+		$sql .= " ss.status_in_session,";
+		$sql .= " c.fk_c_category,dictcat.code as catcode ,dictcat.intitule as catlib";
+		$sql .= " ,p.rowid as placeid, p.ref_interne as placecode";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
+		$sql .= " ON p.rowid = s.fk_session_place";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat ";
+		$sql .= " ON dictcat.rowid=c.fk_c_category";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sa";
 		$sql .= " ON sa.rowid = ss.fk_stagiaire";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";
@@ -577,6 +583,10 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 				$line->ref_interne = $obj->ref_interne;
 				$line->color = $obj->color;
 				$line->status_in_session = $obj->status_in_session;
+				if (! empty($obj->catcode) || ! empty($obj->catlib)) {
+					$line->category_lib = $obj->catcode . ' - ' . $obj->catlib;
+				}
+				$line->placecode=$obj->placecode;
 				
 				$this->lines [$i] = $line;
 				
@@ -759,6 +769,8 @@ class AgfSessionCursusLine {
 	var $statuscode;
 	var $status_in_session;
 	var $realdurationsession;
+	var $category_lib;
+	var $placecode;
 	function __construct() {
 		return 1;
 	}

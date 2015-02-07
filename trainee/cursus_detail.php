@@ -255,6 +255,7 @@ if (! empty($id) && ! empty($cursus_id)) {
 				// Calculate time of session according calendar
 				$calendrier = new Agefodd_sesscalendar($db);
 				$calendrier->fetch_all($line->rowid);
+				$duree=0;
 				if (is_array($calendrier->lines) && count($calendrier->lines) > 0) {
 					foreach ( $calendrier->lines as $linecal ) {
 						$duree += ($linecal->heuref - $linecal->heured);
