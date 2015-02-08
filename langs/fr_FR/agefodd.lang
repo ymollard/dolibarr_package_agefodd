@@ -950,3 +950,4 @@ AgfDisplayAvgPricePropalInvoice=Ajouter dans description produit Taux Horaire to
 AgfAddTraineeNameIntoDocHelp=Lors de la génération automatique des propositions commerciales et/ou commandes et facture, Taux Horaire total HT (HT/nb heure issue du calendrier de la session) et TTC  (TTC/nb heure issue du calendrier de la session) est rajouté sur la ligne correspondante
 AgfTaxHourHT=Taux Horaire HT
 AgfTaxHourTTC=Taux Horaire TTC
+AgfSelectAgefoddSessionToLink=Selectionner la session à associer

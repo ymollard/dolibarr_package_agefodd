@@ -2152,6 +2152,10 @@ class Agsession extends CommonObject {
 					$sql .= ' INNER JOIN llx_societe as insersoc ON insersoc.rowid = innersess.fk_soc_requester';
 					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . ')) ';
 					$sql .= ')';
+				} elseif ($key == 's.rowid') {
+					$sql .= ' AND ' . $key . '=' . $value;
+				} elseif ($key == '!s.rowid') {
+					$sql .= ' AND s.rowid NOT IN ('.$value.')';
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}

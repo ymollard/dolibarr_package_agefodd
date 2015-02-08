@@ -32,6 +32,7 @@ if (! $res)
 
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
+require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_place.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
@@ -57,10 +58,15 @@ $search_invoiceref = GETPOST('search_invoiceref', 'alpha');
 $search_propalref = GETPOST('search_propalref', 'alpha');
 $search_propalid = GETPOST('search_propalid', 'alpha');
 
+$link_element = GETPOST("link_element");
+if (! empty($link_element)) {
+	$action = 'link_element';
+}
+
 $langs->load('bills');
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {
 	$search_orderid = '';
 	$search_invoiceid = '';
 	$search_fourninvoiceid = '';
@@ -94,68 +100,72 @@ if (! empty($search_orderid)) {
 	$order = new Commande($db);
 	$order->fetch($search_orderid);
 	$search_orderref = $order->ref;
-	$object_socid=$order->socid;
+	$object_socid = $order->socid;
 }
 
 if (! empty($search_invoiceid)) {
 	$invoice = new Facture($db);
 	$invoice->fetch($search_invoiceid);
 	$search_invoiceref = $invoice->ref;
-	$object_socid=$invoice->socid;
+	$object_socid = $invoice->socid;
 }
 
 if (! empty($search_fourninvoiceid)) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch($search_fourninvoiceid);
 	$search_fourninvoiceref = $fourninvoice->ref;
-	$object_socid=$fourninvoice->socid;
+	$object_socid = $fourninvoice->socid;
 }
 
 if (! empty($search_orderref)) {
 	$order = new Commande($db);
 	$order->fetch('', $search_orderref);
 	$search_orderid = $order->id;
-	$object_socid=$order->socid;
+	$object_socid = $order->socid;
 }
 
 if (! empty($search_invoiceref)) {
 	$invoice = new Facture($db);
 	$invoice->fetch('', $search_invoiceref);
 	$search_invoiceid = $invoice->id;
-	$object_socid=$invoice->socid;
+	$object_socid = $invoice->socid;
 }
 
 if (! empty($search_fourninvoiceref)) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch('', $search_fourninvoiceref);
 	$search_fourninvoiceid = $fourninvoice->id;
-	$object_socid=$fourninvoice->socid;
+	$object_socid = $fourninvoice->socid;
 }
 
 if (! empty($search_propalref)) {
 	$propal = new Propal($db);
 	$propal->fetch('', $search_propalref);
 	$search_propalid = $propal->id;
-	$object_socid=$propal->socid;
+	$object_socid = $propal->socid;
 }
 
 if (! empty($search_propalid)) {
 	$propal = new Propal($db);
 	$propal->fetch($search_propalid, '');
 	$search_propalref = $propal->ref;
-	$object_socid=$propal->socid;
+	$object_socid = $propal->socid;
 }
 
 if (! empty($search_orderid) || ! empty($search_orderref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php';
 	$head = commande_prepare_head($order);
 	dol_fiche_head($head, 'tabAgefodd', $langs->trans("AgfMenuSessByInvoiceOrder"), 0, 'order');
+	$element_type = 'order';
+	$element_id = $search_orderid;
 }
 
 if (! empty($search_invoiceid) || ! empty($search_invoiceref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php';
 	$head = facture_prepare_head($invoice);
 	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'bill');
+	$element_type = 'invoice';
+	$element_id = $search_invoiceid;
 }
 
 if (! empty($search_fourninvoiceid) || ! empty($search_fourninvoiceref)) {
@@ -168,45 +178,65 @@ if (! empty($search_propalref) || ! empty($search_propalid)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php';
 	$head = propal_prepare_head($propal);
 	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'propal');
+	$element_type = 'propal';
+	$element_id = $search_propalid;
+}
+
+if ($action == 'link_element') {
+	$agf_fin = new Agefodd_session_element($db);
+	$sessionid = GETPOST('session_id', 'int');
+	if (! empty($sessionid)) {
+		$agf_fin->fk_session_agefodd = $sessionid;
+		$agf_fin->fk_soc = $object_socid;
+		$agf_fin->element_type = $element_type;
+		$agf_fin->fk_element = $element_id;
+		$result = $agf_fin->create($user);
+		if ($result < 0) {
+			setEventMessage($agf_fin->error, 'errors');
+		}
+	}
 }
 
 $agf = new Agsession($db);
 $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid);
+
+$session_array_id = array ();
 
 if ($resql != - 1) {
 	$num = $resql;
 	
 	$menu = $langs->trans("AgfMenuSessAct");
 	
-	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
 	
 	$i = 0;
+	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVEUR['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
 	if (! (empty($search_orderref))) {
-		print_liste_field_titre($langs->trans("AgfBonCommande"), $_SERVEUR ['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfBonCommande"), $_SERVEUR['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_invoiceref))) {
-		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_fourninvoiceref))) {
-		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR ['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_propalref))) {
-		print_liste_field_titre($langs->trans("Proposal"), $_SERVEUR ['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Proposal"), $_SERVEUR['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";
 	
 	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
+	$url_form = $_SERVER["PHP_SELF"];
 	$addcriteria = false;
 	if (! empty($sortorder)) {
 		$url_form .= '?sortorder=' . $sortorder;
@@ -229,7 +259,6 @@ if ($resql != - 1) {
 		$addcriteria = true;
 	}
 	
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 	print '<tr class="liste_titre">';
 	
 	print '<td>&nbsp;</td>';
@@ -269,11 +298,11 @@ if ($resql != - 1) {
 	print '</td>';
 	
 	print "</tr>\n";
-	print '</form>';
 	
 	$var = true;
+	
 	foreach ( $agf->lines as $line ) {
-		
+		$session_array_id[$line->rowid] = $line->rowid;
 		// Affichage tableau des sessions
 		$var = ! $var;
 		print "<tr $bc[$var]>";
@@ -282,10 +311,10 @@ if ($resql != - 1) {
 		// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS AFFICHER DU BLANC (#FFF)
 		$couleur_rgb = agf_hex2rgb($line->color);
 		$color_a = '';
-		if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
+		if ($line->color && ((($couleur_rgb[0] * 299) + ($couleur_rgb[1] * 587) + ($couleur_rgb[2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
 		
-		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid='.$object_socid.'">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
 		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
@@ -313,6 +342,41 @@ if ($resql != - 1) {
 } else {
 	setEventMessage($agf->error, 'errors');
 }
+
+// Do not display add form for suppier invoice
+// TODO : set this option for supplier invoice
+if (empty($search_fourninvoiceref)) {
+	$filter = array ();
+	$soc = new Societe($db);
+	$result = $soc->fetch($object_socid);
+	if ($result < 0) {
+		setEventMessage($soc->error, 'errors');
+	}
+	$filter['so.nom'] = $soc->name;
+	if (count($session_array_id) > 0) {
+		$filter['!s.rowid'] = implode(',', $session_array_id);
+	}
+	$agf_session = new Agsession($db);
+	$result = $agf_session->fetch_all("ASC", "s.dated", 0, 0, $filter);
+	if ($result < 0) {
+		setEventMessage($soc->error, 'errors');
+	}
+	$sessions = array ();
+	foreach ( $agf_session->lines as $line_session ) {
+		$sessions[$line_session->rowid] = $line_session->ref_interne . ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session->dated, 'daytext');
+	}
+	print '<table class="noborder" width="100%">';
+	print '<tr>';
+	print '<td align="right">';
+	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1);
+	print '</td>';
+	print '<td align="left">';
+	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_element"/>';
+	print '</td>';
+	print '</tr>';
+	print "</table>";
+}
+print '</form>';
 
 llxFooter();
 $db->close();
