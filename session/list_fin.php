@@ -346,24 +346,36 @@ if ($resql != - 1) {
 // Do not display add form for suppier invoice
 // TODO : set this option for supplier invoice
 if (empty($search_fourninvoiceref)) {
-	$filter = array ();
+	$filter=array();
 	$soc = new Societe($db);
-	$result = $soc->fetch($object_socid);
-	if ($result < 0) {
+	$result=$soc->fetch($object_socid);
+	if ($result<0) {
 		setEventMessage($soc->error, 'errors');
 	}
-	$filter['so.nom'] = $soc->name;
-	if (count($session_array_id) > 0) {
-		$filter['!s.rowid'] = implode(',', $session_array_id);
+	//$filter['so.nom']=$soc->name;
+	if (count($session_array_id)>0) {
+		$filter['!s.rowid']=implode(',',$session_array_id);
 	}
-	$agf_session = new Agsession($db);
-	$result = $agf_session->fetch_all("ASC", "s.dated", 0, 0, $filter);
-	if ($result < 0) {
-		setEventMessage($soc->error, 'errors');
-	}
+	$select_array = array (
+				'thirdparty' => $langs->trans('ThirdParty'),
+				'trainee' => $langs->trans('AgfParticipant'),
+				'requester' => $langs->trans('AgfTypeRequester'),
+				'trainee_requester' => $langs->trans('AgfTypeTraineeRequester'),
+				'opca' => $langs->trans('AgfMailTypeContactOPCA'),
+		);
+	
 	$sessions = array ();
-	foreach ( $agf_session->lines as $line_session ) {
-		$sessions[$line_session->rowid] = $line_session->ref_interne . ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session->dated, 'daytext');
+	foreach($select_array as $key=>$val) {
+		$filter['type_affect']=$key;
+		$agf_session = new Agsession($db);
+		$result=$agf_session->fetch_all_by_soc($object_socid,"ASC", "s.dated", 0, 0, $filter);
+		if ($result<0) {
+			setEventMessage($soc->error, 'errors');
+		}
+		
+		foreach ( $agf_session->lines as $line_session ) {
+			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne . ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
+		}
 	}
 	print '<table class="noborder" width="100%">';
 	print '<tr>';

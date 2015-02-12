@@ -2743,7 +2743,9 @@ class Agsession extends CommonObject {
 						$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 						$sql .= ' AND ' . $key . ' = ' . $value;
-					} else {
+					} elseif ($key == '!s.rowid') {
+						$sql .= ' AND s.rowid NOT IN ('.$value.')';
+					}else {
 						$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 					}
 				}
