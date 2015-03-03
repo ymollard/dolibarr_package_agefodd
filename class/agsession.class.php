@@ -408,7 +408,7 @@ class Agsession extends CommonObject {
 	function fetch($id) {
 		global $langs, $conf;
 		
-		$sql = "SELECT";
+		$sql = "SELECT DISTINCT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_soc,";
 		$sql .= " t.fk_soc_requester,";
