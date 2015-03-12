@@ -76,7 +76,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 		$this->espace_apres_corps_text = 4;
 		$this->espace_apres_titre = 0;
-		$this->default_font_size=9;
+		$this->default_font_size=10;
 		
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -236,7 +236,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					if ($y > 0)
 						$posY += $hauteur;
 					$this->pdf->SetXY($posX, $posY);
-					$hauteur = dol_nboflines_bis($agf->lines [$y]->intitule, 80) * 4;
+					$hauteur = dol_nboflines_bis($agf->lines [$y]->intitule, 100) * 4;
 					
 					$this->pdf->Cell(10, 4, $agf->lines [$y]->priorite . '. ', 0, 0, 'L', 0);
 					$this->pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->lines [$y]->intitule), 0, 'L');
