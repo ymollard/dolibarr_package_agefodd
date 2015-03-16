@@ -514,7 +514,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$action = new ActionComm($this->db);
 		$session = new Agsession($this->db);
 		
-		$$formateur_session = new Agefodd_session_formateur($this->db);
+		$formateur_session = new Agefodd_session_formateur($this->db);
 		$result=$formateur_session->fetch($this->fk_agefodd_session_formateur);
 		if ($result < 0) {
 			$error ++;
