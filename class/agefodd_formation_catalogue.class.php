@@ -325,7 +325,7 @@ class Agefodd extends CommonObject {
 		$sql .= " ref=" . (isset($this->ref_obj) ? "'" . $this->ref_obj . "'" : "null") . ",";
 		$sql .= " ref_interne=" . (isset($this->ref_interne) ? "'" . $this->ref_interne . "'" : "null") . ",";
 		$sql .= " intitule=" . (isset($this->intitule) ? "'" . $this->intitule . "'" : "null") . ",";
-		$sql .= " duree=" . (isset($this->duree) ? $this->duree : "null") . ",";
+		$sql .= " duree=" . (isset($this->duree) ? price2num($this->duree) : "null") . ",";
 		$sql .= " public=" . (isset($this->public) ? "'" . $this->public . "'" : "null") . ",";
 		$sql .= " methode=" . (isset($this->methode) ? "'" . $this->methode . "'" : "null") . ",";
 		$sql .= " prerequis=" . (isset($this->prerequis) ? "'" . $this->prerequis . "'" : "null") . ",";
