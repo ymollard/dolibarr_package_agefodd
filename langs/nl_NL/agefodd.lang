@@ -938,3 +938,4 @@ AgfSendFicheMissionTrainerBody=Bonjour,\n\nVeuillez trouver ci-joint la letter d
 AgfConfirmDeleteSession=All event link to this session will be deleted. Are you sure to delete this session ?
 CloneTraining=Clone training
 ConfirmCloneTraining=Are you sure to clone training
+AgfFacturePropNoResult=Unable to bind: no proposal exists for this company

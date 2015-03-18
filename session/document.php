@@ -320,6 +320,7 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 		;
 		for($i = 0; $i < $num; $i ++) {
 			$options .= '<option value="' . $agf_liste->lines[$i]->id . '">' . $agf_liste->lines[$i]->ref .'-'. dol_print_date($agf_liste->lines[$i]->date).'-';
+			$options .= '-'.$agf_liste->lines[$i]->socname.'-';
 			$options .= $langs->trans('TotalTTC').':'.price($agf_liste->lines[$i]->amount).'-'.$agf_liste->lines[$i]->status.'</option>' . "\n";
 		}
 		$select = '<select class="flat" name="select">' . "\n" . $options . "\n" . '</select>' . "\n";
@@ -339,7 +340,15 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 		print '</form>';
 	} else {
 		print '<td colspan=3>';
-		($type_link == 'bc') ? print $langs->trans("AgfFactureBcNoResult") : print $langs->trans("AgfFactureFacNoResult");
+		if ($type_link == 'bc') {
+			print $langs->trans("AgfFactureBcNoResult");
+		}
+		if ($type_link == 'fac') {
+			print $langs->trans("AgfFactureFacNoResult");
+		}
+		if ($type_link == 'prop') {
+			print $langs->trans("AgfFacturePropcNoResult");
+		}
 		print '</td>';
 	}
 	print '</tr>' . "\n";

@@ -938,3 +938,4 @@ AgfSendFicheMissionTrainer=Lettre de mission %s
 AgfSendFicheMissionTrainerBody=Bonjour,\n\nVeuillez trouver ci-joint la letter de mission pour la foramtion « %s ».AgfSendDoc=Mandar documento per email
 CloneTraining=Clone training
 ConfirmCloneTraining=Are you sure to clone training
+AgfFacturePropNoResult=Unable to bind: no proposal exists for this company
