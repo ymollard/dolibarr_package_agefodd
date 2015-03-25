@@ -939,3 +939,5 @@ AgfConfirmDeleteSession=All event link to this session will be deleted. Are you 
 CloneTraining=Clone training
 ConfirmCloneTraining=Are you sure to clone training
 AgfFacturePropNoResult=Unable to bind: no proposal exists for this company
+AgfPedagoUsage=Educational resources
+AgfSanction=Expected result

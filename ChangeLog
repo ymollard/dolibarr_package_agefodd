@@ -10,6 +10,7 @@ English Dolibarr ChangeLog
 -New : Can link invoice/propal/session from session tab in propal/order/invoice screen
 -New : PRESENCE SHEET : add trainer signature block by session calendar
 -fix : decimal value in training catalogue duration allowed
+-New : Add two field in training catalgue to be compliant with French DIRRECT 2015 reform (and output in fiche pedago PDF)
 
 ***** ChangeLog for 2.1.11 compared to 2.1.10 *****
 -Fix : Priority in objectif training can be new updated 

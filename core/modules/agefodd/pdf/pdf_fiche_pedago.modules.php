@@ -289,6 +289,50 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+				
+				/**
+				 * *** Moyens pédagogique ****
+				 */
+				
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetXY($posX, $posY);
+				$this->str = $outputlangs->transnoentities('AgfPedagoUsage');
+				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $this->pdf->GetY();
+				$this->pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+				
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+				$this->str = ucfirst($agf->pedago_usage);
+				
+				$this->pdf->SetXY($posX, $posY);
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+				
+				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+				
+				/**
+				 * *** Sanction ****
+				 */
+				
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetXY($posX, $posY);
+				$this->str = $outputlangs->transnoentities('AgfSanction');
+				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $this->pdf->GetY();
+				$this->pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+				
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+				$this->str = ucfirst($agf->sanction);
+				
+				$this->pdf->SetXY($posX, $posY);
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+				
+				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				/**
 				 * *** Programme ****
 				 */

@@ -46,6 +46,8 @@ class Agefodd extends CommonObject {
 	var $prerequis;
 	var $but;
 	var $programme;
+	var $pedago_usage;
+	var $sanction;
 	var $note1;
 	var $note2;
 	var $archive;
@@ -96,8 +98,12 @@ class Agefodd extends CommonObject {
 			$this->note1 = $this->db->escape(trim($this->note1));
 		if (isset($this->note2))
 			$this->note2 = $this->db->escape(trim($this->note2));
-		if (isset($this->note2))
+		if (isset($this->programme))
 			$this->programme = $this->db->escape(trim($this->programme));
+		if (isset($this->pedago_usage))
+			$this->pedago_usage = $this->db->escape(trim($this->pedago_usage));
+		if (isset($this->sanction))
+			$this->sanction = $this->db->escape(trim($this->sanction));
 		if (isset($this->certif_duration))
 			$this->certif_duration = $this->db->escape(trim($this->certif_duration));
 		if (isset($this->ref_interne))
@@ -114,6 +120,8 @@ class Agefodd extends CommonObject {
 		$sql .= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,";
 		$sql .= "programme, note1, note2, fk_user_author,fk_user_mod,entity,";
 		$sql .= "fk_product,nb_subscribe_min,fk_c_category,certif_duration";
+		$sql .= ",pedago_usage";
+		$sql .= ",sanction";
 		$sql .= ") VALUES (";
 		$sql .= $this->db->idate(dol_now()) . ', ';
 		$sql .= " " . (! isset($this->ref_obj) ? 'NULL' : "'" . $this->ref_obj . "'") . ",";
@@ -134,6 +142,8 @@ class Agefodd extends CommonObject {
 		$sql .= " " . (empty($this->nb_subscribe_min) ? "null" : $this->nb_subscribe_min) . ', ';
 		$sql .= " " . (empty($this->fk_c_category) ? "null" : $this->fk_c_category) . ', ';
 		$sql .= " " . (empty($this->certif_duration) ? "null" : "'" . $this->certif_duration . "'");
+		$sql .= " " . (empty($this->pedago_usage) ? "null" : "'" . $this->pedago_usage . "'");
+		$sql .= " " . (empty($this->sanction) ? "null" : "'" . $this->sanction . "'");
 		$sql .= ")";
 		
 		$this->db->begin();
@@ -195,6 +205,8 @@ class Agefodd extends CommonObject {
 		$sql .= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 		$sql .= " ,c.note_private, c.note_public, c.fk_product,c.nb_subscribe_min,c.fk_c_category,dictcat.code as catcode ,dictcat.intitule as catlib ";
 		$sql .= " ,c.certif_duration";
+		$sql .= " ,c.pedago_usage";
+		$sql .= " ,c.sanction";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat ON dictcat.rowid=c.fk_c_category";
 		if ($id && ! $ref)
@@ -231,6 +243,8 @@ class Agefodd extends CommonObject {
 					$this->category_lib = $obj->catcode . ' - ' . $obj->catlib;
 				}
 				$this->certif_duration = $obj->certif_duration;
+				$this->pedago_usage = $obj->pedago_usage;
+				$this->sanction = $obj->sanction;
 			}
 			$this->db->free($resql);
 			
@@ -304,6 +318,8 @@ class Agefodd extends CommonObject {
 		$this->prerequis = $this->db->escape(trim($this->prerequis));
 		$this->but = $this->db->escape(trim($this->but));
 		$this->programme = $this->db->escape(trim($this->programme));
+		$this->pedago_usage = $this->db->escape(trim($this->pedago_usage));
+		$this->sanction = $this->db->escape(trim($this->sanction));
 		$this->note1 = $this->db->escape(trim($this->note1));
 		$this->note2 = $this->db->escape(trim($this->note2));
 		$this->certif_duration = $this->db->escape(trim($this->certif_duration));
@@ -331,6 +347,8 @@ class Agefodd extends CommonObject {
 		$sql .= " prerequis=" . (isset($this->prerequis) ? "'" . $this->prerequis . "'" : "null") . ",";
 		$sql .= " but=" . (isset($this->but) ? "'" . $this->but . "'" : "null") . ",";
 		$sql .= " programme=" . (isset($this->programme) ? "'" . $this->programme . "'" : "null") . ",";
+		$sql .= " pedago_usage=" . (isset($this->pedago_usage) ? "'" . $this->pedago_usage . "'" : "null") . ",";
+		$sql .= " sanction=" . (isset($this->sanction) ? "'" . $this->sanction . "'" : "null") . ",";
 		$sql .= " note1=" . (isset($this->note1) ? "'" . $this->note1 . "'" : "null") . ",";
 		$sql .= " note2=" . (isset($this->note2) ? "'" . $this->note2 . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
@@ -668,6 +686,8 @@ class Agefodd extends CommonObject {
 		$this->methode = '';
 		$this->prerequis = '';
 		$this->programme = '';
+		$this->pedago_usage = '';
+		$this->sanction = '';
 		$this->archive = '';
 	}
 	

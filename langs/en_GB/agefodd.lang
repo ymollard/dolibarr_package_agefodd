@@ -939,3 +939,5 @@ AgfSendFicheMissionTrainerBody=Bonjour,\n\nVeuillez trouver ci-joint la letter d
 CloneTraining=Clone training
 ConfirmCloneTraining=Are you sure to clone training
 AgfFacturePropNoResult=Unable to bind: no proposal exists for this company
+AgfPedagoUsage=Educational resources
+AgfSanction=Expected result

@@ -118,6 +118,8 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 			$agf->prerequis = dol_htmlcleanlastbr(GETPOST('prerequis'));
 			$agf->but = dol_htmlcleanlastbr(GETPOST('but'));
 			$agf->programme = dol_htmlcleanlastbr(GETPOST('programme'));
+			$agf->pedago_usage = dol_htmlcleanlastbr(GETPOST('pedago_usage'));
+			$agf->sanction = dol_htmlcleanlastbr(GETPOST('sanction'));
 		} else {
 			$agf->public = GETPOST('public', 'alpha');
 			$agf->methode = GETPOST('methode', 'alpha');
@@ -126,6 +128,8 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 			$agf->prerequis = GETPOST('prerequis', 'alpha');
 			$agf->but = GETPOST('but', 'alpha');
 			$agf->programme = GETPOST('programme', 'alpha');
+			$agf->pedago_usage = GETPOST('pedago_usage', 'alpha');
+			$agf->sanction = GETPOST('sanction', 'alpha');
 		}
 		
 		$extrafields->setOptionalsFromPost($extralabels, $agf);
@@ -173,6 +177,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			$agf->prerequis = dol_htmlcleanlastbr(GETPOST('prerequis'));
 			$agf->but = dol_htmlcleanlastbr(GETPOST('but'));
 			$agf->programme = dol_htmlcleanlastbr(GETPOST('programme'));
+			$agf->pedago_usage = dol_htmlcleanlastbr(GETPOST('pedago_usage'));
+			$agf->sanction = dol_htmlcleanlastbr(GETPOST('sanction'));
 		} else {
 			$agf->public = GETPOST('public', 'alpha');
 			$agf->methode = GETPOST('methode', 'alpha');
@@ -181,6 +187,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			$agf->prerequis = GETPOST('prerequis', 'alpha');
 			$agf->but = GETPOST('but', 'alpha');
 			$agf->programme = GETPOST('programme', 'alpha');
+			$agf->pedago_usage = GETPOST('pedago_usage', 'alpha');
+			$agf->sanction = GETPOST('sanction', 'alpha');
 		}
 		
 		$extrafields->setOptionalsFromPost($extralabels, $agf);
@@ -428,6 +436,16 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	$doleditor->Create();
 	print "</td></tr>";
 	
+	print '<tr><td valign="top">' . $langs->trans("AgfPedagoUsage") . '</td><td>';
+	$doleditor = new DolEditor('pedago_usage', GETPOST('pedago_usage'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
+	
+	print '<tr><td valign="top">' . $langs->trans("AgfSanction") . '</td><td>';
+	$doleditor = new DolEditor('sanction', GETPOST('sanction'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
+	
 	if (! empty($extrafields->attribute_label)) {
 		print $agf->showOptionals($extrafields, 'edit');
 	}
@@ -556,6 +574,16 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				
 				print '<tr><td valign="top">' . $langs->trans("AgfProgramme") . '</td><td colspan=3>';
 				$doleditor = new DolEditor('programme', $agf->programme, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+				$doleditor->Create();
+				print "</td></tr>";
+				
+				print '<tr><td valign="top">' . $langs->trans("AgfPedagoUsage") . '</td><td>';
+				$doleditor = new DolEditor('pedago_usage', $agf->pedago_usage, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+				$doleditor->Create();
+				print "</td></tr>";
+				
+				print '<tr><td valign="top">' . $langs->trans("AgfSanction") . '</td><td>';
+				$doleditor = new DolEditor('sanction', $agf->sanction, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print "</td></tr>";
 				
@@ -772,6 +800,26 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 				if (empty($agf->but))
 					$but = $langs->trans("AgfUndefinedBut");
+				print $but . '</td></tr>';
+				
+				print '<tr><td valign="top">' . $langs->trans("AgfPedagoUsage") . '</td><td colspan=2>';
+				if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+					$but = $agf->pedago_usage;
+				} else {
+					$but = stripslashes(nl2br($agf->pedago_usage));
+				}
+				if (empty($agf->pedago_usage))
+					$but = $langs->trans("AgfUndefined");
+				print $but . '</td></tr>';
+				
+				print '<tr><td valign="top">' . $langs->trans("AgfSanction") . '</td><td colspan=2>';
+				if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+					$but = $agf->sanction;
+				} else {
+					$but = stripslashes(nl2br($agf->sanction));
+				}
+				if (empty($agf->sanction))
+					$but = $langs->trans("AgfUndefined");
 				print $but . '</td></tr>';
 				
 				if (! empty($extrafields->attribute_label)) {
