@@ -141,8 +141,8 @@ class Agefodd extends CommonObject {
 		$sql .= " " . (empty($this->fk_product) ? 'null' : $this->fk_product) . ', ';
 		$sql .= " " . (empty($this->nb_subscribe_min) ? "null" : $this->nb_subscribe_min) . ', ';
 		$sql .= " " . (empty($this->fk_c_category) ? "null" : $this->fk_c_category) . ', ';
-		$sql .= " " . (empty($this->certif_duration) ? "null" : "'" . $this->certif_duration . "'");
-		$sql .= " " . (empty($this->pedago_usage) ? "null" : "'" . $this->pedago_usage . "'");
+		$sql .= " " . (empty($this->certif_duration) ? "null" : "'" . $this->certif_duration . "'"). ', ';
+		$sql .= " " . (empty($this->pedago_usage) ? "null" : "'" . $this->pedago_usage . "',"). ', ';
 		$sql .= " " . (empty($this->sanction) ? "null" : "'" . $this->sanction . "'");
 		$sql .= ")";
 		
