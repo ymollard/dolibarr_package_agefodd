@@ -954,3 +954,5 @@ AgfSelectAgefoddSessionToLink=Selectionner la session à associer
 AgfFacturePropNoResult=Impossible d'effectuer la liaison: aucune proposition commerciale n'existe pour cette société
 AgfPedagoUsage=Moyens pédagogique
 AgfSanction=Sanction de la formation
+AgfTypePresta=Prestataire
+AgfTypePrestaHelp=Contact fournisseur qui est le fomateur prestataire de la session

@@ -808,8 +808,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				} else {
 					$but = stripslashes(nl2br($agf->pedago_usage));
 				}
-				if (empty($agf->pedago_usage))
-					$but = $langs->trans("AgfUndefined");
 				print $but . '</td></tr>';
 				
 				print '<tr><td valign="top">' . $langs->trans("AgfSanction") . '</td><td colspan=2>';
@@ -818,8 +816,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				} else {
 					$but = stripslashes(nl2br($agf->sanction));
 				}
-				if (empty($agf->sanction))
-					$but = $langs->trans("AgfUndefined");
 				print $but . '</td></tr>';
 				
 				if (! empty($extrafields->attribute_label)) {

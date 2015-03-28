@@ -522,9 +522,10 @@ class FormAgefodd extends Form {
 	 * @param array $event Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid',
 	 *        'params'=>array('add-customer-contact'=>'disabled')))
 	 * @param bool $options_only only (for ajax treatment)
+	 * @param bool $supplier only
 	 * @return int if KO, Nb of contact in list if OK
 	 */
-	function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false) {
+	function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
 		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
 		return $this->num;
 	}
@@ -545,9 +546,10 @@ class FormAgefodd extends Form {
 	 * @param int $forcecombo use combo box
 	 * @param array $event Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid',
 	 *        'params'=>array('add-customer-contact'=>'disabled')))
+	 * @param bool $supplier only
 	 * @return int if KO, Nb of contact in list if OK
 	 */
-	function selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showfunction = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array()) {
+	function selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showfunction = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array(), $supplier=0) {
 		global $conf, $langs, $user;
 		
 		$langs->load('companies');
@@ -559,15 +561,18 @@ class FormAgefodd extends Form {
 		if ($showsoc > 0) {
 			$sql .= " , s.nom as company";
 		}
-		$sql .= " FROM (" . MAIN_DB_PREFIX . "socpeople as sp";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as sp";
+		
+		if (empty($supplier)) {
+			$sql .= " LEFT OUTER JOIN  " . MAIN_DB_PREFIX . "societe as s ON s.rowid=sp.fk_soc ";
+		}else {
+			$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "societe as s ON s.rowid=sp.fk_soc and s.fournisseur=1";
+		}
 		
 		// Limit contact visibility to contact of thirdparty saleman
 		if (empty($user->rights->societe->client->voir)) {
-			$sql .= ", " . MAIN_DB_PREFIX . "societe_commerciaux as sc";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sc ON s.rowid = sc.fk_soc AND sc.fk_user = " . $user->id;
 		}
-		$sql .= ")";
-		
-		$sql .= " LEFT OUTER JOIN  " . MAIN_DB_PREFIX . "societe as s ON s.rowid=sp.fk_soc ";
 		
 		$sql .= " WHERE sp.entity IN (" . getEntity('societe', 1) . ")";
 		if ($socid > 0) {
@@ -580,9 +585,6 @@ class FormAgefodd extends Form {
 		if (! empty($conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX))
 			$sql .= " AND sp.statut<>0 ";
 		
-		if (empty($user->rights->societe->client->voir)) {
-			$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = " . $user->id;
-		}
 		
 		$sql .= " ORDER BY sp.lastname ASC";
 		

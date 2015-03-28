@@ -244,6 +244,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST ["stag_upda
 		$fk_soc = GETPOST('fk_soc', 'int');
 		$fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 		$fk_socpeople_requester = GETPOST('fk_socpeople_requester', 'int');
+		$fk_socpeople_presta = GETPOST('fk_socpeople_presta', 'int');
 		$color = GETPOST('color', 'alpha');
 		$nb_place = GETPOST('nb_place', 'int');
 		$nb_stagiaire = GETPOST('nb_stagiaire', 'int');
@@ -263,6 +264,8 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST ["stag_upda
 			$agf->fk_soc_requester = $fk_soc_requester;
 		if (! empty($fk_socpeople_requester))
 			$agf->fk_socpeople_requester = $fk_socpeople_requester;
+		if (! empty($fk_socpeople_presta))
+			$agf->fk_socpeople_requester = $fk_socpeople_presta;
 		if (! empty($color))
 			$agf->color = $color;
 		if (! empty($nb_place))
@@ -490,6 +493,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		if ($agf->fk_soc_requester==$custid && (empty($agf->fk_socpeople_requester) || $agf->fk_socpeople_requester==-1) && (!empty($contactclientid) || $contactclientid!=-1)) {
 			$agf->fk_socpeople_requester=$contactclientid;
 		}
+		$agf->fk_socpeople_presta = GETPOST('fk_socpeople_presta', 'int');
 		
 		$agf->fk_formation_catalogue = $training_id;
 		$agf->fk_session_place = $fk_session_place;
@@ -745,6 +749,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
 	print '</td></tr>';
 	
+	print '<tr><td>' . $langs->trans("AgfTypePresta") . '</td>';
+	print '<td>';
+	$formAgefodd->select_contacts_custom(0, GETPOST('fk_socpeople_presta', 'int'), 'fk_socpeople_presta', 1, '', '', 1, '', 1, 0, array(), false, 1);
+	print '</td></tr>';
+	
 	print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 	print $form->select_produits($agf->fk_product, 'productid', '', 10000, 0, 1, 2, '', 0, array ());
 	print "</td></tr>";
@@ -948,6 +957,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					}
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
+					print '</td></tr>';
+					
+					print '<tr><td>' . $langs->trans("AgfTypePresta") . '</td>';
+					print '<td><table class="nobordernopadding"><tr><td>';
+					$formAgefodd->select_contacts_custom(0, $agf->fk_socpeople_presta, 'fk_socpeople_presta', 1, '', '', 1, '', 1, 0, array(), false, 1);
+					print '</td>';
+					print '<td>' . $form->textwithpicto('', $langs->trans("AgfTypePrestaHelp"), 1, 'help') . '</td></tr></table>';
 					print '</td></tr>';
 					
 					print '<tr><td>' . $langs->trans("AgfLieu") . '</td>';

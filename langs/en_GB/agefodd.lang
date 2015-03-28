@@ -941,3 +941,5 @@ ConfirmCloneTraining=Are you sure to clone training
 AgfFacturePropNoResult=Unable to bind: no proposal exists for this company
 AgfPedagoUsage=Educational resources
 AgfSanction=Expected result
+AgfTypePresta=Recipient
+AgfTypePrestaHelp=Supplier Contact that is recipient of session
