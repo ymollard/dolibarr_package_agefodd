@@ -237,7 +237,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [2] = $this->version;
 		$this->const [$r] [3] = 'Last version installed to know change table to execute';
 		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const [$r] [5] = 'allentities';
 		$this->const [$r] [6] = 0;
 		
 		$r ++;

@@ -943,3 +943,5 @@ AgfPedagoUsage=Educational resources
 AgfSanction=Expected result
 AgfTypePresta=Recipient
 AgfTypePrestaHelp=Supplier Contact that is recipient of session
+AgfAttestationEndTraining=Attestation de fin de formation
+AgfAttestationPresenceTraining=Attestation de présence

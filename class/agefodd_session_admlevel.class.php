@@ -105,7 +105,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . (! isset($this->trigger_name) ? 'NULL' : "'" . $this->trigger_name . "'") . ",";
-		$sql .= " " . $this->db->idate(dol_now());
+		$sql .= " '" . $this->db->idate(dol_now())."'";
 		
 		$sql .= ")";
 		

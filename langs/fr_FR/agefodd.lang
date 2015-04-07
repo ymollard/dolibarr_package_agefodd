@@ -956,3 +956,5 @@ AgfPedagoUsage=Moyens pédagogique
 AgfSanction=Sanction de la formation
 AgfTypePresta=Prestataire
 AgfTypePrestaHelp=Contact fournisseur qui est le fomateur prestataire de la session
+AgfAttestationEndTraining=Attestation de fin de formation
+AgfAttestationPresenceTraining=Attestation de présence

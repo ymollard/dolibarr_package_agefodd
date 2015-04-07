@@ -1342,8 +1342,10 @@ class Agsession extends CommonObject {
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sa";
 		$sql .= " ON sa.rowid = ss.fk_stagiaire";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp";
+		$sql .= " ON socp.rowid = s.fk_socpeople_presta";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
-		$sql .= " ON so.rowid = ss.fk_soc_presta";
+		$sql .= " ON so.rowid = socp.rowid";
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
