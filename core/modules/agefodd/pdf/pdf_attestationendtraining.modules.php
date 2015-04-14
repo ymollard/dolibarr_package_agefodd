@@ -50,8 +50,8 @@ class pdf_convocation extends ModelePDFAgefodd {
 		$langs->load("agefodd@agefodd");
 		
 		$this->db = $db;
-		$this->name = 'convocation';
-		$this->description = $langs->trans('AgfModPDFConvocation');
+		$this->name = 'attestationendtraining';
+		$this->description = $langs->trans('AgfAttestationEndTraining');
 		
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -91,7 +91,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 	 * \return int 1=ok, 0=ko
 	 */
 	function write_file($agf, $outputlangs, $file, $socid) {
-		global $user, $langs, $conf, $mysoc;
+		global $user, $langs, $conf, $mysoc, $mc;
 		
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
@@ -132,7 +132,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 			$pagenb = 0;
 			
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
-			$pdf->SetSubject($outputlangs->transnoentities("AgfModPDFConvocation"));
+			$pdf->SetSubject($outputlangs->transnoentities("AgfAttestationEndTraining"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref_interne) . " " . $outputlangs->transnoentities("Document"));
@@ -181,7 +181,17 @@ class pdf_convocation extends ModelePDFAgefodd {
 							}
 							
 							$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - $decal, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
-								                                                                                                                                                                                              // (auto)
+
+							//Find global logo of the company
+							if ($conf->multicompany->enabled) {
+								
+								//Find logo of master company
+								$sql =" SELECT value FROM ".MAIN_DB_PREFIX." WHERE name='MAIN_INFO_SOCIETE_LOGO' AND entity=1";
+								
+								
+								$logo = DOL_DATA_ROOT . '/mycompany/logos/' . $this->emetteur->logo;
+							}
+							                                                                                                                                                                                              // (auto)
 						} else {
 							$pdf->SetTextColor(200, 0, 0);
 							$pdf->SetFont('', 'B', pdf_getPDFFontSize($outputlangs) - 2);
