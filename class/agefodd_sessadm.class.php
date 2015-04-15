@@ -100,7 +100,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= $this->archive . ',';
 		$sql .= " " . $user->id . ", ";
 		$sql .= " " . $user->id . ", ";
-		$sql .= $this->db->idate(dol_now()) . ", ";
+		$sql .= "'".$this->db->idate(dol_now()) . "', ";
 		$sql .= " " . (! isset($this->trigger_name) ? 'NULL' : "'" . $this->trigger_name . "'");
 		$sql .= ")";
 		
