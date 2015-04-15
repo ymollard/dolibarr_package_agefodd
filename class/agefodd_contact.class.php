@@ -69,7 +69,7 @@ class Agefodd_contact extends CommonObject {
 		$sql .= ' ' . $user->id . ',';
 		$sql .= ' ' . $user->id . ',';
 		$sql .= ' ' . $conf->entity . ',';
-		$sql .= $this->db->idate(dol_now());
+		$sql .= "'".$this->db->idate(dol_now())."'";
 		$sql .= ")";
 		
 		$this->db->begin();
