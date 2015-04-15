@@ -123,7 +123,7 @@ class Agefodd extends CommonObject {
 		$sql .= ",pedago_usage";
 		$sql .= ",sanction";
 		$sql .= ") VALUES (";
-		$sql .= $this->db->idate(dol_now()) . ', ';
+		$sql .= "'".$this->db->idate(dol_now()) . "', ";
 		$sql .= " " . (! isset($this->ref_obj) ? 'NULL' : "'" . $this->ref_obj . "'") . ",";
 		$sql .= " " . (! isset($this->ref_interne) ? 'NULL' : "'" . $this->ref_interne . "'") . ",";
 		$sql .= " " . (! isset($this->intitule) ? 'NULL' : "'" . $this->intitule . "'") . ",";

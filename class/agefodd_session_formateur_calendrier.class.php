@@ -117,9 +117,9 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		
 		$sql .= " '" . $conf->entity . "',";
 		$sql .= " " . (! isset($this->fk_agefodd_session_formateur) ? 'NULL' : "'" . $this->fk_agefodd_session_formateur . "'") . ",";
-		$sql .= " " . (! isset($this->date_session) || dol_strlen($this->date_session) == 0 ? 'NULL' : $this->db->idate($this->date_session)) . ",";
-		$sql .= " " . (! isset($this->heured) || dol_strlen($this->heured) == 0 ? 'NULL' : $this->db->escape($this->db->idate($this->heured))) . ",";
-		$sql .= " " . (! isset($this->heuref) || dol_strlen($this->heuref) == 0 ? 'NULL' : $this->db->escape($this->db->idate($this->heuref))) . ",";
+		$sql .= " " . (! isset($this->date_session) || dol_strlen($this->date_session) == 0 ? 'NULL' : "'".$this->db->idate($this->date_session)."'") . ",";
+		$sql .= " " . (! isset($this->heured) || dol_strlen($this->heured) == 0 ? 'NULL' : "'".$this->db->escape($this->db->idate($this->heured))."'") . ",";
+		$sql .= " " . (! isset($this->heuref) || dol_strlen($this->heuref) == 0 ? 'NULL' : "'".$this->db->escape($this->db->idate($this->heuref))."'") . ",";
 		$sql .= " " . (! isset($this->trainer_cost) ? 'NULL' : "'" . $this->db->escape($this->trainer_cost) . "'") . ",";
 		$sql .= " " . (! isset($this->trainer_status) ? 'NULL' : $this->db->escape($this->trainer_status)) . ",";
 		$sql .= " " . (! isset($this->fk_actioncomm) ? 'NULL' : "'" . $this->fk_actioncomm . "'") . ",";

@@ -89,9 +89,9 @@ class Agefodd_reg_interieur extends CommonObject {
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($this->reg_int) ? 'NULL' : "'" . $this->db->escape($this->reg_int) . "'") . ",";
 		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
-		$sql .= " '" . $user->id . "', ";
-		$sql .= " '" . $user->id . "', ";
-		$sql .= $this->db->idate(dol_now());
+		$sql .= " " . $user->id . ", ";
+		$sql .= " " . $user->id . ", ";
+		$sql .= " '" .$this->db->idate(dol_now())."'";
 		$sql .= ")";
 		
 		$this->db->begin();

@@ -93,9 +93,9 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= "'" . $this->indice . "', ";
 		$sql .= "'" . $this->level_rank . "', ";
 		$sql .= "'" . $this->fk_parent_level . "', ";
-		$sql .= $this->db->idate($this->dated) . ', ';
-		$sql .= $this->db->idate($this->datef) . ', ';
-		$sql .= $this->db->idate($this->datea) . ', ';
+		$sql .= "'" .$this->db->idate($this->dated) . "', ";
+		$sql .= "'" .$this->db->idate($this->datef) . "', ";
+		$sql .= "'" .$this->db->idate($this->datea) . "', ";
 		$sql .= "'" . $this->db->escape($this->notes) . "', ";
 		$sql .= $this->archive . ',';
 		$sql .= " " . $user->id . ", ";
