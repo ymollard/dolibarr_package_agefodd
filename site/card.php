@@ -34,6 +34,8 @@ require_once ('../class/agefodd_place.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 
+require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
+
 // Security check
 if (! $user->rights->agefodd->agefodd_place->lire)
 	accessforbidden();
@@ -126,8 +128,13 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 			$agf->tel = GETPOST('phone', 'alpha');
 			$agf->fk_societe = $societe;
 			$agf->notes = GETPOST('notes');
-			$agf->acces_site = GETPOST('acces_site');
-			$agf->note1 = GETPOST('note1');
+			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
+				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
+			} else {
+				$agf->acces_site = GETPOST('acces_site');
+				$agf->note1 = GETPOST('note1');
+			}
 			$result = $agf->update($user);
 			
 			if ($result > 0) {
@@ -185,8 +192,13 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 			$agf->ref_interne = $label;
 			$agf->fk_societe = $societe;
 			$agf->notes = GETPOST('notes', 'alpha');
-			$agf->acces_site = GETPOST('acces_site', 'alpha');
-			$agf->note1 = GETPOST('note1', 'alpha');
+			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
+				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
+			} else {
+				$agf->acces_site = GETPOST('acces_site');
+				$agf->note1 = GETPOST('note1');
+			}
 			if ($same_adress_customer == - 1) {
 				$agf->adresse = GETPOST('adresse', 'alpha');
 				$agf->cp = GETPOST('zipcode', 'alpha');
@@ -307,11 +319,19 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	
-	print '<tr><td valign="top">' . $langs->trans("AgfAccesSite") . '</td>';
-	print '<td><textarea name="acces_site" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<tr>';
+	print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
+	$doleditor = new DolEditor('acces_site', GETPOST('acces_site'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
 	
-	print '<tr><td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td>';
-	print '<td><textarea name="note1" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<tr>';
+	print '<td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td><td>';
+	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>";
+	
+	
 	print '</table>';
 	print '</div>';
 	
@@ -376,11 +396,17 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 				print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';
 				
-				print '<tr><td valign="top">' . $langs->trans("AgfAccesSite") . '</td>';
-				print '<td><textarea name="acces_site" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->acces_site . '</textarea></td></tr>';
+				print '<tr>';
+				print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
+				$doleditor = new DolEditor('acces_site', $agf->acces_site, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+				$doleditor->Create();
+				print "</td></tr>";
 				
-				print '<tr><td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td>';
-				print '<td><textarea name="note1" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->note1 . '</textarea></td></tr>';
+				print '<tr>';
+				print '<td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td><td>';
+				$doleditor = new DolEditor('note1', $agf->note1, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+				$doleditor->Create();
+				print "</td></tr>";
 				
 				print '</table>';
 				print '</div>';
@@ -459,11 +485,25 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<tr><td valign="top">' . $langs->trans("AgfNotes") . '</td>';
 				print '<td>' . nl2br($agf->notes) . '</td></tr>';
 				
+				if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+					$acces_site = $agf->acces_site;
+				} else {
+					$acces_site = stripslashes(nl2br($agf->acces_site));
+				}
+				
+				
 				print '<tr><td valign="top">' . $langs->trans("AgfAccesSite") . '</td>';
-				print '<td>' . nl2br($agf->acces_site) . '</td></tr>';
+				print '<td>' .$acces_site . '</td></tr>';
 				
 				print '<tr><td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td>';
-				print '<td>' . nl2br($agf->note1) . '</td></tr>';
+				
+				if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+					$note1 = $agf->note1;
+				} else {
+					$note1 = stripslashes(nl2br($agf->note1));
+				}
+					
+				print '<td>' . $note1 . '</td></tr>';
 				
 				print "</table>";
 				

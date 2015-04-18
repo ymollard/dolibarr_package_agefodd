@@ -34,6 +34,8 @@ require_once ('../class/agefodd_place.class.php');
 require_once ('../class/agefodd_reginterieur.class.php');
 require_once ('../lib/agefodd.lib.php');
 
+require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
+
 // Security check
 if (! $user->rights->agefodd->agefodd_place->lire)
 	accessforbidden();
@@ -76,7 +78,12 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 		
 		$result = $agf->fetch($idreg);
 		if ($result > 0) {
-			$agf->reg_int = GETPOST('reg_int');
+			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+				$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int'));
+			} else {
+				$agf->reg_int = GETPOST('reg_int');
+			}
+			
 			$agf->notes = GETPOST('notes');
 			$result = $agf->update($user);
 			
@@ -103,7 +110,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_reg_interieur($db);
 		
-		$agf->reg_int = GETPOST('reg_int');
+		if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
+			$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int'));
+		} else {
+			$agf->reg_int = GETPOST('reg_int');
+		}
 		$agf->notes = GETPOST('notes');
 		$result = $agf->create($user);
 		
@@ -160,6 +171,7 @@ dol_fiche_head($head, 'reg_int', $langs->trans("AgfRegInt"), 0, 'address');
 /*
  * Action create
 */
+
 if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<form name="create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
@@ -174,8 +186,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 	print '<td>' . $agf_place->ref_interne . '</td></tr>';
 	
-	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
-	print '<td><textarea name="reg_int" rows="10" cols="0" class="flat" style="width:560px;"></textarea></td></tr>';
+	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>';
+	/*$doleditor = new DolEditor('reg_int', GETPOST('reg_int'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor->Create();*/
+	print '<textarea name="reg_int" rows="3" cols="0" class="flat" style="width:360px;"></textarea>';
+	print "</td></tr>";
 	
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
@@ -210,8 +225,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 			print '<td>' . $agf_place->ref_interne . '</td></tr>';
 			
-			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
-			print '<td><textarea name="reg_int" rows="10" cols="0" class="flat" style="width:560px;">' . $agf->reg_int . '</textarea></td></tr>';
+			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>';
+			$doleditor = new DolEditor('reg_int', $agf->reg_int, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+			$doleditor->Create();
+			print "</td></tr>";
+			
 			
 			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';

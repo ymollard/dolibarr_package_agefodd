@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   duree real NOT NULL DEFAULT 0,
   public text NULL,
   methode text NULL,
-  prerequis text NULL,
   but text NULL,
   programme text NULL,
   pedago_usage text NULL,
