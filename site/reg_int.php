@@ -1,6 +1,5 @@
 <?php
-/*
- * Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+/* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
  *
@@ -166,7 +165,7 @@ if ($agf_place->fk_reg_interieur) {
 
 $head = site_prepare_head($agf_place);
 
-dol_fiche_head($head, 'reg_int', $langs->trans("AgfRegInt"), 0, 'address');
+dol_fiche_head($head, 'reg_int_tab', $langs->trans("AgfSessPlace"), 0, 'address');
 
 /*
  * Action create
@@ -178,33 +177,32 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<input type="hidden" name="action" value="create_confirm">' . "\n";
 	print '<input type="hidden" name="id" value="' . $id . '">' . "\n";
 	
-	print '<table class="border" width="100%">';
+	print '<table class="border" width="100%">'. "\n";
 	
-	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
-	print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
+	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>'. "\n";
+	print '<td>' . $form->showrefnav($agf_place, 'id', '', 1, 'rowid', 'id') . '</td></tr>'. "\n";
 	
-	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
-	print '<td>' . $agf_place->ref_interne . '</td></tr>';
+	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>'. "\n";
+	print '<td>' . $agf_place->ref_interne . '</td></tr>'. "\n";
 	
-	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>';
-	/*$doleditor = new DolEditor('reg_int', GETPOST('reg_int'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
-	$doleditor->Create();*/
-	print '<textarea name="reg_int" rows="3" cols="0" class="flat" style="width:360px;"></textarea>';
-	print "</td></tr>";
+	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>'. "\n";
+	$doleditor = new DolEditor('reg_int', GETPOST('reg_int'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor->Create();
+	print "</td></tr>". "\n";
 	
-	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
-	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>'. "\n";
+	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>'. "\n";
 	
-	print '</table>';
-	print '</div>';
+	print '</table>'. "\n";
+	print '</div>'. "\n";
 	
-	print '<table style=noborder align="right">';
-	print '<tr><td align="center" colspan=2>';
+	print '<table style=noborder align="right">'. "\n";
+	print '<tr><td align="center" colspan="2">'. "\n";
 	print '<input type="submit" name="importadress" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
-	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
-	print '</td></tr>';
-	print '</table>';
-	print '</form>';
+	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">'. "\n";
+	print '</td></tr>'. "\n";
+	print '</table>'. "\n";
+	print '</form>'. "\n";
 } else {
 	// Card location
 	if ($result_place > 0 && $result_regint > 0) {
@@ -283,6 +281,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
  * Actions tabs
 *
 */
+
 
 print '<div class="tabsAction">';
 

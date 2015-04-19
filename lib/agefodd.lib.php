@@ -300,7 +300,7 @@ function site_prepare_head($object) {
 	
 	$head [$h] [0] = dol_buildpath('/agefodd/site/reg_int.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfRegInt");
-	$head [$h] [2] = 'reg_int';
+	$head [$h] [2] = 'reg_int_tab';
 	$h ++;
 	
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_site=' . $object->id;
