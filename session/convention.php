@@ -145,18 +145,18 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		
 		$result = $agf->fetch(0, 0, $id);
 		
-		$intro1 = GETPOST('intro1', 'alpha');
-		$intro2 = GETPOST('intro2', 'alpha');
-		$art1 = GETPOST('art1', 'alpha');
-		$art2 = GETPOST('art2', 'alpha');
-		$art3 = GETPOST('art3', 'alpha');
-		$art4 = GETPOST('art4', 'alpha');
-		$art5 = GETPOST('art5', 'alpha');
-		$art6 = GETPOST('art6', 'alpha');
-		$art7 = GETPOST('art7', 'alpha');
-		$art8 = GETPOST('art8', 'alpha');
-		$sig = GETPOST('sig', 'alpha');
-		$notes = GETPOST('notes', 'alpha');
+		$intro1 = GETPOST('intro1');
+		$intro2 = GETPOST('intro2');
+		$art1 = GETPOST('art1');
+		$art2 = GETPOST('art2');
+		$art3 = GETPOST('art3');
+		$art4 = GETPOST('art4');
+		$art5 = GETPOST('art5');
+		$art6 = GETPOST('art6');
+		$art7 = GETPOST('art7');
+		$art8 = GETPOST('art8');
+		$sig = GETPOST('sig');
+		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');
 		
@@ -222,18 +222,18 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_convention($db);
 		
-		$intro1 = GETPOST('intro1', 'alpha');
-		$intro2 = GETPOST('intro2', 'alpha');
-		$art1 = GETPOST('art1', 'alpha');
-		$art2 = GETPOST('art2', 'alpha');
-		$art3 = GETPOST('art3', 'alpha');
-		$art4 = GETPOST('art4', 'alpha');
-		$art5 = GETPOST('art5', 'alpha');
-		$art6 = GETPOST('art6', 'alpha');
-		$art7 = GETPOST('art7', 'alpha');
-		$art8 = GETPOST('art8', 'alpha');
-		$sig = GETPOST('sig', 'alpha');
-		$notes = GETPOST('notes', 'alpha');
+		$intro1 = GETPOST('intro1');
+		$intro2 = GETPOST('intro2');
+		$art1 = GETPOST('art1');
+		$art2 = GETPOST('art2');
+		$art3 = GETPOST('art3');
+		$art4 = GETPOST('art4');
+		$art5 = GETPOST('art5');
+		$art6 = GETPOST('art6');
+		$art7 = GETPOST('art7');
+		$art8 = GETPOST('art8');
+		$sig = GETPOST('sig');
+		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');
 		

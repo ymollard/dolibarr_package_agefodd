@@ -1,6 +1,6 @@
 # Language file - en_US - agefodd
 CHARSET=UTF-8
-Module103000Name=Manage Trainning Center
+Module103000Name=Manage Training Center
 Module103000Desc=Training Assistant Manager in Dolibarr
 Permission103001=See Training sessions
 Permission103002=Change Training sessions
