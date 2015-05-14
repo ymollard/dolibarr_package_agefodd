@@ -143,6 +143,14 @@ class pdf_attestation extends ModelePDFAgefodd {
 			$agf2 = new Agefodd_session_stagiaire($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 			
+			// Recuperation des information du lieu de la session
+			$agf_place = new Agefodd_place($this->db);
+			$result = $agf_place->fetch($agf->placeid);
+			
+			// Recuperation des information ddes formateur
+			$agf_session_trainer = new Agefodd_session_formateur($this->db);
+			$agf_session_trainer->fetch_formateur_per_session($id);
+			
 			if ($result) {
 				$trainee_output=0;
 				for($i = 0; $i < count($agf2->lines); $i ++) {
@@ -288,6 +296,29 @@ class pdf_attestation extends ModelePDFAgefodd {
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$this->str = $outputlangs->transnoentities('AgfPDFConv20') . " " . $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
 						$pdf->Cell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
+						
+						/*
+						 //Lieu
+						 $newY = $newY + 20;
+						$pdf->SetXY($this->marge_gauche + 1, $newY);
+						$this->str = $agf_place->ref_interne . ", ".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville
+						$pdf->Cell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
+						 
+						 */
+						
+						/*
+						 //Formateur
+						  
+						   foreach($agf_session_trainer as $trainer) {
+						   
+						    $newY = $newY + 20;
+						 	$pdf->SetXY($this->marge_gauche + 1, $newY);
+						 	$this->str =$trainer->firstname ." ". $trainer->lastname;
+						 	$pdf->Cell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
+						   
+						   }
+						 	
+						 */
 						
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$this->str = date("d/m/Y");
