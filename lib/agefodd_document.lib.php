@@ -269,6 +269,45 @@ function show_attestation_trainee($file, $session_traineeid) {
 	return $mess;
 }
 
+function show_attestationendtraining_trainee($file, $session_traineeid) {
+	global $langs, $conf, $id, $form, $idform;
+
+	$model = 'attestationendtraining_trainee';
+	$file = $model . '_' . $session_traineeid . '.pdf';
+
+	if (is_file($conf->agefodd->dir_output . '/' . $file)) {
+		// afficher
+		$legende = $langs->trans("AgfDocOpen");
+		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+		// Regenerer
+		$legende = $langs->trans("AgfDocRefresh");
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+		// Supprimer
+		$legende = $langs->trans("AgfDocDel");
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+
+		// Envoie par mail
+		$legende = $langs->trans("AgfSendDoc");
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+	} else {
+		// Génereration des documents
+		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
+			$legende = $langs->trans("AgfDocCreate");
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		} else {
+			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
+		}
+	}
+	return $mess;
+}
+
 function show_trainer_mission($session_trainerid) {
 	global $langs, $conf, $id, $form, $idform;
 
@@ -631,6 +670,8 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid) . '</td>' . "\n";
 	} elseif ($mdle == 'attestation_trainee') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid) . '</td>' . "\n";
+	} elseif ($mdle == 'attestationendtraining_trainee') {
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid) . '</td>' . "\n";
 	} elseif ($mdle == 'mission_trainer') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid).'</td>' . "\n";
 	} else {

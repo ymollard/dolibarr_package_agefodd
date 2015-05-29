@@ -190,6 +190,17 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 						$actionmsg .= $message;
 					}
 					$actionmsg2 = $langs->trans('ActionCONVOCATION_SENTBYMAIL');
+				} elseif ($models == 'attestationendtraining_trainee') {
+					if (empty($subject))
+						$langs->transnoentities('AgfAttestationEndTraining') . ' ' . $object->formintitule;
+					$actiontypecode = 'AC_AGF_ATTES';
+					$actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
+					if ($message) {
+						$actionmsg .= $langs->trans('MailTopic') . ": " . $subject . "\n";
+						$actionmsg .= $langs->trans('TextUsedInTheMessageBody') . ":\n";
+						$actionmsg .= $message;
+					}
+					$actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
 				}
 				// Create form object
 				include_once (DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php');
@@ -224,6 +235,8 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 						if ($models == 'convocation_trainee') {
 							$result = $interface->run_triggers('CONVOCATION_SENTBYMAIL', $object, $user, $langs, $conf);
 						} elseif ($models == 'attestation_trainee') {
+							$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
+						} elseif ($models == 'attestationendtraining_trainee') {
 							$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
 						}
 						if ($result < 0) {
@@ -297,7 +310,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 		
 		$sendmail_check = true;
 		
-		if ($models == 'attestation_trainee') {
+		if ($models == 'attestation_trainee' || $models == 'attestationendtraining_trainee') {
 			
 			// Do not send attestation if status is not present
 			if ($line->status_in_session != 3 && $line->status_in_session != 4) {
@@ -316,7 +329,11 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			}
 			$actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
 			
-			$file = $conf->agefodd->dir_output . '/' . 'attestation_trainee_' . $line->stagerowid . '.pdf';
+			if ($models == 'attestation_trainee') {
+				$file = $conf->agefodd->dir_output . '/' . 'attestation_trainee_' . $line->stagerowid . '.pdf';
+			} elseif ($models == 'attestationendtraining_trainee') {
+				$file = $conf->agefodd->dir_output . '/' . 'attestationendtraining_trainee_' . $line->stagerowid . '.pdf';
+			}
 			
 			if (! file_exists($file))
 				$sendmail_check = false;
@@ -395,7 +412,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 					
 					if ($models == 'convocation_trainee') {
 						$result = $interface->run_triggers('CONVOCATION_SENTBYMAIL', $object, $user, $langs, $conf);
-					} elseif ($models == 'attestation_trainee') {
+					} elseif ($models == 'attestation_trainee' || $models == 'attestationendtraining_trainee') {
 						$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
 					}
 					if ($result < 0) {
@@ -445,7 +462,7 @@ if ($action == 'generateall' && $user->rights->agefodd->creer) {
 	
 	foreach ( $agf_trainee->lines as $line ) {
 		
-		if (($typemodel == 'attestation_trainee' && ($line->status_in_session == 3 || $line->status_in_session == 4)) 
+		if ((($typemodel == 'attestation_trainee'  || $typemodel == 'attestationendtraining_trainee') && ($line->status_in_session == 3 || $line->status_in_session == 4)) 
 				|| ($typemodel == 'convocation_trainee')) {
 			$file = $typemodel . '_' . $line->stagerowid . '.pdf';
 			
@@ -467,7 +484,7 @@ if ($action == 'generateall' && $user->rights->agefodd->creer) {
 			}
 			
 			$result = agf_pdf_create($db, $id, '', $typemodel_override, $outputlangs, $file, $line->stagerowid, $cour);
-		} elseif ($typemodel == 'attestation_trainee') {
+		} elseif ($typemodel == 'attestation_trainee' || $typemodel == 'attestationendtraining_trainee') {
 			setEventMessage($langs->trans('AgfOnlyPresentTraineeGetAttestation', $line->nom . ' ' . $line->prenom), 'warnings');
 		}
 	}
@@ -559,12 +576,14 @@ if (! empty($id)) {
 		/*
 		 * Formulaire d'envoi des documents
 		*/
-		if ($action == 'presend_attestation_trainee' || $action == 'presend_convocation_trainee') {
+		if ($action == 'presend_attestation_trainee' || $action == 'presend_convocation_trainee' || $action == 'presend_attestationendtraining_trainee') {
 			
 			if ($action == 'presend_attestation_trainee') {
 				$filename = 'attestation_trainee_' . $session_trainee_id . '.pdf';
 			} elseif ($action == 'presend_convocation_trainee') {
 				$filename = 'convocation_trainee_' . $session_trainee_id . '.pdf';
+			} elseif ($action == 'presend_attestationendtraining_trainee') {
+				$filename = 'attestationendtraining_trainee_' . $session_trainee_id . '.pdf';
 			}
 			
 			if ($filename) {
@@ -577,6 +596,8 @@ if (! empty($id)) {
 				if ($action == 'presend_convocation_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 				} elseif ($action == 'presend_attestation_trainee') {
+					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+				} elseif ($action == 'presend_attestationendtraining_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 				}
 			}
@@ -613,6 +634,11 @@ if (! empty($id)) {
 				$formmail->withbody = $langs->trans('AgfSendConvocationBody', '__FORMINTITULE__');
 				$formmail->param ['models'] = 'convocation_trainee';
 				$formmail->param ['pre_action'] = 'presend_convocation_trainee';
+			} elseif ($action == "presend_attestationendtraining_trainee") {
+				$formmail->withtopic = $langs->trans('AgfAttestationEndTraining', '__FORMINTITULE__');
+				$formmail->withbody = $langs->trans('AgfSendAttestationBody', '__FORMINTITULE__');
+				$formmail->param ['models'] = 'attestationendtraining_trainee';
+				$formmail->param ['pre_action'] = 'presend_attestationendtraining_trainee';
 			}
 			
 			if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
@@ -672,7 +698,7 @@ if (! empty($id)) {
 			
 			if ($action == 'presend_convocation_trainee') {
 				print_fiche_titre($langs->trans('AgfSendDocuments'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
-			} elseif ($action == 'presend_attestation_trainee') {
+			} elseif ($action == 'presend_attestation_trainee' || $action == 'presend_attestationendtraining_trainee') {
 				print_fiche_titre($langs->trans('AgfSendDocuments'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			}
 			$formmail->show_form();
@@ -685,8 +711,11 @@ if (! empty($id)) {
 			print '<div class="tabsAction">';
 			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=convocation_trainee">' . $langs->trans('AgfGenerateAllConvocation') . '</a>';
 			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestation_trainee">' . $langs->trans('AgfGenerateAllAttestation') . '</a>';
+			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfGenerateAllAttestationEndTraining') . '</a>';
+			print '<BR><BR>';
 			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=convocation_trainee">' . $langs->trans('AgfSendMailAllConvocation') . '</a>';
 			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestation_trainee">' . $langs->trans('AgfSendMailAllAttestation') . '</a>';
+			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfSendMailAllAttestationEndTraining') . '</a>';
 			print '</div>';
 			
 			$agf_trainee = new Agefodd_session_stagiaire($db);
@@ -713,6 +742,7 @@ if (! empty($id)) {
 					// After training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfAfterTraining") . '</td></tr>' . "\n";
 					document_line($langs->trans("AgfSendAttestation"), "attestation_trainee", $agf_trainee->lines [$i]->stagerowid);
+					document_line($langs->trans("AgfAttestationEndTraining"), "attestationendtraining_trainee", $agf_trainee->lines [$i]->stagerowid);
 					
 					print '</table>';
 					if ($i < $linecount)

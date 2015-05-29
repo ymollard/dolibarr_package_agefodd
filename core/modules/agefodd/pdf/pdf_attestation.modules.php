@@ -154,7 +154,7 @@ class pdf_attestation extends ModelePDFAgefodd {
 			if ($result) {
 				$trainee_output=0;
 				for($i = 0; $i < count($agf2->lines); $i ++) {
-					if (($agf2->lines [$i]->status_in_session == 3 || $agf2->lines [$i]->status_in_session == 4) || ($agf2->lines [$i]->status_in_session == 2)) {
+					if (($agf2->lines [$i]->status_in_session == 3 || $agf2->lines [$i]->status_in_session == 4)) {
 
 						$trainee_output++;
 						// New page
