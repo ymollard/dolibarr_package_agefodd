@@ -275,7 +275,7 @@ class modAgefodd extends DolibarrModules {
 		$r ++;
 		$this->const [$r] [0] = "AGF_HEAD_COLOR";
 		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = 'CB4619';
+		$this->const [$r] [2] = '1A60C9';
 		$this->const [$r] [3] = 'Text color header in hexadecimal';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;

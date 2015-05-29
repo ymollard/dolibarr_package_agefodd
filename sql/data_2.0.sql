@@ -1,10 +1,10 @@
-INSERT INTO llx_agefodd_stagiaire_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod) VALUES
-(1,'Financement par l''employeur (contrat pro.)', 3, now(), now(), 0, 0),
-(2,'Financement par l''employeur (autre)', 4, now(), now(), 0, 0),
-(3,'Demandeur d''emploi avec financement public', 5, now(), now(), 0, 0),
-(4,'Autre', 6, now(), now(), 0, 0),
-(5,'DIF', 1, now(), now(), 0, 0),
-(6,'Période PRO', 2, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod,active) VALUES
+(1,'Financement par l''employeur (contrat pro.)', 3, now(), now(), 0, 0,1),
+(2,'Financement par l''employeur (autre)', 4, now(), now(), 0, 0,1),
+(3,'Demandeur d''emploi avec financement public', 5, now(), now(), 0, 0,1),
+(4,'Autre', 6, now(), now(), 0, 0,1),
+(5,'DIF', 1, now(), now(), 0, 0,0),
+(6,'Période PRO', 2, now(), now(), 0, 0,1);
 
 INSERT INTO llx_agefodd_formateur_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod, active) VALUES
 (1,'Formateur interne', 0, now(), now(), 0, 0,1),
