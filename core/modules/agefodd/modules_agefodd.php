@@ -170,5 +170,3 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		return - 1;
 	}
 }
-
-?>

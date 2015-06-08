@@ -27,6 +27,7 @@ dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');

@@ -940,4 +940,62 @@ function agf_hex2rgb($hex) {
 	// return implode(",", $rgb); // returns the rgb values separated by commas
 	return $rgb; // returns an array with the rgb values
 }
-?>
+
+/**
+ *
+ * @param unknown $pdf
+ * @param unknown $outputlangs
+ * @param unknown $marge_basse
+ * @param unknown $marge_gauche
+ * @param unknown $page_hauteur
+ * @param unknown $colorfooter
+ * @return number
+ */
+function pdf_agfpagefoot($pdf,$outputlangs,$marge_basse,$marge_gauche,$page_hauteur,$colorfooter)
+{
+	global $conf, $langs, $mysoc;
+
+	$str = $mysoc->name;
+
+	$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+	$pdf->SetTextColor($colorfooter[0], $colorfooter[1], $colorfooter[2]);
+	$pdf->SetXY($marge_gauche, $page_hauteur - 20);
+	$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 0, 0, 'C');
+
+	$str = $mysoc->address . " ";
+	$str .= $mysoc->zip . ' ' . $mysoc->town;
+	$str .= ' - ' . $mysoc->country;
+	$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot1') . ' ' . $mysoc->phone;
+	$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot2') . ' ' . $mysoc->email . "\n";
+
+	$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
+	$str .= $statut;
+	if (! empty($mysoc->capital)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot3') . ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
+	}
+	if (! empty($mysoc->idprof2)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot4') . ' ' . $mysoc->idprof2;
+	}
+	if (! empty($mysoc->idprof4)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot5') . ' ' . $mysoc->idprof4;
+	}
+	if (! empty($mysoc->idprof3)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot6') . ' ' . $mysoc->idprof3;
+	}
+	$str .= "\n";
+	if (! empty($conf->global->AGF_ORGANISME_NUM)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
+	}
+	if (! empty($conf->global->AGF_ORGANISME_PREF)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot8') . ' ' . $conf->global->AGF_ORGANISME_PREF;
+	}
+	if (! empty($mysoc->tva_intra)) {
+		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot9') . ' ' . $mysoc->tva_intra;
+	}
+
+	$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
+	$pdf->SetXY($marge_gauche, $page_hauteur - 16);
+	$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($str), 0, 'C');
+
+	return 1;
+}

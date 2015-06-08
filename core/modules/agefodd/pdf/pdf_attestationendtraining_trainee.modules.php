@@ -50,7 +50,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 		global $conf, $langs, $mysoc;
 		
 		$this->db = $db;
-		$this->name = "attestation";
+		$this->name = "attestationendtrainng_trainee";
 		$this->description = $langs->trans('AgfPDFAttestation');
 		
 		// Dimension page pour format A4 en paysage
@@ -279,12 +279,12 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 			
-			$tab_height = 75;
-			$tab_top = 130;
+			$tab_top=$newY+10;	
 			// Output Rect
-			$this->_tableau($pdf, $tab_top, $tab_height, 0, $outputlangs, 0, 0);
+			$pdf->SetLineWidth(0.0);
+			$this->_tableau($pdf, $tab_top, 5, 0, $outputlangs, 0, 0);
 			
-			$newY = $pdf->getY() + 1;
+			$newY = $pdf->getY();
 			// Bloc objectifs pedagogiques
 			if (count($agf_op->lines) > 0) {
 				
@@ -292,7 +292,6 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 				$hauteur = 0;
 				for($y = 0; $y < count($agf_op->lines); $y ++) {
 					$strobj = $agf_op->lines[$y]->priorite . '. ' . $agf_op->lines[$y]->intitule;
-					$newY ++;
 					$pdf->SetXY($this->marge_gauche, $newY);
 					$width = $this->posxacquired - $this->marge_gauche;
 					$StringWidth = $pdf->GetStringWidth($strobj);
@@ -301,16 +300,23 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 					else
 						$nblines = 1;
 					
+					$beforeY = $pdf->getY();
 					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($strobj), 0, 'L', 0);
+					$afterY = $pdf->getY();
 					
-					$newY = $pdf->getY() + 2;
+					$height_obj=$afterY-$beforeY;
+					$this->printRect($pdf,$this->marge_gauche, $beforeY, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $height_obj, $hidetop, $hidebottom);	// Rect prend une longueur en 3eme param et 4eme param
+					$pdf->line($this->posxacquired-1, $beforeY, $this->posxacquired-1, $beforeY + $height_obj);
+					$pdf->line($this->posxnonacquired-1, $beforeY, $this->posxnonacquired-1, $beforeY + $height_obj);
+					$pdf->line($this->posxongoing-1, $beforeY, $this->posxongoing-1, $beforeY + $height_obj);
+					$pdf->line($this->posxnotevaluated-1, $beforeY, $this->posxnotevaluated-1, $beforeY + $height_obj);
 					
-					$pdf->line($this->marge_gauche, $newY, $this->page_largeur - $this->marge_droite, $newY);
+					$newY = $pdf->getY();
 				}
 			}
 			
 			// Lieu
-			$newY = $tab_height + $tab_top;
+			$newY = $pdf->getY() + 5;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 			$this->str = $outputlangs->transnoentities('Lieu :');
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
@@ -432,7 +438,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 		$this->printRect($pdf, $this->marge_gauche, $tab_top, $this->page_largeur - $this->marge_gauche - $this->marge_droite, $tab_height, $hidetop, $hidebottom); // Rect prend une longueur en 3eme param et 4eme param
 		                                                                                                                                                       
 		// Objectifs (Objectif Peda)
-		$pdf->line($this->marge_gauche, $tab_top + 6, $this->page_largeur - $this->marge_droite, $tab_top + 6); // line prend une position y en 2eme param et 4eme param
+		//$pdf->line($this->marge_gauche, $tab_top + 6, $this->page_largeur - $this->marge_droite, $tab_top + 6); // line prend une position y en 2eme param et 4eme param
 		$pdf->SetXY($this->posxdesc - 1, $tab_top + 1);
 		$pdf->MultiCell(108, 2, $outputlangs->transnoentities("AgfObjectifs"), '', 'L');
 		
@@ -558,49 +564,6 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 	 * \remarks Need this->emetteur object
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) {
-		// return pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
-		global $conf, $langs, $mysoc;
-		
-		$this->str = $mysoc->name;
-		
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
-		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 20);
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
-		
-		$this->str = $mysoc->address . " ";
-		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-		$this->str .= ' - ' . $mysoc->country;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot1') . ' ' . $mysoc->phone;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot2') . ' ' . $mysoc->email . "\n";
-		
-		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-		$this->str .= $statut;
-		if (! empty($mysoc->capital)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot3') . ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
-		}
-		if (! empty($mysoc->idprof2)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot4') . ' ' . $mysoc->idprof2;
-		}
-		if (! empty($mysoc->idprof4)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot5') . ' ' . $mysoc->idprof4;
-		}
-		if (! empty($mysoc->idprof3)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot6') . ' ' . $mysoc->idprof3;
-		}
-		$this->str .= "\n";
-		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
-		}
-		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot8') . ' ' . $conf->global->AGF_ORGANISME_PREF;
-		}
-		if (! empty($mysoc->tva_intra)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot9') . ' ' . $mysoc->tva_intra;
-		}
-		
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 16);
-		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+		return pdf_agfpagefoot($pdf,$outputlangs,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$this->colorfooter);
 	}
 }
