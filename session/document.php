@@ -520,6 +520,7 @@ if (! empty($id)) {
 		document_line($langs->trans("AgfFichePresence"), "fiche_presence");
 		document_line($langs->trans("AgfFichePresenceEmpty"), "fiche_presence_empty");
 		document_line($langs->trans("AgfFichePresenceTrainee"), "fiche_presence_trainee");
+		document_line($langs->trans("AgfFichePresenceTraineeStd"), "fiche_presence_trainee_std");
 		document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
 		document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
 		

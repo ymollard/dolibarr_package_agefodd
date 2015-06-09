@@ -988,3 +988,6 @@ AgfPDFFichePresPers=ETAT D’EMARGEMENT INDIVIDUEL
 AgfPDFFichePresPersNumFormation=Numéro de formation
 AgfPDFFichePresPersNomTrainee=Nom du stagiaire
 AgfPDFFichePresPersCustOPCA=Nom du Client ou de l’OPCA
+AgfFormNumber=Numéro de la session
+AgfCertifExactBy=Certifié exact par
+AgfFichePresenceTraineeStd=Fiche de présence par participant classique
