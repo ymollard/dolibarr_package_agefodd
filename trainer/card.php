@@ -145,7 +145,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="action" value="create_confirm_contact">' . "\n";
 	
 	print '<div class="warning">' . $langs->trans("AgfFormateurAddContactHelp");
-	print '<br>' . $langs->trans("AgfFormateurAddContactHelp1") . ' <a href="' . DOL_URL_ROOT . '/contact/fiche.php?action=create">' . $langs->trans("AgfFormateurAddContactHelp2") . '</a>. ' . $langs->trans("AgfFormateurAddContactHelp3") . '</div>';
+	print '<br>' . $langs->trans("AgfFormateurAddContactHelp1") . ' <a href="' . DOL_URL_ROOT . '/contact/card.php?action=create">' . $langs->trans("AgfFormateurAddContactHelp2") . '</a>. ' . $langs->trans("AgfFormateurAddContactHelp3") . '</div>';
 	
 	print '<table class="border" width="100%">' . "\n";
 	
@@ -184,7 +184,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="action" value="create_confirm_user">' . "\n";
 	
 	print '<div class="warning">' . $langs->trans("AgfFormateurAddUserHelp");
-	print '<br>' . $langs->trans("AgfFormateurAddUserHelp1") . ' <a href="' . DOL_URL_ROOT . '/user/fiche.php?action=create">' . $langs->trans("AgfFormateurAddUserHelp2") . '</a>. ' . $langs->trans("AgfFormateurAddUserHelp3") . '</div>';
+	print '<br>' . $langs->trans("AgfFormateurAddUserHelp1") . ' <a href="' . DOL_URL_ROOT . '/user/card.php?action=create">' . $langs->trans("AgfFormateurAddUserHelp2") . '</a>. ' . $langs->trans("AgfFormateurAddUserHelp3") . '</div>';
 	
 	print '<table class="border" width="100%">' . "\n";
 	
@@ -281,13 +281,13 @@ print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 	if ($agf->type_trainer == $agf->type_trainer_def [1]) {
 		if ($user->rights->societe->contact->creer) {
-			print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/fiche.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
+			print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/card.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 		}
 	} elseif ($agf->type_trainer == $agf->type_trainer_def [0]) {
 		if ($user->rights->user->user->creer) {
-			print '<a class="butAction" href="' . DOL_URL_ROOT . '/user/fiche.php?id=' . $agf->fk_user . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
+			print '<a class="butAction" href="' . DOL_URL_ROOT . '/user/card.php?id=' . $agf->fk_user . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
 		}

@@ -575,7 +575,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		//}
 	}
 	
-	print $formAgefodd->multiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected_id);
+	print $formAgefodd->agfmultiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected_id);
 	print '</td></tr>';
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
@@ -711,7 +711,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
 			}
 			
-			print $formAgefodd->multiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected);
+			print $formAgefodd->agfmultiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected);
 			print '</td></tr>';
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';

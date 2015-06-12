@@ -130,7 +130,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= ")";
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -193,7 +193,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as t";
 		$sql .= " WHERE t.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -237,7 +237,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
 		
-		dol_syslog(get_class($this) . "::fetch_by_action sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_by_action", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -287,7 +287,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " WHERE s.fk_agefodd_session_formateur = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -346,7 +346,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " WHERE trainer.rowid = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 		
-		dol_syslog(get_class($this) . "::fetch_all_by_trainer sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all_by_trainer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -427,7 +427,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -481,7 +481,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -539,6 +539,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$action->fk_element = $session->id;
 		$action->elementtype = $session->element;
 		$action->type_code = 'AC_AGF_SESST';
+		$action->userownerid=$user->id;
 		
 		// Si le formateur est un contact alors sur l'évenement : « Evénement concernant la société » = fournisseur
 		// Sinon si le formateur est un user alors « Action affectée » = user correspondant.
@@ -547,6 +548,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$ret = $userstat->fetch($formateur->fk_user);
 			if ($ret) {
 				$action->usertodo = $userstat;
+				$action->userassigned=array($userstat->id=>array('id'=>$userstat->id));
 			}
 		} else {
 			$contactstat = new Contact($this->db);
@@ -600,6 +602,11 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		}
 		
 		$result = $action->fetch($this->fk_actioncomm);
+		if ($result < 0) {
+			$error ++;
+		}
+		
+		$result = $action->fetch_userassigned();
 		if ($result < 0) {
 			$error ++;
 		}

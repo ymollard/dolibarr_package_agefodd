@@ -126,7 +126,7 @@ class Agefodd_session_element extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -197,7 +197,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "facture_fourn as facture_fourn ON facture_fourn.rowid=t.fk_element AND t.element_type LIKE 'invoice_supplier_%'";
 		$sql .= " WHERE t.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -263,7 +263,7 @@ class Agefodd_session_element extends CommonObject {
 		}
 		$sql .= " WHERE (fk_soc = " . $socid . " OR fk_soc IN (SELECT parent FROM ".MAIN_DB_PREFIX."societe WHERE rowid=" . $socid . "))";
 		
-		dol_syslog(get_class($this) . "::fetch_element_per_soc sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_element_per_soc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -341,7 +341,7 @@ class Agefodd_session_element extends CommonObject {
 				$sql .= " AND element_type LIKE 'invoice_supplier%'";
 			}
 			
-			dol_syslog(get_class($this) . "::fetch_element_by_id sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::fetch_element_by_id", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				$this->lines = array ();
@@ -387,7 +387,7 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " WHERE sesselem.fk_session_agefodd = " . $session_id;
 			$sql .= " AND sesselem.element_type='invoice'";
 			
-			dol_syslog(get_class($this) . "::check_all_invoice_validate sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::check_all_invoice_validate", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				$this->lines = array ();
@@ -459,7 +459,7 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= ' AND t.element_type=\'' . $type . '\'';
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_by_session_by_thirdparty sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_by_session_by_thirdparty", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -514,7 +514,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as t";
 		$sql .= " WHERE t.fk_soc = " . $idsoc;
 		
-		dol_syslog(get_class($this) . "::fetch_invoice_supplier_by_thridparty sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_invoice_supplier_by_thridparty", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -584,7 +584,7 @@ class Agefodd_session_element extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -650,7 +650,7 @@ class Agefodd_session_element extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 			$sql .= " WHERE rowid=" . $this->id;
 			
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::delete");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -694,7 +694,7 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='order'";
 		}
 		
-		dol_syslog(get_class($this) . "::add_invoice sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::add_invoice", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -814,7 +814,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 		$sql .= " WHERE fk_session_agefodd=" . $id;
 		
-		dol_syslog(get_class($this) . "::fetch_by_session sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -931,7 +931,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 		$sql .= " WHERE fk_session_agefodd=" . $id;
 		
-		dol_syslog(get_class($this) . "::get_charges_amount sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::get_charges_amount", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -949,7 +949,7 @@ class Agefodd_session_element extends CommonObject {
 				if ($obj->element_type == 'propal' && $type_element == 'propal') {
 					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "propaldet as ldet WHERE ldet.fk_propal=" . $obj->fk_element;
 					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
-					dol_syslog(get_class($this) . "::get_charges_amount sql=" . $sqlcharges, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
 					$resqlcharges = $this->db->query($sqlcharges);
 					if ($resqlcharges) {
 						$objcharges = $this->db->fetch_object($sqlcharges);
@@ -965,7 +965,7 @@ class Agefodd_session_element extends CommonObject {
 				if ($obj->element_type == 'invoice' && $type_element == 'invoice') {
 					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facturedet as ldet WHERE ldet.fk_facture=" . $obj->fk_element;
 					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
-					dol_syslog(get_class($this) . "::get_charges_amount sql=" . $sqlcharges, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
 					$resqlcharges = $this->db->query($sqlcharges);
 					if ($resqlcharges) {
 						$objcharges = $this->db->fetch_object($sqlcharges);
@@ -981,7 +981,7 @@ class Agefodd_session_element extends CommonObject {
 				if ($obj->element_type == 'invoice_supplier_trainer' && $type_element == 'invoice_supplier_trainer') {
 					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facture_fourn_det as ldet WHERE ldet.fk_facture_fourn=" . $obj->fk_element;
 					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
-					dol_syslog(get_class($this) . "::get_charges_amount sql=" . $sqlcharges, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
 					$resqlcharges = $this->db->query($sqlcharges);
 					if ($resqlcharges) {
 						$objcharges = $this->db->fetch_object($sqlcharges);
@@ -1041,7 +1041,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';
 		$sql .= 'WHERE rowid=' . $this->fk_session_agefodd;
 		
-		dol_syslog(get_class($this) . "::updateSellingPrice sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::updateSellingPrice", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$this->error = "Error " . $this->db->lasterror();
@@ -1071,7 +1071,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 		$sql .= " WHERE fk_session_agefodd=" . $id;
 		
-		dol_syslog(get_class($this) . "::fetch_element_by_session sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_element_by_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();

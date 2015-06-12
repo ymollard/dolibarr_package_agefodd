@@ -109,7 +109,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		$this->need_dolibarr_version = array (
 				3,
-				6 
+				7
 		);
 		$this->langfiles = array (
 				'agefodd@agefodd' 
@@ -774,7 +774,7 @@ class modAgefodd extends DolibarrModules {
 				'statusdict.code as sessionstatus' => 'AgfStatusSession',
 				's.is_opca as sessionisopca' => 'AgfSubrocation',
 				'socsessopca.nom as sessionsocopca' => 'AgfOPCAName',
-				'contactsessopca.civilite as contactsessopcaciv' => 'AgfOPCASessContactCiv',
+				'contactsessopca.civility as contactsessopcaciv' => 'AgfOPCASessContactCiv',
 				'contactsessopca.lastname as contactsessopcalastname' => 'AgfOPCASessContactFirstName',
 				'contactsessopca.firstname as contactsessopcalastname' => 'AgfOPCASessContactLastName',
 				'c.intitule' => 'AgfFormIntitule',
@@ -792,7 +792,7 @@ class modAgefodd extends DolibarrModules {
 				'p.cp' => 'Zip',
 				'p.ville' => 'Town',
 				'p_pays.libelle as country' => 'Country',
-				'CASE WHEN f.type_trainer=\'user\' THEN fu.civilite ELSE fp.civilite END as trainerciv' => 'AgfTrainerCiv',
+				'CASE WHEN f.type_trainer=\'user\' THEN fu.civility ELSE fp.civility END as trainerciv' => 'AgfTrainerCiv',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.lastname ELSE fp.lastname END as trainerlastname' => 'AgfTrainerLastname',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.firstname ELSE fp.firstname END as trainerfirstname' => 'AgfTrainerCivFirstname',
 				'trainerdicttype.intitule as trainertype' => 'AgfTrainerType',
@@ -803,7 +803,7 @@ class modAgefodd extends DolibarrModules {
 				'ssdicttype.intitule as statype' => 'AgfStagiaireModeFinancement',
 				's.is_opca as staisopca' => 'AgfSubrocation',
 				'socstaopca.nom as stasocopca' => 'AgfOPCAName',
-				'contactstaopca.civilite as contactstaopcaciv' => 'AgfOPCAStaContactCiv',
+				'contactstaopca.civility as contactstaopcaciv' => 'AgfOPCAStaContactCiv',
 				'contactstaopca.lastname as contactstaopcalastname' => 'AgfOPCAStaContactLastName',
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfOPCAStaContactFirstName' 
 		);
@@ -826,7 +826,7 @@ class modAgefodd extends DolibarrModules {
 				'statusdict.code as sessionstatus' => 'AgfSessionDetail',
 				's.is_opca as sessionisopca' => 'AgfSessionDetail',
 				'socsessopca.nom as sessionsocopca' => 'AgfSessionDetail',
-				'contactsessopca.civilite as contactsessopcaciv' => 'AgfSessionDetail',
+				'contactsessopca.civility as contactsessopcaciv' => 'AgfSessionDetail',
 				'contactsessopca.lastname as contactsessopcalastname' => 'AgfSessionDetail',
 				'contactsessopca.firstname as contactsessopcalastname' => 'AgfSessionDetail',
 				'c.intitule' => 'AgfCatalogDetail',
@@ -844,7 +844,7 @@ class modAgefodd extends DolibarrModules {
 				'p.cp' => 'AgfSessPlace',
 				'p.ville' => 'AgfSessPlace',
 				'p_pays.libelle as country' => 'AgfSessPlace',
-				'CASE WHEN f.type_trainer=\'user\' THEN fu.civilite ELSE fp.civilite END as trainerciv' => 'AgfTeacher',
+				'CASE WHEN f.type_trainer=\'user\' THEN fu.civility ELSE fp.civility END as trainerciv' => 'AgfTeacher',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.lastname ELSE fp.lastname END as trainerlastname' => 'AgfTeacher',
 				'CASE WHEN f.type_trainer=\'user\' THEN fu.firstname ELSE fp.firstname END as trainerfirstname' => 'AgfTeacher',
 				'trainerdicttype.intitule as trainertype' => 'AgfTeacher',
@@ -855,7 +855,7 @@ class modAgefodd extends DolibarrModules {
 				'ssdicttype.intitule as statype' => 'AgfNbreParticipants',
 				's.is_opca as staisopca' => 'AgfNbreParticipants',
 				'socstaopca.nom as stasocopca' => 'AgfNbreParticipants',
-				'contactstaopca.civilite as contactstaopcaciv' => 'AgfNbreParticipants',
+				'contactstaopca.civility as contactstaopcaciv' => 'AgfNbreParticipants',
 				'contactstaopca.lastname as contactstaopcalastname' => 'AgfNbreParticipants',
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants' 
 		);
@@ -874,7 +874,7 @@ class modAgefodd extends DolibarrModules {
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'user as fu ON fu.rowid = f.fk_user';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as fp ON fp.rowid = f.fk_socpeople';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as dictcat ON dictcat.rowid = c.fk_c_category';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_pays as p_pays ON p_pays.rowid = p.fk_pays';
+		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as p_pays ON p_pays.rowid = p.fk_pays';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product as product ON product.rowid = c.fk_product';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
@@ -1615,7 +1615,7 @@ class modAgefodd extends DolibarrModules {
 							// Special test to know what kind of update script to run
 							$sql = "SELECT value FROM " . MAIN_DB_PREFIX . "const WHERE name='AGF_LAST_VERION_INSTALL'";
 							
-							dol_syslog(get_class($this) . "::_load_tables_agefodd sql:" . $sql, LOG_DEBUG);
+							dol_syslog(get_class($this) . "::_load_tables_agefodd ", LOG_DEBUG);
 							$resql = $this->db->query($sql);
 							if ($resql) {
 								if ($this->db->num_rows($resql) == 1) {
@@ -1656,7 +1656,7 @@ class modAgefodd extends DolibarrModules {
 		
 		// DELETE AGF_LAST_VERION_INSTALL to update with the new one
 		$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
-		dol_syslog(get_class($this) . "::_load_tables_agefodd sql:" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::_load_tables_agefodd ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$this->error = "Error " . $this->db->lasterror();

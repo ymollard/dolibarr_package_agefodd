@@ -144,7 +144,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= ")";
 		
 		// Insert request
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -191,15 +191,15 @@ class Agefodd_place extends CommonObject {
 		global $langs;
 		
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1, p.fk_reg_interieur";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_pays as pays ON pays.rowid = p.fk_pays";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.rowid = " . $id;
 		$sql .= " AND p.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -247,11 +247,11 @@ class Agefodd_place extends CommonObject {
 		global $langs;
 		
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.libelle as country, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_pays as pays ON pays.rowid = p.fk_pays";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.entity IN (" . getEntity('agsession') . ")";
 		
 		// Manage filter
@@ -262,7 +262,7 @@ class Agefodd_place extends CommonObject {
 		}
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			
@@ -319,7 +319,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " WHERE p.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::info", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -403,7 +403,7 @@ class Agefodd_place extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -472,7 +472,7 @@ class Agefodd_place extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -488,7 +488,7 @@ class Agefodd_place extends CommonObject {
 				$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_place";
 				$sql .= " WHERE rowid = " . $this->id;
 				
-				dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
@@ -537,7 +537,7 @@ class Agefodd_place extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::remove_reg_int sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove_reg_int", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -574,7 +574,7 @@ class Agefodd_place extends CommonObject {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "societe as s";
 			$sql .= " WHERE s.rowid = " . $this->fk_societe;
 			
-			dol_syslog(get_class($this) . "::import_customer_adress sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::import_customer_adress", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				if ($this->db->num_rows($resql)) {

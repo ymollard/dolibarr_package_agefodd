@@ -136,7 +136,7 @@ class Agefodd_stagiaire extends CommonObject {
 		if (! $error) {
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -188,12 +188,12 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON s.fk_soc = so.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -271,7 +271,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON s.fk_soc = so.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
 		
@@ -293,7 +293,7 @@ class Agefodd_stagiaire extends CommonObject {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -395,7 +395,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -467,7 +467,7 @@ class Agefodd_stagiaire extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -514,7 +514,7 @@ class Agefodd_stagiaire extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -554,7 +554,7 @@ class Agefodd_stagiaire extends CommonObject {
 		
 		$num = 0;
 		
-		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc sql=" . $sql);
+		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc");
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -574,7 +574,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " AND UPPER(s.lastname)='" . strtoupper($lastname) . "'";
 		$sql .= " AND UPPER(s.firstname)='" . strtoupper($firstname) . "'";
 		
-		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc sql=" . $sql);
+		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc");
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {

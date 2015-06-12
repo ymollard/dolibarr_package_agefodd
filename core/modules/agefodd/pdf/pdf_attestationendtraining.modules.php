@@ -250,16 +250,19 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 						
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
-						$this->str = $outputlangs->transnoentities('AgfPDFAttestationEndEval');
-						$newY = $pdf->getY() + 10;
-						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
-						
 						$tab_top=$newY+10;	
-						// Output Rect
-						$pdf->SetLineWidth(0.0);
-						$this->_tableau($pdf, $tab_top, 5, 0, $outputlangs, 0, 0);
+						if (count($agf_op->lines) > 0) {
+							
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
+							$this->str = $outputlangs->transnoentities('AgfPDFAttestationEndEval');
+							$newY = $pdf->getY() + 10;
+							$pdf->SetXY($this->marge_gauche + 1, $newY);
+							$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
+							
+							// Output Rect
+							$pdf->SetLineWidth(0.0);
+							$this->_tableau($pdf, $tab_top, 5, 0, $outputlangs, 0, 0);
+						}
 						
 						$newY = $pdf->getY();
 						// Bloc objectifs pedagogiques

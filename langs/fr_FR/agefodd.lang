@@ -991,3 +991,7 @@ AgfPDFFichePresPersCustOPCA=Nom du Client ou de l’OPCA
 AgfFormNumber=Numéro de la session
 AgfCertifExactBy=Certifié exact par
 AgfFichePresenceTraineeStd=Fiche de présence par participant classique
+AgfMenuAgendaViewWeek=Agenda des sessions par semaine
+AgfMenuAgendaViewDay=Agenda des sessions par jour
+AgfMenuAgendaViewPerUser=Agenda des sessions par formateur
+AgfMenuAgendaViewList=Agenda des sessions liste

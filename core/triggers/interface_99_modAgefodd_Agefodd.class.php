@@ -373,6 +373,7 @@ class InterfaceAgefodd {
 			$actioncomm->userdone = $user; // User doing action
 			$actioncomm->fk_element = $object->id;
 			$actioncomm->elementtype = $object->element;
+			$actioncomm->userownerid=$user->id;
 			$ret = $actioncomm->add($user); // User qui saisit l'action
 			if ($ret > 0) {
 				return 1;

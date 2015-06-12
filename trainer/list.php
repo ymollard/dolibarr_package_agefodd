@@ -118,7 +118,7 @@ print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Name"), $_SERVER ['PHP_SELF'], "s.lastname", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Firstname"), $_SERVER ['PHP_SELF'], "s.firstname", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "s.civilite", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "s.civility", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("PhoneMobile"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.email", "", $option, '', $sortfield, $sortorder);

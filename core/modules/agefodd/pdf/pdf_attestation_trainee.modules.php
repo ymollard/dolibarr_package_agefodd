@@ -208,7 +208,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			
 			$contact_static = new Contact($this->db);
-			$contact_static->civility_id = $agf2->lines [$i]->civilite;
+			$contact_static->civility_id = $agf_trainee->civilite;
 			
 			$this->str1 = $outputlangs->transnoentities('AgfPDFAttestation2') . " " . ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ';
 			$this->width1 = $pdf->GetStringWidth($this->str1);

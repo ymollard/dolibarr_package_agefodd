@@ -107,7 +107,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as t";
 		$sql .= " WHERE t.rowid=" . $objtraining->id;
 		
-		dol_syslog("mod_agefoddcertif_simple::getNextValue sql=" . $sql, LOG_DEBUG);
+		dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_DEBUG);
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
@@ -125,7 +125,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 				}
 			}
 		} else {
-			dol_syslog("mod_agefoddcertif_simple::getNextValue sql=" . $sql, LOG_ERR);
+			dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_ERR);
 			return - 1;
 		}
 		if (empty($prefix)) {
@@ -140,7 +140,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif";
 		$sql .= " WHERE certif_code LIKE '" . $this->prefix . "____-%'";
 		
-		dol_syslog("mod_agefoddcertif_simple::getNextValue sql=" . $sql, LOG_DEBUG);
+		dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_DEBUG);
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
@@ -149,7 +149,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 			else
 				$max = 0;
 		} else {
-			dol_syslog("mod_agefoddcertif_simple::getNextValue sql=" . $sql, LOG_ERR);
+			dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_ERR);
 			return - 1;
 		}
 		

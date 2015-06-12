@@ -633,8 +633,8 @@ if (! empty($id)) {
 					// After training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfAfterTraining") . '</td></tr>' . "\n";
 					document_line($langs->trans("AgfAttestationEndTraining"), "attestationendtraining", $agf->lines[$i]->socid);
-					document_line($langs->trans("AgfAttestationPresenceTraining"), "attestationpresencetraining", $agf->lines[$i]->socid);
-					document_line($langs->trans("AgfAttestationPresenceCollective"), "attestationpresencecollective", $agf->lines[$i]->socid);
+					//document_line($langs->trans("AgfAttestationPresenceTraining"), "attestationpresencetraining", $agf->lines[$i]->socid);
+					//document_line($langs->trans("AgfAttestationPresenceCollective"), "attestationpresencecollective", $agf->lines[$i]->socid);
 					document_line($langs->trans("AgfSendAttestation"), "attestation", $agf->lines[$i]->socid);
 					
 					$text_fac = $langs->trans("AgfFacture");

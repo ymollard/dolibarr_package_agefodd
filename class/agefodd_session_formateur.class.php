@@ -112,7 +112,7 @@ class Agefodd_session_formateur {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -169,7 +169,7 @@ class Agefodd_session_formateur {
 		$sql .= " ON f.fk_socpeople = sp.rowid";
 		$sql .= " WHERE sf.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -220,7 +220,7 @@ class Agefodd_session_formateur {
 		$sql .= " WHERE sf.fk_session = " . $id;
 		$sql .= " ORDER BY sf.rowid ASC";
 		
-		dol_syslog(get_class($this) . "::fetch_formateur_per_session sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_formateur_per_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -297,7 +297,7 @@ class Agefodd_session_formateur {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -347,7 +347,7 @@ class Agefodd_session_formateur {
 			$sql .= '(SELECT fk_actioncomm FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier ';
 			$sql .= 'WHERE fk_agefodd_session_formateur=' . $id . ')';
 			
-			dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -357,7 +357,7 @@ class Agefodd_session_formateur {
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier ';
 			$sql .= 'WHERE fk_agefodd_session_formateur=' . $id;
 			
-			dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -368,7 +368,7 @@ class Agefodd_session_formateur {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		// Commit or rollback
 		if ($error) {

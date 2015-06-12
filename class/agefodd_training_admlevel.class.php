@@ -128,7 +128,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -192,7 +192,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
 		$sql .= " WHERE t.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -250,7 +250,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " WHERE t.fk_training=" . $training_id;
 		$sql .= " ORDER BY t.indice";
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -336,7 +336,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -402,7 +402,7 @@ class Agefodd_training_admlevel extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel";
 			$sql .= " WHERE rowid=" . $this->id;
 			
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::delete");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -455,7 +455,7 @@ class Agefodd_training_admlevel extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel";
 			$sql .= " WHERE fk_training=" . $this->fk_training;
 			
-			dol_syslog(get_class($this) . "::delete_training_task sql=" . $sql);
+			dol_syslog(get_class($this) . "::delete_training_task");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -574,7 +574,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= " WHERE indice=" . $this->indice;
 				$sql .= " AND fk_training=" . $this->fk_training;
 				
-				dol_syslog(get_class($this) . ":shift_indice:less rank no 0 sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ":shift_indice:less rank no 0", LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -590,7 +590,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= " WHERE rowid=" . $this->id;
 				$sql .= " AND fk_training=" . $this->fk_training;
 				
-				dol_syslog(get_class($this) . ":shift_indice:update sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ":shift_indice:update", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
@@ -605,7 +605,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' WHERE indice>=' . $this->indice . ' AND indice<' . intval(intval($this->indice) + 100);
 				$sql .= " AND fk_training=" . $this->fk_training;
 				
-				dol_syslog(get_class($this) . ':shift_indice:less rank is 0 sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':shift_indice:less rank is 0 ', LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -620,7 +620,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' WHERE indice>=' . intval(intval($this->indice) - 100) . ' AND indice<' . $this->indice;
 				$sql .= " AND fk_training=" . $this->fk_training;
 				
-				dol_syslog(get_class($this) . ':shift_indice:less rank is 0 sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':shift_indice:less rank is 0 ', LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -634,7 +634,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' fk_user_mod=' . $user->id;
 				$sql .= ' WHERE indice>=' . intval(intval($this->indice) + 10000) . ' AND indice<' . intval(intval($this->indice) + 10100);
 				
-				dol_syslog(get_class($this) . ':shift_indice:less rank is 0 sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':shift_indice:less rank is 0 ', LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -653,7 +653,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' fk_user_mod=' . $user->id;
 				$sql .= " WHERE indice=" . $this->indice;
 				
-				dol_syslog(get_class($this) . ":shift_indice:more rank no 0 sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ":shift_indice:more rank no 0", LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -667,7 +667,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' fk_user_mod=' . $user->id;
 				$sql .= " WHERE rowid=" . $this->id;
 				
-				dol_syslog(get_class($this) . ":shift_indice:update sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ":shift_indice:update", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
@@ -681,7 +681,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' fk_user_mod=' . $user->id;
 				$sql .= ' WHERE indice>=' . $this->indice . ' AND indice<' . intval(intval($this->indice) + 100);
 				
-				dol_syslog(get_class($this) . ':shift_indice:more rank is 0 sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':shift_indice:more rank is 0 ', LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -695,7 +695,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' fk_user_mod=' . $user->id;
 				$sql .= ' WHERE indice>=' . intval(intval($this->indice) + 100) . ' AND indice<' . intval(intval($this->indice) + 200);
 				
-				dol_syslog(get_class($this) . ':shift_indice:more rank is 0 sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':shift_indice:more rank is 0 ', LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -709,7 +709,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$sql .= ' fk_user_mod=' . $user->id;
 				$sql .= ' WHERE indice>=' . intval(intval($this->indice) + 10000) . ' AND indice<' . intval(intval($this->indice) + 10100);
 				
-				dol_syslog(get_class($this) . ':shift_indice:more rank is 0 sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':shift_indice:more rank is 0 ', LOG_DEBUG);
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
@@ -776,7 +776,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		// exit;
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::setParentActionId sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::setParentActionId", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;

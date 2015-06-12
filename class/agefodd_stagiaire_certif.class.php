@@ -127,7 +127,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -215,7 +215,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			}
 		}
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -316,7 +316,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_certif_customer sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_certif_customer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -386,7 +386,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlinner .= " WHERE t.fk_certif_type=" . $line->fk_certif_type;
 				$sqlinner .= " AND  t.fk_certif =" . $line->fk_certif;
 				
-				dol_syslog(get_class($this) . "::fetch_certif_state sqlinner=" . $sqlinner, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::fetch_certif_state sqlinner", LOG_DEBUG);
 				$resqlinner = $this->db->query($sqlinner);
 				if ($resqlinner) {
 					$numinner = $this->db->num_rows($resqlinner);
@@ -438,7 +438,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " WHERE t.active=1";
 		$sql .= " ORDER BY t.sort";
 		
-		dol_syslog(get_class($this) . "::get_certif_type sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::get_certif_type", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ( $obj = $this->db->fetch_object($resql) ) {
@@ -475,7 +475,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " WHERE t.fk_certif_type=" . $certif_type_id;
 		$sql .= " AND  t.fk_certif =" . $certif_id;
 		
-		dol_syslog(get_class($this) . "::set_certif_state sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::set_certif_state", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -489,7 +489,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlop .= " WHERE fk_certif_type=" . $certif_type_id;
 				$sqlop .= " AND  fk_certif =" . $certif_id;
 				
-				dol_syslog(get_class($this) . "::set_certif_state sql=" . $sqlop, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::set_certif_state sqlop", LOG_DEBUG);
 				$resql = $this->db->query($sqlop);
 				if (! $resql) {
 					$this->error = "Error " . $this->db->lasterror();
@@ -507,7 +507,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlop .= $certif_type_id . ",";
 				$sqlop .= $certif_state . ")";
 				
-				dol_syslog(get_class($this) . "::set_certif_state sql=" . $sqlop, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::set_certif_state sqlop", LOG_DEBUG);
 				$resql = $this->db->query($sqlop);
 				if (! $resql) {
 					$this->error = "Error " . $this->db->lasterror();
@@ -558,7 +558,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		
 		$sql .= " ORDER BY t.datec desc";
 		
-		dol_syslog(get_class($this) . "::fetch_all_by_trainee sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all_by_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -638,7 +638,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -727,7 +727,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -793,7 +793,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif";
 			$sql .= " WHERE rowid=" . $this->id;
 			
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::delete");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -803,7 +803,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_certif_state";
 			$sql .= " WHERE fk_certif=" . $this->id;
 			
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::delete");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -839,7 +839,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as p";
 		$sql .= " WHERE p.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {

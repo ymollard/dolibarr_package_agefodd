@@ -142,7 +142,7 @@ class Agefodd_convention {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -178,7 +178,7 @@ class Agefodd_convention {
 				$sql .= "'" . $this->db->idate(dol_now()) . "'";
 				$sql .= ")";
 				
-				dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
@@ -225,7 +225,7 @@ class Agefodd_convention {
 			$sql .= " AND c.fk_societe = " . $socid;
 		}
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -262,7 +262,7 @@ class Agefodd_convention {
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as s ON s.rowid=convtrainee.fk_agefodd_session_stagiaire";
 				$sql .= " WHERE convtrainee.fk_agefodd_convention = " . $this->id;
 				
-				dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				
 				if ($resql) {
@@ -305,7 +305,7 @@ class Agefodd_convention {
 			$sql .= " AND c.fk_societe = " . $socid;
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -344,7 +344,7 @@ class Agefodd_convention {
 					$sql_trainee .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as s ON s.rowid=convtrainee.fk_agefodd_session_stagiaire";
 					$sql_trainee .= " WHERE convtrainee.fk_agefodd_convention = " . $line->id;
 					
-					dol_syslog(get_class($this) . "::fetch_all sql_trainee=" . $sql_trainee, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 					$resqltrainee = $this->db->query($sql_trainee);
 					if ($resqltrainee) {
 						if ($this->db->num_rows($resqltrainee)) {
@@ -388,7 +388,7 @@ class Agefodd_convention {
 		$sql .= " WHERE c.fk_societe = " . $socid;
 		$sql .= " GROUP BY c.rowid";
 		
-		dol_syslog(get_class($this) . "::fetch_last_conv_per_socity sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_last_conv_per_socity ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -422,7 +422,7 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "commandedet as c";
 		$sql .= " WHERE c.fk_commande = " . $comid;
 		
-		dol_syslog(get_class($this) . "::fetch_commande_lines sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_commande_lines ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -486,7 +486,7 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facturedet as c";
 		$sql .= " WHERE c.fk_facture = " . $factid;
 		
-		dol_syslog(get_class($this) . "::fetch_invoice_lines sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_invoice_lines ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -550,7 +550,7 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "propaldet as c";
 		$sql .= " WHERE c.fk_propal = " . $propalid;
 		
-		dol_syslog(get_class($this) . "::fetch_propal_lines sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_propal_lines ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -618,7 +618,7 @@ class Agefodd_convention {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " WHERE f.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::info ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -708,7 +708,7 @@ class Agefodd_convention {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -732,7 +732,7 @@ class Agefodd_convention {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
 			$sql .= " WHERE fk_agefodd_convention = " . $this->id;
 			
-			dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -755,7 +755,7 @@ class Agefodd_convention {
 					$sql .= "'" . $this->db->idate(dol_now()) . "'";
 					$sql .= ")";
 					
-					dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 					$resql = $this->db->query($sql);
 					if (! $resql) {
 						$error ++;
@@ -803,7 +803,7 @@ class Agefodd_convention {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
 		$sql .= " WHERE fk_agefodd_convention = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -813,7 +813,7 @@ class Agefodd_convention {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -862,7 +862,7 @@ class Agefodd_convention {
 		$sql .= ' AND code="' . $contacttype . '")';
 		$sql .= " AND elmentcontact.element_id = " . $this->fk_element;
 		
-		dol_syslog(get_class($this) . "::fetch_contact sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_contact", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {

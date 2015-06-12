@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2001-2004 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2003      Eric Seigne          <erics@rycks.com>
- * Copyright (C) 2004-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
+ * Copyright (C) 2004-2014 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2012 Regis Houssin        <regis.houssin@capnetworks.com>
  * Copyright (C) 2013-2014 Florian HEnry		<florian.henry@open-concept.pro>
  *
@@ -50,6 +50,14 @@ $actioncode = GETPOST("actioncode", "alpha", 3);
 $pid = GETPOST("projectid", 'int', 3);
 $status = GETPOST("status", 'alpha');
 $type = GETPOST('type');
+$actioncode=GETPOST("actioncode","alpha",3)?GETPOST("actioncode","alpha",3):(GETPOST("actioncode")=='0'?'0':(empty($conf->global->AGENDA_USE_EVENT_TYPE)?'AC_OTH':''));
+$dateselect=dol_mktime(0, 0, 0, GETPOST('dateselectmonth'), GETPOST('dateselectday'), GETPOST('dateselectyear'));
+$datestart=dol_mktime(0, 0, 0, GETPOST('datestartmonth'), GETPOST('datestartday'), GETPOST('datestartyear'));
+$dateend=dol_mktime(0, 0, 0, GETPOST('dateendmonth'), GETPOST('dateendday'), GETPOST('dateendyear'));
+
+if ($actioncode == '') $actioncode=(empty($conf->global->AGENDA_DEFAULT_FILTER_TYPE)?'':$conf->global->AGENDA_DEFAULT_FILTER_TYPE);
+if ($status == ''   && ! isset($_GET['status']) && ! isset($_POST['status'])) $status=(empty($conf->global->AGENDA_DEFAULT_FILTER_STATUS)?'':$conf->global->AGENDA_DEFAULT_FILTER_STATUS);
+if (empty($action) && ! isset($_GET['action']) && ! isset($_POST['action'])) $action=(empty($conf->global->AGENDA_DEFAULT_VIEW)?'show_month':$conf->global->AGENDA_DEFAULT_VIEW);
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth', 'int'), GETPOST('dt_start_filterday', 'int'), GETPOST('dt_start_filteryear', 'int'));
@@ -86,12 +94,11 @@ $showbirthday = empty($conf->use_javascript_ajax) ? GETPOST("showbirthday", "int
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
 $page = GETPOST("page", 'int');
-if ($page == - 1) {
-	$page = 0;
-}
+if ($page == -1) { $page = 0 ; }
 $limit = $conf->liste_limit;
 $offset = $limit * $page;
-if (! $sortorder) {
+if (! $sortorder)
+{
 	$sortorder = "DESC";
 	if ($status == 'todo')
 		$sortorder = "ASC";
@@ -110,35 +117,22 @@ $canedit = 1;
 // Security check
 if (! $user->rights->agefodd->agenda)
 	accessforbidden();
-	
-	/*
-$socid = GETPOST("socid",'int');
-if ($user->societe_id) $socid=$user->societe_id;
-$result = restrictedArea($user, 'agenda', 0, '', 'myactions');
-
-$canedit=1;
-if (! $user->rights->agenda->myactions->read) accessforbidden();
-if (! $user->rights->agenda->allactions->read) $canedit=0;
-if (! $user->rights->agenda->allactions->read || $filter=='mine')	// If no permission to see all, we show only affected to me
-{
-	$filtera=$user->id;
-	$filtert=$user->id;
-	$filterd=$user->id;
-}
-*/
 
 
 /*
  *	Actions
  */
-if (GETPOST("viewcal") || GETPOST("viewweek") || GETPOST("viewday")) {
+
+if (GETPOST("viewcal") || GETPOST("viewweek") || GETPOST("viewday"))
+{
 	$param = '';
-	foreach ( $_POST as $key => $val ) {
+	foreach($_POST as $key => $val)
+	{
 		$param .= '&' . $key . '=' . urlencode($val);
 	}
 	// print $param;
 	header("Location: " . dol_buildpath('/agefodd/agenda/index.php', 1) . '?' . $param);
-	exit();
+	exit;
 }
 
 /*
@@ -316,7 +310,7 @@ $sql .= $db->order($sortfield, $sortorder);
 $sql .= $db->plimit($limit + 1, $offset);
 // print $sql;
 
-dol_syslog("agefodd/agenda/listactions.php sql=" . $sql);
+dol_syslog("agefodd/agenda/listactions.php");
 $resql = $db->query($sql);
 if ($resql) {
 	$actionstatic = new ActionComm($db);
@@ -339,28 +333,14 @@ if ($resql) {
 		$newtitle = $langs->trans($title);
 	}
 	
-	$head = calendars_prepare_head('');
+	$head = agf_calendars_prepare_head($paramnoaction);
 	
-	dol_fiche_head($head, 'card', $langs->trans('AgfMenuAgenda'), 0, $picto);
+	dol_fiche_head($head, 'cardlist', $langs->trans('AgfMenuAgenda'), 0, $picto);
 	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter,$filter_location);
 	dol_fiche_end();
 	
 	// Add link to show birthdays
 	$link = '';
-	/*
-    if (empty($conf->use_javascript_ajax))
-    {
-        $newparam=$param;   // newparam is for birthday links
-        $newparam=preg_replace('/showbirthday=[0-1]/i','showbirthday='.(empty($showbirthday)?1:0),$newparam);
-        if (! preg_match('/showbirthday=/i',$newparam)) $newparam.='&showbirthday=1';
-        $link='<a href="'.$_SERVER['PHP_SELF'];
-        $link.='?'.$newparam;
-        $link.='">';
-        if (empty($showbirthday)) $link.=$langs->trans("AgendaShowBirthdayEvents");
-        else $link.=$langs->trans("AgendaHideBirthdayEvents");
-        $link.='</a>';
-    }
-    */
 	
 	print_barre_liste($newtitle, $page, $_SERVER ["PHP_SELF"], $param, $sortfield, $sortorder, $link, $num, 0, '');
 	// print '<br>';

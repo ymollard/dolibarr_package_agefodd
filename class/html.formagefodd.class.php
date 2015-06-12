@@ -76,7 +76,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY " . $order;
 		
-		dol_syslog(get_class($this) . "::select_formation sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_formation", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -135,7 +135,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY " . $sort;
 		
-		dol_syslog(get_class($this) . "::select_cursus sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_cursus", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_CURSUS_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -189,7 +189,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.indice";
 		
-		dol_syslog(get_class($this) . "::select_action_session_adm sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_action_session_adm", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			$var = True;
@@ -247,7 +247,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.indice";
 		
-		dol_syslog(get_class($this) . "::select_action_training_adm sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_action_training_adm", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			$var = True;
@@ -294,7 +294,7 @@ class FormAgefodd extends Form {
 		$sql .= ' WHERE t.fk_agefodd_session=\'' . $session_id . '\'';
 		$sql .= " ORDER BY t.indice";
 		
-		dol_syslog(get_class($this) . "::select_action_session sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_action_session", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			$var = True;
@@ -341,7 +341,7 @@ class FormAgefodd extends Form {
 		$sql .= " AND p.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " ORDER BY p.ref_interne";
 		
-		dol_syslog(get_class($this) . "::select_site_forma sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_site_forma", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -405,7 +405,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY fullname";
 		
-		dol_syslog(get_class($this) . "::select_stagiaire sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_stagiaire", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -458,7 +458,7 @@ class FormAgefodd extends Form {
 		
 		$sql = "SELECT";
 		$sql .= " c.rowid, ";
-		$sql .= " s.lastname, s.firstname, s.civilite, ";
+		$sql .= " s.lastname, s.firstname, s.civility, ";
 		$sql .= " soc.nom as socname";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_contact as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON c.fk_socpeople = s.rowid";
@@ -469,7 +469,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::select_agefodd_contact sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_agefodd_contact", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -588,7 +588,7 @@ class FormAgefodd extends Form {
 		
 		$sql .= " ORDER BY sp.lastname ASC";
 		
-		dol_syslog(get_class($this) . "::selectcontactscustom sql=" . $sql);
+		dol_syslog(get_class($this) . "::selectcontactscustom");
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -702,7 +702,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY sp.lastname,u.lastname";
 		
-		dol_syslog(get_class($this) . "::select_formateur sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_formateur", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			
@@ -764,7 +764,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 		
-		dol_syslog(get_class($this) . "::select_type_stagiaire sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_type_stagiaire", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			
@@ -821,7 +821,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 	
-		dol_syslog(get_class($this) . "::select_type_formateur sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_type_formateur", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 				
@@ -878,7 +878,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 		
-		dol_syslog(get_class($this) . "::select_session_status sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_session_status", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			
@@ -963,7 +963,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 		
-		dol_syslog(get_class($this) . "::select_training_categ sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_training_categ", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			
@@ -1257,38 +1257,45 @@ class FormAgefodd extends Form {
 	 */
 	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location='') {
 		global $conf, $langs;
-		
+
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER ["PHP_SELF"] . '" method="POST">';
 		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
 		print '<input type="hidden" name="status" value="' . $status . '">';
 		print '<input type="hidden" name="year" value="' . $year . '">';
 		print '<input type="hidden" name="month" value="' . $month . '">';
 		print '<input type="hidden" name="day" value="' . $day . '">';
+		print '<input type="hidden" name="action" value="' . $action . '">';
 		print '<input type="hidden" name="displayonlytrainerfilter" value="' . $display_only_trainer_filter . '">';
 		print '<table class="nobordernopadding" width="100%">';
-		
+
 		print '<tr><td class="nowrap" width="10%">';
+
+		if (! empty($conf->browser->phone)) print '<div class="fichehalfleft">';
+		else print '<table class="nobordernopadding" width="100%"><tr><td class="nowrap">';
 		
-		if (! empty($canedit)) {
-			print '<table class="nobordernopadding">';
+		print '<table class="nobordernopadding">';
+
+		if ($canedit)
+	    {
+			
 			if (empty($display_only_trainer_filter)) {
 				print '<tr>';
 				print '<td class="nowrap">';
-				print $langs->trans("AgfSessionCommercial");
-				print ' &nbsp;</td><td class="nowrap">';
+				print $langs->trans("AgfSessionCommercial").' &nbsp; ';
+				print '</td><td class="nowrap maxwidthonsmartphone">';
 				if (empty($filter_commercial)) {
 					$filter_commercial = 'a';
 				}
 				$form->select_users($filter_commercial, 'commercial', 1, array (
-						1 
+						1
 				));
 				print '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
 				print '<td class="nowrap">';
 				print $langs->trans("or") . ' ' . $langs->trans("Customer");
-				print ' &nbsp;</td><td class="nowrap">';
+				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 					$events = array ();
 					$events [] = array (
@@ -1296,8 +1303,8 @@ class FormAgefodd extends Form {
 							'url' => dol_buildpath('/core/ajax/contacts.php', 1),
 							'htmlname' => 'contact',
 							'params' => array (
-									'add-customer-contact' => 'disabled' 
-							) 
+									'add-customer-contact' => 'disabled'
+							)
 					);
 					print $form->select_company($filter_customer, 'fk_soc', '', 1, 1, 0, $events);
 				} else {
@@ -1305,9 +1312,9 @@ class FormAgefodd extends Form {
 				}
 				print '</td></tr>';
 				print '<tr>';
-				print '<td class="nowrap">';
+				print '<td class="nowrap maxwidthonsmartphone">';
 				print $langs->trans("or") . ' ' . $langs->trans("AgfSessionContact");
-				print ' &nbsp;</td><td class="nowrap">';
+				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 					if (! empty($filter_customer)) {
 						$form->select_contacts($filter_customer, $filter_contact, 'contact', 1, '', '', 1, '', 1);
@@ -1322,39 +1329,39 @@ class FormAgefodd extends Form {
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans("or") . ' ' . $langs->trans("AgfFormateur");
-			print ' &nbsp;</td><td class="nowrap">';
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 			print $this->select_formateur($filter_trainer, "trainerid", '', 1);
 			print '</td></tr>';
-			
+
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans("or") . ' ' . $langs->trans("AgfLieu");
-			print ' &nbsp;</td><td class="nowrap">';
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 			print $this->select_site_forma($filter_location, 'location', 1);
 			print '</td></tr>';
-				
-			
+
+
 			// Filter by periode only on list view
 			if (strpos($_SERVER ["PHP_SELF"], 'listactions.php') !== false) {
-				
+
 				print '<tr>';
 				print '<td class="nowrap">' . $langs->trans("DateStart") . '</td>';
 				print '<td>';
 				$form->select_date($filterdatestart, 'dt_start_filter', 0, 0, 1);
 				print '</td>';
 				print "</tr>\n";
-				
+
 				print '<td class="nowrap">' . $langs->trans("DateEnd") . '</td>';
 				print '<td>';
 				$form->select_date($filterdatesend, 'dt_end_filter', 0, 0, 1);
 				print '</td>';
 				print "</tr>\n";
 			}
-			
+
 			print '<tr>';
-			print '<td class="nowrap">';
+			print '<td class="nowrap maxwidthonsmartphone">';
 			print $langs->trans("AgfOnlySession");
-			print ' &nbsp;</td><td class="nowrap">';
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 			if (! empty($onlysession)) {
 				$checkedyes = ' checked="checked" ';
 				$checkedno = ' ';
@@ -1365,33 +1372,37 @@ class FormAgefodd extends Form {
 			print '<input type="radio" name="onlysession" ' . $checkedyes . ' value="1">' . $langs->trans('Yes');
 			print '<input type="radio" name="onlysession" ' . $checkedno . ' value="0">' . $langs->trans('No');
 			print '</td></tr>';
-			
+
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans("AgfFormTypeSession");
-			print ' &nbsp;</td><td class="nowrap">';
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 			print $this->select_type_session('type_session', $filter_type_session, 1);
 			print '</td></tr>';
-			
-			print '</table>';
 		}
-		print '</td>';
-		
-		// Buttons
-		print '<td align="left" valign="middle" class="nowrap">';
-		print img_picto($langs->trans("ViewCal"), 'object_calendar', 'class="hideonsmartphone"') . ' <input type="submit" class="button" style="min-width:120px" name="viewcal" value="' . $langs->trans("ViewCal") . '">';
-		print '<br>';
-		print img_picto($langs->trans("ViewWeek"), 'object_calendarweek', 'class="hideonsmartphone"') . ' <input type="submit" class="button" style="min-width:120px" name="viewweek" value="' . $langs->trans("ViewWeek") . '">';
-		print '<br>';
-		print img_picto($langs->trans("ViewDay"), 'object_calendarday', 'class="hideonsmartphone"') . ' <input type="submit" class="button" style="min-width:120px" name="viewday" value="' . $langs->trans("ViewDay") . '">';
-		print '<br>';
-		print img_picto($langs->trans("ViewList"), 'object_list', 'class="hideonsmartphone"') . ' <input type="submit" class="button" style="min-width:120px" name="viewlist" value="' . $langs->trans("ViewList") . '">';
-		print '</td>';
-		
-		print '</tr>';
-		
+
+	print '</table>';
+
+	if (! empty($conf->browser->phone)) print '</div>';
+	else print '</td>';
+
+	if (! empty($conf->browser->phone)) print '<div class="fichehalfright">';
+	else print '<td align="center" valign="middle" class="nowrap">';
+
+	print '<table><tr><td align="center">';
+	print '<div class="formleftzone">';
+	print '<input type="submit" class="button" style="min-width:120px" name="refresh" value="' . $langs->trans("Refresh") . '">';
+	print '</div>';
+	print '</td></tr>';
 		print '</table>';
-		print '</form>';
+
+	if (! empty($conf->browser->phone)) print '</div>';
+	else print '</td></tr></table>';
+
+	print '</div>';	// Close fichecenter
+	print '<div style="clear:both"></div>';
+
+	print '</form>';
 	}
 	
 	/**
@@ -1470,7 +1481,7 @@ class FormAgefodd extends Form {
 		$outselect = '';
 		$outjson = array ();
 		
-		dol_syslog(get_class($this) . "::select_produits_fournisseurs_do sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::select_produits_fournisseurs_do", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			
@@ -1649,7 +1660,7 @@ class FormAgefodd extends Form {
 	 * @param int $showempty show empty
 	 * @return void
 	 */
-	function multiselectarray($htmlname, $options_array = array(), $selected_array = array(), $showempty = 0) {
+	function agfmultiselectarray($htmlname, $options_array = array(), $selected_array = array(), $showempty = 0) {
 		global $conf, $langs;
 		
 		$return = '<script type="text/javascript" language="javascript">

@@ -111,7 +111,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 		$sql .= " WHERE ref like '" . $this->prefix . $yymm . "-%'";
 		
 		$resql = $db->query($sql);
-		dol_syslog("mod_agefodd_simple::getNextValue sql=" . $sql);
+		dol_syslog("mod_agefodd_simple::getNextValue");
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
 			if ($obj)
@@ -119,7 +119,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 			else
 				$max = 0;
 		} else {
-			dol_syslog("mod_agefodd_simple::getNextValue sql=" . $sql);
+			dol_syslog("mod_agefodd_simple::getNextValue");
 			return - 1;
 		}
 		

@@ -217,7 +217,7 @@ class Agsession extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -464,7 +464,7 @@ class Agsession extends CommonObject {
 		$sql .= " us.email as commercialemail, ";
 		$sql .= " us.office_phone as commercialphone, ";
 		$sql .= " com.fk_user_com as commercialid, ";
-		$sql .= " socp.lastname as contactname, socp.firstname as contactfirstname, socp.civilite as contactcivilite,";
+		$sql .= " socp.lastname as contactname, socp.firstname as contactfirstname, socp.civility as contactcivilite,";
 		$sql .= " agecont.fk_socpeople as sourcecontactid, ";
 		$sql .= " agecont.rowid as contactid, ";
 		$sql .= " socOPCA.address as opca_adress, socOPCA.zip as opca_cp, socOPCA.town as opca_ville, ";
@@ -499,7 +499,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE t.rowid = " . $id;
 		$sql .= " AND t.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -624,7 +624,7 @@ class Agsession extends CommonObject {
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sa";
 		$sql .= " ON sa.rowid = ss.fk_stagiaire";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civilite as civ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON civ.code = sa.civilite";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON so.rowid = s.fk_soc";
@@ -635,7 +635,7 @@ class Agsession extends CommonObject {
 			$sql .= " AND so.rowid = " . $socid;
 		$sql .= " ORDER BY sa.nom";
 		
-		dol_syslog(get_class($this) . "::fetch_session_per_trainee sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_session_per_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -753,7 +753,7 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_session_per_trainer sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_session_per_trainer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -820,7 +820,7 @@ class Agsession extends CommonObject {
 		$sql .= " AND so.rowid IS NOT NULL";
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -850,7 +850,7 @@ class Agsession extends CommonObject {
 					$sql_inner .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 					$sql_inner .= " ON so.rowid = sa.fk_soc AND sa.fk_soc=" . $obj->socid;
 					$sql_inner .= " WHERE s.rowid = " . $id;
-					dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee sql_inner=" . $sql_inner, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee sql_inner", LOG_DEBUG);
 					$resql_inner = $this->db->query($sql_inner);
 					$array_trainnee = array ();
 					if ($resql_inner) {
@@ -895,7 +895,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCA sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCA", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$add_soc = 0;
@@ -930,7 +930,7 @@ class Agsession extends CommonObject {
 							$sql_inner .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 							$sql_inner .= " ON so.rowid = s.fk_soc_OPCA";
 							$sql_inner .= " WHERE s.rowid = " . $id;
-							dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee sql_inner=" . $sql_inner, LOG_DEBUG);
+							dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee sql_inner", LOG_DEBUG);
 							$resql_inner = $this->db->query($sql_inner);
 							$array_trainnee = array ();
 							if ($resql_inner) {
@@ -988,7 +988,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$add_soc = 0;
@@ -1026,7 +1026,7 @@ class Agsession extends CommonObject {
 								$sql_inner .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as soOPCATrainee";
 								$sql_inner .= " ON soOPCATrainee.rowid = soOPCA.fk_soc_OPCA AND soOPCA.fk_soc_OPCA=" . $obj->socid;
 								$sql_inner .= " WHERE s.rowid = " . $id;
-								dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee sql_inner=" . $sql_inner, LOG_DEBUG);
+								dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee sql_inner", LOG_DEBUG);
 								$resql_inner = $this->db->query($sql_inner);
 								$array_trainnee = array ();
 								if ($resql_inner) {
@@ -1078,7 +1078,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session Customer sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session Customer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$add_soc = 0;
@@ -1112,7 +1112,7 @@ class Agsession extends CommonObject {
 								$sql_inner .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 								$sql_inner .= " ON so.rowid = s.fk_soc AND so.rowid=" . $obj->socid;
 								$sql_inner .= " WHERE s.rowid = " . $id;
-								dol_syslog(get_class($this) . "::fetch_societe_per_session Customer sql_inner=" . $sql_inner, LOG_DEBUG);
+								dol_syslog(get_class($this) . "::fetch_societe_per_session Customer sql_inner", LOG_DEBUG);
 								$resql_inner = $this->db->query($sql_inner);
 								$array_trainnee = array ();
 								if ($resql_inner) {
@@ -1168,7 +1168,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session SocTraineeForDoc sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session SocTraineeForDoc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -1205,7 +1205,7 @@ class Agsession extends CommonObject {
 								$sql_inner .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 								$sql_inner .= " ON so.rowid = ss.fk_soc_link AND ss.fk_soc_link=" . $obj->socid;
 								$sql_inner .= " WHERE s.rowid = " . $id;
-								dol_syslog(get_class($this) . "::fetch_societe_per_session SocTraineeForDoc sql_inner=" . $sql_inner, LOG_DEBUG);
+								dol_syslog(get_class($this) . "::fetch_societe_per_session SocTraineeForDoc sql_inner", LOG_DEBUG);
 								$resql_inner = $this->db->query($sql_inner);
 								$array_trainnee = array ();
 								if ($resql_inner) {
@@ -1258,7 +1258,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -1295,7 +1295,7 @@ class Agsession extends CommonObject {
 								$sql_inner .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 								$sql_inner .= " ON so.rowid = ss.fk_soc_requester AND ss.fk_soc_requester=" . $obj->socid;
 								$sql_inner .= " WHERE s.rowid = " . $id;
-								dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester sql_inner=" . $sql_inner, LOG_DEBUG);
+								dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester sql_inner", LOG_DEBUG);
 								$resql_inner = $this->db->query($sql_inner);
 								$array_trainnee = array ();
 								if ($resql_inner) {
@@ -1349,7 +1349,7 @@ class Agsession extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
-		dol_syslog(get_class($this) . "::fetch_societe_per_session Sessionpresta sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_societe_per_session Sessionpresta", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -1386,7 +1386,7 @@ class Agsession extends CommonObject {
 								$sql_inner .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 								$sql_inner .= " ON so.rowid = ss.fk_soc_requester AND ss.fk_soc_requester=" . $obj->socid;
 								$sql_inner .= " WHERE s.rowid = " . $id;
-								dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester sql_inner=" . $sql_inner, LOG_DEBUG);
+								dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester sql_inner", LOG_DEBUG);
 								$resql_inner = $this->db->query($sql_inner);
 								$array_trainnee = array ();
 								if ($resql_inner) {
@@ -1446,7 +1446,7 @@ class Agsession extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -1486,10 +1486,10 @@ class Agsession extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::updateArchive sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::updateArchive", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
-			dol_syslog(get_class($this) . "::updateArchive sql=" . $sql, LOG_ERR);
+			dol_syslog(get_class($this) . "::updateArchive", LOG_ERR);
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 			$this->db->rollback();
@@ -1648,7 +1648,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -1708,7 +1708,7 @@ class Agsession extends CommonObject {
 			if ($this->status == 3) {
 				$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_stagiaire SET status_in_session=6 WHERE fk_session_agefodd=" . $this->id;
 				
-				dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
@@ -1717,7 +1717,7 @@ class Agsession extends CommonObject {
 				
 				$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_formateur SET trainer_status=6 WHERE fk_session=" . $this->id;
 				
-				dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
@@ -1761,7 +1761,7 @@ class Agsession extends CommonObject {
 			$sql = "SELECT com.rowid,com.fk_user_com as commercialid FROM " . MAIN_DB_PREFIX . "agefodd_session_commercial as com ";
 			$sql .= " WHERE com.fk_session_agefodd=" . $this->db->escape($this->id);
 			
-			dol_syslog(get_class($this) . "::setCommercialSession sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setCommercialSession", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				if ($this->db->num_rows($resql)) {
@@ -1796,7 +1796,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::setCommercialSession update sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setCommercialSession update", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -1817,7 +1817,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::setCommercialSession insert sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setCommercialSession insert", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -1833,7 +1833,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::setCommercialSession delete sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setCommercialSession delete", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -1881,7 +1881,7 @@ class Agsession extends CommonObject {
 				$sql = "SELECT agecont.rowid FROM " . MAIN_DB_PREFIX . "agefodd_contact as agecont ";
 				$sql .= " WHERE agecont.fk_socpeople=" . $contactid;
 				
-				dol_syslog(get_class($this) . "::setContactSession sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::setContactSession", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
 					if ($this->db->num_rows($resql) > 0) {
@@ -1911,7 +1911,7 @@ class Agsession extends CommonObject {
 			$sql = "SELECT agecont.rowid,agecont.fk_agefodd_contact as contactid FROM " . MAIN_DB_PREFIX . "agefodd_session_contact as agecont ";
 			$sql .= " WHERE agecont.fk_session_agefodd=" . $this->db->escape($this->id);
 			
-			dol_syslog(get_class($this) . "::setContactSession sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setContactSession", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				if ($this->db->num_rows($resql)) {
@@ -1948,7 +1948,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::setContactSession update sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setContactSession update", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -1969,7 +1969,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::setContactSession insert sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setContactSession insert", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -1985,7 +1985,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::setContactSession delete sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::setContactSession delete", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -2039,7 +2039,7 @@ class Agsession extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if (! $resql) {
@@ -2064,7 +2064,7 @@ class Agsession extends CommonObject {
 			// Delete event from agenda that are no more link to a session
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "actioncomm WHERE elementtype='agefodd_agsession' AND fk_element NOT IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "agefodd_session)";
 			
-			dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			
 			if (! $resql) {
@@ -2276,7 +2276,7 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -2456,7 +2456,7 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all_with_task_state sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all_with_task_state", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -2600,7 +2600,7 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all_inter sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all_inter", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -2884,7 +2884,7 @@ class Agsession extends CommonObject {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all_by_soc sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all_by_soc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -3033,7 +3033,7 @@ class Agsession extends CommonObject {
 		
 		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -3359,7 +3359,7 @@ class Agsession extends CommonObject {
 			
 			$this->db->begin();
 			
-			dol_syslog(get_class($this) . "::updateArchiveByYear sql=" . $sql, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::updateArchiveByYear", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -3532,7 +3532,7 @@ class Agsession extends CommonObject {
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 					$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
 					$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp WHERE pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
-					dol_syslog(get_class($this) . "::createOrder sql=" . $sql, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::createOrder", LOG_DEBUG);
 					$resql = $this->db->query($sql);
 					if ($resql) {
 						if ($this->db->num_rows($resql)) {
@@ -3803,7 +3803,7 @@ class Agsession extends CommonObject {
 				$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 				$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
 				$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp WHERE pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
-				dol_syslog(get_class($this) . "::createProposal sql=" . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . "::createProposal", LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
 					if ($this->db->num_rows($resql)) {
@@ -4151,7 +4151,7 @@ class Agsession extends CommonObject {
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
 					$sql .= ' pcp.price_base_type as custprice_base_type, pcp.tva_tx  as custtva_tx';
 					$sql .= " FROM " . MAIN_DB_PREFIX . "product_customer_price as pcp WHERE pcp.fk_soc=" . $soc->id . " AND pcp.fk_product=" . $this->fk_product;
-					dol_syslog(get_class($this) . "::createInvoice sql=" . $sql, LOG_DEBUG);
+					dol_syslog(get_class($this) . "::createInvoice", LOG_DEBUG);
 					$resql = $this->db->query($sql);
 					if ($resql) {
 						if ($this->db->num_rows($resql)) {
@@ -4325,7 +4325,7 @@ class Agsession extends CommonObject {
 		$sql .= " AND act.code='AC_PROPAL_SENTBYMAIL'";
 		$sql .= " AND elem.fk_session_agefodd=" . $this->rowid;
 		
-		dol_syslog(get_class($this) . "::findDateSendPropal sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::findDateSendPropal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -4353,7 +4353,7 @@ class Agsession extends CommonObject {
 		$sql .= " AND propal.fk_statut=2 AND elem.element_type='propal'";
 		$sql .= " AND elem.fk_session_agefodd=" . $this->rowid;
 		
-		dol_syslog(get_class($this) . "::findDateSignPropal sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::findDateSignPropal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {

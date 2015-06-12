@@ -108,7 +108,7 @@ class Agefodd_teacher extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -154,9 +154,9 @@ class Agefodd_teacher extends CommonObject {
 		
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
-		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, ";
+		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civility as sp_civilite, ";
 		$sql .= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
-		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
+		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
@@ -164,7 +164,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " WHERE f.rowid = " . $id;
 		$sql .= " AND f.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -220,9 +220,9 @@ class Agefodd_teacher extends CommonObject {
 		
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
-		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civilite as sp_civilite, ";
+		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civility as sp_civilite, ";
 		$sql .= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
-		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civilite as u_civilite, ";
+		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
@@ -256,7 +256,7 @@ class Agefodd_teacher extends CommonObject {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -321,7 +321,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " WHERE f.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -368,7 +368,7 @@ class Agefodd_teacher extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -413,7 +413,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formateur";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {

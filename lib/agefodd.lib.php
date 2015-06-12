@@ -399,20 +399,50 @@ function agefodd_admin_prepare_head() {
  * @param string $param add to url
  * @return array Array of head
  */
-function calendars_prepare_head($param) {
+function agf_calendars_prepare_head($param) {
 	global $langs, $conf, $user;
 	
 	$h = 0;
-	$head = array ();
+	$head = array();
 	
-	$head [$h] [0] = dol_buildpath("/agefodd/agenda/index.php", 1) . ($param ? '?' . $param : '');
-	$head [$h] [1] = $langs->trans("AgfMenuAgenda");
-	$head [$h] [2] = 'card';
-	$h ++;
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_month'.($param?'&'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgenda");
+	$head[$h][2] = 'cardmonth';
+	$h++;
 	
-	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_agenda');
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_week'.($param?'&'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgendaViewWeek");
+	$head[$h][2] = 'cardweek';
+	$h++;
 	
-	return $head;
+	//$paramday=$param;
+	//if (preg_match('/&month=\d+/',$paramday) && ! preg_match('/&day=\d+/',$paramday)) $paramday.='&day=1';
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_day'.($param?'&'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgendaViewDay");
+	$head[$h][2] = 'cardday';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/pertrainer.php", 1).($param?'?'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgendaViewPerUser");
+	$head[$h][2] = 'cardperuser';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/listactions.php", 1).($param?'?'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgendaViewList");
+	$head[$h][2] = 'cardlist';
+	$h++;
+	
+	$object=new stdClass();
+	
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname);   												to remove a tab
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda');
+	
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda','remove');
+	
+			return $head;
 }
 
 /**
@@ -474,7 +504,7 @@ function ebi_get_level_number($session) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as l";
 	$sql .= " WHERE l.level_rank = 0 AND l.fk_agefodd_session=" . $session;
 	
-	dol_syslog("ebi_get_level_number sql=" . $sql, LOG_DEBUG);
+	dol_syslog("ebi_get_level_number", LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -502,7 +532,7 @@ function ebi_get_adm_lastFinishLevel($sessid) {
 	$sql .= ' WHERE s.level_rank =0 ';
 	$sql .= " AND fk_agefodd_session = " . $sessid;
 	
-	dol_syslog("ebi_get_adm_lastFinishLevel sql=" . $sql, LOG_DEBUG);
+	dol_syslog("ebi_get_adm_lastFinishLevel", LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -618,7 +648,7 @@ function ebi_get_adm_indice_action_child($id) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	
-	dol_syslog("agefodd:lib:ebi_get_adm_indice_action_child sql=" . $sql, LOG_DEBUG);
+	dol_syslog("agefodd:lib:ebi_get_adm_indice_action_child", LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -783,7 +813,7 @@ function ebi_get_adm_get_next_indice_action($id) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	
-	dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+	dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action", LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -796,7 +826,7 @@ function ebi_get_adm_get_next_indice_action($id) {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel WHERE rowid=" . $id . ")";
 			
-			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action", LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
@@ -830,7 +860,7 @@ function ebi_get_adm_training_get_next_indice_action($id) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	
-	dol_syslog("ebi_get_adm_training_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+	dol_syslog("ebi_get_adm_training_get_next_indice_action", LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -843,7 +873,7 @@ function ebi_get_adm_training_get_next_indice_action($id) {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel WHERE rowid=" . $id . ")";
 			
-			dol_syslog("ebi_get_adm_training_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+			dol_syslog("ebi_get_adm_training_get_next_indice_action", LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
@@ -879,7 +909,7 @@ function ebi_get_next_indice_action($id, $sessionid) {
 	$sql .= " WHERE fk_parent_level=" . $id;
 	$sql .= " AND fk_agefodd_session=" . $sessionid;
 	
-	dol_syslog("ebi_get_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+	dol_syslog("ebi_get_get_next_indice_action", LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -893,7 +923,7 @@ function ebi_get_next_indice_action($id, $sessionid) {
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE rowid=" . $id . " AND fk_agefodd_session=" . $sessionid . ")";
 			$sql .= " AND fk_agefodd_session=" . $sessionid;
 			
-			dol_syslog("ebi_get_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+			dol_syslog("ebi_get_get_next_indice_action", LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);

@@ -95,7 +95,7 @@ class Agefoddcalendrier extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -151,7 +151,7 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " WHERE t.rowid = " . $id;
 		$sql .= " AND t.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -188,7 +188,7 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
 		$sql .= " WHERE t.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -246,7 +246,7 @@ class Agefoddcalendrier extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_calendrier";
 			$sql .= " WHERE rowid=" . $this->id;
 			
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::delete ");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;

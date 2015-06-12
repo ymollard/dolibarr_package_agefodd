@@ -95,7 +95,7 @@ class Agefodd_sesscalendar {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -156,7 +156,7 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -192,7 +192,7 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
 		
-		dol_syslog(get_class($this) . "::fetch_by_action sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_by_action", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -229,7 +229,7 @@ class Agefodd_sesscalendar {
 		$sql .= " WHERE s.fk_agefodd_session = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -271,7 +271,7 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -318,7 +318,7 @@ class Agefodd_sesscalendar {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -380,7 +380,7 @@ class Agefodd_sesscalendar {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -404,7 +404,6 @@ class Agefodd_sesscalendar {
 		
 		dol_include_once('/comm/action/class/actioncomm.class.php');
 		dol_include_once('/agefodd/class/agsession.class.php');
-		dol_include_once('/agefodd/class/agsession.class.php');
 		
 		$action = new ActionComm($this->db);
 		$session = new Agsession($this->db);
@@ -423,6 +422,7 @@ class Agefodd_sesscalendar {
 		$action->elementtype = $session->element;
 		$action->type_code = 'AC_AGF_SESS';
 		$action->percentage=-1;
+		$action->userownerid=$user->id;
 		if (! empty($session->fk_soc)) {
 			$action->societe->id = $session->fk_soc;
 		}
@@ -465,6 +465,11 @@ class Agefodd_sesscalendar {
 		}
 		
 		$result = $action->fetch($this->fk_actioncomm);
+		if ($result < 0) {
+			$error ++;
+		}
+		
+		$result = $action->fetch_userassigned();
 		if ($result < 0) {
 			$error ++;
 		}

@@ -78,7 +78,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as se";
 		$sql .= " WHERE se.status = 4";
 		
-		dol_syslog(get_class($this) . "::fetch_student_nb sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_student_nb", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -115,7 +115,7 @@ class Agefodd_index {
 		$sql .= " WHERE status = 4";
 		$sql .= " AND entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch_session_nb sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_session_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -146,7 +146,7 @@ class Agefodd_index {
 		$sql .= " WHERE archive = 0";
 		$sql .= " AND entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch_formation_nb sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_formation_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -180,7 +180,7 @@ class Agefodd_index {
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		// $sql.= " GROUP BY f.duree";
 		
-		dol_syslog(get_class($this) . "::fetch_heures_sessions_nb sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_heures_sessions_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -216,7 +216,7 @@ class Agefodd_index {
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		// $sql.= " GROUP BY f.duree";
 		
-		dol_syslog(get_class($this) . "::fetch_heures_stagiaires_nb sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_heures_stagiaires_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -251,7 +251,7 @@ class Agefodd_index {
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " ORDER BY s.dated DESC LIMIT " . $number;
 		
-		dol_syslog(get_class($this) . "::fetch_last_formations sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_last_formations", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -300,7 +300,7 @@ class Agefodd_index {
 		$sql .= " GROUP BY c.intitule, c.duree,s.fk_formation_catalogue";
 		$sql .= " ORDER BY num DESC LIMIT " . $number;
 		
-		dol_syslog(get_class($this) . "::fetch_top_formations sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_top_formations", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -348,7 +348,7 @@ class Agefodd_index {
 		
 		$sql .= " AND entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch_session sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -383,7 +383,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE (datea - INTERVAL " . $intervalday . ") <= NOW() AND archive = 0 AND (NOW() < datef)";
 		
-		dol_syslog(get_class($this) . "::fetch_tache_en_retard sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_tache_en_retard", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -425,7 +425,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE archive = 0";
 		
-		dol_syslog(get_class($this) . "::fetch_tache_en_cours sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_tache_en_cours", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -492,7 +492,7 @@ class Agefodd_index {
 		
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog(get_class($this) . "::fetch_session_per_dateLimit sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_session_per_dateLimit", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -539,7 +539,7 @@ class Agefodd_index {
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " GROUP BY sa.fk_agefodd_session";
 		
-		dol_syslog(get_class($this) . "::fetch_session_to_archive sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_session_to_archive", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -593,7 +593,7 @@ class Agefodd_index {
 		
 		
 		
-		dol_syslog(get_class($this) . "::fetch_certif_expire sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_certif_expire", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();

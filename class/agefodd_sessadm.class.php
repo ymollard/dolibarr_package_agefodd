@@ -106,7 +106,7 @@ class Agefodd_sessadm extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -182,7 +182,7 @@ class Agefodd_sessadm extends CommonObject {
 		// exit;
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -232,7 +232,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.rowid = '" . $id . "'";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -278,7 +278,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -332,7 +332,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " WHERE s.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -363,7 +363,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -384,7 +384,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE fk_agefodd_session = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -409,7 +409,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " WHERE s.rowid = " . $sessid;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -441,7 +441,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.fk_parent_level = " . $id;
 		
-		dol_syslog(get_class($this) . "::has_child sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::has_child", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -490,7 +490,7 @@ class Agefodd_sessadm extends CommonObject {
 		// exit;
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::setParentActionId sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::setParentActionId", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -534,7 +534,7 @@ class Agefodd_sessadm extends CommonObject {
 		// exit;
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::updateByTriggerName sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::updateByTriggerName", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;

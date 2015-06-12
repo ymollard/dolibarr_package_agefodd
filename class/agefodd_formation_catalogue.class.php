@@ -148,7 +148,7 @@ class Agefodd extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -215,7 +215,7 @@ class Agefodd extends CommonObject {
 			$sql .= " WHERE c.ref = '" . $ref . "'";
 		$sql .= " AND c.entity IN (" . getEntity('agsession') . ")";
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -277,7 +277,7 @@ class Agefodd extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE c.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -361,7 +361,7 @@ class Agefodd extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -416,7 +416,7 @@ class Agefodd extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if (! $resql) {
@@ -476,7 +476,7 @@ class Agefodd extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -526,7 +526,7 @@ class Agefodd extends CommonObject {
 		$sql .= " as o";
 		$sql .= " WHERE o.rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -560,7 +560,7 @@ class Agefodd extends CommonObject {
 		$sql .= " WHERE o.fk_formation_catalogue = " . $id_formation;
 		$sql .= " ORDER BY o.priorite ASC";
 		
-		dol_syslog(get_class($this) . "::fetch_objpeda_per_formation sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_objpeda_per_formation ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
@@ -616,7 +616,7 @@ class Agefodd extends CommonObject {
 		
 		$this->db->begin();
 		
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -660,7 +660,7 @@ class Agefodd extends CommonObject {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda";
 		$sql .= " WHERE rowid = " . $id;
 		
-		dol_syslog(get_class($this) . "::remove sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::remove ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		
 		if ($resql) {
@@ -765,7 +765,7 @@ class Agefodd extends CommonObject {
 		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule";
 		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit($limit + 1, $offset);
 		
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
