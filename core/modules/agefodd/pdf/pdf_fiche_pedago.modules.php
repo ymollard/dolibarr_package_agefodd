@@ -475,7 +475,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				}
 				$this->pdf->SetXY($posX, $posY);
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				
+				//$this->pdf->SetXY($posX, $this->pdf->GetY());
 				// Pied de page
 				$this->_pagefoot($agf, $outputlangs);
 				// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
@@ -602,7 +602,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		
 		
 		$this->pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$this->pdf->Line($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
+		$this->pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+		return pdf_agfpagefoot($this->pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
+		/*$this->pdf->Line($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
 		
 		$this->str = $mysoc->name;
 		
@@ -646,7 +648,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->pdf->SetXY($this->marge_gauche, $this->page_hauteur - 16);
 		$this->pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 		
-		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);*/
 	}
 	
 	

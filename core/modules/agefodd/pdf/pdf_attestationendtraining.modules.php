@@ -573,6 +573,8 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) 
 	{
-		return pdf_agfpagefoot($pdf,$outputlangs,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$this->colorfooter);
+		$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+		return pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
 	}
 }

@@ -2,6 +2,7 @@
 /*
  * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
  * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
+ * Copyright (C) 2014-2015 Philippe Grand  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -399,50 +400,20 @@ function agefodd_admin_prepare_head() {
  * @param string $param add to url
  * @return array Array of head
  */
-function agf_calendars_prepare_head($param) {
+function calendars_prepare_head($param) {
 	global $langs, $conf, $user;
 	
 	$h = 0;
-	$head = array();
+	$head = array ();
 	
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_month'.($param?'&'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgenda");
-	$head[$h][2] = 'cardmonth';
-	$h++;
+	$head [$h] [0] = dol_buildpath("/agefodd/agenda/index.php", 1) . ($param ? '?' . $param : '');
+	$head [$h] [1] = $langs->trans("AgfMenuAgenda");
+	$head [$h] [2] = 'card';
+	$h ++;
 	
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_week'.($param?'&'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewWeek");
-	$head[$h][2] = 'cardweek';
-	$h++;
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_agenda');
 	
-	//$paramday=$param;
-	//if (preg_match('/&month=\d+/',$paramday) && ! preg_match('/&day=\d+/',$paramday)) $paramday.='&day=1';
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_day'.($param?'&'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewDay");
-	$head[$h][2] = 'cardday';
-	$h++;
-	
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/pertrainer.php", 1).($param?'?'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewPerUser");
-	$head[$h][2] = 'cardperuser';
-	$h++;
-	
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/listactions.php", 1).($param?'?'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewList");
-	$head[$h][2] = 'cardlist';
-	$h++;
-	
-	$object=new stdClass();
-	
-	// Show more tabs from modules
-	// Entries must be declared in modules descriptor with line
-	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
-	// $this->tabs = array('entity:-tabname);   												to remove a tab
-	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda');
-	
-	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda','remove');
-	
-			return $head;
+	return $head;
 }
 
 /**
@@ -504,7 +475,7 @@ function ebi_get_level_number($session) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as l";
 	$sql .= " WHERE l.level_rank = 0 AND l.fk_agefodd_session=" . $session;
 	
-	dol_syslog("ebi_get_level_number", LOG_DEBUG);
+	dol_syslog("ebi_get_level_number sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -532,7 +503,7 @@ function ebi_get_adm_lastFinishLevel($sessid) {
 	$sql .= ' WHERE s.level_rank =0 ';
 	$sql .= " AND fk_agefodd_session = " . $sessid;
 	
-	dol_syslog("ebi_get_adm_lastFinishLevel", LOG_DEBUG);
+	dol_syslog("ebi_get_adm_lastFinishLevel sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -648,7 +619,7 @@ function ebi_get_adm_indice_action_child($id) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	
-	dol_syslog("agefodd:lib:ebi_get_adm_indice_action_child", LOG_DEBUG);
+	dol_syslog("agefodd:lib:ebi_get_adm_indice_action_child sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -813,7 +784,7 @@ function ebi_get_adm_get_next_indice_action($id) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	
-	dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action", LOG_DEBUG);
+	dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -826,7 +797,7 @@ function ebi_get_adm_get_next_indice_action($id) {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel WHERE rowid=" . $id . ")";
 			
-			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action", LOG_DEBUG);
+			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
@@ -860,7 +831,7 @@ function ebi_get_adm_training_get_next_indice_action($id) {
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	
-	dol_syslog("ebi_get_adm_training_get_next_indice_action", LOG_DEBUG);
+	dol_syslog("ebi_get_adm_training_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -873,7 +844,7 @@ function ebi_get_adm_training_get_next_indice_action($id) {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel WHERE rowid=" . $id . ")";
 			
-			dol_syslog("ebi_get_adm_training_get_next_indice_action", LOG_DEBUG);
+			dol_syslog("ebi_get_adm_training_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
@@ -909,7 +880,7 @@ function ebi_get_next_indice_action($id, $sessionid) {
 	$sql .= " WHERE fk_parent_level=" . $id;
 	$sql .= " AND fk_agefodd_session=" . $sessionid;
 	
-	dol_syslog("ebi_get_get_next_indice_action", LOG_DEBUG);
+	dol_syslog("ebi_get_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -923,7 +894,7 @@ function ebi_get_next_indice_action($id, $sessionid) {
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE rowid=" . $id . " AND fk_agefodd_session=" . $sessionid . ")";
 			$sql .= " AND fk_agefodd_session=" . $sessionid;
 			
-			dol_syslog("ebi_get_get_next_indice_action", LOG_DEBUG);
+			dol_syslog("ebi_get_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
@@ -972,60 +943,214 @@ function agf_hex2rgb($hex) {
 }
 
 /**
+ *  Show footer of page for PDF generation
  *
- * @param unknown $pdf
- * @param unknown $outputlangs
- * @param unknown $marge_basse
- * @param unknown $marge_gauche
- * @param unknown $page_hauteur
- * @param unknown $colorfooter
- * @return number
+ *	@param	PDF			&$pdf     		The PDF factory
+ *  @param  Translate	$outputlangs	Object lang for output
+ * 	@param	string		$paramfreetext	Constant name of free text
+ * 	@param	Societe		$fromcompany	Object company
+ * 	@param	int			$marge_basse	Margin bottom we use for the autobreak
+ * 	@param	int			$marge_gauche	Margin left (no more used)
+ * 	@param	int			$page_hauteur	Page height (no more used)
+ * 	@param	Object		$object			Object shown in PDF
+ * 	@param	int			$showdetails	Show company details into footer. This param seems to not be used by standard version.
+ *  @param	int			$hidefreetext	1=Hide free text, 0=Show free text
+ * 	@return	int							Return height of bottom margin including footer text
  */
-function pdf_agfpagefoot($pdf,$outputlangs,$marge_basse,$marge_gauche,$page_hauteur,$colorfooter)
+function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_basse,$marge_gauche,$page_hauteur,$object,$showdetails=0,$hidefreetext=1)
 {
-	global $conf, $langs, $mysoc;
+	global $conf,$user;
 
-	$str = $mysoc->name;
+	$outputlangs->load("dict");
+	$outputlangs->load("companies");
+	$line='';
 
-	$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-	$pdf->SetTextColor($colorfooter[0], $colorfooter[1], $colorfooter[2]);
-	$pdf->SetXY($marge_gauche, $page_hauteur - 20);
-	$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 0, 0, 'C');
+	$dims=$pdf->getPageDimensions();
 
-	$str = $mysoc->address . " ";
-	$str .= $mysoc->zip . ' ' . $mysoc->town;
-	$str .= ' - ' . $mysoc->country;
-	$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot1') . ' ' . $mysoc->phone;
-	$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot2') . ' ' . $mysoc->email . "\n";
-
-	$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-	$str .= $statut;
-	if (! empty($mysoc->capital)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot3') . ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
-	}
-	if (! empty($mysoc->idprof2)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot4') . ' ' . $mysoc->idprof2;
-	}
-	if (! empty($mysoc->idprof4)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot5') . ' ' . $mysoc->idprof4;
-	}
-	if (! empty($mysoc->idprof3)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot6') . ' ' . $mysoc->idprof3;
-	}
-	$str .= "\n";
-	if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
-	}
-	if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot8') . ' ' . $conf->global->AGF_ORGANISME_PREF;
-	}
-	if (! empty($mysoc->tva_intra)) {
-		$str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot9') . ' ' . $mysoc->tva_intra;
+	// Line of free text
+	if (empty($hidefreetext) && ! empty($conf->global->$paramfreetext))
+	{
+		// Make substitution
+		$substitutionarray=array(
+		'__FROM_NAME__' => $fromcompany->nom,
+		'__FROM_EMAIL__' => $fromcompany->email,
+		'__TOTAL_TTC__' => $object->total_ttc,
+		'__TOTAL_HT__' => $object->total_ht,
+		'__TOTAL_VAT__' => $object->total_vat
+		);
+		complete_substitutions_array($substitutionarray,$outputlangs,$object);
+		$newfreetext=make_substitutions($conf->global->$paramfreetext,$substitutionarray);
+		$line.=$outputlangs->convToOutputCharset($newfreetext);
 	}
 
-	$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-	$pdf->SetXY($marge_gauche, $page_hauteur - 16);
-	$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($str), 0, 'C');
+	// First line of company infos
 
-	return 1;
+	if ($showdetails)
+	{
+		$line1="";
+		// Company name
+		if ($fromcompany->name)
+		{
+			$line1.=($line1?" - ":"").$fromcompany->name;
+		}
+
+		$line2="";
+		// Address
+		if ($fromcompany->address)
+		{
+			$fromcompany->address = str_replace(array( '<br>', '<br />', "\n", "\r" ), array( ' ', ' ', ' ', ' ' ), $fromcompany->address);
+			$line2.=($line2?" - ":"").$fromcompany->address;
+		}
+		// Zip code
+		if ($fromcompany->zip)
+		{
+			$line2.=($line2?" - ":"").$fromcompany->zip;
+		}
+		// Town
+		if ($fromcompany->town)
+		{
+			$line2.=($line2?" ":"").$fromcompany->town;
+		}
+		// country
+		if ($fromcompany->country)
+		{
+			$line2.=($line2?" ":"").$fromcompany->country;
+		}
+		// Phone
+		if ($fromcompany->phone)
+		{
+			$line2.=($line2?" - ":"").$outputlangs->transnoentities("Tel").": ".$fromcompany->phone;
+		}
+		// Mail
+		if ($fromcompany->email)
+		{
+			$line2.=($line2?" - ":"").$outputlangs->transnoentities("Courriel").": ".$fromcompany->email;
+		}
+		// Juridical status
+		if ($fromcompany->forme_juridique_code)
+		{
+			$line2.=($line2?" - ":"").$outputlangs->convToOutputCharset(getFormeJuridiqueLabel($fromcompany->forme_juridique_code));
+		}
+		// Capital
+		/*if ($fromcompany->capital)
+		{
+			$line2.=($line2?" - ":"").$outputlangs->transnoentities("CapitalOf",$fromcompany->capital)." ".$outputlangs->transnoentities("Currency".$conf->currency);
+		}*/
+	}
+
+		// Line 3 of company infos
+		$line3="";
+		// Prof Id 1
+		if ($fromcompany->idprof1 && ($fromcompany->country_code != 'FR' || ! $fromcompany->idprof2))
+		{
+			$field=$outputlangs->transcountrynoentities("ProfId1",$fromcompany->country_code);
+			if (preg_match('/\((.*)\)/i',$field,$reg)) $field=$reg[1];
+			$line3.=($line3?" - ":"").$field.": ".$outputlangs->convToOutputCharset($fromcompany->idprof1);
+		}
+		// Prof Id 2
+		if ($fromcompany->idprof2)
+		{
+			$field=$outputlangs->transcountrynoentities("ProfId2",$fromcompany->country_code);
+			if (preg_match('/\((.*)\)/i',$field,$reg)) $field=$reg[1];
+			$line3.=($line3?" - ":"").$field.": ".$outputlangs->convToOutputCharset($fromcompany->idprof2);
+		}
+		// Prof Id 3
+		if ($fromcompany->idprof3)
+		{
+			$field=$outputlangs->transcountrynoentities("ProfId3",$fromcompany->country_code);
+			if (preg_match('/\((.*)\)/i',$field,$reg)) $field=$reg[1];
+			$line3.=($line3?" - ":"").$field.": ".$outputlangs->convToOutputCharset($fromcompany->idprof3);
+		}
+		if (! empty($conf->global->AGF_ORGANISME_PREF)) 
+		{
+			$field=$outputlangs->transnoentities('AgfPDFFoot7',$conf->global->AGF_ORGANISME_NUM).' - '.$outputlangs->transnoentities('AgfPDFFoot8');
+			if (preg_match('/(.*)/i',$field,$reg)) $field=$reg[1];
+			$line3.=($line3?" - ":"").$field." ".$conf->global->AGF_ORGANISME_PREF;
+		}
+
+	// Line 4 of company infos
+	$line4="";
+	
+	// Prof Id 3
+	if ($fromcompany->tva_intra != '')
+	{
+		$line4.=($line4?" - ":"").$outputlangs->transnoentities("VATIntraShort").": ".$outputlangs->convToOutputCharset($fromcompany->tva_intra);
+	}
+	
+	// Set free text font size
+	if (! empty($conf->global->ULTIMATEPDF_FREETEXT_FONT_SIZE)) {
+		$freetextfontsize=$conf->global->ULTIMATEPDF_FREETEXT_FONT_SIZE;
+	}
+	$pdf->SetFont('','',$freetextfontsize);
+	//$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+
+	// On positionne le debut du bas de page selon nbre de lignes de ce bas de page
+	$freetextheight=0;
+	if ($line)	// Free text
+	{
+		$width=20000; $align='L';	// By default, ask a manual break: We use a large value 20000, to not have automatic wrap. This make user understand, he need to add CR on its text.
+		if (! empty($conf->global->MAIN_USE_AUTOWRAP_ON_FREETEXT)) {
+			$width=$page_largeur-$marge_gauche-$marge_droite; $align='C';
+		}
+		$freetextheight=$pdf->getStringHeight($width,$line);
+	}
+
+	var_dump($marge_basse);
+	var_dump($freetextheight);
+	var_dump($line1);
+	var_dump($line2);
+	var_dump($line3);
+	var_dump($line4);
+	
+	$marginwithfooter=$marge_basse + $freetextheight + (! empty($line1)?3:0) + (! empty($line2)?3:0) + (! empty($line3)?3:0) + (! empty($line4)?3:0);
+	$posy=$marginwithfooter+0;
+	var_dump($posy);
+	
+	if ($line)	// Free text
+	{
+		$pdf->SetXY($dims['lm'],-$posy);
+		$pdf->MultiCell($width, 3, $line, 0, $align, 0);
+		$posy-=$freetextheight;
+	}
+	$pdf->SetFont('','',7);
+	$pdf->SetY(-$posy);
+	$pdf->line($dims['lm'], $dims['hk']-$posy, $dims['wk']-$dims['rm'], $dims['hk']-$posy);
+	$posy--;
+	var_dump($posy);
+	if (! empty($line1))
+	{
+		$pdf->SetFont('','B',7);
+		$pdf->SetXY($dims['lm'],-$posy+4);
+		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line1, 0, 'C', 0);
+		$posy-=7;
+		$pdf->SetFont('','',7);
+	}
+
+	if (! empty($line2))
+	{
+		$pdf->SetFont('','I',7);
+		$pdf->SetXY($dims['lm']-6,-$posy);
+		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line2, 0, 'C', 0);
+		$posy-=3;
+		$pdf->SetFont('','',7);
+	}
+
+	if (! empty($line3))
+	{
+		$pdf->SetFont('','I',7);
+		$pdf->SetXY($dims['lm']-6,-$posy);
+		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line3, 0, 'C', 0);
+	}
+
+	if (! empty($line4))
+	{
+		$posy-=3;
+		$pdf->SetXY($dims['lm'],-$posy);
+		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line4, 0, 'C', 0);
+	}
+	
+	$posy-=3;
+	$pdf->SetXY($dims['lm'],-$posy);
+
+	return $marginwithfooter;
 }
