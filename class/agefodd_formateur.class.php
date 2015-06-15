@@ -423,6 +423,16 @@ class Agefodd_teacher extends CommonObject {
 			return - 1;
 		}
 	}
+	
+	public function getNomUrl($label='name') {
+		$link=dol_buildpath('/agefodd/trainer/card.php',1);
+		if ($label=='name') {
+			return '<a href="'.$link.'?id='.$this->id.'">'.$this->name.' '.$this->firstname.'</a>';
+		} else {
+			return '<a href="'.$link.'?id='.$this->id.'">'.$this->$label.'</a>';
+		}
+		
+	}
 }
 class AgfTrainerLine {
 	var $id;
@@ -438,5 +448,15 @@ class AgfTrainerLine {
 	var $fk_socpeople;
 	function __construct() {
 		return 1;
+	}
+	
+	public function getNomUrl($label='name') {
+		$link=dol_buildpath('/agefodd/trainer/card.php',1);
+		if ($label=='name') {
+			return '<a href="'.$link.'?id='.$this->id.'">'.$this->name.' '.$this->firstname.'</a>';
+		} else {
+			return '<a href="'.$link.'?id='.$this->id.'">'.$this->$label.'</a>';
+		}
+	
 	}
 }

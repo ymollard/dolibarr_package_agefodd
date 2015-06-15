@@ -88,7 +88,7 @@ if (! $sortfield) $sortfield="a.datec";
 
 $canedit = 1;
 
-if ($type == 'trainer') {
+if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
 	
 	$filter_trainer = $user->id;

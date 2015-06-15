@@ -456,6 +456,15 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [4] = 1;
 		$this->const [$r] [5] = 0;
 		
+		$r ++;
+		$this->const [$r] [0] = "MAIN_MODULES_FOR_EXTERNAL";
+		$this->const [$r] [1] = "chaine";
+		$this->const [$r] [2] = 'user,facture,categorie,commande,fournisseur,contact,propal,projet,contrat,societe,ficheinter,expedition,agenda,adherent,agefodd';
+		$this->const [$r] [3] = 'External modules availability';
+		$this->const [$r] [4] = 1;
+		$this->const [$r] [5] = 0;
+		
+		
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array ();
@@ -1040,7 +1049,7 @@ class modAgefodd extends DolibarrModules {
 				'enabled' => '$user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
-				'user' => 0 
+				'user' => 2 
 		);
 
 		$r ++;
@@ -1367,7 +1376,7 @@ class modAgefodd extends DolibarrModules {
 				'enabled' => '$user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
-				'user' => 0 
+				'user' => 2 
 		);
 		
 		$r ++;
@@ -1389,7 +1398,7 @@ class modAgefodd extends DolibarrModules {
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
 				'type' => 'left',
 				'titre' => 'AgfMenuAgendaTrainerOnly',
-				'url' => '/agefodd/agenda/index.php?displayonlytrainerfilter=1',
+				'url' => '/agefodd/agenda/pertrainer.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 503,
 				'enabled' => '$user->rights->agefodd->agenda',
@@ -1403,13 +1412,13 @@ class modAgefodd extends DolibarrModules {
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
 				'type' => 'left',
 				'titre' => 'AgfMenuAgendaTrainer',
-				'url' => '/agefodd/agenda/index.php?type=trainer',
+				'url' => '/agefodd/agenda/pertrainer.php?type=trainerext',
 				'langs' => 'agefodd@agefodd',
 				'position' => 504,
 				'enabled' => '$user->rights->agefodd->agendatrainer',
 				'perms' => '$user->rights->agefodd->agendatrainer',
 				'target' => '',
-				'user' => 0 
+				'user' => 2 
 		);
 		
 		$r ++;

@@ -1265,6 +1265,7 @@ class FormAgefodd extends Form {
 		print '<input type="hidden" name="month" value="' . $month . '">';
 		print '<input type="hidden" name="day" value="' . $day . '">';
 		print '<input type="hidden" name="action" value="' . $action . '">';
+		print '<input type="hidden" name="onlysession" value="' . $onlysession. '">';
 		print '<input type="hidden" name="displayonlytrainerfilter" value="' . $display_only_trainer_filter . '">';
 		print '<table class="nobordernopadding" width="100%">';
 
@@ -1357,6 +1358,15 @@ class FormAgefodd extends Form {
 				print '</td>';
 				print "</tr>\n";
 			}
+			
+			if (strpos($_SERVER ["PHP_SELF"], 'pertrainer.php') !== false) {
+				print '<tr>';
+				print '<td class="nowrap">' . $langs->trans("DateStart") . '</td>';
+				print '<td>';
+				$form->select_date($filterdatestart, 'dt_start_filter', 0, 0, 1);
+				print '</td>';
+				print "</tr>\n";
+			}
 
 			print '<tr>';
 			print '<td class="nowrap maxwidthonsmartphone">';
@@ -1388,14 +1398,15 @@ class FormAgefodd extends Form {
 
 	if (! empty($conf->browser->phone)) print '<div class="fichehalfright">';
 	else print '<td align="center" valign="middle" class="nowrap">';
-
-	print '<table><tr><td align="center">';
-	print '<div class="formleftzone">';
-	print '<input type="submit" class="button" style="min-width:120px" name="refresh" value="' . $langs->trans("Refresh") . '">';
-	print '</div>';
-	print '</td></tr>';
+	if ($canedit)
+	{
+		print '<table><tr><td align="center">';
+		print '<div class="formleftzone">';
+		print '<input type="submit" class="button" style="min-width:120px" name="refresh" value="' . $langs->trans("Refresh") . '">';
+		print '</div>';
+		print '</td></tr>';
 		print '</table>';
-
+	}
 	if (! empty($conf->browser->phone)) print '</div>';
 	else print '</td></tr></table>';
 

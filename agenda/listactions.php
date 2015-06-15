@@ -63,6 +63,9 @@ $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth', 'int'), GETPOST('dt_start_filterday', 'int'), GETPOST('dt_start_filteryear', 'int'));
 $filterdatesend = dol_mktime(0, 0, 0, GETPOST('dt_end_filtermonth', 'int'), GETPOST('dt_end_filterday', 'int'), GETPOST('dt_end_filteryear', 'int'));
 $onlysession = GETPOST('onlysession', 'int');
+if ($onlysession != '0') {
+	$onlysession = 1;
+}
 
 $filter = GETPOST("filter", '', 3);
 $filter_commercial = GETPOST('commercial', 'int');
@@ -251,8 +254,6 @@ if (! empty($filter_trainer)) {
 $sql .= " WHERE c.id = a.fk_action";
 $sql .= ' AND a.fk_user_author = u.rowid';
 $sql .= ' AND a.entity IN (' . getEntity() . ')'; // To limit to entity
-if ($actioncode)
-	$sql .= " AND c.code='" . $db->escape($actioncode) . "'";
 if ($pid)
 	$sql .= " AND a.fk_project=" . $db->escape($pid);
 if (! $user->rights->societe->client->voir && ! $socid)
