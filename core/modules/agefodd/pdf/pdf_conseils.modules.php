@@ -71,6 +71,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		$this->default_font_size=12;
 		
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -91,8 +92,6 @@ class pdf_conseils extends ModelePDFAgefodd {
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
 		global $user, $langs, $conf, $mysoc;
-		
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
 		
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
@@ -153,7 +152,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$pdf->AddPage();
 				$pagenb ++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 				
@@ -180,7 +179,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 							                                                                                                                                                                                              // (auto)
 					} else {
 						$pdf->SetTextColor(200, 0, 0);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 8);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size);
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'R');
 						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
 					}
@@ -193,12 +192,12 @@ class pdf_conseils extends ModelePDFAgefodd {
 				
 				// $posX += $this->page_largeur - $this->marge_droite - 65;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-1);
 				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 				$pdf->SetXY($posX, $posY - 1);
 				$pdf->Cell(0, 5, $mysoc->name, 0, 0, 'L');
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
 				$pdf->SetXY($posX, $posY + 3);
 				$this->str = $mysoc->address . "\n";
 				$this->str .= $mysoc->zip . ' ' . $mysoc->town;
@@ -246,14 +245,14 @@ class pdf_conseils extends ModelePDFAgefodd {
 				/**
 				 * *** Titre ****
 				 */
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 15);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size+3);
 				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->trans("AgfConseilsPratique");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
 				$posY = $pdf->GetY() + 10;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 				$this->str = $agf_session->intitule_custo;
 				
@@ -271,13 +270,13 @@ class pdf_conseils extends ModelePDFAgefodd {
 				 * *** Doucment required ****
 				 */
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9); // $pdf->SetFont('Arial','B',9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfDocNeeded");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
 				$posY += 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = ucfirst($agf->note1);
 				$pdf->SetXY($posX, $posY);
 				
@@ -289,13 +288,13 @@ class pdf_conseils extends ModelePDFAgefodd {
 				 * *** Equipement required ****
 				 */
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9); // $pdf->SetFont('Arial','B',9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfEquiNeeded");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
 				$posY += 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = ucfirst($agf->note2);
 				
 				$pdf->SetXY($posX, $posY);
@@ -306,13 +305,13 @@ class pdf_conseils extends ModelePDFAgefodd {
 				 * *** Site ****
 				 */
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9); // $pdf->SetFont('Arial','B',9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfLieu");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
 				$posY += 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = ucfirst($agf_session->placecode);
 				
 				$pdf->SetXY($posX, $posY);
@@ -320,7 +319,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				
 				$posY = $pdf->GetY() + 2;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = $agf_place->adresse . ' - ' . $agf_place->cp . ' ' . $agf_place->ville;
 				
 				$pdf->SetXY($posX, $posY);
@@ -331,13 +330,13 @@ class pdf_conseils extends ModelePDFAgefodd {
 				 * *** Acces au sites ****
 				 */
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9); // $pdf->SetFont('Arial','B',9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfAccesSite");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
 				$posY += 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = ucfirst($agf_place->acces_site);
 				
 				$pdf->SetXY($posX, $posY);
@@ -348,13 +347,13 @@ class pdf_conseils extends ModelePDFAgefodd {
 				 * *** Divers ****
 				 */
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $langs->transnoentities("AgfPlaceNote1");
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
 				$posY += 5;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = ucfirst($agf_place->note1);
 				
 				$pdf->SetXY($posX, $posY);
@@ -410,75 +409,8 @@ class pdf_conseils extends ModelePDFAgefodd {
 		global $conf, $langs, $mysoc;
 		
 		$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$pdf->Line($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
-		
-		$this->str = $mysoc->name;
-		
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 20);
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
-		
-		$this->str = $mysoc->address . " ";
-		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-		$this->str .= ' - ' . $mysoc->country;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot1') . ' ' . $mysoc->phone;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot2') . ' ' . $mysoc->email . "\n";
-		
-		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-		$this->str .= $statut;
-		if (! empty($mysoc->capital)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot3') . ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
-		}
-		if (! empty($mysoc->idprof2)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot4') . ' ' . $mysoc->idprof2;
-		}
-		if (! empty($mysoc->idprof4)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot5') . ' ' . $mysoc->idprof4;
-		}
-		if (! empty($mysoc->idprof3)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot6') . ' ' . $mysoc->idprof3;
-		}
-		$this->str .= "\n";
-		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
-		}
-		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot8') . ' ' . $conf->global->AGF_ORGANISME_PREF;
-		}
-		if (! empty($mysoc->tva_intra)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot9') . ' ' . $mysoc->tva_intra;
-		}
-		
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 16);
-		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+		return pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
 	}
 	
-	/**
-	 * \brief		Formatage d'une liste à puce hierarchisée
-	 * \param		pdf PDF factory
-	 * \param		outputlang		Object lang for output
-	 */
-	function liste_a_puce($text) {
-		// - 1er niveau: remplacement de '# ' en debut de ligne par une puce de niv 1 (petit rond noir)
-		// - 2éme niveau: remplacement de '## ' en début de ligne par une puce de niv 2 (tiret)
-		// - 3éme niveau: remplacement de '### ' en début de ligne par une puce de niv 3 (>)
-		// Pour annuler le formatage (début de ligne sur la mage gauche : '!#'
-		$str = "";
-		$line = explode("\n", $text);
-		foreach ( $line as $row ) {
-			if (preg_match('/^\!# /', $row))
-				$str .= preg_replace('/^\!# /', '', $row) . "\n";
-			elseif (preg_match('/^# /', $row))
-				$str .= chr(149) . ' ' . preg_replace('/^#/', '', $row) . "\n";
-			elseif (preg_match('/^## /', $row))
-				$str .= '   ' . '-' . preg_replace('/^##/', '', $row) . "\n";
-			elseif (preg_match('/^### /', $row))
-				$str .= '   ' . '  ' . chr(155) . ' ' . preg_replace('/^###/', '', $row) . "\n";
-			else
-				$str .= '   ' . $row . "\n";
-		}
-		return $str;
-	}
 }

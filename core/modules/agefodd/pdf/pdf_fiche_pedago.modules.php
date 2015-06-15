@@ -68,7 +68,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
 		$this->marge_haute = 10;
-		$this->marge_basse = 50;
+		$this->marge_basse = 10;
 		$this->unit = $formatarray['unit'];
 		$this->oriantation = 'P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
@@ -76,7 +76,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 		$this->espace_apres_corps_text = 4;
 		$this->espace_apres_titre = 0;
-		$this->default_font_size=10;
+		$this->default_font_size=12;
 		
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -175,7 +175,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
 				$posY = $this->pdf->GetY()+10;
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 				$this->str = $agf->intitule;
 				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
@@ -192,7 +192,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 * *** But ****
 				 */
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 12);
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfBut');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -219,7 +219,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				// Récuperation
 				$result2 = $agf->fetch_objpeda_per_formation($agf->id);
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12'); // $this->pdf->SetFont('Arial','B',9);
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1); // $this->pdf->SetFont('Arial','B',9);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfObjPeda');
 				
@@ -233,13 +233,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$hauteur = 0;
 				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 				for($y = 0; $y < count($agf->lines); $y ++) {
-					if ($y > 0)
-						$posY += $hauteur;
+					
 					$this->pdf->SetXY($posX, $posY);
 					$hauteur = dol_nboflines_bis($agf->lines [$y]->intitule, 100) * 4;
 					
-					$this->pdf->Cell(10, 4, $agf->lines [$y]->priorite . '. ', 0, 0, 'L', 0);
-					$this->pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->lines [$y]->intitule), 0, 'L');
+					$this->pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->lines [$y]->priorite.'.   '.$agf->lines [$y]->intitule), 0, 'L');
+					$posY= $this->pdf->GetY();
 				}
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				
@@ -247,7 +246,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 * *** Pré requis ****
 				 */
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPrerequis');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -256,7 +255,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', '9');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = $agf->prerequis;
 				
 				if (empty($this->str))
@@ -272,7 +271,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 * *** Public ****
 				 */
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPublic');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -294,7 +293,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 * *** Moyens pédagogique ****
 				 */
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPedagoUsage');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -316,7 +315,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 * *** Sanction ****
 				 */
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfSanction');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -391,7 +390,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 * *** Programme ****
 				 */
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfProgramme');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -423,7 +422,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				
 				$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 				$this->pdf->SetXY($posX, $posY);
@@ -434,7 +433,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', '9');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$this->str = $agf->methode;
 				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
 				$this->pdf->SetXY($posX, $posY);
@@ -445,7 +444,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 
 				
 				// Durée
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', '12');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -454,7 +453,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', '9');
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				// calcul de la duree en nbre de jours
 				
 				if (empty($agf_session->duree_session)) {
@@ -600,55 +599,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 	function _pagefoot($object, $outputlangs) {
 		global $conf, $langs, $mysoc;
 		
-		
 		$this->pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
 		$this->pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
 		return pdf_agfpagefoot($this->pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
-		/*$this->pdf->Line($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
-		
-		$this->str = $mysoc->name;
-		
-		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-		$this->pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$this->pdf->SetXY($this->marge_gauche, $this->page_hauteur - 20);
-		$this->pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
-		
-		$this->str = $mysoc->address . " ";
-		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-		$this->str .= ' - ' . $mysoc->country;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot1') . ' ' . $mysoc->phone;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot2') . ' ' . $mysoc->email . "\n";
-		
-		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-		$this->str .= $statut;
-		if (! empty($mysoc->capital)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot3') . ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
-		}
-		if (! empty($mysoc->idprof2)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot4') . ' ' . $mysoc->idprof2;
-		}
-		if (! empty($mysoc->idprof4)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot5') . ' ' . $mysoc->idprof4;
-		}
-		if (! empty($mysoc->idprof3)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot6') . ' ' . $mysoc->idprof3;
-		}
-		$this->str .= "\n";
-		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
-		}
-		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot8') . ' ' . $conf->global->AGF_ORGANISME_PREF;
-		}
-		if (! empty($mysoc->tva_intra)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot9') . ' ' . $mysoc->tva_intra;
-		}
-		
-		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-		$this->pdf->SetXY($this->marge_gauche, $this->page_hauteur - 16);
-		$this->pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C');
-		
-		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);*/
 	}
 	
 	
@@ -661,10 +614,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 		// store starting values
 		$start_y = $this->pdf->GetY();
-		//print '$start_y='.$start_y;
+		//print '$start_y='.$start_y.'<br>';
 		
 		$start_page = $this->pdf->getPage();
-		//print '$start_page='.$start_page;
+		//print '$start_page='.$start_page.'<br>';
 		// call your printing functions with your parameters
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		$this->pdf->MultiCell(0, 5, $txt, 0, 'L', '', '2', '', '', '', '', $ishtml);
@@ -673,29 +626,36 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$end_y = $this->pdf->GetY();
 		$end_page = $this->pdf->getPage()-1;
 		// calculate height
-		//print '$end_y='.$end_y;
-		//print '$end_page='.$end_page;
+		//print '$end_y='.$end_y.'<br>';
+		//print '$end_page='.$end_page.'<br>';
 		
 		
 		$height = 0;
-		if ($end_page == $start_page) {
+		if ($end_page == $start_page && $end_y>$start_y) {
 			$height = $end_y - $start_y;
+			//print 'aa$height='.$height.'<br>';
 		} else {
 			for($page = $start_page; $page <= $end_page;  $page ++) {
 				$this->pdf->setPage($page);
+				//print '$page='.$page.'<br>';
 				if ($page == $start_page) {
 					// first page
 					$height = $this->page_hauteur - $start_y - $this->marge_basse;
+					//print '$height=$this->page_hauteur - $start_y - $this->marge_basse='.$this->page_hauteur .'-'. $start_y .'-'. $this->marge_basse.'='.$height.'<br>';
 				} elseif ($page == $end_page) {
 					// last page
+					//print '$height='.$height.'<br>';
 					$height += $end_y - $this->marge_haute;
+					//print '$height += $end_y - $this->marge_haute='.$end_y.'-'. $this->marge_haute.'='.$height.'<br>';
 				} else {
+					//print '$height='.$height.'<br>';
 					$height += $this->page_hauteur - $this->marge_haute - $this->marge_basse;
+					//print '$height += $this->page_hauteur - $this->marge_haute - $this->marge_basse='.$this->page_hauteur .'-'. $this->marge_haute .'-'. $this->marge_basse.'='.$height.'<br>';
 				}
 			}
 		} // restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
-		//print '$height='.$height;
+		//print '$heightfinnal='.$height.'<br>';
 		
 		//exit;
 		return $height;

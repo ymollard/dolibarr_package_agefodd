@@ -1095,16 +1095,8 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		$freetextheight=$pdf->getStringHeight($width,$line);
 	}
 
-	var_dump($marge_basse);
-	var_dump($freetextheight);
-	var_dump($line1);
-	var_dump($line2);
-	var_dump($line3);
-	var_dump($line4);
-	
 	$marginwithfooter=$marge_basse + $freetextheight + (! empty($line1)?3:0) + (! empty($line2)?3:0) + (! empty($line3)?3:0) + (! empty($line4)?3:0);
 	$posy=$marginwithfooter+0;
-	var_dump($posy);
 	
 	if ($line)	// Free text
 	{
@@ -1116,7 +1108,7 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 	$pdf->SetY(-$posy);
 	$pdf->line($dims['lm'], $dims['hk']-$posy, $dims['wk']-$dims['rm'], $dims['hk']-$posy);
 	$posy--;
-	var_dump($posy);
+
 	if (! empty($line1))
 	{
 		$pdf->SetFont('','B',7);
