@@ -369,9 +369,13 @@ if (! empty($id)) {
 	$head = session_prepare_head($agf);
 	
 	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	
+	
 	if ($result > 0) {
 		// Put user on the right action block after reload
-		if ((! empty($socid) || ! empty($sessiontrainerid)) && $action != 'unlink' && $action != 'createorder' && $action != 'createinvoice') {
+		if (((! empty($socid) || ! empty($sessiontrainerid)) && $action != 'unlink' && $action != 'createorder' && $action != 'createinvoice') 
+				|| ($socid==0 && ($action=='create' ||  $action=='refresh'))) {
+					
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
@@ -380,6 +384,8 @@ if (! empty($id)) {
 				print '				 $(documentBody).animate({scrollTop: $("#trainerid' . $sessiontrainerid . '").offset().top}, 500,\'easeInOutCubic\');';
 			} elseif (! empty($socid)) {
 				print '				 $(documentBody).animate({scrollTop: $("#socid' . $socid . '").offset().top}, 500,\'easeInOutCubic\');';
+			} elseif ($socid==0 && ($action=='create' ||  $action=='refresh')) {
+				print '				 $(documentBody).animate({scrollTop: $("#commondoc").offset().top-20}, 500,\'easeInOutCubic\');';
 			}
 			
 			print '			});
@@ -508,7 +514,7 @@ if (! empty($id)) {
 		
 		print '<tr class="liste_titre">' . "\n";
 		print '<td colspan=3>';
-		print $langs->trans("AgfCommonDocs") . '</td>' . "\n";
+		print $langs->trans("AgfCommonDocs") . '<a name="commondoc" id="commondoc"></a></td>' . "\n";
 		print '</tr>' . "\n";
 		
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
@@ -518,9 +524,10 @@ if (! empty($id)) {
 		// During training
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfDuringTraining") . '</td></tr>' . "\n";
 		document_line($langs->trans("AgfFichePresence"), "fiche_presence");
+		document_line($langs->trans("AgfFichePresenceDirect"), "fiche_presence_direct");
 		document_line($langs->trans("AgfFichePresenceEmpty"), "fiche_presence_empty");
 		document_line($langs->trans("AgfFichePresenceTrainee"), "fiche_presence_trainee");
-		document_line($langs->trans("AgfFichePresenceTraineeStd"), "fiche_presence_trainee_std");
+		document_line($langs->trans("AgfFichePresenceTraineeDirect"), "fiche_presence_trainee_direct");
 		document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
 		document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
 		
@@ -633,8 +640,8 @@ if (! empty($id)) {
 					// After training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfAfterTraining") . '</td></tr>' . "\n";
 					document_line($langs->trans("AgfAttestationEndTraining"), "attestationendtraining", $agf->lines[$i]->socid);
-					//document_line($langs->trans("AgfAttestationPresenceTraining"), "attestationpresencetraining", $agf->lines[$i]->socid);
-					//document_line($langs->trans("AgfAttestationPresenceCollective"), "attestationpresencecollective", $agf->lines[$i]->socid);
+					document_line($langs->trans("AgfAttestationPresenceTraining"), "attestationpresencetraining", $agf->lines[$i]->socid);
+					document_line($langs->trans("AgfAttestationPresenceCollective"), "attestationpresencecollective", $agf->lines[$i]->socid);
 					document_line($langs->trans("AgfSendAttestation"), "attestation", $agf->lines[$i]->socid);
 					
 					$text_fac = $langs->trans("AgfFacture");
@@ -688,7 +695,7 @@ if (! empty($id)) {
 		}
 		print '</div>' . "\n";
 	} else {
-		setEventMessage($agf->error, 'errors');
+		setEventMessages($agf->error, null, 'errors');
 	}
 }
 

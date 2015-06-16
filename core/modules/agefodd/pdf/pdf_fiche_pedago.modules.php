@@ -511,79 +511,86 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		pdf_pagehead($this->pdf, $outputlangs, $this->pdf->page_hauteur);
 		
 		$posY_ori = $this->pdf->getY();
-		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-		$this->pdf->MultiCell(0, 3, '', 0, 'J');
-		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-		
-		$posY = $this->marge_haute;
-		$posX = $this->marge_gauche;
-		
-		/*
-		 * Header société
-		*/
-		
-		// Logo en haut à droite
-		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
-		if ($this->emetteur->logo) {
-			if (is_readable($logo)) {
-				$heightLogo = pdf_getHeightForLogo($logo);
-				include_once (DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php');
-				$tmp = dol_getImageSize($logo);
-				if ($tmp ['width']) {
-					$widthLogo = $tmp ['width'];
-				}
-				$this->pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
-				// (auto)
-			} else {
-				$this->pdf->SetTextColor(200, 0, 0);
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 8);
-				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'R');
-				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
-			}
-		} else {
-			$text = $this->emetteur->name;
-			$this->pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-			$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
-			$this->pdf->MultiCell(150, 3, $outputlangs->convToOutputCharset($text), 0, 'R');
-		}
-		
-		// $posX += $this->page_largeur - $this->marge_droite - 65;
-		
-		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
-		
 		$this->pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-		$this->pdf->SetXY($posX, $posY - 1);
-		$this->pdf->Cell(0, 5, $mysoc->name, 0, 0, 'L');
 		
-		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-		$this->pdf->SetXY($posX, $posY + 3);
-		$this->str = $mysoc->address . "\n";
-		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-		$this->str .= ' - ' . $mysoc->country . "\n";
-		if ($mysoc->phone) {
-			$this->str .= $outputlangs->transnoentities('AgfPDFHead1') . ' ' . $mysoc->phone . "\n";
+		$posY=$this->marge_haute;
+		$posX=$this->page_largeur-$this->marge_droite-55;
+		
+		// Logo
+		$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+		if ($this->emetteur->logo)
+		{
+			if (is_readable($logo))
+			{
+				$height=pdf_getHeightForLogo($logo);
+				$this->pdf->Image($logo, $posX, $posY, 0, $height);	// width=0 (auto)
+			}
+			else
+			{
+				$this->pdf->SetTextColor(200,0,0);
+				$this->pdf->SetFont('','B',$this->default_font_size - 2);
+				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+			}
 		}
-		if ($mysoc->fax) {
-			$this->str .= $outputlangs->transnoentities('AgfPDFHead2') . ' ' . $mysoc->fax . "\n";
+		else
+		{
+			$text=$this->emetteur->name;
+			$this->pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
-		if ($mysoc->email) {
-			$this->str .= $outputlangs->transnoentities('AgfPDFHead3') . ' ' . $mysoc->email . "\n";
+		// Other Logo
+		if ($conf->multicompany->enabled) {
+			$sql = 'SELECT value FROM ' . MAIN_DB_PREFIX . 'const WHERE name =\'MAIN_INFO_SOCIETE_LOGO\' AND entity=1';
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				setEventMessage($this->db->lasterror, 'errors');
+			} else {
+				$obj = $this->db->fetch_object($resql);
+				$image_name = $obj->value;
+			}
+			if (! empty($image_name)) {
+				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
+				if (is_readable($otherlogo)) {
+					$logo_height = pdf_getHeightForLogo($otherlogo, true);
+					$this->pdf->Image($otherlogo, $this->marge_gauche + 90, $posY, 0, $logo_height); // width=0 (auto)
+				}
+			}
 		}
-		if ($mysoc->url) {
-			$this->str .= $outputlangs->transnoentities('AgfPDFHead4') . ' ' . $mysoc->url . "\n";
-		}
 		
-		$this->pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+		// Sender properties
+		// Show sender
+		$posy=$this->marge_haute;
+		$posx=$this->marge_gauche;
 		
-		$posY = $this->pdf->getY()+5;
+		$hautcadre=30;
+		$this->pdf->SetXY($posx,$posy);
+		$this->pdf->SetFillColor(255,255,255);
+		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 		
-		$this->pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-		$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+		// Show sender name
+		$this->pdf->SetXY($posx,$posy);
+		$this->pdf->SetFont('','B', $this->default_font_size -2);
+		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+		$posy=$this->pdf->getY();
+
+		// Show sender information
+		$this->pdf->SetXY($posx,$posy);
+		$this->pdf->SetFont('','', $this->default_font_size - 3);
+		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
+		$posy=$this->pdf->getY();
+		$this->pdf->SetXY($posx,$posy);
+		$this->pdf->SetFont('','', $this->default_font_size - 3);
+		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip.' '.$this->emetteur->town), 0, 'L');
+		$posy=$this->pdf->getY();
+		$this->pdf->SetXY($posx,$posy);
+		$this->pdf->SetFont('','', $this->default_font_size - 3);
+		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
+		$posy=$this->pdf->getY();
+		$this->pdf->SetXY($posx,$posy);
+		$this->pdf->SetFont('','', $this->default_font_size - 3);
+		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
+		$posy=$this->pdf->getY();
 		
-		
-		$posY_end = $this->pdf->getY();
-		
-		$this->hearder_height_custom=$posY_end - $posY_ori;
 		
 		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 		

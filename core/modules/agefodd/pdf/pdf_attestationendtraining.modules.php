@@ -255,7 +255,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 							
 							$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 							$this->str = $outputlangs->transnoentities('AgfPDFAttestationEndEval');
-							$newY = $pdf->getY() + 10;
+							$newY = $pdf->getY() + 5;
 							$pdf->SetXY($this->marge_gauche + 1, $newY);
 							$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 							
@@ -521,7 +521,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 				if (is_readable($otherlogo))
 				{
 					$logo_height=pdf_getHeightForLogo($otherlogo,true);
-					$pdf->Image($otherlogo, $this->marge_gauche+80, $posy, 0, $logo_height);	// width=0 (auto)
+					$pdf->Image($otherlogo, $this->marge_gauche+90, $posy, 0, $logo_height);	// width=0 (auto)
 				}
 			}
 		}
@@ -536,7 +536,6 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFillColor(255,255,255);
 			$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
-			$pdf->SetTextColor(0,0,60);
 
 			// Show sender name
 			$pdf->SetXY($posx,$posy);

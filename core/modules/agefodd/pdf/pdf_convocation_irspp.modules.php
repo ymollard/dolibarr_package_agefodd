@@ -20,21 +20,20 @@
  */
 
 /**
- * \file agefodd/core/modules/agefodd/pdf/pdf_attestation.modules.php
+ * \file agefodd/core/modules/agefodd/pdf/pdf_convocation.modules.php
  * \ingroup agefodd
- * \brief PDF for certificate (attestation)
+ * \brief PDF for convocation
  */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-
-class pdf_attestationpresencecollective extends ModelePDFAgefodd {
+require_once ('../class/agefodd_session_stagiaire.class.php');
+class pdf_convocation_irspp extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
@@ -49,11 +48,13 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 	function __construct($db) {
 		global $conf, $langs, $mysoc;
 		
-		$this->db = $db;
-		$this->name = "attestation";
-		$this->description = $langs->trans('AgfPDFAttestation');
+		$langs->load("agefodd@agefodd");
 		
-		// Dimension page pour format A4 en paysage
+		$this->db = $db;
+		$this->name = 'convocation';
+		$this->description = $langs->trans('AgfModPDFConvocation');
+		
+		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray ['width'];
@@ -66,10 +67,12 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 		$this->marge_droite = 15;
 		$this->marge_haute = 10;
 		$this->marge_basse = 10;
+		$this->defaultFontSize = 13;
 		$this->unit = 'mm';
-		$this->oriantation = 'l';
+		$this->oriantation = 'P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
+		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 		
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -98,6 +101,13 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$id = $agf;
 			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
+			if ($ret) {
+				$agf_calendrier = new Agefodd_sesscalendar($this->db);
+				$agf_calendrier->fetch_all($id);
+				
+				$agf_place = new Agefodd_place($this->db);
+				$agf_place->fetch($agf->placeid);
+			}
 		}
 		
 		// Definition of $dir and $file
@@ -114,203 +124,184 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 		if (file_exists($dir)) {
 			$pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
 			
-			$pdf->Open();
-			$pagenb = 0;
-			
 			if (class_exists('TCPDF')) {
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
 			
-			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
-			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
+			$pdf->Open();
+			$pagenb = 0;
+			
+			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref_interne));
+			$pdf->SetSubject($outputlangs->transnoentities("AgfModPDFConvocation"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
-			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref) . " " . $outputlangs->transnoentities("Document"));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref_interne) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
 				$pdf->SetCompression(false);
 			
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 			
-			// Récuperation des objectifs pédagogiques de la formation
-			$agf_op = new Agefodd($this->db);
-			$result2 = $agf_op->fetch_objpeda_per_formation($agf->fk_formation_catalogue);
-			
-			// Récupération de la durée de la formation
-			$agf_duree = new Agefodd($this->db);
-			$result = $agf_duree->fetch($agf->fk_formation_catalogue);
-			
-			// Récupération des stagiaires participant à la formation
+			// Recuperation des stagiaires participant à la formation
 			$agf2 = new Agefodd_session_stagiaire($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
 			
-			// Récupération des informations du lieu de la session
-			$agf_place = new Agefodd_place($this->db);
-			$result = $agf_place->fetch($agf->placeid);
-			
-			// Récupération des informations ddes formateur
-			$agf_session_trainer = new Agefodd_session_formateur($this->db);
-			$agf_session_trainer->fetch_formateur_per_session($id);
-			
-			
-			// New page
-			$pdf->AddPage();
-			$pagenb ++;
-			$this->_pagehead($pdf, $agf, 1, $outputlangs);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-			$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
-											   
-			// On met en place le cadre
-			$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-			
-			$height=pdf_getHeightForLogo($logo);
-			$hautcadre=30;
-			if ($height>$hautcadre)
-				$height=$hautcadre;
-			$this->marge_top=$this->marge_haute+$hautcadre;
-			
-			// Haut
-			$pdf->Line($this->marge_gauche, $this->marge_top, $this->page_largeur - $this->marge_droite, $this->marge_top);
-			// Bas
-			$pdf->Line($this->marge_gauche, $this->marge_top+20, $this->page_largeur - $this->marge_gauche, $this->marge_top+20);
+			if (($result && $ret)) {
+				for($i = 0; $i < count($agf2->lines); $i ++) {
+					// New page
+					$pdf->AddPage();
+					$pagenb ++;
+					$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+					$pdf->MultiCell(0, 3, '', 0, 'J');
+					$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+					
+					$posY = $this->marge_haute;
+					$posX = $this->marge_gauche;
 
-			$newY = $this->marge_haute + 32;
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B,I', 20);
-			$pdf->Cell(0, 0, $outputlangs->transnoentities('AgfAttestationPresenceCollectiveBig'), 0, 0, 'C', 0);
-			
-			$newY = $pdf->GetY()+20;
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			
-			$this->str1 = $outputlangs->convToOutputCharset($this->emetteur->name) . " " . $outputlangs->transnoentities(', atteste que les personnes suivantes:');
-			$pdf->MultiCell($this->page_largeur-$this->marge_gauche-$this->marge_droite, 4, $this->str1, 0, 'L', 0);
-			
-			$newY = $pdf->GetY()+2;
-			if ($result) 
-			{
-				$trainee_output=0;
-				for($i = 0; $i < count($agf2->lines); $i ++) 
-				{
-					if (($agf2->lines [$i]->status_in_session == 3 || $agf2->lines [$i]->status_in_session == 4) || ($agf2->lines [$i]->status_in_session == 2)) 
-					{
-						$newY++;
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 16);
-						$pdf->SetXY($this->marge_gauche, $newY);
-						$pdf->MultiCell($this->page_largeur-$this->marge_gauche-$this->marge_droite, 4, $outputlangs->convToOutputCharset($agf2->lines [$i]->prenom . ' ' . $agf2->lines [$i]->nom), 0, 'C', 0);
-						$trainee_output++;
+					$posY = $pdf->GetY() + 5;
+		
+					$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+					$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+									
+					/*
+					 * Corps de page
+					 */
+					
+					$posX = $this->marge_gauche;
+					$posY = $pdf->GetY() + 10;
+					
+					//Titre
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 34);
+					$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+					$pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocationBold');
+					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
+					$posY = $pdf->GetY() + 20;
+					
+					/**
+					 * *** Text Convocation ****
+					 */
+					
+					$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', $this->defaultFontSize);
+					$this->str = $mysoc->name . ' ' . $outputlangs->transnoentities('AgfPDFConvocation1');
+					$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0);
+					$posY += 8;
+					
+					$pdf->SetXY($posX + 10, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					$this->str = ucfirst(strtolower($agf2->lines [$i]->civilitel)) . " " . $outputlangs->transnoentities($agf2->lines [$i]->prenom . ' ' . $agf2->lines [$i]->nom);
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+					$posY = $pdf->GetY() + 8;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', $this->defaultFontSize);
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation2');
+					$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 2;
+					
+					$pdf->SetXY($posX + 10, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
+					
+					$this->str = $agf->formintitule;
+					if (! empty($agf->intitule_custo))
+						$this->str = $agf->intitule_custo;
+					$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+					$posY = $pdf->GetY() + 8;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', $this->defaultFontSize);
+					$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation3') . ' ';
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 3;
+					
+					foreach ( $agf_calendrier->lines as $line ) {
+						$pdf->SetXY($posX + 10, $posY);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+						$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+						$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+						$posY = $pdf->GetY() + 2;
 					}
-					$newY = $pdf->getY()+2;
+					
+					$posY = $pdf->GetY() + 8;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', $this->defaultFontSize);
+					$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation6') . ' ';
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 3;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					$this->str = $agf_place->ref_interne;
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+					$posY = $pdf->GetY() + 1;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					$this->str = $agf_place->adresse;
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+					$posY = $pdf->GetY() + 1;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					$this->str = $agf_place->cp.' '.$agf_place->ville;
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+					$posY = $pdf->GetY() + 1;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', $this->defaultFontSize);
+					$this->str = $outputlangs->transnoentities('AgfConseilsPratique');
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 1;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+					$this->str = $agf->array_options['options_conspartique'];
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C',false, 1, $posX, $posY, true, 0, true);
+					$posY = $pdf->GetY() + 10;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation7');
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 4;
+					
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+					$this->str = $outputlangs->transnoentities('AgfPDFConvocation8');
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + 8;
+					
+					$pdf->SetXY($this->page_largeur/2, $posY);
+					$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
+					$pdf->MultiCell($this->posxtrainername-$this->marge_gauche,$h_ligne, $outputlangs->convToOutputCharset($this->str),'','L');
+					
+					// Incrustation image tampon
+					$posY = $pdf->GetY()+2;
+					$posX = $this->page_largeur/2;
+					if ($conf->global->AGF_INFO_TAMPON) {
+						$dir = $conf->agefodd->dir_output . '/images/';
+						$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+						if (file_exists($img_tampon) && is_readable($img_tampon))
+						{				
+							$pdf->SetXY($posX, $posY);
+							$tampon_height=pdf_getHeightForLogo($img_tampon,true);
+							$pdf->Image($img_tampon, $posX, $posY, 0, $tampon_height);	// width=0 (auto)
+						}
+					}	
+					
+					// Pied de page
+					$this->_pagefoot($pdf, $agf, $outputlangs);
+					// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
+					if (method_exists($pdf, 'AliasNbPages')) {
+						$pdf->AliasNbPages();
+					}
 				}
-				
-			}	
-
-			if (empty($trainee_output)) {
-				$pdf->SetXY($this->marge_gauche, $newY);
-				$outputlangs->load('companies');
-				/*$pdf->AddPage();
-				$pagenb ++;
-				$this->_pagehead($pdf, $agf, 1, $outputlangs);*/
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-				$this->str=$outputlangs->transnoentities('AgfOnlyPresentTraineeGetAttestation', $outputlangs->transnoentities('PL_NONE'));
-				$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C'); // Set interline to 3
-			}			
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
-			$newY = $newY + 10;
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestation9');
-			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
-			
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
-			$newY = $newY + 10;
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$pdf->Cell(0, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 0, 'C', 0);
-			
-			$this->str = $outputlangs->transnoentities('AgfPDFAttestation4') . " ";
-			if ($agf->dated == $agf->datef)
-				$this->str .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef);
-			else
-				$this->str .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef);
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf_duree->duree . $outputlangs->transnoentities('AgfPDFAttestation6');
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			
-			$newY = $newY + 10;
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
-			
-			$newY = $pdf->getY();		
-			
-			//Lieu
-			$newY = $pdf->getY()+30;
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
-			$this->str = $outputlangs->transnoentities('Lieu :');
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
-			$pdf->SetXY(50, $newY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$this->str = $agf_place->ref_interne . ", ".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville;
-			$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
-			
-			$newY = $pdf->getY()+10;
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
-			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
-								
-			$newY = $pdf->getY()+5;
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$this->str = $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
-			$this->str2 = date("d/m/Y");
-			$this->str2 = dol_print_date($agf->datef);
-			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str).' '.$outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
-			
-			$newY = $pdf->getY();
-			$posX = $this->page_largeur/2;
-			$pdf->SetXY($posX, $newY);					
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
-			$pdf->MultiCell(0, 0, $outputlangs->transnoentities('Le formateur : ').$this->str, 0, 'L', 0);
-			
-			// Incrustation image tampon
-			$newY = $pdf->GetY()+5;
-			$posX = $this->page_largeur/2;
-			if ($conf->global->AGF_INFO_TAMPON) {
-				$dir = $conf->agefodd->dir_output . '/images/';
-				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-				if (file_exists($img_tampon) && is_readable($img_tampon)) 
-				{
-					$pdf->SetXY($posX, $newY);
-					$tampon_height=pdf_getHeightForLogo($img_tampon,true);
-					$pdf->Image($img_tampon, $posX, $newY, 0, $tampon_height);	// width=0 (auto)
-				}					
 			}
-			
-			$newY = $pdf->getY()+$tampon_exitst;
-			
-			// Pied de page $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
-			$this->_pagefoot($pdf, $agf, $outputlangs);
-			// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
-			if (method_exists($pdf, 'AliasNbPages')) {
-				$pdf->AliasNbPages();
-			}
-			
-			// Mise en place du copyright
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-			$this->str = $outputlangs->transnoentities('copyright ' . date("Y") . ' - ' . $mysoc->name);
-			$this->width = $pdf->GetStringWidth($this->str);
-			// alignement du bord droit du container avec le haut de la page
-			$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
-			$baseline_angle = (M_PI / 2); // angle droit
-			$baseline_x = $this->page_largeur - $this->marge - gauche - 12;
-			$baseline_y = $baseline_ecart + 30;
-			$baseline_width = $this->width;
-	
-			
-			
 			$pdf->Close();
 			$pdf->Output($file, 'F');
 			if (! empty($conf->global->MAIN_UMASK))
@@ -446,6 +437,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 	 * \remarks	Need this->emetteur object
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) {
+		
 		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
 		return pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
 	}
