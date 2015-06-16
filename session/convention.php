@@ -367,16 +367,17 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$agf_soc = new Societe($db);
 	$result = $agf_soc->fetch($socid);
 	
-	// if agefodd contact exist
-	$agf_contact = new Agefodd_contact($db);
-	$resql2 = $agf_contact->fetch($socid, 'socid');
 	
 	// intro2
 	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $agf_soc->address . " " . $agf_soc->zip . " " . $agf_soc->town . ",";
-	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2 . ", ";
-	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_4') . ' ';
-	$intro2 .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname;
-	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
+	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
+	if (!empty($agf->contactname)) {
+		$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
+		$intro2 .= ucfirst(strtolower($agf->contactcivilite)) . ' ' . $agf->contactname;
+		$intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
+	} else {
+		$intro2 .= '.';
+	}
 	
 	// article 1
 	// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)

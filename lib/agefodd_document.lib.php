@@ -202,7 +202,7 @@ function show_convo_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
 		
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -240,7 +240,7 @@ function show_attestation_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
 		
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -279,7 +279,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '" ></a>';
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -318,7 +318,7 @@ function show_trainer_mission($session_trainerid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");

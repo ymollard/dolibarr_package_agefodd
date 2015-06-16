@@ -530,7 +530,6 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFillColor(255, 255, 255);
 			$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
-			$pdf->SetTextColor(0, 0, 60);
 			
 			// Show sender name
 			$pdf->SetXY($posx, $posy);
@@ -566,6 +565,8 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 	 * \remarks Need this->emetteur object
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) {
-		return pdf_agfpagefoot($pdf,$outputlangs,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$this->colorfooter);
+		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+		$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+		return pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
 	}
 }
