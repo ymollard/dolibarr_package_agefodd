@@ -11,7 +11,8 @@ English Dolibarr ChangeLog
 -New : PRESENCE SHEET : add trainer signature block by session calendar
 -fix : decimal value in training catalogue duration allowed
 -New : Add two field in training catalgue to be compliant with French DIRRECT 2015 reform (and output in fiche pedago PDF)
--New : Add recipient (supplier contact) in session (as well supplier contract and invoice) 
+-New : Add recipient (supplier contact) in session (as well supplier contract and invoice)
+-New : comptability for Dolibarr 3.7 only
 
 ***** ChangeLog for 2.1.11 compared to 2.1.10 *****
 -Fix : Priority in objectif training can be new updated 
