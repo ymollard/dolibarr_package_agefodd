@@ -212,7 +212,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		$pdf->MultiCell($this->posxforthcolumn+3,2, $outputlangs->transnoentities(""),'','L');
 		
 		$tab_height=100;
-		$tab_top=$tab_top + 40;;
+		$tab_top=$tab_top + 40;
 		$h_ligne=6;
 		
 		// Output Rect
@@ -469,7 +469,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		
 		// lines
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
-		$posY = $pdf->GetY()+8;
+		$posY = $pdf->GetY();
 				
 		foreach ( $agfsta->lines as $line ) {
 
@@ -494,14 +494,14 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		}
 		
 		// Cachet et signature
-		$posY += 30;
+		$posY = 210;
 		$posX -= 2;
 		
 		// Output Rect for signature
 		$this->printRect($pdf,$this->marge_gauche, $posY, $this->posxmiddlesignature-15, 30);
 		$this->printRect($pdf,$this->marge_gauche+$this->posxmiddlesignature-5, $posY, $this->posxmiddlesignature-15, 30);
 		// Incrustation image tampon
-		$posY = $pdf->GetY()+35;
+		
 		$posX = 55;
 		if ($conf->global->AGF_INFO_TAMPON) {
 			$dir = $conf->agefodd->dir_output . '/images/';
