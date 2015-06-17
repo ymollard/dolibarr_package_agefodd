@@ -304,8 +304,14 @@ class pdf_fiche_evaluation_irspp extends ModelePDFAgefodd {
 		{
 			if (is_readable($logo))
 			{
-				$height=pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, $posx, $posy, 0, $height);	// width=0 (auto)
+				$height = pdf_getHeightForLogo($logo);
+				$width_logo=pdf_getWidthForLogo($logo);
+				if ($width_logo>0) {
+					$posx=$this->page_largeur-$this->marge_droite-$width_logo;
+				} else {
+					$posx=$this->page_largeur-$this->marge_droite-55;
+				}
+				$pdf->Image($logo, $posx, $posy, 0, $height);
 			}
 			else
 			{
@@ -334,8 +340,15 @@ class pdf_fiche_evaluation_irspp extends ModelePDFAgefodd {
 				$otherlogo=DOL_DATA_ROOT . '/mycompany/logos/'.$image_name;
 				if (is_readable($otherlogo))
 				{
-					$logo_height=pdf_getHeightForLogo($otherlogo,true);
-					$pdf->Image($otherlogo, $this->marge_gauche+80, $posy, 0, $logo_height);	// width=0 (auto)
+					$logo_height=pdf_getHeightForLogo($otherlogo);
+					$width_otherlogo=pdf_getWidthForLogo($otherlogo);
+					if ($width_otherlogo>0 && $width_logo>0) {
+						$posx=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
+					} else {
+						$posx=$this->marge_gauche+100;
+					}
+					
+					$pdf->Image($otherlogo, $posx, $posy, 0, $logo_height);	
 				}
 			}
 		}

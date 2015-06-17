@@ -80,6 +80,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->default_font_size=12;
 		
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -171,7 +172,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$pdf->MultiCell(0, 3, '', 0, 'J');
-			$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+			$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 			
 			$posY = $this->marge_haute;
 			$posX = $this->marge_gauche;
@@ -184,14 +185,14 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
 			if ($this->emetteur->logo) {
 				if (is_readable($logo)) {
-					$heightLogo = pdf_getHeightForLogo($logo);
-					include_once (DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php');
-					$tmp = dol_getImageSize($logo);
-					if ($tmp ['width']) {
-						$widthLogo = $tmp ['width'];
+					$height = pdf_getHeightForLogo($logo);
+					$width_logo=pdf_getWidthForLogo($logo);
+					if ($width_logo>0) {
+						$posX=$this->page_largeur-$this->marge_droite-$width_logo;
+					} else {
+						$posX=$this->page_largeur-$this->marge_droite-55;
 					}
-					$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
-						                                                                                                                                                                                              // (auto)
+					$pdf->Image($logo, $posX, $posY, 0, $height);                                                                                                                                                                                    // (auto)
 				} else {
 					$pdf->SetTextColor(200, 0, 0);
 					$pdf->SetFont('', 'B', pdf_getPDFFontSize($outputlangs) - 2);
@@ -205,32 +206,65 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 				$pdf->MultiCell(150, 3, $outputlangs->convToOutputCharset($text), 0, 'R');
 			}
 			
+			// Other Logo
+			if ($conf->multicompany->enabled) {
+				$sql = 'SELECT value FROM ' . MAIN_DB_PREFIX . 'const WHERE name =\'MAIN_INFO_SOCIETE_LOGO\' AND entity=1';
+				$resql = $this->db->query($sql);
+				if (! $resql) {
+					setEventMessage($this->db->lasterror, 'errors');
+				} else {
+					$obj = $this->db->fetch_object($resql);
+					$image_name = $obj->value;
+				}
+				if (! empty($image_name)) {
+					$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
+					if (is_readable($otherlogo)) {
+						$logo_height=pdf_getHeightForLogo($otherlogo);
+						$width_otherlogo=pdf_getWidthForLogo($otherlogo);
+						if ($width_otherlogo>0 && $width_logo>0) {
+							$posX=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
+						} else {
+							$posX=$this->marge_gauche+100;
+						}
+			
+						$pdf->Image($otherlogo, $posX, $posY, 0, $logo_height);
+					}
+				}
+			}
+			
 			// $posX += $this->page_largeur - $this->marge_droite - 65;
 			
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
-			$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-			$pdf->SetXY($posX, $posY - 1);
-			$pdf->Cell(0, 5, $mysoc->name, 0, 0, 'L');
+			$posY = $this->marge_haute;
+			$posX = $this->marge_gauche;
 			
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-			$pdf->SetXY($posX, $posY + 3);
-			$this->str = $mysoc->address . "\n";
-			$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-			$this->str .= ' - ' . $mysoc->country . "\n";
-			if ($mysoc->phone) {
-				$this->str .= $outputlangs->transnoentities('AgfPDFHead1') . ' ' . $mysoc->phone . "\n";
-			}
-			if ($mysoc->fax) {
-				$this->str .= $outputlangs->transnoentities('AgfPDFHead2') . ' ' . $mysoc->fax . "\n";
-			}
-			if ($mysoc->email) {
-				$this->str .= $outputlangs->transnoentities('AgfPDFHead3') . ' ' . $mysoc->email . "\n";
-			}
-			if ($mysoc->url) {
-				$this->str .= $outputlangs->transnoentities('AgfPDFHead4') . ' ' . $mysoc->url . "\n";
-			}
+			$hautcadre = 30;
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFillColor(255, 255, 255);
+			$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 			
-			$pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+			// Show sender name
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont('', 'B', $this->default_font_size - 2);
+			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+			$posY = $pdf->getY();
+			
+			// Show sender information
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont('', '', $this->default_font_size - 3);
+			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
+			$posY = $pdf->getY();
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont('', '', $this->default_font_size - 3);
+			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
+			$posY = $pdf->getY();
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont('', '', $this->default_font_size - 3);
+			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
+			$posY = $pdf->getY();
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont('', '', $this->default_font_size - 3);
+			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
+			$posY = $pdf->getY();
 			
 			$posY = $pdf->GetY() + 10;
 			
@@ -427,49 +461,8 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
 		
-		$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$pdf->Line($this->marge_gauche, $this->page_hauteur - 20, $this->page_largeur - $this->marge_droite, $this->page_hauteur - 20);
-		
-		$this->str = $mysoc->name;
-		
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 20);
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
-		
-		$this->str = $mysoc->address . " ";
-		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-		$this->str .= ' - ' . $mysoc->country;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot1') . ' ' . $mysoc->phone;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot2') . ' ' . $mysoc->email . "\n";
-		
-		$statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-		$this->str .= $statut;
-		if (! empty($mysoc->capital)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot3') . ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
-		}
-		if (! empty($mysoc->idprof2)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot4') . ' ' . $mysoc->idprof2;
-		}
-		if (! empty($mysoc->idprof4)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot5') . ' ' . $mysoc->idprof4;
-		}
-		if (! empty($mysoc->idprof3)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot6') . ' ' . $mysoc->idprof3;
-		}
-		$this->str .= "\n";
-		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
-		}
-		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot8') . ' ' . $conf->global->AGF_ORGANISME_PREF;
-		}
-		if (! empty($mysoc->tva_intra)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot9') . ' ' . $mysoc->tva_intra;
-		}
-		
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-		$pdf->SetXY($this->marge_gauche, $this->page_hauteur - 16);
-		$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		return pdf_agfpagefoot($pdf, $outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 1, $hidefreetext);
 	}
 }

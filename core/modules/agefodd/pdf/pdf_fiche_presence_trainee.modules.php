@@ -208,7 +208,13 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd {
 		if ($this->emetteur->logo) {
 			if (is_readable($logo)) {
 				$height = pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, $posX, $posY, 0, $height); // width=0 (auto)
+				$width_logo=pdf_getWidthForLogo($logo);
+				if ($width_logo>0) {
+					$posX=$this->page_largeur-$this->marge_droite-$width_logo;
+				} else {
+					$posX=$this->page_largeur-$this->marge_droite-55;
+				}
+				$pdf->Image($logo, $posX, $posY, 0, $height);
 			} else {
 				$pdf->SetTextColor(200, 0, 0);
 				$pdf->SetFont('', 'B', $this->default_font_size - 2);
@@ -232,8 +238,15 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd {
 			if (! empty($image_name)) {
 				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
 				if (is_readable($otherlogo)) {
-					$logo_height = pdf_getHeightForLogo($otherlogo, true);
-					$pdf->Image($otherlogo, $this->marge_gauche + 100, $posY, 0, $logo_height); // width=0 (auto)
+					$logo_height=pdf_getHeightForLogo($otherlogo);
+					$width_otherlogo=pdf_getWidthForLogo($otherlogo);
+					if ($width_otherlogo>0 && $width_logo>0) {
+						$posX=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
+					} else {
+						$posX=$this->marge_gauche+100;
+					}
+					
+					$pdf->Image($otherlogo, $posX, $posY, 0, $logo_height);	
 				}
 			}
 		}
@@ -448,14 +461,14 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd {
 		// Trainee
 		$posy_trainee=$posY;
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 7);
 		$this->str = $line->nom . ' ' . $line->prenom . ' - ' . dol_trunc($line->socname, 27);
 		if (! empty($line->poste)) {
 			$this->str .= ' (' . $line->poste . ')';
 		}
-		$pdf->Cell($larg_col3, 5, $outputlangs->convToOutputCharset($this->str), TR, 2, "C", 0);
+		$pdf->MultiCell($larg_col3, $h_ligne, $outputlangs->convToOutputCharset($this->str), 'T', 'C',false, 1, $posX + $larg_col1 + $larg_col2, $posY, true, 1, false, true, $h_ligne, 'T', true);
 		
-		$posY = $pdf->GetY();
+		$posY = $pdf->getY()-1;
 		
 		// Signature
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);

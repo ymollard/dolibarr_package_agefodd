@@ -438,7 +438,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->MultiCell($this->posxstudentname-$this->posxsecondcolumn, 4, $agf->id, 0, 'L');
 		
 		//trainee name
-		$pdf->SetXY($this->posxforthcolumn+1, $tab_top+$tab_height/4);
+		$pdf->SetXY($this->posxforthcolumn+1, $tab_top+$tab_height/4-3);
 		$this->str = $line->nom . ' ' . $line->prenom;
 		if (! empty($line->poste)) {
 			$this->str .= ' (' . $line->poste . ')';
@@ -661,7 +661,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 			{				
 				$pdf->SetXY($posX, $posY);
 				$tampon_height=pdf_getHeightForLogo($img_tampon,true);
-				$pdf->Image($img_tampon, $posX, $posY, 0, $tampon_height);	// width=0 (auto)
+				$pdf->Image($img_tampon, $posX, $posY, 0, $tampon_height);	
 			}
 		}	
 		
@@ -700,8 +700,14 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		{
 			if (is_readable($logo))
 			{
-				$height=pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, $posx, $posy, 0, $height);	// width=0 (auto)
+				$height = pdf_getHeightForLogo($logo);
+				$width_logo=pdf_getWidthForLogo($logo);
+				if ($width_logo>0) {
+					$posx=$this->page_largeur-$this->marge_droite-$width_logo;
+				} else {
+					$posx=$this->page_largeur-$this->marge_droite-55;
+				}
+				$pdf->Image($logo, $posx, $posy, 0, $height);
 			}
 			else
 			{
@@ -729,8 +735,15 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 			if (! empty($image_name)) {
 				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
 				if (is_readable($otherlogo)) {
-					$logo_height = pdf_getHeightForLogo($otherlogo, true);
-					$pdf->Image($otherlogo, $this->page_largeur-$this->marge_droite-100, $posy, 0, $logo_height); // width=0 (auto)
+					$logo_height=pdf_getHeightForLogo($otherlogo);
+					$width_otherlogo=pdf_getWidthForLogo($otherlogo);
+					if ($width_otherlogo>0 && $width_logo>0) {
+						$posx=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
+					} else {
+						$posx=$this->marge_gauche+100;
+					}
+					
+					$pdf->Image($otherlogo, $posx, $posy, 0, $logo_height);	
 				}
 			}
 		}

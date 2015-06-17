@@ -523,7 +523,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			if (is_readable($logo))
 			{
 				$height=pdf_getHeightForLogo($logo);
-				$this->pdf->Image($logo, $posX, $posY, 0, $height);	// width=0 (auto)
+				$width_logo=pdf_getWidthForLogo($logo);
+				if ($width_logo>0) {
+					$posX=$this->page_largeur-$this->marge_droite-$width_logo;
+				}
+				$this->pdf->Image($logo, $posX, $posY, 0, $height);	
 			}
 			else
 			{
@@ -551,8 +555,15 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			if (! empty($image_name)) {
 				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
 				if (is_readable($otherlogo)) {
-					$logo_height = pdf_getHeightForLogo($otherlogo, true);
-					$this->pdf->Image($otherlogo, $this->marge_gauche + 90, $posY, 0, $logo_height); // width=0 (auto)
+					$logo_height=pdf_getHeightForLogo($otherlogo);
+					$width_otherlogo=pdf_getWidthForLogo($otherlogo);
+					if ($width_otherlogo>0 && $width_logo>0) {
+						$posX=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
+					} else {
+						$posX=$this->marge_gauche+100;
+					}
+					
+					$this->pdf->Image($otherlogo, $posX, $posY, 0, $logo_height);		
 				}
 			}
 		}

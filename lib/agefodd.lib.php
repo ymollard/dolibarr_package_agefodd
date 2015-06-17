@@ -1176,3 +1176,24 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 
 	return $marginwithfooter;
 }
+
+/**
+ * Return width to use for Logo onot PDF
+ *
+ * @param	string		$logo		Full path to logo file to use
+ * @param	bool		$url		Image with url (true or false)
+ * @return	number
+ */
+function pdf_getWidthForLogo($logo, $url = false)
+{
+	$height=22; $maxwidth=130;
+	include_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
+	$tmp=dol_getImageSize($logo, $url);
+	if ($tmp['height'])
+	{
+		$width=round($height*$tmp['width']/$tmp['height']);
+		//if ($width > $maxwidth) $height=$height*$maxwidth/$width;
+	}
+	//print $tmp['width'].' '.$tmp['height'].' '.$width; exit;
+	return $width;
+}

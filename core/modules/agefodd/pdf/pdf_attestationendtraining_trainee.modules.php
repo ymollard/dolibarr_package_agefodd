@@ -491,7 +491,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 		if ($this->emetteur->logo) {
 			if (is_readable($logo)) {
 				$height = pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, $posx, $posy, 0, $height); // width=0 (auto)
+				$pdf->Image($logo, $posx, $posy, 0, $height); 
 			} else {
 				$pdf->SetTextColor(200, 0, 0);
 				$pdf->SetFont('', 'B', $default_font_size - 2);
@@ -516,7 +516,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
 				if (is_readable($otherlogo)) {
 					$logo_height = pdf_getHeightForLogo($otherlogo, true);
-					$pdf->Image($otherlogo, $this->marge_gauche + 80, $posy, 0, $logo_height); // width=0 (auto)
+					$pdf->Image($otherlogo, $this->marge_gauche + 80, $posy, 0, $logo_height); 
 				}
 			}
 		}

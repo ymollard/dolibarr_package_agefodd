@@ -285,7 +285,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 				{
 					$pdf->SetXY($posX, $newY);
 					$tampon_height=pdf_getHeightForLogo($img_tampon,true);
-					$pdf->Image($img_tampon, $posX, $newY, 0, $tampon_height);	// width=0 (auto)
+					$pdf->Image($img_tampon, $posX, $newY, 0, $tampon_height);	
 				}					
 			}
 			
@@ -353,7 +353,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			if (is_readable($logo))
 			{
 				$height=pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, $posx, $posy, 0, $height);	// width=0 (auto)
+				$pdf->Image($logo, $posx, $posy, 0, $height);	
 			}
 			else
 			{
@@ -383,7 +383,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 				if (is_readable($otherlogo))
 				{
 					$logo_height=pdf_getHeightForLogo($otherlogo,true);
-					$pdf->Image($otherlogo, $this->marge_gauche+80, $posy, 0, $logo_height);	// width=0 (auto)
+					$pdf->Image($otherlogo, $this->marge_gauche+80, $posy, 0, $logo_height);	
 				}
 			}
 		}
