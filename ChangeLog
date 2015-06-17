@@ -1,7 +1,7 @@
 English Dolibarr ChangeLog
 
 ***** ChangeLog for 2.1.13 compared to 2.1.12 *****
--New : Fix session agenda bug
+-Fix : Fix session agenda bug
 
 ***** ChangeLog for 2.1.12 compared to 2.1.11 *****
 -New : Clone Training
