@@ -755,7 +755,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 
 	print '<tr><td align="left" class="nowrap">';
 	print '<a href="' . $_SERVER ['PHP_SELF'];
-	print 'action=show_day&day=' . str_pad($day, 2, "0", STR_PAD_LEFT) . '&month=' . str_pad($month, 2, "0", STR_PAD_LEFT) . '&year=' . $year;
+	print '?action=show_day&day=' . str_pad($day, 2, "0", STR_PAD_LEFT) . '&month=' . str_pad($month, 2, "0", STR_PAD_LEFT) . '&year=' . $year;
 	print $newparam;
 	print '">';
     if ($showinfo) print dol_print_date($curtime,'daytext');
