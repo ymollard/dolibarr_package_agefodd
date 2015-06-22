@@ -999,7 +999,7 @@ class Agsession extends CommonObject {
 				while ( $i < $num_other ) {
 					$obj = $this->db->fetch_object($resql);
 					
-					if (! empty($obj->socid)) {
+					if (! empty($obj->socid) && !empty($obj->fk_soc_opca)) {
 						if (! in_array($obj->socid, $array_soc)) {
 							$newline = new AgfSocLine();
 							$newline->sessid = $obj->rowid;

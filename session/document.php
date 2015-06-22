@@ -588,6 +588,8 @@ if (! empty($id)) {
 					$type_link_label = $langs->trans('AgfMailTypeContactOPCA');
 				if ($agf->lines[$i]->typeline == 'trainee_requester')
 					$type_link_label = $langs->trans('AgfTypeTraineeRequester');
+				if ($agf->lines[$i]->typeline == 'trainee_presta')
+					$type_link_label = $langs->trans('AgfTypePresta');
 				
 				$societe = new Societe($db);
 				$societe->fetch($agf->lines[$i]->socid);
@@ -599,7 +601,7 @@ if (! empty($id)) {
 				print '</td>';
 				
 				print '</tr>' . "\n";
-				if (is_array($agf->lines[$i]->trainee_array) && count($agf->lines[$i]->trainee_array) > 0) {
+				if (is_array($agf->lines[$i]->trainee_array) && count($agf->lines[$i]->trainee_array) > 0 && $agf->lines[$i]->typeline!='trainee_presta') {
 					$trainee_string = array ();
 					print '<tr class="liste_titre">' . "\n";
 					print '<td colspan=3>';
@@ -623,7 +625,7 @@ if (! empty($id)) {
 					print '</tr>' . "\n";
 				}
 				// For OPCA just dispaly line Invoice
-				if (strpos($agf->lines[$i]->typeline, 'OPCA') === false) {
+				if (strpos($agf->lines[$i]->typeline, 'OPCA') === false && $agf->lines[$i]->typeline!='trainee_presta') {
 					// Before training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
 					if (! empty($conf->global->MAIN_MODULE_PROPALE)) {
@@ -670,6 +672,8 @@ if (! empty($id)) {
 						document_line($langs->trans("AgfPDFCertificateA4"), "certificateA4", $agf->lines[$i]->socid);
 						// document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
 					}
+				} elseif ($agf->lines[$i]->typeline=='trainee_presta') {
+					document_line($langs->trans("AgfContratPrestation"), "contrat_presta", $agf->lines[$i]->socid);
 				} else {
 					document_line($langs->trans("AgfFacture"), "facopca", $agf->lines[$i]->socid);
 				}
