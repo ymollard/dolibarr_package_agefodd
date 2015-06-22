@@ -621,7 +621,7 @@ class InterfaceAgefodd {
 				$agfsession = new Agsession($this->db);
 				$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
 
-				if ($object->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
+				if ($object->fk_product == $agfsession->fk_product && (! empty($agfsession->id)) && !empty($agfsession->fk_product)) {
 					$desc = '';
 					if (! empty($agfsession->intitule_custo)) {
 						$desc = $agfsession->intitule_custo . "\n";
