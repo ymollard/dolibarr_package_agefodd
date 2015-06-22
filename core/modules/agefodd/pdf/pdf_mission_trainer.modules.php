@@ -35,7 +35,7 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/agefodd_session_formateur.class.php');
-
+require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 class pdf_mission_trainer extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
@@ -311,7 +311,9 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = ucfirst(strtolower($agf_trainer->civilite)) . " ". $agf_trainer->firstname .' '. $agf_trainer->name.',';
+			$contact_static = new Contact($this->db);
+			$contact_static->civility_id = $agf_trainer->civilite;
+			$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . " ". $agf_trainer->firstname .' '. $agf_trainer->name.',';
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0);
 			$posY += 8;
 			

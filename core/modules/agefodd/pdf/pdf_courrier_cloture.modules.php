@@ -101,7 +101,10 @@ if ($num > 6) {
 			$stagiaires .= ', ';
 		if ($i == (count($agf_stag->lines) - 1) && $i > 0)
 			$stagiaires .= ' ' . $outputlangs->transnoentities('AgfPDFCourrierCloture6') . ' ';
-		$stagiaires .= ucfirst(strtolower($agf_stag->lines [$i]->civilitel)) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;
+		
+		$contact_static = new Contact($this->db);
+		$contact_static->civility_id = $agf_stag->lines[$i]->civilite;
+		$stagiaires .= ucfirst(strtolower($contact_static->getCivilityLabel()) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;
 		if ($i == (count($agf_stag->lines) - 1))
 			$stagiaires .= '.';
 		}

@@ -33,6 +33,7 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 class pdf_convocation_irspp extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
@@ -192,8 +193,10 @@ class pdf_convocation_irspp extends ModelePDFAgefodd {
 					$posY += 8;
 					
 					$pdf->SetXY($posX + 10, $posY);
+					$contact_static = new Contact($this->db);
+					$contact_static->civility_id = $agf2->lines[$i]->civilite;
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-					$this->str = ucfirst(strtolower($agf2->lines [$i]->civilitel)) . " " . $outputlangs->transnoentities($agf2->lines [$i]->prenom . ' ' . $agf2->lines [$i]->nom);
+					$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . " " . $outputlangs->transnoentities($agf2->lines [$i]->prenom . ' ' . $agf2->lines [$i]->nom);
 					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 					$posY = $pdf->GetY() + 8;
 					

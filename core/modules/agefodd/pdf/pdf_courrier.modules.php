@@ -31,6 +31,7 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 class pdf_courrier extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 	               
@@ -278,13 +279,21 @@ class pdf_courrier extends ModelePDFAgefodd {
 				// on en profite pour préparer la ligne "madame, monsieur"
 				$this->madame_monsieur = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4');
 				$this->str = '';
+				
+				
+				
 				if (! (empty($agf->contactname))) {
-					$this->str = ucfirst(strtolower($agf->contactcivilite)) . ' ' . $agf->contactname . "\n";
-					$this->madame_monsieur = $langs->transnoentities("Civility" . $agf->contactcivilite);
+					$contact_static = new Contact($this->db);
+					$contact_static->civility_id = $agf->contactcivilite;
+					
+					$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf->contactname . "\n";
+					$this->madame_monsieur = $contact_static->getCivilityLabel();
 				}
 				if (($agf_contact->name) && (empty($this->str))) {
-					$this->str = ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->name . ' ' . $agf_contact->firstname . "\n";
-					$this->madame_monsieur = $langs->transnoentities("Civility" . $agf_contact->civilite);
+					$contact_static = new Contact($this->db);
+					$contact_static->civility_id = $agf_contact->civilite;
+					$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf_contact->name . ' ' . $agf_contact->firstname . "\n";
+					$this->madame_monsieur = $contact_static->getCivilityLabel();
 				}
 				if (! empty($agf_contact->address)) {
 					$this->str .= $agf_contact->address . "\n" . $agf_contact->zip . ' ' . $agf_contact->town;

@@ -82,7 +82,11 @@ if ($num > 6) {
 			$stagiaires .= ', ';
 		if ($i == ($num - 1) && $i > 0)
 			$stagiaires .= ' et ';
-		$civilite = ($langs->transnoentities("Civility" . $agf_stag->lines [$i]->civilite) != "Civility" . $agf_stag->lines [$i]->civilite ? $langs->transnoentities("Civility" . $agf_stag->lines [$i]->civilite) : ($agf_stag->lines [$i]->civilite != '-' ? $agf_stag->lines [$i]->civilite : ''));
+		
+		$contact_static = new Contact($this->db);
+		$contact_static->civility_id = $agf_stag->lines[$i]->civilite;
+		
+		$civilite = $contact_static->getCivilityLabel();
 		
 		$stagiaires .= ucfirst(strtolower($civilite)) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;
 		if ($i == ($num - 1))

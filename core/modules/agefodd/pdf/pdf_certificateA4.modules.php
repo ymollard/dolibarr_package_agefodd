@@ -242,8 +242,6 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						
 
 						$newY = $pdf->getY();
-						$contact_static = new Contact($this->db);
-						$contact_static->civility_id = $agf2->lines[$i]->civilite;
 						$text = $outputlangs->transnoentities('AgfPDFCertificate12') . ' ' . $agf2->lines[$i]->socname;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
