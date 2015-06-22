@@ -4215,7 +4215,7 @@ class Agsession extends CommonObject {
 			
 			if (! empty($propal->id) && is_array($propal->lines) && count($propal->lines) > 0) {
 				foreach ( $propal->lines as $line ) {
-					if ($line->fk_product != $product->id) {
+					if ($line->fk_product != $product->id || empty($this->fk_product)) {
 						$invoiceline = new FactureLigne($this->db);
 						$invoiceline->fk_product = $line->fk_product;
 						$invoiceline->qty = $line->qty;
