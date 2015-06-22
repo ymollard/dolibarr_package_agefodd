@@ -158,6 +158,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
+		$only_product_session = GETPOST('only_product_session', 'int');
 		$traine_list = GETPOST('trainee_id', 'array');
 		
 		$idtypeelement = GETPOST('idtypelement', 'alpha');
@@ -195,6 +196,8 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 			$agf->element_type = $element_type;
 		if (! empty($model_doc))
 			$agf->model_doc = $model_doc;
+		if (! empty($only_product_session))
+			$agf->only_product_session = $only_product_session;
 		$agf->notes = $notes;
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
@@ -236,6 +239,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');
+		$only_product_session = GETPOST('only_product_session', 'int');
 		
 		$idtypeelement = GETPOST('idtypelement', 'alpha');
 		if (! empty($idtypeelement)) {
@@ -279,6 +283,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$agf->element_type = $element_type;
 			if (! empty($model_doc))
 				$agf->model_doc = $model_doc;
+			if (! empty($only_product_session))
+				$agf->only_product_session = $only_product_session;
 			$agf->socid = $socid;
 			$agf->sessid = $sessid;
 			$agf->line_trainee = $traine_list;
@@ -546,6 +552,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		}
 	}
 	print '</select>';
+	if (!empty($agf->fk_product)) {
+		print '<BR>';
+		print '<input type="checkbox" value="1" name="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
+	}
 	print '</td></tr>';
 	
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvModelDoc") . '</td>';
@@ -694,6 +704,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				}
 			}
 			print '</select>';
+			if (!empty($agf->fk_product)) {
+				print '<BR>';
+				print '<input type="checkbox" value="1" name="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
+			}
 			print '</td></tr>';
 			
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvModelDoc") . '</td>';

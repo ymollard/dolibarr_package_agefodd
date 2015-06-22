@@ -149,6 +149,7 @@ class pdf_convention extends ModelePDFAgefodd {
 			$pdf->SetAutoPageBreak(1, 0);
 			
 			$agf_comdetails = new Agefodd_convention($this->db);
+			$agf_comdetails->fetch(0, 0, $agf_conv->id);
 			if ($agf_conv->element_type == 'invoice') {
 				$result = $agf_comdetails->fetch_invoice_lines($agf_conv->fk_element);
 			}

@@ -1021,3 +1021,4 @@ AgfAttestationPresenceIndividuelleBig=ATTESTATION DE PRESENCE INDIVIDUELLE
 AgfAttestationPresenceCollective=Attestation de présence collective
 AgfFicheEval2=EVALUATION DE FIN DE FORMATION
 AgfContratPrestation=Contrat de prestation
+AgfOutputOnlySessionProductInConv=Afficher uniquement la ligne avec produit/service identique à celui de la session du  sur la convention sur le chapitre des dispositions finnanciére

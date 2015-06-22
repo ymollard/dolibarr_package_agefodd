@@ -49,6 +49,7 @@ class Agefodd_convention {
 	var $art7;
 	var $art8;
 	var $sig;
+	var $only_product_session;
 	var $notes;
 	var $contatcdoc;
 	var $lines = array ();
@@ -106,6 +107,8 @@ class Agefodd_convention {
 			$this->element_type = $this->db->escape(trim($this->element_type));
 		if (isset($this->model_doc))
 			$this->model_doc = $this->db->escape(trim($this->model_doc));
+		if (isset($this->only_product_session))
+			$this->only_product_session = $this->db->escape(trim($this->only_product_session));
 			
 			// Check parameters
 			// Put here code to add control on parameters value
@@ -117,6 +120,7 @@ class Agefodd_convention {
 		$sql .= ",element_type";
 		$sql .= ",fk_element";
 		$sql .= ",model_doc";
+		$sql .= ",only_product_session";
 		$sql .= ") VALUES (";
 		$sql .= "'" . $this->sessid . "', ";
 		$sql .= "'" . $this->socid . "', ";
@@ -138,6 +142,7 @@ class Agefodd_convention {
 		$sql .= ",'" . $this->element_type . "'";
 		$sql .= "," . $this->fk_element;
 		$sql .= "," . (! isset($this->model_doc) ? 'NULL' : "'" . $this->db->escape($this->model_doc) . "'");
+		$sql .= "," . (! isset($this->only_product_session) ? '0' : "'" . $this->db->escape($this->only_product_session) . "'");
 		$sql .= ")";
 		
 		$this->db->begin();
@@ -216,6 +221,7 @@ class Agefodd_convention {
 		$sql .= ",element_type";
 		$sql .= ",fk_element";
 		$sql .= ",model_doc";
+		$sql .= ",only_product_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid=c.fk_societe";
 		if ($id > 0)
@@ -250,6 +256,7 @@ class Agefodd_convention {
 				$this->element_type = $obj->element_type;
 				$this->fk_element = $obj->fk_element;
 				$this->model_doc = $obj->model_doc;
+				$this->only_product_session = $obj->only_product_session;
 			}
 			$this->db->free($resql);
 			
@@ -298,6 +305,7 @@ class Agefodd_convention {
 		$sql .= ",element_type";
 		$sql .= ",fk_element";
 		$sql .= ",model_doc";
+		$sql .= ",only_product_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid=c.fk_societe";
 		$sql .= " WHERE c.fk_agefodd_session = " . $sessid;
@@ -335,6 +343,7 @@ class Agefodd_convention {
 					$line->element_type = $obj->element_type;
 					$line->fk_element = $obj->fk_element;
 					$line->model_doc = $obj->model_doc;
+					$line->only_product_session = $obj->only_product_session;
 					
 					$line->line_trainee = array ();
 					
@@ -421,6 +430,9 @@ class Agefodd_convention {
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "commandedet as c";
 		$sql .= " WHERE c.fk_commande = " . $comid;
+		if (!empty($this->only_product_session)) {
+			$sql .= " AND c.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."agefodd_session WHERE rowid=".$this->sessid.")";
+		}
 		
 		dol_syslog(get_class($this) . "::fetch_commande_lines ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -485,6 +497,9 @@ class Agefodd_convention {
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facturedet as c";
 		$sql .= " WHERE c.fk_facture = " . $factid;
+		if (!empty($this->only_product_session)) {
+			$sql .= " AND c.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."agefodd_session WHERE rowid=".$this->sessid.")";
+		}
 		
 		dol_syslog(get_class($this) . "::fetch_invoice_lines ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -549,6 +564,9 @@ class Agefodd_convention {
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "propaldet as c";
 		$sql .= " WHERE c.fk_propal = " . $propalid;
+		if (!empty($this->only_product_session)) {
+			$sql .= " AND c.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."agefodd_session WHERE rowid=".$this->sessid.")";
+		}
 		
 		dol_syslog(get_class($this) . "::fetch_propal_lines ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -681,6 +699,8 @@ class Agefodd_convention {
 			$this->element_type = $this->db->escape(trim($this->element_type));
 		if (isset($this->model_doc))
 			$this->model_doc = $this->db->escape(trim($this->model_doc));
+		if (isset($this->only_product_session))
+			$this->only_product_session = $this->db->escape(trim($this->only_product_session));
 			
 			// Update request
 		if (! isset($this->archive))
@@ -703,7 +723,8 @@ class Agefodd_convention {
 		$sql .= " fk_societe=" . $this->socid . ",";
 		$sql .= " fk_agefodd_session=" . $this->sessid . ",";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
-		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null");
+		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null"). ", ";
+		$sql .= " only_product_session=" . (isset($this->only_product_session) ? "'" . $this->db->escape($this->only_product_session) . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
 		$this->db->begin();

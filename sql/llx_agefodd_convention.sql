@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
   art7 text NOT NULL,
   art8 text NOT NULL,
   sig text,
+  only_product_session integer DEFAULT 0,
   notes text NOT NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
