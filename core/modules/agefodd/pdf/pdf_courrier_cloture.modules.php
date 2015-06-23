@@ -82,7 +82,7 @@ foreach($agf_stag->lines as $line) {
 }
 
 
-($num > 1) ? $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture2') . $num . ")" : $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture3');
+($num > 1) ? $this->str .= "\n".$outputlangs->transnoentities('AgfPDFCourrierCloture2') . $num . ")" : $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture3');
 $this->str .= "\n";
 $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture4') . "\n";
 $pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
@@ -104,7 +104,7 @@ if ($num > 6) {
 		
 		$contact_static = new Contact($this->db);
 		$contact_static->civility_id = $agf_stag->lines[$i]->civilite;
-		$stagiaires .= ucfirst(strtolower($contact_static->getCivilityLabel()) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;
+		$stagiaires .= ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;
 		if ($i == (count($agf_stag->lines) - 1))
 			$stagiaires .= '.';
 		}
