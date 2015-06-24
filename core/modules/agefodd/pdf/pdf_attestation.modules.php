@@ -336,7 +336,7 @@ class pdf_attestation extends ModelePDFAgefodd {
 							$dir = $conf->agefodd->dir_output . '/images/';
 							$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 							if (file_exists($img_tampon))
-								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY+5, 50);
+								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY+2, 50);
 						}
 						
 						// Pied de page $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
