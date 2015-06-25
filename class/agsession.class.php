@@ -277,6 +277,19 @@ class Agsession extends CommonObject {
 					}
 				}
 				
+				if (! empty($this->fk_formation_catalogue)) {
+					$training = new Agefodd($this->db);
+					$training->fetch($this->fk_formation_catalogue);
+					if (! empty($training->id)) {
+						foreach ( $this->array_options as $key => $value ) {
+							// If same extrafeild exists into customer=> Transfert it to session and value is not fill yet
+							if (is_array($training->array_options) && array_key_exists($key, $training->array_options) && (! empty($training->array_options[$key])) && (empty($this->array_options[$key]))) {
+								$this->array_options[$key] = $training->array_options[$key];
+							}
+						}
+					}
+				}
+				
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
 					$error ++;

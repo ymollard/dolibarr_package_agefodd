@@ -198,12 +198,12 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 					if (($agf2->lines [$i]->status_in_session == 3 || $agf2->lines [$i]->status_in_session == 4) || ($agf2->lines [$i]->status_in_session == 2)) 
 					{
 						$newY++;
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 16);
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 						$pdf->SetXY($this->marge_gauche, $newY);
 						$pdf->MultiCell($this->page_largeur-$this->marge_gauche-$this->marge_droite, 4, $outputlangs->convToOutputCharset($agf2->lines [$i]->prenom . ' ' . $agf2->lines [$i]->nom), 0, 'C', 0);
 						$trainee_output++;
 					}
-					$newY = $pdf->getY()+2;
+					$newY = $pdf->getY();
 				}
 				
 			}	
@@ -219,9 +219,9 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 				$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C'); // Set interline to 3
 			}			
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
-			$newY = $newY + 10;
+			$newY = $newY + 5;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestation9');
+			$this->str = $outputlangs->transnoentities('AgfPDFAttestation9');
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 			
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
@@ -244,7 +244,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$newY = $pdf->getY();		
 			
 			//Lieu
-			$newY = $pdf->getY()+30;
+			$newY = $pdf->getY()+15;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 			$this->str = $outputlangs->transnoentities('Lieu :');
 			$pdf->SetXY($this->marge_gauche + 1, $newY);

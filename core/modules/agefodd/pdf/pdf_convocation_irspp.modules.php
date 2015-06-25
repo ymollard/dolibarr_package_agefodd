@@ -262,9 +262,9 @@ class pdf_convocation_irspp extends ModelePDFAgefodd {
 					$posY = $pdf->GetY() + 1;
 					
 					$pdf->SetXY($posX, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize-1);
 					$this->str = $agf->array_options['options_conspartique'];
-					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C',false, 1, $posX, $posY, true, 0, true);
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L',false, 1, $posX, $posY, true, 0, true);
 					$posY = $pdf->GetY() + 10;
 					
 					$pdf->SetXY($posX, $posY);
