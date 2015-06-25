@@ -457,9 +457,9 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		// Période	
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
 		if ($agf->dated == $agf->datef)
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytextshort');
 		else
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytextshort');
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $tab_top+$tab_height*1/3+4);
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		
