@@ -570,6 +570,7 @@ if (! empty($id)) {
 		$linecount = count($agf->lines);
 		
 		for($i = 0; $i < $linecount; $i ++) {
+			var_dump($agf->lines[$i]);
 			if (! empty($agf->lines[$i]->socid)) {
 				print '<table class="border" width="100%">' . "\n";
 				

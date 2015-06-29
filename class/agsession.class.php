@@ -999,6 +999,7 @@ class Agsession extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soOPCATrainee";
 		$sql .= " ON soOPCATrainee.rowid = soOPCA.fk_soc_OPCA";
 		$sql .= " WHERE s.rowid = " . $id;
+		$sql .= " AND soOPCATrainee.rowid IS NOT NULL";
 		$sql .= " ORDER BY socname";
 		
 		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee", LOG_DEBUG);
@@ -1012,7 +1013,7 @@ class Agsession extends CommonObject {
 				while ( $i < $num_other ) {
 					$obj = $this->db->fetch_object($resql);
 					
-					if (! empty($obj->socid) && !empty($obj->fk_soc_opca)) {
+					if (! empty($obj->socid)) {
 						if (! in_array($obj->socid, $array_soc)) {
 							$newline = new AgfSocLine();
 							$newline->sessid = $obj->rowid;
