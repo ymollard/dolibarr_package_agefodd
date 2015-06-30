@@ -1062,10 +1062,10 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 			$line2.=($line2?" - ":"").$outputlangs->convToOutputCharset(getFormeJuridiqueLabel($fromcompany->forme_juridique_code));
 		}
 		// Capital
-		/*if ($fromcompany->capital)
+		if ($fromcompany->capital)
 		{
 			$line2.=($line2?" - ":"").$outputlangs->transnoentities("CapitalOf",$fromcompany->capital)." ".$outputlangs->transnoentities("Currency".$conf->currency);
-		}*/
+		}
 	}
 
 		// Line 3 of company infos

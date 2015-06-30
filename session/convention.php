@@ -394,14 +394,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	// '### ', une puce de troisième niveau est mis en place
 	$art1 = $langs->trans('AgfConvArt1_1') . "\n";
 	$art1 .= $langs->trans('AgfConvArt1_2') . ' ' . $agf->formintitule . ' ' . $langs->trans('AgfConvArt1_3') . " \n";
-	$art1 .= $langs->trans('AgfConvArt1_4') . "\n";
 	
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
+	if (count( $obj_peda->lines)>0) {
+		$art1 .= $langs->trans('AgfConvArt1_4') . "\n";
+	}
 	foreach ( $obj_peda->lines as $line ) {
 		$art1 .= "-	" . $line->intitule . "\n";
 	}
-	$art1 .= $langs->trans('AgfConvArt1_5') . "\n";
 	$art1 .= $langs->trans('AgfConvArt1_6') . "\n";
 	$art1 .= $langs->trans('AgfConvArt1_7');
 	
