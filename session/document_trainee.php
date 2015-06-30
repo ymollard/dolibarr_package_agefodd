@@ -127,10 +127,12 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 					$sendto[$id_receiver.'_third'] = $societe->name . " <" . $societe->email . ">";
 				} elseif (preg_match ( "/_socp/", $id_receiver )) {
 					$id_receiver= preg_replace('/_socp/', '', $id_receiver);
-					$contactstatic = new Contact($db);
-					$contactstatic->fetch($id_receiver);
-					if ($contactstatic->email != '') {
-						$sendto[$id_receiver.'_socp'] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+					if (!empty($id_receiver)) {
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($id_receiver);
+						if ($contactstatic->email != '') {
+							$sendto[$id_receiver.'_socp'] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+						}
 					}
 				}
 			}
@@ -675,8 +677,11 @@ if (! empty($id)) {
 			if (! empty($thirdpartyid)) {
 				$withto[$thirdpartyid . '_third'] = $companyname . ' - ' . $send_email;
 			}
-				
+			if (!empty($agf_trainee->fk_socpeople)) {
 			$withto[$agf_trainee->fk_socpeople . '_socp'] = $agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail;
+			} else {
+				setEventMessage($langs->trans('AgfTraineeIsNotAContact',$agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail ),'warnings');
+			}
 				
 			if (! empty($withto)) {
 				$formmail->withto = $withto;

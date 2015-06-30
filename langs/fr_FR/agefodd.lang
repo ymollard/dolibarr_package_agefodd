@@ -1023,3 +1023,4 @@ AgfFicheEval2=EVALUATION DE FIN DE FORMATION
 AgfContratPrestation=Contrat de prestation
 AgfOutputOnlySessionProductInConv=Afficher uniquement la ligne avec produit/service identique à celui de la session sur la convention dans le chapitre des dispositions financières
 AgfPDFAttestation9=Ont suivi la formation :
+AgfTraineeIsNotAContact=Le participants %s n'est pas un contact, vous devez remplir l'email à la main dans la zone prévue a cet effet
