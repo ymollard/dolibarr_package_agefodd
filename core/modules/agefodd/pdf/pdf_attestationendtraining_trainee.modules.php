@@ -187,7 +187,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			// Droite
 			// $pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_top, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse-5);
 			// Bas
-			$pdf->Line($this->marge_gauche, $this->marge_top + 20, $this->page_largeur - $this->marge_gauche, $this->marge_top + 20);
+			$pdf->Line($this->marge_gauche, $this->marge_top + 15, $this->page_largeur - $this->marge_gauche, $this->marge_top + 15);
 			// Gauche
 			// $pdf->Line($this->marge_gauche, $this->marge_top, $this->marge_gauche, $this->page_hauteur - $this->marge_basse-5);
 			
@@ -220,7 +220,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B,I', 20);
 			$pdf->MultiCell(140, 3, $outputlangs->transnoentities('AgfPDFAttestationEnd1'), 0, 'C', 0);
 			
-			$newY = $pdf->GetY() + 20;
+			$newY=$pdf->GetY()+10;
 			
 			$pdf->SetFont('', '', 12);
 			$pdf->SetXY($this->marge_gauche, $newY);
@@ -356,7 +356,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$this->str2 = dol_print_date($agf->datef);
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str) . ' ' . $outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 			
-			// $newY = $pdf->getY();
+			$newY = $pdf->getY()+5;
 			$pdf->SetXY($this->posxacquired, $newY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;

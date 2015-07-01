@@ -173,7 +173,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			// Haut
 			$pdf->Line($this->marge_gauche, $this->marge_top, $this->page_largeur - $this->marge_droite, $this->marge_top);
 			// Bas
-			$pdf->Line($this->marge_gauche, $this->marge_top+20, $this->page_largeur - $this->marge_gauche, $this->marge_top+20);
+			$pdf->Line($this->marge_gauche, $this->marge_top+15, $this->page_largeur - $this->marge_gauche, $this->marge_top+15);
 
 			$newY = $this->marge_haute + 32;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);

@@ -179,75 +179,68 @@ class pdf_convention extends ModelePDFAgefodd {
 				$posX = $this->marge_gauche;
 				
 				// Logo en haut à gauche
-				$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
-				if ($this->emetteur->logo) {
-					if (is_readable($logo)) {
-						$heightLogo = pdf_getHeightForLogo($logo);
-						include_once (DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php');
-						$tmp = dol_getImageSize($logo);
-						if ($tmp ['width']) {
-							$widthLogo = $tmp ['width'];
+				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+				if ($this->emetteur->logo)
+				{
+					if (is_readable($logo))
+					{
+						$height=pdf_getHeightForLogo($logo);
+						$width_logo=pdf_getWidthForLogo($logo);
+						if ($width_logo>0) {
+							$posX=$this->page_largeur-$this->marge_droite-$width_logo;
 						}
-						
-						if ($conf->global->AGF_USE_LOGO_CLIENT) {
-							$decal=70;
-						} else {
-							$decal=50;
-						}
-						
-						$pdf->Image($logo, $this->page_largeur - $this->marge_gauche - $this->marge_droite - $decal, $this->marge_haute, 0, $heightLogo, '', '', '', true, 300, '', false, false, 0, false, false, true); // width=0
-							                                                                                                                                                                                              // (auto)
-					} else {
-						$pdf->SetTextColor(200, 0, 0);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 8);
-						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'R');
-						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'R');
+						$pdf->Image($logo, $posX, $posY, 0, $height);	
 					}
-				} else {
-					$text = $this->emetteur->name;
-					$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
-					$pdf->MultiCell(150, 3, $outputlangs->convToOutputCharset($text), 0, 'R');
+					else
+					{
+						$pdf->SetTextColor(200,0,0);
+						$pdf->SetFont('','B',$this->default_font_size - 2);
+						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'L');
+						$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+					}
 				}
-				
-				// Affichage du logo commanditaire (optionnel)
-				if ($conf->global->AGF_USE_LOGO_CLIENT) {
-					$staticsoc = new Societe($this->db);
-					$staticsoc->fetch($agf_conv->socid);
-					$dir = $conf->societe->multidir_output [$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
-					if (! empty($staticsoc->logo)) {
-						$logo_client = $dir . $staticsoc->logo;
-						if (file_exists($logo_client) && is_readable($logo_client))
-							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
-					}
+				else
+				{
+					$text=$this->emetteur->name;
+					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 				
 				// $posX += $this->page_largeur - $this->marge_droite - 65;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
-				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-				$pdf->SetXY($posX, $posY - 1);
-				$pdf->Cell(0, 5, $mysoc->name, 0, 0, 'L');
+				$posy=$this->marge_haute;
+				$posx=$this->marge_gauche;
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-				$pdf->SetXY($posX, $posY + 3);
-				$this->str = $mysoc->address . "\n";
-				$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-				$this->str .= ' - ' . $mysoc->country . "\n";
-				if ($mysoc->phone) {
-					$this->str .= $outputlangs->transnoentities('AgfPDFHead1') . ' ' . $mysoc->phone . "\n";
-				}
-				if ($mysoc->fax) {
-					$this->str .= $outputlangs->transnoentities('AgfPDFHead2') . ' ' . $mysoc->fax . "\n";
-				}
-				if ($mysoc->email) {
-					$this->str .= $outputlangs->transnoentities('AgfPDFHead3') . ' ' . $mysoc->email . "\n";
-				}
-				if ($mysoc->url) {
-					$this->str .= $outputlangs->transnoentities('AgfPDFHead4') . ' ' . $mysoc->url . "\n";
-				}
+				$hautcadre=30;
+				$pdf->SetXY($posx,$posy);
+				$pdf->SetFillColor(255,255,255);
+				$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 				
-				$pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				// Show sender name
+				$pdf->SetXY($posx,$posy);
+				$pdf->SetFont('','B', $this->defaultFontSize);
+				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+				$posy=$pdf->getY();
+		
+				// Show sender information
+				$pdf->SetXY($posx,$posy);
+				$pdf->SetFont('','', $this->defaultFontSize-1);
+				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
+				$posy=$pdf->getY();
+				$pdf->SetXY($posx,$posy);
+				$pdf->SetFont('','', $this->defaultFontSize-1);
+				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip.' '.$this->emetteur->town), 0, 'L');
+				$posy=$pdf->getY();
+				$pdf->SetXY($posx,$posy);
+				$pdf->SetFont('','', $this->defaultFontSize-1);
+				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
+				$posy=$pdf->getY();
+				$pdf->SetXY($posx,$posy);
+				$pdf->SetFont('','', $this->defaultFontSize-1);
+				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
+				$posy=$pdf->getY();
+				
+				
+				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 				
 				$posY = $pdf->GetY() + 10;
 				
@@ -266,6 +259,22 @@ class pdf_convention extends ModelePDFAgefodd {
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
 				$pdf->SetXY($baseline_x, $baseline_y);
+
+				// Affichage du logo commanditaire (optionnel)
+				if ($conf->global->AGF_USE_LOGO_CLIENT) {
+					$staticsoc = new Societe($this->db);
+					$staticsoc->fetch($agf_conv->socid);
+					$dir = $conf->societe->multidir_output [$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
+					if (! empty($staticsoc->logo)) {
+						$logo_client = $dir . $staticsoc->logo;
+						if (file_exists($logo_client) && is_readable($logo_client)) {
+							$pdf->SetXY(($this->page_largeur/2)-20, $this->marge_haute + 50);
+							$pdf->Image($logo_client, '', '', 40, 40, '', '', 'T', false, 300, '', false, false, 0, true, false, false);
+						}
+					}
+				}
+				
+				
 				
 				// TItre page de garde 1
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 25);

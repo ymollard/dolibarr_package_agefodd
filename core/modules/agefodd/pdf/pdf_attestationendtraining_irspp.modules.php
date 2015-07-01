@@ -340,7 +340,7 @@ class pdf_attestationendtraining_irspp extends ModelePDFAgefodd {
 						$this->str2 = dol_print_date($agf->datef);
 						$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str).' '.$outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 						
-						//$newY = $pdf->getY();
+						$newY = $pdf->getY()+5;
 						$pdf->SetXY($this->posxacquired, $newY);					
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
