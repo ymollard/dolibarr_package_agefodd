@@ -1,0 +1,1 @@
+ALTER TABLE llx_agefodd_convention ADD COLUMN only_product_session integer DEFAULT 0 AFTER sig;
