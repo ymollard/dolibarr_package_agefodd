@@ -334,15 +334,6 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 			
-			// Formateur
-			foreach ( $agf_session_trainer as $trainer ) {
-				
-				$newY = $pdf->getY();
-				$pdf->SetXY($this->marge_gauche + 1, $newY);
-				$this->str = $trainer->firstname . " " . $trainer->lastname;
-				// $pdf->MultiCell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
-			}
-			
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 			$newY = $pdf->getY();
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
@@ -357,10 +348,15 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str) . ' ' . $outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 			
 			$newY = $pdf->getY()+5;
-			$pdf->SetXY($this->posxacquired, $newY);
+			$pdf->SetXY($this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $newY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
-			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('Le formateur : ') . $this->str, 0, 'L', 0);
+			//Formateur
+			$trainer_arr=array();
+			foreach($agf_session_trainer->lines as $trainer) {
+				$trainer_arr[]=$trainer->firstname ." ". $trainer->lastname;
+			}
+			$trainer_str=implode(',',$trainer_arr);
+			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'.$trainer_str, 0, 'L', 0);
 			
 			// Incrustation image tampon
 			$tampon_exitst = 1;

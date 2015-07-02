@@ -530,6 +530,7 @@ if (! empty($id)) {
 		document_line($langs->trans("AgfFichePresenceTraineeDirect"), "fiche_presence_trainee_direct");
 		document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
 		document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
+		document_line($langs->trans("AgfRemiseEval"), "fiche_remise_eval");
 		
 		print '</table>' . "\n";
 		
