@@ -150,7 +150,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	function fetch($id, $arch = 0) {
-		global $langs;
+		global $langs,$mysoc;
 		
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
@@ -158,6 +158,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
 		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
+		$sql .= " s.address as s_address, s.zip as s_zip, s.town as s_town";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
@@ -183,6 +184,9 @@ class Agefodd_teacher extends CommonObject {
 					$this->phone = $obj->u_phone;
 					$this->email = $obj->u_email;
 					$this->phone_mobile = $obj->u_phone_mobile;
+					$this->address = $mysoc->address;
+					$this->zip = $mysoc->zip;
+					$this->town = $mysoc->town;
 				} 				// trainer is Dolibarr contact
 				elseif ($this->type_trainer == $this->type_trainer_def [1]) {
 					$this->spid = $obj->spid;
@@ -193,6 +197,9 @@ class Agefodd_teacher extends CommonObject {
 					$this->phone = $obj->sp_phone;
 					$this->email = $obj->sp_email;
 					$this->phone_mobile = $obj->sp_phone_mobile;
+					$this->address = $obj->s_address;
+					$this->zip = $obj->s_zip;
+					$this->town = $obj->s_town;
 				}
 			}
 			$this->db->free($resql);
