@@ -483,7 +483,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				
 				
 				if ($objpedamodif==1) {
-					print 'toto;';
+					//print 'toto;';
 					print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
