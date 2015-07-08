@@ -29,35 +29,35 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Manage certificate
  */
 class Agefodd_stagiaire_certif extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agfstacertif'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_stagiaire_certif'; // !< Name of table without prefix where object is stored
-	var $id;
-	var $entity;
-	var $fk_user_author = '';
-	var $fk_user_mod = '';
-	var $datec = '';
-	var $tms = '';
-	var $fk_stagiaire;
-	var $fk_session_agefodd;
-	var $fk_session_stagiaire;
-	var $certif_code;
-	var $certif_label;
-	var $certif_dt_start = '';
-	var $certif_dt_end = '';
-	var $certif_dt_warning = '';
-	var $mark='';
-	var $lines = array ();
-	var $lines_state = array ();
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agfstacertif'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_stagiaire_certif'; // !< Name of table without prefix where object is stored
+	public $id;
+	public $entity;
+	public $fk_user_author = '';
+	public $fk_user_mod = '';
+	public $datec = '';
+	public $tms = '';
+	public $fk_stagiaire;
+	public $fk_session_agefodd;
+	public $fk_session_stagiaire;
+	public $certif_code;
+	public $certif_label;
+	public $certif_dt_start = '';
+	public $certif_dt_end = '';
+	public $certif_dt_warning = '';
+	public $mark='';
+	public $lines = array ();
+	public $lines_state = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -69,7 +69,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -173,7 +173,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $id_sess_trainee object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id = 0, $id_trainee = 0, $id_session = 0, $id_sess_trainee = 0) {
+	public function  fetch($id = 0, $id_trainee = 0, $id_session = 0, $id_sess_trainee = 0) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -262,7 +262,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function  fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -365,7 +365,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $id object
 	 * @return array State Array
 	 */
-	function fetch_certif_state($id) {
+	public function  fetch_certif_state($id) {
 		global $langs;
 		
 		$certif_type_array = $this->get_certif_type();
@@ -424,7 +424,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return array Array of certificate type
 	 *        
 	 */
-	function get_certif_type() {
+	public function  get_certif_type() {
 		global $langs;
 		
 		$return_array = array ();
@@ -463,7 +463,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return array Array of certificate type
 	 *        
 	 */
-	function set_certif_state($user, $certif_id, $certif_type_id, $certif_state) {
+	public function  set_certif_state($user, $certif_id, $certif_type_id, $certif_state) {
 		if (empty($certif_state)) {
 			$certif_state = 0;
 		}
@@ -531,7 +531,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_by_trainee($idtrainee) {
+	public function  fetch_all_by_trainee($idtrainee) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -612,7 +612,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset) {
+	public function  fetch_all($sortorder, $sortfield, $limit, $offset) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -687,7 +687,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -769,7 +769,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -831,7 +831,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -865,7 +865,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->entity = '';
@@ -889,19 +889,19 @@ class Agefodd_stagiaire_certif extends CommonObject {
  * Session line Class
  */
 class AgfStagiaireCertifLine {
-	var $id;
-	var $entity;
-	var $fk_stagiaire;
-	var $fk_session_agefodd;
-	var $fk_session_stagiaire;
-	var $certif_code;
-	var $certif_label;
-	var $mark;
-	var $certif_dt_start = '';
-	var $certif_dt_end = '';
-	var $certif_dt_warning = '';
-	var $lines_state = array ();
-	function __construct() {
+	public $id;
+	public $entity;
+	public $fk_stagiaire;
+	public $fk_session_agefodd;
+	public $fk_session_stagiaire;
+	public $certif_code;
+	public $certif_label;
+	public $mark;
+	public $certif_dt_start = '';
+	public $certif_dt_end = '';
+	public $certif_dt_warning = '';
+	public $lines_state = array ();
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -910,12 +910,12 @@ class AgfStagiaireCertifLine {
  * Session line Class
  */
 class AgfStagiaireCertifLineState {
-	var $id;
-	var $fk_certif;
-	var $fk_certif_type;
-	var $certif_state;
-	var $certif_type;
-	function __construct() {
+	public $id;
+	public $fk_certif;
+	public $fk_certif_type;
+	public $certif_state;
+	public $certif_type;
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -924,20 +924,20 @@ class AgfStagiaireCertifLineState {
  * Certif line
  */
 class Agefodd_CertifExpire_line {
-	var $id_session;
-	var $fromintitule;
-	var $fromref;
-	var $trainee_id;
-	var $trainee_name;
-	var $trainee_firstname;
-	var $certif_dt_end;
-	var $certif_dt_start;
-	var $certif_dt_warning;
-	var $certif_code;
-	var $certif_label;
-	var $customer_name;
-	var $customer_id;
-	var $dated;
-	var $datef;
-	var $mark;
+	public $id_session;
+	public $fromintitule;
+	public $fromref;
+	public $trainee_id;
+	public $trainee_name;
+	public $trainee_firstname;
+	public $certif_dt_end;
+	public $certif_dt_start;
+	public $certif_dt_warning;
+	public $certif_code;
+	public $certif_label;
+	public $customer_name;
+	public $customer_id;
+	public $dated;
+	public $datef;
+	public $mark;
 }

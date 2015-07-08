@@ -3,6 +3,7 @@ English Dolibarr ChangeLog
 ***** ChangeLog for 2.1.14 compared to 2.1.13 *****
 -Fix : Fix logo on PDF
 -Fix : Can option to output only product line on convention
+-New : Add status DONE for training session
 
 ***** ChangeLog for 2.1.13 compared to 2.1.12 *****
 -Fix : Fix session agenda bug

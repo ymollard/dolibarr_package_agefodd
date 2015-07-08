@@ -34,34 +34,34 @@ require_once ('agsession.class.php');
  */
 class Agefodd_opca extends CommonObject
 {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element='agefodd_opca'; //!< Id that identify managed objects
-	var $table_element='agefodd_opca'; //!< Name of table without prefix where object is stored
-	var $id;
-	var $fk_soc_trainee;
-	var $fk_session_agefodd;
-	var $date_ask_OPCA = '';
-	var $is_date_ask_OPCA;
-	var $is_OPCA;
-	var $fk_soc_OPCA;
-	var $fk_socpeople_OPCA;
-	var $num_OPCA_soc;
-	var $num_OPCA_file;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element='agefodd_opca'; //!< Id that identify managed objects
+	public $table_element='agefodd_opca'; //!< Name of table without prefix where object is stored
+	public $id;
+	public $fk_soc_trainee;
+	public $fk_session_agefodd;
+	public $date_ask_OPCA = '';
+	public $is_date_ask_OPCA;
+	public $is_OPCA;
+	public $fk_soc_OPCA;
+	public $fk_socpeople_OPCA;
+	public $num_OPCA_soc;
+	public $num_OPCA_file;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
 	
-	var $lines=array();
+	public $lines=array();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -73,7 +73,7 @@ class Agefodd_opca extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -184,7 +184,7 @@ class Agefodd_opca extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -245,7 +245,7 @@ class Agefodd_opca extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -341,7 +341,7 @@ class Agefodd_opca extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -393,7 +393,7 @@ class Agefodd_opca extends CommonObject
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -438,7 +438,7 @@ class Agefodd_opca extends CommonObject
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->fk_soc_trainee = '';
@@ -464,7 +464,7 @@ class Agefodd_opca extends CommonObject
 	 * * @param int $fk_trainee_session trainee in session
 	 * @return int <0 if KO, >0 if OK (rowid)
 	 */
-	function getOpcaForTraineeInSession($fk_soc_trainee, $id_session,$fk_trainee_session=0) {
+	public function  getOpcaForTraineeInSession($fk_soc_trainee, $id_session,$fk_trainee_session=0) {
 
 		global $langs;
 		
@@ -558,7 +558,7 @@ class Agefodd_opca extends CommonObject
 	 * * @param int $fk_trainee_session trainee in session
 	 * @return int <0 if KO, >0 if OK (rowid)
 	 */
-	function getOpcaSession($id_session) {
+	public function  getOpcaSession($id_session) {
 	
 		global $langs;
 	
@@ -630,19 +630,19 @@ class Agefodd_opca extends CommonObject
 }
 
 class AgefoddOpcaLine {
-	var $id;
-	var $fk_soc_trainee;
-	var $fk_session_agefodd;
-	var $date_ask_OPCA = '';
-	var $is_date_ask_OPCA;
-	var $is_OPCA;
-	var $fk_soc_OPCA;
-	var $fk_socpeople_OPCA;
-	var $num_OPCA_soc;
-	var $num_OPCA_file;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
+	public $id;
+	public $fk_soc_trainee;
+	public $fk_session_agefodd;
+	public $date_ask_OPCA = '';
+	public $is_date_ask_OPCA;
+	public $is_OPCA;
+	public $fk_soc_OPCA;
+	public $fk_socpeople_OPCA;
+	public $num_OPCA_soc;
+	public $num_OPCA_file;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
 }
 ?>

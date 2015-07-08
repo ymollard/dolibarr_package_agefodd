@@ -30,25 +30,25 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Session calendar class
  */
 class Agefodd_sesscalendar {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd';
-	var $table_element = 'agefodd';
-	var $id;
-	var $date_session;
-	var $heured;
-	var $heuref;
-	var $sessid;
-	var $fk_actioncomm;
-	var $lines = array ();
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd';
+	public $table_element = 'agefodd';
+	public $id;
+	public $date_session;
+	public $heured;
+	public $heuref;
+	public $sessid;
+	public $fk_actioncomm;
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($DB) {
+	public function  __construct($DB) {
 		$this->db = $DB;
 		return 1;
 	}
@@ -60,7 +60,7 @@ class Agefodd_sesscalendar {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -148,7 +148,7 @@ class Agefodd_sesscalendar {
 	 * @param int $actionid object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -184,7 +184,7 @@ class Agefodd_sesscalendar {
 	 * @param int $actionid object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_by_action($actionid) {
+	public function  fetch_by_action($actionid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -220,7 +220,7 @@ class Agefodd_sesscalendar {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($id) {
+	public function  fetch_all($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -263,7 +263,7 @@ class Agefodd_sesscalendar {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -299,7 +299,7 @@ class Agefodd_sesscalendar {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -367,7 +367,7 @@ class Agefodd_sesscalendar {
 	 * @param int $id to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		$result = $this->fetch($id);
 		if (! empty($this->fk_actioncomm)) {
 			dol_include_once('/comm/action/class/actioncomm.class.php');
@@ -397,7 +397,7 @@ class Agefodd_sesscalendar {
 	 * @param int			fk_session_place Location of session
 	 * @param User $user that modify
 	 */
-	function createAction($user) {
+	public function  createAction($user) {
 		global $conf, $langs;
 		
 		$error = 0;
@@ -448,7 +448,7 @@ class Agefodd_sesscalendar {
 	 *
 	 * @param User $user that modify
 	 */
-	function updateAction($user) {
+	public function  updateAction($user) {
 		global $conf, $langs;
 		
 		$error = 0;
@@ -504,12 +504,12 @@ class Agefodd_sesscalendar {
 	}
 }
 class Agefodd_sesscalendar_line {
-	var $id;
-	var $date_session;
-	var $heured;
-	var $heuref;
-	var $sessid;
-	function __construct() {
+	public $id;
+	public $date_session;
+	public $heured;
+	public $heuref;
+	public $sessid;
+	public function  __construct() {
 		return 1;
 	}
 }

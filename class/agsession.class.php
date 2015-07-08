@@ -31,78 +31,78 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Session Class
  */
 class Agsession extends CommonObject {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd_agsession';
-	var $table_element = 'agefodd_session';
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd_agsession';
+	public $table_element = 'agefodd_session';
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $fk_soc;
-	var $client;
-	var $socid;
-	var $fk_formation_catalogue;
-	var $fk_session_place;
-	var $nb_place;
-	var $nb_stagiaire;
-	var $force_nb_stagiaire;
-	var $type_session; // type formation entreprise : 0 intra / 1 inter
-	var $dated = '';
-	var $datef = '';
-	var $notes;
-	var $color;
-	var $cost_trainer;
-	var $cost_site;
-	var $cost_trip;
-	var $sell_price;
-	var $date_res_site = '';
-	var $is_date_res_site;
-	var $date_res_confirm_site = '';
-	var $is_date_res_confirm_site;
-	var $date_res_trainer = '';
-	var $is_date_res_trainer;
-	var $date_ask_OPCA = '';
-	var $is_date_ask_OPCA;
-	var $is_OPCA;
-	var $fk_soc_OPCA;
-	var $soc_OPCA_name;
-	var $fk_socpeople_OPCA;
-	var $contact_name_OPCA;
-	var $OPCA_contact_adress;
-	var $OPCA_adress;
-	var $num_OPCA_soc;
-	var $num_OPCA_file;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $lines = array ();
-	var $commercialid;
-	var $commercialname;
-	var $contactid;
-	var $contactname;
-	var $sourcecontactid;
-	var $fk_actioncomm;
-	var $fk_product;
-	var $formintitule;
-	var $formid;
-	var $formref;
-	var $duree;
-	var $nb_subscribe_min;
-	var $status;
-	var $statuscode;
-	var $statuslib;
-	var $contactcivilite;
-	var $duree_session;
-	var $intitule_custo;
-	var $placecode;
-	var $placeid;
-	var $commercialemail;
-	var $commercialphone;
-	var $fk_soc_requester;
-	var $fk_socpeople_requester;
-	var $socname;
-	var $fk_session_trainee;
+	public $id;
+	public $fk_soc;
+	public $client;
+	public $socid;
+	public $fk_formation_catalogue;
+	public $fk_session_place;
+	public $nb_place;
+	public $nb_stagiaire;
+	public $force_nb_stagiaire;
+	public $type_session; // type formation entreprise : 0 intra / 1 inter
+	public $dated = '';
+	public $datef = '';
+	public $notes;
+	public $color;
+	public $cost_trainer;
+	public $cost_site;
+	public $cost_trip;
+	public $sell_price;
+	public $date_res_site = '';
+	public $is_date_res_site;
+	public $date_res_confirm_site = '';
+	public $is_date_res_confirm_site;
+	public $date_res_trainer = '';
+	public $is_date_res_trainer;
+	public $date_ask_OPCA = '';
+	public $is_date_ask_OPCA;
+	public $is_OPCA;
+	public $fk_soc_OPCA;
+	public $soc_OPCA_name;
+	public $fk_socpeople_OPCA;
+	public $contact_name_OPCA;
+	public $OPCA_contact_adress;
+	public $OPCA_adress;
+	public $num_OPCA_soc;
+	public $num_OPCA_file;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $lines = array ();
+	public $commercialid;
+	public $commercialname;
+	public $contactid;
+	public $contactname;
+	public $sourcecontactid;
+	public $fk_actioncomm;
+	public $fk_product;
+	public $formintitule;
+	public $formid;
+	public $formref;
+	public $duree;
+	public $nb_subscribe_min;
+	public $status;
+	public $statuscode;
+	public $statuslib;
+	public $contactcivilite;
+	public $duree_session;
+	public $intitule_custo;
+	public $placecode;
+	public $placeid;
+	public $commercialemail;
+	public $commercialphone;
+	public $fk_soc_requester;
+	public $fk_socpeople_requester;
+	public $socname;
+	public $fk_session_trainee;
 	public $avgpricedesc;
 	public $fk_soc_presta;
 	public $fk_socpeople_presta;
@@ -112,7 +112,7 @@ class Agsession extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -124,7 +124,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		require_once ('agefodd_formation_catalogue.class.php');
 		
 		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
@@ -317,7 +317,7 @@ class Agsession extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -359,7 +359,7 @@ class Agsession extends CommonObject {
 	/**
 	 * Create admin level for a session
 	 */
-	function createAdmLevelForSession($user) {
+	public function  createAdmLevelForSession($user) {
 		$error = '';
 		
 		require_once ('agefodd_sessadm.class.php');
@@ -422,7 +422,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs, $conf;
 		
 		$sql = "SELECT DISTINCT";
@@ -613,7 +613,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_session_per_trainee($id) {
+	public function  fetch_session_per_trainee($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -698,7 +698,7 @@ class Agsession extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_session_per_trainer($id, $sortorder = '', $sortfield = '', $limit = 0, $offset = 0, $filter = array()) {
+	public function  fetch_session_per_trainer($id, $sortorder = '', $sortfield = '', $limit = 0, $offset = 0, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -812,7 +812,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_societe_per_session($id) {
+	public function  fetch_societe_per_session($id) {
 		$error = 0;
 		global $langs;
 		
@@ -1452,7 +1452,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -1488,7 +1488,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function updateArchive($user, $notrigger = 0) {
+	public function  updateArchive($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -1521,7 +1521,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		require_once ('agefodd_session_stagiaire.class.php');
 		
 		global $conf, $langs;
@@ -1761,7 +1761,7 @@ class Agsession extends CommonObject {
 	 * @param User $user that modify
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function setCommercialSession($userid, $user) {
+	public function  setCommercialSession($userid, $user) {
 		global $conf, $langs;
 		$error = 0;
 		$to_create = false;
@@ -1878,7 +1878,7 @@ class Agsession extends CommonObject {
 	 * @param User $user that modify
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function setContactSession($contactid, $user) {
+	public function  setContactSession($contactid, $user) {
 		global $conf, $langs;
 		$error = 0;
 		$to_create = false;
@@ -2030,7 +2030,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id, $notrigger = 0) {
+	public function  remove($id, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -2104,7 +2104,7 @@ class Agsession extends CommonObject {
 	 * \brief		Initialise object with example values
 	 * \remarks	id must be 0 if object instance is a specimen.
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 	}
 	
@@ -2114,7 +2114,7 @@ class Agsession extends CommonObject {
 	 * @param int $type
 	 * @return string translated description
 	 */
-	function getToolTip($type) {
+	public function  getToolTip($type) {
 		global $conf;
 		
 		$langs->load("admin");
@@ -2141,7 +2141,7 @@ class Agsession extends CommonObject {
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0) {
+	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0) {
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2373,7 +2373,7 @@ class Agsession extends CommonObject {
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
+	public function  fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
 		global $langs;
 		
 		$interval0day = '0 DAY';
@@ -2544,7 +2544,7 @@ class Agsession extends CommonObject {
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
+	public function  fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2691,7 +2691,7 @@ class Agsession extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = '') {
+	public function  fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = '') {
 		global $langs;
 		
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2970,7 +2970,7 @@ class Agsession extends CommonObject {
 	 * @param string $fourninvoiceid num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '') {
+	public function  fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '') {
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
@@ -3109,7 +3109,7 @@ class Agsession extends CommonObject {
 	/**
 	 * Print table of session information
 	 */
-	function printSessionInfo() {
+	public function  printSessionInfo() {
 		global $form, $langs;
 		
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
@@ -3326,7 +3326,7 @@ class Agsession extends CommonObject {
 	 * @param int $maxlength ref
 	 * @return string with URL
 	 */
-	function getNomUrl($withpicto = 0, $option = '', $maxlength = 0) {
+	public function  getNomUrl($withpicto = 0, $option = '', $maxlength = 0) {
 		global $langs;
 		
 		$result = '';
@@ -3354,7 +3354,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function updateArchiveByYear($year, $user, $notrigger = 0) {
+	public function  updateArchiveByYear($year, $user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -3414,7 +3414,7 @@ class Agsession extends CommonObject {
 	 *       
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function createOrder($user, $socid, $frompropalid = 0) {
+	public function  createOrder($user, $socid, $frompropalid = 0) {
 		require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -3688,7 +3688,7 @@ class Agsession extends CommonObject {
 	 *       
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function createProposal($user, $socid) {
+	public function  createProposal($user, $socid) {
 		require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -3953,7 +3953,7 @@ class Agsession extends CommonObject {
 	 * @param number $pricettc
 	 * @return number
 	 */
-	public function getAvgPrice($priceht = 0, $pricettc = 0) {
+	public public function  getAvgPrice($priceht = 0, $pricettc = 0) {
 		global $conf, $langs;
 		// Calc nb hour of a session
 		require_once 'agefodd_session_calendrier.class.php';
@@ -3993,7 +3993,7 @@ class Agsession extends CommonObject {
 	 *       
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function createInvoice($user, $socid, $frompropalid = 0, $amount = 0) {
+	public function  createInvoice($user, $socid, $frompropalid = 0, $amount = 0) {
 		require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -4331,7 +4331,7 @@ class Agsession extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function findDateSendPropal() {
+	public function  findDateSendPropal() {
 		$sql = "SELECT MAX(act.datep) as maxdate";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as elem";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "actioncomm as act ON act.fk_element=elem.fk_element ";
@@ -4360,7 +4360,7 @@ class Agsession extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function findDateSignPropal() {
+	public function  findDateSignPropal() {
 		$sql = "SELECT MAX(propal.date_cloture) as maxdate";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as elem";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "propal as propal ON propal.rowid=elem.fk_element ";
@@ -4388,16 +4388,16 @@ class Agsession extends CommonObject {
  * Session Thridparty Link Class
  */
 class AgfSocLine {
-	var $sessid;
-	var $socname;
-	var $socid;
-	var $type_session;
-	var $is_OPCA;
-	var $fk_soc_OPCA;
-	var $code_client;
-	var $typeline;
+	public $sessid;
+	public $socname;
+	public $socid;
+	public $type_session;
+	public $is_OPCA;
+	public $fk_soc_OPCA;
+	public $code_client;
+	public $typeline;
 	public $trainee_array = array ();
-	function __construct() {
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -4406,29 +4406,29 @@ class AgfSocLine {
  * Session Invoice Order Link Class
  */
 class AgfInvoiceOrder {
-	var $rowid;
-	var $socid;
-	var $type_session;
-	var $is_date_res_site;
-	var $is_date_res_trainer;
-	var $date_res_trainer;
-	var $fk_session_place;
-	var $dated;
-	var $datef;
-	var $intitule;
-	var $ref;
-	var $ref_interne;
-	var $color;
-	var $nb_stagiaire;
-	var $force_nb_stagiaire;
-	var $notes;
-	var $invoiceref;
-	var $orderref;
-	var $propalref;
-	var $duree_session;
-	var $intitule_custom;
-	var $fourninvoiceref;
-	function __construct() {
+	public $rowid;
+	public $socid;
+	public $type_session;
+	public $is_date_res_site;
+	public $is_date_res_trainer;
+	public $date_res_trainer;
+	public $fk_session_place;
+	public $dated;
+	public $datef;
+	public $intitule;
+	public $ref;
+	public $ref_interne;
+	public $color;
+	public $nb_stagiaire;
+	public $force_nb_stagiaire;
+	public $notes;
+	public $invoiceref;
+	public $orderref;
+	public $propalref;
+	public $duree_session;
+	public $intitule_custom;
+	public $fourninvoiceref;
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -4437,48 +4437,48 @@ class AgfInvoiceOrder {
  * Session line Class
  */
 class AgfSessionLine {
-	var $rowid;
-	var $socid;
-	var $socname;
-	var $trainerrowid;
-	var $type_session;
-	var $is_date_res_site;
-	var $is_date_res_confirm_site;
-	var $is_date_res_trainer;
-	var $date_res_trainer;
-	var $fk_session_place;
-	var $dated;
-	var $datef;
-	var $intitule;
-	var $intitule_custom;
-	var $ref;
-	var $ref_interne;
-	var $color;
-	var $nb_stagiaire;
-	var $force_nb_stagiaire;
-	var $notes;
-	var $nb_subscribe_min;
-	var $nb_prospect;
-	var $nb_confirm;
-	var $nb_cancelled;
-	var $statuslib;
-	var $statuscode;
-	var $status_in_session;
-	var $realdurationsession;
-	var $duree_session;
-	var $status;
-	var $trainer_status;
-	var $trainersessionid;
-	var $contactid;
-	var $sell_price;
-	var $datec;
-	var $cost_trainer;
-	var $cost_other;
-	var $socrequesterid;
-	var $socrequestername;
-	var $fk_socpeople_requester;
-	var $admin_task_close_session;
-	function __construct() {
+	public $rowid;
+	public $socid;
+	public $socname;
+	public $trainerrowid;
+	public $type_session;
+	public $is_date_res_site;
+	public $is_date_res_confirm_site;
+	public $is_date_res_trainer;
+	public $date_res_trainer;
+	public $fk_session_place;
+	public $dated;
+	public $datef;
+	public $intitule;
+	public $intitule_custom;
+	public $ref;
+	public $ref_interne;
+	public $color;
+	public $nb_stagiaire;
+	public $force_nb_stagiaire;
+	public $notes;
+	public $nb_subscribe_min;
+	public $nb_prospect;
+	public $nb_confirm;
+	public $nb_cancelled;
+	public $statuslib;
+	public $statuscode;
+	public $status_in_session;
+	public $realdurationsession;
+	public $duree_session;
+	public $status;
+	public $trainer_status;
+	public $trainersessionid;
+	public $contactid;
+	public $sell_price;
+	public $datec;
+	public $cost_trainer;
+	public $cost_other;
+	public $socrequesterid;
+	public $socrequestername;
+	public $fk_socpeople_requester;
+	public $admin_task_close_session;
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -4487,37 +4487,37 @@ class AgfSessionLine {
  * Session line Class
  */
 class AgfSessionLineTask {
-	var $rowid;
-	var $socid;
-	var $socname;
-	var $trainerrowid;
-	var $type_session;
-	var $is_date_res_site;
-	var $is_date_res_trainer;
-	var $date_res_trainer;
-	var $fk_session_place;
-	var $dated;
-	var $datef;
-	var $intitule;
-	var $intitule_custom;
-	var $ref;
-	var $ref_interne;
-	var $color;
-	var $nb_stagiaire;
-	var $force_nb_stagiaire;
-	var $notes;
-	var $task0;
-	var $task1;
-	var $task2;
-	var $task3;
-	var $statuslib;
-	var $statuscode;
-	var $status_in_session;
-	var $realdurationsession;
-	var $duree_session;
-	var $socrequesterid;
-	var $socrequestername;
-	function __construct() {
+	public $rowid;
+	public $socid;
+	public $socname;
+	public $trainerrowid;
+	public $type_session;
+	public $is_date_res_site;
+	public $is_date_res_trainer;
+	public $date_res_trainer;
+	public $fk_session_place;
+	public $dated;
+	public $datef;
+	public $intitule;
+	public $intitule_custom;
+	public $ref;
+	public $ref_interne;
+	public $color;
+	public $nb_stagiaire;
+	public $force_nb_stagiaire;
+	public $notes;
+	public $task0;
+	public $task1;
+	public $task2;
+	public $task3;
+	public $statuslib;
+	public $statuscode;
+	public $status_in_session;
+	public $realdurationsession;
+	public $duree_session;
+	public $socrequesterid;
+	public $socrequestername;
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -4526,33 +4526,33 @@ class AgfSessionLineTask {
  * Session line Class for list by soc
  */
 class AgfSessionLineSoc {
-	var $rowid;
-	var $socid;
-	var $socname;
-	var $trainerrowid;
-	var $type_session;
-	var $is_date_res_site;
-	var $is_date_res_trainer;
-	var $date_res_trainer;
-	var $fk_session_place;
-	var $dated;
-	var $datef;
-	var $intitule;
-	var $ref;
-	var $ref_interne;
-	var $color;
-	var $nb_stagiaire;
-	var $force_nb_stagiaire;
-	var $notes;
-	var $nb_subscribe_min;
-	var $type_affect;
-	var $statuslib;
-	var $statuscode;
-	var $status_in_session;
-	var $active;
-	var $duree_session;
-	var $intitule_custom;
-	function __construct() {
+	public $rowid;
+	public $socid;
+	public $socname;
+	public $trainerrowid;
+	public $type_session;
+	public $is_date_res_site;
+	public $is_date_res_trainer;
+	public $date_res_trainer;
+	public $fk_session_place;
+	public $dated;
+	public $datef;
+	public $intitule;
+	public $ref;
+	public $ref_interne;
+	public $color;
+	public $nb_stagiaire;
+	public $force_nb_stagiaire;
+	public $notes;
+	public $nb_subscribe_min;
+	public $type_affect;
+	public $statuslib;
+	public $statuscode;
+	public $status_in_session;
+	public $active;
+	public $duree_session;
+	public $intitule_custom;
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -4561,40 +4561,40 @@ class AgfSessionLineSoc {
  * Session line Class for list by soc
  */
 class AgfSessionLineInter {
-	var $id;
-	var $fk_session_place;
-	var $dated;
-	var $status;
-	var $statuslib;
-	var $statuscode;
-	var $color;
-	var $force_nb_stagiaire;
-	var $nb_stagiaire;
-	var $notes;
-	var $intitule;
-	var $ref;
-	var $trainingrefinterne;
-	var $nb_subscribe_min;
-	var $ref_interne;
-	var $trainerrowid;
-	var $intitule_custo;
-	var $duree_session;
-	var $trainer_status;
-	var $nb_prospect;
-	var $nb_confirm;
-	var $nb_cancelled;
-	var $trainerrn;
-	var $convoc;
-	var $support;
-	var $ffeedit;
-	var $attrn;
-	var $ffeenv;
-	var $invtrainer;
-	var $invroom;
-	var $is_date_res_site;
-	var $is_date_res_confirm_site;
-	var $sell_price;
-	function __construct() {
+	public $id;
+	public $fk_session_place;
+	public $dated;
+	public $status;
+	public $statuslib;
+	public $statuscode;
+	public $color;
+	public $force_nb_stagiaire;
+	public $nb_stagiaire;
+	public $notes;
+	public $intitule;
+	public $ref;
+	public $trainingrefinterne;
+	public $nb_subscribe_min;
+	public $ref_interne;
+	public $trainerrowid;
+	public $intitule_custo;
+	public $duree_session;
+	public $trainer_status;
+	public $nb_prospect;
+	public $nb_confirm;
+	public $nb_cancelled;
+	public $trainerrn;
+	public $convoc;
+	public $support;
+	public $ffeedit;
+	public $attrn;
+	public $ffeenv;
+	public $invtrainer;
+	public $invroom;
+	public $is_date_res_site;
+	public $is_date_res_confirm_site;
+	public $sell_price;
+	public function  __construct() {
 		return 1;
 	}
 }

@@ -31,27 +31,27 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_stagiaire_cursus extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd_stagiaire_cursus'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_stagiaire_cursus'; // !< Name of table without prefix where object is stored
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd_stagiaire_cursus'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_stagiaire_cursus'; // !< Name of table without prefix where object is stored
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $entity;
-	var $fk_stagiaire;
-	var $fk_cursus;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
+	public $id;
+	public $entity;
+	public $fk_stagiaire;
+	public $fk_cursus;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -63,7 +63,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -147,7 +147,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -196,7 +196,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -268,7 +268,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -320,7 +320,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -365,7 +365,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->entity = '';
@@ -387,7 +387,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param array $filter filter array
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function  fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -516,7 +516,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_session_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
+	public function  fetch_session_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -610,7 +610,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
+	public function  fetch_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -659,7 +659,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_training_session_to_plan() {
+	public function  fetch_training_session_to_plan() {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -705,36 +705,36 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	}
 }
 class AgfCursusTraineeLine {
-	var $id;
-	var $socid;
-	var $socname;
-	var $civilitecode;
-	var $nom;
-	var $prenom;
-	var $civilite;
-	var $starowid;
-	var $nbsessdone;
-	var $nbsessdoto;
-	function __construct() {
+	public $id;
+	public $socid;
+	public $socname;
+	public $civilitecode;
+	public $nom;
+	public $prenom;
+	public $civilite;
+	public $starowid;
+	public $nbsessdone;
+	public $nbsessdoto;
+	public function  __construct() {
 		return 1;
 	}
 }
 class AgfTraineeCursusLine {
-	var $id;
-	var $ref_interne;
-	var $intitule;
-	var $archive;
-	function __construct() {
+	public $id;
+	public $ref_interne;
+	public $intitule;
+	public $archive;
+	public function  __construct() {
 		return 1;
 	}
 }
 class AgfTrainingCursusLine {
-	var $id;
-	var $ref_interne;
-	var $ref;
-	var $intitule;
-	var $archive;
-	function __construct() {
+	public $id;
+	public $ref_interne;
+	public $ref;
+	public $intitule;
+	public $archive;
+	public function  __construct() {
 		return 1;
 	}
 }
@@ -743,35 +743,35 @@ class AgfTrainingCursusLine {
  * Session line Class
  */
 class AgfSessionCursusLine {
-	var $rowid;
-	var $socid;
-	var $socname;
-	var $trainerrowid;
-	var $type_session;
-	var $is_date_res_site;
-	var $is_date_res_trainer;
-	var $date_res_trainer;
-	var $fk_session_place;
-	var $dated;
-	var $datef;
-	var $intitule;
-	var $ref;
-	var $ref_interne;
-	var $color;
-	var $nb_stagiaire;
-	var $force_nb_stagiaire;
-	var $notes;
-	var $nb_subscribe_min;
-	var $nb_prospect;
-	var $nb_confirm;
-	var $nb_cancelled;
-	var $statuslib;
-	var $statuscode;
-	var $status_in_session;
-	var $realdurationsession;
-	var $category_lib;
-	var $placecode;
-	function __construct() {
+	public $rowid;
+	public $socid;
+	public $socname;
+	public $trainerrowid;
+	public $type_session;
+	public $is_date_res_site;
+	public $is_date_res_trainer;
+	public $date_res_trainer;
+	public $fk_session_place;
+	public $dated;
+	public $datef;
+	public $intitule;
+	public $ref;
+	public $ref_interne;
+	public $color;
+	public $nb_stagiaire;
+	public $force_nb_stagiaire;
+	public $notes;
+	public $nb_subscribe_min;
+	public $nb_prospect;
+	public $nb_confirm;
+	public $nb_cancelled;
+	public $statuslib;
+	public $statuscode;
+	public $status_in_session;
+	public $realdurationsession;
+	public $category_lib;
+	public $placecode;
+	public function  __construct() {
 		return 1;
 	}
 }

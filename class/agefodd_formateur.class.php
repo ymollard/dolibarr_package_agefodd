@@ -26,30 +26,30 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Trainner Class
  */
 class Agefodd_teacher extends CommonObject {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd_formateur';
-	var $table_element = 'agefodd_formateur';
-	var $id;
-	var $type_trainer_def = array ();
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd_formateur';
+	public $table_element = 'agefodd_formateur';
+	public $id;
+	public $type_trainer_def = array ();
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $entity;
-	var $fk_socpeople;
-	var $fk_user;
-	var $type_trainer;
-	var $archive;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $lines = array ();
+	public $entity;
+	public $fk_socpeople;
+	public $fk_user;
+	public $type_trainer;
+	public $archive;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($DB) {
+	public function  __construct($DB) {
 		$this->db = $DB;
 		$this->type_trainer_def = array (
 				0 => 'user',
@@ -65,7 +65,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -149,7 +149,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id, $arch = 0) {
+	public function  fetch($id, $arch = 0) {
 		global $langs,$mysoc;
 		
 		$sql = "SELECT";
@@ -222,7 +222,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param array $filter array of filter
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
+	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -320,7 +320,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -356,7 +356,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -416,7 +416,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formateur";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -431,7 +431,7 @@ class Agefodd_teacher extends CommonObject {
 		}
 	}
 	
-	public function getNomUrl($label='name') {
+	public public function  getNomUrl($label='name') {
 		$link=dol_buildpath('/agefodd/trainer/card.php',1);
 		if ($label=='name') {
 			return '<a href="'.$link.'?id='.$this->id.'">'.$this->name.' '.$this->firstname.'</a>';
@@ -442,22 +442,22 @@ class Agefodd_teacher extends CommonObject {
 	}
 }
 class AgfTrainerLine {
-	var $id;
-	var $type_trainer;
-	var $archive;
-	var $fk_user;
-	var $name;
-	var $firstname;
-	var $civilite;
-	var $phone;
-	var $email;
-	var $phone_mobile;
-	var $fk_socpeople;
-	function __construct() {
+	public $id;
+	public $type_trainer;
+	public $archive;
+	public $fk_user;
+	public $name;
+	public $firstname;
+	public $civilite;
+	public $phone;
+	public $email;
+	public $phone_mobile;
+	public $fk_socpeople;
+	public function  __construct() {
 		return 1;
 	}
 	
-	public function getNomUrl($label='name') {
+	public public function  getNomUrl($label='name') {
 		$link=dol_buildpath('/agefodd/trainer/card.php',1);
 		if ($label=='name') {
 			return '<a href="'.$link.'?id='.$this->id.'">'.$this->name.' '.$this->firstname.'</a>';

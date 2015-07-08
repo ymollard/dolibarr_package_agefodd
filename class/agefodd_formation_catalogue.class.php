@@ -28,46 +28,46 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * trainning Class
  */
 class Agefodd extends CommonObject {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd_formation_catalogue';
-	var $table_element = 'agefodd_formation_catalogue';
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd_formation_catalogue';
+	public $table_element = 'agefodd_formation_catalogue';
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $entity;
-	var $ref;
-	var $ref_obj;
-	var $ref_interne;
-	var $intitule;
-	var $duree;
-	var $public;
-	var $methode;
-	var $prerequis;
-	var $but;
-	var $programme;
-	var $pedago_usage;
-	var $sanction;
-	var $note1;
-	var $note2;
-	var $archive;
-	var $note_private;
-	var $note_public;
-	var $fk_product;
-	var $nb_subscribe_min;
-	var $fk_formation_catalogue;
-	var $priorite;
-	var $fk_c_category;
-	var $category_lib;
-	var $certif_duration;
-	var $lines = array ();
+	public $id;
+	public $entity;
+	public $ref;
+	public $ref_obj;
+	public $ref_interne;
+	public $intitule;
+	public $duree;
+	public $public;
+	public $methode;
+	public $prerequis;
+	public $but;
+	public $programme;
+	public $pedago_usage;
+	public $sanction;
+	public $note1;
+	public $note2;
+	public $archive;
+	public $note_private;
+	public $note_public;
+	public $fk_product;
+	public $nb_subscribe_min;
+	public $fk_formation_catalogue;
+	public $priorite;
+	public $fk_c_category;
+	public $category_lib;
+	public $certif_duration;
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -79,7 +79,7 @@ class Agefodd extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -197,7 +197,7 @@ class Agefodd extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id, $ref = '') {
+	public function  fetch($id, $ref = '') {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -269,7 +269,7 @@ class Agefodd extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -305,7 +305,7 @@ class Agefodd extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -410,7 +410,7 @@ class Agefodd extends CommonObject {
 	 * @param int $id to delete
 	 * @return int if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		global $conf;
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
@@ -452,7 +452,7 @@ class Agefodd extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function create_objpeda($user, $notrigger = 0) {
+	public function  create_objpeda($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -517,7 +517,7 @@ class Agefodd extends CommonObject {
 	 * @param int $id of object
 	 * @return int if KO, >0 if OK
 	 */
-	function fetch_objpeda($id) {
+	public function  fetch_objpeda($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -551,7 +551,7 @@ class Agefodd extends CommonObject {
 	 * @param int $id_formation concern by objectif peda
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_objpeda_per_formation($id_formation) {
+	public function  fetch_objpeda_per_formation($id_formation) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -596,7 +596,7 @@ class Agefodd extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update_objpeda($user, $notrigger = 0) {
+	public function  update_objpeda($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -656,7 +656,7 @@ class Agefodd extends CommonObject {
 	 * @param int $id to delete
 	 * @return int if KO, >0 if OK
 	 */
-	function remove_objpeda($id) {
+	public function  remove_objpeda($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -677,7 +677,7 @@ class Agefodd extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		$this->ref = '';
 		$this->intitule = '';
@@ -696,7 +696,7 @@ class Agefodd extends CommonObject {
 	 *
 	 * @return string translated description
 	 */
-	function getToolTip() {
+	public function  getToolTip() {
 		global $conf;
 		
 		$langs->load("admin");
@@ -726,7 +726,7 @@ class Agefodd extends CommonObject {
 	 * @param array $filter array of filter where clause
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
+	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
@@ -810,7 +810,7 @@ class Agefodd extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function printFormationInfo() {
+	public function  printFormationInfo() {
 		global $form, $langs;
 		
 		print '<table class="border" width="100%">';
@@ -832,7 +832,7 @@ class Agefodd extends CommonObject {
 	/**
 	 * Create admin level for a session
 	 */
-	function createAdmLevelForTraining($user) {
+	public function  createAdmLevelForTraining($user) {
 		$error = '';
 		
 		require_once ('agefodd_sessadm.class.php');
@@ -887,7 +887,7 @@ class Agefodd extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs, $conf;
 	
 		$error = 0;
@@ -970,27 +970,27 @@ class Agefodd extends CommonObject {
 	
 }
 class AgfObjPedaLine {
-	var $id;
-	var $fk_formation_catalogue;
-	var $intitule;
-	var $priorite;
-	function __construct() {
+	public $id;
+	public $fk_formation_catalogue;
+	public $intitule;
+	public $priorite;
+	public function  __construct() {
 		return 1;
 	}
 }
 class AgfTrainingLine {
-	var $rowid;
-	var $intitule;
-	var $ref_interne;
-	var $ref;
-	var $datec;
-	var $duree;
-	var $lastsession;
-	var $nbsession;
-	var $fk_product;
-	var $nb_subscribe_min;
-	var $category_lib;
-	function __construct() {
+	public $rowid;
+	public $intitule;
+	public $ref_interne;
+	public $ref;
+	public $datec;
+	public $duree;
+	public $lastsession;
+	public $nbsession;
+	public $fk_product;
+	public $nb_subscribe_min;
+	public $category_lib;
+	public function  __construct() {
 		return 1;
 	}
 }

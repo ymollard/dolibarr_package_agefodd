@@ -27,25 +27,25 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefoddcalendrier extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd_calendrier'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_calendrier'; // !< Name of table without prefix where object is stored
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd_calendrier'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_calendrier'; // !< Name of table without prefix where object is stored
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $entity;
-	var $day_session;
-	var $heured = '';
-	var $heuref = '';
-	var $lines = array ();
+	public $id;
+	public $entity;
+	public $day_session;
+	public $heured = '';
+	public $heuref = '';
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -57,7 +57,7 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -138,7 +138,7 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -178,7 +178,7 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all() {
+	public function  fetch_all() {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -222,7 +222,7 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -274,7 +274,7 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->entity = '';
@@ -288,8 +288,8 @@ class Agefoddcalendrier extends CommonObject {
 	}
 }
 class AgefoddcalendrierLines {
-	var $id;
-	var $day_session;
-	var $heured;
-	var $heuref;
+	public $id;
+	public $day_session;
+	public $heured;
+	public $heuref;
 }

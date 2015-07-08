@@ -30,26 +30,26 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Internal Rule class
  */
 class Agefodd_reg_interieur extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_reg_interieur'; // !< Name of table without prefix where object is stored
-	var $id;
-	var $reg_int;
-	var $notes;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $placeid;
-	var $placecode;
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_reg_interieur'; // !< Name of table without prefix where object is stored
+	public $id;
+	public $reg_int;
+	public $notes;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $placeid;
+	public $placecode;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -61,7 +61,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -139,7 +139,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -179,7 +179,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -244,7 +244,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -296,7 +296,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->reg_int = '';

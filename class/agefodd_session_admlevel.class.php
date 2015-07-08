@@ -28,30 +28,30 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Administrative task by session Class
  */
 class Agefodd_session_admlevel extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_session_admlevel'; // !< Name of table without prefix where object is stored
-	var $id;
-	var $level_rank;
-	var $fk_parent_level;
-	var $indice;
-	var $intitule;
-	var $delais_alerte;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $lines = array ();
-	var $trigger_name;
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_session_admlevel'; // !< Name of table without prefix where object is stored
+	public $id;
+	public $level_rank;
+	public $fk_parent_level;
+	public $indice;
+	public $intitule;
+	public $delais_alerte;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $lines = array ();
+	public $trigger_name;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -63,7 +63,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -154,7 +154,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param $id int Id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -205,7 +205,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 *
 	 * @return array array of object
 	 */
-	function fetch_all() {
+	public function  fetch_all() {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -263,7 +263,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -341,7 +341,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -405,7 +405,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function shift_indice($user, $type = '', $notrigger = 0) {
+	public function  shift_indice($user, $type = '', $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -601,14 +601,14 @@ class Agefodd_session_admlevel extends CommonObject {
  * line Class
  */
 class AgfSessionAdmlvlLine {
-	var $rowid;
-	var $level_rank;
-	var $fk_parent_level;
-	var $indice;
-	var $intitule;
-	var $alerte;
-	var $trigger_name;
-	function __construct() {
+	public $rowid;
+	public $level_rank;
+	public $fk_parent_level;
+	public $indice;
+	public $intitule;
+	public $alerte;
+	public $trigger_name;
+	public function  __construct() {
 		return 1;
 	}
 }

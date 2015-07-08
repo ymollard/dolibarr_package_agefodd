@@ -29,28 +29,28 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Manage traner session object
  */
 class Agefodd_session_formateur {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd';
-	var $table_element = 'agefodd';
-	var $id;
-	var $sessid;
-	var $formid;
-	var $lastname;
-	var $firstname;
-	var $trainer_status;
-	var $trainer_type;
-	var $lines = array ();
-	var $labelstatut;
-	var $labelstatut_short;
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd';
+	public $table_element = 'agefodd';
+	public $id;
+	public $sessid;
+	public $formid;
+	public $lastname;
+	public $firstname;
+	public $trainer_status;
+	public $trainer_type;
+	public $lines = array ();
+	public $labelstatut;
+	public $labelstatut_short;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		global $langs;
 		
 		$this->db = $db;
@@ -81,7 +81,7 @@ class Agefodd_session_formateur {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -153,7 +153,7 @@ class Agefodd_session_formateur {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -198,7 +198,7 @@ class Agefodd_session_formateur {
 	 * @param int $id session object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_formateur_per_session($id) {
+	public function  fetch_formateur_per_session($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -274,7 +274,7 @@ class Agefodd_session_formateur {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -337,7 +337,7 @@ class Agefodd_session_formateur {
 	 * @param int $id of object to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		global $conf;
 		
 		$this->db->begin();
@@ -390,7 +390,7 @@ class Agefodd_session_formateur {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	function getLibStatut($mode = 0) {
+	public function  getLibStatut($mode = 0) {
 		return $this->LibStatut($this->trainer_status, $mode);
 	}
 	
@@ -404,7 +404,7 @@ class Agefodd_session_formateur {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	function LibStatut($statut, $mode = 1) {
+	public function  LibStatut($statut, $mode = 1) {
 		global $langs;
 		
 		if (empty($statut))
@@ -490,17 +490,17 @@ class Agefodd_session_formateur {
  * Session trainer line Class
  */
 class AgfSessionTrainer {
-	var $opsid;
-	var $lastname;
-	var $firstname;
-	var $email;
-	var $socpeopleid;
-	var $userid;
-	var $formid;
-	var $sessid;
-	var $trainer_status;
-	var $trainer_type;
-	var $trainer_type_label;
+	public $opsid;
+	public $lastname;
+	public $firstname;
+	public $email;
+	public $socpeopleid;
+	public $userid;
+	public $formid;
+	public $sessid;
+	public $trainer_status;
+	public $trainer_type;
+	public $trainer_type_label;
 	
 	/**
 	 * Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
@@ -508,7 +508,7 @@ class AgfSessionTrainer {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	function getLibStatut($mode = 0) {
+	public function  getLibStatut($mode = 0) {
 		return $this->LibStatut($this->trainer_status, $mode);
 	}
 	
@@ -522,7 +522,7 @@ class AgfSessionTrainer {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	function LibStatut($statut, $mode = 1) {
+	public function  LibStatut($statut, $mode = 1) {
 		global $langs;
 		
 		if (empty($statut))
@@ -602,7 +602,7 @@ class AgfSessionTrainer {
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
 	}
-	function __construct() {
+	public function  __construct() {
 		global $langs;
 		
 		$this->labelstatut [0] = $langs->trans("TraineeSessionStatusProspect");

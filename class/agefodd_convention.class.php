@@ -26,41 +26,41 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Convention class
  */
 class Agefodd_convention {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd_convention';
-	var $table_element = 'agefodd_convention';
-	var $id;
-	var $sessid;
-	var $socid;
-	var $element_type;
-	var $fk_element;
-	var $model_doc;
-	var $socname;
-	var $intro1;
-	var $intro2;
-	var $art1;
-	var $art2;
-	var $art3;
-	var $art4;
-	var $art5;
-	var $art6;
-	var $art7;
-	var $art8;
-	var $sig;
-	var $only_product_session;
-	var $notes;
-	var $contatcdoc;
-	var $lines = array ();
-	var $line_trainee = array ();
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd_convention';
+	public $table_element = 'agefodd_convention';
+	public $id;
+	public $sessid;
+	public $socid;
+	public $element_type;
+	public $fk_element;
+	public $model_doc;
+	public $socname;
+	public $intro1;
+	public $intro2;
+	public $art1;
+	public $art2;
+	public $art3;
+	public $art4;
+	public $art5;
+	public $art6;
+	public $art7;
+	public $art8;
+	public $sig;
+	public $only_product_session;
+	public $notes;
+	public $contatcdoc;
+	public $lines = array ();
+	public $line_trainee = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -72,7 +72,7 @@ class Agefodd_convention {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -212,7 +212,7 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($sessid, $socid, $id = 0) {
+	public function  fetch($sessid, $socid, $id = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -296,7 +296,7 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sessid, $socid = 0) {
+	public function  fetch_all($sessid, $socid = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -388,7 +388,7 @@ class Agefodd_convention {
 	 * @param int $socid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_last_conv_per_socity($socid) {
+	public function  fetch_last_conv_per_socity($socid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -420,7 +420,7 @@ class Agefodd_convention {
 	 * @param int $comid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_order_lines($comid) {
+	public function  fetch_order_lines($comid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -487,7 +487,7 @@ class Agefodd_convention {
 	 * @param int $factid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_invoice_lines($factid) {
+	public function  fetch_invoice_lines($factid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -554,7 +554,7 @@ class Agefodd_convention {
 	 * @param int $propalid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_propal_lines($propalid) {
+	public function  fetch_propal_lines($propalid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -628,7 +628,7 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -664,7 +664,7 @@ class Agefodd_convention {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -807,7 +807,7 @@ class Agefodd_convention {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		global $conf, $langs;
 		
 		$this->fetch(0, 0, $id);
@@ -870,7 +870,7 @@ class Agefodd_convention {
 	 * @param int $propalid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_contact($contactsource, $contacttype) {
+	public function  fetch_contact($contactsource, $contacttype) {
 		require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
 		
 		global $langs;
@@ -913,18 +913,18 @@ class Agefodd_convention {
 	}
 }
 class AgfConventionLine {
-	var $rowid;
-	var $fk_product;
-	var $description;
-	var $tva_tx;
-	var $remise_percent;
-	var $fk_remise_except;
-	var $price;
-	var $qty;
-	var $total_ht;
-	var $total_tva;
-	var $total_ttc;
-	function __construct() {
+	public $rowid;
+	public $fk_product;
+	public $description;
+	public $tva_tx;
+	public $remise_percent;
+	public $fk_remise_except;
+	public $price;
+	public $qty;
+	public $total_ht;
+	public $total_tva;
+	public $total_ttc;
+	public function  __construct() {
 		return 1;
 	}
 }

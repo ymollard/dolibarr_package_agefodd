@@ -31,32 +31,32 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_training_admlevel extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd_training_admlevel'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_training_admlevel'; // !< Name of table without prefix where object is stored
-	var $id;
-	var $fk_training;
-	var $level_rank;
-	var $fk_parent_level;
-	var $indice;
-	var $intitule;
-	var $delais_alerte;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $fk_agefodd_training_admlevel;
-	var $lines = array ();
-	var $trigger_name;
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd_training_admlevel'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_training_admlevel'; // !< Name of table without prefix where object is stored
+	public $id;
+	public $fk_training;
+	public $level_rank;
+	public $fk_parent_level;
+	public $indice;
+	public $intitule;
+	public $delais_alerte;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $fk_agefodd_training_admlevel;
+	public $lines = array ();
+	public $trigger_name;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -68,7 +68,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -171,7 +171,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -229,7 +229,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $training_id object
 	 * @return array array of object
 	 */
-	function fetch_all($training_id) {
+	public function  fetch_all($training_id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -293,7 +293,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -378,7 +378,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -431,7 +431,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete_training_task($user, $notrigger = 0) {
+	public function  delete_training_task($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -483,7 +483,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -528,7 +528,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->fk_training = '';
@@ -551,7 +551,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function shift_indice($user, $type = '', $notrigger = 0) {
+	public function  shift_indice($user, $type = '', $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -754,7 +754,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function setParentActionId($user, $training_id) {
+	public function  setParentActionId($user, $training_id) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -802,16 +802,16 @@ class Agefodd_training_admlevel extends CommonObject {
  * line Class
  */
 class AgfTrainingAdmlvlLine {
-	var $rowid;
-	var $fk_training;
-	var $level_rank;
-	var $fk_parent_level;
-	var $indice;
-	var $intitule;
-	var $alerte;
-	var $fk_agefodd_training_admlevel;
-	var $trigger_name;
-	function __construct() {
+	public $rowid;
+	public $fk_training;
+	public $level_rank;
+	public $fk_parent_level;
+	public $indice;
+	public $intitule;
+	public $alerte;
+	public $fk_agefodd_training_admlevel;
+	public $trigger_name;
+	public function  __construct() {
 		return 1;
 	}
 }

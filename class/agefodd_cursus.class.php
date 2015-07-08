@@ -30,32 +30,32 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_cursus extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd_cursus'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_cursus'; // !< Name of table without prefix where object is stored
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd_cursus'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_cursus'; // !< Name of table without prefix where object is stored
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $ref_interne;
-	var $entity;
-	var $intitule;
-	var $archive;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $note_private;
-	var $note_public;
-	var $tms = '';
-	var $lines = array ();
-	var $fk_stagiaire;
+	public $id;
+	public $ref_interne;
+	public $entity;
+	public $intitule;
+	public $archive;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $note_private;
+	public $note_public;
+	public $tms = '';
+	public $lines = array ();
+	public $fk_stagiaire;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -67,7 +67,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -177,7 +177,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -241,7 +241,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -336,7 +336,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -400,7 +400,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -438,7 +438,7 @@ class Agefodd_cursus extends CommonObject {
 			return - 1;
 		}
 	}
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -472,7 +472,7 @@ class Agefodd_cursus extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->ref_interne = '';
@@ -496,7 +496,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
+	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -558,18 +558,18 @@ class Agefodd_cursus extends CommonObject {
 	}
 }
 class AgfCursusLine {
-	var $id;
-	var $ref_interne;
-	var $entity;
-	var $intitule;
-	var $archive;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $note_private;
-	var $note_public;
-	var $tms = '';
-	function __construct() {
+	public $id;
+	public $ref_interne;
+	public $entity;
+	public $intitule;
+	public $archive;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $note_private;
+	public $note_public;
+	public $tms = '';
+	public function  __construct() {
 		return 1;
 	}
 }

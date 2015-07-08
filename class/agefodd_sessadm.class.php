@@ -30,30 +30,30 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Administrative task level Class
  */
 class Agefodd_sessadm extends CommonObject {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd';
-	var $table_element = 'agefodd_session_adminsitu';
-	var $id;
-	var $level_rank;
-	var $fk_parent_level;
-	var $indice;
-	var $intitule;
-	var $delais_alerte;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $lines = array ();
-	var $trigger_name;
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd';
+	public $table_element = 'agefodd_session_adminsitu';
+	public $id;
+	public $level_rank;
+	public $fk_parent_level;
+	public $indice;
+	public $intitule;
+	public $delais_alerte;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $lines = array ();
+	public $trigger_name;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($DB) {
+	public function  __construct($DB) {
 		$this->db = $DB;
 		return 1;
 	}
@@ -65,7 +65,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -148,7 +148,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -222,7 +222,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id action (in table agefodd_session_adminsitu)
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -267,7 +267,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $sess_id Id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sess_id) {
+	public function  fetch_all($sess_id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -324,7 +324,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -359,7 +359,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -380,7 +380,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	function remove_all($id) {
+	public function  remove_all($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE fk_agefodd_session = " . $id;
 		
@@ -401,7 +401,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	function get_session_dated($sessid) {
+	public function  get_session_dated($sessid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -433,7 +433,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	function has_child($id) {
+	public function  has_child($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -468,7 +468,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function setParentActionId($user, $session_id) {
+	public function  setParentActionId($user, $session_id) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -520,7 +520,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param $status int status to set
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function updateByTriggerName($user, $session_id, $trigger_name, $status = 1) {
+	public function  updateByTriggerName($user, $session_id, $trigger_name, $status = 1) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -560,21 +560,21 @@ class Agefodd_sessadm extends CommonObject {
  * Session admnistrative line Class
  */
 class AgfSessAdm {
-	var $id;
-	var $level;
-	var $sessid;
-	var $intitule;
-	var $indice;
-	var $level_rank;
-	var $fk_parent_level;
-	var $delais_alerte;
-	var $dated;
-	var $datef;
-	var $datea;
-	var $notes;
-	var $archive;
-	var $trigger_name;
-	function __construct() {
+	public $id;
+	public $level;
+	public $sessid;
+	public $intitule;
+	public $indice;
+	public $level_rank;
+	public $fk_parent_level;
+	public $delais_alerte;
+	public $dated;
+	public $datef;
+	public $datea;
+	public $notes;
+	public $archive;
+	public $trigger_name;
+	public function  __construct() {
 		return 1;
 	}
 }

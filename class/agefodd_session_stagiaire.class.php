@@ -30,34 +30,34 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
  * Manage certificate
  */
 class Agefodd_session_stagiaire extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agfsessionsta'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_session_stagiaire'; // !< Name of table without prefix where object is stored
-	var $id;
-	var $entity;
-	var $fk_session_agefodd;
-	var $fk_stagiaire;
-	var $fk_agefodd_stagiaire_type;
-	var $fk_soc_link;
-	var $fk_soc_requester;
-	var $status_in_session;
-	var $labelstatut;
-	var $labelstatut_short;
-	var $fk_user_author = '';
-	var $fk_user_mod = '';
-	var $datec = '';
-	var $tms = '';
-	var $lines = array ();
-	var $lines_state = array ();
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agfsessionsta'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_session_stagiaire'; // !< Name of table without prefix where object is stored
+	public $id;
+	public $entity;
+	public $fk_session_agefodd;
+	public $fk_stagiaire;
+	public $fk_agefodd_stagiaire_type;
+	public $fk_soc_link;
+	public $fk_soc_requester;
+	public $status_in_session;
+	public $labelstatut;
+	public $labelstatut_short;
+	public $fk_user_author = '';
+	public $fk_user_mod = '';
+	public $datec = '';
+	public $tms = '';
+	public $lines = array ();
+	public $lines_state = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		global $langs;
 		$langs->trans('agefodd@agefodd');
 		
@@ -88,7 +88,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		$sql = "SELECT";
 		$sql .= " fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec, status_in_session";
 		$sql .= " ,fk_soc_link";
@@ -128,7 +128,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $searchAsLink search as soc link
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0) {
+	public function  fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0) {
 		global $langs;
 		
 		$linesadded = array ();
@@ -338,7 +338,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $trainee_seesion_id Trainee session ID
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id=0) {
+	public function  fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id=0) {
 		global $langs;
 		
 		$linesadded = array ();
@@ -453,7 +453,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -649,7 +649,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		$this->db->begin();
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
@@ -709,7 +709,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -782,7 +782,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $status status
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update_status_by_soc($user, $notrigger = 0, $socid = 0, $status = 0) {
+	public function  update_status_by_soc($user, $notrigger = 0, $socid = 0, $status = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -839,7 +839,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	function getLibStatut($mode = 0) {
+	public function  getLibStatut($mode = 0) {
 		return $this->LibStatut($this->status_in_session, $mode);
 	}
 	
@@ -854,7 +854,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	function LibStatut($statut, $mode = 1) {
+	public function  LibStatut($statut, $mode = 1) {
 		global $langs;
 		
 		if (empty($statut))
@@ -940,28 +940,28 @@ class Agefodd_session_stagiaire extends CommonObject {
  * Session Trainee Link Class
  */
 class AgfTraineeSessionLine {
-	var $stagerowid;
-	var $sessid;
-	var $id;
-	var $nom;
-	var $prenom;
-	var $civilite;
-	var $civilitel;
-	var $socname;
-	var $socid;
-	var $typeid;
-	var $type;
-	var $email;
-	var $fk_socpeople;
-	var $date_birth;
-	var $place_birth;
-	var $status_in_session;
-	var $fk_agefodd_stagiaire_type;
-	var $poste;
-	var $soccode;
-	var $fk_soc_link;
-	var $fk_soc_requester;
-	function __construct() {
+	public $stagerowid;
+	public $sessid;
+	public $id;
+	public $nom;
+	public $prenom;
+	public $civilite;
+	public $civilitel;
+	public $socname;
+	public $socid;
+	public $typeid;
+	public $type;
+	public $email;
+	public $fk_socpeople;
+	public $date_birth;
+	public $place_birth;
+	public $status_in_session;
+	public $fk_agefodd_stagiaire_type;
+	public $poste;
+	public $soccode;
+	public $fk_soc_link;
+	public $fk_soc_requester;
+	public function  __construct() {
 		return 1;
 	}
 }

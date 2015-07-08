@@ -32,31 +32,31 @@ require_once ("agefodd_formateur.class.php");
  * Put here description of your class
  */
 class Agefoddsessionformateurcalendrier extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd_sessionformateurcalendrier'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_sessionformateurcalendrier'; // !< Name of table without prefix where object is stored
-	var $id;
-	var $fk_agefodd_session_formateur;
-	var $date_session = '';
-	var $heured = '';
-	var $heuref = '';
-	var $trainer_cost;
-	var $trainer_status;
-	var $fk_actioncomm;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $lines = array ();
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd_sessionformateurcalendrier'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_sessionformateurcalendrier'; // !< Name of table without prefix where object is stored
+	public $id;
+	public $fk_agefodd_session_formateur;
+	public $date_session = '';
+	public $heured = '';
+	public $heuref = '';
+	public $trainer_cost;
+	public $trainer_status;
+	public $fk_actioncomm;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -68,7 +68,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -173,7 +173,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -229,7 +229,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $actionid object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_by_action($actionid) {
+	public function  fetch_by_action($actionid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -268,7 +268,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($id) {
+	public function  fetch_all($id) {
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -326,7 +326,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all_by_trainer($id) {
+	public function  fetch_all_by_trainer($id) {
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -386,7 +386,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -468,7 +468,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $id to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		$result = $this->fetch($id);
 		if (! empty($this->fk_actioncomm)) {
 			dol_include_once('/comm/action/class/actioncomm.class.php');
@@ -498,7 +498,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int			fk_session_place Location of session
 	 * @param User $user that modify
 	 */
-	function createAction($user) {
+	public function  createAction($user) {
 		global $conf, $langs;
 		
 		$error = 0;
@@ -585,7 +585,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 *
 	 * @param User $user that modify
 	 */
-	function updateAction($user) {
+	public function  updateAction($user) {
 		global $conf, $langs;
 		
 		$error = 0;
@@ -646,7 +646,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -691,7 +691,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->fk_agefodd_session_formateur = '';
@@ -707,15 +707,15 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	}
 }
 class AgefoddcalendrierformateurLines {
-	var $id;
-	var $date_session;
-	var $fk_agefodd_session_formateur;
-	var $heured;
-	var $heuref;
-	var $trainer_cost;
-	var $trainer_status;
-	var $fk_actioncomm;
-	var $fk_user_author;
-	var $fk_session;
+	public $id;
+	public $date_session;
+	public $fk_agefodd_session_formateur;
+	public $heured;
+	public $heuref;
+	public $trainer_cost;
+	public $trainer_status;
+	public $fk_actioncomm;
+	public $fk_user_author;
+	public $fk_session;
 }
 ?>

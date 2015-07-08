@@ -34,40 +34,40 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/html.formmail.class.php");
  * $formmail->show_form() affiche le formulaire
  */
 class FormAgefoddsenddocs extends FormMail {
-	var $db;
-	var $withform;
-	var $fromname;
-	var $frommail;
-	var $replytoname;
-	var $replytomail;
-	var $toname;
-	var $tomail;
-	var $withsubstit; // Show substitution array
-	var $withfrom;
-	var $withto;
-	var $withtofree;
-	var $withtocc;
-	var $withtopic;
-	var $withfile; // 0=No attaches files, 1=Show attached files, 2=Can add new attached files
-	var $withbody;
-	var $withfromreadonly;
-	var $withreplytoreadonly;
-	var $withtoreadonly;
-	var $withtoccreadonly;
-	var $withtopicreadonly;
-	var $withfilereadonly;
-	var $withdeliveryreceipt;
-	var $withcancel;
-	var $substit = array ();
-	var $param = array ();
-	var $error;
+	protected $db;
+	public $withform;
+	public $fromname;
+	public $frommail;
+	public $replytoname;
+	public $replytomail;
+	public $toname;
+	public $tomail;
+	public $withsubstit; // Show substitution array
+	public $withfrom;
+	public $withto;
+	public $withtofree;
+	public $withtocc;
+	public $withtopic;
+	public $withfile; // 0=No attaches files, 1=Show attached files, 2=Can add new attached files
+	public $withbody;
+	public $withfromreadonly;
+	public $withreplytoreadonly;
+	public $withtoreadonly;
+	public $withtoccreadonly;
+	public $withtopicreadonly;
+	public $withfilereadonly;
+	public $withdeliveryreceipt;
+	public $withcancel;
+	public $substit = array ();
+	public $param = array ();
+	public $error;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDB $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		
 		$this->withform = 1;
@@ -103,7 +103,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 * @param string $removefileaction action when removing file attachments
 	 * @return void
 	 */
-	function show_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
+	public function  show_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
 		print $this->get_form($addfileaction, $removefileaction);
 	}
 	
@@ -115,7 +115,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 * @param string $removefileaction action when removing file attachments
 	 * @return string to show
 	 */
-	function get_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
+	public function  get_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
 		global $conf, $langs, $user;
 		
 		$langs->load("other");
@@ -365,8 +365,8 @@ class FormAgefoddsenddocs extends FormMail {
 			// TODO Trick to have param removedfile containing nb of image to delete. But this does not works without javascript
 			$out .= '<input type="hidden" class="removedfilehidden" name="removedfile" value="">' . "\n";
 			$out .= '<script type="text/javascript" language="javascript">';
-			$out .= 'jQuery(document).ready(function () {';
-			$out .= '    jQuery(".removedfile").click(function() {';
+			$out .= 'jQuery(document).ready(public function  () {';
+			$out .= '    jQuery(".removedfile").click(public function () {';
 			$out .= '        jQuery(".removedfilehidden").val(jQuery(this).val());';
 			$out .= '    });';
 			$out .= '})';
@@ -504,7 +504,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 * @param string $option
 	 * @return void
 	 */
-	function multiselect_agefodd_entities($htmlname, $current, $option = '') {
+	public function  multiselect_agefodd_entities($htmlname, $current, $option = '') {
 		global $conf, $langs;
 		
 		$return = '<select id="' . $htmlname . '" class="multiselect" multiple="multiple" name="' . $htmlname . '[]" ' . $option . '>';

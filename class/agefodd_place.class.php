@@ -31,38 +31,38 @@ dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
  * Location Class
  */
 class Agefodd_place extends CommonObject {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd_place';
-	var $table_element = 'agefodd_place';
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd_place';
+	public $table_element = 'agefodd_place';
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $entity;
-	var $ref_interne;
-	var $adresse;
-	var $cp;
-	var $ville;
-	var $fk_pays;
-	var $tel;
-	var $fk_societe;
-	var $notes;
-	var $acces_site;
-	var $note1;
-	var $archive;
-	var $fk_reg_interieur;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $lines = array ();
+	public $id;
+	public $entity;
+	public $ref_interne;
+	public $adresse;
+	public $cp;
+	public $ville;
+	public $fk_pays;
+	public $tel;
+	public $fk_societe;
+	public $notes;
+	public $acces_site;
+	public $note1;
+	public $archive;
+	public $fk_reg_interieur;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -74,7 +74,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -187,7 +187,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -243,7 +243,7 @@ class Agefodd_place extends CommonObject {
 	 * @param array $filter filter array
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -311,7 +311,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -346,7 +346,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -444,7 +444,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($user, $notrigger = 0) {
+	public function  remove($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -528,7 +528,7 @@ class Agefodd_place extends CommonObject {
 	 * @param User $user that delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove_reg_int($user) {
+	public function  remove_reg_int($user) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -564,7 +564,7 @@ class Agefodd_place extends CommonObject {
 	 * @param User $user that ask request
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function import_customer_adress($user) {
+	public function  import_customer_adress($user) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -608,7 +608,7 @@ class Agefodd_place extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function printPlaceInfo() {
+	public function  printPlaceInfo() {
 		global $langs, $form;
 		
 		print '<table class="border" width="100%">';
@@ -631,23 +631,23 @@ class Agefodd_place extends CommonObject {
 	}
 }
 class AgfPlaceLine {
-	var $id;
-	var $ref_interne;
-	var $adresse;
-	var $cp;
-	var $ville;
-	var $pays_id;
-	var $country;
-	var $country_code;
-	var $tel;
-	var $fk_societe;
-	var $notes;
-	var $socid;
-	var $socname;
-	var $archive;
-	var $acces_site;
-	var $note1;
-	function __construct() {
+	public $id;
+	public $ref_interne;
+	public $adresse;
+	public $cp;
+	public $ville;
+	public $pays_id;
+	public $country;
+	public $country_code;
+	public $tel;
+	public $fk_societe;
+	public $notes;
+	public $socid;
+	public $socname;
+	public $archive;
+	public $acces_site;
+	public $note1;
+	public function  __construct() {
 		return 1;
 	}
 }

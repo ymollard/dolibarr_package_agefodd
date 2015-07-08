@@ -22,45 +22,45 @@
 /**
  * \file agefodd/class/agefodd_index.class.php
  * \ingroup agefodd
- * \brief Index page function
+ * \brief Index page public function 
  */
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 class Agefodd_index_line {
-	var $sessid;
-	var $rowid;
-	var $intitule;
-	var $dated;
-	var $datef;
-	var $idforma;
-	var $id;
-	var $num;
-	var $duree;
+	public $sessid;
+	public $rowid;
+	public $intitule;
+	public $dated;
+	public $datef;
+	public $idforma;
+	public $id;
+	public $num;
+	public $duree;
 }
 class Agefodd_CertifExpireSoc_line {
-	var $customer_name;
-	var $customer_id;
-	var $fromintitule;
-	var $fromref;
+	public $customer_name;
+	public $customer_id;
+	public $fromintitule;
+	public $fromref;
 }
 
 /**
  * Index pages
  */
 class Agefodd_index {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd';
-	var $table_element = 'agefodd';
-	var $id;
-	var $lines = array ();
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd';
+	public $table_element = 'agefodd';
+	public $id;
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function Agefodd_index($DB) {
+	public function  Agefodd_index($DB) {
 		$this->db = $DB;
 		return 1;
 	}
@@ -70,7 +70,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_student_nb() {
+	public function  fetch_student_nb() {
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -107,7 +107,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_session_nb() {
+	public function  fetch_session_nb() {
 		global $langs;
 		
 		$sql = "SELECT count(*) as num";
@@ -138,7 +138,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_formation_nb() {
+	public function  fetch_formation_nb() {
 		global $langs;
 		
 		$sql = "SELECT count(*) as num";
@@ -169,7 +169,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_heures_sessions_nb() {
+	public function  fetch_heures_sessions_nb() {
 		global $langs;
 		
 		$sql = "SELECT  sum(f.duree) AS total";
@@ -203,7 +203,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_heures_stagiaires_nb() {
+	public function  fetch_heures_stagiaires_nb() {
 		global $langs;
 		
 		$sql = "SELECT  sum(f.duree) AS total";
@@ -240,7 +240,7 @@ class Agefodd_index {
 	 * @param int $number number of sessions to display
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_last_formations($number = 5) {
+	public function  fetch_last_formations($number = 5) {
 		global $langs;
 		
 		$sql = "SELECT c.intitule, s.dated, s.datef, s.fk_formation_catalogue, s.rowid as id";
@@ -287,7 +287,7 @@ class Agefodd_index {
 	 * @param int $number number of sessions to display
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_top_formations($number = 5) {
+	public function  fetch_top_formations($number = 5) {
 		global $langs;
 		
 		$sql = "SELECT c.intitule, count(s.rowid) as num, c.duree, ";
@@ -334,7 +334,7 @@ class Agefodd_index {
 	 * @param int $archive Archive
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_session($archive = 0) {
+	public function  fetch_session($archive = 0) {
 		global $langs;
 		
 		$sql = "SELECT count(*) as total";
@@ -370,7 +370,7 @@ class Agefodd_index {
 	 * @param int $jour Nb day to display
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_tache_en_retard($jour = 0) {
+	public function  fetch_tache_en_retard($jour = 0) {
 		global $langs;
 		
 		$intervalday = $jour . ' DAY';
@@ -418,7 +418,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_tache_en_cours() {
+	public function  fetch_tache_en_cours() {
 		global $langs;
 		
 		$sql = "SELECT count(*) as total";
@@ -452,7 +452,7 @@ class Agefodd_index {
 	 * @param int $delais_inf low limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf = 0) {
+	public function  fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf = 0) {
 		global $langs;
 		
 		$intervalday_sup = $delais_sup . ' DAY';
@@ -525,7 +525,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_session_to_archive() {
+	public function  fetch_session_to_archive() {
 		global $langs;
 		
 		// Il faut que toutes les tâches administratives soit crées (top_level);
@@ -564,7 +564,7 @@ class Agefodd_index {
 	 * @param int $time_expiration before expiration
 	 * @return int if KO, $num of student if OK
 	 */
-	function fetch_certif_expire($month_expiration) {
+	public function  fetch_certif_expire($month_expiration) {
 		global $langs;
 		
 		$sql = "SELECT ";

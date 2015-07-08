@@ -26,16 +26,16 @@
  * Class to manage building of HTML components
  */
 class FormAgefodd extends Form {
-	var $db;
-	var $error;
-	var $type_session_def;
+	protected $db;
+	public $error;
+	public $type_session_def;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDB $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		global $langs;
 		$this->db = $db;
 		$this->type_session_def = array (
@@ -50,13 +50,13 @@ class FormAgefodd extends Form {
 	 *
 	 * @param int $selectid à preselectionner
 	 * @param string $htmlname select field
-	 * @param string $sort Value to show/edit (not used in this function)
+	 * @param string $sort Value to show/edit (not used in this public function )
 	 * @param int $showempty empty field
 	 * @param int $forcecombo use combo box
 	 * @param array $event
 	 * @return string select field
 	 */
-	function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
+	public function  select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
 		global $conf, $user, $langs;
 		
 		$out = '';
@@ -114,13 +114,13 @@ class FormAgefodd extends Form {
 	 *
 	 * @param int $selectid à preselectionner
 	 * @param string $htmlname select field
-	 * @param string $sort Value to show/edit (not used in this function)
+	 * @param string $sort Value to show/edit (not used in this public function )
 	 * @param int $showempty empty field
 	 * @param int $forcecombo use combo box
 	 * @param array $event
 	 * @return string select field
 	 */
-	function select_cursus($selectid, $htmlname = 'cursus', $sort = 'c.ref_interne', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
+	public function  select_cursus($selectid, $htmlname = 'cursus', $sort = 'c.ref_interne', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
 		global $conf, $user, $langs;
 		
 		$out = '';
@@ -176,7 +176,7 @@ class FormAgefodd extends Form {
 	 * @param string $excludeid est necessaire d'exclure une valeur de sortie
 	 * @return string select field
 	 */
-	function select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
+	public function  select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -226,7 +226,7 @@ class FormAgefodd extends Form {
 	 * @param string $fk_training
 	 * @return string select field
 	 */
-	function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training=0) {
+	public function  select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training=0) {
 		global $conf, $langs;
 		
 		$sqlwhere=array();
@@ -283,7 +283,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname Name of HTML control
 	 * @return string The HTML control
 	 */
-	function select_action_session($session_id = 0, $selectid = '', $htmlname = 'action_level') {
+	public function  select_action_session($session_id = 0, $selectid = '', $htmlname = 'action_level') {
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -332,7 +332,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 		
 		$sql = "SELECT p.rowid, p.ref_interne";
@@ -387,7 +387,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -453,7 +453,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_agefodd_contact($selectid = '', $htmlname = 'contact', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_agefodd_contact($selectid = '', $htmlname = 'contact', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -515,7 +515,7 @@ class FormAgefodd extends Form {
 	 * @param int $showempty empty value, 1=add an empty value
 	 * @param string $exclude of contacts id to exclude
 	 * @param string $limitto that are not id in this array list
-	 * @param string $showfunction function into label
+	 * @param string $showpublic function  public function  into label
 	 * @param string $moreclass class to class style
 	 * @param string $showsoc company into label
 	 * @param int $forcecombo use combo box
@@ -525,8 +525,8 @@ class FormAgefodd extends Form {
 	 * @param bool $supplier only
 	 * @return int if KO, Nb of contact in list if OK
 	 */
-	function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
-		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
+	public function  select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showpublic function  = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
+		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showpublic function , $moreclass, $options_only, $showsoc, $forcecombo, $event);
 		return $this->num;
 	}
 	
@@ -539,7 +539,7 @@ class FormAgefodd extends Form {
 	 * @param int $showempty empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
 	 * @param string $exclude of contacts id to exclude
 	 * @param string $limitto contact ti display in max
-	 * @param string $showfunction function into label
+	 * @param string $showpublic function  public function  into label
 	 * @param string $moreclass class to class style
 	 * @param bool $options_only only (for ajax treatment)
 	 * @param string $showsoc company into label
@@ -549,7 +549,7 @@ class FormAgefodd extends Form {
 	 * @param bool $supplier only
 	 * @return int if KO, Nb of contact in list if OK
 	 */
-	function selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showfunction = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array(), $supplier=0) {
+	public function  selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showpublic function  = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array(), $supplier=0) {
 		global $conf, $langs, $user;
 		
 		$langs->load('companies');
@@ -630,7 +630,7 @@ class FormAgefodd extends Form {
 								$out .= ' disabled="disabled"';
 							$out .= ' selected="selected">';
 							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
+							if ($showpublic function  && $obj->poste)
 								$out .= ' (' . $obj->poste . ')';
 							if (($showsoc > 0) && $obj->company)
 								$out .= ' - (' . $obj->company . ')';
@@ -641,7 +641,7 @@ class FormAgefodd extends Form {
 								$out .= ' disabled="disabled"';
 							$out .= '>';
 							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
+							if ($showpublic function  && $obj->poste)
 								$out .= ' (' . $obj->poste . ')';
 							if (($showsoc > 0) && $obj->company)
 								$out .= ' - (' . $obj->company . ')';
@@ -650,7 +650,7 @@ class FormAgefodd extends Form {
 					} else {
 						if ($selected == $obj->rowid) {
 							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
+							if ($showpublic function  && $obj->poste)
 								$out .= ' (' . $obj->poste . ')';
 							if (($showsoc > 0) && $obj->company)
 								$out .= ' - (' . $obj->company . ')';
@@ -684,7 +684,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_formateur($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_formateur($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 		
 		$sql = "SELECT";
@@ -754,7 +754,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_type_stagiaire($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_type_stagiaire($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 		
 		$sql = "SELECT t.rowid, t.intitule";
@@ -811,7 +811,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_type_formateur($selectid, $htmlname = 'trainertype', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_type_formateur($selectid, $htmlname = 'trainertype', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 	
 		$sql = "SELECT t.rowid, t.intitule";
@@ -868,7 +868,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function  select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
 		
 		$sql = "SELECT t.rowid, t.code ,t.intitule ";
@@ -921,7 +921,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname Name of HTML control
 	 * @return string The HTML control
 	 */
-	function select_type_affect($selectid, $htmlname = 'search_type_affect') {
+	public function  select_type_affect($selectid, $htmlname = 'search_type_affect') {
 		global $conf, $langs;
 		
 		$select_array = array (
@@ -953,7 +953,7 @@ class FormAgefodd extends Form {
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	function select_training_categ($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 1) {
+	public function  select_training_categ($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 1) {
 		global $conf, $langs;
 		
 		$sql = "SELECT t.rowid, t.code, t.intitule";
@@ -1003,7 +1003,7 @@ class FormAgefodd extends Form {
 	 * @param string $title légende précédent la jauge
 	 * @return string The HTML control
 	 */
-	function level_graph($actual_level, $total_level, $title) {
+	public function  level_graph($actual_level, $total_level, $title) {
 		$str = '<table style="border:0px; margin:0px; padding:0px">' . "\n";
 		$str .= '<tr style="border:0px;"><td style="border:0px; margin:0px; padding:0px">' . $title . ' : </td>' . "\n";
 		for($i = 0; $i < $total_level; $i ++) {
@@ -1026,7 +1026,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	function select_time($selectval = '', $htmlname = 'period') {
+	public function  select_time($selectval = '', $htmlname = 'period') {
 		$time = 7;
 		$heuref = 23;
 		$min = 0;
@@ -1054,7 +1054,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	function select_duration_agf($selectval = '', $htmlname = 'duration') {
+	public function  select_duration_agf($selectval = '', $htmlname = 'duration') {
 		global $langs;
 		
 		$duration_array = array ();
@@ -1102,7 +1102,7 @@ class FormAgefodd extends Form {
 	 * @param int $showempty Show Empty
 	 * @return string HTML control
 	 */
-	function select_type_session($htmlname, $selectval, $showempty = 0) {
+	public function  select_type_session($htmlname, $selectval, $showempty = 0) {
 		return $this->selectarray($htmlname, $this->type_session_def, $selectval, $showempty);
 	}
 	
@@ -1114,7 +1114,7 @@ class FormAgefodd extends Form {
 	 * @param int $socid user
 	 * @return int if KO, >=0 if OK
 	 */
-	function showactions($object, $typeelement = 'agefodd_agsession', $socid = 0) {
+	public function  showactions($object, $typeelement = 'agefodd_agsession', $socid = 0) {
 		global $langs, $conf, $user;
 		global $bc;
 		
@@ -1173,7 +1173,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	function select_stagiaire_session_status($htmlname, $selectval) {
+	public function  select_stagiaire_session_status($htmlname, $selectval) {
 		require_once 'agefodd_session_stagiaire.class.php';
 		$sess_sta = new Agefodd_session_stagiaire($this->db);
 		
@@ -1187,7 +1187,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	function select_trainer_session_status($htmlname, $selectval, $filter = array(), $showempty = 0) {
+	public function  select_trainer_session_status($htmlname, $selectval, $filter = array(), $showempty = 0) {
 		require_once 'agefodd_session_formateur.class.php';
 		$sess_trainer = new Agefodd_session_formateur($this->db);
 		
@@ -1208,32 +1208,32 @@ class FormAgefodd extends Form {
 	 * @param string $prefix HTML field
 	 * @return string HTML result
 	 */
-	function select_color($set_color = '', $htmlname = 'f_color') {
+	public function  select_color($set_color = '', $htmlname = 'f_color') {
 		$out = '<input id="' . $htmlname . '" type="text" size="8" name="' . $htmlname . '" value="' . $set_color . '" />';
 		
 		$out .= '<script type="text/javascript" language="javascript">
-			$(document).ready(function() {
+			$(document).ready(public function () {
 			$("#' . $htmlname . '").css("backgroundColor", \'#' . $set_color . '\');
 				$("#' . $htmlname . '").ColorPicker({
 					color: \'#' . $set_color . '\',
-						onShow: function (colpkr) {
+						onShow: public function  (colpkr) {
 						$(colpkr).fadeIn(500);
 						return false;
 	},
-						onHide: function (colpkr) {
+						onHide: public function  (colpkr) {
 						$(colpkr).fadeOut(500);
 						return false;
 	},
-						onChange: function (hsb, hex, rgb) {
+						onChange: public function  (hsb, hex, rgb) {
 						$("#' . $htmlname . '").css("backgroundColor", \'#\' + hex);
 							$("#' . $htmlname . '").val(hex);
 	},
-								onSubmit: function (hsb, hex, rgb) {
+								onSubmit: public function  (hsb, hex, rgb) {
 								$("#' . $htmlname . '").val(hex);
 	}
 	});
 	})
-									.bind(\'keyup\', function(){
+									.bind(\'keyup\', public function (){
 									$(this).ColorPickerSetColor(this.value);
 	});
 									</script>';
@@ -1255,7 +1255,7 @@ class FormAgefodd extends Form {
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location='') {
+	public function  agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location='') {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER ["PHP_SELF"] . '" method="POST">';
@@ -1427,7 +1427,7 @@ class FormAgefodd extends Form {
 	 * @param array $ajaxoptions ajax_autocompleter
 	 * @return void
 	 */
-	function select_produits_fournisseurs_agefodd($socid, $selected = '', $htmlname = 'productid', $filtertype = '', $filtre = '', $ajaxoptions = array()) {
+	public function  select_produits_fournisseurs_agefodd($socid, $selected = '', $htmlname = 'productid', $filtertype = '', $filtre = '', $ajaxoptions = array()) {
 		global $langs, $conf;
 		global $price_level, $status, $finished;
 		
@@ -1455,7 +1455,7 @@ class FormAgefodd extends Form {
 	 * @param int $disableout print output
 	 * @return array Array of keys for json
 	 */
-	function select_produits_fournisseurs_agefodd_do($socid, $selected = '', $htmlname = 'productid', $filtertype = '', $filtre = '', $filterkey = '', $statut = -1, $disableout = 0) {
+	public function  select_produits_fournisseurs_agefodd_do($socid, $selected = '', $htmlname = 'productid', $filtertype = '', $filtre = '', $filterkey = '', $statut = -1, $disableout = 0) {
 		global $langs, $conf;
 		
 		$langs->load('stocks');
@@ -1629,7 +1629,7 @@ class FormAgefodd extends Form {
 	 * @param string $model item
 	 * @return string HTML output
 	 */
-	function select_conv_model($model = '', $htmlname = 'model_doc') {
+	public function  select_conv_model($model = '', $htmlname = 'model_doc') {
 		$outselect = '<select class="flat" id="' . $htmlname . '" name="' . $htmlname . '">';
 		
 		$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
@@ -1671,18 +1671,18 @@ class FormAgefodd extends Form {
 	 * @param int $showempty show empty
 	 * @return void
 	 */
-	function agfmultiselectarray($htmlname, $options_array = array(), $selected_array = array(), $showempty = 0) {
+	public function  agfmultiselectarray($htmlname, $options_array = array(), $selected_array = array(), $showempty = 0) {
 		global $conf, $langs;
 		
 		$return = '<script type="text/javascript" language="javascript">
-						$(document).ready(function() {
+						$(document).ready(public function () {
 							$.extend($.ui.multiselect.locale, {
 								addAll:\'' . $langs->transnoentities("AddAll") . '\',
 								removeAll:\'' . $langs->transnoentities("RemoveAll") . '\',
 								itemsCount:\'' . $langs->transnoentities("ItemsCount") . '\'
 							});
 						
-							$(function(){
+							$(public function (){
 								$("#' . $htmlname . '").addClass("' . $htmlname . '").attr("multiple","multiple").attr("name","' . $htmlname . '[]");
 								$(".multiselect").multiselect({sortable: false, searchable: false});
 							});

@@ -31,28 +31,28 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_formation_cursus extends CommonObject {
-	var $db; // !< To store db handler
-	var $error; // !< To return error code (or message)
-	var $errors = array (); // !< To return several error codes (or messages)
-	var $element = 'agefodd_formation_cursus'; // !< Id that identify managed objects
-	var $table_element = 'agefodd_formation_cursus'; // !< Name of table without prefix where object is stored
+	protected $db; // !< To store db handler
+	public $error; // !< To return error code (or message)
+	public $errors = array (); // !< To return several error codes (or messages)
+	public $element = 'agefodd_formation_cursus'; // !< Id that identify managed objects
+	public $table_element = 'agefodd_formation_cursus'; // !< Name of table without prefix where object is stored
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $id;
-	var $entity;
-	var $fk_formation_catalogue;
-	var $fk_cursus;
-	var $fk_user_author;
-	var $datec = '';
-	var $fk_user_mod;
-	var $tms = '';
-	var $lines = array ();
+	public $id;
+	public $entity;
+	public $fk_formation_catalogue;
+	public $fk_cursus;
+	public $fk_user_author;
+	public $datec = '';
+	public $fk_user_mod;
+	public $tms = '';
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -64,7 +64,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -144,7 +144,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -194,7 +194,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function  update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -268,7 +268,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function  delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -320,7 +320,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function  createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -365,7 +365,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function  initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->entity = '';
@@ -386,7 +386,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_formation_per_cursus($sortorder = "ASC", $sortfield = "f.ref", $limit = 0, $offset = 0) {
+	public function  fetch_formation_per_cursus($sortorder = "ASC", $sortfield = "f.ref", $limit = 0, $offset = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -435,13 +435,13 @@ class Agefodd_formation_cursus extends CommonObject {
 	}
 }
 class AgfCursusTrainingLine {
-	var $id;
-	var $ref_interne;
-	var $ref;
-	var $entity;
-	var $intitule;
-	var $archive;
-	function __construct() {
+	public $id;
+	public $ref_interne;
+	public $ref;
+	public $entity;
+	public $intitule;
+	public $archive;
+	public function  __construct() {
 		return 1;
 	}
 }

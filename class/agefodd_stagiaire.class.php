@@ -31,33 +31,33 @@ require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
  * Trainee Class
  */
 class Agefodd_stagiaire extends CommonObject {
-	var $db;
-	var $error;
-	var $errors = array ();
-	var $element = 'agefodd';
-	var $table_element = 'agefodd_stagiaire';
-	var $id;
+	protected $db;
+	public $error;
+	public $errors = array ();
+	public $element = 'agefodd';
+	public $table_element = 'agefodd_stagiaire';
+	public $id;
 	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
-	var $nom;
-	var $prenom;
-	var $fonction;
-	var $tel1;
-	var $tel2;
-	var $mail;
-	var $note;
-	var $date_birth;
-	var $place_birth;
-	var $socid;
-	var $socname;
-	var $fk_socpeople;
-	var $lines = array ();
+	public $nom;
+	public $prenom;
+	public $fonction;
+	public $tel1;
+	public $tel2;
+	public $mail;
+	public $note;
+	public $date_birth;
+	public $place_birth;
+	public $socid;
+	public $socname;
+	public $fk_socpeople;
+	public $lines = array ();
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
+	public function  __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -69,7 +69,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function  create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -177,7 +177,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function  fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -260,7 +260,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
+	public function  fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -387,7 +387,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function  info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -423,7 +423,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user, $notrigger = 0) {
+	public function  update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -508,7 +508,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function remove($id) {
+	public function  remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -536,7 +536,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $socid thirdparty id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function searchByLastNameFirstNameSoc($lastname, $firstname, $socid) {
+	public function  searchByLastNameFirstNameSoc($lastname, $firstname, $socid) {
 		
 		global $conf;
 		
@@ -590,23 +590,23 @@ class Agefodd_stagiaire extends CommonObject {
 	}
 }
 class AgfTraineeLine {
-	var $socid;
-	var $socname;
-	var $civilitecode;
-	var $rowid;
-	var $nom;
-	var $prenom;
-	var $civilite;
-	var $fk_soc;
-	var $fonction;
-	var $tel1;
-	var $tel2;
-	var $mail;
-	var $note;
-	var $fk_socpeople;
-	var $date_birth;
-	var $place_birth;
-	function __construct() {
+	public $socid;
+	public $socname;
+	public $civilitecode;
+	public $rowid;
+	public $nom;
+	public $prenom;
+	public $civilite;
+	public $fk_soc;
+	public $fonction;
+	public $tel1;
+	public $tel2;
+	public $mail;
+	public $note;
+	public $fk_socpeople;
+	public $date_birth;
+	public $place_birth;
+	public function  __construct() {
 		return 1;
 	}
 }
