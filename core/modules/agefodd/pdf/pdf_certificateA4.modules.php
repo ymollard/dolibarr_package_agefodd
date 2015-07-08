@@ -260,7 +260,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
 						$newY = $pdf->getY()+5;
-						$text = $outputlangs->transnoentities('AgfPDFCertificate14').' '.dol_print_date($agf->dated,'daytext','tzserver',$outputlangs);
+						$text = $outputlangs->transnoentities('AgfPDFCertificate14').' '.dol_print_date($agf->datef,'daytext','tzserver',$outputlangs);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
