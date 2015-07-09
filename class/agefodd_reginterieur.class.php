@@ -30,7 +30,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Internal Rule class
  */
 class Agefodd_reg_interieur extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd'; // !< Id that identify managed objects
@@ -49,7 +48,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -61,7 +60,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -91,7 +90,7 @@ class Agefodd_reg_interieur extends CommonObject {
 		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
 		$sql .= " " . $user->id . ", ";
 		$sql .= " " . $user->id . ", ";
-		$sql .= " '" .$this->db->idate(dol_now())."'";
+		$sql .= " '" . $this->db->idate(dol_now()) . "'";
 		$sql .= ")";
 		
 		$this->db->begin();
@@ -100,7 +99,7 @@ class Agefodd_reg_interieur extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -139,7 +138,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -179,7 +178,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -206,7 +205,7 @@ class Agefodd_reg_interieur extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -244,7 +243,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -272,7 +271,7 @@ class Agefodd_reg_interieur extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -296,7 +295,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->reg_int = '';

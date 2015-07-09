@@ -31,7 +31,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_formation_cursus extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_formation_cursus'; // !< Id that identify managed objects
@@ -52,7 +51,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -64,7 +63,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -105,7 +104,7 @@ class Agefodd_formation_cursus extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -144,7 +143,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -194,7 +193,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -230,7 +229,7 @@ class Agefodd_formation_cursus extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -268,7 +267,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -296,7 +295,7 @@ class Agefodd_formation_cursus extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -320,7 +319,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	public function  createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -365,7 +364,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->entity = '';
@@ -386,7 +385,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_formation_per_cursus($sortorder = "ASC", $sortfield = "f.ref", $limit = 0, $offset = 0) {
+	public function fetch_formation_per_cursus($sortorder = "ASC", $sortfield = "f.ref", $limit = 0, $offset = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -423,7 +422,7 @@ class Agefodd_formation_cursus extends CommonObject {
 				$line->intitule = $obj->intitule;
 				$line->archive = $obj->archive;
 				
-				$this->lines [] = $line;
+				$this->lines[] = $line;
 			}
 			$this->db->free($resql);
 			return $num;
@@ -441,7 +440,7 @@ class AgfCursusTrainingLine {
 	public $entity;
 	public $intitule;
 	public $archive;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

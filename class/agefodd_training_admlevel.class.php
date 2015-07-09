@@ -31,7 +31,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_training_admlevel extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_training_admlevel'; // !< Id that identify managed objects
@@ -56,7 +55,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -68,7 +67,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -132,7 +131,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -171,7 +170,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -229,7 +228,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $training_id object
 	 * @return array array of object
 	 */
-	public function  fetch_all($training_id) {
+	public function fetch_all($training_id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -273,7 +272,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
 				$line->trigger_name = $obj->trigger_name;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				$i ++;
 			}
 			$this->db->free($resql);
@@ -293,7 +292,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -340,7 +339,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -378,7 +377,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -406,7 +405,7 @@ class Agefodd_training_admlevel extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -431,7 +430,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete_training_task($user, $notrigger = 0) {
+	public function delete_training_task($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -459,7 +458,7 @@ class Agefodd_training_admlevel extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -483,7 +482,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	public function  createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -528,7 +527,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->fk_training = '';
@@ -551,7 +550,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  shift_indice($user, $type = '', $notrigger = 0) {
+	public function shift_indice($user, $type = '', $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -578,7 +577,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -594,7 +593,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			} else {
 				// Update request
@@ -609,7 +608,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -624,7 +623,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -638,7 +637,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			}
 		}
@@ -657,7 +656,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -671,7 +670,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			} else {
 				// Update request
@@ -685,7 +684,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -699,7 +698,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -713,7 +712,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			}
 		}
@@ -754,7 +753,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  setParentActionId($user, $training_id) {
+	public function setParentActionId($user, $training_id) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -780,7 +779,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		// Commit or rollback
@@ -811,7 +810,7 @@ class AgfTrainingAdmlvlLine {
 	public $alerte;
 	public $fk_agefodd_training_admlevel;
 	public $trigger_name;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

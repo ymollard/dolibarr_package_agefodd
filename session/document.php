@@ -671,7 +671,7 @@ if (! empty($id)) {
 					document_line($langs->trans("AgfCourrierCloture"), "courrier", $agf->lines[$i]->socid, 'cloture');
 					if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 						document_line($langs->trans("AgfPDFCertificateA4"), "certificateA4", $agf->lines[$i]->socid);
-						// document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
+						document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
 					}
 				} elseif ($agf->lines[$i]->typeline=='trainee_presta') {
 					document_line($langs->trans("AgfContratPrestation"), "contrat_presta", $agf->lines[$i]->socid);

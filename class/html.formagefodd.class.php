@@ -26,7 +26,6 @@
  * Class to manage building of HTML components
  */
 class FormAgefodd extends Form {
-	protected $db;
 	public $error;
 	public $type_session_def;
 	
@@ -50,7 +49,7 @@ class FormAgefodd extends Form {
 	 *
 	 * @param int $selectid à preselectionner
 	 * @param string $htmlname select field
-	 * @param string $sort Value to show/edit (not used in this public function )
+	 * @param string $sort Value to show/edit (not used in this function )
 	 * @param int $showempty empty field
 	 * @param int $forcecombo use combo box
 	 * @param array $event
@@ -114,7 +113,7 @@ class FormAgefodd extends Form {
 	 *
 	 * @param int $selectid à preselectionner
 	 * @param string $htmlname select field
-	 * @param string $sort Value to show/edit (not used in this public function )
+	 * @param string $sort Value to show/edit (not used in this function )
 	 * @param int $showempty empty field
 	 * @param int $forcecombo use combo box
 	 * @param array $event
@@ -515,7 +514,7 @@ class FormAgefodd extends Form {
 	 * @param int $showempty empty value, 1=add an empty value
 	 * @param string $exclude of contacts id to exclude
 	 * @param string $limitto that are not id in this array list
-	 * @param string $showpublic function  public function  into label
+	 * @param string $showpublic function  into label
 	 * @param string $moreclass class to class style
 	 * @param string $showsoc company into label
 	 * @param int $forcecombo use combo box
@@ -525,11 +524,11 @@ class FormAgefodd extends Form {
 	 * @param bool $supplier only
 	 * @return int if KO, Nb of contact in list if OK
 	 */
-	public function  select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showpublic function  = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
-		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showpublic function , $moreclass, $options_only, $showsoc, $forcecombo, $event);
+	function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
+		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
 		return $this->num;
 	}
-	
+	 
 	/**
 	 * Return list of all contacts (for a third party or all)
 	 *
@@ -539,7 +538,7 @@ class FormAgefodd extends Form {
 	 * @param int $showempty empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
 	 * @param string $exclude of contacts id to exclude
 	 * @param string $limitto contact ti display in max
-	 * @param string $showpublic function  public function  into label
+	 * @param string $showpublic function into label
 	 * @param string $moreclass class to class style
 	 * @param bool $options_only only (for ajax treatment)
 	 * @param string $showsoc company into label
@@ -549,7 +548,7 @@ class FormAgefodd extends Form {
 	 * @param bool $supplier only
 	 * @return int if KO, Nb of contact in list if OK
 	 */
-	public function  selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showpublic function  = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array(), $supplier=0) {
+	public function  selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showfunction = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array(), $supplier=0) {
 		global $conf, $langs, $user;
 		
 		$langs->load('companies');
@@ -630,7 +629,7 @@ class FormAgefodd extends Form {
 								$out .= ' disabled="disabled"';
 							$out .= ' selected="selected">';
 							$out .= $contactstatic->getFullName($langs);
-							if ($showpublic function  && $obj->poste)
+							if ($showfunction && $obj->poste)
 								$out .= ' (' . $obj->poste . ')';
 							if (($showsoc > 0) && $obj->company)
 								$out .= ' - (' . $obj->company . ')';
@@ -641,7 +640,7 @@ class FormAgefodd extends Form {
 								$out .= ' disabled="disabled"';
 							$out .= '>';
 							$out .= $contactstatic->getFullName($langs);
-							if ($showpublic function  && $obj->poste)
+							if ($showfunction && $obj->poste)
 								$out .= ' (' . $obj->poste . ')';
 							if (($showsoc > 0) && $obj->company)
 								$out .= ' - (' . $obj->company . ')';
@@ -650,7 +649,7 @@ class FormAgefodd extends Form {
 					} else {
 						if ($selected == $obj->rowid) {
 							$out .= $contactstatic->getFullName($langs);
-							if ($showpublic function  && $obj->poste)
+							if ($showfunction && $obj->poste)
 								$out .= ' (' . $obj->poste . ')';
 							if (($showsoc > 0) && $obj->company)
 								$out .= ' - (' . $obj->company . ')';

@@ -102,6 +102,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 		$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 		$agf->fk_product = GETPOST('productid', 'int');
 		$agf->fk_c_category = GETPOST('categid', 'int');
+		$agf->color = GETPOST('color', 'alpha');
 		
 		if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 			$certif_year = GETPOST('certif_year', 'int');
@@ -337,7 +338,12 @@ if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogu
  * View
 */
 $title = ($action == 'create' ? $langs->trans("AgfMenuCatNew") : $langs->trans("AgfCatalogDetail"));
-llxHeader('', $title);
+
+llxHeader('', $title, '', '', '', '', array (
+'/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js',
+), array (
+'/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css',
+));
 
 $form = new Form($db);
 $formagefodd = new FormAgefodd($db);
@@ -540,6 +546,36 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 				print $form->select_produits($agf->fk_product, 'productid', '', 10000);
 				print "</td></tr>";
+				
+				print '<tr><td>' . $langs->trans("Color") . '</td>';
+				print '<td><input id="colorpicker" type="text" size="8" name="color" value="' . $agf->color . '" /></td></tr>';
+					
+				print '<script type="text/javascript" language="javascript">
+						$(document).ready(function() {
+						$("#colorpicker").css("backgroundColor", \'#' . $agf->color . '\');
+							$("#colorpicker").ColorPicker({
+							color: \'#' . $agf->color . '\',
+								onShow: function (colpkr) {
+								$(colpkr).fadeIn(500);
+								return false;
+				},
+								onHide: function (colpkr) {
+								$(colpkr).fadeOut(500);
+								return false;
+				},
+								onChange: function (hsb, hex, rgb) {
+								$("#colorpicker").css("backgroundColor", \'#\' + hex);
+								$("#colorpicker").val(hex);
+				},
+								onSubmit: function (hsb, hex, rgb) {
+								$("#colorpicker").val(hex);
+				}
+				});
+				})
+								.bind(\'keyup\', function(){
+								$(this).ColorPickerSetColor(this.value);
+				});
+								</script>';
 				
 				print '<tr>';
 				print '<td valign="top">' . $langs->trans("AgfPublic") . '</td><td>';

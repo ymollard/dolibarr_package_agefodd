@@ -34,7 +34,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/html.formmail.class.php");
  * $formmail->show_form() affiche le formulaire
  */
 class FormAgefoddsenddocs extends FormMail {
-	protected $db;
 	public $withform;
 	public $fromname;
 	public $frommail;
@@ -67,7 +66,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 *
 	 * @param DoliDB $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		
 		$this->withform = 1;
@@ -103,7 +102,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 * @param string $removefileaction action when removing file attachments
 	 * @return void
 	 */
-	public function  show_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
+	public function show_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
 		print $this->get_form($addfileaction, $removefileaction);
 	}
 	
@@ -115,7 +114,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 * @param string $removefileaction action when removing file attachments
 	 * @return string to show
 	 */
-	public function  get_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
+	public function get_form($addfileaction = 'addfile', $removefileaction = 'removefile') {
 		global $conf, $langs, $user;
 		
 		$langs->load("other");
@@ -127,19 +126,19 @@ class FormAgefoddsenddocs extends FormMail {
 		$listofpaths = array ();
 		$listofnames = array ();
 		$listofmimes = array ();
-		if (! empty($_SESSION ["listofpaths"]))
-			$listofpaths = explode(';', $_SESSION ["listofpaths"]);
-		if (! empty($_SESSION ["listofnames"]))
-			$listofnames = explode(';', $_SESSION ["listofnames"]);
-		if (! empty($_SESSION ["listofmimes"]))
-			$listofmimes = explode(';', $_SESSION ["listofmimes"]);
+		if (! empty($_SESSION["listofpaths"]))
+			$listofpaths = explode(';', $_SESSION["listofpaths"]);
+		if (! empty($_SESSION["listofnames"]))
+			$listofnames = explode(';', $_SESSION["listofnames"]);
+		if (! empty($_SESSION["listofmimes"]))
+			$listofmimes = explode(';', $_SESSION["listofmimes"]);
 		
 		$form = new Form($this->db);
 		
 		$out .= "\n<!-- Debut form mail -->\n";
 		if ($this->withform) {
-			$out .= '<form method="POST" name="mailform" enctype="multipart/form-data" action="' . $this->param ["returnurl"] . '">' . "\n";
-			$out .= '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '" />';
+			$out .= '<form method="POST" name="mailform" enctype="multipart/form-data" action="' . $this->param["returnurl"] . '">' . "\n";
+			$out .= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '" />';
 		}
 		foreach ( $this->param as $key => $value ) {
 			$out .= '<input type="hidden" id="' . $key . '" name="' . $key . '" value="' . $value . '" />' . "\n";
@@ -241,27 +240,27 @@ class FormAgefoddsenddocs extends FormMail {
 					}
 					$out .= ' &lt;' . $this->tomail . '&gt;';
 					if ($this->withtofree) {
-						$out .= '<br>' . $langs->trans("or") . ' <input size="' . (is_array($this->withto) ? "30" : "60") . '" id="sendto" name="sendto" value="' . (! is_array($this->withto) && ! is_numeric($this->withto) ? (isset($_REQUEST ["sendto"]) ? $_REQUEST ["sendto"] : $this->withto) : "") . '" />';
+						$out .= '<br>' . $langs->trans("or") . ' <input size="' . (is_array($this->withto) ? "30" : "60") . '" id="sendto" name="sendto" value="' . (! is_array($this->withto) && ! is_numeric($this->withto) ? (isset($_REQUEST["sendto"]) ? $_REQUEST["sendto"] : $this->withto) : "") . '" />';
 					}
 				} else {
 					$out .= (! is_array($this->withto) && ! is_numeric($this->withto)) ? $this->withto : "";
 				}
 			} else {
 				if ($this->withtofree) {
-					$out .= '<input size="' . (is_array($this->withto) ? "30" : "60") . '" id="sendto" name="sendto" value="' . (! is_array($this->withto) && ! is_numeric($this->withto) ? (isset($_REQUEST ["sendto"]) ? $_REQUEST ["sendto"] : $this->withto) : "") . '" />';
+					$out .= '<input size="' . (is_array($this->withto) ? "30" : "60") . '" id="sendto" name="sendto" value="' . (! is_array($this->withto) && ! is_numeric($this->withto) ? (isset($_REQUEST["sendto"]) ? $_REQUEST["sendto"] : $this->withto) : "") . '" />';
 				}
 				if (is_array($this->withto)) {
 					if ($this->withtofree)
 						$out .= " " . $langs->trans("or") . " ";
 					$out .= $form->selectarray("receiver", $this->withto, GETPOST("receiver"), 0);
 				}
-				if ($this->withtosocid > 0) 				// deprecated. TODO Remove this. Instead, fill withto with array before calling method.
-				{
+				if ($this->withtosocid > 0) // deprecated. TODO Remove this. Instead, fill withto with array before calling method.
+{
 					$liste = array ();
 					$soc = new Societe($this->db);
 					$soc->fetch($this->withtosocid);
 					foreach ( $soc->thirdparty_and_contact_email_array(1) as $key => $value ) {
-						$liste [$key] = $value;
+						$liste[$key] = $value;
 					}
 					if ($this->withtofree)
 						$out .= " " . $langs->trans("or") . " ";
@@ -279,18 +278,18 @@ class FormAgefoddsenddocs extends FormMail {
 			if ($this->withtoccreadonly) {
 				$out .= (! is_array($this->withtocc) && ! is_numeric($this->withtocc)) ? $this->withtocc : "";
 			} else {
-				$out .= '<input size="' . (is_array($this->withtocc) ? "30" : "60") . '" id="sendtocc" name="sendtocc" value="' . ((! is_array($this->withtocc) && ! is_numeric($this->withtocc)) ? (isset($_POST ["sendtocc"]) ? $_POST ["sendtocc"] : $this->withtocc) : (isset($_POST ["sendtocc"]) ? $_POST ["sendtocc"] : "")) . '" />';
+				$out .= '<input size="' . (is_array($this->withtocc) ? "30" : "60") . '" id="sendtocc" name="sendtocc" value="' . ((! is_array($this->withtocc) && ! is_numeric($this->withtocc)) ? (isset($_POST["sendtocc"]) ? $_POST["sendtocc"] : $this->withtocc) : (isset($_POST["sendtocc"]) ? $_POST["sendtocc"] : "")) . '" />';
 				if (is_array($this->withto)) {
 					$out .= " " . $langs->trans("or") . " ";
 					$out .= $form->selectarray("receivercc", $this->withto, GETPOST("receivercc"), 1);
 				}
-				if ($this->withtoccsocid > 0) 				// deprecated. TODO Remove this. Instead, fill withto with array before calling method.
-				{
+				if ($this->withtoccsocid > 0) // deprecated. TODO Remove this. Instead, fill withto with array before calling method.
+{
 					$liste = array ();
 					$soc = new Societe($this->db);
 					$soc->fetch($this->withtoccsocid);
 					foreach ( $soc->thirdparty_and_contact_email_array(1) as $key => $value ) {
-						$liste [$key] = $value;
+						$liste[$key] = $value;
 					}
 					$out .= " " . $langs->trans("or") . " ";
 					$out .= $form->selectarray("receivercc", $liste, GETPOST("receivercc"), 1);
@@ -307,18 +306,18 @@ class FormAgefoddsenddocs extends FormMail {
 			if ($this->withtocccreadonly) {
 				$out .= (! is_array($this->withtoccc) && ! is_numeric($this->withtoccc)) ? $this->withtoccc : "";
 			} else {
-				$out .= '<input size="' . (is_array($this->withtoccc) ? "30" : "60") . '" id="sendtoccc" name="sendtoccc" value="' . ((! is_array($this->withtoccc) && ! is_numeric($this->withtoccc)) ? (isset($_POST ["sendtoccc"]) ? $_POST ["sendtoccc"] : $this->withtoccc) : (isset($_POST ["sendtoccc"]) ? $_POST ["sendtoccc"] : "")) . '" />';
+				$out .= '<input size="' . (is_array($this->withtoccc) ? "30" : "60") . '" id="sendtoccc" name="sendtoccc" value="' . ((! is_array($this->withtoccc) && ! is_numeric($this->withtoccc)) ? (isset($_POST["sendtoccc"]) ? $_POST["sendtoccc"] : $this->withtoccc) : (isset($_POST["sendtoccc"]) ? $_POST["sendtoccc"] : "")) . '" />';
 				if (is_array($this->withto)) {
 					$out .= " " . $langs->trans("or") . " ";
 					$out .= $form->selectarray("receiverccc", $this->withto, GETPOST("receiverccc"), 1);
 				}
-				if ($this->withtocccsocid > 0) 				// deprecated. TODO Remove this. Instead, fill withto with array before calling method.
-				{
+				if ($this->withtocccsocid > 0) // deprecated. TODO Remove this. Instead, fill withto with array before calling method.
+{
 					$liste = array ();
 					$soc = new Societe($this->db);
 					$soc->fetch($this->withtosocid);
 					foreach ( $soc->thirdparty_and_contact_email_array(1) as $key => $value ) {
-						$liste [$key] = $value;
+						$liste[$key] = $value;
 					}
 					$out .= " " . $langs->trans("or") . " ";
 					$out .= $form->selectarray("receiverccc", $liste, GETPOST("receiverccc"), 1);
@@ -335,7 +334,7 @@ class FormAgefoddsenddocs extends FormMail {
 			if ($this->withdeliveryreceiptreadonly) {
 				$out .= yn($this->withdeliveryreceipt);
 			} else {
-				$out .= $form->selectyesno('deliveryreceipt', (isset($_POST ["deliveryreceipt"]) ? $_POST ["deliveryreceipt"] : $this->withdeliveryreceipt), 1);
+				$out .= $form->selectyesno('deliveryreceipt', (isset($_POST["deliveryreceipt"]) ? $_POST["deliveryreceipt"] : $this->withdeliveryreceipt), 1);
 			}
 			
 			$out .= "</td></tr>\n";
@@ -352,7 +351,7 @@ class FormAgefoddsenddocs extends FormMail {
 				$out .= $this->withtopic;
 				$out .= '<input type="hidden" size="60" id="subject" name="subject" value="' . $this->withtopic . '" />';
 			} else {
-				$out .= '<input type="text" size="60" id="subject" name="subject" value="' . (isset($_POST ["subject"]) ? $_POST ["subject"] : $this->withtopic) . '" />';
+				$out .= '<input type="text" size="60" id="subject" name="subject" value="' . (isset($_POST["subject"]) ? $_POST["subject"] : $this->withtopic) . '" />';
 			}
 			$out .= "</td></tr>\n";
 		}
@@ -374,11 +373,11 @@ class FormAgefoddsenddocs extends FormMail {
 			if (count($listofpaths)) {
 				foreach ( $listofpaths as $key => $val ) {
 					$out .= '<div id="attachfile_' . $key . '">';
-					$out .= img_mime($listofnames [$key]); // . ' ' . $listofnames [$key];
+					$out .= img_mime($listofnames[$key]); // . ' ' . $listofnames [$key];
 					if (strpos($val, DOL_DATA_ROOT . '/agefodd/') !== false) {
-						$out .= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $listofnames [$key] . '" target="_blanck">' . $listofnames [$key] . '</a>';
+						$out .= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $listofnames[$key] . '" target="_blanck">' . $listofnames[$key] . '</a>';
 					} else {
-						$out .= $listofnames [$key];
+						$out .= $listofnames[$key];
 					}
 					
 					if (! $this->withfilereadonly) {
@@ -391,8 +390,8 @@ class FormAgefoddsenddocs extends FormMail {
 			} else {
 				$out .= $langs->trans("NoAttachedFiles") . '<br>';
 			}
-			if ($this->withfile == 2) 			// Can add other files
-			{
+			if ($this->withfile == 2) // Can add other files
+{
 				$out .= '<input type="file" class="flat" id="addedfile" name="addedfile" value="' . $langs->trans("Upload") . '" />';
 				$out .= ' ';
 				$out .= '<input type="submit" class="button" id="' . $addfileaction . '" name="' . $addfileaction . '" value="' . $langs->trans("MailingAddFile") . '" />';
@@ -405,21 +404,21 @@ class FormAgefoddsenddocs extends FormMail {
 			$defaultmessage = "";
 			
 			// TODO A partir du type, proposer liste de messages dans table llx_models
-			if ($this->param ["models"] == 'facture_send') {
+			if ($this->param["models"] == 'facture_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendInvoice");
-			} elseif ($this->param ["models"] == 'facture_relance') {
+			} elseif ($this->param["models"] == 'facture_relance') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendInvoiceReminder");
-			} elseif ($this->param ["models"] == 'propal_send') {
+			} elseif ($this->param["models"] == 'propal_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendProposal");
-			} elseif ($this->param ["models"] == 'order_send') {
+			} elseif ($this->param["models"] == 'order_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendOrder");
-			} elseif ($this->param ["models"] == 'order_supplier_send') {
+			} elseif ($this->param["models"] == 'order_supplier_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendSupplierOrder");
-			} elseif ($this->param ["models"] == 'invoice_supplier_send') {
+			} elseif ($this->param["models"] == 'invoice_supplier_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendSupplierInvoice");
-			} elseif ($this->param ["models"] == 'shipping_send') {
+			} elseif ($this->param["models"] == 'shipping_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendShipping");
-			} elseif ($this->param ["models"] == 'fichinter_send') {
+			} elseif ($this->param["models"] == 'fichinter_send') {
 				$defaultmessage = $langs->transnoentities("PredefinedMailContentSendFichInter");
 			} elseif (! is_numeric($this->withbody)) {
 				$defaultmessage = $this->withbody;
@@ -431,19 +430,19 @@ class FormAgefoddsenddocs extends FormMail {
 				
 				$langs->load('paypal');
 				
-				if ($this->param ["models"] == 'order_send') {
-					$url = getPaypalPaymentUrl(0, 'order', $this->substit ['__ORDERREF__']);
-					$this->substit ['__PERSONALIZED__'] = $langs->transnoentitiesnoconv("PredefinedMailContentLink", $url);
+				if ($this->param["models"] == 'order_send') {
+					$url = getPaypalPaymentUrl(0, 'order', $this->substit['__ORDERREF__']);
+					$this->substit['__PERSONALIZED__'] = $langs->transnoentitiesnoconv("PredefinedMailContentLink", $url);
 				}
-				if ($this->param ["models"] == 'facture_send') {
-					$url = getPaypalPaymentUrl(0, 'invoice', $this->substit ['__FACREF__']);
-					$this->substit ['__PERSONALIZED__'] = $langs->transnoentitiesnoconv("PredefinedMailContentLink", $url);
+				if ($this->param["models"] == 'facture_send') {
+					$url = getPaypalPaymentUrl(0, 'invoice', $this->substit['__FACREF__']);
+					$this->substit['__PERSONALIZED__'] = $langs->transnoentitiesnoconv("PredefinedMailContentLink", $url);
 				}
 			}
 			
 			$defaultmessage = make_substitutions($defaultmessage, $this->substit);
-			if (isset($_POST ["message"]))
-				$defaultmessage = $_POST ["message"];
+			if (isset($_POST["message"]))
+				$defaultmessage = $_POST["message"];
 			$defaultmessage = str_replace('\n', "\n", $defaultmessage);
 			
 			$out .= '<tr>';
@@ -504,7 +503,7 @@ class FormAgefoddsenddocs extends FormMail {
 	 * @param string $option
 	 * @return void
 	 */
-	public function  multiselect_agefodd_entities($htmlname, $current, $option = '') {
+	public function multiselect_agefodd_entities($htmlname, $current, $option = '') {
 		global $conf, $langs;
 		
 		$return = '<select id="' . $htmlname . '" class="multiselect" multiple="multiple" name="' . $htmlname . '[]" ' . $option . '>';

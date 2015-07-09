@@ -48,7 +48,7 @@ class Agefodd_sesscalendar {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($DB) {
+	public function __construct($DB) {
 		$this->db = $DB;
 		return 1;
 	}
@@ -60,7 +60,7 @@ class Agefodd_sesscalendar {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -73,7 +73,7 @@ class Agefodd_sesscalendar {
 			$result = $this->createAction($user);
 			if ($result <= 0) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			} else {
 				$this->fk_actioncomm = $result;
 			}
@@ -99,7 +99,7 @@ class Agefodd_sesscalendar {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_calendrier");
@@ -123,7 +123,7 @@ class Agefodd_sesscalendar {
 				$result = $admintask->updateByTriggerName($user, $this->sessid, 'AGF_DT_CONFIRM');
 				if ($result < 0) {
 					$error ++;
-					$this->errors [] = "Error " . $admintask->error;
+					$this->errors[] = "Error " . $admintask->error;
 				}
 			}
 		}
@@ -148,7 +148,7 @@ class Agefodd_sesscalendar {
 	 * @param int $actionid object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -184,7 +184,7 @@ class Agefodd_sesscalendar {
 	 * @param int $actionid object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_by_action($actionid) {
+	public function fetch_by_action($actionid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -220,7 +220,7 @@ class Agefodd_sesscalendar {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($id) {
+	public function fetch_all($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -246,7 +246,7 @@ class Agefodd_sesscalendar {
 				$line->heuref = $this->db->jdate($obj->heuref);
 				$line->sessid = $obj->sessid;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -263,7 +263,7 @@ class Agefodd_sesscalendar {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -299,7 +299,7 @@ class Agefodd_sesscalendar {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -322,7 +322,7 @@ class Agefodd_sesscalendar {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -334,7 +334,7 @@ class Agefodd_sesscalendar {
 					$result = $this->updateAction($user);
 					if ($result == - 1) {
 						$error ++;
-						$this->errors [] = "Error " . $this->db->lasterror();
+						$this->errors[] = "Error " . $this->db->lasterror();
 					}
 				}
 				
@@ -367,7 +367,7 @@ class Agefodd_sesscalendar {
 	 * @param int $id to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($id) {
+	public function remove($id) {
 		$result = $this->fetch($id);
 		if (! empty($this->fk_actioncomm)) {
 			dol_include_once('/comm/action/class/actioncomm.class.php');
@@ -397,7 +397,7 @@ class Agefodd_sesscalendar {
 	 * @param int			fk_session_place Location of session
 	 * @param User $user that modify
 	 */
-	public function  createAction($user) {
+	public function createAction($user) {
 		global $conf, $langs;
 		
 		$error = 0;
@@ -421,8 +421,8 @@ class Agefodd_sesscalendar {
 		$action->fk_element = $session->id;
 		$action->elementtype = $session->element;
 		$action->type_code = 'AC_AGF_SESS';
-		$action->percentage=-1;
-		$action->userownerid=$user->id;
+		$action->percentage = - 1;
+		$action->userownerid = $user->id;
 		if (! empty($session->fk_soc)) {
 			$action->societe->id = $session->fk_soc;
 		}
@@ -448,7 +448,7 @@ class Agefodd_sesscalendar {
 	 *
 	 * @param User $user that modify
 	 */
-	public function  updateAction($user) {
+	public function updateAction($user) {
 		global $conf, $langs;
 		
 		$error = 0;
@@ -509,7 +509,7 @@ class Agefodd_sesscalendar_line {
 	public $heured;
 	public $heuref;
 	public $sessid;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

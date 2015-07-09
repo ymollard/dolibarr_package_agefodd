@@ -1030,3 +1030,5 @@ AgfNumTraining=Numéro de la formation
 AgfPDFRemiseEvalText=Les apprenants nommés ci-dessous attestent avoir reçu leur attestation de fin de formation comprenant les informations relatives aux objectifs de la formation et à l’évaluation des acquis, conformément à l’article L.6353-1 du Code du Travail.
 AgfPDFRemiseEvalSing=SIGNATURE
 AgfTrainerPDF=Le(s) formateur(s)/trice(s)
+AgfStatusSession_DONE=Réalisé
+AgfMenuSessDoneList=Sessions réalisées

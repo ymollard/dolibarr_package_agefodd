@@ -28,7 +28,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Administrative task by session Class
  */
 class Agefodd_session_admlevel extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd'; // !< Id that identify managed objects
@@ -51,7 +50,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -63,7 +62,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -105,7 +104,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . (! isset($this->trigger_name) ? 'NULL' : "'" . $this->trigger_name . "'") . ",";
-		$sql .= " '" . $this->db->idate(dol_now())."'";
+		$sql .= " '" . $this->db->idate(dol_now()) . "'";
 		
 		$sql .= ")";
 		
@@ -115,7 +114,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -154,7 +153,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param $id int Id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -205,7 +204,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 *
 	 * @return array array of object
 	 */
-	public function  fetch_all() {
+	public function fetch_all() {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -244,7 +243,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$line->alerte = $obj->delais_alerte;
 				$line->trigger_name = $obj->trigger_name;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				$i ++;
 			}
 			$this->db->free($resql);
@@ -263,7 +262,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -303,7 +302,7 @@ class Agefodd_session_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -341,7 +340,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -355,7 +354,7 @@ class Agefodd_session_admlevel extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 			
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel";
@@ -365,7 +364,7 @@ class Agefodd_session_admlevel extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -405,7 +404,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  shift_indice($user, $type = '', $notrigger = 0) {
+	public function shift_indice($user, $type = '', $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -431,7 +430,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -446,7 +445,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			} else {
 				// Update request
@@ -460,7 +459,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -474,7 +473,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -488,7 +487,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			}
 		}
@@ -507,7 +506,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -521,7 +520,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			} else {
 				// Update request
@@ -535,7 +534,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -549,7 +548,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				// Update request
@@ -563,7 +562,7 @@ class Agefodd_session_admlevel extends CommonObject {
 				$resql1 = $this->db->query($sql);
 				if (! $resql1) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			}
 		}
@@ -608,7 +607,7 @@ class AgfSessionAdmlvlLine {
 	public $intitule;
 	public $alerte;
 	public $trigger_name;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

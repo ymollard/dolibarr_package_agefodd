@@ -26,7 +26,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Contact Class
  */
 class Agefodd_contact extends CommonObject {
-	protected $db;
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd';
@@ -40,7 +39,7 @@ class Agefodd_contact extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($DB) {
+	public function __construct($DB) {
 		$this->db = $DB;
 		return 1;
 	}
@@ -52,7 +51,7 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -69,7 +68,7 @@ class Agefodd_contact extends CommonObject {
 		$sql .= ' ' . $user->id . ',';
 		$sql .= ' ' . $user->id . ',';
 		$sql .= ' ' . $conf->entity . ',';
-		$sql .= "'".$this->db->idate(dol_now())."'";
+		$sql .= "'" . $this->db->idate(dol_now()) . "'";
 		$sql .= ")";
 		
 		$this->db->begin();
@@ -78,7 +77,7 @@ class Agefodd_contact extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_contact");
@@ -115,7 +114,7 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id, $type = 'socid') {
+	public function fetch($id, $type = 'socid') {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -165,7 +164,7 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sortorder, $sortfield, $limit = '', $offset, $arch = 0) {
+	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $arch = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -210,7 +209,7 @@ class Agefodd_contact extends CommonObject {
 					$line->fk_socpeople = $obj->fk_socpeople;
 					$line->archive = $obj->archive;
 					
-					$this->lines [$i] = $line;
+					$this->lines[$i] = $line;
 					
 					$i ++;
 				}
@@ -230,7 +229,7 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -266,7 +265,7 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -289,7 +288,7 @@ class Agefodd_contact extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -325,7 +324,7 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $id to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($id) {
+	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_contact";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -363,7 +362,7 @@ class AgfContactLine {
 	public $phone_mobile;
 	public $fk_socpeople;
 	public $archive;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

@@ -22,7 +22,7 @@
 /**
  * \file agefodd/class/agefodd_index.class.php
  * \ingroup agefodd
- * \brief Index page public function 
+ * \brief Index page public function
  */
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 class Agefodd_index_line {
@@ -60,7 +60,7 @@ class Agefodd_index {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  Agefodd_index($DB) {
+	public function Agefodd_index($DB) {
 		$this->db = $DB;
 		return 1;
 	}
@@ -70,7 +70,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_student_nb() {
+	public function fetch_student_nb() {
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -107,7 +107,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_session_nb() {
+	public function fetch_session_nb() {
 		global $langs;
 		
 		$sql = "SELECT count(*) as num";
@@ -138,7 +138,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_formation_nb() {
+	public function fetch_formation_nb() {
 		global $langs;
 		
 		$sql = "SELECT count(*) as num";
@@ -169,7 +169,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_heures_sessions_nb() {
+	public function fetch_heures_sessions_nb() {
 		global $langs;
 		
 		$sql = "SELECT  sum(f.duree) AS total";
@@ -203,7 +203,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_heures_stagiaires_nb() {
+	public function fetch_heures_stagiaires_nb() {
 		global $langs;
 		
 		$sql = "SELECT  sum(f.duree) AS total";
@@ -240,7 +240,7 @@ class Agefodd_index {
 	 * @param int $number number of sessions to display
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_last_formations($number = 5) {
+	public function fetch_last_formations($number = 5) {
 		global $langs;
 		
 		$sql = "SELECT c.intitule, s.dated, s.datef, s.fk_formation_catalogue, s.rowid as id";
@@ -268,7 +268,7 @@ class Agefodd_index {
 				$line->idforma = $obj->fk_formation_catalogue;
 				$line->id = $obj->id;
 				
-				$this->line [$i] = $line;
+				$this->line[$i] = $line;
 				
 				$i ++;
 			}
@@ -287,7 +287,7 @@ class Agefodd_index {
 	 * @param int $number number of sessions to display
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_top_formations($number = 5) {
+	public function fetch_top_formations($number = 5) {
 		global $langs;
 		
 		$sql = "SELECT c.intitule, count(s.rowid) as num, c.duree, ";
@@ -315,7 +315,7 @@ class Agefodd_index {
 				$line->duree = $obj->duree;
 				$line->idforma = $obj->fk_formation_catalogue;
 				
-				$this->line [$i] = $line;
+				$this->line[$i] = $line;
 				
 				$i ++;
 			}
@@ -334,7 +334,7 @@ class Agefodd_index {
 	 * @param int $archive Archive
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_session($archive = 0) {
+	public function fetch_session($archive = 0) {
 		global $langs;
 		
 		$sql = "SELECT count(*) as total";
@@ -370,7 +370,7 @@ class Agefodd_index {
 	 * @param int $jour Nb day to display
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_tache_en_retard($jour = 0) {
+	public function fetch_tache_en_retard($jour = 0) {
 		global $langs;
 		
 		$intervalday = $jour . ' DAY';
@@ -399,7 +399,7 @@ class Agefodd_index {
 					$line->rowid = $obj->rowid;
 					$line->sessid = $obj->fk_agefodd_session;
 					
-					$this->line [$i] = $line;
+					$this->line[$i] = $line;
 					
 					$i ++;
 				}
@@ -418,7 +418,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_tache_en_cours() {
+	public function fetch_tache_en_cours() {
 		global $langs;
 		
 		$sql = "SELECT count(*) as total";
@@ -452,7 +452,7 @@ class Agefodd_index {
 	 * @param int $delais_inf low limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf = 0) {
+	public function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf = 0) {
 		global $langs;
 		
 		$intervalday_sup = $delais_sup . ' DAY';
@@ -507,7 +507,7 @@ class Agefodd_index {
 				$line->rowid = $obj->rowid;
 				$line->sessid = $obj->fk_agefodd_session;
 				
-				$this->line [$i] = $line;
+				$this->line[$i] = $line;
 				
 				$i ++;
 			}
@@ -525,7 +525,7 @@ class Agefodd_index {
 	 *
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_session_to_archive() {
+	public function fetch_session_to_archive() {
 		global $langs;
 		
 		// Il faut que toutes les tâches administratives soit crées (top_level);
@@ -564,7 +564,7 @@ class Agefodd_index {
 	 * @param int $time_expiration before expiration
 	 * @return int if KO, $num of student if OK
 	 */
-	public function  fetch_certif_expire($month_expiration) {
+	public function fetch_certif_expire($month_expiration) {
 		global $langs;
 		
 		$sql = "SELECT ";
@@ -584,14 +584,12 @@ class Agefodd_index {
 		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " AND sta.rowid NOT IN (SELECT stasessinner.fk_stagiaire FROM llx_agefodd_session_stagiaire as stasessinner INNER JOIN llx_agefodd_session as sinner ON sinner.rowid=stasessinner.fk_session_agefodd ";
 		$sql .= " AND stasessinner.status_in_session IN (2,3) WHERE sinner.dated<certif.certif_dt_end AND sinner.fk_formation_catalogue=s.fk_formation_catalogue AND sinner.entity IN (" . getEntity('agsession') . "))";
-		$sql.= ' GROUP BY c.intitule,c.ref,soc.rowid ';
+		$sql .= ' GROUP BY c.intitule,c.ref,soc.rowid ';
 		if ($this->db->type == 'pgsql') {
 			$sql .= " HAVING MAX(certif.certif_dt_end) < ( NOW() + INTERVAL '" . $month_expiration . " MONTHS') ";
 		} else {
 			$sql .= " HAVING MAX(certif.certif_dt_end) < ( NOW() + INTERVAL " . $month_expiration . " MONTH) ";
 		}
-		
-		
 		
 		dol_syslog(get_class($this) . "::fetch_certif_expire", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -610,7 +608,7 @@ class Agefodd_index {
 				$line->customer_name = $obj->customer_name;
 				$line->customer_id = $obj->customer_id;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}

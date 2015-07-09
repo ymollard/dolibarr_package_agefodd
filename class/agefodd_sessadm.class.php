@@ -30,7 +30,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Administrative task level Class
  */
 class Agefodd_sessadm extends CommonObject {
-	protected $db;
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd';
@@ -53,8 +52,8 @@ class Agefodd_sessadm extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($DB) {
-		$this->db = $DB;
+	public function __construct($db) {
+		$this->db = $db;
 		return 1;
 	}
 	
@@ -65,7 +64,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -93,14 +92,14 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= "'" . $this->indice . "', ";
 		$sql .= "'" . $this->level_rank . "', ";
 		$sql .= "'" . $this->fk_parent_level . "', ";
-		$sql .= "'" .$this->db->idate($this->dated) . "', ";
-		$sql .= "'" .$this->db->idate($this->datef) . "', ";
-		$sql .= "'" .$this->db->idate($this->datea) . "', ";
+		$sql .= "'" . $this->db->idate($this->dated) . "', ";
+		$sql .= "'" . $this->db->idate($this->datef) . "', ";
+		$sql .= "'" . $this->db->idate($this->datea) . "', ";
 		$sql .= "'" . $this->db->escape($this->notes) . "', ";
 		$sql .= $this->archive . ',';
 		$sql .= " " . $user->id . ", ";
 		$sql .= " " . $user->id . ", ";
-		$sql .= "'".$this->db->idate(dol_now()) . "', ";
+		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
 		$sql .= " " . (! isset($this->trigger_name) ? 'NULL' : "'" . $this->trigger_name . "'");
 		$sql .= ")";
 		
@@ -110,7 +109,7 @@ class Agefodd_sessadm extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_adminsitu");
@@ -148,7 +147,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -186,7 +185,7 @@ class Agefodd_sessadm extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -222,7 +221,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id action (in table agefodd_session_adminsitu)
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -267,7 +266,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $sess_id Id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sess_id) {
+	public function fetch_all($sess_id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -305,7 +304,7 @@ class Agefodd_sessadm extends CommonObject {
 				$line->archive = $obj->archive;
 				$line->trigger_name = $obj->trigger_name;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -324,7 +323,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -359,7 +358,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	public function  remove($id) {
+	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -380,7 +379,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	public function  remove_all($id) {
+	public function remove_all($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE fk_agefodd_session = " . $id;
 		
@@ -401,7 +400,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	public function  get_session_dated($sessid) {
+	public function get_session_dated($sessid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -433,7 +432,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param int $id delete
 	 * @return int if KO, >0 if OK
 	 */
-	public function  has_child($id) {
+	public function has_child($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -468,7 +467,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  setParentActionId($user, $session_id) {
+	public function setParentActionId($user, $session_id) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -494,7 +493,7 @@ class Agefodd_sessadm extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		// Commit or rollback
@@ -520,7 +519,7 @@ class Agefodd_sessadm extends CommonObject {
 	 * @param $status int status to set
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  updateByTriggerName($user, $session_id, $trigger_name, $status = 1) {
+	public function updateByTriggerName($user, $session_id, $trigger_name, $status = 1) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -538,7 +537,7 @@ class Agefodd_sessadm extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		// Commit or rollback
@@ -574,7 +573,7 @@ class AgfSessAdm {
 	public $notes;
 	public $archive;
 	public $trigger_name;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

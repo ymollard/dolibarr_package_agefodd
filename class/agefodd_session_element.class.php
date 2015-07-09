@@ -32,7 +32,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_session_element extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_session_element'; // !< Id that identify managed objects
@@ -67,7 +66,7 @@ class Agefodd_session_element extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -79,7 +78,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -130,7 +129,7 @@ class Agefodd_session_element extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -171,7 +170,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -235,7 +234,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string $type is default
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_element_per_soc($socid, $type = 'bc') {
+	public function fetch_element_per_soc($socid, $type = 'bc') {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -252,7 +251,6 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid=f.fk_soc";
 			
 			require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
-			
 		}
 		if ($type == 'prop') {
 			$sql .= " f.rowid, f.fk_soc, f.ref, f.datec, f.total as amount, soc.nom as socname";
@@ -261,7 +259,7 @@ class Agefodd_session_element extends CommonObject {
 			
 			require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		}
-		$sql .= " WHERE (fk_soc = " . $socid . " OR fk_soc IN (SELECT parent FROM ".MAIN_DB_PREFIX."societe WHERE rowid=" . $socid . "))";
+		$sql .= " WHERE (fk_soc = " . $socid . " OR fk_soc IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . "))";
 		
 		dol_syslog(get_class($this) . "::fetch_element_per_soc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -277,29 +275,28 @@ class Agefodd_session_element extends CommonObject {
 				$line->socid = $obj->fk_soc;
 				$line->socname = $obj->socname;
 				$line->ref = $obj->ref;
-				$line->date=$this->db->jdate($obj->datec);
-				$line->amount=$obj->amount;
-				
+				$line->date = $this->db->jdate($obj->datec);
+				$line->amount = $obj->amount;
 				
 				if ($type == 'fac') {
 					$facture = new Facture($this->db);
 					$facture->fetch($obj->rowid);
-					$line->status=$facture->getLibStatut(1);
+					$line->status = $facture->getLibStatut(1);
 				}
 				
 				if ($type == 'bc') {
 					$order = new Commande($this->db);
 					$order->fetch($obj->rowid);
-					$line->status=$order->getLibStatut(1);
+					$line->status = $order->getLibStatut(1);
 				}
 				
 				if ($type == 'prop') {
 					$proposal = new Propal($this->db);
 					$proposal->fetch($obj->rowid);
-					$line->status=$proposal->getLibStatut(1);
+					$line->status = $proposal->getLibStatut(1);
 				}
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -317,7 +314,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string $type is default
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_element_by_id($id, $type = 'bc') {
+	public function fetch_element_by_id($id, $type = 'bc') {
 		global $langs;
 		
 		if (! empty($id)) {
@@ -355,7 +352,7 @@ class Agefodd_session_element extends CommonObject {
 					$line->socid = $obj->fk_soc;
 					$line->fk_session_agefodd = $obj->fk_session_agefodd;
 					
-					$this->lines [$i] = $line;
+					$this->lines[$i] = $line;
 				}
 				$this->db->free($resql);
 				return 1;
@@ -376,7 +373,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string $type is default
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  check_all_invoice_validate($session_id) {
+	public function check_all_invoice_validate($session_id) {
 		global $langs;
 		
 		if (! empty($id)) {
@@ -403,7 +400,7 @@ class Agefodd_session_element extends CommonObject {
 						break;
 					}
 					
-					$this->lines [$i] = $line;
+					$this->lines[$i] = $line;
 				}
 				$this->db->free($resql);
 				
@@ -429,7 +426,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string type order,invoice,propal,invoice_supplier
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_by_session_by_thirdparty($idsession, $idsoc = 0, $type = '') {
+	public function fetch_by_session_by_thirdparty($idsession, $idsoc = 0, $type = '') {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -484,7 +481,7 @@ class Agefodd_session_element extends CommonObject {
 				$line->comref = $obj->comref;
 				$line->facnumber = $obj->facnumber;
 				
-				$this->lines [] = $line;
+				$this->lines[] = $line;
 			}
 			$this->db->free($resql);
 			
@@ -504,7 +501,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string type order,invoice,propal,invoice_supplier
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_invoice_supplier_by_thridparty($idsoc) {
+	public function fetch_invoice_supplier_by_thridparty($idsoc) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid";
@@ -530,7 +527,7 @@ class Agefodd_session_element extends CommonObject {
 				$line->ref = $obj->ref;
 				$line->ref_supplier = $obj->ref_supplier;
 				
-				$this->lines [] = $line;
+				$this->lines[] = $line;
 			}
 			$this->db->free($resql);
 			
@@ -549,7 +546,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -588,7 +585,7 @@ class Agefodd_session_element extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -626,7 +623,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -654,7 +651,7 @@ class Agefodd_session_element extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -681,7 +678,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $invoiceid to link
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  add_invoice($user, $id, $type, $invoiceid) {
+	public function add_invoice($user, $id, $type, $invoiceid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -724,7 +721,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	public function  createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -769,7 +766,7 @@ class Agefodd_session_element extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->fk_session_agefodd = '';
@@ -788,7 +785,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $id ob object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_by_session($id) {
+	public function fetch_by_session($id) {
 		require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php';
@@ -916,8 +913,8 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string $type_element element type
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  get_charges_amount($id, $catid = 0, $type_element = '') {
-		global $langs,$conf;
+	public function get_charges_amount($id, $catid = 0, $type_element = '') {
+		global $langs, $conf;
 		
 		$total_charges = 0;
 		
@@ -996,7 +993,8 @@ class Agefodd_session_element extends CommonObject {
 			}
 			$this->db->free($resql);
 			
-			if (empty($total_charges)) $total_charges=0;
+			if (empty($total_charges))
+				$total_charges = 0;
 			
 			return $total_charges;
 		} else {
@@ -1011,7 +1009,7 @@ class Agefodd_session_element extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  updateSellingPrice($user) {
+	public function updateSellingPrice($user) {
 		// Update session selling price
 		$sell_price = 0;
 		
@@ -1058,7 +1056,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $id ob object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_element_by_session($id) {
+	public function fetch_element_by_session($id) {
 		require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
@@ -1112,7 +1110,7 @@ class Agefodd_session_element extends CommonObject {
 					}
 				}
 				
-				$this->lines [] = $line;
+				$this->lines[] = $line;
 			}
 			$this->db->free($resql);
 			return 1;

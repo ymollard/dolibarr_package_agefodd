@@ -26,7 +26,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Trainner Class
  */
 class Agefodd_teacher extends CommonObject {
-	protected $db;
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd_formateur';
@@ -49,7 +48,7 @@ class Agefodd_teacher extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($DB) {
+	public function __construct($DB) {
 		$this->db = $DB;
 		$this->type_trainer_def = array (
 				0 => 'user',
@@ -65,7 +64,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -90,15 +89,15 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= "fk_socpeople,fk_user, type_trainer, fk_user_author, fk_user_mod, entity, datec";
 		$sql .= ") VALUES (";
 		// trainer is user
-		if ($this->type_trainer == $this->type_trainer_def [0]) {
+		if ($this->type_trainer == $this->type_trainer_def[0]) {
 			$sql .= 'NULL, ';
 			$sql .= " " . $this->fk_user . ", ";
-			$sql .= "'" . $this->type_trainer_def [0] . "', ";
-		} 		// trainer is Dolibarr contact
-		elseif ($this->type_trainer == $this->type_trainer_def [1]) {
+			$sql .= "'" . $this->type_trainer_def[0] . "', ";
+		} // trainer is Dolibarr contact
+elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 			$sql .= " " . $this->spid . ", ";
 			$sql .= 'NULL, ';
-			$sql .= "'" . $this->type_trainer_def [1] . "', ";
+			$sql .= "'" . $this->type_trainer_def[1] . "', ";
 		}
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . $user->id . ",";
@@ -112,7 +111,7 @@ class Agefodd_teacher extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_formateur");
@@ -149,8 +148,8 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id, $arch = 0) {
-		global $langs,$mysoc;
+	public function fetch($id, $arch = 0) {
+		global $langs, $mysoc;
 		
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
@@ -176,7 +175,7 @@ class Agefodd_teacher extends CommonObject {
 				$this->type_trainer = $obj->type_trainer;
 				
 				// trainer is user
-				if ($this->type_trainer == $this->type_trainer_def [0]) {
+				if ($this->type_trainer == $this->type_trainer_def[0]) {
 					$this->fk_user = $obj->fk_user;
 					$this->name = $obj->u_name;
 					$this->firstname = $obj->u_firstname;
@@ -187,8 +186,8 @@ class Agefodd_teacher extends CommonObject {
 					$this->address = $mysoc->address;
 					$this->zip = $mysoc->zip;
 					$this->town = $mysoc->town;
-				} 				// trainer is Dolibarr contact
-				elseif ($this->type_trainer == $this->type_trainer_def [1]) {
+				} // trainer is Dolibarr contact
+elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 					$this->spid = $obj->spid;
 					$this->fk_socpeople = $obj->fk_socpeople;
 					$this->name = $obj->sp_name;
@@ -222,7 +221,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param array $filter array of filter
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -280,7 +279,7 @@ class Agefodd_teacher extends CommonObject {
 					$line->type_trainer = $obj->type_trainer;
 					$line->archive = $obj->archive;
 					// trainer is user
-					if ($line->type_trainer == $this->type_trainer_def [0]) {
+					if ($line->type_trainer == $this->type_trainer_def[0]) {
 						$line->fk_user = $obj->fk_user;
 						$line->name = $obj->u_name;
 						$line->firstname = $obj->u_firstname;
@@ -289,8 +288,8 @@ class Agefodd_teacher extends CommonObject {
 						$line->email = $obj->u_email;
 						$line->phone_mobile = $obj->u_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
-					} 					// trainer is Dolibarr contact
-					elseif ($line->type_trainer == $this->type_trainer_def [1]) {
+					} // trainer is Dolibarr contact
+elseif ($line->type_trainer == $this->type_trainer_def[1]) {
 						$line->spid = $obj->spid;
 						$line->name = $obj->sp_name;
 						$line->firstname = $obj->sp_firstname;
@@ -301,7 +300,7 @@ class Agefodd_teacher extends CommonObject {
 						$line->fk_socpeople = $obj->fk_socpeople;
 					}
 					
-					$this->lines [$i] = $line;
+					$this->lines[$i] = $line;
 					$i ++;
 				}
 			}
@@ -320,7 +319,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -356,7 +355,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -379,7 +378,7 @@ class Agefodd_teacher extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -416,7 +415,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($id) {
+	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formateur";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -431,14 +430,18 @@ class Agefodd_teacher extends CommonObject {
 		}
 	}
 	
-	public public function  getNomUrl($label='name') {
-		$link=dol_buildpath('/agefodd/trainer/card.php',1);
-		if ($label=='name') {
-			return '<a href="'.$link.'?id='.$this->id.'">'.$this->name.' '.$this->firstname.'</a>';
+	/**
+	 * 
+	 * @param string $label
+	 * @return string
+	 */
+	public function getNomUrl($label = 'name') {
+		$link = dol_buildpath('/agefodd/trainer/card.php', 1);
+		if ($label == 'name') {
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->name . ' ' . $this->firstname . '</a>';
 		} else {
-			return '<a href="'.$link.'?id='.$this->id.'">'.$this->$label.'</a>';
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
 		}
-		
 	}
 }
 class AgfTrainerLine {
@@ -453,17 +456,20 @@ class AgfTrainerLine {
 	public $email;
 	public $phone_mobile;
 	public $fk_socpeople;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
-	
-	public public function  getNomUrl($label='name') {
-		$link=dol_buildpath('/agefodd/trainer/card.php',1);
-		if ($label=='name') {
-			return '<a href="'.$link.'?id='.$this->id.'">'.$this->name.' '.$this->firstname.'</a>';
+	/**
+	 * 
+	 * @param string $label
+	 * @return string
+	 */
+	public function getNomUrl($label = 'name') {
+		$link = dol_buildpath('/agefodd/trainer/card.php', 1);
+		if ($label == 'name') {
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->name . ' ' . $this->firstname . '</a>';
 		} else {
-			return '<a href="'.$link.'?id='.$this->id.'">'.$this->$label.'</a>';
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
 		}
-	
 	}
 }

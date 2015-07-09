@@ -27,7 +27,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefoddcalendrier extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_calendrier'; // !< Id that identify managed objects
@@ -45,7 +44,7 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -57,7 +56,7 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -99,7 +98,7 @@ class Agefoddcalendrier extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -138,7 +137,7 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -178,7 +177,7 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all() {
+	public function fetch_all() {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -196,12 +195,12 @@ class Agefoddcalendrier extends CommonObject {
 			$i = 0;
 			while ( $i < $num ) {
 				$obj = $this->db->fetch_object($resql);
-				$this->lines [$i] = new AgefoddcalendrierLines();
-				$this->lines [$i]->id = $obj->rowid;
+				$this->lines[$i] = new AgefoddcalendrierLines();
+				$this->lines[$i]->id = $obj->rowid;
 				
-				$this->lines [$i]->day_session = $obj->day_session;
-				$this->lines [$i]->heured = $obj->heured;
-				$this->lines [$i]->heuref = $obj->heuref;
+				$this->lines[$i]->day_session = $obj->day_session;
+				$this->lines[$i]->heured = $obj->heured;
+				$this->lines[$i]->heuref = $obj->heuref;
 				
 				$i ++;
 			}
@@ -222,7 +221,7 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -250,7 +249,7 @@ class Agefoddcalendrier extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
@@ -274,7 +273,7 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->entity = '';

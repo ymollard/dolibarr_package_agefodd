@@ -908,11 +908,11 @@ class modAgefodd extends DolibarrModules {
 		// Array to add new pages in new tabs
 		// Array to add new pages in new tabs
 		$this->tabs = array (
-				'order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_orderid=__ID__',
-				'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
-				'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_propalid=__ID__',
-				'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_soc.php?socid=__ID__',
-				'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__' 
+				'order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_orderid=__ID__',
+				'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
+				'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_propalid=__ID__',
+				'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_soc.php?socid=__ID__',
+				'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__' 
 		);
 		
 		// Boxes
@@ -1172,10 +1172,24 @@ class modAgefodd extends DolibarrModules {
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
+				'titre' => 'AgfMenuSessDoneList',
+				'url' => '/agefodd/session/list.php?status=5',
+				'langs' => 'agefodd@agefodd',
+				'position' => 204,
+				'enabled' => '$user->rights->agefodd->lire',
+				'perms' => '$user->rights->agefodd->lire',
+				'target' => '',
+				'user' => 0
+		);
+		
+		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
+				'type' => 'left',
 				'titre' => 'AgfMenuSessArchList',
 				'url' => '/agefodd/session/list.php?status=4',
 				'langs' => 'agefodd@agefodd',
-				'position' => 204,
+				'position' => 205,
 				'enabled' => '$user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
@@ -1189,7 +1203,7 @@ class modAgefodd extends DolibarrModules {
 				'titre' => 'AgfMenuSessArchiveByYear',
 				'url' => '/agefodd/session/archive_year.php',
 				'langs' => 'agefodd@agefodd',
-				'position' => 205,
+				'position' => 206,
 				'enabled' => '$user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
@@ -1203,7 +1217,7 @@ class modAgefodd extends DolibarrModules {
 				'titre' => 'AgfMenuSessNew',
 				'url' => '/agefodd/session/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
-				'position' => 206,
+				'position' => 207,
 				'enabled' => '$user->rights->agefodd->creer',
 				'perms' => '$user->rights->agefodd->creer',
 				'target' => '',
@@ -1217,7 +1231,7 @@ class modAgefodd extends DolibarrModules {
 				'titre' => 'AgfMenuSessStats',
 				'url' => '/agefodd/session/stats/index.php',
 				'langs' => 'agefodd@agefodd',
-				'position' => 207,
+				'position' => 208,
 				'enabled' => '$user->rights->agefodd->viewstats',
 				'perms' => '$user->rights->agefodd->viewstats',
 				'target' => '',
@@ -1231,7 +1245,7 @@ class modAgefodd extends DolibarrModules {
 				'titre' => 'AgfMenuSessListOpe',
 				'url' => '/agefodd/session/list_ope.php',
 				'langs' => 'agefodd@agefodd',
-				'position' => 208,
+				'position' => 209,
 				'enabled' => '$user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',

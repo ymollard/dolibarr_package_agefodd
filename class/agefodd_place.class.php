@@ -31,7 +31,6 @@ dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
  * Location Class
  */
 class Agefodd_place extends CommonObject {
-	protected $db;
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd_place';
@@ -62,7 +61,7 @@ class Agefodd_place extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -74,7 +73,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -148,7 +147,7 @@ class Agefodd_place extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -187,7 +186,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -243,7 +242,7 @@ class Agefodd_place extends CommonObject {
 	 * @param array $filter filter array
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -255,9 +254,9 @@ class Agefodd_place extends CommonObject {
 		$sql .= " WHERE p.entity IN (" . getEntity('agsession') . ")";
 		
 		// Manage filter
-		if (count($filter)>0) {
+		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				$sql .= ' AND '. $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+				$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 			}
 		}
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
@@ -292,7 +291,7 @@ class Agefodd_place extends CommonObject {
 				$line->acces_site = $obj->acces_site;
 				$line->note1 = $obj->note1;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -311,7 +310,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -346,7 +345,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -407,7 +406,7 @@ class Agefodd_place extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -444,7 +443,7 @@ class Agefodd_place extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($user, $notrigger = 0) {
+	public function remove($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -476,7 +475,7 @@ class Agefodd_place extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 			
 			if (! $error) {
@@ -492,7 +491,7 @@ class Agefodd_place extends CommonObject {
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 				
 				if ((! $error) && ! (empty($fk_reg_interieur))) {
@@ -502,7 +501,7 @@ class Agefodd_place extends CommonObject {
 					
 					if ($result < 0) {
 						$error ++;
-						$this->errors [] = "Error " . $agf_regint->errors;
+						$this->errors[] = "Error " . $agf_regint->errors;
 					}
 				}
 			}
@@ -528,7 +527,7 @@ class Agefodd_place extends CommonObject {
 	 * @param User $user that delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove_reg_int($user) {
+	public function remove_reg_int($user) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -541,7 +540,7 @@ class Agefodd_place extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		// Commit or rollback
@@ -564,11 +563,11 @@ class Agefodd_place extends CommonObject {
 	 * @param User $user that ask request
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  import_customer_adress($user) {
+	public function import_customer_adress($user) {
 		global $conf, $langs;
 		$error = 0;
 		
-		if (!empty($this->fk_societe)) {
+		if (! empty($this->fk_societe)) {
 			$sql = "SELECT";
 			$sql .= " s.address, s.zip, s.phone, s.town, s.fk_departement, s.fk_pays";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "societe as s";
@@ -585,21 +584,20 @@ class Agefodd_place extends CommonObject {
 					$this->ville = $obj->town;
 					$this->tel = $obj->phone;
 					$result = $this->update($user);
-					if ($result<0) {
+					if ($result < 0) {
 						$this->error = "Error " . $this->db->lasterror();
 						dol_syslog(get_class($this) . "::import_customer_adress::update error=" . $agf->error, LOG_ERR);
 						return - 1;
 					}
 				}
 				$this->db->free($resql);
-			
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
 				dol_syslog(get_class($this) . "::import_customer_adress " . $this->error, LOG_ERR);
 				return - 1;
 			}
 		}
-
+		
 		return 1;
 	}
 	
@@ -608,7 +606,7 @@ class Agefodd_place extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  printPlaceInfo() {
+	public function printPlaceInfo() {
 		global $langs, $form;
 		
 		print '<table class="border" width="100%">';
@@ -647,7 +645,7 @@ class AgfPlaceLine {
 	public $archive;
 	public $acces_site;
 	public $note1;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

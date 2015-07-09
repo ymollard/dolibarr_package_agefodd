@@ -31,7 +31,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Session Class
  */
 class Agsession extends CommonObject {
-	protected $db;
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd_agsession';
@@ -112,7 +111,7 @@ class Agsession extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -124,7 +123,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		require_once ('agefodd_formation_catalogue.class.php');
 		
 		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
@@ -317,7 +316,7 @@ class Agsession extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	public function  createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -359,7 +358,7 @@ class Agsession extends CommonObject {
 	/**
 	 * Create admin level for a session
 	 */
-	public function  createAdmLevelForSession($user) {
+	public function createAdmLevelForSession($user) {
 		$error = '';
 		
 		require_once ('agefodd_sessadm.class.php');
@@ -422,7 +421,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs, $conf;
 		
 		$sql = "SELECT DISTINCT";
@@ -613,7 +612,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_session_per_trainee($id) {
+	public function fetch_session_per_trainee($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -698,7 +697,7 @@ class Agsession extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_session_per_trainer($id, $sortorder = '', $sortfield = '', $limit = 0, $offset = 0, $filter = array()) {
+	public function fetch_session_per_trainer($id, $sortorder = '', $sortfield = '', $limit = 0, $offset = 0, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -812,7 +811,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_societe_per_session($id) {
+	public function fetch_societe_per_session($id) {
 		$error = 0;
 		global $langs;
 		
@@ -1368,7 +1367,7 @@ class Agsession extends CommonObject {
 		if ($resql) {
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
-				
+			
 			if ($num) {
 				$i = 0;
 				while ( $i < $num ) {
@@ -1376,7 +1375,7 @@ class Agsession extends CommonObject {
 					if (! empty($obj->socid)) {
 						if (! in_array($obj->socid, $array_soc)) {
 							$newline = new AgfSocLine();
-								
+							
 							$newline->sessid = $obj->rowid;
 							$newline->socname = $obj->socname;
 							$newline->code_client = $obj->code_client;
@@ -1384,11 +1383,11 @@ class Agsession extends CommonObject {
 							$newline->type_session = $obj->type_session;
 							$newline->is_OPCA = $obj->is_opca;
 							$newline->fk_soc_OPCA = $obj->fk_soc_opca;
-								
+							
 							$newline->typeline = 'trainee_presta';
-								
+							
 							$array_soc[] = $obj->socid;
-								
+							
 							if (! empty($obj->socid)) {
 								$sql_inner = "SELECT";
 								$sql_inner .= " DISTINCT sa.rowid, sa.nom, sa.prenom ";
@@ -1405,13 +1404,13 @@ class Agsession extends CommonObject {
 								$array_trainnee = array ();
 								if ($resql_inner) {
 									$num_inner = $this->db->num_rows($resql_inner);
-										
+									
 									if ($num_inner) {
 										while ( $obj_inner = $this->db->fetch_object($resql_inner) ) {
 											$array_trainnee[] = array (
 													'id' => $obj_inner->rowid,
 													'lastname' => $obj_inner->prenom,
-													'firstname' => $obj_inner->nom
+													'firstname' => $obj_inner->nom 
 											);
 										}
 									}
@@ -1422,7 +1421,7 @@ class Agsession extends CommonObject {
 								}
 								$newline->trainee_array = $array_trainnee;
 							}
-								
+							
 							$this->lines[] = $newline;
 							$add_soc ++;
 						}
@@ -1430,7 +1429,7 @@ class Agsession extends CommonObject {
 					$i ++;
 				}
 			}
-				
+			
 			$this->db->free($resql);
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -1452,7 +1451,7 @@ class Agsession extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -1488,7 +1487,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  updateArchive($user, $notrigger = 0) {
+	public function updateArchive($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -1521,7 +1520,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		require_once ('agefodd_session_stagiaire.class.php');
 		
 		global $conf, $langs;
@@ -1761,7 +1760,7 @@ class Agsession extends CommonObject {
 	 * @param User $user that modify
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  setCommercialSession($userid, $user) {
+	public function setCommercialSession($userid, $user) {
 		global $conf, $langs;
 		$error = 0;
 		$to_create = false;
@@ -1878,7 +1877,7 @@ class Agsession extends CommonObject {
 	 * @param User $user that modify
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  setContactSession($contactid, $user) {
+	public function setContactSession($contactid, $user) {
 		global $conf, $langs;
 		$error = 0;
 		$to_create = false;
@@ -2030,7 +2029,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($id, $notrigger = 0) {
+	public function remove($id, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -2104,7 +2103,7 @@ class Agsession extends CommonObject {
 	 * \brief		Initialise object with example values
 	 * \remarks	id must be 0 if object instance is a specimen.
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 	}
 	
@@ -2114,7 +2113,7 @@ class Agsession extends CommonObject {
 	 * @param int $type
 	 * @return string translated description
 	 */
-	public function  getToolTip($type) {
+	public function getToolTip($type) {
 		global $conf;
 		
 		$langs->load("admin");
@@ -2141,7 +2140,7 @@ class Agsession extends CommonObject {
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0) {
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2163,7 +2162,8 @@ class Agsession extends CommonObject {
 		$sql .= " ,s.fk_socpeople_requester";
 		$sql .= " ,s.fk_socpeople_presta";
 		$sql .= " ,sa.archive as closesessionstatus";
-		$sql .= " ,sorequester.nom as socrequestername,";
+		$sql .= " ,sorequester.nom as socrequestername";
+		$sql .= " ,c.color as trainingcolor,";
 		// Avoid perf problem with too many trainnee into archive sessions
 		if (is_array($filter) && key_exists('s.status', $filter) && $filter['s.status'] == '4') {
 			$sql .= " 0 as nb_prospect,";
@@ -2274,7 +2274,7 @@ class Agsession extends CommonObject {
 				} elseif ($key == 's.rowid') {
 					$sql .= ' AND ' . $key . '=' . $value;
 				} elseif ($key == '!s.rowid') {
-					$sql .= ' AND s.rowid NOT IN ('.$value.')';
+					$sql .= ' AND s.rowid NOT IN (' . $value . ')';
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
@@ -2340,6 +2340,7 @@ class Agsession extends CommonObject {
 					$line->cost_trainer = $obj->cost_trainer;
 					$line->cost_other = $obj->cost_trip + $obj->cost_site;
 					$line->admin_task_close_session = $obj->closesessionstatus;
+					$line->trainingcolor = $obj->trainingcolor;
 					
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
@@ -2373,7 +2374,7 @@ class Agsession extends CommonObject {
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
+	public function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
 		global $langs;
 		
 		$interval0day = '0 DAY';
@@ -2544,7 +2545,7 @@ class Agsession extends CommonObject {
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
+	public function fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2691,7 +2692,7 @@ class Agsession extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = '') {
+	public function fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = '') {
 		global $langs;
 		
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2815,7 +2816,7 @@ class Agsession extends CommonObject {
 			$sql .= " ON s.status = dictstatus.rowid";
 			
 			$type_affect = $langs->trans('AgfTypePresta');
-		}elseif ($filter['type_affect'] == 'trainer') {
+		} elseif ($filter['type_affect'] == 'trainer') {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 			$sql .= " ON c.rowid = s.fk_formation_catalogue";
@@ -2886,8 +2887,8 @@ class Agsession extends CommonObject {
 					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 						$sql .= ' AND ' . $key . ' = ' . $value;
 					} elseif ($key == '!s.rowid') {
-						$sql .= ' AND s.rowid NOT IN ('.$value.')';
-					}else {
+						$sql .= ' AND s.rowid NOT IN (' . $value . ')';
+					} else {
 						$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 					}
 				}
@@ -2970,7 +2971,7 @@ class Agsession extends CommonObject {
 	 * @param string $fourninvoiceid num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '') {
+	public function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '') {
 		global $langs;
 		
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
@@ -3109,7 +3110,7 @@ class Agsession extends CommonObject {
 	/**
 	 * Print table of session information
 	 */
-	public function  printSessionInfo() {
+	public function printSessionInfo() {
 		global $form, $langs;
 		
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
@@ -3326,7 +3327,7 @@ class Agsession extends CommonObject {
 	 * @param int $maxlength ref
 	 * @return string with URL
 	 */
-	public function  getNomUrl($withpicto = 0, $option = '', $maxlength = 0) {
+	public function getNomUrl($withpicto = 0, $option = '', $maxlength = 0) {
 		global $langs;
 		
 		$result = '';
@@ -3354,7 +3355,7 @@ class Agsession extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  updateArchiveByYear($year, $user, $notrigger = 0) {
+	public function updateArchiveByYear($year, $user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -3414,7 +3415,7 @@ class Agsession extends CommonObject {
 	 *       
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  createOrder($user, $socid, $frompropalid = 0) {
+	public function createOrder($user, $socid, $frompropalid = 0) {
 		require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -3623,7 +3624,7 @@ class Agsession extends CommonObject {
 			// Add average price
 			if (empty($error)) {
 				if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
-						
+					
 					$order->fetch($neworderid);
 					foreach ( $order->lines as $ordline ) {
 						if ($ordline->fk_product == $this->fk_product) {
@@ -3650,7 +3651,7 @@ class Agsession extends CommonObject {
 				}
 			}
 		}
-			
+		
 		if (empty($error)) {
 			
 			// Link new order to the session/thridparty
@@ -3666,7 +3667,7 @@ class Agsession extends CommonObject {
 				$error ++;
 			}
 		}
-			
+		
 		if (empty($error)) {
 			$this->db->commit();
 			return $neworderid;
@@ -3688,7 +3689,7 @@ class Agsession extends CommonObject {
 	 *       
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  createProposal($user, $socid) {
+	public function createProposal($user, $socid) {
 		require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -3953,7 +3954,7 @@ class Agsession extends CommonObject {
 	 * @param number $pricettc
 	 * @return number
 	 */
-	public public function  getAvgPrice($priceht = 0, $pricettc = 0) {
+	public function getAvgPrice($priceht = 0, $pricettc = 0) {
 		global $conf, $langs;
 		// Calc nb hour of a session
 		require_once 'agefodd_session_calendrier.class.php';
@@ -3970,11 +3971,11 @@ class Agsession extends CommonObject {
 		$min = floor($duree / 60);
 		$rmin = sprintf("%02d", $min % 60);
 		$hour = floor($min / 60);
-
+		
 		$this->avgpricedesc = '';
 		if (! empty($hour)) {
-			$this->avgpricedesc = "\n" . $langs->trans('AgfTaxHourHT') . ':' . price($priceht / $hour, 0, $langs, 1, - 1, 2). $langs->getCurrencySymbol($conf->currency);
-			$this->avgpricedesc .= "\n" . $langs->trans('AgfTaxHourTTC') . ':' . price($pricettc / $hour, 0, $langs, 1, - 1, 2). $langs->getCurrencySymbol($conf->currency);
+			$this->avgpricedesc = "\n" . $langs->trans('AgfTaxHourHT') . ':' . price($priceht / $hour, 0, $langs, 1, - 1, 2) . $langs->getCurrencySymbol($conf->currency);
+			$this->avgpricedesc .= "\n" . $langs->trans('AgfTaxHourTTC') . ':' . price($pricettc / $hour, 0, $langs, 1, - 1, 2) . $langs->getCurrencySymbol($conf->currency);
 		} /*else {
 			$this->avgpricedesc="\n" .$langs->trans('AgfTaxHourHT').':N/A';
 			$this->avgpricedesc.="\n" .$langs->trans('AgfTaxHourTTC').':'.price($pricettc/$hour);
@@ -3993,7 +3994,7 @@ class Agsession extends CommonObject {
 	 *       
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  createInvoice($user, $socid, $frompropalid = 0, $amount = 0) {
+	public function createInvoice($user, $socid, $frompropalid = 0, $amount = 0) {
 		require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -4331,7 +4332,7 @@ class Agsession extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  findDateSendPropal() {
+	public function findDateSendPropal() {
 		$sql = "SELECT MAX(act.datep) as maxdate";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as elem";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "actioncomm as act ON act.fk_element=elem.fk_element ";
@@ -4360,7 +4361,7 @@ class Agsession extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  findDateSignPropal() {
+	public function findDateSignPropal() {
 		$sql = "SELECT MAX(propal.date_cloture) as maxdate";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as elem";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "propal as propal ON propal.rowid=elem.fk_element ";
@@ -4397,7 +4398,7 @@ class AgfSocLine {
 	public $code_client;
 	public $typeline;
 	public $trainee_array = array ();
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }
@@ -4428,7 +4429,7 @@ class AgfInvoiceOrder {
 	public $duree_session;
 	public $intitule_custom;
 	public $fourninvoiceref;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }
@@ -4478,7 +4479,8 @@ class AgfSessionLine {
 	public $socrequestername;
 	public $fk_socpeople_requester;
 	public $admin_task_close_session;
-	public function  __construct() {
+	public $trainingcolor;
+	public function __construct() {
 		return 1;
 	}
 }
@@ -4517,7 +4519,7 @@ class AgfSessionLineTask {
 	public $duree_session;
 	public $socrequesterid;
 	public $socrequestername;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }
@@ -4552,7 +4554,7 @@ class AgfSessionLineSoc {
 	public $active;
 	public $duree_session;
 	public $intitule_custom;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }
@@ -4594,7 +4596,7 @@ class AgfSessionLineInter {
 	public $is_date_res_site;
 	public $is_date_res_confirm_site;
 	public $sell_price;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

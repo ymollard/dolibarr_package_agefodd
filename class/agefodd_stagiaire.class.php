@@ -31,7 +31,6 @@ require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
  * Trainee Class
  */
 class Agefodd_stagiaire extends CommonObject {
-	protected $db;
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd';
@@ -57,7 +56,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -69,7 +68,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -103,7 +102,7 @@ class Agefodd_stagiaire extends CommonObject {
 		
 		if (empty($this->civilite)) {
 			$error ++;
-			$this->errors [] = $langs->trans("AgfCiviliteMandatory");
+			$this->errors[] = $langs->trans("AgfCiviliteMandatory");
 		}
 		
 		// Insert request
@@ -140,7 +139,7 @@ class Agefodd_stagiaire extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 			
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_stagiaire");
@@ -177,7 +176,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -260,7 +259,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
+	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -281,12 +280,12 @@ class Agefodd_stagiaire extends CommonObject {
 				if ($key == 'naturalsearch') {
 					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
 				} elseif ($key != 's.tel1') {
-					$sql .= ' AND '. $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				} else {
-					$sql .= ' AND '. $key . ' = \'' . $this->db->escape($value) . '\'';
+					$sql .= ' AND ' . $key . ' = \'' . $this->db->escape($value) . '\'';
 				}
 			}
-		} 
+		}
 		
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
 		if (! empty($limit)) {
@@ -309,7 +308,7 @@ class Agefodd_stagiaire extends CommonObject {
 					// Manage filter for telephone to remove all space from result to filter correctly
 					if (! empty($filter)) {
 						if (array_key_exists('s.tel1', $filter)) {
-							$value = $filter ['s.tel1'];
+							$value = $filter['s.tel1'];
 							if (! empty($value)) {
 								if ($pos !== false) {
 									$line->socid = $obj->socid;
@@ -367,7 +366,7 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->place_birth = $obj->place_birth;
 					}
 					
-					$this->lines [$i] = $line;
+					$this->lines[$i] = $line;
 					
 					$i ++;
 				}
@@ -387,7 +386,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -423,7 +422,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -471,7 +470,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -508,7 +507,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($id) {
+	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire";
 		$sql .= " WHERE rowid = " . $id;
 		
@@ -536,21 +535,20 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param int $socid thirdparty id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  searchByLastNameFirstNameSoc($lastname, $firstname, $socid) {
-		
+	public function searchByLastNameFirstNameSoc($lastname, $firstname, $socid) {
 		global $conf;
 		
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE (s.fk_soc=" . $socid;
-		//contact is in a company witch child $socid
-		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent=" . $socid. "))";
-		//contact is in a company witch share the same mother company than $socid
-		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid. "))))";
+		// contact is in a company witch child $socid
+		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent=" . $socid . "))";
+		// contact is in a company witch share the same mother company than $socid
+		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . "))))";
 		$sql .= " AND UPPER(s.nom)='" . strtoupper(trim($lastname)) . "'";
 		$sql .= " AND UPPER(s.prenom)='" . strtoupper(trim($firstname)) . "'";
-		$sql .= " AND s.entity IN (".$conf->entity.')';
+		$sql .= " AND s.entity IN (" . $conf->entity . ')';
 		
 		$num = 0;
 		
@@ -570,7 +568,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
-		$sql .= " AND s.entity IN (" . getEntity('agsession').')';
+		$sql .= " AND s.entity IN (" . getEntity('agsession') . ')';
 		$sql .= " AND UPPER(s.lastname)='" . strtoupper($lastname) . "'";
 		$sql .= " AND UPPER(s.firstname)='" . strtoupper($firstname) . "'";
 		
@@ -606,7 +604,7 @@ class AgfTraineeLine {
 	public $fk_socpeople;
 	public $date_birth;
 	public $place_birth;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

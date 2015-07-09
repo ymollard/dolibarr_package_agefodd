@@ -51,7 +51,7 @@ class SessionStats extends Stats {
 	 * @param int $userid user for filter
 	 * @return SessionStats
 	 */
-	public function  SessionStats($db, $socid = 0, $mode = '', $userid = 0, $training_id = 0) {
+	public function SessionStats($db, $socid = 0, $mode = '', $userid = 0, $training_id = 0) {
 		global $conf;
 		
 		$this->db = $db;
@@ -82,7 +82,7 @@ class SessionStats extends Stats {
 	 *
 	 * @return array of values
 	 */
-	public function  getNbByYear() {
+	public function getNbByYear() {
 		$sql = "SELECT YEAR(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql .= " FROM " . $this->from . " as main";
 		
@@ -102,7 +102,7 @@ class SessionStats extends Stats {
 	 * @param int $year scan
 	 * @return array of values
 	 */
-	public function  getNbByMonth($year) {
+	public function getNbByMonth($year) {
 		$sql = "SELECT MONTH(main.datef) as dm, COUNT(DISTINCT main.rowid)";
 		$sql .= " FROM " . $this->from . " as main";
 		if (strpos($this->where, 'com.fk_user_com') !== false) {
@@ -124,7 +124,7 @@ class SessionStats extends Stats {
 	 * @param int $year scan
 	 * @return array of values
 	 */
-	public function  getAmountByMonth($year) {
+	public function getAmountByMonth($year) {
 		$sql = "SELECT date_format(main.datef,'%m') as dm, SUM(" . $this->field . ")";
 		$sql .= " FROM " . $this->from . " as main";
 		if (strpos($this->where, 'com.fk_user_com') !== false) {
@@ -146,7 +146,7 @@ class SessionStats extends Stats {
 	 * @param int $year scan
 	 * @return array of values
 	 */
-	public function  getAverageByMonth($year) {
+	public function getAverageByMonth($year) {
 		$sql = "SELECT date_format(main.datef,'%m') as dm, AVG(" . $this->field . ")";
 		$sql .= " FROM " . $this->from . " as main";
 		if (strpos($this->where, 'com.fk_user_com') !== false) {
@@ -165,7 +165,7 @@ class SessionStats extends Stats {
 	 *
 	 * @return array of values
 	 */
-	public function  getAllByYear() {
+	public function getAllByYear() {
 		$sql = "SELECT date_format(main.datef,'%Y') as year, COUNT(DISTINCT main.rowid) as nb, SUM(" . $this->field . ") as total, AVG(" . $this->field . ") as avg";
 		$sql .= " FROM " . $this->from . " as main";
 		if (strpos($this->where, 'com.fk_user_com') !== false) {

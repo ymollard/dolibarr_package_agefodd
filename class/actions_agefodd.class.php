@@ -37,7 +37,7 @@ class ActionsAgefodd {
 	 *
 	 * @param DoliDB $db
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		$this->error = 0;
 		$this->errors = array ();
@@ -52,7 +52,7 @@ class ActionsAgefodd {
 	 * @param object $hookmanager class instance
 	 * @return void
 	 */
-	public function  printSearchForm($parameters, &$object, &$action, $hookmanager) {
+	public function printSearchForm($parameters, &$object, &$action, $hookmanager) {
 		global $langs;
 		$langs->load('agefodd@agefodd');
 		
@@ -71,7 +71,7 @@ class ActionsAgefodd {
 	 * @param object $hookmanager class instance
 	 * @return void
 	 */
-	public function  formObjectOptions($parameters, &$object, &$action, $hookmanager) {
+	public function formObjectOptions($parameters, &$object, &$action, $hookmanager) {
 		global $langs, $conf, $user;
 		
 		// dol_syslog(get_class($this).':: formObjectOptions',LOG_DEBUG);
@@ -88,7 +88,7 @@ class ActionsAgefodd {
 	 * @param object $hookmanager class instance
 	 * @return void
 	 */
-	public function  doActions($parameters, &$object, &$action, $hookmanager) {
+	public function doActions($parameters, &$object, &$action, $hookmanager) {
 		// global $langs,$conf,$user;
 		return 0;
 	}

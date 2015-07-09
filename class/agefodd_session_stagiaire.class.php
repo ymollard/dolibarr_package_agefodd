@@ -30,7 +30,6 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
  * Manage certificate
  */
 class Agefodd_session_stagiaire extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agfsessionsta'; // !< Id that identify managed objects
@@ -57,27 +56,27 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		global $langs;
 		$langs->trans('agefodd@agefodd');
 		
 		$this->db = $db;
 		
-		$this->labelstatut [0] = $langs->trans("TraineeSessionStatusProspect");
-		$this->labelstatut [1] = $langs->trans("TraineeSessionStatusVerbalAgreement");
-		$this->labelstatut [2] = $langs->trans("TraineeSessionStatusConfirm");
-		$this->labelstatut [3] = $langs->trans("TraineeSessionStatusPresent");
-		$this->labelstatut [4] = $langs->trans("TraineeSessionStatusPartPresent");
-		$this->labelstatut [5] = $langs->trans("TraineeSessionStatusNotPresent");
-		$this->labelstatut [6] = $langs->trans("TraineeSessionStatusCancelled");
+		$this->labelstatut[0] = $langs->trans("TraineeSessionStatusProspect");
+		$this->labelstatut[1] = $langs->trans("TraineeSessionStatusVerbalAgreement");
+		$this->labelstatut[2] = $langs->trans("TraineeSessionStatusConfirm");
+		$this->labelstatut[3] = $langs->trans("TraineeSessionStatusPresent");
+		$this->labelstatut[4] = $langs->trans("TraineeSessionStatusPartPresent");
+		$this->labelstatut[5] = $langs->trans("TraineeSessionStatusNotPresent");
+		$this->labelstatut[6] = $langs->trans("TraineeSessionStatusCancelled");
 		
-		$this->labelstatut_short [0] = $langs->trans("TraineeSessionStatusProspectShort");
-		$this->labelstatut_short [1] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
-		$this->labelstatut_short [2] = $langs->trans("TraineeSessionStatusConfirmShort");
-		$this->labelstatut_short [3] = $langs->trans("TraineeSessionStatusPresentShort");
-		$this->labelstatut_short [4] = $langs->trans("TraineeSessionStatusPartPresentShort");
-		$this->labelstatut_short [5] = $langs->trans("TraineeSessionStatusNotPresentShort");
-		$this->labelstatut_short [6] = $langs->trans("TraineeSessionStatusCancelledShort");
+		$this->labelstatut_short[0] = $langs->trans("TraineeSessionStatusProspectShort");
+		$this->labelstatut_short[1] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
+		$this->labelstatut_short[2] = $langs->trans("TraineeSessionStatusConfirmShort");
+		$this->labelstatut_short[3] = $langs->trans("TraineeSessionStatusPresentShort");
+		$this->labelstatut_short[4] = $langs->trans("TraineeSessionStatusPartPresentShort");
+		$this->labelstatut_short[5] = $langs->trans("TraineeSessionStatusNotPresentShort");
+		$this->labelstatut_short[6] = $langs->trans("TraineeSessionStatusCancelledShort");
 		
 		return 1;
 	}
@@ -88,7 +87,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		$sql = "SELECT";
 		$sql .= " fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec, status_in_session";
 		$sql .= " ,fk_soc_link";
@@ -128,7 +127,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $searchAsLink search as soc link
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0) {
+	public function fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0) {
 		global $langs;
 		
 		$linesadded = array ();
@@ -174,10 +173,10 @@ class Agefodd_session_stagiaire extends CommonObject {
 			$num = $this->db->num_rows($resql);
 			
 			$i = 0;
-			while ($obj = $this->db->fetch_object($resql)) {
+			while ( $obj = $this->db->fetch_object($resql) ) {
 				
 				if (! empty($searchAsLink)) {
-					$linesadded [] = $obj->rowid;
+					$linesadded[] = $obj->rowid;
 				}
 				
 				$line = new AgfTraineeSessionLine();
@@ -220,7 +219,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
 				
 				$this->lines[$i] = $line;
-				//dol_syslog(get_class($this) . "::fetch_stagiaire_per_session line=".var_export($line,true));
+				// dol_syslog(get_class($this) . "::fetch_stagiaire_per_session line=".var_export($line,true));
 				$i ++;
 			}
 			$this->db->free($resql);
@@ -267,7 +266,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 					$num = + $this->db->num_rows($resql);
 					
 					$i = 0;
-					while ($obj = $this->db->fetch_object($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
 						
 						if (! in_array($obj->rowid, $linesadded)) {
 							$line = new AgfTraineeSessionLine();
@@ -309,7 +308,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 							
 							$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
 							
-							$this->lines [$line->stagerowid] = $line;
+							$this->lines[$line->stagerowid] = $line;
 							
 							$i ++;
 						}
@@ -338,7 +337,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $trainee_seesion_id Trainee session ID
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id=0) {
+	public function fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id = 0) {
 		global $langs;
 		
 		$linesadded = array ();
@@ -364,10 +363,10 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_opca as staopca";
 		$sql .= " ON s.rowid = staopca.fk_session_agefodd ";
-		if (!empty($socid)) {
-			$sql .= " AND staopca.fk_soc_OPCA=" . $socid .' AND staopca.fk_session_trainee=ss.rowid';
+		if (! empty($socid)) {
+			$sql .= " AND staopca.fk_soc_OPCA=" . $socid . ' AND staopca.fk_session_trainee=ss.rowid';
 		}
-		if (!empty($trainee_seesion_id)) {
+		if (! empty($trainee_seesion_id)) {
 			$sql .= " AND staopca.fk_session_trainee=" . $trainee_seesion_id;
 		}
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sa";
@@ -432,7 +431,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				
 				$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -453,7 +452,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -472,35 +471,35 @@ class Agefodd_session_stagiaire extends CommonObject {
 		}
 		if (empty($this->status_in_session))
 			$this->status_in_session = 0;
-		
-		//Determine for trainne subscrition if there already a propospal link with the customer signed
+			
+			// Determine for trainne subscrition if there already a propospal link with the customer signed
 		if ($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) {
 			$sql = "SELECT propal.rowid ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "propal as propal ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselem ";
-			$sql .= " ON propal.rowid=sesselem.fk_element AND sesselem.element_type='propal' AND sesselem.fk_session_agefodd=".$this->fk_session_agefodd." AND propal.fk_statut=2 ";
+			$sql .= " ON propal.rowid=sesselem.fk_element AND sesselem.element_type='propal' AND sesselem.fk_session_agefodd=" . $this->fk_session_agefodd . " AND propal.fk_statut=2 ";
 			
-			$sql_fk_soc_link='';
-			if (!empty($this->fk_soc_link)) {
-				$sql_fk_soc_link=' propal.fk_soc='.$this->fk_soc_link.' OR ';
+			$sql_fk_soc_link = '';
+			if (! empty($this->fk_soc_link)) {
+				$sql_fk_soc_link = ' propal.fk_soc=' . $this->fk_soc_link . ' OR ';
 			}
 			
-			$sql .= " WHERE (".$sql_fk_soc_link." propal.fk_soc IN (SELECT trainee.fk_soc FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee WHERE trainee.rowid=".$this->fk_stagiaire."))";
+			$sql .= " WHERE (" . $sql_fk_soc_link . " propal.fk_soc IN (SELECT trainee.fk_soc FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee WHERE trainee.rowid=" . $this->fk_stagiaire . "))";
 			
 			dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				$this->lines = array ();
 				$num = $this->db->num_rows($resql);
-				if ($num>0) {
+				if ($num > 0) {
 					$obj = $this->db->fetch_object($resql);
-					if (!empty($obj->rowid)) {
+					if (! empty($obj->rowid)) {
 						$this->status_in_session = 2;
 					}
 				}
-			}else {
-				$this->error= "Error " . $this->db->lasterror();
-				return -1;
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				return - 1;
 			}
 		}
 		
@@ -527,7 +526,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error) {
@@ -594,9 +593,9 @@ class Agefodd_session_stagiaire extends CommonObject {
 			if (! empty($agf_training->certif_duration)) {
 				require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 				$duration_array = explode(':', $agf_training->certif_duration);
-				$year = $duration_array [0];
-				$month = $duration_array [1];
-				$day = $duration_array [2];
+				$year = $duration_array[0];
+				$month = $duration_array[1];
+				$day = $duration_array[2];
 				$certif_dt_end = dol_time_plus_duree($certif_dt_start, $year, 'y');
 				$certif_dt_end = dol_time_plus_duree($certif_dt_end, $month, 'm');
 				$certif_dt_end = dol_time_plus_duree($certif_dt_end, $day, 'd');
@@ -610,7 +609,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 			$resultcertif = $agf_certif->create($user);
 			if ($resultcertif < 0) {
 				$error ++;
-				$this->errors [] = "Error " . $agf_certif->error;
+				$this->errors[] = "Error " . $agf_certif->error;
 			} else {
 				
 				$certif_type_array = $agf_certif->get_certif_type();
@@ -621,7 +620,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 						$result = $agf_certif->set_certif_state($user, $resultcertif, $certif_type_id, 0);
 						if ($result < 0) {
 							$error ++;
-							$this->errors [] = "Error " . $agf_certif->error;
+							$this->errors[] = "Error " . $agf_certif->error;
 						}
 					}
 				}
@@ -649,7 +648,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		$this->db->begin();
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
@@ -659,7 +658,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		$this->fetch($this->id);
@@ -680,12 +679,12 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$result = $session->update($user);
 				if ($result < 0) {
 					$error ++;
-					$this->errors [] = "Error " . $session->error;
+					$this->errors[] = "Error " . $session->error;
 				}
 			}
 		} else {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		// Commit or rollback
@@ -709,7 +708,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -743,7 +742,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -782,7 +781,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $status status
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update_status_by_soc($user, $notrigger = 0, $socid = 0, $status = 0) {
+	public function update_status_by_soc($user, $notrigger = 0, $socid = 0, $status = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -803,7 +802,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -839,12 +838,13 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	public function  getLibStatut($mode = 0) {
+	public function getLibStatut($mode = 0) {
 		return $this->LibStatut($this->status_in_session, $mode);
 	}
 	
 	/**
 	 * Return label of a status (draft, validated, .
+	 *
 	 *
 	 *
 	 *
@@ -854,7 +854,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	public function  LibStatut($statut, $mode = 1) {
+	public function LibStatut($statut, $mode = 1) {
 		global $langs;
 		
 		if (empty($statut))
@@ -864,26 +864,26 @@ class Agefodd_session_stagiaire extends CommonObject {
 		
 		if ($mode == 0) {
 			
-			return $this->labelstatut [$statut];
+			return $this->labelstatut[$statut];
 		}
 		if ($mode == 1) {
-			return $this->labelstatut_short [$statut];
+			return $this->labelstatut_short[$statut];
 		}
 		if ($mode == 2) {
 			if ($statut == 0)
-				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0') . ' ' . $this->labelstatut_short[$statut];
 			if ($statut == 1)
-				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3') . ' ' . $this->labelstatut_short[$statut];
 			if ($statut == 2)
-				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut_short[$statut];
 			if ($statut == 3)
-				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut_short[$statut];
 			if ($statut == 4)
-				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut_short[$statut];
 			if ($statut == 5)
-				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut_short[$statut];
 			if ($statut == 6)
-				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8') . ' ' . $this->labelstatut_short [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8') . ' ' . $this->labelstatut_short[$statut];
 		}
 		if ($mode == 3) {
 			if ($statut == 0)
@@ -903,35 +903,35 @@ class Agefodd_session_stagiaire extends CommonObject {
 		}
 		if ($mode == 4) {
 			if ($statut == 0)
-				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0') . ' ' . $this->labelstatut[$statut];
 			if ($statut == 1)
-				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3') . ' ' . $this->labelstatut[$statut];
 			if ($statut == 2)
-				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut[$statut];
 			if ($statut == 3)
-				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut[$statut];
 			if ($statut == 4)
-				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut[$statut];
 			if ($statut == 5)
-				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut[$statut];
 			if ($statut == 6)
-				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8') . ' ' . $this->labelstatut [$statut];
+				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8') . ' ' . $this->labelstatut[$statut];
 		}
 		if ($mode == 5) {
 			if ($statut == 0)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0');
 			if ($statut == 1)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3');
 			if ($statut == 2)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4');
 			if ($statut == 3)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6');
 			if ($statut == 4)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7');
 			if ($statut == 5)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9');
 			if ($statut == 6)
-				return '<span class="hideonsmartphone">' . $this->labelstatut_short [$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
 	}
 }
@@ -961,7 +961,7 @@ class AgfTraineeSessionLine {
 	public $soccode;
 	public $fk_soc_link;
 	public $fk_soc_requester;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

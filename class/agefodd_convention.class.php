@@ -60,7 +60,7 @@ class Agefodd_convention {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -72,7 +72,7 @@ class Agefodd_convention {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -151,7 +151,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_convention");
@@ -187,7 +187,7 @@ class Agefodd_convention {
 				$resql = $this->db->query($sql);
 				if (! $resql) {
 					$error ++;
-					$this->errors [] = "Error " . $this->db->lasterror();
+					$this->errors[] = "Error " . $this->db->lasterror();
 				}
 			}
 		}
@@ -212,7 +212,7 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($sessid, $socid, $id = 0) {
+	public function fetch($sessid, $socid, $id = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -275,7 +275,7 @@ class Agefodd_convention {
 				if ($resql) {
 					if ($this->db->num_rows($resql)) {
 						while ( $obj = $this->db->fetch_object($resql) ) {
-							$this->line_trainee [] = $obj->fk_agefodd_session_stagiaire;
+							$this->line_trainee[] = $obj->fk_agefodd_session_stagiaire;
 						}
 					}
 				}
@@ -296,7 +296,7 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sessid, $socid = 0) {
+	public function fetch_all($sessid, $socid = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -359,7 +359,7 @@ class Agefodd_convention {
 						if ($this->db->num_rows($resqltrainee)) {
 							
 							while ( $objtrainee = $this->db->fetch_object($resqltrainee) ) {
-								$line->line_trainee [] = $objtrainee->fk_agefodd_session_stagiaire;
+								$line->line_trainee[] = $objtrainee->fk_agefodd_session_stagiaire;
 							}
 						}
 					} else {
@@ -369,7 +369,7 @@ class Agefodd_convention {
 					}
 					$this->db->free($resqltrainee);
 					
-					$this->lines [] = $line;
+					$this->lines[] = $line;
 				}
 			}
 			$this->db->free($resql);
@@ -388,7 +388,7 @@ class Agefodd_convention {
 	 * @param int $socid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_last_conv_per_socity($socid) {
+	public function fetch_last_conv_per_socity($socid) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -420,7 +420,7 @@ class Agefodd_convention {
 	 * @param int $comid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_order_lines($comid) {
+	public function fetch_order_lines($comid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -430,8 +430,8 @@ class Agefodd_convention {
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "commandedet as c";
 		$sql .= " WHERE c.fk_commande = " . $comid;
-		if (!empty($this->only_product_session)) {
-			$sql .= " AND c.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."agefodd_session WHERE rowid=".$this->sessid.")";
+		if (! empty($this->only_product_session)) {
+			$sql .= " AND c.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE rowid=" . $this->sessid . ")";
 		}
 		
 		dol_syslog(get_class($this) . "::fetch_commande_lines ", LOG_DEBUG);
@@ -468,7 +468,7 @@ class Agefodd_convention {
 				$line->total_tva = $obj->total_tva;
 				$line->total_ttc = $obj->total_ttc;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -487,7 +487,7 @@ class Agefodd_convention {
 	 * @param int $factid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_invoice_lines($factid) {
+	public function fetch_invoice_lines($factid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -497,8 +497,8 @@ class Agefodd_convention {
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facturedet as c";
 		$sql .= " WHERE c.fk_facture = " . $factid;
-		if (!empty($this->only_product_session)) {
-			$sql .= " AND c.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."agefodd_session WHERE rowid=".$this->sessid.")";
+		if (! empty($this->only_product_session)) {
+			$sql .= " AND c.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE rowid=" . $this->sessid . ")";
 		}
 		
 		dol_syslog(get_class($this) . "::fetch_invoice_lines ", LOG_DEBUG);
@@ -535,7 +535,7 @@ class Agefodd_convention {
 				$line->total_tva = $obj->total_tva;
 				$line->total_ttc = $obj->total_ttc;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -554,7 +554,7 @@ class Agefodd_convention {
 	 * @param int $propalid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_propal_lines($propalid) {
+	public function fetch_propal_lines($propalid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 		
 		global $langs;
@@ -564,8 +564,8 @@ class Agefodd_convention {
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "propaldet as c";
 		$sql .= " WHERE c.fk_propal = " . $propalid;
-		if (!empty($this->only_product_session)) {
-			$sql .= " AND c.fk_product IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."agefodd_session WHERE rowid=".$this->sessid.")";
+		if (! empty($this->only_product_session)) {
+			$sql .= " AND c.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE rowid=" . $this->sessid . ")";
 		}
 		
 		dol_syslog(get_class($this) . "::fetch_propal_lines ", LOG_DEBUG);
@@ -592,7 +592,7 @@ class Agefodd_convention {
 					// $line->description = $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
 					if (! empty($obj->label) && $obj->label != $prod_static->label) {
 						$line->description = $obj->label . '<BR>' . nl2br($obj->description);
-					} elseif (strpos($obj->description,$prod_static->label) !== false) {
+					} elseif (strpos($obj->description, $prod_static->label) !== false) {
 						$line->description = nl2br($obj->description);
 					} else {
 						$line->description = $prod_static->label . '<BR>' . nl2br($obj->description);
@@ -609,7 +609,7 @@ class Agefodd_convention {
 				$line->total_tva = $obj->total_tva;
 				$line->total_ttc = $obj->total_ttc;
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -628,7 +628,7 @@ class Agefodd_convention {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -664,7 +664,7 @@ class Agefodd_convention {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -723,7 +723,7 @@ class Agefodd_convention {
 		$sql .= " fk_societe=" . $this->socid . ",";
 		$sql .= " fk_agefodd_session=" . $this->sessid . ",";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
-		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null"). ", ";
+		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null") . ", ";
 		$sql .= " only_product_session=" . (isset($this->only_product_session) ? "'" . $this->db->escape($this->only_product_session) . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
@@ -733,7 +733,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		if (! $error) {
 			if (! $notrigger) {
@@ -757,7 +757,7 @@ class Agefodd_convention {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 			
 			if (! $error && count($this->line_trainee) > 0) {
@@ -780,7 +780,7 @@ class Agefodd_convention {
 					$resql = $this->db->query($sql);
 					if (! $resql) {
 						$error ++;
-						$this->errors [] = "Error " . $this->db->lasterror();
+						$this->errors[] = "Error " . $this->db->lasterror();
 					}
 				}
 			}
@@ -807,7 +807,7 @@ class Agefodd_convention {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  remove($id) {
+	public function remove($id) {
 		global $conf, $langs;
 		
 		$this->fetch(0, 0, $id);
@@ -828,7 +828,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention";
@@ -838,7 +838,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			$this->errors [] = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
 		if (! $error && ! empty($file)) {
@@ -846,7 +846,7 @@ class Agefodd_convention {
 			$result = dol_delete_file($file);
 			if (! $result) {
 				$error ++;
-				$this->errors [] = $file . ' : ' . $langs->trans("AgfDocDelError");
+				$this->errors[] = $file . ' : ' . $langs->trans("AgfDocDelError");
 			}
 		}
 		
@@ -870,7 +870,7 @@ class Agefodd_convention {
 	 * @param int $propalid id
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_contact($contactsource, $contacttype) {
+	public function fetch_contact($contactsource, $contacttype) {
 		require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
 		
 		global $langs;
@@ -924,7 +924,7 @@ class AgfConventionLine {
 	public $total_ht;
 	public $total_tva;
 	public $total_ttc;
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }

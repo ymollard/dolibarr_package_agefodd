@@ -407,7 +407,15 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
+			$couleur_rgb_training = agf_hex2rgb($line->trainingcolor);
+			$color_training = '';
+			if ($line->trainingcolor && ((($couleur_rgb_training [0] * 299) + ($couleur_rgb_training [1] * 587) + ($couleur_rgb_training [2] * 114)) / 1000) < 125) {
+				$color_training = ' style="color: #FFFFFF;background: #' . $line->trainingcolor . '"';
+			} else {
+				$color_training=' style="background: #' . $line->trainingcolor . '" ';
+			}
+				
+			print '<td ' . $color_training . '>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 			print '<td>' . $line->ref . '</td>';
 			print '<td>' . $line->training_ref_interne . '</td>';
 			print '<td>' . ($line->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';

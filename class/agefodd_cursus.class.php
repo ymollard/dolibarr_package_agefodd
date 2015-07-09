@@ -30,7 +30,6 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  * Put here description of your class
  */
 class Agefodd_cursus extends CommonObject {
-	protected $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_cursus'; // !< Id that identify managed objects
@@ -55,7 +54,7 @@ class Agefodd_cursus extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function  __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -67,7 +66,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function  create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -87,11 +86,11 @@ class Agefodd_cursus extends CommonObject {
 		
 		if (empty($this->ref_interne)) {
 			$error ++;
-			$this->errors [] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
+			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
 		}
 		if (empty($this->intitule)) {
 			$error ++;
-			$this->errors [] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
+			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
 		}
 		
 		if (! $error) {
@@ -129,7 +128,7 @@ class Agefodd_cursus extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		if (! $error) {
@@ -148,8 +147,8 @@ class Agefodd_cursus extends CommonObject {
 			}
 		}
 		if (! $error) {
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) 			// For avoid conflicts if trigger used
-			{
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+{
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
 					$error ++;
@@ -177,7 +176,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -241,7 +240,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -258,11 +257,11 @@ class Agefodd_cursus extends CommonObject {
 		
 		if (empty($this->ref_interne)) {
 			$error ++;
-			$this->errors [] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
+			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
 		}
 		if (empty($this->intitule)) {
 			$error ++;
-			$this->errors [] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
+			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
 		}
 		
 		if (! $error) {
@@ -288,7 +287,7 @@ class Agefodd_cursus extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		if (! $error) {
@@ -306,8 +305,8 @@ class Agefodd_cursus extends CommonObject {
 		}
 		
 		if (! $error) {
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) 			// For avoid conflicts if trigger used
-			{
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+{
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
 					$error ++;
@@ -336,7 +335,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 		
@@ -364,14 +363,14 @@ class Agefodd_cursus extends CommonObject {
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
-				$this->errors [] = "Error " . $this->db->lasterror();
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 		
 		if (! $error) {
 			// Removed extrafields
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) 			// For avoid conflicts if trigger used
-			{
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+{
 				$result = $this->deleteExtraFields();
 				if ($result < 0) {
 					$error ++;
@@ -400,7 +399,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	public function  createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 		
 		$error = 0;
@@ -438,7 +437,7 @@ class Agefodd_cursus extends CommonObject {
 			return - 1;
 		}
 	}
-	public function  info($id) {
+	public function info($id) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -472,7 +471,7 @@ class Agefodd_cursus extends CommonObject {
 	 *
 	 * @return void
 	 */
-	public function  initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 		
 		$this->ref_interne = '';
@@ -496,7 +495,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function  fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -544,7 +543,7 @@ class Agefodd_cursus extends CommonObject {
 				$line->note_public = $obj->note_public;
 				$line->tms = $this->db->jdate($obj->tms);
 				
-				$this->lines [$i] = $line;
+				$this->lines[$i] = $line;
 				
 				$i ++;
 			}
@@ -569,7 +568,7 @@ class AgfCursusLine {
 	public $note_private;
 	public $note_public;
 	public $tms = '';
-	public function  __construct() {
+	public function __construct() {
 		return 1;
 	}
 }
