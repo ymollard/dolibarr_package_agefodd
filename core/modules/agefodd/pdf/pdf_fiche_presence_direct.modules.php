@@ -258,7 +258,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 				$pdf->line($this->marge_gauche, $nexY, $this->page_largeur-$this->marge_droite, $nexY);
 			
 				$posY = $pdf->GetY();
-				if ($posY > 212) {			
+				if ($posY > 232) {			
 					$pdf->AddPage();
 					$this->_pagehead($pdf, $agf, 1, $outputlangs);
 					$this->_tableau($pdf, $tab_top, 40, 0, $outputlangs, 0, 0);
@@ -337,7 +337,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		$pdf->SetXY($this->posxforthcolumn+3, $tab_top+$tab_height/4);
 		$pdf->MultiCell($this->posxforthcolumn+3,2, $outputlangs->transnoentities(""),'','L');
 		
-		$tab_height=100;
+		$tab_height=110;
 		$tab_top=$tab_top + 40;
 		$h_ligne=6;
 		
