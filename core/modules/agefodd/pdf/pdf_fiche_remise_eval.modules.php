@@ -27,6 +27,7 @@ dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_formateur.class.php');
+require_once ('../class/agefodd_place.class.php');
 require_once ('../class/agefodd_contact.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
@@ -103,6 +104,9 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 		// Recuperation des informations des formateurs
 		$agf_session_trainer = new Agefodd_session_formateur($this->db);
 		$agf_session_trainer->fetch_formateur_per_session($id);
+		
+		$agf_place = new Agefodd_place($this->db);
+		$agf_place->fetch($agf->placeid);
 		
 		// Definition of $dir and $file
 		$dir = $conf->agefodd->dir_output;
@@ -284,19 +288,19 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$posx = $this->marge_droite;
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
-			$this->str = $outputlangs->transnoentities('AgfNumTraining') . ':' . $agf->id;
+			$this->str = $outputlangs->transnoentities('AgfNumTraining') . ' : ' . $agf->id;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posy = $pdf->getY() + 1;
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
-			$this->str = $outputlangs->transnoentities('AgfTraining') . ':' . $agf->intitule_custo;
+			$this->str = $outputlangs->transnoentities('AgfTraining') . ' : ' . $agf->intitule_custo;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posy = $pdf->getY() + 1;
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePresPers');
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres24') . ': ';
 			if ($agf->dated == $agf->datef)
 				$this->str .= dol_print_date($agf->dated);
 			else
@@ -306,7 +310,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres11') .' ' . $agf->placecode;
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres11') .' ' . $agf->placecode . ' '.$agf_place->adresse. ' '.$agf_place->cp.' '.$agf_place->ville;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posy = $pdf->getY() + 10;
 			
@@ -337,8 +341,8 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			}
 			$pdf->SetXY($this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$trainer_str=implode(',',$trainer_arr);
-			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'.$trainer_str, 0, 'L', 0);
+			$trainer_str=implode("\n",$trainer_arr);
+			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'."\n".$trainer_str, 0, 'L', 0);
 			
 			// Incrustation image tampon
 			$tampon_exitst=1;
