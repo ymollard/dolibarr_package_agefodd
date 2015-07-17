@@ -1358,7 +1358,7 @@ class Agsession extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp";
 		$sql .= " ON socp.rowid = s.fk_socpeople_presta";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
-		$sql .= " ON so.rowid = socp.rowid";
+		$sql .= " ON so.rowid = socp.fk_soc";
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " ORDER BY socname";
 		
