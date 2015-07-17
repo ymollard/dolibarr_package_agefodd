@@ -265,7 +265,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && ! $_POST ["stag_upda
 		if (! empty($fk_socpeople_requester))
 			$agf->fk_socpeople_requester = $fk_socpeople_requester;
 		if (! empty($fk_socpeople_presta))
-			$agf->fk_socpeople_requester = $fk_socpeople_presta;
+			$agf->fk_socpeople_presta = $fk_socpeople_presta;
 		if (! empty($color))
 			$agf->color = $color;
 		if (! empty($nb_place))
