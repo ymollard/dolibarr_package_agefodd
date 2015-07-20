@@ -965,8 +965,6 @@ class Agsession extends CommonObject {
 							$newline->trainee_array = $array_trainnee;
 							
 							$this->lines[] = $newline;
-							
-							$add_soc ++;
 						}
 					}
 					$i ++;
@@ -979,8 +977,6 @@ class Agsession extends CommonObject {
 			dol_syslog(get_class($this) . "::fetch_societe_per_session OPCA " . $this->error, LOG_ERR);
 			$error ++;
 		}
-		
-		$num = $num + $add_soc;
 		
 		// Get OPCA Soc of trainee
 		$sql = "SELECT";
@@ -1065,7 +1061,6 @@ class Agsession extends CommonObject {
 							$array_soc[] = $obj->socid;
 							
 							$this->lines[] = $newline;
-							$add_soc ++;
 						}
 					}
 					$i ++;
@@ -1078,8 +1073,6 @@ class Agsession extends CommonObject {
 			dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee " . $this->error, LOG_ERR);
 			$error ++;
 		}
-		
-		$num = $num + $add_soc;
 		
 		// Get session customer
 		$sql = "SELECT";
@@ -1151,7 +1144,6 @@ class Agsession extends CommonObject {
 							$array_soc[] = $obj->socid;
 							
 							$this->lines[] = $newline;
-							$add_soc ++;
 						}
 					}
 					$i ++;
@@ -1164,8 +1156,6 @@ class Agsession extends CommonObject {
 			dol_syslog(get_class($this) . "::fetch_societe_per_session Customer " . $this->error, LOG_ERR);
 			$error ++;
 		}
-		
-		$num = $num + $add_soc;
 		
 		// Get session Trainee USe for doc
 		$sql = "SELECT";
@@ -1255,8 +1245,6 @@ class Agsession extends CommonObject {
 			$error ++;
 		}
 		
-		$num = $num + $add_soc;
-		
 		// Get session requester trainee
 		$sql = "SELECT";
 		$sql .= " DISTINCT so.rowid as socid,";
@@ -1332,7 +1320,6 @@ class Agsession extends CommonObject {
 							}
 							
 							$this->lines[] = $newline;
-							$add_soc ++;
 						}
 					}
 					$i ++;
@@ -1423,7 +1410,6 @@ class Agsession extends CommonObject {
 							}
 							
 							$this->lines[] = $newline;
-							$add_soc ++;
 						}
 					}
 					$i ++;
@@ -1437,9 +1423,8 @@ class Agsession extends CommonObject {
 			$error ++;
 		}
 		
-		$num = $num + $add_soc;
 		if (! $error) {
-			return $num;
+			return count($this->lines);
 		} else {
 			return - 1;
 		}
