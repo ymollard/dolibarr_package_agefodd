@@ -471,7 +471,7 @@ function show_fac($file, $socid, $mdle) {
 				$legende = $langs->trans("AgfFactureAddFacFromPropal") . ' ' . $val;
 				$propal_static = new Propal($db);
 				$propal_static->fetch($key);
-				if ($propal_static->statut == 2) {
+				if ($propal_static->statut == 2 || $propal_static->statut==4) {
 					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				} else {
@@ -501,7 +501,7 @@ function show_fac($file, $socid, $mdle) {
 				$legende = $langs->trans("AgfFactureAddFacFromPropal") . ' ' . $val;
 				$propal_static = new Propal($db);
 				$propal_static->fetch($key);
-				if ($propal_static->statut == 2) {
+				if ($propal_static->statut == 2 || $propal_static->statut==4) {
 					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
 				} else {
