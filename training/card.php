@@ -47,8 +47,8 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
-$objpedamodif=GETPOST('objpedamodif','int');
-$objc=GETPOST('objc','int');
+$objpedamodif = GETPOST('objpedamodif', 'int');
+$objc = GETPOST('objc', 'int');
 
 $agf = new Agefodd($db);
 $extrafields = new ExtraFields($db);
@@ -79,7 +79,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
 	$result = $agf->update($user);
 	
 	if ($result > 0) {
-		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 		exit();
 	} else {
 		setEventMessage($agf->error, 'errors');
@@ -90,7 +90,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
  * Action update (fiche de formation)
 */
 if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$agf = new Agefodd($db);
 		
 		$result = $agf->fetch($id);
@@ -137,13 +137,13 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 		$result = $agf->update($user);
 		
 		if ($result > 0) {
-			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 		exit();
 	}
 }
@@ -152,7 +152,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
  * Action create (fiche formation)
 */
 if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$agf = new Agefodd($db);
 		
 		$agf->intitule = GETPOST('intitule', 'alpha');
@@ -209,7 +209,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 		
 		if (! $error) {
 			
-			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $newid);
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $newid);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -232,22 +232,22 @@ if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalog
 	// Uate objectif pedagogique
 	if (GETPOST('obj_update_x')) {
 		$agf_peda = new Agefodd($db);
-	
+		
 		$result_peda = $agf_peda->fetch_objpeda_per_formation($idforma);
-		if ($result_peda<0) {
-			setEventMessage($agf_peda->error,'errors');
+		if ($result_peda < 0) {
+			setEventMessage($agf_peda->error, 'errors');
 		}
-		foreach($agf_peda->lines as $line) {
+		foreach ( $agf_peda->lines as $line ) {
 			$result = $agf->fetch_objpeda($line->id);
 			
-			$agf->intitule = GETPOST('intitule_'.$line->id, 'alpha');
-			$agf->priorite = GETPOST('priorite_'.$line->id, 'alpha');
+			$agf->intitule = GETPOST('intitule_' . $line->id, 'alpha');
+			$agf->priorite = GETPOST('priorite_' . $line->id, 'alpha');
 			$agf->fk_formation_catalogue = $idforma;
 			$agf->id = $line->id;
 			
 			$result = $agf->update_objpeda($user);
-			if ($result_peda<0) {
-				setEventMessage($agf->error,'errors');
+			if ($result_peda < 0) {
+				setEventMessage($agf->error, 'errors');
 			}
 		}
 	}
@@ -271,7 +271,7 @@ if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalog
 	}
 	
 	if ($result > 0) {
-		Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $idforma."&objpedamodif=1");
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $idforma . "&objpedamodif=1");
 		exit();
 	} else {
 		setEventMessage($agf->error, 'errors');
@@ -286,7 +286,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 			setEventMessage($agf->error, 'errors');
 			$action = '';
 		} else {
-			header("Location: " . $_SERVER ['PHP_SELF'] . '?id=' . $result);
+			header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $result);
 			exit();
 		}
 	}
@@ -327,7 +327,46 @@ if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogu
 	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
 	
 	if ($result > 0) {
-		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
+if ($action == 'fichepedamodule' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
+	// Define output language
+	$outputlangs = $langs;
+	$newlang = GETPOST('lang_id', 'alpha');
+	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
+		$newlang = $object->client->default_lang;
+	if (! empty($newlang)) {
+		$outputlangs = new Translate("", $conf);
+		$outputlangs->setDefaultLang($newlang);
+	}
+	$model = 'fiche_pedago_modules';
+	$file = $model . '_' . $id . '.pdf';
+	
+	// this configuration variable is designed like
+	// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+	if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE)) {
+		$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+		if (is_array($modelarray) && count($modelarray) > 0) {
+			foreach ( $modelarray as $modeloveride ) {
+				$modeloverridearray = explode(':', $modeloveride);
+				if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+					if ($modeloverridearray[0] == $model) {
+						$model = $modeloverridearray[1];
+					}
+				}
+			}
+		}
+	}
+	
+	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
+	
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 		exit();
 	} else {
 		setEventMessage($agf->error, 'errors');
@@ -340,9 +379,9 @@ if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogu
 $title = ($action == 'create' ? $langs->trans("AgfMenuCatNew") : $langs->trans("AgfCatalogDetail"));
 
 llxHeader('', $title, '', '', '', '', array (
-'/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js',
+		'/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js' 
 ), array (
-'/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css',
+		'/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css' 
 ));
 
 $form = new Form($db);
@@ -354,8 +393,8 @@ $formagefodd = new FormAgefodd($db);
 if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	print_fiche_titre($langs->trans("AgfMenuCatNew"));
 	
-	print '<form name="create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
+	print '<form name="create" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="create_confirm">';
 	
 	print '<table class="border" width="100%">';
@@ -487,25 +526,24 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 			// Affichage en mode "édition"
 			if ($action == 'edit') {
 				
-				
-				if ($objpedamodif==1) {
-					//print 'toto;';
+				if ($objpedamodif == 1) {
+					// print 'toto;';
 					print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
-							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;'."\n";
-					if (!empty($objc)) {
-						print '		$(documentBody).animate({scrollTop: $("#priorite_new").offset().top}, 500,\'easeInOutCubic\');'."\n";
+							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;' . "\n";
+					if (! empty($objc)) {
+						print '		$(documentBody).animate({scrollTop: $("#priorite_new").offset().top}, 500,\'easeInOutCubic\');' . "\n";
 					} else {
-						print '		$(documentBody).animate({scrollTop: $("#obj_peda").offset().top}, 500,\'easeInOutCubic\');'."\n";
+						print '		$(documentBody).animate({scrollTop: $("#obj_peda").offset().top}, 500,\'easeInOutCubic\');' . "\n";
 					}
 					print '	});
 					});
 					</script> ';
 				}
 				
-				print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-				print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
+				print '<form name="update" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+				print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 				print '<input type="hidden" name="action" value="update">';
 				print '<input type="hidden" name="id" value="' . $id . '">';
 				
@@ -549,7 +587,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				
 				print '<tr><td>' . $langs->trans("Color") . '</td>';
 				print '<td><input id="colorpicker" type="text" size="8" name="color" value="' . $agf->color . '" /></td></tr>';
-					
+				
 				print '<script type="text/javascript" language="javascript">
 						$(document).ready(function() {
 						$("#colorpicker").css("backgroundColor", \'#' . $agf->color . '\');
@@ -643,13 +681,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print_barre_liste($langs->trans("AgfObjPeda"), "", "", "", "", "", '', 0);
 				
 				print '<div class="tabBar">';
-				print '<form name="obj_peda" id="obj_peda" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-				print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+				print '<form name="obj_peda" id="obj_peda" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+				print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 				print '<input type="hidden" name="action" value="obj_update">' . "\n";
 				print '<input type="hidden" name="idforma" value="' . $id . '">' . "\n";
 				print '<table class="border" width="100%">';
 				print '<tr>';
-				if (count($agf_peda->lines)>0) {
+				if (count($agf_peda->lines) > 0) {
 					print '<td align="center" width="50">' . $langs->trans("AgfObjPoids") . '</td>';
 					print '<td>' . $langs->trans("AgfObjDesc") . '</td>';
 				} elseif (empty($objc)) {
@@ -657,12 +695,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 				print '<td>';
 				if (empty($objc) && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-					print '&nbsp;<a href="' . $_SERVER ['PHP_SELF'] . '?action=edit&amp;id=' . $agf->id . '&amp;objc=1&objpedamodif=1">';
+					print '&nbsp;<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $agf->id . '&amp;objc=1&objpedamodif=1">';
 					print img_edit_add($langs->trans("AgfNewObjAdd")) . "</a>";
 				}
 				print '</td>';
 				print '</tr>';
-				
 				
 				foreach ( $agf_peda->lines as $line ) {
 					print '<tr><td align="center" width="40">' . "\n";
@@ -672,12 +709,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					
 					print "<td>";
 					
-						if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-							print '<a href="' . $_SERVER['PHP_SELF'] . '?action=obj_update&idforma=' . $id . '&objpedaid=' . $line->id . '&obj_remove_x=1">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
-						}
+					if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=obj_update&idforma=' . $id . '&objpedaid=' . $line->id . '&obj_remove_x=1">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
+					}
 					
 					print '</tr>' . "\n";
-					$priorite=$line->priorite;
+					$priorite = $line->priorite;
 				}
 				if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
 					print '<tr><td colspan="3">';
@@ -686,9 +723,9 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 				
 				// New Objectif peda line
-				if (!empty($objc)) {
+				if (! empty($objc)) {
 					print '<table class="border" width="100%">';
-					$priorite++;
+					$priorite ++;
 					print '<tr><td align="center" width="40">' . "\n";
 					print '<input name="priorite_new" id="priorite_new" class="flat" size="4" value="' . $priorite . '"></td>';
 					print '<td width="400"><input name="intitule_new" class="flat" size="50"></td>' . "\n";
@@ -697,7 +734,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 						print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="obj_add" alt="' . $langs->trans("AgfNewObjAdd") . '">';
 					}
 					print '</td></tr>' . "\n";
-					
 				}
 				print '</table>' . "\n";
 				print '</form>' . "\n";
@@ -710,14 +746,14 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				
 				// confirm delete
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
+					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
 				
 				// Confirm clone
 				if ($action == 'clone') {
-					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
+					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
@@ -729,7 +765,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					if ($action == 'active')
 						$value = 0;
 					
-					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
@@ -757,9 +793,9 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print '<tr><td width="20%">' . $langs->trans("AgfCertificateDuration") . '</td><td>';
 					if (! empty($agf->certif_duration)) {
 						$duration_array = explode(':', $agf->certif_duration);
-						$year = $duration_array [0];
-						$month = $duration_array [1];
-						$day = $duration_array [2];
+						$year = $duration_array[0];
+						$month = $duration_array[1];
+						$day = $duration_array[2];
 					} else {
 						$year = $month = $day = 0;
 					}
@@ -897,17 +933,29 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				
 				print "</table>";
 				
+				print '&nbsp';
+				print '<table class="border" width="100%">';
+				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
+				
 				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $id . '.pdf')) {
-					print '&nbsp';
-					print '<table class="border" width="100%">';
-					print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
+					
 					// afficher
 					$legende = $langs->trans("AgfDocOpen");
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogique") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 					print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
-					print '</td></tr></table>';
+					print '</td></tr>';
 				}
+				
+				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $id . '.pdf')) {
+					$legende = $langs->trans("AgfDocOpen");
+					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogiqueModule") . '</td><td> ';
+					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+					print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					print '</td></tr>';
+				}
+				
+				print '</table>';
 				
 				print '</div>';
 			}
@@ -924,17 +972,17 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 print '<div class="tabsAction">';
 
-if ($_GET ["action"] != 'create' && $_GET ["action"] != 'edit') {
+if ($_GET["action"] != 'create' && $_GET["action"] != 'edit') {
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('ToClone') . '</a>';
 	}
 	
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-		print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
+		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
@@ -942,7 +990,7 @@ if ($_GET ["action"] != 'create' && $_GET ["action"] != 'edit') {
 	if ($agf->archive == 0) {
 		$button_action = $langs->trans('AgfArchiver');
 		if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-			print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=archive&id=' . $id . '">';
+			print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=archive&id=' . $id . '">';
 			print $button_action . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $button_action . '</a>';
@@ -950,7 +998,7 @@ if ($_GET ["action"] != 'create' && $_GET ["action"] != 'edit') {
 	} else {
 		$button_action = $langs->trans('AgfActiver');
 		if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-			print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=active&id=' . $id . '">';
+			print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=active&id=' . $id . '">';
 			print $button_action . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $button_action . '</a>';
@@ -958,7 +1006,8 @@ if ($_GET ["action"] != 'create' && $_GET ["action"] != 'edit') {
 	}
 	
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=fichepeda&id=' . $id . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=fichepeda&id=' . $id . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=fichepedamodule&id=' . $id . '">' . $langs->trans('AgfPrintFichePedagoModules') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
 	}

@@ -5,6 +5,7 @@ English Dolibarr ChangeLog
 -Fix : Can option to output only product line on convention
 -New : Add status DONE for training session
 -New : add colors on training
+-New : add modules in training catalogues
 
 ***** ChangeLog for 2.1.13 compared to 2.1.12 *****
 -Fix : Fix session agenda bug

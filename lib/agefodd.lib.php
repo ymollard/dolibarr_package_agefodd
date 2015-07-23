@@ -56,6 +56,12 @@ function training_prepare_head($object) {
 	$hselected = $h;
 	$h ++;
 	
+	$head [$h] [0] = dol_buildpath('/agefodd/training/modules.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("AgfTrainingModule");
+	$head [$h] [2] = 'trainingmodule';
+	$hselected = $h;
+	$h ++;
+	
 	$head [$h] [0] = dol_buildpath('/agefodd/training/note.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfNote");
 	$head [$h] [2] = 'notes';
