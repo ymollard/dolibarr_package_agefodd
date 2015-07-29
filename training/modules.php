@@ -103,7 +103,7 @@ if ($action == "add") {
 /*
  * VIEW
 */
-$title = $langs->trans('Module103258Name');
+$title = $langs->trans('AgfTrainingModule');
 
 llxHeader('', $title);
 
@@ -144,7 +144,7 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 	foreach ( $object_modules->lines as $line_chapter ) {
 		print '<table class="border" width="100%">';
 		
-		if ($user->rights->referenceletters->write) {
+		if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
 			print '<tr><td rowspan="5" width="20px">';
 			print '<a href="' . dol_buildpath('/agefodd/training/modules_chapters.php', 1) . '?id=' . $line_chapter->id . '&fk_formation_catalogue='.$object->id.'&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 			print '<a href="' . dol_buildpath('/agefodd/training/modules_chapters.php', 1) . '?id=' . $line_chapter->id . '&fk_formation_catalogue='.$object->id.'&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
@@ -180,7 +180,7 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 		
 		print '<tr>';
 		print '<td  width="20%">';
-		print $langs->trans('Text');
+		print $langs->trans('AgfContenu');
 		print '</td>';
 		print '<td>';
 		print $line_chapter->content_text;

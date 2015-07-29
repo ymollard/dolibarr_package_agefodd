@@ -23,6 +23,7 @@
  * \brief PDF for explanation sheet
  */
 dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+require_once ('../class/agefodd_formation_catalogue_modules.class.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_contact.class.php');
@@ -113,6 +114,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			if (! empty($courrier)) {
 				$agf_session->fetch($courrier);
 			}
+			
+			$object_modules = new Agefoddformationcataloguemodules($this->db);
+			$result = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array (
+					't.fk_formation_catalogue' => $id
+			));
 		}
 		
 		// Definition of $dir and $file
@@ -335,9 +341,20 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				/**
 				 * *** Programme ****
 				 */
+				$programme='';
+				if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
+					$programme.='<ul>';
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+					foreach ( $object_modules->lines as $line_chapter ) {
+						$programme .= '<li>'.$line_chapter->title;
+					}
+					$programme.='</ul>';
+				} else {
+					$programme=$agf->programme;
+				}
 				
 				//Determine if jump pages is needed
-				$height = $this->getRealHeightLine($agf->programme);
+				$height = $this->getRealHeightLine($programme);
 				//print 'Real $height='.$height;
 				//print '<BR>';
 				
@@ -347,48 +364,48 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				if ($height > $height_left) {
 					
-					//Save this value bacause reset into this method
+				//Save this value bacause reset into this method
 					$header_height=$this->hearder_height_custom;
-					
+						
 					//Check if needed to reduce text font size to fitt all in one page
-					$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs, $fontsize);
+					$height = $this->getTotalHeightLine($programme,$agf, $outputlangs, $fontsize);
 					/*print 'TOTAL $height='.$height;
 					print '<BR>';
 					print ' $fontsize='.$fontsize;
-					print '<BR>';*/
-					
-					$total_height_left = $this->page_hauteur - $header_height - 80;
-					
+					 print '<BR>';*/
+							
+					 $total_height_left = $this->page_hauteur - $header_height - 80;
+						
 					//print ' $$total_height_left='.$total_height_left;
 					//print '<BR>';
 					if ($height>$total_height_left)	{
-						$allin_a_page=false;
-						
-						while ($allin_a_page!==true && $fontsize>0) {
-							$fontsize--;
+					$allin_a_page=false;
+				
+					while ($allin_a_page!==true && $fontsize>0) {
+					$fontsize--;
 							
-							$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs,$fontsize);
-							/*print '$fontsize='.$fontsize;
-							print '$height='.$height;
-							print '<BR>';*/
-							if ($height<=$total_height_left)	{
-								$allin_a_page=true;
-							} 							
-						}
-					}
-					$this->hearder_height_custom=$header_height;
-					
-					$this->_pagefoot($agf, $outputlangs);
-					$this->pdf->AddPage();
-					$this->_pagehead($agf, $outputlangs);
-					$posY = $this->pdf->GetY()+5;
+						$height = $this->getTotalHeightLine($programme,$agf, $outputlangs,$fontsize);
+						/*print '$fontsize='.$fontsize;
+						print '$height='.$height;
+						print '<BR>';*/
+						if ($height<=$total_height_left)	{
+						$allin_a_page=true;
+						 }
+						 }
+						 }
+						 $this->hearder_height_custom=$header_height;
+						 	
+						 $this->_pagefoot($agf, $outputlangs);
+						 $this->pdf->AddPage();
+						 $this->_pagehead($agf, $outputlangs);
+						 $posY = $this->pdf->GetY()+5;
 				} else {
-					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
 				
 				/**
-				 * *** Programme ****
-				 */
+				* *** Programme ****
+				*/
 				
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+1);
 				$this->pdf->SetXY($posX, $posY);
@@ -401,10 +418,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				$this->pdf->SetXY($posX, $posY);
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize+2);
-				$this->str = $agf->programme;
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
+				$this->str = $programme;
 				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
+				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				
 				

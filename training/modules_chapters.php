@@ -222,7 +222,7 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
-	print $langs->trans('Text');
+	print $langs->trans('AgfContenu');
 	print '</td>';
 	print '<td>';
 	require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';

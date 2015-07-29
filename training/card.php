@@ -36,6 +36,7 @@ require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+require_once ('../class/agefodd_formation_catalogue_modules.class.php');
 
 require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
 
@@ -906,7 +907,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '}' . "\n";
 				print '</script>' . "\n";
 				
-				print '<tr class="liste_titre"><td valign="top">' . $langs->trans("AgfProgramme") . '</td>';
+				print '<tr class="liste_titre"><td valign="top">' . $langs->trans("AgfProgramme").$form->textwithpicto('', $langs->trans("AgfProgrammeHelp"), 1, 'help').'</td>';
 				print '<td align="left" colspan=2>';
 				print '<a href="javascript:DivStatus(\'prog\');" title="afficher detail" style="font-size:14px;">+</a></td></tr>';
 				if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
@@ -917,6 +918,35 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				if (empty($agf->programme))
 					$programme = $langs->trans("AgfUndefinedProg");
 				print '<tr><td></td><td><div id="prog" style="display:none;">' . $programme . '</div></td></tr>';
+				
+				$object_modules = new Agefoddformationcataloguemodules($db);
+				$result = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array (
+						't.fk_formation_catalogue' => $id
+				));
+				if (count($object_modules->lines)>0) {
+					print '<script type="text/javascript">' . "\n";
+					print 'function DivStatus( div_){' . "\n";
+					print '	var Obj = document.getElementById( div_);' . "\n";
+					print '	if( Obj.style.display=="none"){' . "\n";
+					print '		Obj.style.display ="block";' . "\n";
+					print '	}' . "\n";
+					print '	else{' . "\n";
+					print '		Obj.style.display="none";' . "\n";
+					print '	}' . "\n";
+					print '}' . "\n";
+					print '</script>' . "\n";
+					
+					print '<tr class="liste_titre"><td valign="top">' . $langs->trans("AgfProgrammeModules").$form->textwithpicto('', $langs->trans("AgfProgrammeModulesHelp"), 1, 'help'). '</td>';
+					print '<td align="left" colspan=2>';
+					print '<a href="javascript:DivStatus(\'progmod\');" title="afficher detail" style="font-size:14px;">+</a></td></tr>';
+					$programme='';
+					foreach($object_modules->lines as $line_mod) {
+						$programme .= $line_mod->title.'<br />';
+					}
+					print '<tr><td></td><td><div id="progmod" style="display:none;">' . $programme . '</div></td></tr>';
+				}
+				
+				
 				
 				print '</table>';
 				print '&nbsp';

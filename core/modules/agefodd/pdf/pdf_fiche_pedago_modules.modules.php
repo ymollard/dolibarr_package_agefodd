@@ -341,9 +341,20 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				/**
 				 * *** Programme ****
 				 */
+				$programme='';
+				if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
+					$programme.='<ul>';
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+					foreach ( $object_modules->lines as $line_chapter ) {
+						$programme .= '<li>'.$line_chapter->title;
+					}
+					$programme.='</ul>';
+				} else {
+					$programme=$agf->programme;
+				}
 				
 				//Determine if jump pages is needed
-				$height = $this->getRealHeightLine($agf->programme);
+				$height = $this->getRealHeightLine($programme);
 				//print 'Real $height='.$height;
 				//print '<BR>';
 				
@@ -357,7 +368,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 					$header_height=$this->hearder_height_custom;
 					
 					//Check if needed to reduce text font size to fitt all in one page
-					$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs, $fontsize);
+					$height = $this->getTotalHeightLine($programme,$agf, $outputlangs, $fontsize);
 					/*print 'TOTAL $height='.$height;
 					print '<BR>';
 					print ' $fontsize='.$fontsize;
@@ -373,7 +384,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 						while ($allin_a_page!==true && $fontsize>0) {
 							$fontsize--;
 							
-							$height = $this->getTotalHeightLine($agf->programme,$agf, $outputlangs,$fontsize);
+							$height = $this->getTotalHeightLine($programme,$agf, $outputlangs,$fontsize);
 							/*print '$fontsize='.$fontsize;
 							print '$height='.$height;
 							print '<BR>';*/
@@ -407,10 +418,10 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				$this->pdf->SetXY($posX, $posY);
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize+2);
-				$this->str = $agf->programme;
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
+				$this->str = $programme;
 				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
+				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				
 				
@@ -502,21 +513,35 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 						
 						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+2);
 						
-						$this->pdf->MultiCell(0, 5, $line_chapter->title.' - '.$line_chapter->duration.' h', 0, 'L', false, 1, $posX, $posY, true, 0, 0);
+						if (!empty($line_chapter->duration)) {
+							$str_duration=' - '.$line_chapter->duration.' h';
+						}else {
+							$str_duration='';
+						}
+						
+						$this->pdf->MultiCell(0, 5, $line_chapter->title.$str_duration, 0, 'L', false, 1, $posX, $posY, true, 0, 0);
 						$posY = $this->pdf->GetY()+2;
 						
-						$this->pdf->SetXY($posX, $posY);
-						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-						$this->pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfObjPeda'), 0, 'L', false, 1, $posX, $posY, true, 0, 0);
-						$posY = $this->pdf->GetY()+1;
-						$this->pdf->SetXY($posX, $posY);
-						$this->pdf->MultiCell(0, 0, $line_chapter->obj_peda, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
-						$posY = $this->pdf->GetY();
+						if (!empty($line_chapter->obj_peda)) {
+							$this->pdf->SetXY($posX, $posY);
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+							$this->pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfObjPeda'), 0, 'L', false, 1, $posX, $posY, true, 0, 0);
+							$posY = $this->pdf->GetY()+1;
+							$this->pdf->SetXY($posX, $posY);
+							$this->pdf->MultiCell(0, 0, $line_chapter->obj_peda, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
+							$posY = $this->pdf->GetY()+3;
+						}
 						
-						$this->pdf->SetXY($posX, $posY);
-						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-						$this->pdf->MultiCell(0, 0, $line_chapter->content_text, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
-						$posY = $this->pdf->GetY()+6;
+						if (!empty($line_chapter->content_text)) {
+							$this->pdf->SetXY($posX, $posY);
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+							$this->pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfContenu'), 0, 'L', false, 1, $posX, $posY, true, 0, 0);
+							$posY = $this->pdf->GetY()+1;
+							$this->pdf->SetXY($posX, $posY);
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+							$this->pdf->MultiCell(0, 0, $line_chapter->content_text, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
+							$posY = $this->pdf->GetY()+6;
+						}
 					}
 				}
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
