@@ -63,6 +63,8 @@ if ($action == "add") {
 	$object->fk_formation_catalogue = $fk_formation_catalogue;
 	$object->title = GETPOST('moduletitle');
 	$object->content_text = GETPOST('content_text');
+	$object->duration = GETPOST('duration');
+	$object->obj_peda = GETPOST('obj_peda');
 	$object->sort_order = GETPOST('sort_order');
 	$object->status=1;
 	
@@ -82,6 +84,8 @@ if ($action == "add") {
 	
 	$object->title = GETPOST('moduletitle');
 	$object->content_text = GETPOST('content_text');
+	$object->duration = GETPOST('duration');
+	$object->obj_peda = GETPOST('obj_peda');
 	$object->sort_order = GETPOST('sort_order');
 	
 	$result = $object->update($user);
@@ -191,6 +195,30 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	print '<input type="text" name="moduletitle" size="20" value="' . $object->title . '"/>';
 	print '</td>';
 	print '</tr>';
+	
+	print '<td width="20%">';
+	print $langs->trans('AgfPDFFichePeda1');
+	print '</td>';
+	print '<td>';
+	print '<input type="text" name="duration" size="2" value="' . $object->duration . '"/>';
+	print '</td>';
+	print '</tr>';
+	
+	print '<tr>';
+	print '<td width="20%">';
+	print $langs->trans('AgfObjPeda');
+	print '</td>';
+	print '<td>';
+	require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+	$nbrows = ROWS_2;
+	if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+		$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+	$enable = (isset($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING) ? $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING : 0);
+	$doleditor = new DolEditor('obj_peda', $object->obj_peda, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+	$doleditor->Create();
+	print '</td>';
+	print '</tr>';
+	
 	
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';

@@ -69,6 +69,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 	public $sort_order;
 	public $title;
 	public $content_text;
+	public $duration;
+	public $obj_peda;
 	public $status;
 	public $import_key;
 	public $fk_user_author;
@@ -120,6 +122,12 @@ class Agefoddformationcataloguemodules extends CommonObject
 		if (isset($this->content_text)) {
 			 $this->content_text = trim($this->content_text);
 		}
+		if (isset($this->duration)) {
+			 $this->duration = trim($this->duration);
+		}
+		if (isset($this->obj_peda)) {
+			 $this->obj_peda = trim($this->obj_peda);
+		}
 		if (isset($this->status)) {
 			 $this->status = trim($this->status);
 		}
@@ -146,6 +154,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 		$sql.= 'sort_order,';
 		$sql.= 'title,';
 		$sql.= 'content_text,';
+		$sql.= 'duration,';
+		$sql.= 'obj_peda,';
 		$sql.= 'status,';
 		$sql.= 'import_key,';
 		$sql.= 'fk_user_author,';
@@ -160,6 +170,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 		$sql .= ' '.(! isset($this->sort_order)?'NULL':$this->sort_order).',';
 		$sql .= ' '.(! isset($this->title)?'NULL':"'".$this->db->escape($this->title)."'").',';
 		$sql .= ' '.(! isset($this->content_text)?'NULL':"'".$this->db->escape($this->content_text)."'").',';
+		$sql .= ' '.(! isset($this->duration)?'NULL':"'".$this->db->escape($this->duration)."'").',';
+		$sql .= ' '.(! isset($this->obj_peda)?'NULL':"'".$this->db->escape($this->obj_peda)."'").',';
 		$sql .= ' '.(! isset($this->status)?'NULL':$this->status).',';
 		$sql .= ' '.(! isset($this->import_key)?'NULL':"'".$this->db->escape($this->import_key)."'").',';
 		$sql .= ' '.$user->id.',';
@@ -224,6 +236,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 		$sql .= " t.sort_order,";
 		$sql .= " t.title,";
 		$sql .= " t.content_text,";
+		$sql .= " t.duration,";
+		$sql .= " t.obj_peda,";
 		$sql .= " t.status,";
 		$sql .= " t.import_key,";
 		$sql .= " t.fk_user_author,";
@@ -252,6 +266,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 				$this->sort_order = $obj->sort_order;
 				$this->title = $obj->title;
 				$this->content_text = $obj->content_text;
+				$this->duration = $obj->duration;
+				$this->obj_peda = $obj->obj_peda;
 				$this->status = $obj->status;
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
@@ -299,6 +315,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 		$sql .= " t.sort_order,";
 		$sql .= " t.title,";
 		$sql .= " t.content_text,";
+		$sql .= " t.duration,";
+		$sql .= " t.obj_peda,";
 		$sql .= " t.status,";
 		$sql .= " t.import_key,";
 		$sql .= " t.fk_user_author,";
@@ -345,6 +363,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 				$line->sort_order = $obj->sort_order;
 				$line->title = $obj->title;
 				$line->content_text = $obj->content_text;
+				$line->duration = $obj->duration;
+				$line->obj_peda = $obj->obj_peda;
 				$line->status = $obj->status;
 				$line->import_key = $obj->import_key;
 				$line->fk_user_author = $obj->fk_user_author;
@@ -398,6 +418,12 @@ class Agefoddformationcataloguemodules extends CommonObject
 		if (isset($this->content_text)) {
 			 $this->content_text = trim($this->content_text);
 		}
+		if (isset($this->duration)) {
+			 $this->duration = trim($this->duration);
+		}
+		if (isset($this->obj_peda)) {
+			 $this->obj_peda = trim($this->obj_peda);
+		}
 		if (isset($this->status)) {
 			 $this->status = trim($this->status);
 		}
@@ -424,6 +450,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 		$sql .= ' sort_order = '.(isset($this->sort_order)?$this->sort_order:"null").',';
 		$sql .= ' title = '.(isset($this->title)?"'".$this->db->escape($this->title)."'":"null").',';
 		$sql .= ' content_text = '.(isset($this->content_text)?"'".$this->db->escape($this->content_text)."'":"null").',';
+		$sql .= ' duration = '.(isset($this->duration)?"'".$this->db->escape($this->duration)."'":"null").',';
+		$sql .= ' obj_peda = '.(isset($this->obj_peda)?"'".$this->db->escape($this->obj_peda)."'":"null").',';
 		$sql .= ' status = '.(isset($this->status)?$this->status:"null").',';
 		$sql .= ' import_key = '.(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").',';
 		$sql .= ' fk_user_author = '.(isset($this->fk_user_author)?$this->fk_user_author:"null").',';
@@ -579,6 +607,8 @@ class Agefoddformationcataloguemodules extends CommonObject
 		$this->sort_order = '';
 		$this->title = '';
 		$this->content_text = '';
+		$this->duration = '';
+		$this->obj_peda = '';
 		$this->status = '';
 		$this->import_key = '';
 		$this->fk_user_author = '';
@@ -643,6 +673,8 @@ class AgefoddformationcataloguemodulesLine
 	public $sort_order;
 	public $title;
 	public $content_text;
+	public $duration;
+	public $obj_peda;
 	public $status;
 	public $import_key;
 	public $fk_user_author;

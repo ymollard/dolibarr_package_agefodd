@@ -73,7 +73,7 @@ $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 if ($action == "add") {
 	$object->title = $moduletitle;
 	
-	$extrafields->setOptionalsFromPost($extralabels, $object);
+	//$extrafields->setOptionalsFromPost($extralabels, $object);
 	
 	$result = $object->create($user);
 	if ($result < 0) {
@@ -157,6 +157,24 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 		print '</td>';
 		print '<td>';
 		print $line_chapter->title;
+		print '</td>';
+		print '</tr>';
+		
+		print '<tr>';
+		print '<td  width="20%">';
+		print $langs->trans('AgfPDFFichePeda1');
+		print '</td>';
+		print '<td>';
+		print price($line_chapter->duration);
+		print '</td>';
+		print '</tr>';
+		
+		print '<tr>';
+		print '<td  width="20%">';
+		print $langs->trans('AgfObjPeda');
+		print '</td>';
+		print '<td>';
+		print $line_chapter->obj_peda;
 		print '</td>';
 		print '</tr>';
 		

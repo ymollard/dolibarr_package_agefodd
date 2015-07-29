@@ -495,20 +495,27 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				$posY = $this->pdf->GetY()+10;
 				$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 				if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 					foreach ( $object_modules->lines as $line_chapter ) {
 						
 						$this->pdf->SetXY($posX, $posY);
 						
 						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size+2);
-						$this->pdf->MultiCell(0, 5, $line_chapter->title, 0, 'L', '', '2', '', '', '', '', 0);
-						$posY = $this->pdf->GetY()+3;
 						
+						$this->pdf->MultiCell(0, 5, $line_chapter->title.' - '.$line_chapter->duration.' h', 0, 'L', false, 1, $posX, $posY, true, 0, 0);
+						$posY = $this->pdf->GetY()+2;
 						
-						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 						$this->pdf->SetXY($posX, $posY);
-						$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+						$this->pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfObjPeda'), 0, 'L', false, 1, $posX, $posY, true, 0, 0);
+						$posY = $this->pdf->GetY()+1;
+						$this->pdf->SetXY($posX, $posY);
+						$this->pdf->MultiCell(0, 0, $line_chapter->obj_peda, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
+						$posY = $this->pdf->GetY();
 						
-						$this->pdf->MultiCell(0, 5, $line_chapter->content_text, 0, 'L', '', '2', '', '', '', '', $ishtml);
+						$this->pdf->SetXY($posX, $posY);
+						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+						$this->pdf->MultiCell(0, 0, $line_chapter->content_text, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
 						$posY = $this->pdf->GetY()+6;
 					}
 				}

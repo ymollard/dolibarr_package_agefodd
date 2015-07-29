@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue_modules (
   sort_order integer NOT NULL DEFAULT '1',
   title varchar(200) NOT NULL,
   content_text text,
+  duration double,
+  obj_peda text,
   status integer NOT NULL DEFAULT '1',
   import_key varchar(100) DEFAULT NULL,
   fk_user_author integer NOT NULL,
