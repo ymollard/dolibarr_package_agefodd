@@ -237,15 +237,15 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size); // $this->pdf->SetFont('Arial','',9);
 				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
-				/*for($y = 0; $y < count($agf->lines); $y ++) {
+				for($y = 0; $y < count($agf->lines); $y ++) {
 				 	
 				$this->pdf->SetXY($posX, $posY);
 				$hauteur = dol_nboflines_bis($agf->lines [$y]->intitule, 100) * 4;
 					
 				$this->pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf->lines [$y]->priorite.'.   '.$agf->lines [$y]->intitule), 0, 'L');
 				$posY= $this->pdf->GetY();
-				}*/
-				$obj_peda_array=array();
+				}
+				/*$obj_peda_array=array();
 				for($y = 0; $y < count($agf->lines); $y ++) {
 						
 					$this->pdf->SetXY($posX, $posY);
@@ -256,7 +256,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 					$obj_peda_array_str.=implode('  '.$this->pdf->unichr(149).' ',$obj_peda_array);
 						
 					$this->pdf->MultiCell($width, 0, $outputlangs->convToOutputCharset($obj_peda_array_str), 0, 'L');
-				}
+				}*/
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				
 				/**
