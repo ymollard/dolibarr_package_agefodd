@@ -1211,28 +1211,28 @@ class FormAgefodd extends Form {
 		$out = '<input id="' . $htmlname . '" type="text" size="8" name="' . $htmlname . '" value="' . $set_color . '" />';
 		
 		$out .= '<script type="text/javascript" language="javascript">
-			$(document).ready(public function () {
+			$(document).ready(function() {
 			$("#' . $htmlname . '").css("backgroundColor", \'#' . $set_color . '\');
 				$("#' . $htmlname . '").ColorPicker({
 					color: \'#' . $set_color . '\',
-						onShow: public function  (colpkr) {
+						onShow:function(colpkr) {
 						$(colpkr).fadeIn(500);
 						return false;
 	},
-						onHide: public function  (colpkr) {
+						onHide:function(colpkr) {
 						$(colpkr).fadeOut(500);
 						return false;
 	},
-						onChange: public function  (hsb, hex, rgb) {
+						onChange:function(hsb, hex, rgb) {
 						$("#' . $htmlname . '").css("backgroundColor", \'#\' + hex);
 							$("#' . $htmlname . '").val(hex);
 	},
-								onSubmit: public function  (hsb, hex, rgb) {
+								onSubmit:function(hsb, hex, rgb) {
 								$("#' . $htmlname . '").val(hex);
 	}
 	});
 	})
-									.bind(\'keyup\', public function (){
+									.bind(\'keyup\',function(){
 									$(this).ColorPickerSetColor(this.value);
 	});
 									</script>';
@@ -1674,14 +1674,14 @@ class FormAgefodd extends Form {
 		global $conf, $langs;
 		
 		$return = '<script type="text/javascript" language="javascript">
-						$(document).ready(public function () {
+						$(document).ready(function () {
 							$.extend($.ui.multiselect.locale, {
 								addAll:\'' . $langs->transnoentities("AddAll") . '\',
 								removeAll:\'' . $langs->transnoentities("RemoveAll") . '\',
 								itemsCount:\'' . $langs->transnoentities("ItemsCount") . '\'
 							});
 						
-							$(public function (){
+							$(function (){
 								$("#' . $htmlname . '").addClass("' . $htmlname . '").attr("multiple","multiple").attr("name","' . $htmlname . '[]");
 								$(".multiselect").multiselect({sortable: false, searchable: false});
 							});
