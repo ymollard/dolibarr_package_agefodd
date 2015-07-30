@@ -77,7 +77,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 		$this->espace_apres_corps_text = 4;
 		$this->espace_apres_titre = 0;
-		$this->default_font_size=12;
+		$this->default_font_size=11;
 		
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -236,15 +236,18 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size); // $this->pdf->SetFont('Arial','',9);
-				$hauteur = 0;
 				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
+				$obj_peda_array=array();
 				for($y = 0; $y < count($agf->lines); $y ++) {
-					
+						
 					$this->pdf->SetXY($posX, $posY);
-					$hauteur = dol_nboflines_bis($agf->lines [$y]->intitule, 100) * 4;
-					
-					$this->pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->lines [$y]->priorite.'.   '.$agf->lines [$y]->intitule), 0, 'L');
-					$posY= $this->pdf->GetY();
+					$obj_peda_array[] = $agf->lines [$y]->priorite.'-'.$agf->lines [$y]->intitule;
+				}
+				if (count($obj_peda_array)>0) {
+					$obj_peda_array_str='  '.$this->pdf->unichr(149).' ';
+					$obj_peda_array_str.=implode('  '.$this->pdf->unichr(149).' ',$obj_peda_array);
+						
+					$this->pdf->MultiCell($width, 0, $outputlangs->convToOutputCharset($obj_peda_array_str), 0, 'L');
 				}
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				
@@ -343,12 +346,15 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				 */
 				$programme='';
 				if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
-					$programme.='<ul>';
 					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+					$programme_array=array();
 					foreach ( $object_modules->lines as $line_chapter ) {
-						$programme .= '<li>'.$line_chapter->title;
+						$programme_array[] = $line_chapter->title;
 					}
-					$programme.='</ul>';
+					if (count($programme_array)>0) {
+						$programme='  '.$this->pdf->unichr(149).' ';
+						$programme.=implode('  '.$this->pdf->unichr(149).' ',$programme_array);
+					}
 				} else {
 					$programme=$agf->programme;
 				}
@@ -505,6 +511,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				$this->pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
 				$posY = $this->pdf->GetY()+10;
 				$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+				$this->pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 				if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 					foreach ( $object_modules->lines as $line_chapter ) {
@@ -520,21 +527,24 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 						}
 						
 						$this->pdf->MultiCell(0, 5, $line_chapter->title.$str_duration, 0, 'L', false, 1, $posX, $posY, true, 0, 0);
+						$posY = $this->pdf->GetY();
+						$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 						$posY = $this->pdf->GetY()+2;
 						
 						if (!empty($line_chapter->obj_peda)) {
 							$this->pdf->SetXY($posX, $posY);
-							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', $this->default_font_size);
 							$this->pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfObjPeda'), 0, 'L', false, 1, $posX, $posY, true, 0, 0);
 							$posY = $this->pdf->GetY()+1;
 							$this->pdf->SetXY($posX, $posY);
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 							$this->pdf->MultiCell(0, 0, $line_chapter->obj_peda, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
 							$posY = $this->pdf->GetY()+3;
 						}
 						
 						if (!empty($line_chapter->content_text)) {
 							$this->pdf->SetXY($posX, $posY);
-							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', $this->default_font_size);
 							$this->pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfContenu'), 0, 'L', false, 1, $posX, $posY, true, 0, 0);
 							$posY = $this->pdf->GetY()+1;
 							$this->pdf->SetXY($posX, $posY);

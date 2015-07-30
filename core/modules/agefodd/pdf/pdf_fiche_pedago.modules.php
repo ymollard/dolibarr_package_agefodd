@@ -77,7 +77,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 		$this->espace_apres_corps_text = 4;
 		$this->espace_apres_titre = 0;
-		$this->default_font_size=12;
+		$this->default_font_size=11;
 		
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -236,14 +236,13 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size); // $this->pdf->SetFont('Arial','',9);
-				$hauteur = 0;
 				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 				for($y = 0; $y < count($agf->lines); $y ++) {
 					
 					$this->pdf->SetXY($posX, $posY);
 					$hauteur = dol_nboflines_bis($agf->lines [$y]->intitule, 100) * 4;
 					
-					$this->pdf->MultiCell($width, 4, $outputlangs->transnoentities($agf->lines [$y]->priorite.'.   '.$agf->lines [$y]->intitule), 0, 'L');
+					$this->pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf->lines [$y]->priorite.'.   '.$agf->lines [$y]->intitule), 0, 'L');
 					$posY= $this->pdf->GetY();
 				}
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
@@ -343,12 +342,15 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				 */
 				$programme='';
 				if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
-					$programme.='<ul>';
 					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+					$programme_array=array();
 					foreach ( $object_modules->lines as $line_chapter ) {
-						$programme .= '<li>'.$line_chapter->title;
+						$programme_array[] = $line_chapter->title;
 					}
-					$programme.='</ul>';
+					if (count($programme_array)>0) {
+						$programme='  '.$this->pdf->unichr(149).' ';
+						$programme.=implode('  '.$this->pdf->unichr(149).' ',$programme_array);
+					}
 				} else {
 					$programme=$agf->programme;
 				}
