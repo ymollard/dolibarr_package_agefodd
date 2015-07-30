@@ -192,7 +192,7 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	print $langs->trans('Title');
 	print '</td>';
 	print '<td>';
-	print '<input type="text" name="moduletitle" size="20" value="' . $object->title . '"/>';
+	print '<input type="text" name="moduletitle" size="50" value="' . $object->title . '"/>';
 	print '</td>';
 	print '</tr>';
 	
