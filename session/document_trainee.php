@@ -559,8 +559,7 @@ if (! empty($id)) {
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
-							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;
-		    				 $(documentBody).animate({scrollTop: $("#sessiontraineeid' . $session_trainee_id . '").offset().top}, 500,\'easeInOutCubic\');
+		    				$(\'html, body\').animate({scrollTop: $("#sessiontraineeid' . $session_trainee_id . '").offset().top}, 500,\'easeInOutCubic\');
 						});
 					});
 					</script> ';

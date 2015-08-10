@@ -378,14 +378,13 @@ if (! empty($id)) {
 					
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
-						jQuery(function() {
-							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;';
+						jQuery(function() {'."\n";
 			if (! empty($sessiontrainerid)) {
-				print '				 $(documentBody).animate({scrollTop: $("#trainerid' . $sessiontrainerid . '").offset().top}, 500,\'easeInOutCubic\');';
+				print '				 $(\'html, body\').animate({scrollTop: $("#trainerid' . $sessiontrainerid . '").offset().top}, 500,\'easeInOutCubic\');';
 			} elseif (! empty($socid)) {
-				print '				 $(documentBody).animate({scrollTop: $("#socid' . $socid . '").offset().top}, 500,\'easeInOutCubic\');';
+				print '				 $(\'html, body\').animate({scrollTop: $("#socid' . $socid . '").offset().top}, 500,\'easeInOutCubic\');';
 			} elseif ($socid==0 && ($action=='create' ||  $action=='refresh')) {
-				print '				 $(documentBody).animate({scrollTop: $("#commondoc").offset().top-20}, 500,\'easeInOutCubic\');';
+				print '				 $(\'html, body\').animate({scrollTop: $("#commondoc").offset().top-20}, 500,\'easeInOutCubic\');';
 			}
 			
 			print '			});

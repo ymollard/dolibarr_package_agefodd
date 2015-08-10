@@ -531,12 +531,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					// print 'toto;';
 					print '<script type="text/javascript">
 					jQuery(document).ready(function () {
-						jQuery(function() {
-							var documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement;' . "\n";
+						jQuery(function() {' . "\n";
 					if (! empty($objc)) {
-						print '		$(documentBody).animate({scrollTop: $("#priorite_new").offset().top}, 500,\'easeInOutCubic\');' . "\n";
+						print '		$(\'html, body\').animate({scrollTop: $("#priorite_new").offset().top}, 500,\'easeInOutCubic\');' . "\n";
 					} else {
-						print '		$(documentBody).animate({scrollTop: $("#obj_peda").offset().top}, 500,\'easeInOutCubic\');' . "\n";
+						print '		$(\'html, body\').animate({scrollTop: $("#obj_peda").offset().top}, 500,\'easeInOutCubic\');' . "\n";
 					}
 					print '	});
 					});
