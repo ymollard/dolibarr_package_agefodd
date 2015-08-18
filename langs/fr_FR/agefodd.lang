@@ -1042,3 +1042,4 @@ AgfContenu=Contenu
 AgfProgrammeModules=Programme de formation des modules
 AgfProgrammeHelp=Si des modules sont définie pour cette formation c'est le programme des modules, contruit à partir du titre des modules, qui sera pour le document PDF programme de formation
 AgfProgrammeModulesHelp=Contruit à partir du titre des modules et utilisé pour le document PDF programme de formation (avec modules).<br> Si il n'y a pas de modules, c'est le programme normal qui sera utilisé
+ImportDataset_agefoddsessionparticipant=Agefodd - Import des Participants-Session

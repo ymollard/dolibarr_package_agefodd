@@ -657,6 +657,42 @@ class modAgefodd extends DolibarrModules {
 				'certif.datec' => "2013-11-12" 
 		);
 		
+		// Import Session Trainee
+		$r ++;
+		$this->import_code [$r] = $this->rights_class . '_' . $r;
+		$this->import_label [$r] = 'ImportDataset_agefoddsessionparticipant';
+		$this->import_icon [$r] = 'contact';
+		$this->import_entities_array [$r] = array (
+				's.fk_session_agefodd' => 'AgefoddMenuAction',
+				's.fk_stagiaire' => 'AgfNbreParticipants',
+				's.fk_agefodd_stagiaire_type' => 'AgfNbreParticipants',
+				's.datec' => 'AgfNbreParticipants',
+		);
+		$this->import_tables_array [$r] = array (
+				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire'
+		);
+		$this->import_fields_array [$r] = array (
+				's.fk_session_agefodd' => 'Id*',
+				's.fk_stagiaire' => 'Id*',
+				's.fk_agefodd_stagiaire_type' => "AgfTraineeType",
+				's.datec' => 'DateCreation',
+		);
+		
+		$this->import_fieldshidden_array [$r] = array (
+				's.fk_user_author' => 'user->id',
+				's.fk_user_mod' => 'user->id',
+		);
+		$this->import_convertvalue_array [$r] = array ();
+		$this->import_regex_array [$r] = array (
+				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+		);
+		$this->import_examplevalues_array [$r] = array (
+				's.fk_session_agefodd' => '999999',
+				's.fk_stagiaire' => '1',
+				's.fk_agefodd_stagiaire_type' => $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
+				's.datec' => '2013-11-12',
+		);
+		
 		// Trainee export
 		$r = 0;
 		$r ++;
