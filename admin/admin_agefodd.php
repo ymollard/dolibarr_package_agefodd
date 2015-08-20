@@ -730,11 +730,12 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 // Admin var of module
 print_titre($langs->trans("AgfAdmVar"));
 
-print '<table class="noborder" width="100%">';
-
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
 print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 print '<input type="hidden" name="action" value="setvar">';
+
+
+print '<table class="noborder" width="100%">';
 
 print '<tr class="liste_titre">';
 print '<td>' . $langs->trans("Name") . '</td>';
@@ -1463,7 +1464,7 @@ if ($result0 > 0) {
 		print '<td>' . $formAgefodd->select_action_session_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
 		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
 		print '<td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
-		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
+		print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete','',false,1).'" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
 		print '</tr>';
 		print '</form>';
 	}
@@ -1476,7 +1477,7 @@ print '<td></td>';
 print '<td><input type="text" name="intitule" value="" size="30"/></td>';
 print '<td>' . $formAgefodd->select_action_session_adm('', 'parent_level') . '</td>';
 print '<td><input type="text" name="delai" value=""/></td>';
-print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
+print '<td><input type="image" src="' . img_picto($langs->trans("Save"), 'edit_add','',false,1).'" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
 print '</tr>';
 print '</form>';
 print '</table><br>';
@@ -1508,7 +1509,7 @@ foreach ( $tmpl_calendar->lines as $line ) {
 	print '<td>' . $line->day_session . '</td>';
 	print '<td>' . $line->heured . '</td>';
 	print '<td>' . $line->heuref . '</td>';
-	print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sessioncalendar_delete" alt="' . $langs->trans("Save") . '"></td>';
+	print '<td><input type="image" src="'.img_picto($langs->trans("Delete"), 'delete','',false,1).'" border="0" name="sessioncalendar_delete" alt="' . $langs->trans("Delete") . '"></td>';
 	print '</tr>';
 	print '</form>';
 }
@@ -1524,7 +1525,7 @@ for($i = 1; $i <= 200; $i ++) {
 print '</select></td>';
 print '<td>' . $formAgefodd->select_time('', 'periodstart') . '</td>';
 print '<td>' . $formAgefodd->select_time('', 'periodend') . '</td>';
-print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sessioncalendar_create" alt="' . $langs->trans("Save") . '"></td>';
+print '<td><input type="image" src="'. img_picto($langs->trans("Save"), 'edit_add','',false,1).'" border="0" name="sessioncalendar_create" alt="' . $langs->trans("Save") . '"></td>';
 print '</tr>';
 print '</table>';
 print '</td></tr>';
