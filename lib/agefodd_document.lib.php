@@ -112,28 +112,28 @@ function show_conv($file, $socid, $nom_courrier) {
 				// Display
 				$legende = $langs->trans("AgfDocOpen");
 				$mess .= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
+				$mess .=img_picto($file, 'pdf2').'</a>';
 				
 				// Regenerer
 				$legende = $langs->trans("AgfDocRefresh");
 				$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&convid=' . $conv->id . '" alt="' . $legende . '" title="' . $legende . '">';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 				
 				// Delete
 				$legende = $langs->trans("AgfDocDel");
 				$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&convid=' . $conv->id . '&socid=' . $socid . '&action=del&model=' . $model . '&cour=' . $nom_courrier . '" alt="' . $legende . '" title="' . $legende . '">';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 			} else {
 				// Create PDF document
 				$legende = $langs->trans("AgfDocCreate");
 				$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&socid=' . $socid . '&model=' . $model . '&cour=' . $nom_courrier . '&convid=' . $conv->id . '" alt="' . $legende . '" title="' . $legende . '">';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .=img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 			}
 			
 			// Edit Convention
 			$legende = $langs->trans("AgfDocEdit");
 			$mess .= '<a href="' . dol_buildpath('/agefodd/session/convention.php', 1) . '?action=edit&sessid=' . $id . '&id=' . $conv->id . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .=img_picto($langs->trans("AgfDocEdit"), 'edit').'</a>';
 			if (count($conv->line_trainee) > 0) {
 				$mess .= '(' . count($conv->line_trainee) . ')';
 			}
@@ -142,12 +142,12 @@ function show_conv($file, $socid, $nom_courrier) {
 		// Allow to create another
 		$legende = $langs->trans("AgfDocEdit");
 		$mess .= '<a href="' . dol_buildpath('/agefodd/session/convention.php', 1) . '?action=create&sessid=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($legende, 'filenew').'</a>';
 	} elseif ($continue) {
 		// If not exists you should do it now
 		$legende = $langs->trans("AgfDocEdit");
 		$mess .= '<a href="' . dol_buildpath('/agefodd/session/convention.php', 1) . '?action=create&sessid=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($legende, 'filenew').'</a>';
 	}
 	
 	return $mess;
@@ -169,23 +169,22 @@ function show_doc($file, $socid, $nom_courrier) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
-		
+		$mess .=img_picto($file, 'pdf2').'</a>';
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 		
 		// Supprimer
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=del&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 	} else {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&socid=' . $socid . '&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .=img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
 		}
@@ -202,28 +201,28 @@ function show_convo_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
+		$mess .=img_picto($file, 'pdf2').'</a>';
 		
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 		
 		// Supprimer
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 		
 		// Envoie par mail
 		$legende = $langs->trans("AgfSendDoc");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_convocation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfSendDoc"), 'stcomm0').'</a>';
 	} else {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
 		}
@@ -240,28 +239,28 @@ function show_attestation_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
+		$mess .= img_picto($file, 'pdf2').'</a>';
 		
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 		
 		// Supprimer
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 		
 		// Envoie par mail
 		$legende = $langs->trans("AgfSendDoc");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfSendDoc"), 'stcomm0').'</a>';
 	} else {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
 		}
@@ -279,28 +278,28 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '" ></a>';
+		$mess .= img_picto($file, 'pdf2').'</a>';
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 
 		// Envoie par mail
 		$legende = $langs->trans("AgfSendDoc");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfSendDoc"), 'stcomm0').'</a>';
 	} else {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
 		}
@@ -318,24 +317,24 @@ function show_trainer_mission($session_trainerid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" alt="' . $file . '"></a>';
+		$mess .= img_picto($file, 'pdf2').'</a>';
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/refresh.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/editdelete.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 
 	} else {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontrainerid=' . $session_trainerid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
 		}
@@ -366,7 +365,7 @@ function show_fac($file, $socid, $mdle) {
 				// Send order by mail
 				$legende = $langs->trans("AgfFactureSeeBonMail", $line->comref);
 				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .=img_picto($legende, 'stcomm0').'</a>';
 				
 				// Unlink order
 				$legende = $langs->trans("AgfFactureUnselectBon");
@@ -376,7 +375,7 @@ function show_fac($file, $socid, $mdle) {
 				// See order card
 				$legende = $langs->trans("AgfFactureSeeProp") . ' ' . $line->comref;
 				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '"  ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->comref . '</a>';
+				$mess .=img_picto($legende, 'edit') . $line->comref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 				$order = new Commande($db);
 				$order->fetch($line->fk_element);
@@ -391,13 +390,13 @@ function show_fac($file, $socid, $mdle) {
 		// Create Order
 		$legende = $langs->trans("AgfFactureGenererBonAuto");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createorder&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+		$mess .= img_picto($legende, 'filenew').'</a>';
 		
 		if (! empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
 			// Generate order
 			$legende = $langs->trans("AgfFactureGenererBon");
 			$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&action=create&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($legende, 'filenew').'</a>';
 		}
 		
 		// Link existing order
@@ -425,7 +424,7 @@ function show_fac($file, $socid, $mdle) {
 				// Go to send mail card
 				$legende = $langs->trans("AgfFactureSeeFacMail", $line->facnumber);
 				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .=img_picto($legende, 'stcomm0').'</a>';
 				
 				// Unlink invoice
 				$legende = $langs->trans("AgfFactureUnselectFac");
@@ -435,7 +434,7 @@ function show_fac($file, $socid, $mdle) {
 				// See Invoice card
 				$legende = $langs->trans("AgfFactureSeeFac") . ' ' . $line->facnumber;
 				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&facid=' . $line->fk_element . '"" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->facnumber . '</a>';
+				$mess .= img_picto($legende, 'edit'). $line->facnumber . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 				$invoice = new Facture($db);
 				$invoice->fetch($line->fk_element);
@@ -473,7 +472,7 @@ function show_fac($file, $socid, $mdle) {
 				$propal_static->fetch($key);
 				if ($propal_static->statut == 2 || $propal_static->statut==4) {
 					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					$mess .= img_picto($legende, 'filenew').'</a>';
 				} else {
 					$mess .= img_picto($langs->trans("AgfFactureFacNoPropalSignedHelp"), 'warning');
 				}
@@ -485,7 +484,7 @@ function show_fac($file, $socid, $mdle) {
 				if ($commande_static->statut == 1) {
 					$legende = $langs->trans("AgfFactureAddFacFromOrder") . ' ' . $val;
 					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					$mess .= img_picto($legende, 'filenew').'</a>';
 				}else {
 					$mess .= img_picto($langs->trans("AgfFactureFacNoOrderValidHelp"), 'warning');
 				}
@@ -503,7 +502,7 @@ function show_fac($file, $socid, $mdle) {
 				$propal_static->fetch($key);
 				if ($propal_static->statut == 2 || $propal_static->statut==4) {
 					$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $propal_static->element . '&originid=' . $key . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-					$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					$mess .= img_picto($legende, 'filenew').'</a>';
 				} else {
 					$mess .= img_picto($langs->trans("AgfFactureFacNoPropalSignedHelp"), 'warning');
 				}
@@ -517,7 +516,7 @@ function show_fac($file, $socid, $mdle) {
 				$legende = $langs->trans("AgfFactureAddFacFromOrder") . ' ' . $val;
 				$commande_static = new Commande($db);
 				$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .= img_picto($legende, 'filenew').'</a>';
 			}
 			
 			// link existing invoice
@@ -543,7 +542,7 @@ function show_fac($file, $socid, $mdle) {
 				// Go to send mail card
 				$legende = $langs->trans("AgfFactureSeePropMail", $line->propalref);
 				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				$mess .=img_picto($legende, 'stcomm0').'</a>';
 				
 				// Unlink proposal
 				$legende = $langs->trans("AgfFactureUnselectProp");
@@ -553,7 +552,7 @@ function show_fac($file, $socid, $mdle) {
 				// See Proposal card
 				$legende = $langs->trans("AgfFactureSeeProp") . ' ' . $line->propalref;
 				$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?id=' . $line->fk_element . '&mainmenu=commercial" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-				$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" align="absmiddle" hspace="2px" >' . $line->propalref . '</a>';
+				$mess .= img_picto($legende, 'edit'). $line->propalref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 				$propal = new Propal($db);
 				$propal->fetch($line->fk_element);
@@ -572,14 +571,14 @@ function show_fac($file, $socid, $mdle) {
 			// Create Proposal
 			$legende = $langs->trans("AgfFactureGenererPropAuto");
 			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?action=createproposal&id=' . $id . '&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($legende, 'filenew').'</a>';
 		}
 		
 		if (empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
 			// Generate Proposal
 			$legende = $langs->trans("AgfFactureGenererProp");
 			$mess .= '<a href="' . DOL_URL_ROOT . '/comm/propal.php?action=create&mainmenu=commercial&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/filenew.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .= img_picto($legende, 'filenew').'</a>';
 		}
 		
 		// Link existing proposal
@@ -617,7 +616,7 @@ function show_facopca($file, $socid, $mdle) {
 			// Go to send mail card
 			$legende = $langs->trans("AgfFactureSeeFacMail", $line->facnumber);
 			$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
-			$mess .= '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			$mess .=img_picto($legende, 'stcomm0').'</a>';
 			
 			// Unlink invoice
 			$legende = $langs->trans("AgfFactureUnselectFac");
@@ -717,7 +716,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 				/*$filename = 'convention_' . $id . '_' . $socid . '.pdf';
 				$file = $conf->agefodd->dir_output . '/' . $filename;*/
 				if (file_exists($file)) {
-					$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&convid=' . $conv->id . '&action=presend_convention&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+					$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&convid=' . $conv->id . '&action=presend_convention&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 				} else {
 					$mess .= $langs->trans('AgfDocNotDefined');
 				}
@@ -738,7 +737,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'fiche_presence_' . $id . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_presence&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_presence&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -748,7 +747,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'attestation_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestation&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestation&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -758,7 +757,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'courrier-cloture_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_cloture&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_cloture&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -768,7 +767,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'courrier-accueil_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_accueil&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_accueil&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -778,7 +777,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'convocation_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_convocation&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_convocation&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -788,7 +787,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'conseils_' . $id . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_conseils&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_conseils&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -798,7 +797,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'fiche_pedago_' . $idform . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_pedago&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_pedago&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
@@ -808,7 +807,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'mission_trainer_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_mission_trainer&mode=init"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/stcomm0.png" border="0" align="absmiddle" hspace="2px" alt="send" /> ' . $langs->trans('SendMail') . '</a>';
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_mission_trainer&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
