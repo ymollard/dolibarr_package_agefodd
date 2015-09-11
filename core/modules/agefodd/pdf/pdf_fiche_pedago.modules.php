@@ -612,7 +612,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		// Show sender name
 		$this->pdf->SetXY($posx,$posy);
 		$this->pdf->SetFont('','B', $this->default_font_size -2);
-		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+		$this->pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 		$posy=$this->pdf->getY();
 
 		// Show sender information

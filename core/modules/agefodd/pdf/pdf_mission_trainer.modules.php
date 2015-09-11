@@ -245,7 +245,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			// Show sender name
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont('', 'B', $this->default_font_size - 2);
-			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+			$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 			$posY = $pdf->getY();
 			
 			// Show sender information

@@ -208,7 +208,7 @@ class pdf_courrier extends ModelePDFAgefodd {
 				// Show sender name
 				$pdf->SetXY($posx, $posy);
 				$pdf->SetFont('', 'B', $this->default_font_size - 2);
-				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 				$posy = $pdf->getY();
 				
 				// Show sender information
