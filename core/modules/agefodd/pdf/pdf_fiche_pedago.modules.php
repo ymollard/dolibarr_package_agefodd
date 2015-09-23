@@ -585,7 +585,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			}
 			if (! empty($image_name)) {
 				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
-				if (is_readable($otherlogo)) {
+				if (is_readable($otherlogo) && $otherlogo!=$logo) {
 					$logo_height=pdf_getHeightForLogo($otherlogo);
 					$width_otherlogo=pdf_getWidthForLogo($otherlogo);
 					if ($width_otherlogo>0 && $width_logo>0) {

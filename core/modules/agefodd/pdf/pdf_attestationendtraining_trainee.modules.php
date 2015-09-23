@@ -510,7 +510,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			}
 			if (! empty($image_name)) {
 				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
-				if (is_readable($otherlogo)) {
+				if (is_readable($otherlogo) && $otherlogo!=$logo) {
 					$logo_height = pdf_getHeightForLogo($otherlogo, true);
 					$pdf->Image($otherlogo, $this->marge_gauche + 80, $posy, 0, $logo_height); 
 				}
