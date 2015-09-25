@@ -61,6 +61,7 @@ class Agefodd extends CommonObject {
 	public $certif_duration;
 	public $colors;
 	public $lines = array ();
+	public $trainers = array ();
 	
 	/**
 	 * Constructor
@@ -221,8 +222,12 @@ class Agefodd extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
-				$this->ref = $obj->rowid; // use for next prev ref
-				$this->ref_obj = $obj->ref; // use for next prev ref
+				// I know twice affactation...
+				$this->rowid = $obj->rowid;
+				// use for next prev ref
+				$this->ref = $obj->rowid;
+				// use for next prev ref
+				$this->ref_obj = $obj->ref;
 				$this->ref_interne = $obj->ref_interne;
 				$this->intitule = stripslashes($obj->intitule);
 				$this->duree = $obj->duree;
@@ -323,7 +328,8 @@ class Agefodd extends CommonObject {
 		$this->note1 = $this->db->escape(trim($this->note1));
 		$this->note2 = $this->db->escape(trim($this->note2));
 		$this->certif_duration = $this->db->escape(trim($this->certif_duration));
-		if (isset($this->color)) $this->color = trim($this->color);
+		if (isset($this->color))
+			$this->color = trim($this->color);
 		
 		if ($this->fk_c_category == - 1)
 			$this->fk_c_category = 0;
@@ -357,7 +363,8 @@ class Agefodd extends CommonObject {
 		$sql .= " fk_product=" . (! empty($this->fk_product) ? $this->fk_product : "null") . ",";
 		$sql .= " nb_subscribe_min=" . (! empty($this->nb_subscribe_min) ? $this->nb_subscribe_min : "null") . ",";
 		$sql .= " fk_c_category=" . (! empty($this->fk_c_category) ? $this->fk_c_category : "null") . ",";
-		$sql .= " certif_duration=" . (! empty($this->certif_duration) ? "'" . $this->certif_duration . "'" : "null"). ",";;
+		$sql .= " certif_duration=" . (! empty($this->certif_duration) ? "'" . $this->certif_duration . "'" : "null") . ",";
+		;
 		$sql .= " color=" . (! empty($this->color) ? "'" . $this->color . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
@@ -765,7 +772,12 @@ class Agefodd extends CommonObject {
 		}
 		
 		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule";
-		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit($limit + 1, $offset);
+		if (! empty($sortfield)) {
+			$sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder;
+		}
+		if (! empty($limit)) {
+			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
+		}
 		
 		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -791,7 +803,6 @@ class Agefodd extends CommonObject {
 					$line->fk_product = $obj->fk_product;
 					$line->nb_subscribe_min = $obj->nb_subscribe_min;
 					$line->category_lib = $obj->catcode . ' - ' . $obj->catlib;
-					;
 					
 					$this->lines[$i] = $line;
 					
@@ -955,6 +966,24 @@ class Agefodd extends CommonObject {
 			}
 		}
 		
+		if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
+			$source->id=$fromid;
+			$result_trainer = $source->fetchTrainer();
+			if ($result_trainer < 0) {
+				$this->errors[] = $source->error;
+				$error ++;
+			}
+			foreach ( $source->trainers as $trainer ) {
+				$trainer_array[$trainer->id]=$trainer->id;
+			}
+			$object->id=$newid;
+			$result_trainer=$object->setTrainingTrainer($trainer_array);
+			if ($result_trainer < 0) {
+				$this->errors[] = $object->error;
+				$error ++;
+			}
+		}
+		
 		// End
 		if (empty($error)) {
 			$this->db->commit();
@@ -967,6 +996,121 @@ class Agefodd extends CommonObject {
 			$this->db->rollback();
 			return - 1;
 		}
+	}
+	
+	/**
+	 *
+	 * @param string $label
+	 * @return string
+	 */
+	public function getNomUrl($label = 'all') {
+		$link = dol_buildpath('/agefodd/training/card.php', 1);
+		if ($label == 'all') {
+			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->ref . ((! empty($this->ref_interne)) ? ' (' . $this->ref_interne . ') ' : ' ') . $this->intitule . '</a>';
+		} else {
+			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->$label . '</a>';
+		}
+	}
+	
+	/**
+	 *
+	 * @param unknown $training
+	 */
+	public function setTrainingTrainer($trainers = array()) {
+		global $conf;
+		
+		$error = 0;
+		
+		$this->db->begin();
+		
+		$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_training WHERE fk_training=' . $this->id;
+		
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . " ERROR :" . $this->error, LOG_ERR);
+			$error ++;
+		}
+		if (empty($error) && count($trainers) > 0) {
+			foreach ( $trainers as $key => $trainerid ) {
+				$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . 'agefodd_formateur_training(fk_trainer,fk_training) ';
+				$sql .= ' VALUES (' . $trainerid . ',' . $this->id . ')';
+				
+				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if (! $resql) {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::" . __METHOD__ . " ERROR :" . $this->error, LOG_ERR);
+					$error ++;
+				}
+			}
+		}
+		
+		// Commit or rollback
+		if ($error) {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return - 1 * $error;
+		} else {
+			$this->db->commit();
+			return 1;
+		}
+	}
+	
+
+	/**
+	 * 
+	 * @return number
+	 */
+	public function fetchTrainer() {
+		
+		global $conf;
+		require_once 'agefodd_formateur.class.php';
+		
+		$sql = 'SELECT link.rowid as linkid, f.rowid as fk_trainer ';
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur_training as link';
+		$sql .= ' ON f.rowid=link.fk_trainer AND link.fk_training=' . $this->id;
+		$sql .= " WHERE f.entity IN (" . getEntity('agsession') . ")";
+		
+		
+		// $line->fk_socpeople
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			
+			while ( $obj = $this->db->fetch_object($resql) ) {
+				$trainer = new Agefodd_teacher($this->db);
+				$result=$trainer->fetch($obj->fk_trainer);
+				if ($result<0) {
+					$this->errors[] = "Error " . $this->db->lasterror();
+					$error++;
+				}
+				$this->trainers[] = $trainer;
+			}
+		} else {
+			$this->errors[] = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
+			$error++;
+		}
+		
+		
+		if (empty($error)) {
+			return $num;
+		} else {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			return - 1 * $error;
+		}
+		
 	}
 }
 class AgfObjPedaLine {
@@ -992,5 +1136,19 @@ class AgfTrainingLine {
 	public $category_lib;
 	public function __construct() {
 		return 1;
+	}
+	
+	/**
+	 *
+	 * @param string $label
+	 * @return string
+	 */
+	public function getNomUrl($label = 'all') {
+		$link = dol_buildpath('/agefodd/training/card.php', 1);
+		if ($label == 'all') {
+			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->ref . ((! empty($this->ref_interne)) ? ' (' . $this->ref_interne . ') ' : ' ') . $this->intitule . '</a>';
+		} else {
+			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->$label . '</a>';
+		}
 	}
 }

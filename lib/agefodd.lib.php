@@ -56,6 +56,14 @@ function training_prepare_head($object) {
 	$hselected = $h;
 	$h ++;
 	
+	if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
+		$head [$h] [0] = dol_buildpath('/agefodd/training/trainer.php', 1) . '?id=' . $object->id;
+		$head [$h] [1] = $langs->trans("AgfTrainingTrainer");
+		$head [$h] [2] = 'trainingtrainer';
+		$hselected = $h;
+		$h ++;
+	}
+	
 	$head [$h] [0] = dol_buildpath('/agefodd/training/modules.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfTrainingModule");
 	$head [$h] [2] = 'trainingmodule';

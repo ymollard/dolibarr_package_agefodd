@@ -30,6 +30,7 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
+require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_formateur.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
@@ -45,7 +46,7 @@ if (! $user->rights->agefodd->lire)
 	
 	/*
  * Actions delete
-*/
+ */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	$agf = new Agefodd_teacher($db);
 	$result = $agf->remove($id);
@@ -60,7 +61,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions archive/active
-*/
+ */
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confirm == "yes") {
 	$agf = new Agefodd_teacher($db);
 	
@@ -70,7 +71,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
 	$result = $agf->update($user);
 	
 	if ($result > 0) {
-		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 		exit();
 	} else {
 		setEventMessage($agf->error, 'errors');
@@ -79,18 +80,18 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
 
 /*
  * Action create from contact (card trainer : CARREFULL, Dolibarr contact must exists)
-*/
+ */
 
 if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_teacher($db);
 		
 		$agf->spid = GETPOST('spid');
-		$agf->type_trainer = $agf->type_trainer_def [1];
+		$agf->type_trainer = $agf->type_trainer_def[1];
 		$result = $agf->create($user);
 		
 		if ($result > 0) {
-			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $result);
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $result);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -103,18 +104,18 @@ if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer) {
 
 /*
  * Action create from users (card trainer : CARREFULL, Dolibarr users must exists)
-*/
+ */
 
 if ($action == 'create_confirm_user' && $user->rights->agefodd->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_teacher($db);
 		
 		$agf->fk_user = GETPOST('fk_user', 'int');
-		$agf->type_trainer = $agf->type_trainer_def [0];
+		$agf->type_trainer = $agf->type_trainer_def[0];
 		$result = $agf->create($user);
 		
 		if ($result > 0) {
-			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $result);
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $result);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -125,23 +126,58 @@ if ($action == 'create_confirm_user' && $user->rights->agefodd->creer) {
 	}
 }
 
+if ($action == 'updatecat' && $user->rights->agefodd->creer) {
+	$trainet_cat = GETPOST('trainercat', 'array');
+	$agf = new Agefodd_teacher($db);
+	$agf->id = $id;
+	$result = $agf->setTrainerCat($trainet_cat);
+	if ($result < 0) {
+		$action = 'editcategory';
+		setEventMessage($agf->error, 'errors');
+	} else {
+		$action = '';
+	}
+}
+
+if ($action == 'updatetraining' && $user->rights->agefodd->creer) {
+	$trainer_training = GETPOST('trainertraining', 'array');
+	$agf = new Agefodd_teacher($db);
+	$agf->id = $id;
+	$result = $agf->setTrainerTraining($trainer_training);
+	if ($result < 0) {
+		$action = 'edittraining';
+		setEventMessage($agf->error, 'errors');
+	} else {
+		$action = '';
+	}
+}
+
 /*
  * View
-*/
+ */
 $title = ($action == 'create' ? $langs->trans("AgfFormateurAdd") : $langs->trans("AgfTeacher"));
-llxHeader('', $title);
+
+$extrajs = array (
+		'/agefodd/includes/multiselect/js/ui.multiselect.js' 
+);
+$extracss = array (
+		'/agefodd/includes/multiselect/css/ui.multiselect.css',
+		'/agefodd/css/agefodd.css' 
+);
+
+llxHeader('', $title, '', '', '', '', $extrajs, $extracss);
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
 /*
  * Action create
-*/
+ */
 if ($action == 'create' && $user->rights->agefodd->creer) {
 	print_fiche_titre($langs->trans("AgfFormateurAdd"));
 	
-	print '<form name="create_contact" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+	print '<form name="create_contact" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm_contact">' . "\n";
 	
 	print '<div class="warning">' . $langs->trans("AgfFormateurAddContactHelp");
@@ -158,7 +194,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
 		foreach ( $agf_static->lines as $line ) {
 			if (! empty($line->fk_socpeople)) {
-				$exclude_array [] = $line->fk_socpeople;
+				$exclude_array[] = $line->fk_socpeople;
 			}
 		}
 	}
@@ -179,8 +215,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<br>';
 	print '<br>';
 	
-	print '<form name="create_user" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+	print '<form name="create_user" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm_user">' . "\n";
 	
 	print '<div class="warning">' . $langs->trans("AgfFormateurAddUserHelp");
@@ -197,7 +233,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
 		foreach ( $agf_static->lines as $line ) {
 			if ((! empty($line->fk_user)) && (! in_array($line->fk_user, $exclude_array))) {
-				$exclude_array [] = $line->fk_user;
+				$exclude_array[] = $line->fk_user;
 			}
 		}
 	}
@@ -233,26 +269,36 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			
 			/*
 			 * Delete confirm
-			*/
+			 */
 			if ($action == 'delete') {
-				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteTeacher"), $langs->trans("AgfConfirmDeleteTeacher"), "confirm_delete", '', '', 1);
+				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteTeacher"), $langs->trans("AgfConfirmDeleteTeacher"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
 			
 			/*
 			 * Confirm archive status change
-			*/
+			 */
 			if ($action == 'archive' || $action == 'active') {
 				if ($action == 'archive')
 					$value = 1;
 				if ($action == 'active')
 					$value = 0;
 				
-				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
+			
+			print '<form name="create_contact" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+			if ($action == 'editcategory') {
+				print '<input type="hidden" name="action" value="updatecat">' . "\n";
+			}
+			if ($action == 'edittraining') {
+				print '<input type="hidden" name="action" value="updatetraining">' . "\n";
+			}
+			print '<input type="hidden" name="id" value="' . $agf->id . '">' . "\n";
 			
 			print '<table class="border" width="100%">';
 			
@@ -262,7 +308,95 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td>' . $langs->trans("Name") . '</td>';
 			print '<td>' . ucfirst(strtolower($agf->civilite)) . ' ' . strtoupper($agf->name) . ' ' . ucfirst(strtolower($agf->firstname)) . '</td></tr>';
 			
+			print '<tr><td>' . $langs->trans("AgfTrainerCategory");
+			if ($action != 'editcategory' && $user->rights->agefodd->creer) {
+				print '<a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $agf->id . '&action=editcategory" style="text-align:right">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
+			}
+			print $form->textwithpicto('', $langs->trans("AgfTrainerCategoryDictHelp"), 1, 'help');
+			print '</td>';
+			
+			print '<td>';
+			
+			if ($action == 'editcategory') {
+				$option_cat = array ();
+				$selected_cat = array ();
+				// Build selected categorie
+				if (is_array($agf->categories) && count($agf->categories) > 0) {
+					foreach ( $agf->categories as $cat ) {
+						$selected_cat[] = $cat->dictid;
+					}
+				}
+				// Build all categorie available
+				$result = $agf->fetchAllCategories();
+				if ($result < 0) {
+					setEventMessage($agf->error, 'errors');
+				}
+				foreach ( $agf->dict_categories as $cat ) {
+					$option_cat[$cat->dictid] = $cat->code . '-' . $cat->label;
+				}
+				print $formAgefodd->agfmultiselectarray('trainercat', $option_cat, $selected_cat);
+				print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
+			} else {
+				if (is_array($agf->categories) && count($agf->categories) > 0) {
+					print '<ul>';
+					foreach ( $agf->categories as $cat ) {
+						print '<li>';
+						print $cat->code . '-' . $cat->label . '(' . dol_trunc($cat->description, 50) . ')';
+						print '</li>';
+					}
+					print '</ul>';
+				}
+			}
+			print '</td>';
+			print '</tr>';
+			
+			if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
+				print '<tr><td>' . $langs->trans("AgfTrainerTraining");
+				if ($action != 'edittraining' && $user->rights->agefodd->creer) {
+					print '<a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $agf->id . '&action=edittraining" style="text-align:right">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
+				}
+				print '</td>';
+				
+				print '<td>';
+				if ($action == 'edittraining') {
+					$option_cat = array ();
+					$selected_cat = array ();
+					// Build selected categorie
+					if (is_array($agf->trainings) && count($agf->trainings) > 0) {
+						foreach ( $agf->trainings as $training ) {
+							$selected_training[] = $training->trainingid;
+						}
+					}
+					require_once '../class/agefodd_formation_catalogue.class.php';
+					$trainingcat = new Agefodd($db);
+					$result = $trainingcat->fetch_all('ASC', 'c.ref', 0, 0);
+					if ($result < 0) {
+						setEventMessage($trainingcat->error, 'errors');
+					}
+					foreach ( $trainingcat->lines as $line ) {
+						$option_training[$line->rowid] = $line->ref . '-' . $line->intitule;
+					}
+					print $formAgefodd->agfmultiselectarray('trainertraining', $option_training, $selected_training);
+					print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
+				} else {
+					if (is_array($agf->trainings) && count($agf->trainings) > 0) {
+						$training_det = new Agefodd($db);
+						print '<ul>';
+						foreach ( $agf->trainings as $training ) {
+							print '<li>';
+							$training_det->fetch($training->trainingid);
+							print $training_det->getNomUrl();
+							print '</li>';
+						}
+						print '</ul>';
+					}
+				}
+				print '</td>';
+				print '</tr>';
+			}
+			
 			print "</table>";
+			print '</form>';
 			
 			print '</div>';
 		} else {
@@ -273,19 +407,18 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 /*
  * Actions tabs
-*
-*/
+ *
+ */
 
 print '<div class="tabsAction">';
-
-if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
-	if ($agf->type_trainer == $agf->type_trainer_def [1]) {
+if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'editcategory' && $action != 'edittraining') {
+	if ($agf->type_trainer == $agf->type_trainer_def[1]) {
 		if ($user->rights->societe->contact->creer) {
 			print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/card.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 		}
-	} elseif ($agf->type_trainer == $agf->type_trainer_def [0]) {
+	} elseif ($agf->type_trainer == $agf->type_trainer_def[0]) {
 		if ($user->rights->user->user->creer) {
 			print '<a class="butAction" href="' . DOL_URL_ROOT . '/user/card.php?id=' . $agf->fk_user . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
 		} else {
@@ -294,16 +427,16 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 	}
 	
 	if ($user->rights->agefodd->creer) {
-		print '<a class="butActionDelete" href="' . $_SERVER ['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
+		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 	
 	if ($user->rights->agefodd->modifier) {
 		if ($agf->archive == 0) {
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=archive&id=' . $id . '">' . $langs->trans('AgfArchiver') . '</a>';
+			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=archive&id=' . $id . '">' . $langs->trans('AgfArchiver') . '</a>';
 		} else {
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=active&id=' . $id . '">' . $langs->trans('AgfActiver') . '</a>';
+			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=active&id=' . $id . '">' . $langs->trans('AgfActiver') . '</a>';
 		}
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfArchiver') . '/' . $langs->trans('AgfActiver') . '</a>';

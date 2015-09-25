@@ -427,7 +427,14 @@ if (! empty($id)) {
 				if ($formateurs->lines [$i]->opsid == GETPOST('opsid') && empty(GETPOST('form_remove'))) {
 					print '<td width="600px" style="border-right: 0px">';
 					print '<input type="hidden" name="opsid" value="' . $formateurs->lines [$i]->opsid . '">' . "\n";
-					print $formAgefodd->select_formateur($formateurs->lines [$i]->formid, "formid");
+					
+					$filterSQL=' ((s.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . '))';
+					if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
+						$filterSQL.=' AND (s.rowid IN (SELECT fk_trainer FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training WHERE fk_training='.$agf->formid.'))';
+					}
+					$filterSQL.= ') OR s.rowid='.$formateurs->lines [$i]->formid;
+					
+					print $formAgefodd->select_formateur($formateurs->lines [$i]->formid, "formid",$filterSQL);
 					if (!empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
 						print '&nbsp;';
 						print $formAgefodd->select_type_formateur($formateurs->lines [$i]->trainer_type, "trainertype", ' active=1 ');
@@ -526,7 +533,11 @@ if (! empty($id)) {
 			print '<td width="20px" align="center"><a id="anchornewform" name="anchornewform"/>' . ($i + 1) . '</td>';
 			print '<td nowrap="nowrap">';
 			
-			print $formAgefodd->select_formateur($formateurs->lines [$i]->formid, "formid", 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . ')', 1);
+			$filterSQL='s.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . ')';
+			if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
+				$filterSQL.=' AND s.rowid IN (SELECT fk_trainer FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training WHERE fk_training='.$agf->formid.')';
+			}
+			print $formAgefodd->select_formateur($formateurs->lines [$i]->formid, "formid", $filterSQL, 1);
 			if (!empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
 				print '&nbsp;';
 				print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, "trainertype", ' active=1 ');

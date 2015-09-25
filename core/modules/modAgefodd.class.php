@@ -457,6 +457,14 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
+		$this->const [$r] [0] = "AGF_FILTER_TRAINER_TRAINING";
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '0';
+		$this->const [$r] [3] = 'Filter trainer list';
+		$this->const [$r] [4] = 1;
+		$this->const [$r] [5] = 0;
+		
+		$r ++;
 		$this->const [$r] [0] = "MAIN_MODULES_FOR_EXTERNAL";
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = 'user,facture,categorie,commande,fournisseur,contact,propal,projet,contrat,societe,ficheinter,expedition,agenda,adherent,agefodd';
@@ -478,55 +486,65 @@ class modAgefodd extends DolibarrModules {
 						MAIN_DB_PREFIX . "agefodd_stagiaire_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_type",
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type" 
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type" ,
+						MAIN_DB_PREFIX . "agefodd_formateur_category_dict" ,
 				),
 				'tablib' => array (
 						"AgfTraineeType",
 						"AgfTrainerTypeDict",
 						"AgfCertificateType",
-						"AgfTrainingCategTbl" 
+						"AgfTrainingCategTbl",
+						"AgfTrainerCategoryDict"
 				),
 				'tabsql' => array (
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
-						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f' 
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
+						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
 				),
 				'tabsqlsort' => array (
 						'sort ASC',
 						'sort ASC',
 						'sort ASC',
-						'sort ASC' 
+						'sort ASC',
+						'code ASC'
 				),
 				'tabfield' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
-						"code,intitule,sort" 
+						"code,intitule,sort",
+						"code,label,description"
 				),
 				'tabfieldvalue' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
-						"code,intitule,sort" 
+						"code,intitule,sort",
+						"code,label,description"
 				),
 				'tabfieldinsert' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
-						"code,intitule,sort" 
+						"code,intitule,sort",
+						"code,label,description"
 				),
 				'tabrowid' => array (
 						"rowid",
 						"rowid",
 						"rowid",
-						"rowid" 
+						"rowid",
+						"rowid"
 				),
 				'tabcond' => array (
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
-						'$conf->agefodd->enabled' 
+						'$conf->agefodd->enabled',
+						'$conf->agefodd->enabled',
+						
 				) 
 		);
 		

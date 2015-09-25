@@ -42,6 +42,9 @@ class Agefodd_teacher extends CommonObject {
 	public $datec = '';
 	public $fk_user_mod;
 	public $lines = array ();
+	public $categories = array ();
+	public $dict_categories = array ();
+	public $trainings = array ();
 	
 	/**
 	 * Constructor
@@ -93,8 +96,9 @@ class Agefodd_teacher extends CommonObject {
 			$sql .= 'NULL, ';
 			$sql .= " " . $this->fk_user . ", ";
 			$sql .= "'" . $this->type_trainer_def[0] . "', ";
-		} // trainer is Dolibarr contact
-elseif ($this->type_trainer == $this->type_trainer_def[1]) {
+		} 
+		// trainer is Dolibarr contact
+		elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 			$sql .= " " . $this->spid . ", ";
 			$sql .= 'NULL, ';
 			$sql .= "'" . $this->type_trainer_def[1] . "', ";
@@ -186,8 +190,9 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 					$this->address = $mysoc->address;
 					$this->zip = $mysoc->zip;
 					$this->town = $mysoc->town;
-				} // trainer is Dolibarr contact
-elseif ($this->type_trainer == $this->type_trainer_def[1]) {
+				} 
+				// trainer is Dolibarr contact
+				elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 					$this->spid = $obj->spid;
 					$this->fk_socpeople = $obj->fk_socpeople;
 					$this->name = $obj->sp_name;
@@ -200,13 +205,69 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 					$this->zip = $obj->s_zip;
 					$this->town = $obj->s_town;
 				}
+				
+				
+				$sql_inner='SELECT cat.rowid as catid, dict.rowid as dictid,dict.code,dict.label,dict.description ';
+				$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category as cat';
+				$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict as dict';
+				$sql_inner.=' ON cat.fk_category=dict.rowid AND cat.fk_trainer='.$obj->rowid;
+				//$line->fk_socpeople
+				dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
+				$resql_inner = $this->db->query($sql_inner);
+				if ($resql_inner) {
+					while ($objcat = $this->db->fetch_object($resql_inner) ) {
+						$trainer_cat = new AgfTrainerCategorie();
+						$trainer_cat->catid=$objcat->catid;
+						$trainer_cat->dictid=$objcat->dictid;
+						$trainer_cat->code=$objcat->code;
+						$trainer_cat->label=$objcat->label;
+						$trainer_cat->description=$objcat->description;
+						$this->categories[]=$trainer_cat;
+					}
+				} else {
+					$this->errors[] = "Error " . $this->db->lasterror();
+					$error++;
+				}
+				
+				
+				$sql_inner='SELECT training.rowid as linkid, dict.rowid as trainingid,dict.ref,dict.ref_interne,dict.intitule ';
+				$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training as training';
+				$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue as dict';
+				$sql_inner.=' ON training.fk_training=dict.rowid AND training.fk_trainer='.$obj->rowid;
+				//$line->fk_socpeople
+				dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
+				$resql_inner = $this->db->query($sql_inner);
+				if ($resql_inner) {
+					while ($objcat = $this->db->fetch_object($resql_inner) ) {
+						$trainer_training = new AgfTrainerTraining();
+						$trainer_training->linkid=$objcat->linkid;
+						$trainer_training->trainingid=$objcat->trainingid;
+						$trainer_training->ref=$objcat->ref;
+						$trainer_training->ref_interne=$objcat->ref_interne;
+						$trainer_training->intitule=$objcat->intitule;
+						$this->trainings[]=$trainer_training;
+					}
+				} else {
+					$this->errors[] = "Error " . $this->db->lasterror();
+					$error++;
+				}
+				
 			}
 			$this->db->free($resql);
+		} else {
+			$this->errors[] = "Error " . $this->db->lasterror();
+			$error++;
+		}
+		
+		
+		if (empty($error)) {
 			return 1;
 		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
-			return - 1;
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			return - 1 * $error;
 		}
 	}
 	
@@ -224,6 +285,8 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
 		global $langs;
 		
+		$error=0;
+		
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
 		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civility as sp_civilite, ";
@@ -234,8 +297,9 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
 		$sql .= " WHERE f.entity IN (" . getEntity('agsession') . ")";
-		if ($arch == 0 || $arch == 1)
+		if ($arch == 0 || $arch == 1) {
 			$sql .= " AND f.archive = " . $arch;
+		}
 			
 			// Manage filter
 		if (count($filter) > 0) {
@@ -256,8 +320,9 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 				}
 			}
 		}
-		
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
+		if (!empty($sortfield)) {
+			$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
+		}
 		if (! empty($limit)) {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
@@ -266,6 +331,7 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
+			
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 			
@@ -288,8 +354,9 @@ elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 						$line->email = $obj->u_email;
 						$line->phone_mobile = $obj->u_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
-					} // trainer is Dolibarr contact
-elseif ($line->type_trainer == $this->type_trainer_def[1]) {
+					} 
+					// trainer is Dolibarr contact
+					elseif ($line->type_trainer == $this->type_trainer_def[1]) {
 						$line->spid = $obj->spid;
 						$line->name = $obj->sp_name;
 						$line->firstname = $obj->sp_firstname;
@@ -300,16 +367,69 @@ elseif ($line->type_trainer == $this->type_trainer_def[1]) {
 						$line->fk_socpeople = $obj->fk_socpeople;
 					}
 					
+					$sql_inner='SELECT cat.rowid as catid, dict.rowid as dictid,dict.code,dict.label,dict.description ';
+					$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category as cat';
+					$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict as dict';
+					$sql_inner.=' ON cat.fk_category=dict.rowid AND cat.fk_trainer='.$obj->rowid;
+					//$line->fk_socpeople
+					dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
+					$resql_inner = $this->db->query($sql_inner);
+					if ($resql_inner) {
+						while ($objcat = $this->db->fetch_object($resql_inner) ) {
+							$trainer_cat = new AgfTrainerCategorie();
+							$trainer_cat->catid=$objcat->catid;
+							$trainer_cat->dictid=$objcat->dictid;
+							$trainer_cat->code=$objcat->code;
+							$trainer_cat->label=$objcat->label;
+							$trainer_cat->description=$objcat->description;
+							$line->categories[]=$trainer_cat;
+						}
+					} else {
+						$this->errors[] = "Error " . $this->db->lasterror();
+						$error++;
+					}
+					
+					$sql_inner='SELECT training.rowid as linkid, dict.rowid as trainingid,dict.ref,dict.ref_interne,dict.intitule ';
+					$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training as training';
+					$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue as dict';
+					$sql_inner.=' ON training.fk_training=dict.rowid AND training.fk_trainer='.$obj->rowid;
+					//$line->fk_socpeople
+					dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
+					$resql_inner = $this->db->query($sql_inner);
+					if ($resql_inner) {
+						while ($objcat = $this->db->fetch_object($resql_inner) ) {
+							$trainer_training = new AgfTrainerTraining();
+							$trainer_training->linkid=$objcat->linkid;
+							$trainer_training->trainingid=$objcat->trainingid;
+							$trainer_training->ref=$objcat->ref;
+							$trainer_training->ref_interne=$objcat->ref_interne;
+							$trainer_training->intitule=$objcat->intitule;
+							$line->trainings[]=$trainer_training;
+						}
+					} else {
+						$this->errors[] = "Error " . $this->db->lasterror();
+						$error++;
+					}
+					
 					$this->lines[$i] = $line;
 					$i ++;
 				}
 			}
 			$this->db->free($resql);
+		} else {
+			$this->errors[] = "Error " . $this->db->lasterror();
+			$error++;
+		}
+		
+		
+		if (empty($error)) {
 			return $num;
 		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
-			return - 1;
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			return - 1 * $error;
 		}
 	}
 	
@@ -443,7 +563,152 @@ elseif ($line->type_trainer == $this->type_trainer_def[1]) {
 			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
 		}
 	}
+	
+	/**
+	 * 
+	 * @return number|unknown
+	 */
+	public function fetchAllCategories() {
+		
+		global $conf;
+		
+		
+		$sql = 'SELECT dict.rowid as dictid,dict.code,dict.label,dict.description ';
+		$sql.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict as dict WHERE dict.active=1';
+		
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$this->dict_categories = array ();
+				
+			$num = $this->db->num_rows($resql);
+				
+			if ($num) {
+				while ( $objcat = $this->db->fetch_object($resql) ) {
+					$trainer_cat = new AgfTrainerCategorie();
+					$trainer_cat->dictid=$objcat->dictid;
+					$trainer_cat->code=$objcat->code;
+					$trainer_cat->label=$objcat->label;
+					$trainer_cat->description=$objcat->description;
+					$this->dict_categories[]=$trainer_cat;
+				}
+			}
+		}else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
+			return - 1;
+		}
+		
+		return $num;
+	}
+	
+	/**
+	 * 
+	 * @param unknown $categories
+	 */
+	public function setTrainerCat($categories=array()) {
+		
+		global $conf;
+		
+		$error=0;
+		
+		$this->db->begin();
+		
+		
+		$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category WHERE fk_trainer='.$this->id;
+		
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
+			$error++;
+		}
+		
+		if (empty($error) && count($categories)>0) {
+			foreach($categories as $key=>$catid) {
+				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_category(fk_trainer,fk_category) ';
+				$sql .= ' VALUES ('.$this->id.','.$catid.')';
+				
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if (!$resql) {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
+					$error++;
+				}
+			}
+		}
+		
+		
+		// Commit or rollback
+		if ($error) {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return - 1 * $error;
+		} else {
+			$this->db->commit();
+			return 1;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param unknown $training
+	 */
+	public function setTrainerTraining($training=array()) {
+	
+		global $conf;
+	
+		$error=0;
+	
+		$this->db->begin();
+	
+	
+		$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training WHERE fk_trainer='.$this->id;
+	
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
+			$error++;
+		}
+	
+		if (empty($error) && count($training)>0) {
+			foreach($training as $key=>$trainingid) {
+				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_training(fk_trainer,fk_training) ';
+				$sql .= ' VALUES ('.$this->id.','.$trainingid.')';
+	
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if (!$resql) {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
+					$error++;
+				}
+			}
+		}
+	
+	
+		// Commit or rollback
+		if ($error) {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return - 1 * $error;
+		} else {
+			$this->db->commit();
+			return 1;
+		}
+	}
 }
+
 class AgfTrainerLine {
 	public $id;
 	public $type_trainer;
@@ -456,6 +721,8 @@ class AgfTrainerLine {
 	public $email;
 	public $phone_mobile;
 	public $fk_socpeople;
+	public $categories = array ();
+	public $trainings = array ();
 	public function __construct() {
 		return 1;
 	}
@@ -471,5 +738,27 @@ class AgfTrainerLine {
 		} else {
 			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
 		}
+	}
+}
+
+class AgfTrainerCategorie {
+	public $catid;
+	public $dictid;
+	public $code;
+	public $label;
+	public $description;
+	public function __construct() {
+		return 1;
+	}
+}
+
+class AgfTrainerTraining {
+	public $linkid;
+	public $trainingid;
+	public $ref;
+	public $ref_interne;
+	public $intitule;
+	public function __construct() {
+		return 1;
 	}
 }
