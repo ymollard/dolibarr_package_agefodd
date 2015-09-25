@@ -922,86 +922,87 @@ class Agefodd_session_element extends CommonObject {
 			$catid = $conf->global->AGF_CAT_PRODUCT_CHARGES;
 		}
 		
-		$sql = "SELECT";
-		$sql .= " rowid, fk_element, element_type, fk_soc ";
-		
-		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
-		$sql .= " WHERE fk_session_agefodd=" . $id;
-		
-		dol_syslog(get_class($this) . "::get_charges_amount", LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			for($i = 0; $i < $num; $i ++) {
-				
-				$obj = $this->db->fetch_object($resql);
-				
-				if ($obj->element_type == 'order') {
-					/*$order = new Commande ( $this->db );
-					$order->fetch ( $obj->fk_element );
-					$this->order_amount += $order->total_ht;*/
-				}
-				
-				if ($obj->element_type == 'propal' && $type_element == 'propal') {
-					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "propaldet as ldet WHERE ldet.fk_propal=" . $obj->fk_element;
-					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
-					dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
-					$resqlcharges = $this->db->query($sqlcharges);
-					if ($resqlcharges) {
-						$objcharges = $this->db->fetch_object($sqlcharges);
-						$total_charges += $objcharges->totalcharges;
-						$this->db->free($resqlcharges);
-					} else {
-						$this->error = "Error " . $this->db->lasterror();
-						dol_syslog(get_class($this) . "::get_charges_amount " . $this->error, LOG_ERR);
-						return - 1;
+		if (empty($catid)) {
+			$sql = "SELECT";
+			$sql .= " rowid, fk_element, element_type, fk_soc ";
+			
+			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
+			$sql .= " WHERE fk_session_agefodd=" . $id;
+			
+			dol_syslog(get_class($this) . "::get_charges_amount", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				$num = $this->db->num_rows($resql);
+				if ($num > 0) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						
+						if ($obj->element_type == 'order') {
+							/*$order = new Commande ( $this->db );
+							 $order->fetch ( $obj->fk_element );
+							 $this->order_amount += $order->total_ht;*/
+						}
+						
+						if ($obj->element_type == 'propal' && $type_element == 'propal') {
+							$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "propaldet as ldet WHERE ldet.fk_propal=" . $obj->fk_element;
+							$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
+							dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
+							$resqlcharges = $this->db->query($sqlcharges);
+							if ($resqlcharges) {
+								$objcharges = $this->db->fetch_object($sqlcharges);
+								$total_charges += $objcharges->totalcharges;
+								$this->db->free($resqlcharges);
+							} else {
+								$this->error = "Error " . $this->db->lasterror();
+								dol_syslog(get_class($this) . "::get_charges_amount " . $this->error, LOG_ERR);
+								return - 1;
+							}
+						}
+						
+						if ($obj->element_type == 'invoice' && $type_element == 'invoice') {
+							$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facturedet as ldet WHERE ldet.fk_facture=" . $obj->fk_element;
+							$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
+							dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
+							$resqlcharges = $this->db->query($sqlcharges);
+							if ($resqlcharges) {
+								$objcharges = $this->db->fetch_object($sqlcharges);
+								$total_charges += $objcharges->totalcharges;
+								$this->db->free($resqlcharges);
+							} else {
+								$this->error = "Error " . $this->db->lasterror();
+								dol_syslog(get_class($this) . "::get_charges_amount " . $this->error, LOG_ERR);
+								return - 1;
+							}
+						}
+						
+						if ($obj->element_type == 'invoice_supplier_trainer' && $type_element == 'invoice_supplier_trainer') {
+							$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facture_fourn_det as ldet WHERE ldet.fk_facture_fourn=" . $obj->fk_element;
+							$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
+							dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
+							$resqlcharges = $this->db->query($sqlcharges);
+							if ($resqlcharges) {
+								$objcharges = $this->db->fetch_object($sqlcharges);
+								$total_charges += $objcharges->totalcharges;
+								$this->db->free($resqlcharges);
+							} else {
+								$this->error = "Error " . $this->db->lasterror();
+								dol_syslog(get_class($this) . "::get_charges_amount " . $this->error, LOG_ERR);
+								return - 1;
+							}
+						}
 					}
 				}
-				
-				if ($obj->element_type == 'invoice' && $type_element == 'invoice') {
-					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facturedet as ldet WHERE ldet.fk_facture=" . $obj->fk_element;
-					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
-					dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
-					$resqlcharges = $this->db->query($sqlcharges);
-					if ($resqlcharges) {
-						$objcharges = $this->db->fetch_object($sqlcharges);
-						$total_charges += $objcharges->totalcharges;
-						$this->db->free($resqlcharges);
-					} else {
-						$this->error = "Error " . $this->db->lasterror();
-						dol_syslog(get_class($this) . "::get_charges_amount " . $this->error, LOG_ERR);
-						return - 1;
-					}
-				}
-				
-				if ($obj->element_type == 'invoice_supplier_trainer' && $type_element == 'invoice_supplier_trainer') {
-					$sqlcharges = "SELECT SUM(ldet.total_ht) as totalcharges FROM " . MAIN_DB_PREFIX . "facture_fourn_det as ldet WHERE ldet.fk_facture_fourn=" . $obj->fk_element;
-					$sqlcharges .= " AND ldet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $catid . "))";
-					dol_syslog(get_class($this) . "::get_charges_amount sqlcharges", LOG_DEBUG);
-					$resqlcharges = $this->db->query($sqlcharges);
-					if ($resqlcharges) {
-						$objcharges = $this->db->fetch_object($sqlcharges);
-						$total_charges += $objcharges->totalcharges;
-						$this->db->free($resqlcharges);
-					} else {
-						$this->error = "Error " . $this->db->lasterror();
-						dol_syslog(get_class($this) . "::get_charges_amount " . $this->error, LOG_ERR);
-						return - 1;
-					}
-				}
+				$this->db->free($resql);
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_by_session " . $this->error, LOG_ERR);
+				return - 1;
 			}
-			$this->db->free($resql);
-			
-			if (empty($total_charges))
-				$total_charges = 0;
-			
-			return $total_charges;
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_by_session " . $this->error, LOG_ERR);
-			return - 1;
 		}
+		
+		if (empty($total_charges))
+			$total_charges = 0;
+		
+		return $total_charges;
 	}
 	
 	/**
@@ -1022,12 +1023,13 @@ class Agefodd_session_element extends CommonObject {
 			dol_syslog(get_class($this) . "::updateSellingPrice invoice sell_price=" . $sell_price, LOG_DEBUG);
 		}
 		
-		/*$sell_price = $this->invoice_payed_amount;
-		dol_syslog ( get_class ( $this ) . "::updateSellingPrice invoice sell_price=" . $sell_price, LOG_DEBUG );
-		
-		if (empty ( $sell_price ))
-			$sell_price = $this->order_amount;
-		dol_syslog ( get_class ( $this ) . "::updateSellingPrice order sell_price=" . $sell_price, LOG_DEBUG );*/
+		// Save charge cost and buy
+		$total_sell_charges = 0;
+		$total_sell_charges = $this->get_charges_amount($this->fk_session_agefodd, 0, 'invoice');
+		if (empty($total_sell_charges)) {
+			$total_sell_charges = $this->get_charges_amount($this->fk_session_agefodd, 0, 'propal');
+		}
+		$total_buy_charges = $this->get_charges_amount($this->fk_session_agefodd, 0, 'invoice_supplier_trainer');
 		
 		if (empty($sell_price))
 			$sell_price = $this->propal_sign_amount;
@@ -1037,6 +1039,8 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= ' ,cost_site=\'' . price2num($this->room_cost_amount) . '\' ';
 		$sql .= ' ,cost_trainer=\'' . price2num($this->trainer_cost_amount) . '\' ';
 		$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';
+		$sql .= ' ,cost_buy_charges=\'' . price2num($total_buy_charges) . '\' ';
+		$sql .= ' ,cost_sell_charges=\'' . price2num($total_sell_charges) . '\' ';
 		$sql .= 'WHERE rowid=' . $this->fk_session_agefodd;
 		
 		dol_syslog(get_class($this) . "::updateSellingPrice", LOG_DEBUG);

@@ -1050,3 +1050,6 @@ AgfTrainingTrainer=Formateur(s)
 AgfFilterTrainerTraining=Filtre les formateurs dans les sessions
 AgfFilterTrainerTrainingHelp=Les formateurs sont affecté a des formations du catalogue et lors de l'ajout d'un formateur à une session seul les formateurs affecté à la formation du catalgue de la session sont disponible
 AgfTrainerCategoryDictHelp=Les valeur se paramétre dans le dictionnaire Agefodd - Diplôme/Compétence des formateurs
+AgfCategCostCateg=Produit de Frais (calcul marge)
+AgfCategOverheadCost=Catégorie de Service/produit comptabilisé comme Frais	 
+AgfCategOverheadCostHelp=Les services/produits classé dans ces catégories seront exclus lors du calcul du prix de "vente" et d'achat de la session, donc il ne seront pas prix en compte dans le calcul des marges
