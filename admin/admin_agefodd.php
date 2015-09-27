@@ -43,6 +43,10 @@ if (empty($conf->global->AGF_DEMO_MODE)) {
 }
 
 $action = GETPOST('action', 'alpha');
+$updatedaytodate=GETPOST('updatedaytodate');
+if (!empty($updatedaytodate)) {
+	$action='updatedaytodate';
+}
 
 if ($action == 'updateMaskType') {
 	$masktype = GETPOST('value');
@@ -488,6 +492,37 @@ if ($action == 'sessioncalendar_delete') {
 	$result = $tmpl_calendar->delete($user);
 	if ($result != 1) {
 		setEventMessage($tmpl_calendar->error, 'errors');
+	}
+}
+
+if ($action == 'updatedaytodate') {
+	
+	$weekday=GETPOST('AGF_WEEKADAY','array');
+	foreach(array(1,2,3,4,5,6,0) as $daynum) {
+		if (in_array($daynum, $weekday)) {
+			$res = dolibarr_set_const($db, 'AGF_WEEKADAY'.$daynum, '1', 'yesno', 0, '', $conf->entity);
+			if (! $res > 0)
+				$error ++;
+		} else {
+			$res = dolibarr_set_const($db, 'AGF_WEEKADAY'.$daynum, '0', 'yesno', 0, '', $conf->entity);
+			if (! $res > 0)
+				$error ++;
+		}
+	}
+	
+	foreach(array(1,2,3,4) as $shiftnum) {
+		$val=GETPOST('AGF_'.$shiftnum.'DAYSHIFT');
+		$res = dolibarr_set_const($db, 'AGF_'.$shiftnum.'DAYSHIFT', $val, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+	}
+	
+	
+	
+	if (! $error) {
+		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
+	} else {
+		setEventMessage($langs->trans("Error") . " " . $msg, 'errors');
 	}
 }
 
@@ -1549,6 +1584,59 @@ print '</table>';
 print '</td></tr>';
 print '</table>';
 print '</form>';
+
+
+print_titre($langs->trans("AgfAdminCalendarDayToDate"));
+print '<form name="daytodate" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td width="20%">' . $langs->trans("Name") . '</td>';
+print '<td>' . $langs->trans("Valeur") . '</td>';
+print "</tr>\n";
+
+print '<tr class="pair"><td>' . $langs->trans("AgfDayWeek") . '</td>';
+print '<td align="left">';
+foreach(array(1,2,3,4,5,6,0) as $daynum) {
+	if ($conf->global->{'AGF_WEEKADAY'.$daynum}==1) {
+		$checked=' checked="checked" ';
+	} else {
+		$checked='';
+	}
+	print '<input type="checkbox" '.$checked.' name="AGF_WEEKADAY[]" id="AGF_WEEKADAY" value="'.$daynum.'"/>'.$langs->trans('Day'.$daynum);
+}
+print '</td>';
+print '</tr>';
+
+print '<tr class="pair"><td>' . $langs->trans("Agf1DayShift") . '</td>';
+print '<td align="left">';
+//print $conf->global->AGF_1DAYSHIFT;
+print $formAgefodd->select_time($conf->global->AGF_1DAYSHIFT, 'AGF_1DAYSHIFT');
+print '</td>';
+print '</tr>';
+print '<tr class="impair"><td>' . $langs->trans("Agf2DayShift") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_time($conf->global->AGF_2DAYSHIFT, 'AGF_2DAYSHIFT');
+print '</td>';
+print '</tr>';
+print '<tr class="pair"><td>' . $langs->trans("Agf3DayShift") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_time($conf->global->AGF_3DAYSHIFT, 'AGF_3DAYSHIFT');
+print '</td>';
+print '</tr>';
+print '<tr class="impair"><td>' . $langs->trans("Agf4DayShift") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_time($conf->global->AGF_4DAYSHIFT, 'AGF_4DAYSHIFT');
+print '</td>';
+print '</tr>';
+
+
+print '<tr class="impair"><td colspan="2" align="right"><input type="submit" class="button" name="updatedaytodate" value="' . $langs->trans("Save") . '"></td>';
+
+print '</table>';
+print '</form>';
+
+
 
 llxFooter();
 $db->close();

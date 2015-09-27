@@ -1025,7 +1025,7 @@ class FormAgefodd extends Form {
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	public function  select_time($selectval = '', $htmlname = 'period') {
+	public function  select_time($selectval = '', $htmlname = 'period', $enabled=1) {
 		$time = 7;
 		$heuref = 23;
 		$min = 0;
@@ -1035,7 +1035,9 @@ class FormAgefodd extends Form {
 				$min = 0;
 				$time ++;
 			}
+			
 			$ftime = sprintf("%02d", $time) . ':' . sprintf("%02d", $min);
+			
 			if ($selectval == $ftime)
 				$selected = ' selected="selected"';
 			else
@@ -1043,7 +1045,13 @@ class FormAgefodd extends Form {
 			$options .= '<option value="' . $ftime . '"' . $selected . '>' . $ftime . '</option>' . "\n";
 			$min += 15;
 		}
-		return '<select class="flat" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
+		if (empty($enabled)) {
+			$disabled=' disabled="disabeld" ';
+		} else {
+			$disabled='';
+		}
+		
+		return '<select class="flat" '.$disabled.' name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 	}
 	
 	/**
