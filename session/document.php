@@ -531,6 +531,7 @@ if (! empty($id)) {
 		document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
 		document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
 		document_line($langs->trans("AgfRemiseEval"), "fiche_remise_eval");
+		document_line($langs->trans("AgfAttestationEndTrainingEmpty"), "attestationendtraining_empty");
 		
 		print '</table>' . "\n";
 		
