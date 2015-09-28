@@ -178,8 +178,8 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						                                   
 						// On met en place le cadre
 						$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-						$ep_line1 = 0.5;
-						$pdf->SetLineWidth($ep_line1);
+						//$ep_line1 = 0.5;
+						//$pdf->SetLineWidth($ep_line1);
 						
 						$height=pdf_getHeightForLogo($logo);
 						$hautcadre=30;
@@ -204,7 +204,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 						$pdf->MultiCell($this->page_largeur-$this->marge_gauche-$this->marge_droite, 4, $outputlangs->convToOutputCharset($this->emetteur->name).$outputlangs->transnoentities('AgfPDFAttestationEnd2'), 0, 'C', 0);
 						
-						$newY = $newY + 5;
+						$newY = $newY + 10;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
@@ -229,13 +229,13 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$pdf->Cell($this->width2, - 3, $this->str2, 0, 0, 'C', 0);
 						
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-						$newY = $newY + 6;
+						$newY = $newY + 10;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestation3');
 						$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 						
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
-						$newY = $newY + 10;
+						$newY = $newY + 15;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->Cell(0, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 0, 'C', 0);
 						
@@ -261,7 +261,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 							
 							// Output Rect
 							$pdf->SetLineWidth(0.0);
-							$this->_tableau($pdf, $tab_top, 5, 0, $outputlangs, 0, 0);
+							$this->_tableau($pdf, $tab_top+3, 5, 0, $outputlangs, 0, 0);
 						}
 						
 						$newY = $pdf->getY();
@@ -298,7 +298,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						}					
 						
 						//Lieu
-						$newY = $pdf->getY() + 5;
+						$newY = $pdf->getY() + 10;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 						$this->str = $outputlangs->transnoentities('Lieu :');
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
@@ -308,13 +308,11 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$this->str = $agf_place->ref_interne . ", ".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville;
 						$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 						
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->getY()+10;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
-						$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
-							
-						
+						$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);					
 						
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
@@ -323,7 +321,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$this->str = $outputlangs->transnoentities('AgfPDFAttestation8') . " " . $mysoc->name . ",";
 						//$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 						
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->getY()+10;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$this->str = $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
 						$this->str2 = date("d/m/Y");
@@ -338,8 +336,8 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						foreach($agf_session_trainer->lines as $trainer) {
 							$trainer_arr[]=$trainer->firstname ." ". $trainer->lastname;
 						}
-						$trainer_str=implode(',',$trainer_arr);
-						$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'.$trainer_str, 0, 'L', 0);
+						$trainer_str=implode("\n",$trainer_arr);
+						$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'."\n".$trainer_str, 0, 'L', 0);
 						
 						// Incrustation image tampon
 						$tampon_exitst=1;
@@ -360,7 +358,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$pdf->SetXY($this->marge_gauche, $newY);
 						$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 						$pdf->MultiCell($this->page_largeur-$this->marge_gauche-$this->marge_droite, 4, $outputlangs->transnoentities('AgfPDFAttestationEnd3'), 0, 'L', 0);
-						$newY = $pdf->getY()+2;
+						$newY = $pdf->getY()+8;
 						$pdf->SetFont('','I,B', 9);
 						$pdf->MultiCell($this->page_largeur-$this->marge_gauche-$this->marge_droite, 4, $outputlangs->transnoentities('AgfPDFAttestationEnd4'), 0, 'L', 0);
 						

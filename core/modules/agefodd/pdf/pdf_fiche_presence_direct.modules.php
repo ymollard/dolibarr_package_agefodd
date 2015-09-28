@@ -258,7 +258,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 				$pdf->line($this->marge_gauche, $nexY, $this->page_largeur-$this->marge_droite, $nexY);
 			
 				$posY = $pdf->GetY();
-				if ($posY > 232) {			
+				if ($posY >= 215) {			
 					$pdf->AddPage();
 					$this->_pagehead($pdf, $agf, 1, $outputlangs);
 					$this->_tableau($pdf, $tab_top, 40, 0, $outputlangs, 0, 0);
@@ -459,8 +459,8 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		if ($agf->dated == $agf->datef)
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytextshort');
 		else
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytextshort');
-		$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $tab_top+$tab_height*1/3+4);
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytextshort') . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytextshort');
+		$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $tab_top+$tab_height*1/3+2);
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		
 		

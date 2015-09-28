@@ -265,11 +265,13 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY()+5;
-						$text = $outputlangs->transnoentities('AgfPDFCertificate15').' '.$agf_certif->mark;
-						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
-						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+						if (!empty($agf_certif->mark)) {
+							$newY = $pdf->getY()+5;
+							$text = $outputlangs->transnoentities('AgfPDFCertificate15').' '.$agf_certif->mark;
+							$pdf->SetXY($this->marge_gauche + 1, $newY);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
+							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+						}
 						
 						$newY = $pdf->getY()+5;
 						$text = $outputlangs->transnoentities('AgfPDFCertificate16').' '.dol_print_date($agf_certif->certif_dt_end,'daytext','tzserver',$outputlangs);
@@ -289,13 +291,13 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->SetXY($this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'L');						
-						
+						$newY = $pdf->getY();
 						// Incrustation image tampon
 						if ($conf->global->AGF_INFO_TAMPON) {
 							$dir = $conf->agefodd->dir_output . '/images/';
 							$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 							if (file_exists($img_tampon))
-								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY + 5, 50);
+								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY + 1, 50);
 						}
 						
 						// Pied de page $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);

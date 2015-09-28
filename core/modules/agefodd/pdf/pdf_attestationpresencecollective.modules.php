@@ -257,7 +257,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$newY = $pdf->getY()+10;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
+			$this->str = $outputlangs->transnoentities('AgfDoneRights');
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 								
 			$newY = $pdf->getY()+5;
@@ -273,7 +273,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $newY);					
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
-			$pdf->MultiCell(0, 0, $outputlangs->transnoentities('Le formateur : ').$this->str, 0, 'L', 0);
+			$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'.$this->str, 0, 'L', 0);
 			
 			// Incrustation image tampon
 			$newY = $pdf->GetY()+5;

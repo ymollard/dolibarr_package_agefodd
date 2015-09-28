@@ -270,16 +270,17 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 				 */
 			
 			$posX = $this->marge_gauche;
-			$posY = $posY + 5;
+			$posY = $posY + 3;
 			
 			/**
 			 * *** Titre ****
 			 */
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BU', 15);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 			$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 			$pdf->SetXY($posX, $posY);
 			$this->str = $outputlangs->transnoentities('AgfRemiseEvalPDF');
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
+			$pdf->Line($this->marge_gauche + 0.5, $posY+10, $this->page_largeur - $this->marge_droite, $posY+10);
 			$posy = $pdf->getY() + 10;
 			
 			

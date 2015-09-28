@@ -88,7 +88,6 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
 	}
 	
-
 	/**
 	 * Create PDF File
 	 * 

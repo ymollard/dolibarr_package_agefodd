@@ -304,11 +304,11 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres39');
 		$pdf->MultiCell($this->posxstudenttime-$this->posxtrainername,$h_ligne, $outputlangs->convToOutputCharset($this->str),'','C');
 		$pdf->SetFont('','I',$default_font_size - 1);
-		$pdf->SetTextColor(200,0,0);
+		/*$pdf->SetTextColor(200,0,0);
 		$pdf->SetXY($this->marge_gauche, $tab_top+60);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres40');
 		$pdf->MultiCell($this->posxtrainername-$this->marge_gauche,$h_ligne, $outputlangs->convToOutputCharset($this->str),'','C');
-		$pdf->SetTextColor(0,0,0);
+		$pdf->SetTextColor(0,0,0);*/
 	
 		// Output Rect for signature
 		$this->printRect($pdf,$this->marge_gauche, $tab_top+66, $this->posxsignature+($this->posxmodulename-$this->posxsignature)/2, 24);
@@ -363,7 +363,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		 * Corps de page
 		*/
 		$posX = $this->marge_gauche;
-		$posY = $posY + 5;
+		$posY = $posY + 3;
 		
 		// Titre
 		$pdf->SetXY($posX, $posY);
@@ -371,7 +371,8 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePresPers');
 		$pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str), 0, 2, "C", 0);
-		$posY += 10;
+		$pdf->Line($this->marge_gauche + 0.5, $posY+10, $this->page_largeur - $this->marge_droite, $posY+10);
+		$posY += 13;
 		
 		// Intro
 		$pdf->SetXY($posX, $posY);
@@ -650,8 +651,8 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->SetXY($this->marge_gauche+1, $posY);
 		$pdf->MultiCell($this->posxtrainername-$this->marge_gauche,$h_ligne, $outputlangs->transnoentities("AgfPDFFichePres18").' : ','','L');
 		
-		$posY = $pdf->GetY() - 20;
-		$posX = $this->marge_gauche+80;
+		$posY = $pdf->GetY() - 17;
+		$posX = $this->marge_gauche+30;
 		
 		// Incrustation image tampon
 		if ($conf->global->AGF_INFO_TAMPON) {

@@ -82,8 +82,8 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 	/**
 	 * \brief Fonction generant le document sur le disque
 	 * \param agf Objet document a generer (ou id si ancienne methode)
-	 * outputlangs Lang object for output language
-	 * file Name of file to generate
+	 * \outputlangs		Lang object for output language
+	 * \file			Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
