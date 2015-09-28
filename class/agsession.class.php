@@ -54,6 +54,9 @@ class Agsession extends CommonObject {
 	public $cost_site;
 	public $cost_trip;
 	public $sell_price;
+	public $invoice_amount;
+	public $cost_buy_charges;
+	public $cost_sell_charges;
 	public $date_res_site = '';
 	public $is_date_res_site;
 	public $date_res_confirm_site = '';
@@ -259,8 +262,8 @@ class Agsession extends CommonObject {
 				// // End call triggers
 			}
 			
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
-{
+			// For avoid conflicts if trigger used
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
 				
 				// Fill session extrafields with customer extrafield if they are the same
 				if (! empty($this->fk_soc)) {
@@ -449,6 +452,9 @@ class Agsession extends CommonObject {
 		$sql .= " t.cost_site,";
 		$sql .= " t.cost_trip,";
 		$sql .= " t.sell_price,";
+		$sql .= " t.invoice_amount,";
+		$sql .= " t.cost_buy_charges,";
+		$sql .= " t.cost_sell_charges,";
 		$sql .= " t.date_res_site,";
 		$sql .= " t.is_date_res_site,";
 		$sql .= " t.date_res_confirm_site,";
@@ -546,6 +552,9 @@ class Agsession extends CommonObject {
 				$this->cost_site = $obj->cost_site;
 				$this->cost_trip = $obj->cost_trip;
 				$this->sell_price = $obj->sell_price;
+				$this->invoice_amount = $obj->invoice_amount;
+				$this->cost_buy_charges = $obj->cost_buy_charges;
+				$this->cost_sell_charges = $obj->cost_sell_charges;
 				$this->date_res_site = $this->db->jdate($obj->date_res_site);
 				$this->is_date_res_site = $obj->is_date_res_site;
 				$this->date_res_confirm_site = $this->db->jdate($obj->date_res_confirm_site);
@@ -2085,8 +2094,8 @@ class Agsession extends CommonObject {
 	}
 	
 	/**
-	 * \brief		Initialise object with example values
-	 * \remarks	id must be 0 if object instance is a specimen.
+	 * \brief Initialise object with example values
+	 * \remarks id must be 0 if object instance is a specimen.
 	 */
 	public function initAsSpecimen() {
 		$this->id = 0;
@@ -2139,10 +2148,13 @@ class Agsession extends CommonObject {
 		$sql .= " ,s.duree_session";
 		$sql .= " ,socp.rowid as contactid";
 		$sql .= " ,s.sell_price";
+		$sql .= " ,s.invoice_amount";
 		$sql .= " ,s.datec";
 		$sql .= " ,s.cost_trainer";
 		$sql .= " ,s.cost_site";
 		$sql .= " ,s.cost_trip";
+		$sql .= " ,s.cost_sell_charges";
+		$sql .= " ,s.cost_buy_charges";
 		$sql .= " ,s.fk_soc_requester";
 		$sql .= " ,s.fk_socpeople_requester";
 		$sql .= " ,s.fk_socpeople_presta";
@@ -2321,8 +2333,11 @@ class Agsession extends CommonObject {
 					$line->intitule_custo = $obj->intitule_custo;
 					$line->contactid = $obj->contactid;
 					$line->sell_price = $obj->sell_price;
+					$line->invoice_amount = $obj->invoice_amount;
 					$line->datec = $this->db->jdate($obj->datec);
 					$line->cost_trainer = $obj->cost_trainer;
+					$line->cost_buy_charges = $obj->cost_buy_charges;
+					$line->cost_sell_charges = $obj->cost_sell_charges;
 					$line->cost_other = $obj->cost_trip + $obj->cost_site;
 					$line->admin_task_close_session = $obj->closesessionstatus;
 					$line->trainingcolor = $obj->trainingcolor;
@@ -3962,9 +3977,9 @@ class Agsession extends CommonObject {
 			$this->avgpricedesc = "\n" . $langs->trans('AgfTaxHourHT') . ':' . price($priceht / $hour, 0, $langs, 1, - 1, 2) . $langs->getCurrencySymbol($conf->currency);
 			$this->avgpricedesc .= "\n" . $langs->trans('AgfTaxHourTTC') . ':' . price($pricettc / $hour, 0, $langs, 1, - 1, 2) . $langs->getCurrencySymbol($conf->currency);
 		} /*else {
-			$this->avgpricedesc="\n" .$langs->trans('AgfTaxHourHT').':N/A';
-			$this->avgpricedesc.="\n" .$langs->trans('AgfTaxHourTTC').':'.price($pricettc/$hour);
-		}*/
+		   $this->avgpricedesc="\n" .$langs->trans('AgfTaxHourHT').':N/A';
+		   $this->avgpricedesc.="\n" .$langs->trans('AgfTaxHourTTC').':'.price($pricettc/$hour);
+		   }*/
 		
 		return 1;
 	}
@@ -4457,9 +4472,12 @@ class AgfSessionLine {
 	public $trainersessionid;
 	public $contactid;
 	public $sell_price;
+	public $invoice_amount;
 	public $datec;
 	public $cost_trainer;
 	public $cost_other;
+	public $cost_sell_charges;
+	public $cost_buy_charges;
 	public $socrequesterid;
 	public $socrequestername;
 	public $fk_socpeople_requester;

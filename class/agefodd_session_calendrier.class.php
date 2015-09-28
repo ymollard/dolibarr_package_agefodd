@@ -375,6 +375,14 @@ class Agefodd_sesscalendar {
 			$action = new ActionComm($this->db);
 			$action->id = $this->fk_actioncomm;
 			$action->delete();
+			
+			
+			//TODO Remove when PR #3615 merge in dolbar 3.7
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "actioncomm_resources";
+			$sql .= " WHERE fk_actioncomm NOT IN (SELECT rowid from llx_actioncomm)";
+			
+			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+			$resql = $this->db->query($sql);
 		}
 		
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier";

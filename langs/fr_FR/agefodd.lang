@@ -1065,4 +1065,11 @@ Agf3DayShift=Horaire 3
 Agf4DayShift=Horaire 4
 AgfAllDeletePeriod=Supprimer tous les creneaux
 AgfConfirmAllDeletePeriod=Etes vous sure de supprimer toute les périodes ?
+AgfAmoutHTHF=Montant HT & HF
+AgfCostTrainer=Coût formateur(s)/trice(s)
+AgfCostOther=Coût autre(s)
+AgfFactAmount=Montant fact. HT & HF
+AgfMargin=Marge
+AgfHideMarginInfo=Caché les colonne de marges et coûts
+AgfDisplayMarginInfo=Affiché les colonne de marges et coûts
 

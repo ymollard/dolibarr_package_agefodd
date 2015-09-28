@@ -1144,6 +1144,14 @@ class modAgefodd extends DolibarrModules {
 		$this->rights [$r] [4] = 'session';
 		$this->rights [$r] [5] = 'all';
 		
+		$r ++;
+		$this->rights [$r] [0] = 103016;
+		$this->rights [$r] [1] = 'See session margin';
+		$this->rights [$r] [2] = 'r';
+		$this->rights [$r] [3] = 1;
+		$this->rights [$r] [4] = 'session';
+		$this->rights [$r] [5] = 'margin';
+		
 		// Main menu entries
 		$this->menus = array ();
 		$r = 0;

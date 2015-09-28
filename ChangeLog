@@ -10,6 +10,7 @@ English Dolibarr ChangeLog
 -New : Add trainer diploma management (dictionnay)
 -New : Add option to link trainer  to training catalogue (to filter trainer list on trainer session affectation)
 -New : New session calendar generation feature
+-New : in session list display cost information
 
 ***** ChangeLog for 2.1.13 compared to 2.1.12 *****
 -Fix : Fix session agenda bug

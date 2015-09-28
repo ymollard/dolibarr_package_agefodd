@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   cost_site double(24,8) DEFAULT 0,
   cost_trip double(24,8) NULL,    
   sell_price double(24,8) DEFAULT 0, 
+  invoice_amount double(24,8) DEFAULT 0, 
   cost_buy_charges double(24,8) DEFAULT 0, 
   cost_sell_charges double(24,8) DEFAULT 0, 
   is_date_res_site smallint NOT NULL DEFAULT 0,

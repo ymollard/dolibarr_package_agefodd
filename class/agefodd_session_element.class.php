@@ -1018,8 +1018,10 @@ class Agefodd_session_element extends CommonObject {
 		
 		// Par defaut si montant facturé non payé ou facturé payé => prix de vent c'est facturé non payé + facturé payé
 		// Sinon montant total propal
+		$invoiced_amount=0;
 		if ((! empty($this->invoice_payed_amount) || (! empty($this->invoice_ongoing_amount)))) {
 			$sell_price = $this->invoice_payed_amount + $this->invoice_ongoing_amount;
+			$invoiced_amount=$sell_price;
 			dol_syslog(get_class($this) . "::updateSellingPrice invoice sell_price=" . $sell_price, LOG_DEBUG);
 		}
 		
@@ -1036,6 +1038,7 @@ class Agefodd_session_element extends CommonObject {
 		dol_syslog(get_class($this) . "::updateSellingPrice propal sell_price=" . $sell_price, LOG_DEBUG);
 		
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session SET sell_price=\'' . price2num($sell_price) . '\' ';
+		$sql .= ' ,invoice_amount=\'' . price2num($invoiced_amount) . '\' ';
 		$sql .= ' ,cost_site=\'' . price2num($this->room_cost_amount) . '\' ';
 		$sql .= ' ,cost_trainer=\'' . price2num($this->trainer_cost_amount) . '\' ';
 		$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';

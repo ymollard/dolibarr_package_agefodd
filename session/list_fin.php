@@ -314,7 +314,7 @@ if ($resql != - 1) {
 		if ($line->color && ((($couleur_rgb[0] * 299) + ($couleur_rgb[1] * 587) + ($couleur_rgb[2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
 		
-		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
 		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';

@@ -398,10 +398,10 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [2] = 'attributecursus';
 	$h ++;
 	
-	//$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catcost.php", 1);
-	//$head [$h] [1] = $langs->trans("AgfCategCostCateg");
-	//$head [$h] [2] = 'catcost';
-	//$h ++;
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catcost.php", 1);
+	$head [$h] [1] = $langs->trans("AgfCategCostCateg");
+	$head [$h] [2] = 'catcost';
+	$h ++;
 	
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/about.php", 1);
 	$head [$h] [1] = $langs->trans("About");

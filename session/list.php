@@ -161,17 +161,31 @@ $formother = new FormOther($db);
 
 if ($status_view == 1) {
 	$title = $langs->trans("AgfMenuSessDraftList");
+	if (empty($sortorder))
+		$sortorder = "ASC";
+	if (empty($sortfield))
+		$sortfield = "s.datec";
 } elseif ($status_view == 2) {
 	$title = $langs->trans("AgfMenuSessConfList");
 } elseif ($status_view == 3) {
 	$title = $langs->trans("AgfMenuSessNotDoneList");
 } elseif ($status_view == 4) {
 	$title = $langs->trans("AgfMenuSessArch");
+	if (empty($sortorder))
+		$sortorder = "DESC";
+	if (empty($sortfield))
+		$sortfield = "s.datec";
 } else {
 	$title = $langs->trans("AgfMenuSess");
 }
 
 llxHeader('', $title);
+
+
+if (empty($sortorder))
+	$sortorder = "ASC";
+if (empty($sortfield))
+	$sortfield = "s.dated";
 
 if ($training_view && ! empty($search_training_ref)) {
 	$agf = new Agefodd($db);
@@ -206,6 +220,46 @@ $nbtotalofrecords = 0;
 
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter, $user);
+	if ($user->rights->agefodd->session->margin) {
+		$total_sellprice=0;
+		$total_costtrainer=0;
+		$total_costother=0;
+		$total_facththf=0;
+		$total_margin=0;
+		$total_percentmargin=0;
+		foreach ( $agf->lines as $line ) {
+			if ($line->rowid != $oldid) {
+				$total_sellprice+=$line->sell_price;
+				$total_costtrainer+=$line->cost_trainer;
+				$total_costother+=$line->cost_other;
+				
+				$amount_act_invoiced_less_charges=0;
+				if (! empty($line->cost_sell_charges) && $line->cost_sell_charges <= $line->invoice_amount) {
+					$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
+				} else {
+					$amount_act_invoiced_less_charges = $line->invoice_amount;
+				}
+				$total_facththf += $amount_act_invoiced_less_charges;
+				
+				
+				if ($line->invoice_amount > 0) {
+					$margin = $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
+				} else {
+					$margin = 0;
+				}
+				$total_margin += $margin;
+				
+				$oldid=$line->rowid;
+			}
+		}
+		if (!empty($total_facththf)) {
+			$total_percentmargin=price((($total_margin * 100) / $total_facththf), 0, $langs, 1, 0, 1).'%';
+		} else {
+			$total_percentmargin='n/a';
+		}
+	}
+	
+	
 }
 $resql = $agf->fetch_all($sortorder, $sortfield, $conf->liste_limit, $offset, $filter, $user);
 
@@ -288,12 +342,27 @@ if ($resql != - 1) {
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
 	$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
 	$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
-	
+	if ($user->rights->agefodd->session->margin) {
+		$moreforfilter .= '<span id="showhidemargininfo" style="cursor:pointer">'.$langs->transnoentities('AgfDisplayMarginInfo').'</span>';
+	}
 	if ($moreforfilter) {
 		print '<div class="liste_titre">';
 		print $moreforfilter;
 		print '</div>';
 	}
+	
+	print '<script type="text/javascript">'."\n";
+	print '$(document).ready(function () {'."\n";
+	print '	$(\'#showhidemargininfo\').click(function(){'."\n";
+	print '		$(\'[name*=margininfo]\').toggle();'."\n";
+	print '		if ($(this).text()==\''.$langs->transnoentities('AgfDisplayMarginInfo').'\') {'."\n";
+	print '			$(this).text(\''.$langs->transnoentities('AgfHideMarginInfo').'\');'."\n";
+	print '		} else {'."\n";
+	print '			$(this).text(\''.$langs->transnoentities('AgfDisplayMarginInfo').'\');'."\n";
+	print '		}'."\n";
+	print '	});'."\n";
+	print '});'."\n";
+	print '</script>'."\n";
 	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
@@ -310,6 +379,13 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVEUR ['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
+	if ($user->rights->agefodd->session->margin) {
+		print_liste_field_titre($langs->trans("AgfAmoutHTHF"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1" style="display:none" ', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfCostTrainer"), $_SERVER ['PHP_SELF'], "s.cost_trainer", "", $option, ' name="margininfo2" style="display:none" ', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfCostOther"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo3" style="display:none" ', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFactAmount"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo4" style="display:none" ', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfMargin"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo5" style="display:none" ', $sortfield, $sortorder);
+	}
 	print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print "</tr>\n";
 	
@@ -357,6 +433,23 @@ if ($resql != - 1) {
 	print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
 	print '</td>';
 	
+	if ($user->rights->agefodd->session->margin) {
+		print '<td class="liste_titre" name="margininfo6" style="display:none">';
+		print '</td>';
+		
+		print '<td class="liste_titre" name="margininfo7"  style="display:none">';
+		print '</td>';
+		
+		print '<td class="liste_titre" name="margininfo8"  style="display:none">';
+		print '</td>';
+		
+		print '<td class="liste_titre" name="margininfo9"  style="display:none">';
+		print '</td>';
+		
+		print '<td class="liste_titre" name="margininfo10"  style="display:none">';
+		print '</td>';
+	}
+	
 	print '<td class="liste_titre">';
 	print '</td>';
 	
@@ -369,6 +462,7 @@ if ($resql != - 1) {
 	print '</form>';
 	
 	$var = true;
+	$oldid=0;
 	foreach ( $agf->lines as $line ) {
 		
 		if ($line->rowid != $oldid) {
@@ -402,7 +496,7 @@ if ($resql != - 1) {
 				$trainer->fetch($line->trainerrowid);
 			}
 			if (! empty($trainer->id)) {
-				print ucfirst(strtolower($trainer->civilite)) . ' ' . strtoupper($trainer->name) . ' ' . ucfirst(strtolower($trainer->firstname));
+				print $trainer->getNomUrl();
 			} else {
 				print '&nbsp;';
 			}
@@ -426,6 +520,42 @@ if ($resql != - 1) {
 			print '</td>';
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
 			print '<td>' . $line->nb_stagiaire . '</td>';
+			
+			if ($user->rights->agefodd->session->margin) {
+				print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" style="display:none">' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				print '<td  nowrap="nowrap"  name="margininfoline2'.$line->rowid.'" style="display:none">' . price($line->cost_trainer,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				print '<td  nowrap="nowrap"  name="margininfoline3'.$line->rowid.'" style="display:none">' . price($line->cost_other,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				print '<td  nowrap="nowrap"  name="margininfoline4'.$line->rowid.'" style="display:none">';
+				$amount_act_invoiced_less_charges=0;
+				// Remove charges of product of category 'frais'
+				if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
+					$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
+				} else {
+					$amount_act_invoiced_less_charges = $line->invoice_amount;
+				}
+				$totalfacththf += $amount_act_invoiced_less_charges;
+				
+				if ($amount_act_invoiced_less_charges == 0 && $line->sell_price!=0) {
+					$bgfact = 'red';
+				} else {
+					$bgfact = '';
+				}
+				print '<font style="color:' . $bgfact . '">' . price($amount_act_invoiced_less_charges,0, $langs, 1, -1, -1, 'auto'). '</font>';
+				print '</td>';
+				
+				
+				print '<td nowrap="nowrap"  name="margininfoline5'.$line->rowid.'" style="display:none">';
+				if ($line->invoice_amount > 0) {
+					$margin = $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
+					$percentmargin = price((($margin * 100) / $line->invoice_amount), 0, $langs, 1, 0, 1) . '%';
+				} else {
+					$margin = 0;
+					$percentmargin = "n/a";
+				}
+				print price($margin,0, '', 1, -1, -1, 'auto') . '(' . $percentmargin . ')';
+				print '</td>';
+			}
+			
 			if (! empty($line->nb_subscribe_min)) {
 				if ($line->nb_confirm >= $line->nb_subscribe_min) {
 					$style = 'style="background: green"';
@@ -435,6 +565,7 @@ if ($resql != - 1) {
 			} else {
 				$style = '';
 			}
+			
 			print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
 			print "</tr>\n";
 		} else {
@@ -447,7 +578,7 @@ if ($resql != - 1) {
 				$trainer->fetch($line->trainerrowid);
 			}
 			if (! empty($trainer->id)) {
-				print ucfirst(strtolower($trainer->civilite)) . ' ' . strtoupper($trainer->name) . ' ' . ucfirst(strtolower($trainer->firstname));
+				print $trainer->getNomUrl();
 			} else {
 				print '&nbsp;';
 			}
@@ -461,6 +592,13 @@ if ($resql != - 1) {
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
+			if ($user->rights->agefodd->session->margin) {
+				print '<td name="margininfolineb1'.$line->rowid.'" style="display:none"></td>';
+				print '<td name="margininfolineb2'.$line->rowid.'" style="display:none"></td>';
+				print '<td name="margininfolineb3'.$line->rowid.'" style="display:none"></td>';
+				print '<td name="margininfolineb4'.$line->rowid.'" style="display:none"></td>';
+				print '<td name="margininfolineb5'.$line->rowid.'" style="display:none"></td>';
+			}
 			print '<td></td>';
 			print "</tr>\n";
 		}
@@ -469,7 +607,30 @@ if ($resql != - 1) {
 		
 		$i ++;
 	}
-	
+	if ($user->rights->agefodd->session->margin) {
+		print '<tr class="liste_total" name="margininfototal" style="display:none">';
+		print '<td>'.$langs->trans('Total').'</td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		if ($user->rights->agefodd->session->margin) {
+			print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
+			print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
+			print '<td nowrap="nowrap">'.price($total_costother,0, '', 1, -1, -1, 'auto').'</td>';
+			print '<td nowrap="nowrap">'.price($total_facththf,0, '', 1, -1, -1, 'auto').'</td>';
+			print '<td nowrap="nowrap">'.price($total_margin,0, '', 1, -1, -1, 'auto').'(' . $total_percentmargin . ')'.'</td>';
+		}
+		print '<td></td>';
+		print "</tr>\n";
+	}
 	print "</table>";
 } else {
 	setEventMessage($agf->error, 'errors');
