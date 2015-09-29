@@ -169,9 +169,8 @@ class Agefodd extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
-		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
-{
+		// For avoid conflicts if trigger used
+		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
 			$result = $this->insertExtraFields();
 			if ($result < 0) {
 				$error ++;
@@ -364,7 +363,6 @@ class Agefodd extends CommonObject {
 		$sql .= " nb_subscribe_min=" . (! empty($this->nb_subscribe_min) ? $this->nb_subscribe_min : "null") . ",";
 		$sql .= " fk_c_category=" . (! empty($this->fk_c_category) ? $this->fk_c_category : "null") . ",";
 		$sql .= " certif_duration=" . (! empty($this->certif_duration) ? "'" . $this->certif_duration . "'" : "null") . ",";
-		;
 		$sql .= " color=" . (! empty($this->color) ? "'" . $this->color . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 		
@@ -377,8 +375,8 @@ class Agefodd extends CommonObject {
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 		
-		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
-{
+		// For avoid conflicts if trigger used
+		if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
 			$result = $this->insertExtraFields();
 			if ($result < 0) {
 				$error ++;
@@ -435,8 +433,8 @@ class Agefodd extends CommonObject {
 		
 		// Removed extrafields
 		if (! $error) {
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
-{
+			// For avoid conflicts if trigger used
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
 				$this->id = $id;
 				$result = $this->deleteExtraFields();
 				if ($result < 0) {
@@ -760,8 +758,8 @@ class Agefodd extends CommonObject {
 		// Manage filter
 		if (! empty($filter)) {
 			foreach ( $filter as $key => $value ) {
-				if ($key == 'c.datec') // To allow $filter['YEAR(s.dated)']=>$year
-{
+				// To allow $filter['YEAR(s.dated)']=>$year
+				if ($key == 'c.datec') {
 					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date($value, '%Y-%m-%d') . '\'';
 				} elseif ($key == 'c.duree' || $key == 'c.fk_c_category') {
 					$sql .= ' AND ' . $key . ' = ' . $value;
@@ -967,17 +965,17 @@ class Agefodd extends CommonObject {
 		}
 		
 		if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
-			$source->id=$fromid;
+			$source->id = $fromid;
 			$result_trainer = $source->fetchTrainer();
 			if ($result_trainer < 0) {
 				$this->errors[] = $source->error;
 				$error ++;
 			}
 			foreach ( $source->trainers as $trainer ) {
-				$trainer_array[$trainer->id]=$trainer->id;
+				$trainer_array[$trainer->id] = $trainer->id;
 			}
-			$object->id=$newid;
-			$result_trainer=$object->setTrainingTrainer($trainer_array);
+			$object->id = $newid;
+			$result_trainer = $object->setTrainingTrainer($trainer_array);
 			if ($result_trainer < 0) {
 				$this->errors[] = $object->error;
 				$error ++;
@@ -1061,13 +1059,11 @@ class Agefodd extends CommonObject {
 		}
 	}
 	
-
 	/**
-	 * 
+	 *
 	 * @return number
 	 */
 	public function fetchTrainer() {
-		
 		global $conf;
 		require_once 'agefodd_formateur.class.php';
 		
@@ -1077,9 +1073,8 @@ class Agefodd extends CommonObject {
 		$sql .= ' ON f.rowid=link.fk_trainer AND link.fk_training=' . $this->id;
 		$sql .= " WHERE f.entity IN (" . getEntity('agsession') . ")";
 		
-		
 		// $line->fk_socpeople
-		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -1087,19 +1082,18 @@ class Agefodd extends CommonObject {
 			
 			while ( $obj = $this->db->fetch_object($resql) ) {
 				$trainer = new Agefodd_teacher($this->db);
-				$result=$trainer->fetch($obj->fk_trainer);
-				if ($result<0) {
+				$result = $trainer->fetch($obj->fk_trainer);
+				if ($result < 0) {
 					$this->errors[] = "Error " . $this->db->lasterror();
-					$error++;
+					$error ++;
 				}
 				$this->trainers[] = $trainer;
 			}
 		} else {
 			$this->errors[] = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
-			$error++;
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			$error ++;
 		}
-		
 		
 		if (empty($error)) {
 			return $num;
@@ -1110,7 +1104,6 @@ class Agefodd extends CommonObject {
 			}
 			return - 1 * $error;
 		}
-		
 	}
 }
 class AgfObjPedaLine {

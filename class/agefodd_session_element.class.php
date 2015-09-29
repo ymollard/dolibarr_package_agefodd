@@ -1158,4 +1158,3 @@ class AgefoddElementInvoiceLine {
 	public $ref;
 	public $ref_supplier;
 }
-?>
