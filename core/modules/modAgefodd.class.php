@@ -453,7 +453,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '';
 		$this->const [$r] [3] = 'Cat product charges';
-		$this->const [$r] [4] = 1;
+		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		
 		$r ++;
@@ -469,7 +469,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '08:00';
 		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 1;
+		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		$r ++;
 		
@@ -477,7 +477,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '12:00';
 		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 1;
+		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		$r ++;
 		
@@ -485,7 +485,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [1] = "yesno";
 		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 1;
+		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		$r ++;
 		
@@ -493,7 +493,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '14:00';
 		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 1;
+		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		$r ++;
 		
@@ -501,7 +501,7 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '18:00';
 		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 1;
+		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
 		$r ++;
 		
@@ -515,7 +515,7 @@ class modAgefodd extends DolibarrModules {
 				$this->const [$r] [2] = '1';
 			}
 			$this->const [$r] [3] = '';
-			$this->const [$r] [4] = 1;
+			$this->const [$r] [4] = 0;
 			$this->const [$r] [5] = 0;
 			$r ++;
 		}
