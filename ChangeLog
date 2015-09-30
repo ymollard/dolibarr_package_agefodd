@@ -12,6 +12,7 @@ English Dolibarr ChangeLog
 -New : New session calendar generation feature
 -New : In session list display cost information (enabled by right management)
 -New : Add End training attestation empty
+-New : Can merge training programme to proposal PDF
 
 ***** ChangeLog for 2.1.13 compared to 2.1.12 *****
 -Fix : Fix session agenda bug

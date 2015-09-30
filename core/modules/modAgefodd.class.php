@@ -87,7 +87,9 @@ class modAgefodd extends DolibarrModules {
 		$this->module_parts = array (
 				'triggers' => 1,
 				'hooks' => array (
-						'searchform' 
+						'searchform',
+						'pdfgeneration',
+						'propalcard'
 				) 
 		);
 		

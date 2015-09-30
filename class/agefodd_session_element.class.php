@@ -322,11 +322,11 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " rowid, fk_session_agefodd, fk_soc ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 			$sql .= " WHERE fk_element = " . $id;
-			if ($type == 'bc') {
+			if ($type == 'bc' || $type=='order') {
 				$sql .= " AND element_type='order'";
-			} elseif ($type == 'fac') {
+			} elseif ($type == 'fac' || $type=='invoice') {
 				$sql .= " AND element_type='invoice'";
-			} elseif ($type == 'prop') {
+			} elseif ($type == 'prop' || $type=='propal') {
 				$sql .= " AND element_type='propal'";
 			} elseif ($type == 'invoice_supplier_trainer') {
 				$sql .= " AND element_type='invoice_supplier_trainer'";

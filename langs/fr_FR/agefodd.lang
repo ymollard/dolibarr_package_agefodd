@@ -1074,3 +1074,7 @@ AgfHideMarginInfo=Caché les colonne de marges et coûts
 AgfDisplayMarginInfo=Affiché les colonne de marges et coûts
 AgfDoneRights=Fait pour servir et valoir ce que droit
 AgfAttestationEndTrainingEmpty=Attestation de fin de formation vierge
+AgfAddTrainingProgram=Compléter avec le programme de formation de la session %s
+AgfAddTrainingProgramNotExists=Le programme de foramtion de la session %s n'existe pas
+AgfAddTrainingProgramMod=complétér le programme de formation (avec module) de la session %s
+AgfAddTrainingProgramModNotExists=Le programme de formation (avec module) de la session %s n'existe pas
