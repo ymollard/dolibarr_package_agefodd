@@ -1,6 +1,9 @@
 English Dolibarr ChangeLog
 
 ***** ChangeLog for 2.1.14 compared to 2.1.13 *****
+Fix : Fix training colors
+
+***** ChangeLog for 2.1.14 compared to 2.1.13 *****
 -Fix : Fix logo on PDF
 -Fix : Add option to output only product line on convention
 -New : Add status DONE for training session
