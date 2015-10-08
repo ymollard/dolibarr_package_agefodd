@@ -47,7 +47,12 @@ $id = GETPOST('id', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $form_update_x = GETPOST('form_update_x', 'alpha');
 $form_add_x = GETPOST('form_add_x', 'alpha');
-
+$period_add=GETPOST('period_add_x','alpha');
+$period_update=GETPOST('period_update_x','alpha');
+$newform_var=GETPOST('newform');
+$opsid_var=GETPOST('opsid');
+$form_remove_var=GETPOST('form_remove');
+$period_remove=GETPOST('period_remove');
 $newperiod = GETPOST('newperiod');
 
 /*
@@ -107,7 +112,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 
 if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
 	
-	if ($_POST ["period_add_x"]) {
+	if (!empty($period_add)) {
 		$error = 0;
 		$error_message = '';
 		
@@ -163,7 +168,7 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
 		}
 	}
 	
-	if ($_POST ["period_update_x"]) {
+	if (!empty($period_update)) {
 		
 		$modperiod = GETPOST('modperiod', 'int');
 		$date_session = dol_mktime(0, 0, 0, GETPOST('datemonth', 'int'), GETPOST('dateday', 'int'), GETPOST('dateyear', 'int'));
@@ -353,15 +358,20 @@ if (! empty($id)) {
 	/*
 	 * Confirm delete calendar
 	*/
-	if (!empty(GETPOST('period_remove'))) {
+	
+	if (!empty($period_remove)) {
 		// Param url = id de la periode à supprimer - id session
 		$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . '?modperiod=' . GETPOST('modperiod') . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
 		if ($ret == 'html')
 			print '<br>';
 	}
-	if ($action=='edit_calendrier' && (!empty(GETPOST('rowf')) || !empty(GETPOST('trainerid')))) {
+	
+	$rowf_var=GETPOST('rowf');
+	$trainerid_var=GETPOST('trainerid');
+	if ($action=='edit_calendrier' && (!empty($rowf_var) || !empty($trainerid_var))) {
 		
-		$anchroid=empty(GETPOST('rowf')?GETPOST('trainerid'):GETPOST('rowf'));
+		
+		$anchroid=empty($rowf_var?$trainerid_var:$rowf_var);
 		
 		print '<script type="text/javascript">
 						jQuery(document).ready(function () {
@@ -376,12 +386,14 @@ if (! empty($id)) {
 	if ($action == 'edit') {
 		
 		
+		
+		
 		print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {'."\n";
-		if (! empty(GETPOST('newform'))) {
+		if (! empty($newform_var)) {
 			print '				 $(\'html, body\').animate({scrollTop: $("#anchornewform").offset().top}, 500,\'easeInOutCubic\');';
-		} elseif (!empty(GETPOST('opsid')) && empty(GETPOST('form_remove'))) {
+		} elseif (!empty($opsid_var) && empty($form_remove_var)) {
 			print '				 $(\'html, body\').animate({scrollTop: $("#anchoropsid' . GETPOST('opsid') . '").offset().top}, 500,\'easeInOutCubic\');';
 		} 			
 		print '			});
@@ -392,7 +404,7 @@ if (! empty($id)) {
 		/*
 		 * Confirm Delete
 		*/
-		if (GETPOST('form_remove')) {
+		if (!empty($form_remove_var)) {
 			// Param url = id de la ligne formateur dans session - id session
 			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?opsid=" . GETPOST('opsid') . '&id=' . $id, $langs->trans("AgfDeleteForm"), $langs->trans("AgfConfirmDeleteForm"), "confirm_delete_form", '', '', 1);
 			if ($ret == 'html')
@@ -411,7 +423,7 @@ if (! empty($id)) {
 		$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 		if ($nbform > 0) {
 			for($i = 0; $i < $nbform; $i ++) {
-				if ($formateurs->lines [$i]->opsid == GETPOST('opsid') && !empty(GETPOST('form_remove')))
+				if ($formateurs->lines [$i]->opsid == GETPOST('opsid') && !empty($form_remove_var))
 					print '<tr bgcolor="#d5baa8">';
 				else
 					print '<tr>';
@@ -424,7 +436,7 @@ if (! empty($id)) {
 				
 				//Edit line
 				
-				if ($formateurs->lines [$i]->opsid == GETPOST('opsid') && empty(GETPOST('form_remove'))) {
+				if ($formateurs->lines [$i]->opsid == GETPOST('opsid') && empty($form_remove_var)) {
 					print '<td width="600px" style="border-right: 0px">';
 					print '<input type="hidden" name="opsid" value="' . $formateurs->lines [$i]->opsid . '">' . "\n";
 					
@@ -527,7 +539,7 @@ if (! empty($id)) {
 		}
 		
 		// New trainers
-		if (!empty(GETPOST('newform')) && ! empty($user->rights->agefodd->modifier)) {
+		if (!empty($newform_var) && ! empty($user->rights->agefodd->modifier)) {
 			print '<tr>';
 			
 			print '<td width="20px" align="center"><a id="anchornewform" name="anchornewform"/>' . ($i + 1) . '</td>';
@@ -555,7 +567,7 @@ if (! empty($id)) {
 		
 		print '</table>';
 		print '</form>' . "\n";
-		if (empty(GETPOST('newform')) && ! empty($user->rights->agefodd->modifier)) {
+		if (empty($newform_var) && ! empty($user->rights->agefodd->modifier)) {
 			print '</div>';
 			print '<table style="border:0;" width="100%">';
 			print '<tr><td align="right">';
@@ -652,13 +664,13 @@ if (! empty($id)) {
 						$old_date = 0;
 						$duree = 0;
 						for($j = 0; $j < $blocNumber; $j ++) {
-							if ($calendrier->lines [$j]->id == GETPOST('modperiod') && !empty(GETPOST('period_remove')))
+							if ($calendrier->lines [$j]->id == GETPOST('modperiod') && !empty($period_remove))
 								print '<tr bgcolor="#d5baa8">' . "\n";
 							else
 								print '<tr>' . "\n";
 							
 							
-							if ($calendrier->lines [$j]->id == GETPOST('modperiod') && empty(GETPOST('period_remove'))) {
+							if ($calendrier->lines [$j]->id == GETPOST('modperiod') && empty($period_remove)) {
 								print '<td  width="20%">' . $langs->trans("AgfPeriodDate") . ' '. "\n";
 								$form->select_date($calendrier->lines [$j]->date_session, 'date', '', '', '', 'obj_update_' . $j);
 								
