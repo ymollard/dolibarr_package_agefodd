@@ -508,7 +508,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 							$heure_tmp_arr = explode(':', $datedaytodate2d);
 							$agf->heured = dol_mktime($heure_tmp_arr [0], $heure_tmp_arr [1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 							$heure_tmp_arr = explode(':', $datedaytodate2f);
-							$agf->heured = dol_mktime($heure_tmp_arr [0], $heure_tmp_arr [1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+							$agf->heuref = dol_mktime($heure_tmp_arr [0], $heure_tmp_arr [1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 							
 							$result = $agf->create($user);
 							if ($result < 0) {

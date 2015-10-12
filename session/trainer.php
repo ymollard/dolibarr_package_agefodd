@@ -371,7 +371,7 @@ if (! empty($id)) {
 	if ($action=='edit_calendrier' && (!empty($rowf_var) || !empty($trainerid_var))) {
 		
 		
-		$anchroid=empty($rowf_var?$trainerid_var:$rowf_var);
+		$anchroid=empty($rowf_var)?$trainerid_var:$rowf_var;
 		
 		print '<script type="text/javascript">
 						jQuery(document).ready(function () {
