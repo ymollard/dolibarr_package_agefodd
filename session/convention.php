@@ -705,7 +705,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				}
 			}
 			print '</select>';
-			if (!empty($agf->fk_product)) {
+			if (!empty($agf_session->fk_product)) {
 				print '<BR>';
 				print '<input type="checkbox" value="1" name="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
 			}
