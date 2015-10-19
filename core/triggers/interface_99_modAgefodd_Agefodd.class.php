@@ -498,56 +498,59 @@ class InterfaceAgefodd {
 		} elseif ($action == 'PROPAL_CLOSE_SIGNED') {
 			
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-			
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-			$agf_fin = new Agefodd_session_element($this->db);
-			$agf_fin->fetch_element_by_id($object->id, 'prop');
-			
-			if (count($agf_fin->lines) > 0) {
-				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+			if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->id, 'prop');
 				
-				$session_sta = new Agefodd_session_stagiaire($this->db);
-				$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
-				// Set trainee status to confirm
-				$session_sta->update_status_by_soc($user, 0, $object->socid, 2);
-				
-				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
-				// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
-				$agf_fin->updateSellingPrice($user);
+				if (count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+					
+					$session_sta = new Agefodd_session_stagiaire($this->db);
+					$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+					// Set trainee status to confirm
+					$session_sta->update_status_by_soc($user, 0, $object->socid, 2);
+					
+					$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+					// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
+					$agf_fin->updateSellingPrice($user);
+				}
 			}
 			
 			return 1;
 		} elseif ($action == 'PROPAL_CLOSE_REFUSED') {
 			
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-			
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-			$agf_fin = new Agefodd_session_element($this->db);
-			$agf_fin->fetch_element_by_id($object->id, 'prop');
-			
-			if (count($agf_fin->lines) > 0) {
-				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+			if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->id, 'prop');
 				
-				$session_sta = new Agefodd_session_stagiaire($this->db);
-				$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
-				$session_sta->update_status_by_soc($user, 0, $object->socid, 6);
+				if (count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+					
+					$session_sta = new Agefodd_session_stagiaire($this->db);
+					$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+					$session_sta->update_status_by_soc($user, 0, $object->socid, 6);
+				}
 			}
 			
 			return 1;
 		} elseif ($action == 'PROPAL_REOPEN') {
 			
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-			
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-			$agf_fin = new Agefodd_session_element($this->db);
-			$agf_fin->fetch_element_by_id($object->id, 'prop');
-			
-			if (count($agf_fin->lines) > 0) {
-				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+			if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->id, 'prop');
 				
-				$session_sta = new Agefodd_session_stagiaire($this->db);
-				$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
-				$session_sta->update_status_by_soc($user, 0, $object->socid, 0);
+				if (count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+					
+					$session_sta = new Agefodd_session_stagiaire($this->db);
+					$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+					$session_sta->update_status_by_soc($user, 0, $object->socid, 0);
+				}
 			}
 			
 			return 1;
