@@ -3752,7 +3752,7 @@ class Agsession extends CommonObject {
 				$desc .= '-' . dol_print_date($this->datef, 'day');
 			}
 			
-			$propal->ref_client = $desc;
+			$propal->ref_client = str_replace("\n",' ',$desc);
 			
 			if (! empty($this->duree_session)) {
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
