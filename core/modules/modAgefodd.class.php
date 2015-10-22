@@ -469,7 +469,7 @@ class modAgefodd extends DolibarrModules {
 		
 		$this->const [$r] [0] = "AGF_1DAYSHIFT";
 		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '08:00';
+		$this->const [$r] [2] = '09:00';
 		$this->const [$r] [3] = '';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
@@ -502,6 +502,14 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [0] = "AGF_4DAYSHIFT";
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '18:00';
+		$this->const [$r] [3] = '';
+		$this->const [$r] [4] = 0;
+		$this->const [$r] [5] = 0;
+		$r ++;
+		
+		$this->const [$r] [0] = "AGF_REF_PROPAL_AUTO";
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = '';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
