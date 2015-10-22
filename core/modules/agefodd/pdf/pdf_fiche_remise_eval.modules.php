@@ -188,7 +188,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 				}
 				if (! empty($image_name)) {
 					$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
-					if (is_readable($otherlogo) && $otherlogo!=$logo) {
+					if (is_readable($otherlogo) && $otherlogo != $logo) {
 						$logo_height = pdf_getHeightForLogo($otherlogo);
 						$width_otherlogo = pdf_getWidthForLogo($otherlogo);
 						if ($width_otherlogo > 0 && $width_logo > 0) {
@@ -266,8 +266,8 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$pdf->SetXY($baseline_x, $baseline_y);
 			
 			/*
-				 * Corps de page
-				 */
+			 * Corps de page
+			 */
 			
 			$posX = $this->marge_gauche;
 			$posY = $posY + 3;
@@ -280,9 +280,8 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$this->str = $outputlangs->transnoentities('AgfRemiseEvalPDF');
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
-			$pdf->Line($this->marge_gauche + 0.5, $posY+10, $this->page_largeur - $this->marge_droite, $posY+10);
+			$pdf->Line($this->marge_gauche + 0.5, $posY + 10, $this->page_largeur - $this->marge_droite, $posY + 10);
 			$posy = $pdf->getY() + 10;
-			
 			
 			$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 			
@@ -311,7 +310,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres11') .' ' . $agf->placecode . ' '.$agf_place->adresse. ' '.$agf_place->cp.' '.$agf_place->ville;
+			$this->str = $outputlangs->transnoentities('AgfPDFFichePres11') . ' ' . $agf->placecode . ' ' . $agf_place->adresse . ' ' . $agf_place->cp . ' ' . $agf_place->ville;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posy = $pdf->getY() + 10;
 			
@@ -319,45 +318,41 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
 			$this->str = $outputlangs->transnoentities('AgfPDFRemiseEvalText');
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posy = $pdf->getY() +10;
+			$posy = $pdf->getY() + 10;
 			
-			$posy=$this->_tableau($pdf,$posy,7,$outputlangs);
+			$posy = $this->_tableau($pdf, $posy, 7, $outputlangs);
 			
-			
-			//Lieu
+			// Lieu
 			$posy += 5;
 			$pdf->SetXY($this->marge_gauche + 1, $posy);
 			$this->str = $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
 			$this->str2 = date("d/m/Y");
 			$this->str2 = dol_print_date($agf->datef);
-			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str).' '.$outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
+			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str) . ' ' . $outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 			
-			
-			$posy = $pdf->getY()+5;
-			//Formateur
-			$trainer_arr=array();
-			foreach($agf_session_trainer->lines as $trainer) {
-				$trainer_arr[]=$trainer->firstname ." ". $trainer->lastname;
-				//$pdf->MultiCell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
+			$posy = $pdf->getY() + 5;
+			// Formateur
+			$trainer_arr = array ();
+			foreach ( $agf_session_trainer->lines as $trainer ) {
+				$trainer_arr[] = $trainer->firstname . " " . $trainer->lastname;
+				// $pdf->MultiCell(80, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'R', 0);
 			}
 			$pdf->SetXY($this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$trainer_str=implode("\n",$trainer_arr);
-			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'."\n".$trainer_str, 0, 'L', 0);
+			$trainer_str = implode("\n", $trainer_arr);
+			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF') . ':' . "\n" . $trainer_str, 0, 'L', 0);
 			
 			// Incrustation image tampon
-			$tampon_exitst=1;
+			$tampon_exitst = 1;
 			if ($conf->global->AGF_INFO_TAMPON) {
 				$dir = $conf->agefodd->dir_output . '/images/';
 				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 				if (file_exists($img_tampon)) {
 					$posy = $pdf->getY();
 					$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $posy, 50);
-					$tampon_exitst=22;
+					$tampon_exitst = 22;
 				}
-			
 			}
-			
 			
 			// Pied de page
 			$this->_pagefoot($pdf, $agf, $outputlangs);
@@ -366,15 +361,12 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 				$pdf->AliasNbPages();
 			}
 			
-			
-			
 			$pdf->Close();
 			$pdf->Output($file, 'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 			
 			return 1;
-			
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
 			return 0;
@@ -415,57 +407,55 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 	}
 	
 	/**
-	 *   Show table for lines
+	 * Show table for lines
 	 *
-	 *   @param		PDF			$pdf     		Object PDF
-	 *   @param		string		$tab_top		Top position of table
-	 *   @param		string		$tab_height		Height of table (rectangle)
-	 *   @param		int			$nexY			Y (not used)
-	 *   @param		Translate	$outputlangs	Langs object
-	 *   @return	void
+	 * @param PDF $pdf Object PDF
+	 * @param string $tab_top Top position of table
+	 * @param string $tab_height Height of table (rectangle)
+	 * @param int $nexY Y (not used)
+	 * @param Translate $outputlangs Langs object
+	 * @return void
 	 */
-	function _tableau(&$pdf, $tab_top, $tab_height, $outputlangs)
-	{
+	function _tableau(&$pdf, $tab_top, $tab_height, $outputlangs) {
 		global $conf;
-		//$tab_height=80;
+		// $tab_height=80;
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
-	
-		$pdf->SetDrawColor(128,128,128);
-		$pdf->SetFont('','',$default_font_size - 1);
-	
+		
+		$pdf->SetDrawColor(128, 128, 128);
+		$pdf->SetFont('', '', $default_font_size - 1);
+		
 		// Output Rect
-		$this->printRect($pdf,$this->marge_gauche, $tab_top, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $tab_height, $hidetop, $hidebottom);	// Rect prend une longueur en 3eme param et 4eme param
-	
-		//Prenom
-		$pdf->SetXY($this->marge_droite, $tab_top+1);
-		$pdf->MultiCell(108,$tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("Firstname"), 'UTF-8')),'','L');
-	
-		//Nom
-		$pdf->line($this->marge_droite+20, $tab_top, $this->marge_droite+20, $tab_top + $tab_height);
-		$pdf->SetXY($this->marge_droite+22, $tab_top+1);
-		$pdf->MultiCell($this->marge_droite+22,$tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("Lastname"), 'UTF-8')),'','C');
-	
-		//Societe
-		$pdf->line($this->marge_droite+60, $tab_top, $this->marge_droite+60, $tab_top + $tab_height);
-		$pdf->SetXY($this->marge_droite+62, $tab_top+1);
-		$pdf->MultiCell($this->marge_droite+52,$tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("Company"), 'UTF-8')),'','C');
-	
-		//Signature
-		$pdf->line($this->marge_droite+120, $tab_top, $this->marge_droite+120, $tab_top + $tab_height);
-		$pdf->SetXY($this->marge_droite+122, $tab_top+1);
-		$pdf->MultiCell($this->marge_droite+52,$tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("AgfPDFRemiseEvalSing"), 'UTF-8')),'','C');
+		$this->printRect($pdf, $this->marge_gauche, $tab_top, $this->page_largeur - $this->marge_gauche - $this->marge_droite, $tab_height, $hidetop, $hidebottom); // Rect prend une longueur en 3eme param et 4eme param
+		                                                                                                                                                       
+		// Prenom
+		$pdf->SetXY($this->marge_droite, $tab_top + 1);
+		$pdf->MultiCell(108, $tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("Firstname"), 'UTF-8')), '', 'L');
+		
+		// Nom
+		$pdf->line($this->marge_droite + 20, $tab_top, $this->marge_droite + 20, $tab_top + $tab_height);
+		$pdf->SetXY($this->marge_droite + 22, $tab_top + 1);
+		$pdf->MultiCell($this->marge_droite + 22, $tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("Lastname"), 'UTF-8')), '', 'C');
+		
+		// Societe
+		$pdf->line($this->marge_droite + 60, $tab_top, $this->marge_droite + 60, $tab_top + $tab_height);
+		$pdf->SetXY($this->marge_droite + 62, $tab_top + 1);
+		$pdf->MultiCell($this->marge_droite + 52, $tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("Company"), 'UTF-8')), '', 'C');
+		
+		// Signature
+		$pdf->line($this->marge_droite + 120, $tab_top, $this->marge_droite + 120, $tab_top + $tab_height);
+		$pdf->SetXY($this->marge_droite + 122, $tab_top + 1);
+		$pdf->MultiCell($this->marge_droite + 52, $tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("AgfPDFRemiseEvalSing"), 'UTF-8')), '', 'C');
 		
 		$beforeY = $pdf->getY();
 		
-		for($i=1; $i<=12; $i++) {
-			$this->printRect($pdf,$this->marge_gauche, $beforeY, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $tab_height, $hidetop, $hidebottom);	// Rect prend une longueur en 3eme param et 4eme param
-			$pdf->line($this->marge_droite+20, $beforeY, $this->marge_droite+20, $beforeY + $tab_height);
-			$pdf->line($this->marge_droite+60, $beforeY, $this->marge_droite+60, $beforeY + $tab_height);
-			$pdf->line($this->marge_droite+120, $beforeY, $this->marge_droite+120, $beforeY + $tab_height);
-			$beforeY +=$tab_height;
+		for($i = 1; $i <= 12; $i ++) {
+			$this->printRect($pdf, $this->marge_gauche, $beforeY, $this->page_largeur - $this->marge_gauche - $this->marge_droite, $tab_height, $hidetop, $hidebottom); // Rect prend une longueur en 3eme param et 4eme param
+			$pdf->line($this->marge_droite + 20, $beforeY, $this->marge_droite + 20, $beforeY + $tab_height);
+			$pdf->line($this->marge_droite + 60, $beforeY, $this->marge_droite + 60, $beforeY + $tab_height);
+			$pdf->line($this->marge_droite + 120, $beforeY, $this->marge_droite + 120, $beforeY + $tab_height);
+			$beforeY += $tab_height;
 		}
 		
 		return $beforeY;
-		
 	}
 }
