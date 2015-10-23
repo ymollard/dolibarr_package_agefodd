@@ -48,10 +48,10 @@ INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, 
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(2, 1, 1, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (3, 1, 2, '09:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(4, 1, 2, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
-INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (3, 1, 3, '09:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
-INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(4, 1, 3, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
-INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (3, 1, 4, '09:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
-INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(4, 1, 4, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
+INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (5, 1, 3, '09:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
+INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(6, 1, 3, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
+INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (7, 1, 4, '09:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
+INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(8, 1, 4, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
 
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
 (1,'ENV', 'Envisagée', 1, 1, '2013-01-01 00:00:00' );
