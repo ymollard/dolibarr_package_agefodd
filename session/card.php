@@ -1302,7 +1302,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								
 								if ($tmpldate <= $agf->datef) {
 									print '<tr>';
-									print '<td width="20%">';
+									print '<td width="20%" nowrap="nowrap">';
 									print '<input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="' . $line->id . '"/>' . dol_print_date($tmpldate, 'daytext') . ' ' . $line->heured . ' - ' . $line->heuref ;
 									print '</td>';
 									if ($user->rights->agefodd->modifier && empty($tmli)) {
