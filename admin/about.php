@@ -66,7 +66,8 @@ print 'Version : ' . $conf->global->AGF_LAST_VERION_INSTALL;
 print '<BR><a href="' . dol_buildpath('/agefodd/ChangeLog', 1) . '">Change Log</a>';
 
 print '<BR><BR><BR><BR>--------------------------------';
-print '<BR><a href="http://www.open-concept.pro/images/doc/Manuel%20Utilisation%20-%20Agefodd-%20FR.pdf" target="_blanck">Lien Documentation Utilisateur Français</a>';
+print '<BR><a href="http://www.open-concept.pro/images/doc/Agefodd%20-%20Guide%20utilisateur.pdf" target="_blanck">Lien Documentation Utilisateur Français</a>';
+print '<BR><a href="http://www.open-concept.pro/images/doc/Agefodd%20-%20User%20guide.pdf" target="_blanck">link Englich user documentation</a>';
 print '<BR>--------------------------------';
 
 
