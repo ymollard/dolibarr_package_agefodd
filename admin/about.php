@@ -67,7 +67,7 @@ print '<BR><a href="' . dol_buildpath('/agefodd/ChangeLog', 1) . '">Change Log</
 
 print '<BR><BR><BR><BR>--------------------------------';
 print '<BR><a href="http://www.open-concept.pro/images/doc/Agefodd%20-%20Guide%20utilisateur.pdf" target="_blanck">Lien Documentation Utilisateur Français</a>';
-print '<BR><a href="http://www.open-concept.pro/images/doc/Agefodd%20-%20User%20guide.pdf" target="_blanck">link Englich user documentation</a>';
+print '<BR><a href="http://www.open-concept.pro/images/doc/Agefodd%20-%20User%20guide.pdf" target="_blanck">Link English user documentation</a>';
 print '<BR>--------------------------------';
 
 
