@@ -922,7 +922,7 @@ class Agefodd_session_element extends CommonObject {
 			$catid = $conf->global->AGF_CAT_PRODUCT_CHARGES;
 		}
 		
-		if (empty($catid)) {
+		if (!empty($catid)) {
 			$sql = "SELECT";
 			$sql .= " rowid, fk_element, element_type, fk_soc ";
 			
@@ -999,8 +999,9 @@ class Agefodd_session_element extends CommonObject {
 			}
 		}
 		
-		if (empty($total_charges))
+		if (empty($total_charges)) {
 			$total_charges = 0;
+		}
 		
 		return $total_charges;
 	}
@@ -1033,8 +1034,9 @@ class Agefodd_session_element extends CommonObject {
 		}
 		$total_buy_charges = $this->get_charges_amount($this->fk_session_agefodd, 0, 'invoice_supplier_trainer');
 		
-		if (empty($sell_price))
+		if (empty($sell_price)) {
 			$sell_price = $this->propal_sign_amount;
+		}
 		dol_syslog(get_class($this) . "::updateSellingPrice propal sell_price=" . $sell_price, LOG_DEBUG);
 		
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session SET sell_price=\'' . price2num($sell_price) . '\' ';
