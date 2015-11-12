@@ -5,7 +5,7 @@ Fix : Fix training colors
 Fix : Fix bug on new time session
 Fix : Revert to php 5.4 compatiblity
 Fix : Trainee status in session must not be auto updated if option is OFF on propal closure or re-opening
-NEW : Export session with extrafield catalogue and session
+NEW : Export session with extrafields catalogue and session
 
 ***** ChangeLog for 2.1.14 compared to 2.1.13 *****
 -Fix : Fix logo on PDF
