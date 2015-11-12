@@ -117,6 +117,11 @@ if (! empty($search_end_date)) {
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
+	
+	if (empty($sortorder)) {
+		$sortfield = "DESC";
+	}
+	
 }
 if (! empty($search_training_ref_interne)) {
 	$filter ['c.ref_interne'] = $search_training_ref_interne;
@@ -142,10 +147,14 @@ if (! empty($search_session_status)) {
 	$filter ['s.status'] = $search_session_status;
 }
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "ASC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "s.dated";
+}
+
+
 
 if ($page == - 1) {
 	$page = 0;
