@@ -26,7 +26,25 @@ DOCUMENTATION
 ---------------
 
 	http://www.open-concept.pro/images/doc/
+	
 
+DOLISTORE
+---------------
+
+	https://www.dolistore.com/fr/modules/146-Agefodd---Complet.html
+	https://www.dolistore.com/en/modules/146-Agefodd---Full.html
+
+
+DOLIBARR WIKI PAGE
+---------------
+
+	https://wiki.dolibarr.org/index.php/Module_Agefodd
+	
+
+LIVE DEMO
+---------------
+
+	http://demo.open-concept.pro/dolibarr_agefodd/htdocs/
 
 Other Licences
 --------------
