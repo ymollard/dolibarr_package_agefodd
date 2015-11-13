@@ -2278,7 +2278,7 @@ class Agsession extends CommonObject {
 			}
 		}
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom";
+		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color";
 		if (! empty($sortfield)) {
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
@@ -3296,7 +3296,7 @@ class Agsession extends CommonObject {
 				$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 			}
 			if ((($agf->duree * 3600) != $duree) && (! empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-				print '<tr<td colspan=2>';
+				print '<tr><td colspan=2>';
 				if (($agf->duree * 3600) < $duree)
 					$text_timealert = $langs->trans("AgfCalendarSup");
 				if (($agf->duree * 3600) > $duree)
@@ -3315,7 +3315,6 @@ class Agsession extends CommonObject {
 				setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
 			}
 		}
-		print '</tr>';
 		print "</table>";
 	}
 	
@@ -3674,7 +3673,7 @@ class Agsession extends CommonObject {
 		} else {
 			$this->db->rollback();
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::createProposal " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			return - 1 * $error;
@@ -3752,7 +3751,9 @@ class Agsession extends CommonObject {
 				$desc .= '-' . dol_print_date($this->datef, 'day');
 			}
 			
-			$propal->ref_client = $desc;
+			if (!empty($conf->global->AGF_REF_PROPAL_AUTO)) {
+				$propal->ref_client = str_replace("\n",' ',$desc);
+			}
 			
 			if (! empty($this->duree_session)) {
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
@@ -4382,6 +4383,41 @@ class Agsession extends CommonObject {
 		}
 		
 		return $returndate;
+	}
+	
+	/**
+	 * 
+	 * @return number
+	 */
+	public function fetch_other_session_sameplacedate() {
+		$this->lines_place = array ();
+	
+		if (! empty($this->id) && ! empty($this->fk_session_place)) {
+				
+			$sql = "SELECT ";
+			$sql .= "DISTINCT ag.rowid FROM llx_agefodd_session as ag ";
+			$sql .= " WHERE ag.fk_session_place=".$this->fk_session_place;
+			$sql .= " AND ag.dated BETWEEN '".$this->db->idate($this->dated)."' AND '".$this->db->idate($this->datef)."' ";
+			$sql .= " AND ag.datef BETWEEN '".$this->db->idate($this->dated)."' AND '".$this->db->idate($this->datef)."' ";
+				
+			dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				while ($obj = $this->db->fetch_object($resql)) {
+					$line = new AgfSessionLine();
+					$line->rowid=$obj->rowid;
+					$this->lines_place[]=$line;
+				}
+	
+				return 1;
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+				return - 1;
+			}
+		} else {
+			return 1;
+		}
 	}
 }
 

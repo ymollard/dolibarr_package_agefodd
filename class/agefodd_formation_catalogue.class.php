@@ -207,6 +207,7 @@ class Agefodd extends CommonObject {
 		$sql .= " ,c.certif_duration";
 		$sql .= " ,c.pedago_usage";
 		$sql .= " ,c.sanction";
+		$sql .= " ,c.color";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat ON dictcat.rowid=c.fk_c_category";
 		if ($id && ! $ref)
@@ -249,6 +250,7 @@ class Agefodd extends CommonObject {
 				$this->certif_duration = $obj->certif_duration;
 				$this->pedago_usage = $obj->pedago_usage;
 				$this->sanction = $obj->sanction;
+				$this->color = $obj->color;
 			}
 			$this->db->free($resql);
 			

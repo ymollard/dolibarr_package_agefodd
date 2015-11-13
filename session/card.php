@@ -177,6 +177,21 @@ if ($action == 'update' && $user->rights->agefodd->creer && empty($period_update
 			$error ++;
 		}
 		
+		$result = $agf->fetch_other_session_sameplacedate();
+		if ($result<0) {
+			setEventMessage($agf->error, 'errors');
+			$error ++;
+		} else {
+		
+			if (is_array($agf->lines_place) && count($agf->lines_place)>0) {
+				$sessionplaceerror='';
+				foreach($agf->lines_place as $linesess) {
+					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id='.$linesess->rowid.'&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+				}
+				setEventMessage($sessionplaceerror, 'warnings');
+			}
+		}
+		
 		// If customer is selected contact is required
 		$custid = GETPOST('fk_soc', 'int');
 		$contactclientid = GETPOST('contact', 'int');
@@ -508,7 +523,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 							$heure_tmp_arr = explode(':', $datedaytodate2d);
 							$agf->heured = dol_mktime($heure_tmp_arr [0], $heure_tmp_arr [1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 							$heure_tmp_arr = explode(':', $datedaytodate2f);
-							$agf->heured = dol_mktime($heure_tmp_arr [0], $heure_tmp_arr [1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+							$agf->heuref = dol_mktime($heure_tmp_arr [0], $heure_tmp_arr [1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 							
 							$result = $agf->create($user);
 							if ($result < 0) {
@@ -616,6 +631,22 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				$error ++;
 			}
 		}
+		
+		$result = $agf->fetch_other_session_sameplacedate();
+		if ($result<0) {
+			setEventMessage($agf->error, 'errors');
+			$error ++;
+		} else {
+		
+			if (is_array($agf->lines_place) && count($agf->lines_place)>0) {
+				$sessionplaceerror='';
+				foreach($agf->lines_place as $linesess) {
+					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id='.$linesess->rowid.'&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+				}
+				setEventMessage($sessionplaceerror, 'warnings');
+			}
+		}
+		
 		if ($error == 0) {
 			Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $agf->id);
 			exit();
@@ -1302,7 +1333,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								
 								if ($tmpldate <= $agf->datef) {
 									print '<tr>';
-									print '<td width="20%">';
+									print '<td width="20%" nowrap="nowrap">';
 									print '<input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="' . $line->id . '"/>' . dol_print_date($tmpldate, 'daytext') . ' ' . $line->heured . ' - ' . $line->heuref ;
 									print '</td>';
 									if ($user->rights->agefodd->modifier && empty($tmli)) {

@@ -1,5 +1,14 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.15 compared to 2.1.14 *****
+Fix : Fix training colors
+Fix : Fix bug on new time session
+Fix : Revert to php 5.4 compatiblity
+Fix : Trainee status in session must not be auto updated if option is OFF on propal closure or re-opening
+New : Export session with extrafields catalogue and session
+New : Add place control use in the same dates 
+New : Easier trainer calendar deletion (checkbox)
+
 ***** ChangeLog for 2.1.14 compared to 2.1.13 *****
 -Fix : Fix logo on PDF
 -Fix : Add option to output only product line on convention

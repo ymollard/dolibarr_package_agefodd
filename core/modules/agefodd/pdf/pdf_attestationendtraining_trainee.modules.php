@@ -67,7 +67,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 		$this->marge_haute = 10;
 		$this->marge_basse = 10;
 		$this->unit = 'mm';
-		$this->oriantation = 'l';
+		$this->oriantation = 'P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		
@@ -486,6 +486,12 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 		if ($this->emetteur->logo) {
 			if (is_readable($logo)) {
 				$height = pdf_getHeightForLogo($logo);
+				$width_logo = pdf_getWidthForLogo($logo);
+				if ($width_logo > 0) {
+					$posx = $this->page_largeur - $this->marge_droite - $width_logo;
+				} else {
+					$posx = $this->page_largeur - $this->marge_droite - 55;
+				}
 				$pdf->Image($logo, $posx, $posy, 0, $height); 
 			} else {
 				$pdf->SetTextColor(200, 0, 0);

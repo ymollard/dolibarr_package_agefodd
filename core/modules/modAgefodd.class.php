@@ -57,7 +57,7 @@ class modAgefodd extends DolibarrModules {
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.1.14';
+		$this->version = '2.1.15';
 		
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -469,7 +469,7 @@ class modAgefodd extends DolibarrModules {
 		
 		$this->const [$r] [0] = "AGF_1DAYSHIFT";
 		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '08:00';
+		$this->const [$r] [2] = '09:00';
 		$this->const [$r] [3] = '';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
@@ -502,6 +502,14 @@ class modAgefodd extends DolibarrModules {
 		$this->const [$r] [0] = "AGF_4DAYSHIFT";
 		$this->const [$r] [1] = "chaine";
 		$this->const [$r] [2] = '18:00';
+		$this->const [$r] [3] = '';
+		$this->const [$r] [4] = 0;
+		$this->const [$r] [5] = 0;
+		$r ++;
+		
+		$this->const [$r] [0] = "AGF_REF_PROPAL_AUTO";
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
 		$this->const [$r] [3] = '';
 		$this->const [$r] [4] = 0;
 		$this->const [$r] [5] = 0;
@@ -881,6 +889,10 @@ class modAgefodd extends DolibarrModules {
 						"export" 
 				) 
 		);
+		
+		
+		
+		
 		$this->export_fields_array [$r] = array (
 				's.rowid' => 'Id',
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfFormTypeSession',
@@ -928,6 +940,8 @@ class modAgefodd extends DolibarrModules {
 				'contactstaopca.lastname as contactstaopcalastname' => 'AgfOPCAStaContactLastName',
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfOPCAStaContactFirstName' 
 		);
+		
+		
 		$this->export_TypeFields_array [$r] = array (
 				's.rowid' => "Text" ,
 				's.dated' => 'Date',
@@ -981,6 +995,75 @@ class modAgefodd extends DolibarrModules {
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants' 
 		);
 		
+
+		$sql="SELECT name, label, type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_formation_catalogue'";
+		$resql=$this->db->query($sql);
+		if ($resql)    // This can fail when class is used on old database (during migration for example)
+		{
+			global $langs;
+			while ($obj=$this->db->fetch_object($resql))
+			{
+				$fieldname='extracatalogue.'.$obj->name;
+				$fieldlabel=$langs->trans('AgfTraining').'-'.ucfirst($obj->label);
+				$typeFilter="Text";
+				switch($obj->type)
+				{
+					case 'int':
+					case 'double':
+					case 'price':
+						$typeFilter="Numeric";
+						break;
+					case 'date':
+					case 'datetime':
+						$typeFilter="Date";
+						break;
+					case 'boolean':
+						$typeFilter="Boolean";
+						break;
+					case 'sellist':
+						$typeFilter="List:".$obj->param;
+						break;
+				}
+				$this->export_fields_array[$r][$fieldname]=$fieldlabel;
+				$this->export_TypeFields_array[$r][$fieldname]=$typeFilter;
+				$this->export_entities_array[$r][$fieldname]='AgfCatalogDetail';
+			}
+		}
+		
+		$sql="SELECT name, label, type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_session'";
+		$resql=$this->db->query($sql);
+		if ($resql)    // This can fail when class is used on old database (during migration for example)
+		{
+			global $langs;
+			while ($obj=$this->db->fetch_object($resql))
+			{
+				$fieldname='extrasession.'.$obj->name;
+				$fieldlabel=$langs->trans('Training').'-'.ucfirst($obj->label);
+				$typeFilter="Text";
+				switch($obj->type)
+				{
+					case 'int':
+					case 'double':
+					case 'price':
+						$typeFilter="Numeric";
+						break;
+					case 'date':
+					case 'datetime':
+						$typeFilter="Date";
+						break;
+					case 'boolean':
+						$typeFilter="Boolean";
+						break;
+					case 'sellist':
+						$typeFilter="List:".$obj->param;
+						break;
+				}
+				$this->export_fields_array[$r][$fieldname]=$fieldlabel;
+				$this->export_TypeFields_array[$r][$fieldname]=$typeFilter;
+				$this->export_entities_array[$r][$fieldname]='AgfSessionDetail';
+			}
+		}
+		
 		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
@@ -1003,6 +1086,8 @@ class modAgefodd extends DolibarrModules {
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
 		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';
+		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
+		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
 		
 		// Array to add new pages in new tabs
 		// $this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');

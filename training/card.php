@@ -587,7 +587,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				
 				print '<tr><td>' . $langs->trans("Color") . '</td>';
 				print '<td><input id="colorpicker" type="text" size="8" name="color" value="' . $agf->color . '" /></td></tr>';
-				
+
 				print '<script type="text/javascript" language="javascript">
 						$(document).ready(function() {
 						$("#colorpicker").css("backgroundColor", \'#' . $agf->color . '\');
