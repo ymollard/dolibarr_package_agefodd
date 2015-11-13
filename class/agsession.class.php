@@ -4385,6 +4385,41 @@ class Agsession extends CommonObject {
 		
 		return $returndate;
 	}
+	
+	/**
+	 * 
+	 * @return number
+	 */
+	public function fetch_other_session_sameplacedate() {
+		$this->lines_place = array ();
+	
+		if (! empty($this->id) && ! empty($this->fk_session_place)) {
+				
+			$sql = "SELECT ";
+			$sql .= "DISTINCT ag.rowid FROM llx_agefodd_session as ag ";
+			$sql .= " WHERE ag.fk_session_place=".$this->fk_session_place;
+			$sql .= " AND ag.dated BETWEEN '".$this->db->idate($this->dated)."' AND '".$this->db->idate($this->datef)."' ";
+			$sql .= " AND ag.datef BETWEEN '".$this->db->idate($this->dated)."' AND '".$this->db->idate($this->datef)."' ";
+				
+			dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				while ($obj = $this->db->fetch_object($resql)) {
+					$line = new AgfSessionLine();
+					$line->rowid=$obj->rowid;
+					$this->lines_place[]=$line;
+				}
+	
+				return 1;
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+				return - 1;
+			}
+		} else {
+			return 1;
+		}
+	}
 }
 
 /**

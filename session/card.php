@@ -177,6 +177,21 @@ if ($action == 'update' && $user->rights->agefodd->creer && empty($period_update
 			$error ++;
 		}
 		
+		$result = $agf->fetch_other_session_sameplacedate();
+		if ($result<0) {
+			setEventMessage($agf->error, 'errors');
+			$error ++;
+		} else {
+		
+			if (is_array($agf->lines_place) && count($agf->lines_place)>0) {
+				$sessionplaceerror='';
+				foreach($agf->lines_place as $linesess) {
+					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id='.$linesess->rowid.'&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+				}
+				setEventMessage($sessionplaceerror, 'warnings');
+			}
+		}
+		
 		// If customer is selected contact is required
 		$custid = GETPOST('fk_soc', 'int');
 		$contactclientid = GETPOST('contact', 'int');
@@ -616,6 +631,22 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				$error ++;
 			}
 		}
+		
+		$result = $agf->fetch_other_session_sameplacedate();
+		if ($result<0) {
+			setEventMessage($agf->error, 'errors');
+			$error ++;
+		} else {
+		
+			if (is_array($agf->lines_place) && count($agf->lines_place)>0) {
+				$sessionplaceerror='';
+				foreach($agf->lines_place as $linesess) {
+					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id='.$linesess->rowid.'&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+				}
+				setEventMessage($sessionplaceerror, 'warnings');
+			}
+		}
+		
 		if ($error == 0) {
 			Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $agf->id);
 			exit();
