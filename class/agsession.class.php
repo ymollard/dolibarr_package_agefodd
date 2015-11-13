@@ -3296,7 +3296,7 @@ class Agsession extends CommonObject {
 				$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 			}
 			if ((($agf->duree * 3600) != $duree) && (! empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-				print '<tr<td colspan=2>';
+				print '<tr><td colspan=2>';
 				if (($agf->duree * 3600) < $duree)
 					$text_timealert = $langs->trans("AgfCalendarSup");
 				if (($agf->duree * 3600) > $duree)
@@ -3315,7 +3315,6 @@ class Agsession extends CommonObject {
 				setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
 			}
 		}
-		print '</tr>';
 		print "</table>";
 	}
 	
@@ -3674,7 +3673,7 @@ class Agsession extends CommonObject {
 		} else {
 			$this->db->rollback();
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::createProposal " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			return - 1 * $error;

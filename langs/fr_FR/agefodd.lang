@@ -1079,3 +1079,4 @@ AgfAddTrainingProgramNotExists=Le programme de foramtion de la session %s n'exis
 AgfAddTrainingProgramMod=complétér le programme de formation (avec module) de la session %s
 AgfAddTrainingProgramModNotExists=Le programme de formation (avec module) de la session %s n'existe pas
 AgfPlaceUseInOtherSession=La salle est utilisée pour une autre session aux même dates : 
+AgfDeleteOnlySelectedLines=Supprimer les lines selectionées
