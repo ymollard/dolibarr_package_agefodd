@@ -212,7 +212,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$this->str = $outputlangs->transnoentities('AgfUndefinedBut');
 				
 				$this->pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
@@ -415,8 +415,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 						$programme_array[] = $line_chapter->title;
 					}
 					if (count($programme_array) > 0) {
-						$programme = '  ' . $this->pdf->unichr(149) . ' ';
-						$programme .= implode('  ' . $this->pdf->unichr(149) . ' ', $programme_array);
+						$programme = '  ' . chr(149) . ' ';
+						$programme .= implode('  ' . chr(149) . ' ', $programme_array);
 					}
 				} else {
 					$programme = $agf->programme;
