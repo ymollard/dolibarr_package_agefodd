@@ -1081,3 +1081,4 @@ AgfAddTrainingProgramModNotExists=Le programme de formation (avec module) de la 
 AgfPlaceUseInOtherSession=La salle est utilisée pour une autre session aux même dates : 
 AgfDeleteOnlySelectedLines=Supprimer les lines selectionées
 AgfNoCursus=Pas de cursus
+AgfThirdparyMandatory=Au moins un client sur la sesison est requis(client de participants, tier payeur, client de session)
