@@ -235,9 +235,8 @@ class ActionsAgefodd {
 					}
 				}
 			}
-			
-			
 		}
+		return 0;
 	}
 	
 	/**
