@@ -1082,3 +1082,4 @@ AgfAddTrainingProgramMod=Add training programm (with modules) of the session %s
 AgfAddTrainingProgramModNotExists=The training programm (with modules) of the session %s does not exist
 AgfPlaceUseInOtherSession=Room (location) is already use for other session on same dates 
 AgfDeleteOnlySelectedLines=Delete only selected lines
+AgfNoCursus=No cursus

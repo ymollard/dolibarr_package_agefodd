@@ -23,7 +23,7 @@
  * \ingroup agefodd
  * \brief PDF for trainer mission
  */
-dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_calendrier.class.php');

@@ -24,7 +24,7 @@
  * \ingroup agefodd
  * \brief PDF for certificate (attestation)
  */
-dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
@@ -235,7 +235,8 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
 						$newY = $newY + 15;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->Cell(0, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 0, 'C', 0);
+						$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 'C', 0);
+						$newY = $pdf->GetY();
 						
 						$this->str = $outputlangs->transnoentities('AgfPDFAttestation4') . " ";
 						if ($agf->dated == $agf->datef)

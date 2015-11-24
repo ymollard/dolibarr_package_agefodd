@@ -22,7 +22,7 @@
  * \ingroup agefodd
  * \brief PDF for explanation sheet
  */
-dol_include_once('/agefodd/core/modules/agefodd/agefodd_modules.php');
+dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_formation_catalogue_modules.class.php');
@@ -212,7 +212,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 					$this->str = $outputlangs->transnoentities('AgfUndefinedBut');
 				
 				$this->pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
+				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 				
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;

@@ -32,6 +32,7 @@ if (! $res)
 
 require_once ('../class/agefodd_place.class.php');
 require_once ('../lib/agefodd.lib.php');
+require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 
 // Security check
 if (! $user->rights->agefodd->agefodd_place->lire)
@@ -83,6 +84,7 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 $agf = new Agefodd_place($db);
+$soc=new Societe($db);
 
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
@@ -142,13 +144,20 @@ if ($result > 0) {
 	$var = true;
 	$i = 0;
 	while ( $i < $linenum ) {
+		
+		if (!empty($agf->lines [$i]->socid)) {
+			$soc->fetch($agf->lines [$i]->socid);
+		}
+		
 		// Affichage liste des sites de formation
 		$var = ! $var;
 		($agf->lines [$i]->archive == 1) ? $style = ' style="color:gray;"' : $style = '';
 		print "<tr $bc[$var]>";
-		print '<td><span style="background-color:' . $bgcolor . ';"><a href="card.php?id=' . $agf->lines [$i]->id . '"' . $style . '>' . img_object($langs->trans("AgfEditerFichePlace"), "company") . ' ' . $agf->lines [$i]->id . '</a></span></td>' . "\n";
+		print '<td><span style="background-color:' . $bgcolor . ';"><a href="card.php?id=' . $agf->lines [$i]->id . '"' . $style . '>' . $agf->lines [$i]->id . '</a></span></td>' . "\n";
 		print '<td' . $style . '>' . $agf->lines [$i]->ref_interne . '</td>' . "\n";
-		print '<td><a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '"  alt="' . $langs->trans("AgfEditerFicheCompany") . '" title="' . $langs->trans("AgfEditerFicheCompany") . '"' . $style . '>' . $agf->lines [$i]->socname . '</td>' . "\n";
+		print '<td>';
+		print $soc->getNomUrl(1);
+		print '</td>' . "\n";
 		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->tel) . '</td>' . "\n";
 		print '</tr>' . "\n";
 		

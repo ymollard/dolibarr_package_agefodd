@@ -700,6 +700,8 @@ if (! empty($id)) {
 			print '</table>';
 		}
 		print '</div>' . "\n";
+	} elseif ($result==0) {
+		setEventMessages($langs->trans('AgfThirdparyMandatory'), null, 'errors');
 	} else {
 		setEventMessages($agf->error, null, 'errors');
 	}
