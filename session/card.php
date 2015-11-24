@@ -1326,6 +1326,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							foreach ( $tmpl_calendar->lines as $line ) {
 								
 								if ($line->day_session != 1) {
+									//TODO : fix warning strtotime() expects parameter 2 to be long, string given in /home/bobby/Eclipse/workspace/dolibarr/htdocs/core/lib/date.lib.php
 									$tmpldate = dol_time_plus_duree($agf->dated, (($line->day_session) - 1), 'd');
 								} else {
 									$tmpldate = $agf->dated;
