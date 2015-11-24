@@ -355,7 +355,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			foreach($agf_session_trainer->lines as $trainer) {
 				$trainer_arr[]=$trainer->firstname ." ". $trainer->lastname;
 			}
-			$trainer_str=implode(',',$trainer_arr);
+			$trainer_str=implode("\n",$trainer_arr);
 			$pdf->MultiCell(80, 0, $outputlangs->transnoentities('AgfTrainerPDF').':'.$trainer_str, 0, 'L', 0);
 			
 			// Incrustation image tampon
