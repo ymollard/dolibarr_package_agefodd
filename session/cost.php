@@ -209,6 +209,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 			$session_invoice->fk_session_agefodd = $id;
 			$session_invoice->fk_element = $result;
 			$session_invoice->element_type = 'invoice_supplier_trainer';
+			$session_invoice->fk_sub_element = $opsid;
 			$result = $session_invoice->create($user);
 			if ($result < 0) {
 				setEventMessage($session_invoice->error, 'errors');
@@ -460,6 +461,9 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 		$session_invoice->fk_session_agefodd = $id;
 		$session_invoice->fk_element = $invoiceselected;
 		$session_invoice->element_type = $type;
+		if ($type=='invoice_supplier_trainer') {
+			$session_invoice->fk_sub_element=$opsid;
+		}
 		
 		$result = $session_invoice->create($user);
 		
@@ -574,7 +578,13 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 			'name' => 'invoiceselected' 
 	);
 	
-	$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&type=' . $type, $langs->trans("AgfFactureSelectInvoice"), '', "link_confirm", $form_question, '', 1);
+	if ($type=='invoice_supplier_trainer') {
+		$opsid_param='&opsid='.$opsid;
+	} else {
+		$opsid_param='';
+	}
+	
+	$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&type=' . $type.$opsid_param, $langs->trans("AgfFactureSelectInvoice"), '', "link_confirm", $form_question, '', 1);
 	if ($ret == 'html')
 		print '<br>';
 }
@@ -640,6 +650,9 @@ foreach ( $agf_formateurs->lines as $line ) {
 			
 			// Get all document lines
 			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, 'invoice_supplier_trainer');
+			
+			//TODO : cheack if this feautre work without huge data update
+			//$agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, 'invoice_supplier_trainer',$line->opsid);
 			
 			if (count($agf_fin->lines) > 0) {
 				

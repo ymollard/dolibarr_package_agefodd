@@ -90,6 +90,8 @@ class Agefodd_session_element extends CommonObject {
 			$this->fk_soc = trim($this->fk_soc);
 		if (isset($this->element_type))
 			$this->element_type = trim($this->element_type);
+		if (isset($this->fk_sub_element))
+			$this->fk_sub_element = trim($this->fk_sub_element);
 		if (isset($this->fk_element))
 			$this->fk_element = trim($this->fk_element);
 		if (isset($this->fk_user_author))
@@ -107,6 +109,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= "fk_soc,";
 		$sql .= "element_type,";
 		$sql .= "fk_element,";
+		$sql .= "fk_sub_element,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
@@ -116,7 +119,8 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " " . (! isset($this->fk_session_agefodd) ? 'NULL' : "'" . $this->fk_session_agefodd . "'") . ",";
 		$sql .= " " . (! isset($this->fk_soc) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
-		$sql .= " " . (! isset($this->fk_element) ? 'NULL' : "'" . $this->fk_element . "'") . ",";
+		$sql .= " " . (! isset($this->fk_element) ? 'NULL' : $this->fk_element) . ",";
+		$sql .= " " . (empty($this->fk_sub_element) ? 'NULL' : $this->fk_sub_element) . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
@@ -179,6 +183,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " t.fk_soc,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
+		$sql .= " t.fk_sub_element,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
@@ -208,6 +213,7 @@ class Agefodd_session_element extends CommonObject {
 				$this->fk_soc = $obj->fk_soc;
 				$this->element_type = $obj->element_type;
 				$this->fk_element = $obj->fk_element;
+				$this->fk_sub_element = $obj->fk_sub_element;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
@@ -322,11 +328,11 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " rowid, fk_session_agefodd, fk_soc ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 			$sql .= " WHERE fk_element = " . $id;
-			if ($type == 'bc' || $type=='order') {
+			if ($type == 'bc' || $type == 'order') {
 				$sql .= " AND element_type='order'";
-			} elseif ($type == 'fac' || $type=='invoice') {
+			} elseif ($type == 'fac' || $type == 'invoice') {
 				$sql .= " AND element_type='invoice'";
-			} elseif ($type == 'prop' || $type=='propal') {
+			} elseif ($type == 'prop' || $type == 'propal') {
 				$sql .= " AND element_type='propal'";
 			} elseif ($type == 'invoice_supplier_trainer') {
 				$sql .= " AND element_type='invoice_supplier_trainer'";
@@ -435,6 +441,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " t.fk_soc,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
+		$sql .= " t.fk_sub_element,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
@@ -473,6 +480,7 @@ class Agefodd_session_element extends CommonObject {
 				$line->fk_soc = $obj->fk_soc;
 				$line->element_type = $obj->element_type;
 				$line->fk_element = $obj->fk_element;
+				$line->fk_sub_element = $obj->fk_sub_element;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->datec = $this->db->jdate($obj->datec);
 				$line->fk_user_mod = $obj->fk_user_mod;
@@ -560,6 +568,8 @@ class Agefodd_session_element extends CommonObject {
 			$this->element_type = trim($this->element_type);
 		if (isset($this->fk_element))
 			$this->fk_element = trim($this->fk_element);
+		if (isset($this->fk_sub_element))
+			$this->fk_sub_element = trim($this->fk_sub_element);
 		if (isset($this->fk_user_author))
 			$this->fk_user_author = trim($this->fk_user_author);
 		if (isset($this->fk_user_mod))
@@ -575,6 +585,7 @@ class Agefodd_session_element extends CommonObject {
 		$sql .= " fk_soc=" . (isset($this->fk_soc) ? $this->fk_soc : "null") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
 		$sql .= " fk_element=" . (isset($this->fk_element) ? $this->fk_element : "null") . ",";
+		$sql .= " fk_sub_element=" . (! empty($this->fk_sub_element) ? $this->fk_sub_element : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
 		
 		$sql .= " WHERE rowid=" . $this->id;
@@ -773,6 +784,7 @@ class Agefodd_session_element extends CommonObject {
 		$this->fk_soc = '';
 		$this->element_type = '';
 		$this->fk_element = '';
+		$this->fk_sub_element = '';
 		$this->fk_user_author = '';
 		$this->datec = '';
 		$this->fk_user_mod = '';
@@ -783,9 +795,10 @@ class Agefodd_session_element extends CommonObject {
 	 * Load object in memory from database
 	 *
 	 * @param int $id ob object
+	 * @param int $sub_elment ob object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_by_session($id) {
+	public function fetch_by_session($id, $sub_elment = 0) {
 		require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php';
@@ -810,93 +823,94 @@ class Agefodd_session_element extends CommonObject {
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 		$sql .= " WHERE fk_session_agefodd=" . $id;
-		
+		if (! empty($sub_elment)) {
+			$sql .= ' AND fk_sub_element=' . $sub_elment;
+		}
 		dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
-			$i = 0;
-			for($i = 0; $i < $num; $i ++) {
-				
-				$obj = $this->db->fetch_object($resql);
-				
-				if ($obj->element_type == 'order') {
-					$order = new Commande($this->db);
-					$order->fetch($obj->fk_element);
-					$this->order_amount += $order->total_ht;
-				}
-				
-				if ($obj->element_type == 'propal') {
-					$proposal = new Propal($this->db);
-					$proposal->fetch($obj->fk_element);
-					if ($proposal->statut == 2) {
-						$this->propal_sign_amount += $proposal->total_ht;
-						dol_syslog(get_class($this) . "::fetch_by_session status=2 proposal->total_ht=" . $proposal->total_ht, LOG_DEBUG);
-					} elseif ($proposal->statut != 4) {
-						$this->propal_amount = + $proposal->total_ht;
-					}
-				}
-				
-				if ($obj->element_type == 'invoice') {
-					$facture = new Facture($this->db);
-					$facture->fetch($obj->fk_element);
-					if ($facture->statut == 2) {
-						$this->invoice_payed_amount += $facture->total_ht;
-						dol_syslog(get_class($this) . "::fetch_by_session status=2 facture->total_ht=" . $facture->total_ht, LOG_DEBUG);
-						$this->nb_invoice_validated ++;
-					}
-					if ($facture->statut == 1) {
-						$this->invoice_ongoing_amount += $facture->total_ht;
-						dol_syslog(get_class($this) . "::fetch_by_session status=1 facture->total_ht=" . $facture->total_ht, LOG_DEBUG);
-						$this->nb_invoice_unpaid ++;
-					}
-				}
-				
-				if ($obj->element_type == 'invoice_supplier_trainer') {
-					$facturefourn = new FactureFournisseur($this->db);
-					$facturefourn->fetch($obj->fk_element);
-					if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-						foreach ( $facturefourn->lines as $line ) {
-							$this->trainer_cost_amount += $line->total_ht;
-						}
-					} else {
-						$this->trainer_cost_amount += $facturefourn->total_ht;
-					}
-					$this->invoicetrainerdraft = $this->invoicetrainerdraft || ($facturefourn->statut == 0);
+			if ($num > 0) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
 					
-					dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_trainer facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
-				}
-				
-				if ($obj->element_type == 'invoice_supplier_missions') {
-					$facturefourn = new FactureFournisseur($this->db);
-					$facturefourn->fetch($obj->fk_element);
-					
-					if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-						foreach ( $facturefourn->lines as $line ) {
-							$this->trip_cost_amount += $line->total_ht;
-						}
-					} else {
-						$this->trip_cost_amount += $facturefourn->total_ht;
+					if ($obj->element_type == 'order') {
+						$order = new Commande($this->db);
+						$order->fetch($obj->fk_element);
+						$this->order_amount += $order->total_ht;
 					}
-					dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_missions facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
-				}
-				
-				if ($obj->element_type == 'invoice_supplier_room') {
-					$facturefourn = new FactureFournisseur($this->db);
-					$facturefourn->fetch($obj->fk_element);
 					
-					if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-						foreach ( $facturefourn->lines as $line ) {
-							$this->room_cost_amount += $line->total_ht;
+					if ($obj->element_type == 'propal') {
+						$proposal = new Propal($this->db);
+						$proposal->fetch($obj->fk_element);
+						if ($proposal->statut == 2) {
+							$this->propal_sign_amount += $proposal->total_ht;
+							dol_syslog(get_class($this) . "::fetch_by_session status=2 proposal->total_ht=" . $proposal->total_ht, LOG_DEBUG);
+						} elseif ($proposal->statut != 4) {
+							$this->propal_amount = + $proposal->total_ht;
 						}
-					} else {
-						$this->room_cost_amount += $facturefourn->total_ht;
 					}
-					dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
+					
+					if ($obj->element_type == 'invoice') {
+						$facture = new Facture($this->db);
+						$facture->fetch($obj->fk_element);
+						if ($facture->statut == 2) {
+							$this->invoice_payed_amount += $facture->total_ht;
+							dol_syslog(get_class($this) . "::fetch_by_session status=2 facture->total_ht=" . $facture->total_ht, LOG_DEBUG);
+							$this->nb_invoice_validated ++;
+						}
+						if ($facture->statut == 1) {
+							$this->invoice_ongoing_amount += $facture->total_ht;
+							dol_syslog(get_class($this) . "::fetch_by_session status=1 facture->total_ht=" . $facture->total_ht, LOG_DEBUG);
+							$this->nb_invoice_unpaid ++;
+						}
+					}
+					
+					if ($obj->element_type == 'invoice_supplier_trainer') {
+						$facturefourn = new FactureFournisseur($this->db);
+						$facturefourn->fetch($obj->fk_element);
+						if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+							foreach ( $facturefourn->lines as $line ) {
+								$this->trainer_cost_amount += $line->total_ht;
+							}
+						} else {
+							$this->trainer_cost_amount += $facturefourn->total_ht;
+						}
+						$this->invoicetrainerdraft = $this->invoicetrainerdraft || ($facturefourn->statut == 0);
+						
+						dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_trainer facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
+					}
+					
+					if ($obj->element_type == 'invoice_supplier_missions') {
+						$facturefourn = new FactureFournisseur($this->db);
+						$facturefourn->fetch($obj->fk_element);
+						
+						if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+							foreach ( $facturefourn->lines as $line ) {
+								$this->trip_cost_amount += $line->total_ht;
+							}
+						} else {
+							$this->trip_cost_amount += $facturefourn->total_ht;
+						}
+						dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_missions facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
+					}
+					
+					if ($obj->element_type == 'invoice_supplier_room') {
+						$facturefourn = new FactureFournisseur($this->db);
+						$facturefourn->fetch($obj->fk_element);
+						
+						if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+							foreach ( $facturefourn->lines as $line ) {
+								$this->room_cost_amount += $line->total_ht;
+							}
+						} else {
+							$this->room_cost_amount += $facturefourn->total_ht;
+						}
+						dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
+					}
 				}
+				$this->db->free($resql);
 			}
-			$this->db->free($resql);
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -913,7 +927,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string $type_element element type
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function get_charges_amount($id, $catid = 0, $type_element = '') {
+	public function get_charges_amount($id, $catid = 0, $type_element = '', $sub_element = 0) {
 		global $langs, $conf;
 		
 		$total_charges = 0;
@@ -922,12 +936,15 @@ class Agefodd_session_element extends CommonObject {
 			$catid = $conf->global->AGF_CAT_PRODUCT_CHARGES;
 		}
 		
-		if (!empty($catid)) {
+		if (! empty($catid)) {
 			$sql = "SELECT";
 			$sql .= " rowid, fk_element, element_type, fk_soc ";
 			
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 			$sql .= " WHERE fk_session_agefodd=" . $id;
+			if (! empty($sub_element)) {
+				$sql .= ' AND fk_sub_element=' . $sub_element;
+			}
 			
 			dol_syslog(get_class($this) . "::get_charges_amount", LOG_DEBUG);
 			$resql = $this->db->query($sql);
@@ -1019,10 +1036,10 @@ class Agefodd_session_element extends CommonObject {
 		
 		// Par defaut si montant facturé non payé ou facturé payé => prix de vent c'est facturé non payé + facturé payé
 		// Sinon montant total propal
-		$invoiced_amount=0;
+		$invoiced_amount = 0;
 		if ((! empty($this->invoice_payed_amount) || (! empty($this->invoice_ongoing_amount)))) {
 			$sell_price = $this->invoice_payed_amount + $this->invoice_ongoing_amount;
-			$invoiced_amount=$sell_price;
+			$invoiced_amount = $sell_price;
 			dol_syslog(get_class($this) . "::updateSellingPrice invoice sell_price=" . $sell_price, LOG_DEBUG);
 		}
 		
