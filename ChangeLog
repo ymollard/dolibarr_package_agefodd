@@ -1,5 +1,9 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.16 compared to 2.1.15 *****
+New : is session salemans is empty, it will be affected automaticly to first customer saleman
+
+
 ***** ChangeLog for 2.1.15 compared to 2.1.14 *****
 Fix : Fix training colors
 Fix : Fix bug on new time session

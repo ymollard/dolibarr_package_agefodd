@@ -605,6 +605,22 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		
 		$agf->notes = GETPOST('notes', 'alpha');
 		$agf->commercialid = GETPOST('commercial', 'int');
+		
+		//If custid not empty but commercialid empty, set commercial as first saleman of thirdparty
+		if ((empty($agf->commercialid) || $agf->commercialid==-1) && !empty($custid)) {
+			$sql_saleman = 'SELECT fk_user FROM '.MAIN_DB_PREFIX.'societe_commerciaux WHERE fk_soc='.$custid. ' LIMIT 1';
+			$resql_saleman=$db->query($sql_saleman);
+			if (!$resql_saleman) {
+				setEventMessage($db->lasterror,'erros');
+			} else {
+				$obj_saleman = $db->fetch_object($resql_saleman);
+				if (!empty($obj_saleman->fk_user)) {
+					$agf->commercialid=$obj_saleman->fk_user;
+				}
+			}
+		}
+		
+		
 		$agf->contactid = GETPOST('contact', 'int');
 		
 		$agf->fk_product = GETPOST('productid', 'int');
