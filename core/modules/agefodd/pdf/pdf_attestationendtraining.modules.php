@@ -200,7 +200,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$pdf->SetFont('', '', 12);
 						$pdf->SetXY($this->marge_gauche, $newY);
 						$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-						$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 4, $outputlangs->convToOutputCharset($this->emetteur->name) . $outputlangs->transnoentities('AgfPDFAttestationEnd2'), 0, 'C', 0);
+						$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->emetteur->name) . $outputlangs->transnoentities('AgfPDFAttestationEnd2'), 0, 'C', 0);
 						
 						$newY = $newY + 10;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);

@@ -227,7 +227,8 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
 			$newY = $newY + 10;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$pdf->Cell(0, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 0, 'C', 0);
+			$pdf->MultiCell(0, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 'C', 0);
+			$newY = $pdf->getY();
 			
 			$this->str = $outputlangs->transnoentities('AgfPDFAttestation4') . " ";
 			if ($agf->dated == $agf->datef)

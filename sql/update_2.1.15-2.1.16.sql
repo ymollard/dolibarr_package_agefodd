@@ -1,0 +1,1 @@
+ALTER TABLE llx_agefodd_convention ADD COLUMN fk_sub_element integer NOT NULL AFTER fk_element;
