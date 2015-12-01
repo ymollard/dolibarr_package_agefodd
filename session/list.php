@@ -119,7 +119,7 @@ if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
 	
 	if (empty($sortorder)) {
-		$sortfield = "DESC";
+		$sortorder = "DESC";
 	}
 	
 }
