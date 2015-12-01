@@ -239,25 +239,25 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetFont('', 'B', $this->default_font_size - 2);
 		$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-		$posy = $pdf->getY();
+		$posy = $pdf->GetY();
 		
 		// Show sender information
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetFont('', '', $this->default_font_size - 3);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-		$posy = $pdf->getY();
+		$posy = $pdf->GetY();
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetFont('', '', $this->default_font_size - 3);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-		$posy = $pdf->getY();
+		$posy = $pdf->GetY();
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetFont('', '', $this->default_font_size - 3);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-		$posy = $pdf->getY();
+		$posy = $pdf->GetY();
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetFont('', '', $this->default_font_size - 3);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-		$posy = $pdf->getY();
+		$posy = $pdf->GetY();
 		
 		// Affichage du logo commanditaire (optionnel)
 		if ($conf->global->AGF_USE_LOGO_CLIENT) {
@@ -358,7 +358,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		}
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		
-		$posY = $pdf->getY() + 2;
+		$posY = $pdf->GetY() + 2;
 		$haut_col2 += $hauteur;
 		
 		// Période

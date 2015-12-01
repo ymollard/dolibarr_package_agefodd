@@ -211,7 +211,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfPDFCertificate10'), 0, 'C');
 						// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false
 						
-						$newY = $pdf->getY();
+						$newY = $pdf->GetY();
 						$agf_certif = new Agefodd_stagiaire_certif($this->db);
 						$agf_certif->fetch(0, $agf2->lines[$i]->traineeid, $id, $agf2->lines[$i]->stagerowid);
 						$text = 'N°' . $agf_certif->certif_code . '/' . $agf_certif->certif_label;
@@ -220,19 +220,19 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY() + 5;
+						$newY = $pdf->GetY() + 5;
 						$text = $mysoc->name . ' - ' . $mysoc->address . ' - ' . $mysoc->zip . ' ' . $mysoc->town;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY();
+						$newY = $pdf->GetY();
 						$text = $outputlangs->transnoentities('AgfPDFCertificate11');
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY() + 5;
+						$newY = $pdf->GetY() + 5;
 						$contact_static = new Contact($this->db);
 						$contact_static->civility_id = $agf2->lines[$i]->civilite;
 						$text = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf2->lines[$i]->prenom . ' ' . $agf2->lines[$i]->nom;
@@ -241,39 +241,39 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
 
-						$newY = $pdf->getY();
+						$newY = $pdf->GetY();
 						$text = $outputlangs->transnoentities('AgfPDFCertificate12') . ' ' . $agf2->lines[$i]->socname;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->GetY()+5;
 						$text = $outputlangs->transnoentities('AgfPDFCertificate13');
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->GetY()+5;
 						$text = $agf->intitule_custo;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 13);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->GetY()+5;
 						$text = $outputlangs->transnoentities('AgfPDFCertificate14').' '.dol_print_date($agf->datef,'daytext','tzserver',$outputlangs);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						
 						if (!empty($agf_certif->mark)) {
-							$newY = $pdf->getY()+5;
+							$newY = $pdf->GetY()+5;
 							$text = $outputlangs->transnoentities('AgfPDFCertificate15').' '.$agf_certif->mark;
 							$pdf->SetXY($this->marge_gauche + 1, $newY);
 							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
 							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						}
 						
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->GetY()+5;
 						$text = $outputlangs->transnoentities('AgfPDFCertificate16').' '.dol_print_date($agf_certif->certif_dt_end,'daytext','tzserver',$outputlangs);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 12);
@@ -287,11 +287,11 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 							}
 							
 						}
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->GetY()+5;
 						$pdf->SetXY($this->page_largeur - $this->marge_gauche - $this->marge_droite - 85, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'L');						
-						$newY = $pdf->getY();
+						$newY = $pdf->GetY();
 						// Incrustation image tampon
 						if ($conf->global->AGF_INFO_TAMPON) {
 							$dir = $conf->agefodd->dir_output . '/images/';
@@ -374,7 +374,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
 			$text .= ' '.$outputlangs->transnoentities('AgfPDFCertificate21', $conf->global->AGF_ORGANISME_PREF);
 		}
-		$pdf->SetXY($this->marge_gauche + 1, $pdf->getY());
+		$pdf->SetXY($this->marge_gauche + 1, $pdf->GetY());
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
 		$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 		$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
@@ -389,7 +389,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 		if (! empty($mysoc->idprof3)) {
 			$text .=  ' - ' .$outputlangs->transnoentities(AgfPDFCertificate25).' '.$mysoc->idprof3;
 		}
-		$pdf->SetXY($this->marge_gauche + 1, $pdf->getY());
+		$pdf->SetXY($this->marge_gauche + 1, $pdf->GetY());
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
 		$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 		$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');

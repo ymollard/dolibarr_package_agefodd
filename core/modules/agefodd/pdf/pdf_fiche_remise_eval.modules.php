@@ -228,21 +228,21 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', 'B', $default_font_size);
 			$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			
 			// Show sender information
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
@@ -281,7 +281,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$this->str = $outputlangs->transnoentities('AgfRemiseEvalPDF');
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 			$pdf->Line($this->marge_gauche + 0.5, $posY + 10, $this->page_largeur - $this->marge_droite, $posY + 10);
-			$posy = $pdf->getY() + 10;
+			$posy = $pdf->GetY() + 10;
 			
 			$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 			
@@ -290,13 +290,13 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
 			$this->str = $outputlangs->transnoentities('AgfNumTraining') . ' : ' . $agf->id;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posy = $pdf->getY() + 1;
+			$posy = $pdf->GetY() + 1;
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
 			$this->str = $outputlangs->transnoentities('AgfTraining') . ' : ' . $agf->intitule_custo;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posy = $pdf->getY() + 1;
+			$posy = $pdf->GetY() + 1;
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
@@ -306,19 +306,19 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			else
 				$this->str .= ' ' . dol_print_date($agf->dated) . ' au ' . dol_print_date($agf->datef);
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posy = $pdf->getY() + 1;
+			$posy = $pdf->GetY() + 1;
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres11') . ' ' . $agf->placecode . ' ' . $agf_place->adresse . ' ' . $agf_place->cp . ' ' . $agf_place->ville;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posy = $pdf->getY() + 10;
+			$posy = $pdf->GetY() + 10;
 			
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size);
 			$this->str = $outputlangs->transnoentities('AgfPDFRemiseEvalText');
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posy = $pdf->getY() + 10;
+			$posy = $pdf->GetY() + 10;
 			
 			$posy = $this->_tableau($pdf, $posy, 7, $outputlangs);
 			
@@ -330,7 +330,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 			$this->str2 = dol_print_date($agf->datef);
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str) . ' ' . $outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 			
-			$posy = $pdf->getY() + 5;
+			$posy = $pdf->GetY() + 5;
 			// Formateur
 			$trainer_arr = array ();
 			foreach ( $agf_session_trainer->lines as $trainer ) {
@@ -348,7 +348,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 				$dir = $conf->agefodd->dir_output . '/images/';
 				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 				if (file_exists($img_tampon)) {
-					$posy = $pdf->getY();
+					$posy = $pdf->GetY();
 					$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $posy, 50);
 					$tampon_exitst = 22;
 				}
@@ -446,7 +446,7 @@ class pdf_fiche_remise_eval extends ModelePDFAgefodd {
 		$pdf->SetXY($this->marge_droite + 122, $tab_top + 1);
 		$pdf->MultiCell($this->marge_droite + 52, $tab_height, $outputlangs->convToOutputCharset(mb_strtoupper($outputlangs->transnoentities("AgfPDFRemiseEvalSing"), 'UTF-8')), '', 'C');
 		
-		$beforeY = $pdf->getY();
+		$beforeY = $pdf->GetY();
 		
 		for($i = 1; $i <= 12; $i ++) {
 			$this->printRect($pdf, $this->marge_gauche, $beforeY, $this->page_largeur - $this->marge_gauche - $this->marge_droite, $tab_height, $hidetop, $hidebottom); // Rect prend une longueur en 3eme param et 4eme param

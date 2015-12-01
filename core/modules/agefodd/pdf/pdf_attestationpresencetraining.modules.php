@@ -225,7 +225,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$newY = $newY + 10;
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 'C', 0);
-						$newY = $pdf->getY();
+						$newY = $pdf->GetY();
 						
 						$this->str = $outputlangs->transnoentities('AgfPDFAttestation4') . " ";
 						if ($agf->dated == $agf->datef)
@@ -239,10 +239,10 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 						
-						$newY = $pdf->getY();		
+						$newY = $pdf->GetY();		
 						
 						//Lieu
-						$newY = $pdf->getY()+30;
+						$newY = $pdf->GetY()+30;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 						$this->str = $outputlangs->transnoentities('Lieu :');
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
@@ -252,13 +252,13 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$this->str = $agf_place->ref_interne . ", ".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville;
 						$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 						
-						$newY = $pdf->getY()+10;
+						$newY = $pdf->GetY()+10;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$this->str = $outputlangs->transnoentities('AgfDoneRights');
 						$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 											
-						$newY = $pdf->getY()+5;
+						$newY = $pdf->GetY()+5;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
 						$this->str = $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
@@ -266,7 +266,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$this->str2 = dol_print_date($agf->datef);
 						$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str).' '.$outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 						
-						$newY = $pdf->getY();
+						$newY = $pdf->GetY();
 						$posX = $this->page_largeur/2;
 						$pdf->SetXY($posX, $newY);					
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
@@ -287,7 +287,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 							}					
 						}
 						
-						$newY = $pdf->getY()+$tampon_exitst;
+						$newY = $pdf->GetY()+$tampon_exitst;
 						
 						// Pied de page $pdf->SetFont(pdf_getPDFFont($outputlangs),'', 10);
 						$this->_pagefoot($pdf, $agf, $outputlangs);
@@ -426,25 +426,25 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','B', $default_font_size);
 			$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 
 			// Show sender information
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip.' '.$this->emetteur->town), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 		}
 	}
 	

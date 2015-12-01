@@ -465,7 +465,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 			$pdf->MultiCell($this->posxstudentname-$this->posxsecondcolumn, 4, $line->socname, 0, 'L');
 		}
 		
-		$posY = $pdf->getY() + 2;
+		$posY = $pdf->GetY() + 2;
 		$haut_col2 += $hauteur;
 		
 		// Période
@@ -495,7 +495,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$this->str = $agf_place->ref_interne . "\n" . $agf_place->adresse . "\n" . $agf_place->cp . " " . $agf_place->ville;
 		//$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-		$posY += $pdf->getY() + 5;
+		$posY += $pdf->GetY() + 5;
 		$haut_col4 += $hauteur + 7;
 		
 		
@@ -782,25 +782,25 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','B', $default_font_size);
 			$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 
 			// Show sender information
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip.' '.$this->emetteur->town), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-			$posy=$pdf->getY();
+			$posy=$pdf->GetY();
 		}
 	}
 	

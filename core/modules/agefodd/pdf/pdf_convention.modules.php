@@ -219,25 +219,25 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetXY($posx,$posy);
 				$pdf->SetFont('','B', $this->defaultFontSize);
 				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-				$posy=$pdf->getY();
+				$posy=$pdf->GetY();
 		
 				// Show sender information
 				$pdf->SetXY($posx,$posy);
 				$pdf->SetFont('','', $this->defaultFontSize-1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-				$posy=$pdf->getY();
+				$posy=$pdf->GetY();
 				$pdf->SetXY($posx,$posy);
 				$pdf->SetFont('','', $this->defaultFontSize-1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip.' '.$this->emetteur->town), 0, 'L');
-				$posy=$pdf->getY();
+				$posy=$pdf->GetY();
 				$pdf->SetXY($posx,$posy);
 				$pdf->SetFont('','', $this->defaultFontSize-1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-				$posy=$pdf->getY();
+				$posy=$pdf->GetY();
 				$pdf->SetXY($posx,$posy);
 				$pdf->SetFont('','', $this->defaultFontSize-1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-				$posy=$pdf->getY();
+				$posy=$pdf->GetY();
 				
 				
 				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);

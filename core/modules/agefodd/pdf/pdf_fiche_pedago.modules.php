@@ -529,7 +529,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		
 		pdf_pagehead($this->pdf, $outputlangs, $this->pdf->page_hauteur);
 		
-		$posY_ori = $this->pdf->getY();
+		$posY_ori = $this->pdf->GetY();
 		$this->pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 		
 		$posY = $this->marge_haute;
@@ -595,25 +595,25 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetFont('', 'B', $this->default_font_size - 2);
 		$this->pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-		$posy = $this->pdf->getY();
+		$posy = $this->pdf->GetY();
 		
 		// Show sender information
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-		$posy = $this->pdf->getY();
+		$posy = $this->pdf->GetY();
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-		$posy = $this->pdf->getY();
+		$posy = $this->pdf->GetY();
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-		$posy = $this->pdf->getY();
+		$posy = $this->pdf->GetY();
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-		$posy = $this->pdf->getY();
+		$posy = $this->pdf->GetY();
 		
 		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 	}

@@ -245,25 +245,25 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont('', 'B', $this->default_font_size - 2);
 			$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-			$posY = $pdf->getY();
+			$posY = $pdf->GetY();
 			
 			// Show sender information
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont('', '', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-			$posY = $pdf->getY();
+			$posY = $pdf->GetY();
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont('', '', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-			$posY = $pdf->getY();
+			$posY = $pdf->GetY();
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont('', '', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-			$posY = $pdf->getY();
+			$posY = $pdf->GetY();
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont('', '', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-			$posY = $pdf->getY();
+			$posY = $pdf->GetY();
 			
 			$posY = $pdf->GetY() + 10;
 			

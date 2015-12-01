@@ -261,21 +261,21 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		$pdf->SetXY($posx,$posy);
 		$pdf->SetFont('','B', $default_font_size);
 		$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-		$posy=$pdf->getY();
+		$posy=$pdf->GetY();
 
 		// Show sender information
 		$pdf->SetXY($posx,$posy);
 		$pdf->SetFont('','', $default_font_size - 1);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-		$posy=$pdf->getY();
+		$posy=$pdf->GetY();
 		$pdf->SetXY($posx,$posy);
 		$pdf->SetFont('','', $default_font_size - 1);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip.' '.$this->emetteur->town), 0, 'L');
-		$posy=$pdf->getY();
+		$posy=$pdf->GetY();
 		$pdf->SetXY($posx,$posy);
 		$pdf->SetFont('','', $default_font_size - 1);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-		$posy=$pdf->getY();
+		$posy=$pdf->GetY();
 		$pdf->SetXY($posx,$posy);
 		$pdf->SetFont('','', $default_font_size - 1);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
@@ -310,7 +310,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres1');
 		$pdf->MultiCell(0, 6, $outputlangs->convToOutputCharset($this->str), 0, "C");
-		$posY = $pdf->getY()+1;
+		$posY = $pdf->GetY()+1;
 		
 		// Intro
 		$pdf->SetXY($posX, $posY);
@@ -365,7 +365,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			$this->str = '« ' . $agf->intitule_custo . ' »';
 		}
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-		$posY = $pdf->getY() + 2;
+		$posY = $pdf->GetY() + 2;
 		$haut_col2 += $hauteur;
 		
 		// Période

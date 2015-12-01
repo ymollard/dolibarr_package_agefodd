@@ -256,7 +256,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$rmin = sprintf("%02d", $min % 60);
 				$hour = floor($min / 60);
 				
-				$newY = $pdf->getY() + 5;
+				$newY = $pdf->GetY() + 5;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$this->str = $outputlangs->transnoentities('AgfPDFAttestationCursus5') . " " . $hour . $outputlangs->transnoentities('AgfPDFAttestationCursus6');
 				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);

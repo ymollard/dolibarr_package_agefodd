@@ -259,7 +259,7 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			if (count($agf_op->lines) > 0) {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 				$this->str = $outputlangs->transnoentities('AgfPDFAttestationEndEval');
-				$newY = $pdf->getY() + 10;
+				$newY = $pdf->GetY() + 10;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 				
@@ -269,7 +269,7 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 				$this->_tableau($pdf, $tab_top+3, 5, 0, $outputlangs, 0, 0);
 			}
 			
-			$newY = $pdf->getY();
+			$newY = $pdf->GetY();
 			// Bloc objectifs pedagogiques
 			if (count($agf_op->lines) > 0) {
 				
@@ -285,9 +285,9 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 					else
 						$nblines = 1;
 					
-					$beforeY = $pdf->getY();
+					$beforeY = $pdf->GetY();
 					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($strobj), 0, 'L', 0);
-					$afterY = $pdf->getY();
+					$afterY = $pdf->GetY();
 					
 					$height_obj=$afterY-$beforeY;
 					$this->printRect($pdf,$this->marge_gauche, $beforeY, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $height_obj, $hidetop, $hidebottom);	// Rect prend une longueur en 3eme param et 4eme param
@@ -296,12 +296,12 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 					$pdf->line($this->posxongoing-1, $beforeY, $this->posxongoing-1, $beforeY + $height_obj);
 					$pdf->line($this->posxnotevaluated-1, $beforeY, $this->posxnotevaluated-1, $beforeY + $height_obj);
 					
-					$newY = $pdf->getY();
+					$newY = $pdf->GetY();
 				}
 			}
 			
 			// Lieu
-			$newY = $pdf->getY() + 10;
+			$newY = $pdf->GetY() + 10;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 			$this->str = $outputlangs->transnoentities('Lieu :');
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
@@ -311,26 +311,26 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$this->str = $agf_place->ref_interne . ", " . $agf_place->adresse . ", " . $agf_place->cp . ", " . $agf_place->ville;
 			$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 			
-			$newY = $pdf->getY() + 10;
+			$newY = $pdf->GetY() + 10;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 			
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
-			$newY = $pdf->getY();
+			$newY = $pdf->GetY();
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$this->str = $outputlangs->transnoentities('AgfPDFAttestation8') . " " . $mysoc->name . ",";
 			// $pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 			
-			$newY = $pdf->getY() + 10;
+			$newY = $pdf->GetY() + 10;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$this->str = $mysoc->town . ", " . $outputlangs->transnoentities('AgfPDFFichePres8');
 			$this->str2 = date("d/m/Y");
 			$this->str2 = dol_print_date($agf->datef);
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str) . ' ' . $outputlangs->convToOutputCharset($this->str2), 0, 'L', 0);
 			
-			$newY = $pdf->getY()+10;
+			$newY = $pdf->GetY()+10;
 			$pdf->SetXY($this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $newY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			//Formateur
@@ -347,19 +347,19 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 				$dir = $conf->agefodd->dir_output . '/images/';
 				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 				if (file_exists($img_tampon)) {
-					$newY = $pdf->getY();
+					$newY = $pdf->GetY();
 					$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 55, $newY, 50);
 					$tampon_exitst = 22;
 				}
 			}
 			
-			$newY = $pdf->getY() + $tampon_exitst;
+			$newY = $pdf->GetY() + $tampon_exitst;
 			
 			$pdf->SetFont('', 'I', 9);
 			$pdf->SetXY($this->marge_gauche, $newY);
 			$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 			$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 4, $outputlangs->transnoentities('AgfPDFAttestationEnd3'), 0, 'L', 0);
-			$newY = $pdf->getY() + 8;
+			$newY = $pdf->GetY() + 8;
 			$pdf->SetFont('', 'I,B', 9);
 			$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 4, $outputlangs->transnoentities('AgfPDFAttestationEnd4'), 0, 'L', 0);
 			
@@ -520,25 +520,25 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', 'B', $default_font_size);
 			$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			
 			// Show sender information
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-			$posy = $pdf->getY();
+			$posy = $pdf->GetY();
 		}
 	}
 	
