@@ -435,7 +435,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				}
 				
 				// Determine if jump pages is needed
-				$height = $this->getRealHeightLine($programme);
+				$height = $this->getRealHeightLine($programme) + 10 + $this->espace_apres_titre + 2;
 				// print 'Real $height='.$height;
 				// print '<BR>';
 				
@@ -465,7 +465,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 						while ( $allin_a_page !== true && $fontsize > 0 ) {
 							$fontsize --;
 							
-							$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize);
+							$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize) + 10 + $this->espace_apres_titre + 2;
 							/*print '$fontsize='.$fontsize;
 							 print '$height='.$height;
 							 print '<BR>';*/
@@ -700,6 +700,11 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 		$this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		return pdf_agfpagefoot($this->pdf, $outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 1, $hidefreetext);
 	}
+	
+	/**
+	 * 
+	 * @param unknown $txt
+	 */
 	public function getRealHeightLine($txt) {
 		global $conf;
 		// Determine if jump pages is needed
@@ -714,7 +719,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 		// print '$start_page='.$start_page.'<br>';
 		// call your printing functions with your parameters
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		$this->pdf->MultiCell(0, 5, $txt, 0, 'L', '', '2', '', '', '', '', $ishtml);
+		$this->pdf->MultiCell(0, 5, $txt, 0, 'L', false, 1, '', '', true, 0, $ishtml);
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// get the new Y
 		$end_y = $this->pdf->GetY();

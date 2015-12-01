@@ -423,13 +423,18 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres6');
 		//$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 		
-		$pdf->SetXY($this->posxsecondcolumn+1, $tab_top+$tab_height/4);
+		
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
 		
 		if (empty($agf->intitule_custo)) {
 			$this->str = '« ' . $agf->formintitule . ' »';
 		} else {
 			$this->str = '« ' . $agf->intitule_custo . ' »';
+		}
+		if (strlen($this->str)>46) {
+			$pdf->SetXY($this->posxsecondcolumn+1, $tab_top+$tab_height/4-3);
+		} else {
+			$pdf->SetXY($this->posxsecondcolumn+1, $tab_top+$tab_height/4-2);
 		}
 		$pdf->MultiCell($this->posxstudentname-$this->posxsecondcolumn, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		
@@ -591,7 +596,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 						$this->str = $agf->intitule_custo;
 					}
 					$pdf->SetXY($this->posxmodulename,$posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
 					$pdf->MultiCell($larg_col4, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, 'L', false, 0, '', '', true, 0, false, false, $h_ligne, 'M');
 						
 				}

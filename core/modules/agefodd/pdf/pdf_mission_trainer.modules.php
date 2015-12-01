@@ -300,7 +300,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			if (! empty($agf->intitule_custo))
 				$training = $agf->intitule_custo;
 			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF1').' ' . $training;
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
+			$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 			$posY += 14;
 			
 			/**

@@ -340,7 +340,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				
 				// Methode pedago ****
 				
-				$height = $this->getTotalHeightLine($agf->methode, $agf, $outputlangs, $fontsize);
+				$height = $this->getRealHeightLine($agf->methode, $agf, $outputlangs, $this->default_font_size);
 				
 				$height_left = $this->page_hauteur - $this->marge_basse - $posY;
 				if ($height > $height_left) {
@@ -423,30 +423,31 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				}
 				
 				// Determine if jump pages is needed
-				$height = $this->getRealHeightLine($programme);
-				// print 'Real $height='.$height;
-				// print '<BR>';
+				$height = $this->getRealHeightLine($programme) + 10 + $this->espace_apres_titre + 2;
+				//print 'Real $height='.$height;
+				//print '<BR>';
 				
 				$height_left = $this->page_hauteur - $this->marge_basse - $posY;
-				
+				//print 'Real $$height_left='.$height_left;
+				//print '<BR>';
 				$fontsize = $this->default_font_size;
 				
 				if ($height > $height_left) {
-					
+					//print 'sdqsd';
 					// Save this value bacause reset into this method
 					$header_height = $this->hearder_height_custom;
 					
 					// Check if needed to reduce text font size to fitt all in one page
-					$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize);
-					/*print 'TOTAL $height='.$height;
-					 print '<BR>';
-					 print ' $fontsize='.$fontsize;
-					 print '<BR>';*/
+					$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize) + 10 + $this->espace_apres_titre + 2;
+					//print 'TOTAL $height='.$height;
+					// print '<BR>';
+					// print ' $fontsize='.$fontsize;
+					// print '<BR>';
 					
 					$total_height_left = $this->page_hauteur - $header_height - 80;
 					
-					// print ' $$total_height_left='.$total_height_left;
-					// print '<BR>';
+					//print ' $$total_height_left='.$total_height_left;
+					//print '<BR>';
 					if ($height > $total_height_left) {
 						$allin_a_page = false;
 						
@@ -454,9 +455,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 							$fontsize --;
 							
 							$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize);
-							/*print '$fontsize='.$fontsize;
-							 print '$height='.$height;
-							 print '<BR>';*/
+						//	print '$fontsize='.$fontsize;
+						//	 print '$height='.$height;
+						//	 print '<BR>';
 							if ($height <= $total_height_left) {
 								$allin_a_page = true;
 							}
@@ -471,7 +472,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				} else {
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
-				
+				//exit;
 				/**
 				 * *** Programme ****
 				 */
@@ -631,6 +632,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		return pdf_agfpagefoot($this->pdf, $outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 1, $hidefreetext);
 	}
+	
+	/**
+	 * 
+	 * @param unknown $txt
+	 */
 	public function getRealHeightLine($txt) {
 		global $conf;
 		// Determine if jump pages is needed
@@ -639,23 +645,24 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 		$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 		// store starting values
 		$start_y = $this->pdf->GetY();
-		// print '$start_y='.$start_y.'<br>';
+		//print '$start_y='.$start_y.'<br>';
 		
 		$start_page = $this->pdf->getPage();
-		// print '$start_page='.$start_page.'<br>';
+		//print '$start_page='.$start_page.'<br>';
 		// call your printing functions with your parameters
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		$this->pdf->MultiCell(0, 5, $txt, 0, 'L', '', '2', '', '', '', '', $ishtml);
+		//$w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false
+		$this->pdf->MultiCell(0, 5, $txt, 0, 'L', false, 1, '', '', true, 0, $ishtml);
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// get the new Y
 		$end_y = $this->pdf->GetY();
 		$end_page = $this->pdf->getPage() - 1;
 		// calculate height
-		// print '$end_y='.$end_y.'<br>';
-		// print '$end_page='.$end_page.'<br>';
+		//print '$end_y='.$end_y.'<br>';
+		//print '$end_page='.$end_page.'<br>';
 		
 		$height = 0;
-		if ($end_page == $start_page && $end_y > $start_y) {
+		if (($end_page == $start_page || $end_page==0) && $end_y > $start_y) {
 			$height = $end_y - $start_y;
 			// print 'aa$height='.$height.'<br>';
 		} else {
@@ -679,11 +686,19 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 			}
 		} // restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
-		// print '$heightfinnal='.$height.'<br>';
+		//print '$heightfinnal='.$height.'<br>';
 		
 		// exit;
 		return $height;
 	}
+	
+	/**
+	 * 
+	 * @param unknown $txt
+	 * @param unknown $object
+	 * @param unknown $outputlangs
+	 * @param number $fontsize
+	 */
 	public function getTotalHeightLine($txt, $object, $outputlangs, $fontsize = 8) {
 		global $conf;
 		// Determine if jump pages is needed

@@ -306,10 +306,10 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		//Training name
 		$pdf->line($this->marge_gauche, $tab_top+$tab_height/3, $this->page_largeur-$this->marge_droite, $tab_top+$tab_height/3);	// line prend une position y en 2eme param et 4eme param
 		$pdf->line($this->marge_gauche, $tab_top+2*$tab_height/3, $this->page_largeur-$this->marge_droite, $tab_top+2*$tab_height/3);	// line prend une position y en 2eme param et 4eme param
-		$pdf->SetXY($this->posxtrainingname, $tab_top+$tab_height/6);
+		$pdf->SetXY($this->posxtrainingname, $tab_top+$tab_height/6-2);
 		$pdf->MultiCell(50,2, $outputlangs->transnoentities("AgfFormIntitule"),'','L');
 		//Training number
-		$pdf->SetXY($this->posxtrainingname, $tab_top+$tab_height*1/3+4);
+		$pdf->SetXY($this->posxtrainingname, $tab_top+$tab_height*1/3+3);
 		$pdf->MultiCell(50,2, $outputlangs->transnoentities("AgfFormNumber"),'','L');
 		// Période
 		$pdf->SetXY($this->posxtrainingname, $tab_top+$tab_height*2/3+4);
@@ -411,6 +411,12 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		} else {
 			$this->str = '« ' . $agf->intitule_custo . ' »';
 		}
+		if (strlen($this->str)>46) {
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-5);
+		} else {
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
+		}
+		
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		
 		$posY = $pdf->getY() + 2;

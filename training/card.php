@@ -972,7 +972,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					$legende = $langs->trans("AgfDocOpen");
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogique") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-					print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					print img_picto('fiche_pedago_' . $id . '.pdf:fiche_pedago_' . $id . '.pdf', 'pdf2').'</a>';
 					print '</td></tr>';
 				}
 				
@@ -980,7 +980,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					$legende = $langs->trans("AgfDocOpen");
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogiqueModule") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-					print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+					print img_picto('fiche_pedago_modules_' . $id . '.pdf:fiche_pedago_modules_' . $id . '.pdf', 'pdf2').'</a>';
 					print '</td></tr>';
 				}
 				

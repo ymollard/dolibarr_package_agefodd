@@ -1164,21 +1164,19 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		$pdf->SetXY($dims['lm'],-$posy+4);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line1, 0, 'C', 0);
 		$posy-=7;
-		$pdf->SetFont('','',7);
 	}
 
 	if (! empty($line2))
 	{
-		$pdf->SetFont('','I',7);
+		$pdf->SetFont('','I',6);
 		$pdf->SetXY($dims['lm']-6,-$posy);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line2, 0, 'C', 0);
 		$posy-=3;
-		$pdf->SetFont('','',7);
 	}
 
 	if (! empty($line3))
 	{
-		$pdf->SetFont('','I',7);
+		$pdf->SetFont('','I',6);
 		$pdf->SetXY($dims['lm']-6,-$posy);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line3, 0, 'C', 0);
 	}

@@ -112,7 +112,7 @@ function show_conv($file, $socid, $nom_courrier) {
 				// Display
 				$legende = $langs->trans("AgfDocOpen");
 				$mess .= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-				$mess .=img_picto($file, 'pdf2').'</a>';
+				$mess .=img_picto($file.':'.$file, 'pdf2').'</a>';
 				
 				// Regenerer
 				$legende = $langs->trans("AgfDocRefresh");
@@ -169,7 +169,7 @@ function show_doc($file, $socid, $nom_courrier) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .=img_picto($file, 'pdf2').'</a>';
+		$mess .=img_picto($file.':'.$file, 'pdf2').'</a>';
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -201,7 +201,7 @@ function show_convo_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .=img_picto($file, 'pdf2').'</a>';
+		$mess .=img_picto($file.':'.$file, 'pdf2').'</a>';
 		
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -239,7 +239,7 @@ function show_attestation_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= img_picto($file, 'pdf2').'</a>';
+		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
 		
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -278,7 +278,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= img_picto($file, 'pdf2').'</a>';
+		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -317,7 +317,7 @@ function show_trainer_mission($session_trainerid) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-		$mess .= img_picto($file, 'pdf2').'</a>';
+		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");

@@ -82,7 +82,7 @@ foreach($agf_stag->lines as $line) {
 }
 
 
-($num > 1) ? $this->str .= "\n".$outputlangs->transnoentities('AgfPDFCourrierCloture2') . $num . ")" : $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture3');
+($num > 1) ? $this->str = "\n".$outputlangs->transnoentities('AgfPDFCourrierCloture2') . $num . ")" : $this->str = $outputlangs->transnoentities('AgfPDFCourrierCloture3');
 $this->str .= "\n";
 $this->str .= $outputlangs->transnoentities('AgfPDFCourrierCloture4') . "\n";
 $pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
