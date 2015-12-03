@@ -145,7 +145,6 @@ if (GETPOST("viewcal") || GETPOST("viewweek") || GETPOST("viewday"))
 $now = dol_now();
 
 $help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&omodulodulo_Agenda';
-llxHeader('', $langs->trans("Agenda"), $help_url);
 
 $form = new Form($db);
 
@@ -201,6 +200,9 @@ if (! empty($filterdatesend))
 	$param .= "&dt_end_filtermonth=" . GETPOST('dt_end_filtermonth', 'int') . '&dt_end_filterday=' . GETPOST('dt_end_filterday', 'int') . '&dt_end_filteryear=' . GETPOST('dt_end_filteryear', 'int');
 if (! empty($onlysession))
 	$param .= "&onlysession=" . $onlysession;
+
+
+llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
 
 $sql = "SELECT s.nom as societe, s.rowid as socid, s.client,";
 $sql .= " a.id, a.datep as dp, a.datep2 as dp2,";

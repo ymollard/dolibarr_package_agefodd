@@ -222,7 +222,6 @@ if ($action == 'delete_action') {
  */
 
 $help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&oacute;dulo_Agenda';
-llxHeader('', $langs->trans("Agenda"), $help_url);
 
 $form = new Form($db);
 $companystatic = new Societe($db);
@@ -324,6 +323,9 @@ $picto = 'calendarweek';
 // Must be after the nav definition
 $param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 // print 'x'.$param;
+
+
+llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
 
 $tabactive = '';
 if ($action == 'show_month')

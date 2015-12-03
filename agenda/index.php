@@ -177,7 +177,6 @@ if ($action =='delete_action')
  */
 
 $help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&oacute;dulo_Agenda';
-llxHeader('', $langs->trans("Agenda"), $help_url);
 
 $form = new Form($db);
 $formagefodd = new FormAgefodd($db);
@@ -272,6 +271,9 @@ if ($display_only_trainer_filter != '')
 	$param .= '&displayonlytrainerfilter=' . $display_only_trainer_filter;
 
 $param .= "&maxprint=" . $maxprint;
+
+
+llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
 
 // Show navigation bar
 if (empty($action) || $action=='show_month')
