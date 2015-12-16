@@ -127,7 +127,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $searchAsLink search as soc link
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0) {
+	public function fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0, $sortfield='sa.nom', $sortorder='') {
 		global $langs;
 		
 		$linesadded = array ();
@@ -164,7 +164,9 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " WHERE s.rowid = " . $id;
 		if (! empty($socid))
 			$sql .= " AND so.rowid = " . $socid;
-		$sql .= " ORDER BY sa.nom";
+		if (! empty($sortfield)) {
+			$sql .= $this->db->order($sortfield,$sortorder);
+		}
 		
 		dol_syslog(get_class($this) . "::fetch_stagiaire_per_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
