@@ -46,7 +46,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 	 * \brief		Constructor
 	 * \param		db		Database handler
 	 */
-	function pdf_fiche_presence_landscape($db) {
+	function __construct($db) {
 		global $conf, $langs, $mysoc;
 		
 		$this->db = $db;
