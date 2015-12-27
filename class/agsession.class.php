@@ -2256,16 +2256,16 @@ class Agsession extends CommonObject {
 					$sql .= '	(so.parent=' . $this->db->escape($value) . ' OR sorequester.parent=' . $this->db->escape($value);
 					$sql .= ' OR so.rowid=' . $this->db->escape($value) . ' OR sorequester.rowid=' . $this->db->escape($value) . ')';
 					// Parent company of trainnee into inter session
-					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM llx_agefodd_session as innersess';
-					$sql .= ' INNER JOIN llx_agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
-					$sql .= ' INNER JOIN llx_agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
-					$sql .= ' INNER JOIN llx_societe as insersoc ON insersoc.rowid = insersta.fk_soc';
+					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc';
 					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . '))';
 					// Parent company of trainnee soc requester
-					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM llx_agefodd_session as innersess';
-					$sql .= ' INNER JOIN llx_agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
-					$sql .= ' INNER JOIN llx_agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
-					$sql .= ' INNER JOIN llx_societe as insersoc ON insersoc.rowid = innersess.fk_soc_requester';
+					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = innersess.fk_soc_requester';
 					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . ')) ';
 					$sql .= ')';
 				} elseif ($key == 's.rowid') {
@@ -4395,7 +4395,7 @@ class Agsession extends CommonObject {
 		if (! empty($this->id) && ! empty($this->fk_session_place)) {
 				
 			$sql = "SELECT ";
-			$sql .= "DISTINCT ag.rowid FROM llx_agefodd_session as ag ";
+			$sql .= "DISTINCT ag.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as ag ";
 			$sql .= " WHERE ag.fk_session_place=".$this->fk_session_place;
 			$sql .= " AND ag.dated BETWEEN '".$this->db->idate($this->dated)."' AND '".$this->db->idate($this->datef)."' ";
 			$sql .= " AND ag.datef BETWEEN '".$this->db->idate($this->dated)."' AND '".$this->db->idate($this->datef)."' ";

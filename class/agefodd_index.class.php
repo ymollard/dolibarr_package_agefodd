@@ -582,7 +582,7 @@ class Agefodd_index {
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = sta.fk_soc";
 		
 		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
-		$sql .= " AND sta.rowid NOT IN (SELECT stasessinner.fk_stagiaire FROM llx_agefodd_session_stagiaire as stasessinner INNER JOIN llx_agefodd_session as sinner ON sinner.rowid=stasessinner.fk_session_agefodd ";
+		$sql .= " AND sta.rowid NOT IN (SELECT stasessinner.fk_stagiaire FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as stasessinner INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sinner ON sinner.rowid=stasessinner.fk_session_agefodd ";
 		$sql .= " AND stasessinner.status_in_session IN (2,3) WHERE sinner.dated<certif.certif_dt_end AND sinner.fk_formation_catalogue=s.fk_formation_catalogue AND sinner.entity IN (" . getEntity('agsession') . "))";
 		$sql .= ' GROUP BY c.intitule,c.ref,soc.rowid ';
 		if ($this->db->type == 'pgsql') {

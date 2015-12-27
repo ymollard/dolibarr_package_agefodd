@@ -577,7 +577,7 @@ class FormAgefodd extends Form {
 		if ($socid > 0) {
 			$sql .= " AND (sp.fk_soc IN (SELECT rowid FROM  " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . '))';
 			$sql .= " OR (sp.fk_soc=" . $socid . ")";
-			$sql .= " OR (sp.fk_soc IN (SELECT parent FROM llx_societe WHERE rowid=" . $socid . "))";
+			$sql .= " OR (sp.fk_soc IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . "))";
 			$sql .= " OR (sp.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent=" . $socid . ")))";
 		}
 		
