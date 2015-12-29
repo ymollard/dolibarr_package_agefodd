@@ -1188,6 +1188,15 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line4, 0, 'C', 0);
 	}
 	
+	// Show page nb only on iso languages (so default Helvetica font)
+	if (strtolower(pdf_getPDFFont($outputlangs)) == 'helvetica')
+	{
+		$pdf->SetXY(-20,-$posy);
+		//print 'xxx'.$pdf->PageNo().'-'.$pdf->getAliasNbPages().'-'.$pdf->getAliasNumPage();exit;
+		if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
+		else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);
+	}
+	
 	$posy-=3;
 	$pdf->SetXY($dims['lm'],-$posy);
 
