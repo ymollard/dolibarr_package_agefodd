@@ -127,6 +127,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			$firstname = GETPOST('prenom', 'alpha');
 			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
+			if ($socid==-1) {
+				unset($socid);
+			}
 			
 			if (empty($name) || empty($firstname)) {
 				setEventMessage($langs->trans('AgfNameRequiredForParticipant'), 'errors');
@@ -137,12 +140,12 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$error ++;
 			}
 			if (empty($socid)) {
-				setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('ThirdParty')), 'errors');
+				setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
 				$error ++;
 			}
 			
 			// Test trainee already exists or not
-			if (! $error) {
+			if (empty($error)) {
 				$result = $agf->searchByLastNameFirstNameSoc($name, $firstname, GETPOST('societe', 'int'));
 				if ($result > 0) {
 					setEventMessage($langs->trans('AgfTraineeAlreadyExists'), 'errors');
@@ -152,7 +155,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 					$error ++;
 				}
 			}
-			if (! $error) {
+			if (empty($error)) {
 				$create_thirdparty = GETPOST('create_thirdparty', 'int');
 				$create_contact = GETPOST('create_contact', 'int');
 				
@@ -268,8 +271,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$agf->error = 'Select a contact';
 			}
 		}
-		
-		if ($result > 0) {
+
+		if ($result > 0 && empty($error)) {
 			
 			// Inscrire dans la session
 			if ($session_id > 0) {
