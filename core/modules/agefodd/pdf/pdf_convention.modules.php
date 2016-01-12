@@ -570,7 +570,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(array_sum($w), 0, '', 'T');
-				$posY += 6;
+				//$posY += 6;
 				
 				// total HT
 				$pdf->SetXY($posX + array_sum($w) - $w [5] - $w [6], $posY);
