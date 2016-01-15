@@ -107,18 +107,22 @@ class ActionsAgefodd {
 		if (in_array('propalcard', explode(':', $parameters['context']))) {
 			
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			dol_include_once('/agefodd/class/agsession.class.php');
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, 'propal');
 			if ($result > 0) {
 				if (is_array($agfsess->lines) && count($agfsess->lines) > 0) {
 					$langs->load('agefodd@agefodd');
 					foreach ( $agfsess->lines as $key => $session ) {
-						if (is_file($conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $session->fk_session_agefodd . '.pdf')) {
-							
+						
+						$sessiondetail=new Agsession($object->db);
+						$sessiondetail->fetch($session->fk_session_agefodd);
+						
+						if (is_file($conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $sessiondetail->formid . '.pdf')) {
 							$out .= '<tr ' . $bc[$var] . '>
 			     			<td colspan="4" align="right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgram', $session->fk_session_agefodd) . '</label>
-			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $session->fk_session_agefodd . '" />
+			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $sessiondetail->formid . '" />
 			     			</td>
 			     			</tr>';
 							
@@ -127,18 +131,18 @@ class ActionsAgefodd {
 							$out .= '<tr ' . $bc[$var] . '>
 			     			<td colspan="4" align="right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgramNotExists', $session->fk_session_agefodd) . '</label>
-			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $session->fk_session_agefodd . '" disabled="disabled" />
+			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $sessiondetail->formid . '" disabled="disabled" />
 			     			</td>
 			     			</tr>';
 							$var = - $var;
 						}
 						
-						if (is_file($conf->agefodd->dir_output . '/' . 'fiche_pedago_modules_' . $session->fk_session_agefodd . '.pdf')) {
+						if (is_file($conf->agefodd->dir_output . '/' . 'fiche_pedago_modules_' . $sessiondetail->formid . '.pdf')) {
 							
 							$out .= '<tr ' . $bc[$var] . '>
 			     			<td colspan="4" align="right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgramMod', $session->fk_session_agefodd) . '</label>
-			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsessionmod[]" value="' . $session->fk_session_agefodd . '" />
+			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsessionmod[]" value="' . $sessiondetail->formid . '" />
 			     			</td>
 			     			</tr>';
 							
@@ -147,7 +151,7 @@ class ActionsAgefodd {
 							$out .= '<tr ' . $bc[$var] . '>
 			     			<td colspan="4" align="right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgramModNotExists', $session->fk_session_agefodd) . '</label>
-			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $session->fk_session_agefodd . '" disabled="disabled" />
+			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $sessiondetail->formid . '" disabled="disabled" />
 			     			</td>
 			     			</tr>';
 							$var = - $var;
@@ -207,8 +211,8 @@ class ActionsAgefodd {
 			$mergeprogrammod=GETPOST('progsessionmod','array');
 			
 			if (is_array($mergeprogram) && count($mergeprogram)>0) {
-				foreach($mergeprogram as $session_id) {
-					$file=$conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $session_id . '.pdf';
+				foreach($mergeprogram as $training_id) {
+					$file=$conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $training_id . '.pdf';
 					if (is_file($file) && is_readable($file)) {
 						$files[]=$file;
 					}
@@ -216,8 +220,8 @@ class ActionsAgefodd {
 			}
 			
 			if (is_array($mergeprogrammod) && count($mergeprogrammod)>0) {
-				foreach($mergeprogrammod as $session_id) {
-					$file=$conf->agefodd->dir_output . '/' . 'fiche_pedago_modules_' . $session_id . '.pdf';
+				foreach($mergeprogrammod as $training_id) {
+					$file=$conf->agefodd->dir_output . '/' . 'fiche_pedago_modules_' . $training_id . '.pdf';
 					if (is_file($file) && is_readable($file)) {
 						$files[]=$file;
 					}

@@ -4,7 +4,7 @@ English Dolibarr ChangeLog
 New : is session salemans is empty, it will be affected automaticly to first customer saleman
 New : Add pages numbers on all PDF documents
 Fix : French translation
-
+Fix : Add training program to proposal work not correctly
 
 ***** ChangeLog for 2.1.15 compared to 2.1.14 *****
 Fix : Fix training colors
