@@ -242,7 +242,7 @@ class Agefodd_place extends CommonObject {
 	 * @param array $filter filter array
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function fetch_all($sortorder='', $sortfield='', $limit=0, $offset=0, $filter = array()) {
 		global $langs;
 		
 		$sql = "SELECT";
@@ -256,16 +256,25 @@ class Agefodd_place extends CommonObject {
 		// Manage filter
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+				if ($key=='s.rowid' || $key=='p.rowid' || $key=='p.fk_societe' || $key=='p.archive') {
+					$sql .= ' AND ' . $key . ' =' . $this->db->escape($value);
+				} else {
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+				}
 			}
 		}
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
+		if (! empty($sortfield)) {
+			$sql .= $this->db->order($sortfield, $sortorder);
+		}
+		if (! empty($limit)) {
+			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
+		}
 		
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 			
 			$i = 0;
