@@ -55,7 +55,7 @@ $importfrom = GETPOST('importfrom', 'alpha');
 /*
  * Actions delete
 */
-if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
+if ($action == 'confirm_delete' && $confirm == "yes" && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->remove($id);
 	
@@ -73,7 +73,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 /*
  * Action update (fiche rens stagiaire)
 */
-if ($action == 'update' && $user->rights->agefodd->creer) {
+if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_stagiaire($db);
 		
@@ -115,7 +115,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
  * Action create (fiche formation)
 */
 
-if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
+if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	if (! $_POST["cancel"]) {
 		$error = 0;
 		
@@ -338,7 +338,7 @@ $formAgefodd = new FormAgefodd($db);
 /*
  * Action create
 */
-if ($action == 'create' && $user->rights->agefodd->creer) {
+if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	
 	print "\n" . '<script type="text/javascript">
 		$(document).ready(function () {
@@ -809,12 +809,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
-	if ($user->rights->agefodd->creer) {
+	if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 	}
-	if ($user->rights->agefodd->creer) {
+	if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
 		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';

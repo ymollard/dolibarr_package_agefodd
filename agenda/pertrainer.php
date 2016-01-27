@@ -263,26 +263,48 @@ if ($status == 'todo')
 
 $param = '';
 if ($actioncode || isset($_GET['actioncode']) || isset($_POST['actioncode']))
-	$param .= "&actioncode=" . $actioncode;
+	$param .= "&amp;actioncode=" . $actioncode;
 if ($status || isset($_GET['status']) || isset($_POST['status']))
-	$param .= "&status=" . $status;
+	$param .= "&amp;status=" . $status;
 if ($filter)
-	$param .= "&filter=" . $filter;
+	$param .= "&amp;filter=" . $filter;
 if ($filtert)
-	$param .= "&filtert=" . $filtert;
+	$param .= "&amp;filtert=" . $filtert;
 if ($usergroup)
-	$param .= "&usergroup=" . $usergroup;
+	$param .= "&amp;usergroup=" . $usergroup;
 if ($socid)
-	$param .= "&socid=" . $socid;
+	$param .= "&amp;socid=" . $socid;
 if ($showbirthday)
-	$param .= "&showbirthday=1";
+	$param .= "&amp;showbirthday=1";
 if ($pid)
-	$param .= "&projectid=" . $pid;
+	$param .= "&amp;projectid=" . $pid;
 if ($type)
-	$param .= "&type=" . $type;
+	$param .= "&amp;type=" . $type;
 if ($action == 'show_day' || $action == 'show_week' || $action == 'show_month' || $action != 'show_peruser')
-	$param .= '&action=' . $action;
-$param .= "&maxprint=" . $maxprint;
+	$param .= '&amp;action=' . $action;
+if (!empty($filter_commercial)) {
+	$param .= "&amp;commercial=" . $filter_commercial;
+}
+if (!empty($filter_customer)) {
+	$param .= "&amp;fk_soc=" . $filter_customer;
+}
+if (!empty($filter_contact)) {
+	$param .= "&amp;contact=" . $filter_contact;
+}
+if (!empty($filter_commercial)) {
+	$param .= "&amp;commercial=" . $filter_commercial;
+}
+if (!empty($filter_trainer)) {
+	$param .= "&amp;trainerid=" . $filter_trainer;
+}
+if (!empty($filter_type_session)) {
+	$param .= "&amp;type_session=" . $filter_type_session;
+}
+if (!empty($filter_location)) {
+	$param .= "&amp;location=" . $filter_location;
+}
+	
+$param .= "&amp;maxprint=" . $maxprint;
 
 $prev = dol_get_first_day_week($day, $month, $year);
 // print "day=".$day." month=".$month." year=".$year;

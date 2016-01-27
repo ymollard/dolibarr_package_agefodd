@@ -48,8 +48,9 @@ $langs->load('bills');
 $langs->load('orders');
 
 // Security check
-if (! $user->rights->agefodd->lire)
+if (! $user->rights->agefodd->lire) {
 	accessforbidden();
+}
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
@@ -124,7 +125,7 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 /*
  * Action create and refresh pdf document
 */
-if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->creer) {
+if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	$cour = GETPOST('cour', 'alpha');
 	$model = GETPOST('model', 'alpha');
 	$idform = GETPOST('idform', 'alpha');

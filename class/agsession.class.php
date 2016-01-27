@@ -370,7 +370,7 @@ class Agsession extends CommonObject {
 		$admlevel = new Agefodd_training_admlevel($this->db);
 		$result2 = $admlevel->fetch_all($this->fk_formation_catalogue);
 		
-		if ($result2 > 0) {
+		if ($result2 > 0 && !empty($this->dated)) {
 			foreach ( $admlevel->lines as $line ) {
 				$actions = new Agefodd_sessadm($this->db);
 				
@@ -2135,7 +2135,7 @@ class Agsession extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0) {
-		global $langs;
+		global $langs, $conf;
 		
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, ";
@@ -2693,7 +2693,7 @@ class Agsession extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = '') {
-		global $langs;
+		global $conf, $langs, $user;
 		
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, ";
@@ -2877,12 +2877,29 @@ class Agsession extends CommonObject {
 			$sql .= '		ON opca.fk_session_agefodd=innersess.rowid AND opca.is_OPCA=1 AND opca.fk_soc_OPCA=' . $socid . '))';
 		}
 		
+		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
+			// Saleman of session is current user
+			$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
+			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com=' . $user->id . ')';
+			$sql .= " OR ";
+			// current user is saleman of customersession
+			$sql .= ' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user=' . $user->id . ')))';
+				
+			if ($conf->volvo->enabled) {
+					
+				$sql.=' OR (s.rowid IN (SELECT sessform.fk_session FROM '.MAIN_DB_PREFIX.'agefodd_session_element as elem';
+				$sql.=' INNER JOIN '.MAIN_DB_PREFIX.'volvo_vehicule as veh ON veh.rowid=elem.fk_element AND elem.element_type = \'vehicule\'';
+				$sql.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur as sessform ON sessform.fk_session=elem.fk_session_agefodd';
+				$sql.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur as form ON form.rowid=sessform.fk_agefodd_formateur AND form.fk_user='.$user->id.'))';
+			}
+		}
+		
 		// Manage filter
 		if (! empty($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if ($key != 'type_affect') {
-					if (strpos($key, 'date')) // To allow $filter['YEAR(s.dated)']=>$year
-{
+					if (strpos($key, 'date')) {
+						// To allow $filter['YEAR(s.dated)']=>$year
 						$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 						$sql .= ' AND ' . $key . ' = ' . $value;
@@ -3111,7 +3128,7 @@ class Agsession extends CommonObject {
 	 * Print table of session information
 	 */
 	public function printSessionInfo() {
-		global $form, $langs;
+		global $form, $langs, $conf, $user;
 		
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -3180,7 +3197,12 @@ class Agsession extends CommonObject {
 		print '</td></tr>';
 		
 		print '<tr><td>' . $langs->trans("AgfSessionContact") . '</td>';
-		print '<td><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
+		if (!empty($this->sourcecontactid) && !empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
+			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $this->sourcecontactid . '">' . $this->contactname . '</a></td></tr>';
+		} else {
+			print '<td><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
+		}
+		
 		
 		print '<tr><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
 		print '	<td>';

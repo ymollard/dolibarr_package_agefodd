@@ -148,7 +148,7 @@ if ($object->id) {
 	print '</div>';
 	
 	$modulepart = 'agefodd';
-	$permission = $user->rights->agefodd->creer;
+	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 	

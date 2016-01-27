@@ -47,8 +47,9 @@ require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_opca.class.php');
 
 // Security check
-if (! $user->rights->agefodd->lire)
+if (! $user->rights->agefodd->lire) {
 	accessforbidden();
+}
 
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
@@ -165,7 +166,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 /*
  * Action update (fiche session)
 */
-if ($action == 'update' && $user->rights->agefodd->creer && empty($period_update)) {
+if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && empty($period_update)) {
 	if (empty($cancel)) {
 		$error = 0;
 		
@@ -358,7 +359,7 @@ if ($action == 'update' && $user->rights->agefodd->creer && empty($period_update
 * - Calendar update
 * - trainer update
 */
-if ($action == 'edit' && $user->rights->agefodd->creer) {
+if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	
 	if (!empty($period_update)) {
 		
@@ -1279,7 +1280,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&amp;modperiod=' . $calendrier->lines [$i]->id . '&amp;anchor=period">' . img_picto($langs->trans("Save"), 'edit') . '</a>';
 								}
 								print '&nbsp;';
-								if ($user->rights->agefodd->creer) {
+								if ($user->rights->agefodd->modifier) {
 									print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&amp;period_remove=1&amp;modperiod=' . $calendrier->lines [$i]->id . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
 								}
 								print '</td>';
@@ -1814,7 +1815,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
-	if ($user->rights->agefodd->creer) {
+	if ($user->rights->agefodd->modifier) {
 		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';

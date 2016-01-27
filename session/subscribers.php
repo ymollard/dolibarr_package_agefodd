@@ -59,7 +59,7 @@ if ($fk_soc_link<0) {
 	$fk_soc_link=0;
 }
 
-if ($action == 'edit' && $user->rights->agefodd->creer) {
+if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd->modifier)) {
 	
 	if ($stag_update_x > 0) {
 		$agf = new Agsession($db);
@@ -158,7 +158,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
  * Actions delete stagiaire
 */
 
-if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agefodd->creer) {
+if ($action == 'confirm_delete_stag' && $confirm == "yes" && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	$stagerowid = GETPOST('stagerowid', 'int');
 	
 	$agf = new Agefodd_session_stagiaire($db);
@@ -176,7 +176,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && $user->rights->agef
 /*
  * Action update info OPCA
 */
-if ($action == 'update_subrogation' && $user->rights->agefodd->creer) {
+if ($action == 'update_subrogation' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	if (! $_POST["cancel"]) {
 		$error = 0;
 		
@@ -596,7 +596,7 @@ if (! empty($id)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modstagid=' . $stagiaires->lines[$i]->id . '">' . img_picto($langs->trans("Save"), 'edit') . '</a>';
 					}
 					print '&nbsp;';
-					if ($user->rights->agefodd->creer) {
+					if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modstagid=' . $stagiaires->lines[$i]->id . '&stag_remove=1&stagerowid=' . $stagiaires->lines[$i]->stagerowid . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
 					}
 					print '</td>' . "\n";
@@ -981,13 +981,13 @@ if (! empty($id)) {
 print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" && (! empty($agf->id))) {
-	if ($user->rights->agefodd->creer && $agf->status != 4) {
+	if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && $agf->status != 4) {
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	}
 	
-	if ($user->rights->agefodd->creer && ! $agf->type_session > 0) {
+	if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && ! $agf->type_session > 0) {
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit_subrogation&id=' . $id . '">' . $langs->trans('AgfModifySubrogation') . '</a>';
 	} else {
 		if ($agf->type_session)
