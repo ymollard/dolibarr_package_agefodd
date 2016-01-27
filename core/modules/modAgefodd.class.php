@@ -36,7 +36,7 @@ class modAgefodd extends DolibarrModules {
 	/**
 	 * Constructor.
 	 *
-	 * @param DoliDB		Database handler
+	 * @param DoliDB Database handler
 	 */
 	function __construct($db) {
 		global $conf;
@@ -89,7 +89,7 @@ class modAgefodd extends DolibarrModules {
 				'hooks' => array (
 						'searchform',
 						'pdfgeneration',
-						'propalcard'
+						'propalcard' 
 				) 
 		);
 		
@@ -111,7 +111,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		$this->need_dolibarr_version = array (
 				3,
-				7
+				7 
 		);
 		$this->langfiles = array (
 				'agefodd@agefodd' 
@@ -122,422 +122,421 @@ class modAgefodd extends DolibarrModules {
 		$r = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_USE_STAGIAIRE_TYPE";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Use trainee type';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_USE_STAGIAIRE_TYPE";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Use trainee type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_DEFAULT_STAGIAIRE_TYPE";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '2';
-		$this->const [$r] [3] = 'Type of  trainee funding';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_DEFAULT_STAGIAIRE_TYPE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '2';
+		$this->const[$r][3] = 'Type of  trainee funding';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_UNIVERSAL_MASK";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Mask of training number ref';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_UNIVERSAL_MASK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Mask of training number ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ADDON";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = 'mod_agefodd_simple';
-		$this->const [$r] [3] = 'Use simple mask for training ref';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ADDON";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'mod_agefodd_simple';
+		$this->const[$r][3] = 'Use simple mask for training ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ORGANISME_PREF";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Prefecture d\'enregistrement';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ORGANISME_PREF";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Prefecture d\'enregistrement';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ORGANISME_NUM";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Numerot d\'enregistrement a la prefecture';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ORGANISME_NUM";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Numerot d\'enregistrement a la prefecture';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ORGANISME_REPRESENTANT";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Representant de la societé de formation';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ORGANISME_REPRESENTANT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Representant de la societé de formation';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_TRAINING_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Search Training with combobox';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_TRAINING_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Search Training with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_TRAINER_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Search Trainer with combobox';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_TRAINER_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Search Trainer with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_TRAINEE_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Search Trainee with combobox';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_TRAINEE_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Search Trainee with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_SITE_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Search site with combobox';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_SITE_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Search site with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_STAGTYPE_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Search stagiaire type with combobox';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_STAGTYPE_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Search stagiaire type with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CONTACT_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Search contact with combobox';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CONTACT_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Search contact with combobox';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CONTACT_DOL_SESSION";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Use dolibarr or agefodd contact for session';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CONTACT_DOL_SESSION";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_LAST_VERION_INSTALL";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = $this->version;
-		$this->const [$r] [3] = 'Last version installed to know change table to execute';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 'allentities';
-		$this->const [$r] [6] = 0;
+		$this->const[$r][0] = "AGF_LAST_VERION_INSTALL";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = $this->version;
+		$this->const[$r][3] = 'Last version installed to know change table to execute';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 'allentities';
+		$this->const[$r][6] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_DOL_AGENDA";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Create Event in Dolibarr Agenda';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_DOL_AGENDA";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Create Event in Dolibarr Agenda';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_USE_FAC_WITHOUT_ORDER";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Can link invocie without order to session';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_USE_FAC_WITHOUT_ORDER";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Can link invocie without order to session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_LINK_OPCA_ADRR_TO_CONTACT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Display OPCA adress from OPCA contact rather than OPCA';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_LINK_OPCA_ADRR_TO_CONTACT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Display OPCA adress from OPCA contact rather than OPCA';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_TEXT_COLOR";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '000000';
-		$this->const [$r] [3] = 'Text color of PDF in hexadecimal';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_TEXT_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '000000';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_HEAD_COLOR";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '1A60C9';
-		$this->const [$r] [3] = 'Text color header in hexadecimal';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_HEAD_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '1A60C9';
+		$this->const[$r][3] = 'Text color header in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_FOOT_COLOR";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = 'BEBEBE';
-		$this->const [$r] [3] = 'Text color of PDF footer, in hexadccimal';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_FOOT_COLOR";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'BEBEBE';
+		$this->const[$r][3] = 'Text color of PDF footer, in hexadccimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_MANAGE_CERTIF";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Manage certification';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_MANAGE_CERTIF";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Manage certification';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_DEFAULT_CREATE_CERTIF";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'When Add a trainee defaut create certificate';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_DEFAULT_CREATE_CERTIF";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'When Add a trainee defaut create certificate';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_FCKEDITOR_ENABLE_TRAINING";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Use WISIWYG on training information';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_FCKEDITOR_ENABLE_TRAINING";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Use WISIWYG on training information';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_MANAGE_OPCA";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Manage Opca';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_MANAGE_OPCA";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Manage Opca';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CERTIF_ADDON";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = 'mod_agefoddcertif_simple';
-		$this->const [$r] [3] = 'Use simple mask for certif ref';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CERTIF_ADDON";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'mod_agefoddcertif_simple';
+		$this->const[$r][3] = 'Use simple mask for certif ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CERTIF_UNIVERSAL_MASK";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Mask of certificate code';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CERTIF_UNIVERSAL_MASK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Mask of certificate code';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_SESSION_TRAINEE_STATUS_AUTO";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Manage subcription status by propal/order status';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_SESSION_TRAINEE_STATUS_AUTO";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Manage subcription status by propal/order status';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_DOL_TRAINER_AGENDA";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Manage time by session for trainer';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_DOL_TRAINER_AGENDA";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Manage time by session for trainer';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_DEFAULT_SESSION_STATUS";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Defaut status session';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_DEFAULT_SESSION_STATUS";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Defaut status session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Add trainnee name when create order/proposal';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Add trainnee name when create order/proposal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ADD_AVGPRICE_DOCPROPODR";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Add average price on create order/proposal';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ADD_AVGPRICE_DOCPROPODR";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Add average price on create order/proposal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_MANAGE_CURSUS";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Manage cursus';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_MANAGE_CURSUS";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Manage cursus';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CURSUS_USE_SEARCH_TO_SELECT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Display combobox for cursus select';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CURSUS_USE_SEARCH_TO_SELECT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Display combobox for cursus select';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_ADVANCE_COST_MANAGEMENT";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Advanced session cost management';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_ADVANCE_COST_MANAGEMENT";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Advanced session cost management';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_NOT_DISPLAY_WARNING_TIME_SESSION";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Do not display warning betwenn training and session time';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_NOT_DISPLAY_WARNING_TIME_SESSION";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Do not display warning betwenn training and session time';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_NO_MANUAL_CREATION_DOC";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Do not display manual propal/order/invoice creation';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_NO_MANUAL_CREATION_DOC";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Do not display manual propal/order/invoice creation';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_NEW_BROWSER_WINDOWS_ON_LINK";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'open new browser window/tab on link click';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_NEW_BROWSER_WINDOWS_ON_LINK";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'open new browser window/tab on link click';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CONTACT_NOT_MANDATORY_ON_SESSION";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Contact is not mandatory on session';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CONTACT_NOT_MANDATORY_ON_SESSION";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Contact is not mandatory on session';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_USE_FORMATEUR_TYPE";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Use trainer type';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_USE_FORMATEUR_TYPE";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Use trainer type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_DEFAULT_FORMATEUR_TYPE";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = 'Type of  trainer funding';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_DEFAULT_FORMATEUR_TYPE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Type of  trainer funding';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_CAT_PRODUCT_CHARGES";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '';
-		$this->const [$r] [3] = 'Cat product charges';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_CAT_PRODUCT_CHARGES";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Cat product charges';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		
 		$r ++;
-		$this->const [$r] [0] = "AGF_FILTER_TRAINER_TRAINING";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '0';
-		$this->const [$r] [3] = 'Filter trainer list';
-		$this->const [$r] [4] = 1;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_FILTER_TRAINER_TRAINING";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Filter trainer list';
+		$this->const[$r][4] = 1;
+		$this->const[$r][5] = 0;
 		$r ++;
 		
-		$this->const [$r] [0] = "AGF_1DAYSHIFT";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '09:00';
-		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_1DAYSHIFT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '09:00';
+		$this->const[$r][3] = '';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		$r ++;
 		
-		$this->const [$r] [0] = "AGF_2DAYSHIFT";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '12:00';
-		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_2DAYSHIFT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '12:00';
+		$this->const[$r][3] = '';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		$r ++;
 		
-		$this->const [$r] [0] = "AGF_USESEONDPERIOD";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_USESEONDPERIOD";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = '';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		$r ++;
 		
-		$this->const [$r] [0] = "AGF_3DAYSHIFT";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '14:00';
-		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_3DAYSHIFT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '14:00';
+		$this->const[$r][3] = '';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		$r ++;
 		
-		$this->const [$r] [0] = "AGF_4DAYSHIFT";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = '18:00';
-		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
+		$this->const[$r][0] = "AGF_4DAYSHIFT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '18:00';
+		$this->const[$r][3] = '';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
 		$r ++;
 		
-		$this->const [$r] [0] = "AGF_REF_PROPAL_AUTO";
-		$this->const [$r] [1] = "yesno";
-		$this->const [$r] [2] = '1';
-		$this->const [$r] [3] = '';
-		$this->const [$r] [4] = 0;
-		$this->const [$r] [5] = 0;
-		$r ++;
-		
-		foreach(array(1,2,3,4,5,6,0) as $daynum) {
+		foreach ( array (
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				0 
+		) as $daynum ) {
 			
-			$this->const [$r] [0] = 'AGF_WEEKADAY'.$daynum;
-			$this->const [$r] [1] = "yesno";
-			if ($daynum==6 || $daynum==0) {
-				$this->const [$r] [2] = '0';
+			$this->const[$r][0] = 'AGF_WEEKADAY' . $daynum;
+			$this->const[$r][1] = "yesno";
+			if ($daynum == 6 || $daynum == 0) {
+				$this->const[$r][2] = '0';
 			} else {
-				$this->const [$r] [2] = '1';
+				$this->const[$r][2] = '1';
 			}
-			$this->const [$r] [3] = '';
-			$this->const [$r] [4] = 0;
-			$this->const [$r] [5] = 0;
+			$this->const[$r][3] = '';
+			$this->const[$r][4] = 0;
+			$this->const[$r][5] = 0;
 			$r ++;
 		}
 		
 		$r ++;
-		$this->const [$r] [0] = "MAIN_MODULES_FOR_EXTERNAL";
-		$this->const [$r] [1] = "chaine";
-		$this->const [$r] [2] = 'user,facture,categorie,commande,fournisseur,contact,propal,projet,contrat,societe,ficheinter,expedition,agenda,adherent,agefodd';
-		$this->const [$r] [3] = 'External modules availability';
-		$this->const [$r] [4] = 1;
-		$this->const [$r] [5] = 0;
-		
+		$this->const[$r][0] = "MAIN_MODULES_FOR_EXTERNAL";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'user,facture,categorie,commande,fournisseur,contact,propal,projet,contrat,societe,ficheinter,expedition,agenda,adherent,agefodd';
+		$this->const[$r][3] = 'External modules availability';
+		$this->const[$r][4] = 1;
+		$this->const[$r][5] = 0;
 		
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
@@ -552,75 +551,75 @@ class modAgefodd extends DolibarrModules {
 						MAIN_DB_PREFIX . "agefodd_stagiaire_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_type",
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type" ,
-						MAIN_DB_PREFIX . "agefodd_formateur_category_dict" ,
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
+						MAIN_DB_PREFIX . "agefodd_formateur_category_dict" 
 				),
 				'tablib' => array (
 						"AgfTraineeType",
 						"AgfTrainerTypeDict",
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
-						"AgfTrainerCategoryDict"
+						"AgfTrainerCategoryDict" 
 				),
 				'tabsql' => array (
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
-						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
+						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f' 
 				),
 				'tabsqlsort' => array (
 						'sort ASC',
 						'sort ASC',
 						'sort ASC',
 						'sort ASC',
-						'code ASC'
+						'code ASC' 
 				),
 				'tabfield' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort",
-						"code,label,description"
+						"code,label,description" 
 				),
 				'tabfieldvalue' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort",
-						"code,label,description"
+						"code,label,description" 
 				),
 				'tabfieldinsert' => array (
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort",
-						"code,label,description"
+						"code,label,description" 
 				),
 				'tabrowid' => array (
 						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
-						"rowid"
+						"rowid" 
 				),
 				'tabcond' => array (
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
-						'$conf->agefodd->enabled',
-						
-				) 
+						'$conf->agefodd->enabled' 
+				)
+				 
 		);
 		
 		// Import list of trainee
 		$r = 0;
 		$r ++;
-		$this->import_code [$r] = $this->rights_class . '_' . $r;
-		$this->import_label [$r] = 'ImportDataset_trainee';
-		$this->import_icon [$r] = 'contact';
-		$this->import_entities_array [$r] = array (
+		$this->import_code[$r] = $this->rights_class . '_' . $r;
+		$this->import_label[$r] = 'ImportDataset_trainee';
+		$this->import_icon[$r] = 'contact';
+		$this->import_entities_array[$r] = array (
 				's.fk_soc' => 'company',
 				's.nom' => 'AgfNbreParticipants',
 				's.prenom' => 'AgfNbreParticipants',
@@ -632,10 +631,10 @@ class modAgefodd extends DolibarrModules {
 				's.place_birth' => 'AgfNbreParticipants',
 				's.datec' => 'AgfNbreParticipants' 
 		);
-		$this->import_tables_array [$r] = array (
+		$this->import_tables_array[$r] = array (
 				's' => MAIN_DB_PREFIX . 'agefodd_stagiaire' 
 		);
-		$this->import_fields_array [$r] = array (
+		$this->import_fields_array[$r] = array (
 				's.fk_soc' => 'ThirdPartyName*',
 				's.nom' => 'AgfFamilyName',
 				's.prenom' => 'AgfFirstName',
@@ -647,11 +646,11 @@ class modAgefodd extends DolibarrModules {
 				's.place_birth' => 'AgfPlaceBirth',
 				's.datec' => 'AgfDateC' 
 		);
-		$this->import_fieldshidden_array [$r] = array (
+		$this->import_fieldshidden_array[$r] = array (
 				's.fk_user_author' => 'user->id',
 				's.fk_user_mod' => 'user->id' 
 		);
-		$this->import_convertvalue_array [$r] = array (
+		$this->import_convertvalue_array[$r] = array (
 				's.fk_soc' => array (
 						'rule' => 'fetchidfromref',
 						'file' => '/societe/class/societe.class.php',
@@ -660,11 +659,11 @@ class modAgefodd extends DolibarrModules {
 						'element' => 'ThirdParty' 
 				) 
 		);
-		$this->import_regex_array [$r] = array (
+		$this->import_regex_array[$r] = array (
 				's.date_birth' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$' 
 		);
-		$this->import_examplevalues_array [$r] = array (
+		$this->import_examplevalues_array[$r] = array (
 				's.fk_soc' => 'MyBigCompany',
 				's.nom' => 'Huppelepup',
 				's.prenom' => 'Jantje',
@@ -679,10 +678,10 @@ class modAgefodd extends DolibarrModules {
 		
 		// Import certificate
 		$r ++;
-		$this->import_code [$r] = $this->rights_class . '_' . $r;
-		$this->import_label [$r] = 'ImportDataset_agefoddcertificate';
-		$this->import_icon [$r] = 'contact';
-		$this->import_entities_array [$r] = array (
+		$this->import_code[$r] = $this->rights_class . '_' . $r;
+		$this->import_label[$r] = 'ImportDataset_agefoddcertificate';
+		$this->import_icon[$r] = 'contact';
+		$this->import_entities_array[$r] = array (
 				's.fk_session_agefodd' => 'AgefoddMenuAction',
 				's.fk_stagiaire' => 'AgfNbreParticipants',
 				's.fk_agefodd_stagiaire_type' => 'AgfNbreParticipants',
@@ -695,11 +694,11 @@ class modAgefodd extends DolibarrModules {
 				'certif.certif_dt_end' => 'AgfCertificate',
 				'certif.datec' => 'AgfCertificate' 
 		);
-		$this->import_tables_array [$r] = array (
+		$this->import_tables_array[$r] = array (
 				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire',
 				'certif' => MAIN_DB_PREFIX . 'agefodd_stagiaire_certif' 
 		);
-		$this->import_fields_array [$r] = array (
+		$this->import_fields_array[$r] = array (
 				's.fk_session_agefodd' => 'Id*',
 				's.fk_stagiaire' => 'Id*',
 				's.fk_agefodd_stagiaire_type' => "AgfTraineeType",
@@ -713,21 +712,21 @@ class modAgefodd extends DolibarrModules {
 				'certif.datec' => "DateCreation" 
 		);
 		
-		$this->import_fieldshidden_array [$r] = array (
+		$this->import_fieldshidden_array[$r] = array (
 				's.fk_user_author' => 'user->id',
 				's.fk_user_mod' => 'user->id',
 				'certif.fk_user_author' => 'user->id',
 				'certif.fk_user_mod' => 'user->id',
 				'certif.fk_session_stagiaire' => 'lastrowid-' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire' 
 		);
-		$this->import_convertvalue_array [$r] = array ();
-		$this->import_regex_array [$r] = array (
+		$this->import_convertvalue_array[$r] = array ();
+		$this->import_regex_array[$r] = array (
 				'certif.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 				'certif.certif_dt_start' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 				'certif.certif_dt_end' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$' 
 		);
-		$this->import_examplevalues_array [$r] = array (
+		$this->import_examplevalues_array[$r] = array (
 				's.fk_session_agefodd' => '999999',
 				's.fk_stagiaire' => '1',
 				's.fk_agefodd_stagiaire_type' => $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
@@ -743,53 +742,53 @@ class modAgefodd extends DolibarrModules {
 		
 		// Import Session Trainee
 		$r ++;
-		$this->import_code [$r] = $this->rights_class . '_' . $r;
-		$this->import_label [$r] = 'ImportDataset_agefoddsessionparticipant';
-		$this->import_icon [$r] = 'contact';
-		$this->import_entities_array [$r] = array (
+		$this->import_code[$r] = $this->rights_class . '_' . $r;
+		$this->import_label[$r] = 'ImportDataset_agefoddsessionparticipant';
+		$this->import_icon[$r] = 'contact';
+		$this->import_entities_array[$r] = array (
 				's.fk_session_agefodd' => 'AgefoddMenuAction',
 				's.fk_stagiaire' => 'AgfNbreParticipants',
 				's.fk_agefodd_stagiaire_type' => 'AgfNbreParticipants',
-				's.datec' => 'AgfNbreParticipants',
+				's.datec' => 'AgfNbreParticipants' 
 		);
-		$this->import_tables_array [$r] = array (
-				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire'
+		$this->import_tables_array[$r] = array (
+				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire' 
 		);
-		$this->import_fields_array [$r] = array (
+		$this->import_fields_array[$r] = array (
 				's.fk_session_agefodd' => 'Id*',
 				's.fk_stagiaire' => 'Id*',
 				's.fk_agefodd_stagiaire_type' => "AgfTraineeType",
-				's.datec' => 'DateCreation',
+				's.datec' => 'DateCreation' 
 		);
 		
-		$this->import_fieldshidden_array [$r] = array (
+		$this->import_fieldshidden_array[$r] = array (
 				's.fk_user_author' => 'user->id',
-				's.fk_user_mod' => 'user->id',
+				's.fk_user_mod' => 'user->id' 
 		);
-		$this->import_convertvalue_array [$r] = array ();
-		$this->import_regex_array [$r] = array (
-				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
+		$this->import_convertvalue_array[$r] = array ();
+		$this->import_regex_array[$r] = array (
+				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$' 
 		);
-		$this->import_examplevalues_array [$r] = array (
+		$this->import_examplevalues_array[$r] = array (
 				's.fk_session_agefodd' => '999999',
 				's.fk_stagiaire' => '1',
 				's.fk_agefodd_stagiaire_type' => $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
-				's.datec' => '2013-11-12',
+				's.datec' => '2013-11-12' 
 		);
 		
 		// Trainee export
 		$r = 0;
 		$r ++;
-		$this->export_code [$r] = $this->rights_class . '_' . $r;
-		$this->export_label [$r] = 'ExportDataset_trainee';
-		$this->export_icon [$r] = 'contact';
-		$this->export_permission [$r] = array (
+		$this->export_code[$r] = $this->rights_class . '_' . $r;
+		$this->export_label[$r] = 'ExportDataset_trainee';
+		$this->export_icon[$r] = 'contact';
+		$this->export_permission[$r] = array (
 				array (
 						"agefodd",
 						"export" 
 				) 
 		);
-		$this->export_fields_array [$r] = array (
+		$this->export_fields_array[$r] = array (
 				's.rowid' => 'Id',
 				'c.nom' => 'ThirdPartyName',
 				's.nom' => 'AgfFamilyName',
@@ -802,13 +801,13 @@ class modAgefodd extends DolibarrModules {
 				's.place_birth' => 'AgfPlaceBirth',
 				's.datec' => 'AgfDateC' 
 		);
-		$this->export_TypeFields_array [$r] = array (
+		$this->export_TypeFields_array[$r] = array (
 				'c.nom' => "Text",
 				's.nom' => "Text",
 				's.prenom' => "Text",
 				's.civilite' => "Text" 
 		);
-		$this->export_entities_array [$r] = array (
+		$this->export_entities_array[$r] = array (
 				'c.nom' => "company",
 				's.rowid' => "AgfNbreParticipants",
 				's.nom' => "AgfNbreParticipants",
@@ -822,23 +821,23 @@ class modAgefodd extends DolibarrModules {
 				's.datec' => "AgfNbreParticipants" 
 		);
 		
-		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
-		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as c ON s.fk_soc = c.rowid';
-		$this->export_sql_end [$r] .= ' WHERE c.entity IN (' . getEntity("societe", 1) . ')';
+		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
+		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as c ON s.fk_soc = c.rowid';
+		$this->export_sql_end[$r] .= ' WHERE c.entity IN (' . getEntity("societe", 1) . ')';
 		
 		// certificate export
 		$r ++;
-		$this->export_code [$r] = $this->rights_class . '_' . $r;
-		$this->export_label [$r] = 'ExportDataset_certificate';
-		$this->export_icon [$r] = 'contact';
-		$this->export_permission [$r] = array (
+		$this->export_code[$r] = $this->rights_class . '_' . $r;
+		$this->export_label[$r] = 'ExportDataset_certificate';
+		$this->export_icon[$r] = 'contact';
+		$this->export_permission[$r] = array (
 				array (
 						"agefodd",
 						"export" 
 				) 
 		);
-		$this->export_fields_array [$r] = array (
+		$this->export_fields_array[$r] = array (
 				's.nom' => 'AgfFamilyName',
 				's.prenom' => 'AgfFirstName',
 				's.civilite' => 'AgfTitle',
@@ -852,13 +851,13 @@ class modAgefodd extends DolibarrModules {
 				'certif.certif_dt_end' => 'AgfCertifDateEnd',
 				's.datec' => 'AgfDateC' 
 		);
-		$this->export_TypeFields_array [$r] = array (
+		$this->export_TypeFields_array[$r] = array (
 				'c.nom' => "Text",
 				's.nom' => "Text",
 				's.prenom' => "Text",
 				's.civilite' => "Text" 
 		);
-		$this->export_entities_array [$r] = array (
+		$this->export_entities_array[$r] = array (
 				'c.nom' => "company",
 				's.nom' => 'AgfNbreParticipants',
 				's.prenom' => 'AgfNbreParticipants',
@@ -874,26 +873,23 @@ class modAgefodd extends DolibarrModules {
 				's.datec' => 'AgfNbreParticipants' 
 		);
 		
-		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
-		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
+		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
+		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
 		
 		// Session export
 		$r ++;
-		$this->export_code [$r] = $this->rights_class . '_' . $r;
-		$this->export_label [$r] = 'ExportDataset_session';
-		$this->export_icon [$r] = 'bill';
-		$this->export_permission [$r] = array (
+		$this->export_code[$r] = $this->rights_class . '_' . $r;
+		$this->export_label[$r] = 'ExportDataset_session';
+		$this->export_icon[$r] = 'bill';
+		$this->export_permission[$r] = array (
 				array (
 						"agefodd",
 						"export" 
 				) 
 		);
 		
-		
-		
-		
-		$this->export_fields_array [$r] = array (
+		$this->export_fields_array[$r] = array (
 				's.rowid' => 'Id',
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfFormTypeSession',
 				's.dated' => 'AgfDateDebut',
@@ -941,13 +937,12 @@ class modAgefodd extends DolibarrModules {
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfOPCAStaContactFirstName' 
 		);
 		
-		
-		$this->export_TypeFields_array [$r] = array (
-				's.rowid' => "Text" ,
+		$this->export_TypeFields_array[$r] = array (
+				's.rowid' => "Text",
 				's.dated' => 'Date',
-				's.datef' => 'Date',
+				's.datef' => 'Date' 
 		);
-		$this->export_entities_array [$r] = array (
+		$this->export_entities_array[$r] = array (
 				's.rowid' => "Id",
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
 				's.dated' => 'AgfSessionDetail',
@@ -995,99 +990,94 @@ class modAgefodd extends DolibarrModules {
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants' 
 		);
 		
-
-		$sql="SELECT name, label, type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_formation_catalogue'";
-		$resql=$this->db->query($sql);
-		if ($resql)    // This can fail when class is used on old database (during migration for example)
-		{
+		$sql = "SELECT name, label, type, param FROM " . MAIN_DB_PREFIX . "extrafields WHERE elementtype = 'agefodd_formation_catalogue'";
+		$resql = $this->db->query($sql);
+		if ($resql) // This can fail when class is used on old database (during migration for example)
+{
 			global $langs;
-			while ($obj=$this->db->fetch_object($resql))
-			{
-				$fieldname='extracatalogue.'.$obj->name;
-				$fieldlabel=$langs->trans('AgfTraining').'-'.ucfirst($obj->label);
-				$typeFilter="Text";
-				switch($obj->type)
-				{
-					case 'int':
-					case 'double':
-					case 'price':
-						$typeFilter="Numeric";
+			while ( $obj = $this->db->fetch_object($resql) ) {
+				$fieldname = 'extracatalogue.' . $obj->name;
+				$fieldlabel = $langs->trans('AgfTraining') . '-' . ucfirst($obj->label);
+				$typeFilter = "Text";
+				switch ($obj->type) {
+					case 'int' :
+					case 'double' :
+					case 'price' :
+						$typeFilter = "Numeric";
 						break;
-					case 'date':
-					case 'datetime':
-						$typeFilter="Date";
+					case 'date' :
+					case 'datetime' :
+						$typeFilter = "Date";
 						break;
-					case 'boolean':
-						$typeFilter="Boolean";
+					case 'boolean' :
+						$typeFilter = "Boolean";
 						break;
-					case 'sellist':
-						$typeFilter="List:".$obj->param;
+					case 'sellist' :
+						$typeFilter = "List:" . $obj->param;
 						break;
 				}
-				$this->export_fields_array[$r][$fieldname]=$fieldlabel;
-				$this->export_TypeFields_array[$r][$fieldname]=$typeFilter;
-				$this->export_entities_array[$r][$fieldname]='AgfCatalogDetail';
+				$this->export_fields_array[$r][$fieldname] = $fieldlabel;
+				$this->export_TypeFields_array[$r][$fieldname] = $typeFilter;
+				$this->export_entities_array[$r][$fieldname] = 'AgfCatalogDetail';
 			}
 		}
 		
-		$sql="SELECT name, label, type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_session'";
-		$resql=$this->db->query($sql);
-		if ($resql)    // This can fail when class is used on old database (during migration for example)
-		{
+		$sql = "SELECT name, label, type, param FROM " . MAIN_DB_PREFIX . "extrafields WHERE elementtype = 'agefodd_session'";
+		$resql = $this->db->query($sql);
+		if ($resql) // This can fail when class is used on old database (during migration for example)
+{
 			global $langs;
-			while ($obj=$this->db->fetch_object($resql))
-			{
-				$fieldname='extrasession.'.$obj->name;
-				$fieldlabel=$langs->trans('Training').'-'.ucfirst($obj->label);
-				$typeFilter="Text";
-				switch($obj->type)
-				{
-					case 'int':
-					case 'double':
-					case 'price':
-						$typeFilter="Numeric";
+			while ( $obj = $this->db->fetch_object($resql) ) {
+				$fieldname = 'extrasession.' . $obj->name;
+				$fieldlabel = $langs->trans('Training') . '-' . ucfirst($obj->label);
+				$typeFilter = "Text";
+				switch ($obj->type) {
+					case 'int' :
+					case 'double' :
+					case 'price' :
+						$typeFilter = "Numeric";
 						break;
-					case 'date':
-					case 'datetime':
-						$typeFilter="Date";
+					case 'date' :
+					case 'datetime' :
+						$typeFilter = "Date";
 						break;
-					case 'boolean':
-						$typeFilter="Boolean";
+					case 'boolean' :
+						$typeFilter = "Boolean";
 						break;
-					case 'sellist':
-						$typeFilter="List:".$obj->param;
+					case 'sellist' :
+						$typeFilter = "List:" . $obj->param;
 						break;
 				}
-				$this->export_fields_array[$r][$fieldname]=$fieldlabel;
-				$this->export_TypeFields_array[$r][$fieldname]=$typeFilter;
-				$this->export_entities_array[$r][$fieldname]='AgfSessionDetail';
+				$this->export_fields_array[$r][$fieldname] = $fieldlabel;
+				$this->export_TypeFields_array[$r][$fieldname] = $typeFilter;
+				$this->export_entities_array[$r][$fieldname] = 'AgfSessionDetail';
 			}
 		}
 		
-		$this->export_sql_start [$r] = 'SELECT DISTINCT ';
-		$this->export_sql_end [$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_place as p ON p.rowid = s.fk_session_place';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as sta ON sta.rowid = ss.fk_stagiaire';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as ssdicttype ON ssdicttype.rowid = ss.fk_agefodd_stagiaire_type';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as so ON so.rowid = s.fk_soc';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur as sf ON sf.fk_session = s.rowid';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as trainerdicttype ON trainerdicttype.rowid = sf.fk_agefodd_formateur_type';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'user as fu ON fu.rowid = f.fk_user';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as fp ON fp.rowid = f.fk_socpeople';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as dictcat ON dictcat.rowid = c.fk_c_category';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as p_pays ON p_pays.rowid = p.fk_pays';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product as product ON product.rowid = c.fk_product';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND (staopca.fk_soc_trainee=sta.fk_soc OR staopca.fk_session_trainee=ss.rowid)';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
-		$this->export_sql_end [$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
+		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
+		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_place as p ON p.rowid = s.fk_session_place';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as sta ON sta.rowid = ss.fk_stagiaire';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as ssdicttype ON ssdicttype.rowid = ss.fk_agefodd_stagiaire_type';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as so ON so.rowid = s.fk_soc';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur as sf ON sf.fk_session = s.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as trainerdicttype ON trainerdicttype.rowid = sf.fk_agefodd_formateur_type';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'user as fu ON fu.rowid = f.fk_user';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as fp ON fp.rowid = f.fk_socpeople';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as dictcat ON dictcat.rowid = c.fk_c_category';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as p_pays ON p_pays.rowid = p.fk_pays';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product as product ON product.rowid = c.fk_product';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socsessopca ON socsessopca.rowid = s.fk_soc_opca';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsessopca ON contactsessopca.rowid = s.fk_socpeople_opca';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca as staopca ON staopca.fk_session_agefodd=s.rowid AND (staopca.fk_soc_trainee=sta.fk_soc OR staopca.fk_session_trainee=ss.rowid)';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
 		
 		// Array to add new pages in new tabs
 		// $this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');
@@ -1127,122 +1117,122 @@ class modAgefodd extends DolibarrModules {
 		$this->rights = array ();
 		$r = 0;
 		
-		$this->rights [$r] [0] = 103001;
-		$this->rights [$r] [1] = 'Voir les sessions';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'lire';
+		$this->rights[$r][0] = 103001;
+		$this->rights[$r][1] = 'Voir les sessions';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'lire';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103002;
-		$this->rights [$r] [1] = 'Modifier les sessions';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'modifier';
+		$this->rights[$r][0] = 103002;
+		$this->rights[$r][1] = 'Modifier les sessions';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'modifier';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103003;
-		$this->rights [$r] [1] = 'Creer les sessions';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'creer';
+		$this->rights[$r][0] = 103003;
+		$this->rights[$r][1] = 'Creer les sessions';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'creer';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103004;
-		$this->rights [$r] [1] = 'Suppression des sessions';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'supprimer';
+		$this->rights[$r][0] = 103004;
+		$this->rights[$r][1] = 'Suppression des sessions';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'supprimer';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103005;
-		$this->rights [$r] [1] = 'Voir stats';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'viewstats';
+		$this->rights[$r][0] = 103005;
+		$this->rights[$r][1] = 'Voir stats';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'viewstats';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103006;
-		$this->rights [$r] [1] = 'export';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'export';
+		$this->rights[$r][0] = 103006;
+		$this->rights[$r][1] = 'export';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'export';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103007;
-		$this->rights [$r] [1] = 'agenda';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'agenda';
+		$this->rights[$r][0] = 103007;
+		$this->rights[$r][1] = 'agenda';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'agenda';
 		$r ++;
 		
-		$this->rights [$r] [0] = 103008;
-		$this->rights [$r] [1] = 'agendatrainer';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'agendatrainer';
+		$this->rights[$r][0] = 103008;
+		$this->rights[$r][1] = 'agendatrainer';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'agendatrainer';
 		$r ++;
 		
 		$r ++;
-		$this->rights [$r] [0] = 103009;
-		$this->rights [$r] [1] = 'Voir les formations du catalogue';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'agefodd_formation_catalogue';
-		$this->rights [$r] [5] = 'lire';
+		$this->rights[$r][0] = 103009;
+		$this->rights[$r][1] = 'Voir les formations du catalogue';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'agefodd_formation_catalogue';
+		$this->rights[$r][5] = 'lire';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103010;
-		$this->rights [$r] [1] = 'Creer/Modifier les formations du catalogue';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'agefodd_formation_catalogue';
-		$this->rights [$r] [5] = 'creer';
+		$this->rights[$r][0] = 103010;
+		$this->rights[$r][1] = 'Creer/Modifier les formations du catalogue';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'agefodd_formation_catalogue';
+		$this->rights[$r][5] = 'creer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103011;
-		$this->rights [$r] [1] = 'Supprimer les formations du catalogue';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'agefodd_formation_catalogue';
-		$this->rights [$r] [5] = 'supprimer';
+		$this->rights[$r][0] = 103011;
+		$this->rights[$r][1] = 'Supprimer les formations du catalogue';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'agefodd_formation_catalogue';
+		$this->rights[$r][5] = 'supprimer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103012;
-		$this->rights [$r] [1] = 'Voir les sites (lieux)';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'agefodd_place';
-		$this->rights [$r] [5] = 'lire';
+		$this->rights[$r][0] = 103012;
+		$this->rights[$r][1] = 'Voir les sites (lieux)';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'agefodd_place';
+		$this->rights[$r][5] = 'lire';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103013;
-		$this->rights [$r] [1] = 'Creer/Modifier les sites (lieux)';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'agefodd_place';
-		$this->rights [$r] [5] = 'creer';
+		$this->rights[$r][0] = 103013;
+		$this->rights[$r][1] = 'Creer/Modifier les sites (lieux)';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'agefodd_place';
+		$this->rights[$r][5] = 'creer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103014;
-		$this->rights [$r] [1] = 'Supprimer les sites (lieux)';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'agefodd_place';
-		$this->rights [$r] [5] = 'supprimer';
+		$this->rights[$r][0] = 103014;
+		$this->rights[$r][1] = 'Supprimer les sites (lieux)';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'agefodd_place';
+		$this->rights[$r][5] = 'supprimer';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103015;
-		$this->rights [$r] [1] = 'Visibilité transverse des session';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'session';
-		$this->rights [$r] [5] = 'all';
+		$this->rights[$r][0] = 103015;
+		$this->rights[$r][1] = 'Visibilité transverse des session';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'session';
+		$this->rights[$r][5] = 'all';
 		
 		$r ++;
-		$this->rights [$r] [0] = 103016;
-		$this->rights [$r] [1] = 'See session margin';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 1;
-		$this->rights [$r] [4] = 'session';
-		$this->rights [$r] [5] = 'margin';
+		$this->rights[$r][0] = 103016;
+		$this->rights[$r][1] = 'See session margin';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'session';
+		$this->rights[$r][5] = 'margin';
 		
 		// Main menu entries
 		$this->menus = array ();
 		$r = 0;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
 				'titre' => 'Module103000Name',
@@ -1256,9 +1246,9 @@ class modAgefodd extends DolibarrModules {
 				'target' => '',
 				'user' => 2 
 		);
-
+		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuCat',
@@ -1273,7 +1263,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 				'type' => 'left',
 				'titre' => 'AgfMenuCatListActivees',
@@ -1288,7 +1278,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 				'type' => 'left',
 				'titre' => 'AgfMenuCatListArchivees',
@@ -1303,7 +1293,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCat',
 				'type' => 'left',
 				'titre' => 'AgfMenuCatNew',
@@ -1317,7 +1307,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuSess',
@@ -1332,7 +1322,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessDraftList',
@@ -1346,7 +1336,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessConfList',
@@ -1360,7 +1350,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessNotDoneList',
@@ -1374,7 +1364,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessDoneList',
@@ -1384,11 +1374,11 @@ class modAgefodd extends DolibarrModules {
 				'enabled' => '$user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
-				'user' => 0
+				'user' => 0 
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessArchList',
@@ -1402,7 +1392,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessArchiveByYear',
@@ -1416,7 +1406,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessNew',
@@ -1430,7 +1420,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessStats',
@@ -1444,7 +1434,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessListOpe',
@@ -1459,18 +1449,18 @@ class modAgefodd extends DolibarrModules {
 		$r ++;
 		
 		/*	$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
-		'type'=>'left',
-		'titre'=>'AgfMenuSessListOpeInter',
-		'url'=>'/agefodd/session/list_ope_inter.php',
-		'langs'=>'agefodd@agefodd',
-		'position'=>209,
-		'enabled'=>'$user->rights->agefodd->lire',
-		'perms'=>'$user->rights->agefodd->lire',
-		'target'=>'',
-		'user'=>0);
-		$r++;*/
+		 'type'=>'left',
+		 'titre'=>'AgfMenuSessListOpeInter',
+		 'url'=>'/agefodd/session/list_ope_inter.php',
+		 'langs'=>'agefodd@agefodd',
+		 'position'=>209,
+		 'enabled'=>'$user->rights->agefodd->lire',
+		 'perms'=>'$user->rights->agefodd->lire',
+		 'target'=>'',
+		 'user'=>0);
+		 $r++;*/
 		
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuActStagiaire',
@@ -1485,7 +1475,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
 				'type' => 'left',
 				'titre' => 'AgfMenuActStagiaireList',
@@ -1499,7 +1489,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
 				'type' => 'left',
 				'titre' => 'AgfMenuActStagiaireNew',
@@ -1513,7 +1503,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
 				'type' => 'left',
 				'titre' => 'AgfMenuActStagiaireNewFromContact',
@@ -1527,7 +1517,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuLogistique',
@@ -1542,7 +1532,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuLogistique',
 				'type' => 'left',
 				'titre' => 'AgfMenuSite',
@@ -1556,7 +1546,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuLogistique',
 				'type' => 'left',
 				'titre' => 'AgfMenuFormateur',
@@ -1570,7 +1560,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuLogistique',
 				'type' => 'left',
 				'titre' => 'AgfMenuContact',
@@ -1584,7 +1574,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuAgenda',
@@ -1599,7 +1589,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
 				'type' => 'left',
 				'titre' => 'AgfMenuAgenda',
@@ -1613,7 +1603,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
 				'type' => 'left',
 				'titre' => 'AgfMenuAgendaTrainerOnly',
@@ -1627,7 +1617,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
 				'type' => 'left',
 				'titre' => 'AgfMenuAgendaTrainer',
@@ -1641,7 +1631,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuCursus',
@@ -1656,7 +1646,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCursus',
 				'type' => 'left',
 				'titre' => 'AgfMenuCursusList',
@@ -1670,7 +1660,7 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuCursus',
 				'type' => 'left',
 				'titre' => 'AgfMenuCursusNew',
@@ -1684,29 +1674,33 @@ class modAgefodd extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd',
-		'type'=>'left',
-		'titre'=>'AgfMenuDemoAdmin',
-		'leftmenu'=>'AgfMenuDemoAdmin',
-		'url'=>'/agefodd/admin/admin_agefodd.php',
-		'langs'=>'agefodd@agefodd',
-		'position'=>701,
-		'enabled'=>'$conf->global->AGF_DEMO_MODE',
-		'perms'=>'$user->rights->agefodd->lire',
-		'target'=>'',
-		'user'=>0);
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd',
+				'type' => 'left',
+				'titre' => 'AgfMenuDemoAdmin',
+				'leftmenu' => 'AgfMenuDemoAdmin',
+				'url' => '/agefodd/admin/admin_agefodd.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 701,
+				'enabled' => '$conf->global->AGF_DEMO_MODE',
+				'perms' => '$user->rights->agefodd->lire',
+				'target' => '',
+				'user' => 0 
+		);
 		
-		$r++;
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuDemoAdmin',
-		'type'=>'left',
-		'titre'=>'AgfMenuDemoAdminDetail',
-		'url'=>'/agefodd/admin/admin_agefodd.php',
-		'langs'=>'agefodd@agefodd',
-		'position'=>702,
-		'enabled'=>'$conf->global->AGF_DEMO_MODE',
-		'perms'=>'$user->rights->agefodd->lire',
-		'target'=>'',
-		'user'=>0);
+		$r ++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuDemoAdmin',
+				'type' => 'left',
+				'titre' => 'AgfMenuDemoAdminDetail',
+				'url' => '/agefodd/admin/admin_agefodd.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 702,
+				'enabled' => '$conf->global->AGF_DEMO_MODE',
+				'perms' => '$user->rights->agefodd->lire',
+				'target' => '',
+				'user' => 0 
+		);
 	}
 	
 	/**
@@ -1852,8 +1846,8 @@ class modAgefodd extends DolibarrModules {
 									dol_syslog(get_class($this) . "::_load_tables_agefodd last_version_install:" . $last_version_install, LOG_DEBUG);
 									
 									$tmpversion = explode('_', $file);
-									$fileversion_array = explode('-', $tmpversion [1]);
-									$fileversion = str_replace('.sql', '', $fileversion_array [1]);
+									$fileversion_array = explode('-', $tmpversion[1]);
+									$fileversion = str_replace('.sql', '', $fileversion_array[1]);
 									dol_syslog(get_class($this) . "::_load_tables_agefodd fileversion:" . $fileversion, LOG_DEBUG);
 									if (version_compare($last_version_install, $fileversion) == - 1) {
 										$dorun = true;
