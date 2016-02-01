@@ -556,7 +556,7 @@ class FormAgefodd extends Form {
 		$out = '';
 		
 		// On recherche les societes
-		$sql = "SELECT DISTINCT sp.rowid, sp.lastname, sp.firstname, sp.poste";
+		$sql = "SELECT DISTINCT sp.rowid, sp.lastname, sp.statut, sp.firstname, sp.poste";
 		if ($showsoc > 0) {
 			$sql .= " , s.nom as company";
 		}
@@ -592,73 +592,68 @@ class FormAgefodd extends Form {
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
 			
-			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only) {
-				$out .= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
-				
-				if ($num > $limitto && ! empty($limitto)) {
-					$num = $limitto;
-				}
+			if ($conf->use_javascript_ajax && ! $forcecombo && ! $options_only) {
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
+				$comboenhancement = ajax_combobox($htmlname, $events, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
+				$out .= $comboenhancement;
+				$nodatarole = ($comboenhancement ? ' data-role="none"' : '');
 			}
 			
 			if ($htmlname != 'none' || $options_only)
 				$out .= '<select class="flat' . ($moreclass ? ' ' . $moreclass : '') . '" id="' . $htmlname . '" name="' . $htmlname . '">';
 			if ($showempty == 1)
-				$out .= '<option value="0"' . ($selected == '0' ? ' selected="selected"' : '') . '></option>';
+				$out .= '<option value="0"' . ($selected == '0' ? ' selected' : '') . '></option>';
 			if ($showempty == 2)
-				$out .= '<option value="0"' . ($selected == '0' ? ' selected="selected"' : '') . '>' . $langs->trans("Internal") . '</option>';
+				$out .= '<option value="0"' . ($selected == '0' ? ' selected' : '') . '>' . $langs->trans("Internal") . '</option>';
 			
-			$i = 0;
 			if ($num) {
 				include_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 				$contactstatic = new Contact($this->db);
 				
-				while ( $i < $num ) {
-					$obj = $this->db->fetch_object($resql);
+				while ($obj = $this->db->fetch_object($resql)) {
 					
 					$contactstatic->id = $obj->rowid;
 					$contactstatic->lastname = $obj->lastname;
 					$contactstatic->firstname = $obj->firstname;
 					
-					if ($htmlname != 'none') {
-						$disabled = 0;
-						if (is_array($exclude) && count($exclude) && in_array($obj->rowid, $exclude))
-							$disabled = 1;
-						if ($selected && $selected == $obj->rowid) {
-							$out .= '<option value="' . $obj->rowid . '"';
-							if ($disabled)
-								$out .= ' disabled="disabled"';
-							$out .= ' selected="selected">';
-							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
-								$out .= ' (' . $obj->poste . ')';
-							if (($showsoc > 0) && $obj->company)
-								$out .= ' - (' . $obj->company . ')';
-							$out .= '</option>';
-						} else {
-							$out .= '<option value="' . $obj->rowid . '"';
-							if ($disabled)
-								$out .= ' disabled="disabled"';
-							$out .= '>';
-							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
-								$out .= ' (' . $obj->poste . ')';
-							if (($showsoc > 0) && $obj->company)
-								$out .= ' - (' . $obj->company . ')';
-							$out .= '</option>';
-						}
-					} else {
-						if ($selected == $obj->rowid) {
-							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
-								$out .= ' (' . $obj->poste . ')';
-							if (($showsoc > 0) && $obj->company)
-								$out .= ' - (' . $obj->company . ')';
-						}
-					}
-					$i ++;
+					if ($htmlname != 'none')
+                    {
+                        $disabled=0;
+                        if (is_array($exclude) && count($exclude) && in_array($obj->rowid,$exclude)) $disabled=1;
+                        if (is_array($limitto) && count($limitto) && ! in_array($obj->rowid,$limitto)) $disabled=1;
+                        if ($selected && $selected == $obj->rowid)
+                        {
+                            $out.= '<option value="'.$obj->rowid.'"';
+                            if ($disabled) $out.= ' disabled';
+                            $out.= ' selected>';
+                            $out.= $contactstatic->getFullName($langs);
+                            if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+                            if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+                            $out.= '</option>';
+                        }
+                        else
+                        {
+                            $out.= '<option value="'.$obj->rowid.'"';
+                            if ($disabled) $out.= ' disabled';
+                            $out.= '>';
+                            $out.= $contactstatic->getFullName($langs);
+                            if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+                            if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+                            $out.= '</option>';
+                        }
+                    }
+                    else
+					{
+                        if ($selected == $obj->rowid)
+                        {
+                            $out.= $contactstatic->getFullName($langs);
+                            if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+                            if (($showsoc > 0) && $obj->company) $out.= ' - ('.$obj->company.')';
+                        }
+                    }
 				}
 			} else {
-				$out .= '<option value="-1"' . ($showempty == 2 ? '' : ' selected="selected"') . ' disabled="disabled">' . $langs->trans($socid ? "NoContactDefinedForThirdParty" : "NoContactDefined") . '</option>';
+				$out .= '<option value="-1"' . ($showempty == 2 ? '' : ' selected') . ' disabled>' . $langs->trans($socid ? "NoContactDefinedForThirdParty" : "NoContactDefined") . '</option>';
 			}
 			if ($htmlname != 'none' || $options_only) {
 				$out .= '</select>';

@@ -555,6 +555,8 @@ if ($conf->use_javascript_ajax) {
 	print 'window.fnHideOPCAAdrr=function() {$( "#OPCAAdrr" ).hide();};' . "\n";
 	print 'window.fnDisplayCertifAutoAdd=function() {$( "#CertifAutoAdd" ).show();};' . "\n";
 	print 'window.fnHideCertifAutoAdd=function() {$( "#CertifAutoAdd" ).hide();};' . "\n";
+	print 'window.fnDisplayContactAjaxAdd=function() {$( "#ContactAjaxAdd" ).show();};' . "\n";
+	print 'window.fnHideContactAjaxAdd=function() {$( "#ContactAjaxAdd" ).hide();};' . "\n";
 	print ' </script>';
 }
 
@@ -960,7 +962,29 @@ print '</tr>';
 print '<tr class="pair"><td>' . $langs->trans("AgfUseSessionDolContact") . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('AGF_CONTACT_DOL_SESSION');
+	
+		$input_array = array (
+				'alert' => array (
+						'set' => array (
+								'content' => $langs->trans('AgfConfirmChangeState'),
+								'title' => $langs->trans('AgfConfirmChangeState'),
+								'method' => 'fnHideContactAjaxAdd',
+								'yesButton' => $langs->trans('Yes'),
+								'noButton' => $langs->trans('No')
+						),
+						'del' => array (
+								'content' => $langs->trans('AgfConfirmChangeState'),
+								'title' => $langs->trans('AgfConfirmChangeState'),
+								'method' => 'fnDisplayContactAjaxAdd',
+								'yesButton' => $langs->trans('Yes'),
+								'noButton' => $langs->trans('No')
+						)
+				)
+		);
+	
+	
+	
+	print ajax_constantonoff('AGF_CONTACT_DOL_SESSION',$input_array);
 } else {
 	$arrval = array (
 			'0' => $langs->trans("No"),
@@ -972,6 +996,45 @@ print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfUseSessionDolContactHelp"), 1, 'help');
 print '</td>';
+print '</tr>';
+
+// use ajax combo box for contact
+print '<tr class="impair" id="ContactAjaxAdd">';
+print '<td>' . $langs->trans("AgfUseSearchToSelectContact") . '</td>';
+if (! $conf->use_javascript_ajax || empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
+	print '<td nowrap="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabledOrContactComboBox");
+	print '</td>';
+	print '<td align="center">';
+	print '</td>';
+} else {
+	print '<td align="left">';
+	if ($conf->use_javascript_ajax) {
+		print ajax_constantonoff('AGF_CONTACT_USE_SEARCH_TO_SELECT');
+		
+		if (! empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
+			print ' <script type="text/javascript">';
+			print '$( "#ContactAjaxAdd" ).hide()';
+			print ' </script>';
+		} else {
+			print ' <script type="text/javascript">';
+			print '$( "#ContactAjaxAdd" ).show()';
+			print ' </script>';
+		}
+		
+	} else {
+		if (! empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
+		$arrval = array (
+				'0' => $langs->trans("No"),
+				'1' => $langs->trans("Yes")
+		);
+		print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT", $arrval, $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
+		}
+	}
+	print '</td>';
+	print '<td align="center">';
+	print '</td>';
+}
 print '</tr>';
 
 // utilisation formulaire Ajax sur choix training
@@ -1123,32 +1186,6 @@ if ($conf->use_javascript_ajax) {
 print '</td>';
 print '<td align="center">';
 print '</td>';
-print '</tr>';
-
-// use ajax combo box for contact
-print '<tr class="impair">';
-print '<td>' . $langs->trans("AgfUseSearchToSelectContact") . '</td>';
-if (! $conf->use_javascript_ajax || ! $conf->global->CONTACT_USE_SEARCH_TO_SELECT) {
-	print '<td nowrap="nowrap" align="right" colspan="2">';
-	print $langs->trans("NotAvailableWhenAjaxDisabledOrContactComboBox");
-	print '</td>';
-	print '<td align="center">';
-	print '</td>';
-} else {
-	print '<td align="left">';
-	if ($conf->use_javascript_ajax) {
-		print ajax_constantonoff('AGF_CONTACT_USE_SEARCH_TO_SELECT');
-	} else {
-		$arrval = array (
-				'0' => $langs->trans("No"),
-				'1' => $langs->trans("Yes") 
-		);
-		print $form->selectarray("AGF_CONTACT_USE_SEARCH_TO_SELECT", $arrval, $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT);
-	}
-	print '</td>';
-	print '<td align="center">';
-	print '</td>';
-}
 print '</tr>';
 
 // Update global variable MAIN_USE_COMPANY_NAME_OF_CONTACT

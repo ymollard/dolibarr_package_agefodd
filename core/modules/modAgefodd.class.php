@@ -538,6 +538,14 @@ class modAgefodd extends DolibarrModules {
 		$this->const[$r][4] = 1;
 		$this->const[$r][5] = 0;
 		
+		$r ++;
+		$this->const[$r][0] = "AGF_ALLOW_ADMIN_COMMERCIAL";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'Admin not allowed by default';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array ();

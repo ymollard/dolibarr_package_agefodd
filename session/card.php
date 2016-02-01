@@ -89,6 +89,23 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
  * Actions delete period
 */
 
+if ($action == 'remove_cust' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	unset($agf->fk_soc);
+	$agf->contactid=0;
+	$agf->sourcecontactid=0;
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
 if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	
 	$agf = new Agefodd_sesscalendar($db);
@@ -634,6 +651,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
 			
 			$result = $agf->create($user);
+			$new_session_id=$result;
 			
 			if ($result > 0) {
 				// If session creation are ok
@@ -658,9 +676,13 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			if (is_array($agf->lines_place) && count($agf->lines_place)>0) {
 				$sessionplaceerror='';
 				foreach($agf->lines_place as $linesess) {
-					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id='.$linesess->rowid.'&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+					if ($linesess->rowid!=$new_session_id) {
+						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id='.$linesess->rowid.'&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+					}
 				}
-				setEventMessage($sessionplaceerror, 'warnings');
+				if (!empty($sessionplaceerror)) {
+					setEventMessage($sessionplaceerror, 'warnings');
+				}
 			}
 		}
 		
@@ -795,9 +817,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfSessionCommercial") . '</span></td>';
 	print '<td>';
 	$commercial = GETPOST('commercial', 'int');
-	$form->select_users((empty($commercial) ? $user->id : $commercial), 'commercial', 1, array (
-			1 
-	));
+	if (empty($conf->global->AGF_ALLOW_ADMIN_COMMERCIAL)) {
+		$exclude_array= array (1);
+	} else {
+		$exclude_array= array ();
+	}
+	$form->select_users((empty($commercial) ? $user->id : $commercial), 'commercial', 1, $exclude_array);
 	print '</td></tr>';
 	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfDateDebut") . '</span></td><td>';
@@ -1013,9 +1038,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								</script>';
 					print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 					print '<td>';
-					$form->select_users($agf->commercialid, 'commercial', 1, array (
-							1 
-					));
+					if (empty($conf->global->AGF_ALLOW_ADMIN_COMMERCIAL)) {
+						$exclude_array= array (1);
+					} else {
+						$exclude_array= array ();
+					}
+					$form->select_users($agf->commercialid, 'commercial', 1, $exclude_array);
 					print '</td></tr>';
 					
 					print '<tr><td>' . $langs->trans("AgfDuree") . '</td>';
@@ -1048,6 +1076,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print $form->select_company($agf->fk_soc, 'fk_soc', '', 1, 1, 0, $events);
 					} else {
 						print $form->select_company($agf->fk_soc, 'fk_soc', '', 1, 1);
+					}
+					if (!empty($agf->fk_soc) && !empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
+						print '<a href="'.$_SERVER ['PHP_SELF'].'?id='.$agf->id.'&amp;action=remove_cust">'.img_delete($langs->trans('Delete')).'</a>';
 					}
 					
 					if ($conf->global->AGF_CONTACT_DOL_SESSION) {

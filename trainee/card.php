@@ -355,6 +355,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 			$("select[name=importfrom]").change(function() {
 				if($(this).val()=="contact") {
 					$("#fromcontact").show();
+					//hack to force select display again
+					$(\'#contact\').select2({dir: \'ltr\',width: \'resolve\',minimumInputLength: '.$conf->global->CONTACT_USE_SEARCH_TO_SELECT.'});
 					$("#fromblanck").hide();
 				}else {
 					$("#fromcontact").hide();
@@ -400,9 +402,9 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<option value="create" ' . $selected . '>' . $langs->trans("AgfMenuActStagiaireNew") . '</option>';
 	print '</select>';
 	
-	print '<div id="fromcontact" style="display:none">';
+	print '<div id="fromcontact">';
 	print_fiche_titre($langs->trans("AgfMenuActStagiaireNewFromContact"));
-	
+
 	print '<table class="border" width="100%">';
 	
 	print '<tr><td width="20%">' . $langs->trans("AgfContactImportAsStagiaire") . '</td>';
