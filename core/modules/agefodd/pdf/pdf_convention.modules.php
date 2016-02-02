@@ -319,9 +319,9 @@ class pdf_convention extends ModelePDFAgefodd {
 				
 				// If customer is personnal entity, the french low ask contrat and not convention
 				if ($customer->typent_id == 8) {
-					$this->str = 'trainee:' . $customer->name; // Trainer NAme;
+					$this->str = $outputlangs->transnoentities('AgfConvTrainees').':' . $customer->name; // Trainer Name;
 				} else {
-					$this->str = $customer->name; // Customer NAme;
+					$this->str = $customer->name; // Customer Name;
 				}
 				$pdf->SetXY($this->marge_gauche, $this->marge_haute + 190);
 				$pdf->MultiCell(0, 5, $this->str, 0, 'C');
