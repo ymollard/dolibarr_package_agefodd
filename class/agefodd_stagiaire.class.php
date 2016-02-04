@@ -546,8 +546,8 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent=" . $socid . "))";
 		// contact is in a company witch share the same mother company than $socid
 		$sql .= " OR (s.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . "))))";
-		$sql .= " AND UPPER(s.nom)='" . strtoupper(trim($lastname)) . "'";
-		$sql .= " AND UPPER(s.prenom)='" . strtoupper(trim($firstname)) . "'";
+		$sql .= " AND UPPER(s.nom)='" . strtoupper(trim($this->db->escape($lastname))) . "'";
+		$sql .= " AND UPPER(s.prenom)='" . strtoupper(trim($this->db->escape($firstname))) . "'";
 		$sql .= " AND s.entity IN (" . $conf->entity . ')';
 		
 		$num = 0;
@@ -569,8 +569,8 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ')';
-		$sql .= " AND UPPER(s.lastname)='" . strtoupper($lastname) . "'";
-		$sql .= " AND UPPER(s.firstname)='" . strtoupper($firstname) . "'";
+		$sql .= " AND UPPER(s.lastname)='" . strtoupper($this->db->escape($lastname)) . "'";
+		$sql .= " AND UPPER(s.firstname)='" . strtoupper($this->db->escape($firstname)) . "'";
 		
 		dol_syslog(get_class($this) . "::searchByLastNameFirstNameSoc");
 		$resql = $this->db->query($sql);
