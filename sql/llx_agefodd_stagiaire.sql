@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   tms timestamp NOT NULL,
   fk_soc integer NOT NULL,
   fk_socpeople integer default NULL,
-  fonction varchar(60) default NULL,
+  fonction varchar(80) default NULL,
   tel1 varchar(30) default NULL,
   tel2 varchar(30) default NULL,
   mail varchar(100) default NULL,
