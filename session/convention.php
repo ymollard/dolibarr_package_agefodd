@@ -459,7 +459,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$art3 = $langs->trans('AgfConvArt3_1');
 	
 	// texte 4
-	if ($conf->global->FACTURE_TVAOPTION == "franchise") {
+	if (empty($conf->global->FACTURE_TVAOPTION)) {
 		$art4 = $langs->trans('AgfConvArt4_1');
 	} else {
 		$art4 = $langs->trans('AgfConvArt4_3');
