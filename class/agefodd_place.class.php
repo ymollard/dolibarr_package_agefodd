@@ -45,6 +45,12 @@ class Agefodd_place extends CommonObject {
 	public $fk_pays;
 	public $tel;
 	public $fk_societe;
+	public $fk_socpeople;
+	public $socp_lastname;
+	public $socp_firstname;
+	public $socp_phone;
+	public $socp_email;
+	public $timeschedule;
 	public $notes;
 	public $acces_site;
 	public $note1;
@@ -93,12 +99,16 @@ class Agefodd_place extends CommonObject {
 			$this->tel = trim($this->tel);
 		if (isset($this->fk_societe))
 			$this->fk_societe = trim($this->fk_societe);
+		if (isset($this->fk_socpeople))
+			$this->fk_socpeople = trim($this->fk_socpeople);
 		if (isset($this->notes))
 			$this->notes = trim($this->notes);
 		if (isset($this->acces_site))
 			$this->acces_site = trim($this->acces_site);
 		if (isset($this->note1))
 			$this->note1 = trim($this->note1);
+		if (isset($this->timeschedule))
+			$this->timeschedule = trim($this->timeschedule);
 		if (isset($this->archive))
 			$this->archive = trim($this->archive);
 		if (isset($this->fk_reg_interieur))
@@ -118,6 +128,8 @@ class Agefodd_place extends CommonObject {
 		$sql .= "fk_pays,";
 		$sql .= "tel,";
 		$sql .= "fk_societe,";
+		$sql .= "fk_socpeople,";
+		$sql .= "timeschedule,";
 		$sql .= "notes,";
 		$sql .= "acces_site,";
 		$sql .= "note1,";
@@ -134,6 +146,8 @@ class Agefodd_place extends CommonObject {
 		$sql .= " " . (! isset($this->fk_pays) ? 'NULL' : "'" . $this->fk_pays . "'") . ",";
 		$sql .= " " . (! isset($this->tel) ? 'NULL' : "'" . $this->db->escape($this->tel) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_societe) ? 'NULL' : "'" . $this->fk_societe . "'") . ",";
+		$sql .= " " . (empty($this->fk_socpeople) ? 'NULL' : "'" . $this->fk_socpeople . "'") . ",";
+		$sql .= " " . (empty($this->timeschedule) ? 'NULL' : "'" . $this->timeschedule . "'") . ",";
 		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
 		$sql .= " " . (! isset($this->acces_site) ? 'NULL' : "'" . $this->db->escape($this->acces_site) . "'") . ",";
 		$sql .= " " . (! isset($this->note1) ? 'NULL' : "'" . $this->db->escape($this->note1) . "'") . ",";
@@ -192,8 +206,16 @@ class Agefodd_place extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1, p.fk_reg_interieur";
+		$sql .= " ,p.fk_socpeople";
+		$sql .= " ,p.timeschedule";
+		$sql .= " ,socp.lastname as socp_lastname";
+		$sql .= " ,socp.firstname as socp_firstname";
+		$sql .= " ,socp.phone as socp_phone";
+		$sql .= " ,socp.email as socp_email";
+		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp ON p.fk_socpeople = socp.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.rowid = " . $id;
 		$sql .= " AND p.entity IN (" . getEntity('agsession') . ")";
@@ -214,6 +236,8 @@ class Agefodd_place extends CommonObject {
 				$this->country_code = $obj->country_code;
 				$this->tel = stripslashes($obj->tel);
 				$this->fk_societe = $obj->fk_societe;
+				$this->fk_socpeople = $obj->fk_socpeople;
+				$this->timeschedule = $obj->timeschedule;
 				$this->notes = stripslashes($obj->notes);
 				$this->socid = $obj->socid;
 				$this->socname = stripslashes($obj->socname);
@@ -221,6 +245,10 @@ class Agefodd_place extends CommonObject {
 				$this->acces_site = $obj->acces_site;
 				$this->note1 = $obj->note1;
 				$this->fk_reg_interieur = $obj->fk_reg_interieur;
+				$this->socp_lastname=$obj->socp_lastname;
+				$this->socp_firstname=$obj->socp_firstname;
+				$this->socp_phone=$obj->socp_phone;
+				$this->socp_email=$obj->socp_email;
 			}
 			$this->db->free($resql);
 			
@@ -248,8 +276,15 @@ class Agefodd_place extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1";
+		$sql .= " ,p.fk_socpeople";
+		$sql .= " ,p.timeschedule";
+		$sql .= " ,socp.lastname as socp_lastname";
+		$sql .= " ,socp.firstname as socp_firstname";
+		$sql .= " ,socp.phone as socp_phone";
+		$sql .= " ,socp.email as socp_email";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp ON p.fk_socpeople = socp.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.entity IN (" . getEntity('agsession') . ")";
 		
@@ -293,12 +328,18 @@ class Agefodd_place extends CommonObject {
 				$line->country_code = $obj->country_code;
 				$line->tel = stripslashes($obj->tel);
 				$line->fk_societe = $obj->fk_societe;
+				$line->fk_socpeople = $obj->fk_socpeople;
+				$line->timeschedule = $obj->timeschedule;
 				$line->notes = stripslashes($obj->notes);
 				$line->socid = $obj->socid;
 				$line->socname = stripslashes($obj->socname);
 				$line->archive = $obj->archive;
 				$line->acces_site = $obj->acces_site;
 				$line->note1 = $obj->note1;
+				$line->socp_lastname=$obj->socp_lastname;
+				$line->socp_firstname=$obj->socp_firstname;
+				$line->socp_phone=$obj->socp_phone;
+				$line->socp_email=$obj->socp_email;
 				
 				$this->lines[$i] = $line;
 				
@@ -384,6 +425,11 @@ class Agefodd_place extends CommonObject {
 		if (isset($this->fk_reg_interieur))
 			$this->fk_reg_interieur = trim($this->fk_reg_interieur);
 		
+		if (isset($this->fk_socpeople))
+			$this->fk_socpeople = trim($this->fk_socpeople);
+		if (isset($this->timeschedule))
+			$this->timeschedule = trim($this->timeschedule);
+		
 		if (! isset($this->archive))
 			$this->archive = 0;
 			
@@ -399,6 +445,8 @@ class Agefodd_place extends CommonObject {
 		$sql .= " fk_pays=" . (isset($this->fk_pays) ? $this->fk_pays : "null") . ",";
 		$sql .= " tel=" . (isset($this->tel) ? "'" . $this->db->escape($this->tel) . "'" : "null") . ",";
 		$sql .= " fk_societe=" . (isset($this->fk_societe) ? $this->fk_societe : "null") . ",";
+		$sql .= " fk_socpeople=" . (!empty($this->fk_socpeople) ? $this->fk_socpeople : "null") . ",";
+		$sql .= " timeschedule=" . (!empty($this->timeschedule) ? "'".$this->db->escape($this->timeschedule). "'"  : "null") . ",";
 		$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
 		$sql .= " acces_site=" . (isset($this->acces_site) ? "'" . $this->db->escape($this->acces_site) . "'" : "null") . ",";
 		$sql .= " note1=" . (isset($this->note1) ? "'" . $this->db->escape($this->note1) . "'" : "null") . ",";

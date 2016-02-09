@@ -43,8 +43,9 @@ $langs->load('other');
 
 $action = GETPOST('action');
 $confirm = GETPOST('confirm');
-$id = (GETPOST('socid', 'int') ? GETPOST('socid', 'int') : GETPOST('id', 'int'));
+$id = GETPOST('id', 'int');
 $ref = GETPOST('ref', 'alpha');
+$asfichepedago = GETPOST('asfichepedago','int');
 
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire) {
@@ -82,6 +83,16 @@ if ($result < 0) {
 
 include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
 
+//Copy file uploaded as a training program file
+if (!empty($asfichepedago)) {
+	$destfile=$_FILES['userfile']['name'];
+	$path_parts=pathinfo($destfile);
+	$result=dol_copy($upload_dir.'/'.$destfile, $conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.'.$path_parts['extension']);
+	if ($result<0) {
+		setEventMessages($langs->trans('AgfErrorCopyFile'), null,'errors');
+	}
+}
+
 /*
  * View
  */
@@ -99,6 +110,15 @@ if ($object->id) {
 	if (! empty($conf->notification->enabled)) {
 		$langs->load("mails");
 	}
+
+	
+	$out_js = '<script>' . "\n";
+	$out_js .= '$(document).ready(function () { ' . "\n";
+	$out_js .= '	$(\'#formuserfile > table > tbody:last-child\').append(\'<tr><td><input type="checkbox" value="1" name="asfichepedago" id="asfichepedago"/>'.$langs->trans('AgfLikeFichePedgao').'</td></tr>\'); ' . "\n";
+	$out_js .= '});' . "\n";
+	$out_js .= '</script>' . "\n";
+	
+	print $out_js;
 	
 	$head = training_prepare_head($object);
 	
@@ -110,7 +130,6 @@ if ($object->id) {
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
-		var_dump($file);
 		$totalsize += $file['size'];
 	}
 	

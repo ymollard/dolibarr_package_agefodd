@@ -811,6 +811,11 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
+	}elseif ($mdle == 'trainer_doc') {
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_trainer_doc&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+		print '</td></tr>' . "\n";
 	} else {
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist

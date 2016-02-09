@@ -56,10 +56,9 @@ $period_remove = GETPOST('period_remove');
 $newperiod = GETPOST('newperiod');
 
 $delete_calsel = GETPOST('deletecalsel_x', 'alpha');
-if (!empty($delete_calsel)) {
-	$action='delete_calsel';
+if (! empty($delete_calsel)) {
+	$action = 'delete_calsel';
 }
-
 
 /*
  * Actions delete formateur
@@ -308,15 +307,12 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
 			setEventMessage($error_message, 'errors');
 		}
 	}
-	
-	
 }
 
-
-if ($action=='delete_calsel') {
-	$deleteselcal=GETPOST('deleteselcal','array');
-	if (count($deleteselcal)>0) {
-		foreach($deleteselcal as $lineid) {
+if ($action == 'delete_calsel') {
+	$deleteselcal = GETPOST('deleteselcal', 'array');
+	if (count($deleteselcal) > 0) {
+		foreach ( $deleteselcal as $lineid ) {
 			$agf = new Agefoddsessionformateurcalendrier($db);
 			$result = $agf->remove($lineid);
 			if ($result < 0) {
@@ -587,6 +583,11 @@ if (! empty($id)) {
 			print '<input type="hidden" name="action" value="edit">' . "\n";
 			print '<input type="hidden" name="newform" value="1">' . "\n";
 			print '<input type="submit" class="butAction" value="' . $langs->trans("AgfFormateurAdd") . '"></form>';
+			if ($user->rights->agefodd->creer) {
+				print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
+			}
 			print '</td></tr>';
 			print '</table>';
 		}
@@ -664,7 +665,7 @@ if (! empty($id)) {
 						print '<tr class="liste_titre">';
 						print '<th class="liste_titre">';
 						if ($user->rights->agefodd->modifier) {
-							print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete','',false,1) . '" border="0" align="absmiddle" name="deletecalsel" title="' . $langs->trans("AgfDeleteOnlySelectedLines") . '" alt="' . $langs->trans("AgfDeleteOnlySelectedLines") . '">';
+							print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete', '', false, 1) . '" border="0" align="absmiddle" name="deletecalsel" title="' . $langs->trans("AgfDeleteOnlySelectedLines") . '" alt="' . $langs->trans("AgfDeleteOnlySelectedLines") . '">';
 						}
 						print '</th>';
 						print '<th class="liste_titre">' . $langs->trans('Date') . '</th>';
@@ -674,7 +675,6 @@ if (! empty($id)) {
 							print '<th class="liste_titre">' . $langs->trans('AgfTrainerCostHour') . '</th>';
 						}
 						print '<th class="liste_titre">' . $langs->trans('Edit') . '</th>';
-						
 						
 						print '</tr>';
 						
@@ -687,8 +687,8 @@ if (! empty($id)) {
 								print '<tr>' . "\n";
 							
 							if ($calendrier->lines[$j]->id == GETPOST('modperiod') && empty($period_remove)) {
-								//Delete select case not display here
-								print '<td></td>'. "\n";
+								// Delete select case not display here
+								print '<td></td>' . "\n";
 								
 								print '<td  width="20%">' . $langs->trans("AgfPeriodDate") . ' ' . "\n";
 								$form->select_date($calendrier->lines[$j]->date_session, 'date', '', '', '', 'obj_update_' . $j);
@@ -718,7 +718,7 @@ if (! empty($id)) {
 							} else {
 								print '<td width="1%;">';
 								if ($user->rights->agefodd->modifier) {
-									print '<input type="checkbox" name="deleteselcal[]" value="'.$calendrier->lines[$j]->id.'"/>';
+									print '<input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$j]->id . '"/>';
 								}
 								print '</td>' . "\n";
 								print '<td width="20%">' . dol_print_date($calendrier->lines[$j]->date_session, 'daytext') . '</td>' . "\n";
@@ -740,8 +740,6 @@ if (! empty($id)) {
 									print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;sessid=' . $id . '&amp;modperiod=' . $calendrier->lines[$j]->id . '&amp;trainerid=' . $formateurs->lines[$i]->formid . '&amp;id=' . $id . '&amp;period_remove=1">' . img_picto($langs->trans("Delete"), 'delete') . '</a>' . "\n";
 								}
 								print '</td>' . "\n";
-								
-								
 							}
 							
 							// We calculated the total session duration time
@@ -826,6 +824,12 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id)) && $nbform >
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+	}
+	
+	if ($user->rights->agefodd->creer) {
+		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
+	} else {
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
 	}
 }
 

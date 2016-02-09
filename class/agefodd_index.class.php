@@ -76,7 +76,7 @@ class Agefodd_index {
 		$sql = "SELECT ";
 		$sql .= " sum(se.nb_stagiaire) as nb_sta ";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as se";
-		$sql .= " WHERE se.status = 4";
+		$sql .= " WHERE se.status IN (4,5)";
 		
 		dol_syslog(get_class($this) . "::fetch_student_nb", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -112,7 +112,7 @@ class Agefodd_index {
 		
 		$sql = "SELECT count(*) as num";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session";
-		$sql .= " WHERE status = 4";
+		$sql .= " WHERE status = 5";
 		$sql .= " AND entity IN (" . getEntity('agsession') . ")";
 		
 		dol_syslog(get_class($this) . "::fetch_session_nb ", LOG_DEBUG);
@@ -176,7 +176,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue AS f";
 		$sql .= " ON s.fk_formation_catalogue = f.rowid";
-		$sql .= " WHERE s.status = 4";
+		$sql .= " WHERE s.status IN (4,5)";
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		// $sql.= " GROUP BY f.duree";
 		
@@ -206,32 +206,44 @@ class Agefodd_index {
 	public function fetch_heures_stagiaires_nb() {
 		global $langs;
 		
-		$sql = "SELECT  sum(f.duree) AS total";
+		$error=0;
+		
+		$this->fetch_heures_sessions_nb();
+		$nbhour=$this->total;
+		
+		$sql = "SELECT  sum(s.nb_stagiaire) AS total";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as s";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ss";
-		$sql .= " ON ss.fk_session_agefodd = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue AS f";
 		$sql .= " ON s.fk_formation_catalogue = f.rowid";
-		$sql .= " WHERE s.status = 4";
+		$sql .= " WHERE s.status IN (4,5)";
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		// $sql.= " GROUP BY f.duree";
+		
 		
 		dol_syslog(get_class($this) . "::fetch_heures_stagiaires_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				$this->total = $obj->total;
+				$this->total = $obj->total*(empty($nbhour)?1:$nbhour);
 			}
-			if ($obj->total == '')
+			if ($obj->total == '') {
 				$this->total = 0;
-			$this->db->free($resql);
-			return 1;
+			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_heures_stagiaires_nb " . $this->error, LOG_ERR);
+			$error++;
+		}
+		
+		
+		if (empty($error)) {
+			$this->db->free($resql);
+			return 1;
+		} else {
 			return - 1;
 		}
+			
 	}
 	
 	/**
@@ -247,7 +259,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
-		$sql .= " WHERE s.status = 4";
+		$sql .= " WHERE s.status IN (4,5)";
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " ORDER BY s.dated DESC LIMIT " . $number;
 		
@@ -295,7 +307,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
-		$sql .= " WHERE s.status = 4";
+		$sql .= " WHERE s.status IN (5,4)";
 		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
 		$sql .= " GROUP BY c.intitule, c.duree,s.fk_formation_catalogue";
 		$sql .= " ORDER BY num DESC LIMIT " . $number;
@@ -474,6 +486,7 @@ class Agefodd_index {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as f";
 		$sql .= " ON sess.fk_formation_catalogue = f.rowid";
 		$sql .= " WHERE s.archive = 0 AND (NOW() < s.datef)";
+		$sql .= " WHERE s.status IN (1,2)";
 		if (! empty($delais_sup) && ! empty($delais_inf)) {
 			if ($delais_sup != 1)
 				$delais_sup_sql = 's.datea - INTERVAL ' . $intervalday_sup;

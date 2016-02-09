@@ -74,10 +74,11 @@ print '<tr class="liste"><td>' . $langs->trans("AgfIndexSessDo") . ' </td><td al
 $resql = $agf->fetch_heures_sessions_nb();
 print '<tr class="liste"><td>' . $langs->trans("AgfIndexHourSessDo") . ' </td><td align="right">' . $agf->total . '&nbsp;</td></tr>';
 $total_heures = $agf->total;
-if ($total_heures == 0)
+if ($total_heures == 0) {
 	$total_heures = 1;
+}
 	
-	// Nbre d'heures stagiaires délivrées
+// Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
 print '<tr class="liste"><td>' . $langs->trans("AgfIndexHourTrainneDo") . '  </td><td align="right">' . $agf->total . '&nbsp;</td></tr>';
 

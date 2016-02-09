@@ -30,11 +30,13 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agefodd_place.class.php');
-require_once ('../lib/agefodd.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
-
-require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
+require_once '../class/agefodd_place.class.php';
+require_once '../lib/agefodd.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
+require_once '../class/html.formagefodd.class.php';
 
 // Security check
 if (! $user->rights->agefodd->agefodd_place->lire)
@@ -47,6 +49,7 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
+$societe = GETPOST('societe', 'int');
 
 $url_return = GETPOST('url_return', 'alpha');
 
@@ -54,7 +57,7 @@ $same_adress_customer = GETPOST('same_adress_customer', 'int');
 
 /*
  * Actions delete
-*/
+ */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_place->creer) {
 	$agf = new Agefodd_place($db);
 	$agf->id = $id;
@@ -70,7 +73,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions archive/active
-*/
+ */
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->agefodd_place->creer) {
 	if ($confirm == "yes") {
 		$agf = new Agefodd_place($db);
@@ -94,7 +97,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->agefodd_place->c
 
 /*
  * Action update (Location)
-*/
+ */
 if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 	
 	$error = 0;
@@ -102,7 +105,6 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 	if (! $_POST["cancel"] && ! $_POST["importadress"]) {
 		$agf = new Agefodd_place($db);
 		
-		$societe = GETPOST('societe', 'int');
 		if (empty($societe)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
 		}
@@ -127,6 +129,8 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 			$agf->fk_pays = GETPOST('country_id', 'int');
 			$agf->tel = GETPOST('phone', 'alpha');
 			$agf->fk_societe = $societe;
+			$agf->fk_socpeople = GETPOST('contact', 'int');
+			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->notes = GETPOST('notes');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
@@ -166,7 +170,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 
 /*
  * Action create (Location)
-*/
+ */
 
 if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer) {
 	
@@ -175,7 +179,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_place($db);
 		
-		$societe = GETPOST('societe', 'int');
 		if (empty($societe)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
 			$error ++;
@@ -191,6 +194,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 			
 			$agf->ref_interne = $label;
 			$agf->fk_societe = $societe;
+			$agf->fk_socpeople = GETPOST('contact', 'int');
+			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->notes = GETPOST('notes', 'alpha');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
@@ -244,16 +249,17 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 
 /*
  * View
-*/
+ */
 
 $title = ($action == 'create' ? $langs->trans("AgfCreatePlace") : $langs->trans("AgfSessPlace"));
 llxHeader('', $title);
 
 $form = new Form($db);
+$formAgefodd = new FormAgefodd($db);
 
 /*
  * Action create
-*/
+ */
 if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	
 	if ($conf->use_javascript_ajax) {
@@ -289,7 +295,26 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Company") . '</span></td>';
-	print '<td>' . $form->select_company('', 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 0, 1, 0) . '</td></tr>';
+	$events = array ();
+	$events[] = array (
+			'method' => 'getContacts',
+			'url' => dol_buildpath('/core/ajax/contacts.php', 1),
+			'htmlname' => 'contact',
+			'showempty' => '1',
+			'params' => array (
+					'add-customer-contact' => 'disabled' 
+			) 
+	);
+	print '<td>' . $form->select_company('', 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 0, 1, 0, $events) . '</td></tr>';
+	
+	print '<tr><td>' . $langs->trans("Contact") . '</td>';
+	print '<td>';
+	if (! empty($societe)) {
+		$formAgefodd->select_contacts_custom($societe, '', 'contact', 1, '', '', 1, '', 1);
+	} else {
+		$formAgefodd->select_contacts_custom(0, '', 'contact', 1, '', 1000, 1, '', 1);
+	}
+	print '</td></tr>';
 	
 	print '<tr><td>' . $langs->trans('AgfImportCustomerAdress') . '</td><td>';
 	print '<input type="radio" id="same_adress_customer_yes" name="same_adress_customer" value="1" checked="checked"/> <label for="same_adress_customer_yes">' . $langs->trans('Yes') . '</label>';
@@ -319,6 +344,9 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 	
+	print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
+	print '<td><input name="timeschedule" class="flat" size="50" value="' . GETPOST('timeschedule', 'alpha') . '"></td></tr>';
+	
 	print '<tr>';
 	print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
 	$doleditor = new DolEditor('acces_site', GETPOST('acces_site'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
@@ -330,7 +358,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
-	
 	
 	print '</table>';
 	print '</div>';
@@ -371,7 +398,22 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<td><input name="ref_interne" class="flat" size="50" value="' . $agf->ref_interne . '"></td></tr>';
 				
 				print '<tr><td class="fieldrequired">' . $langs->trans("Company") . '</td>';
-				print '<td>' . $form->select_company($agf->socid, 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 0, 1) . '</td></tr>';
+				$events = array ();
+				$events[] = array (
+						'method' => 'getContacts',
+						'url' => dol_buildpath('/core/ajax/contacts.php', 1),
+						'htmlname' => 'contact',
+						'showempty' => '1',
+						'params' => array (
+								'add-customer-contact' => 'disabled' 
+						) 
+				);
+				print '<td>' . $form->select_company($agf->socid, 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 0, 1, 0,$events) . '</td></tr>';
+				
+				print '<tr><td>' . $langs->trans("Contact") . '</td>';
+				print '<td>';
+				$formAgefodd->select_contacts_custom($agf->socid, $agf->fk_socpeople, 'contact', 1, '', '', 1, '', 1);
+				print '</td></tr>';
 				
 				print '<tr><td>' . $langs->trans("Address") . '</td>';
 				print '<td><input name="adresse" class="flat" size="50" value="' . $agf->adresse . '"></td></tr>';
@@ -395,6 +437,9 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				
 				print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 				print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';
+				
+				print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
+				print '<td><input name="timeschedule" class="flat" size="50" value="' . $agf->timeschedule . '"></td></tr>';
 				
 				print '<tr>';
 				print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
@@ -425,7 +470,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				
 				/*
 				 * Confirm delete
-				*/
+				 */
 				if ($action == 'delete') {
 					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeletePlace"), $langs->trans("AgfConfirmDeletePlace"), "confirm_delete", '', '', 1);
 					if ($ret == 'html')
@@ -433,7 +478,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				}
 				/*
 				 * Confirm archive
-				*/
+				 */
 				if ($action == 'archive' || $action == 'active') {
 					if ($action == 'archive')
 						$value = 1;
@@ -455,11 +500,18 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				
 				print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 				if ($agf->socid) {
-					print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->socid . '">';
-					print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($agf->socname, 20) . '</a>';
+					$soc = new Societe($db);
+					$soc->fetch($agf->socid);
+					print $soc->getNomUrl();
 				} else {
 					print '&nbsp;';
 				}
+				print '</tr>';
+				
+				print '<tr><td valign="top">' . $langs->trans("Contact") . '</td><td>';
+				$contact = new Contact($db);
+				$contact->fetch($agf->fk_socpeople);
+				print $contact->getNomUrl();
 				print '</tr>';
 				
 				print '<tr><td rowspan=3 valign="top">' . $langs->trans("Address") . '</td>';
@@ -485,15 +537,17 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<tr><td valign="top">' . $langs->trans("AgfNotes") . '</td>';
 				print '<td>' . nl2br($agf->notes) . '</td></tr>';
 				
+				print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
+				print '<td>' . $agf->timeschedule . '</td></tr>';
+				
 				if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 					$acces_site = $agf->acces_site;
 				} else {
 					$acces_site = stripslashes(nl2br($agf->acces_site));
 				}
 				
-				
 				print '<tr><td valign="top">' . $langs->trans("AgfAccesSite") . '</td>';
-				print '<td>' .$acces_site . '</td></tr>';
+				print '<td>' . $acces_site . '</td></tr>';
 				
 				print '<tr><td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td>';
 				
@@ -502,7 +556,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				} else {
 					$note1 = stripslashes(nl2br($agf->note1));
 				}
-					
+				
 				print '<td>' . $note1 . '</td></tr>';
 				
 				print "</table>";
@@ -517,8 +571,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 /*
  * Actions tabs
-*
-*/
+ *
+ */
 
 print '<div class="tabsAction">';
 
