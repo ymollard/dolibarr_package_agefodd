@@ -21,7 +21,7 @@
  */
 
 /**
- * \file /agefodd/session/document_files.php
+ * \file /agefodd/training/document_files.php
  * \ingroup agefodd
  * \brief files linked to session
  */
@@ -32,11 +32,11 @@ if (! $res)
 	die("Include of main fails");
 
 require_once '../lib/agefodd.lib.php';
-require_once ('../class/agsession.class.php');
+require_once '../class/agefodd_formation_catalogue.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
-require_once ('../class/html.formagefodd.class.php');
+require_once '../class/html.formagefodd.class.php';
 
 $langs->load("companies");
 $langs->load('other');
@@ -47,8 +47,9 @@ $id = (GETPOST('socid', 'int') ? GETPOST('socid', 'int') : GETPOST('id', 'int'))
 $ref = GETPOST('ref', 'alpha');
 
 // Security check
-if (! $user->rights->agefodd->lire)
+if (! $user->rights->agefodd->agefodd_formation_catalogue->lire) {
 	accessforbidden();
+}
 	
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
@@ -65,109 +66,78 @@ if (! $sortorder)
 if (! $sortfield)
 	$sortfield = "name";
 
-$object = new Agsession($db);
+$object = new Agefodd($db);
 $result = $object->fetch($id);
 
 if ($result < 0) {
 	setEventMessage($agf->error, 'errors');
 } else {
-	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
+	$upload_dir = $conf->agefodd->dir_output . "/training/". $object->id;
+	$relativepathwithnofile="training/" . $object->id.'/';
 }
 
 /*
  * Actions
-*/
-
-/*
- * Actions
-*/
+ */
 
 include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
 
 /*
-// Post file
-if (GETPOST ( 'sendit' ) && ! empty ( $conf->global->MAIN_UPLOAD_DOC )) {
-	if ($object->id) {
-		dol_add_file_process ( $upload_dir, 0, 1, 'userfile' );
-	}
-}
-
-// Delete file
-if ($action == 'confirm_deletefile' && $confirm == 'yes') {
-	if ($object->id) {
-		$file = $upload_dir . "/" . GETPOST ( 'urlfile' ); // Do not use urldecode here ($_GET and $_REQUEST are already decoded by PHP).
-		
-		$ret = dol_delete_file ( $file, 0, 0, 0, $object );
-		if ($ret)
-			setEventMessage ( $langs->trans ( "FileWasRemoved", GETPOST ( 'urlfile' ) ) );
-		else
-			setEventMessage ( $langs->trans ( "ErrorFailToDeleteFile", GETPOST ( 'urlfile' ) ), 'errors' );
-		header ( 'Location: ' . $_SERVER ["PHP_SELF"] . '?id=' . $object->id );
-		exit ();
-	}
-}
-*/
-
-/*
  * View
-*/
+ */
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
 $help_url = '';
-llxHeader('', $langs->trans("AgfSessionDocuments") . ' - ' . $langs->trans("Files"), $help_url);
+llxHeader('', $langs->trans("AgfCatalogDetail") . ' - ' . $langs->trans("Files"), $help_url);
 
 if ($object->id) {
 	/*
 	 * Affichage onglets
-	*/
-	if (! empty($conf->notification->enabled))
+	 */
+	if (! empty($conf->notification->enabled)) {
 		$langs->load("mails");
-	$head = session_prepare_head($object);
+	}
+	
+	$head = training_prepare_head($object);
+	
+	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfCatalogDetail"), 0, 'bill');
 	
 	$form = new Form($db);
-	
-	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 	
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
-		$totalsize += $file ['size'];
+		var_dump($file);
+		$totalsize += $file['size'];
 	}
 	
-	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-	print '</div>';
+	print '<table class="border" width="100%">';
 	
-	// Print session card
-	$object->printSessionInfo();
+	print "<tr>";
+	print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
+	print $form->showrefnav($object, 'id', '', 1, 'rowid', 'id');
+	print '</td></tr>';
 	
-	print '&nbsp';
+	print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
+	print '<td colspan=2>' . stripslashes($object->intitule) . '</td></tr>';
+	
+	print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
+	print $object->ref_obj . '</td></tr>';
+	
+	print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
+	print $object->ref_interne . '</td></tr>';
+	print '</table>';
 	print '</div>';
 	
 	$modulepart = 'agefodd';
-	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
+	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 	
-	/*
-	if ($action == 'delete') {
-		$ret = $form->form_confirm ( $_SERVER ["PHP_SELF"] . '?id=' . $object->id . '&urlfile=' . urlencode ( GETPOST ( "urlfile" ) ), $langs->trans ( 'DeleteFile' ), $langs->trans ( 'ConfirmDeleteFile' ), 'confirm_deletefile', '', 0, 1 );
-		if ($ret == 'html')
-			print '<br>';
-	}
 	
-	$formfile = new FormFile ( $db );
-	
-	// Show upload form
-	$formfile->form_attach_new_file ( $_SERVER ["PHP_SELF"] . '?id=' . $object->id, '', 0, 0, $user->rights->agefodd->creer, 50, $object );
-	
-	// List of document
-	$formfile->list_of_documents ( $filearray, $object, 'agefodd' );
-	
-	print "<br><br>";*/
 } else {
 	accessforbidden('', 0, 0);
 }

@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,13 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/html.formagefodd.class.php');
-require_once ('../lib/agefodd.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
-require_once ('../class/agefodd_formation_catalogue_modules.class.php');
+require_once '../class/agefodd_formation_catalogue.class.php';
+require_once '../core/modules/agefodd/modules_agefodd.php';
+require_once '../class/html.formagefodd.class.php';
+require_once '../lib/agefodd.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+require_once '../class/agefodd_formation_catalogue_modules.class.php';
 
 require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
 

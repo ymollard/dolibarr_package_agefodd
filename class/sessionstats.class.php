@@ -4,7 +4,7 @@
  * Copyright (c) 2005-2012 Laurent Destailleur <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2009 Regis Houssin <regis@dolibarr.fr>
  * Copyright (C) 2012 JF FERRY <jfefe@aternatik.fr>
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

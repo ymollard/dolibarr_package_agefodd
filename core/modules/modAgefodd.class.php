@@ -71,7 +71,7 @@ class modAgefodd extends DolibarrModules {
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
 		$this->dirs = array (
-				"/agefodd" 
+				"/agefodd",
 		);
 		$r = 0;
 		

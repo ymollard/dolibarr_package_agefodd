@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
  * Copyright (C) 2014-2015 Philippe Grand  <philippe.grand@atoo-net.com>
  *
@@ -73,6 +73,12 @@ function training_prepare_head($object) {
 	$head [$h] [0] = dol_buildpath('/agefodd/training/note.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfNote");
 	$head [$h] [2] = 'notes';
+	$hselected = $h;
+	$h ++;
+	
+	$head [$h] [0] = dol_buildpath('/agefodd/training/document_files.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("Documents");
+	$head [$h] [2] = 'documentfiles';
 	$hselected = $h;
 	$h ++;
 	
