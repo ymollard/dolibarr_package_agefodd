@@ -347,12 +347,6 @@ class InterfaceAgefodd {
 			
 			require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 			require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
-			$contactforaction = new Contact($this->db);
-			$societeforaction = new Societe($this->db);
-			if ($object->sendtoid > 0)
-				$contactforaction->fetch($object->sendtoid);
-			if ($object->socid > 0)
-				$societeforaction->fetch($object->socid);
 				
 				// Insertion action
 			require_once (DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php');
@@ -366,8 +360,8 @@ class InterfaceAgefodd {
 			$actioncomm->durationp = 0;
 			$actioncomm->punctual = 1;
 			$actioncomm->percentage = - 1; // Not applicable
-			$actioncomm->contact = $contactforaction;
-			$actioncomm->societe = $societeforaction;
+			$actioncomm->contact = $object->sendtoid;
+			$actioncomm->socid = $object->socid;
 			$actioncomm->author = $user; // User saving action
 			                             // $actioncomm->usertodo = $user; // User affected to action
 			$actioncomm->userdone = $user; // User doing action
