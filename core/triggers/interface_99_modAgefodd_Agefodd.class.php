@@ -360,7 +360,7 @@ class InterfaceAgefodd {
 			$actioncomm->durationp = 0;
 			$actioncomm->punctual = 1;
 			$actioncomm->percentage = - 1; // Not applicable
-			$actioncomm->contact = $object->sendtoid;
+			$actioncomm->contactid = $object->sendtoid;
 			$actioncomm->socid = $object->socid;
 			$actioncomm->author = $user; // User saving action
 			                             // $actioncomm->usertodo = $user; // User affected to action
