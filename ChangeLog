@@ -12,6 +12,7 @@ Fix : Issue #18
 Fix : Issue #23
 Fix : Issue #12
 New : Can upload files on training (optionnaly to replace training program)
+Fix : Invoice created from Document liked was not associated to Session
 	
 
 ***** ChangeLog for 2.1.15 compared to 2.1.14 *****
