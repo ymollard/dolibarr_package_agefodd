@@ -419,12 +419,12 @@ if (! empty($id)) {
 		/*
 		 * Formulaire d'envoi des documents
 		 */
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc') {
 			
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_presence_direct') {
-				$filename = 'fiche_pedago_direct_' . $agf->id . '.pdf';
+				$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_pedago') {
 				$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 			} elseif ($action == 'presend_convention') {
@@ -462,6 +462,13 @@ if (! empty($id)) {
 					if (file_exists($file))
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 				} elseif ($action == 'presend_presence') {
+					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+					// Ajout fiche péda
+					$filename = 'fiche_evaluation_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file))
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+				} elseif ($action == 'presend_presence_direct') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					// Ajout fiche péda
 					$filename = 'fiche_evaluation_' . $agf->id . '.pdf';
