@@ -127,6 +127,9 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			$firstname = GETPOST('prenom', 'alpha');
 			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
+
+			$create_thirdparty = GETPOST('create_thirdparty', 'int');
+
 			if ($socid==-1) {
 				unset($socid);
 			}
@@ -139,7 +142,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				setEventMessage($langs->trans('AgfCiviliteMandatory'), 'errors');
 				$error ++;
 			}
-			if (empty($socid)) {
+			if (empty($socid) && empty($create_thirdparty)) {
 				setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
 				$error ++;
 			}
@@ -156,7 +159,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				}
 			}
 			if (empty($error)) {
-				$create_thirdparty = GETPOST('create_thirdparty', 'int');
+
 				$create_contact = GETPOST('create_contact', 'int');
 				
 				$socid = GETPOST('societe', 'int');
