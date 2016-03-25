@@ -253,23 +253,35 @@ $title = $langs->trans("DoneAndToDoActions");
 
 $param = '';
 $region = '';
-if ($filter_commercial)
-	$param .= "&commercial=" . $filter_commercial;
-if ($filter_customer)
-	$param .= "&fk_soc=" . $filter_customer;
-if ($filter_contact)
-	$param .= "&contact=" . $filter_contact;
-if ($filter_trainer)
-	$param .= "&trainerid=" . $filter_trainer;
-if ($type)
-	$param .= "&type=" . $type;
-if ($action == 'show_day' || $action == 'show_week')
-	$param .= '&action=' . $action;
-if ($filter_type_session != '')
-	$param .= '&type_session=' . $filter_type_session;
-if ($display_only_trainer_filter != '')
-	$param .= '&displayonlytrainerfilter=' . $display_only_trainer_filter;
+if ($filter_commercial) {
+	$param .= "&commercial=" . $filter_commercial;	
+}
 
+if ($filter_customer) {
+	$param .= "&fk_soc=" . $filter_customer;
+}
+if ($filter_contact) {
+	$param .= "&contact=" . $filter_contact;
+}
+if ($filter_trainer) {
+	$param .= "&trainerid=" . $filter_trainer;
+}
+if ($type) {
+	$param .= "&type=" . $type;
+}
+if ($action == 'show_day' || $action == 'show_week') {
+	$param .= '&action=' . $action;
+}
+	
+if ($filter_type_session != '') {
+	$param .= '&type_session=' . $filter_type_session;
+}
+if ($display_only_trainer_filter != '') {
+	$param .= '&displayonlytrainerfilter=' . $display_only_trainer_filter;
+}
+if ($filter_location){
+	$param .= '&location=' . $filter_location;
+}
 $param .= "&maxprint=" . $maxprint;
 
 
