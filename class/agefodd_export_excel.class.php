@@ -306,8 +306,9 @@ class AgefoddExportExcel {
 
 				$this->workbook->setActiveSheetIndex($keysheet);
 				$this->row[$keysheet] ++;
-				var_dump($this->array_column_header);
+
 				foreach ( $this->array_column_header[$keysheet] as $col => $value ) {
+
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$keysheet], $value['title']);
 					// If header is set then write header
 					if (array_key_exists('header', $value)) {
@@ -502,6 +503,7 @@ class AgefoddExportExcel {
 								$column_array_manually_sized[PHPExcel_Cell::stringFromColumnIndex($i)]=$this->array_column_header[$keysheet][$i]['width'];
 					}
 				}
+
 				foreach ( $column_array as $columnID ) {
 					$this->workbook->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
 				}

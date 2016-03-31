@@ -342,11 +342,11 @@ class ReportBPF extends AgefoddExportExcel
 			return $result;
 		}*/
 
-		$this->row[0] ++;
+		/*$this->row[0] ++;
 		$result = $this->write_filter($filter);
 		if ($result < 0) {
 			return $result;
-		}
+		}*/
 
 		$this->close_file(0, 0, 0);
 		return count($this->trainer_data);
