@@ -21,9 +21,9 @@
  * \brief File of class to generate report for agefodd
  * \author Florian Henry
  */
-require_once '../includes/phpexcel/Classes/PHPExcel.php';
-require_once '../includes/phpexcel/Classes/PHPExcel/Style/Alignment.php';
-require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel.php';
+require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
+require_once DOL_DOCUMENT_ROOT. '/core/lib/date.lib.php';
 
 /**
  * Class to build export files with Excel format
@@ -49,7 +49,7 @@ class AgefoddExportExcel {
 	protected $array_column_header = array ();
 	protected $sheet_array = array ();
 	public $rowheader=array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -59,20 +59,20 @@ class AgefoddExportExcel {
 	public function __construct($db, $array_column_header, $outputlangs, $sheet_array=array()) {
 		global $conf, $langs;
 		$this->db = $db;
-		
+
 		$this->id = 'excel2007'; // Same value then xxx in file name export_xxx.modules.php
 		$this->label = 'Excel 2007'; // Label of driver
 		$this->desc = $langs->trans('Excel2007FormatDesc');
 		$this->extension = 'xlsx'; // Extension for generated file by this driver
 		$this->picto = 'mime/xls'; // Picto
 		$this->version = '1.30'; // Driver version
-		                         
+
 		// If driver use an external library, put its name here
 		$this->label_lib = 'PhpExcel';
 		$this->version_lib = '1.8.0';
-		
+
 		$this->array_column_header = $array_column_header;
-		
+
 		if (count($sheet_array)>0) {
 			$this->sheet_array = $sheet_array;
 		} else {
@@ -80,7 +80,7 @@ class AgefoddExportExcel {
 		}
 		$this->outputlangs = $outputlangs;
 	}
-	
+
 	/**
 	 * getDriverId
 	 *
@@ -89,7 +89,7 @@ class AgefoddExportExcel {
 	function getDriverId() {
 		return $this->id;
 	}
-	
+
 	/**
 	 * getDriverLabel
 	 *
@@ -98,7 +98,7 @@ class AgefoddExportExcel {
 	function getDriverLabel() {
 		return $this->label;
 	}
-	
+
 	/**
 	 * getDriverDesc
 	 *
@@ -107,7 +107,7 @@ class AgefoddExportExcel {
 	function getDriverDesc() {
 		return $this->desc;
 	}
-	
+
 	/**
 	 * getDriverExtension
 	 *
@@ -116,7 +116,7 @@ class AgefoddExportExcel {
 	function getDriverExtension() {
 		return $this->extension;
 	}
-	
+
 	/**
 	 * getDriverVersion
 	 *
@@ -125,7 +125,7 @@ class AgefoddExportExcel {
 	function getDriverVersion() {
 		return $this->version;
 	}
-	
+
 	/**
 	 * getLibLabel
 	 *
@@ -134,7 +134,7 @@ class AgefoddExportExcel {
 	function getLibLabel() {
 		return $this->label_lib;
 	}
-	
+
 	/**
 	 * getLibVersion
 	 *
@@ -143,7 +143,7 @@ class AgefoddExportExcel {
 	function getLibVersion() {
 		return $this->version_lib;
 	}
-	
+
 	/**
 	 * set column hearder
 	 *
@@ -152,7 +152,7 @@ class AgefoddExportExcel {
 	public function setArrayColumnHeader($array_column_header) {
 		$this->array_column_header=$array_column_header;
 	}
-	
+
 	/**
 	 * Open output file
 	 *
@@ -161,45 +161,45 @@ class AgefoddExportExcel {
 	 */
 	public function open_file($file) {
 		global $user, $conf, $langs;
-		
+
 		dol_syslog(get_class($this) . "::open_file file=" . $file);
 		$this->file = $file;
-		
+
 		$this->outputlangs->load("exports");
-		
+
 		// To use PCLZip
 		if (! class_exists('ZipArchive')) {
 			$langs->load("errors");
 			$this->error = $langs->trans('ErrorPHPNeedModule', 'zip');
 			return - 1;
 		}
-		
+
 		try {
-			
+
 			$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_discISAM;
 			$cacheSettings = array (
-					'dir' => $conf->agefodd->dir_output . '/report/' 
+					'dir' => $conf->agefodd->dir_output . '/report/'
 			);
 			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-			
+
 			$this->workbook = new PHPExcel();
 			$this->workbook->getProperties()->setCreator($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
 			$this->workbook->getProperties()->setLastModifiedBy($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
 			// $this->workbook->getProperties()->setLastModifiedBy('Dolibarr '.DOL_VERSION);
-			
+
 			$this->workbook->getProperties()->setTitle($this->title);
 			$this->workbook->getProperties()->setSubject($this->subject);
 			$this->workbook->getProperties()->setDescription($this->description);
-			
+
 			$this->workbook->getProperties()->setKeywords($this->keywords);
 			foreach($this->sheet_array as $keysheet=>$sheet) {
 				$myWorkSheet = new PHPExcel_Worksheet($this->workbook, $sheet['title']);
 				$this->workbook->addSheet($myWorkSheet, $keysheet);
-				
+
 				$this->workbook->setActiveSheetIndex($keysheet);
 				$this->workbook->getActiveSheet()->setTitle(dol_trunc($sheet['title'], 31, 'right', 'UTF-8', 1));
 				$this->workbook->getActiveSheet()->getDefaultRowDimension()->setRowHeight(16);
-				
+
 				$this->row[$keysheet] = 0;
 			}
 			//Remove the last default one
@@ -208,10 +208,10 @@ class AgefoddExportExcel {
 			$this->error = $e->getMessage();
 			return - 1;
 		}
-		
+
 		return 1;
 	}
-	
+
 	/**
 	 * Output title line into file
 	 *
@@ -247,8 +247,8 @@ class AgefoddExportExcel {
 				$this->workbook->setActiveSheetIndex($keysheet);
 				$this->workbook->getActiveSheet()->setCellValue('C2', $sheet['title']);
 				$this->workbook->getActiveSheet()->mergeCells('C2:G2');
-			
-			
+
+
 				$this->workbook->getActiveSheet()->getStyle('C2:G2')->applyFromArray($styleArray);
 				$this->row[$keysheet] = 6;
 			}
@@ -256,11 +256,11 @@ class AgefoddExportExcel {
 			$this->error = $e->getMessage();
 			return - 1;
 		}
-		
+
 		return 1;
 	}
-	
-	
+
+
 	/**
 	 * Write Header of spreadheet
 	 *
@@ -268,45 +268,45 @@ class AgefoddExportExcel {
 	 */
 	public function write_header() {
 		dol_syslog(get_class($this) . "::write_header ");
-		
+
 		// Title header merge subarea is outputted (case of merge cell on line upper the header to explain kind of data)
 		$upper_hearder_output = '';
-		
-		
-		
+
+
+
 		// Style for heeader tittle SpreadSheet
 		$styleArray = array (
 				'borders' => array (
 						'allborders' => array (
 								'style' => PHPExcel_Style_Border::BORDER_THIN,
 								'color' => array (
-										'argb' => PHPExcel_Style_Color::COLOR_BLACK 
-								) 
-						) 
+										'argb' => PHPExcel_Style_Color::COLOR_BLACK
+								)
+						)
 				),
 				'fill' => array (
 						'type' => PHPExcel_Style_Fill::FILL_SOLID,
 						'color' => array (
-								'rgb' => 'cfe2f3' 
-						) 
+								'rgb' => 'cfe2f3'
+						)
 				),
 				'font' => array (
 						'color' => array (
-								'argb' => PHPExcel_Style_Color::COLOR_BLACK 
+								'argb' => PHPExcel_Style_Color::COLOR_BLACK
 						),
-						'bold' => true 
+						'bold' => true
 				),
 				'alignment' => array (
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER 
-				) 
+						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+				)
 		);
-		
+
 		try {
 			foreach($this->sheet_array as $keysheet=>$sheet) {
-				
+
 				$this->workbook->setActiveSheetIndex($keysheet);
 				$this->row[$keysheet] ++;
-
+				var_dump($this->array_column_header);
 				foreach ( $this->array_column_header[$keysheet] as $col => $value ) {
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$keysheet], $value['title']);
 					// If header is set then write header
@@ -319,32 +319,32 @@ class AgefoddExportExcel {
 					} else {
 						if ($colstartheader > 0) {
 							$range_upper_header = PHPExcel_Cell::stringFromColumnIndex($colstartheader) . ($this->row[$keysheet] - 1) . ':' . PHPExcel_Cell::stringFromColumnIndex($col - 1) . ($this->row[$keysheet] - 1);
-							
+
 							$this->workbook->getActiveSheet()->mergeCells($range_upper_header);
 							$this->workbook->getActiveSheet()->getStyle($range_upper_header)->applyFromArray($styleArray);
-							
+
 							$upper_hearder_output = '';
 							$colstartheader = - 1;
 						}
 					}
 				}
-				
+
 				$min_value_key = min(array_keys($this->array_column_header[$keysheet]));
 				$max_value_key = max(array_keys($this->array_column_header[$keysheet]));
 				$range_header = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[$keysheet]) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[$keysheet]);
 				$this->rowheader[$keysheet]=$this->row[$keysheet];
 				$this->workbook->getActiveSheet()->getStyle($range_header)->applyFromArray($styleArray);
-				
+
 				$this->row[$keysheet] ++;
 			}
 		} catch ( Exception $e ) {
 			$this->error = $e->getMessage();
 			return - 1;
 		}
-		
+
 		return 1;
 	}
-	
+
 	/**
 	 * Write total line
 	 *
@@ -363,8 +363,8 @@ class AgefoddExportExcel {
 				'fill' => array (
 						'type' => PHPExcel_Style_Fill::FILL_SOLID,
 						'color' => array (
-								'rgb' => $style_color 
-						) 
+								'rgb' => $style_color
+						)
 				),
 				'font' => array (
 						'color' => array (
@@ -405,16 +405,16 @@ class AgefoddExportExcel {
 			$max_value_key = max(array_keys($this->array_column_header[$sheetkey]));
 			$range_header = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[$sheetkey]) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[$sheetkey]);
 			$this->workbook->getActiveSheet()->getStyle($range_header)->applyFromArray($styleArray);
-			
+
 			$this->row[$sheetkey] ++;
 		} catch ( Exception $e ) {
 			$this->error = $e->getMessage();
 			return - 1;
 		}
-		
+
 		return 1;
 	}
-	
+
 	/**
 	 * Write line
 	 *
@@ -426,10 +426,10 @@ class AgefoddExportExcel {
 						'top' => array (
 								'style' => PHPExcel_Style_Border::BORDER_THIN,
 								'color' => array (
-										'argb' => PHPExcel_Style_Color::COLOR_BLACK 
-								) 
-						) 
-				) 
+										'argb' => PHPExcel_Style_Color::COLOR_BLACK
+								)
+						)
+				)
 		);
 		try {
 			$this->workbook->setActiveSheetIndex($sheetkey);
@@ -457,14 +457,14 @@ class AgefoddExportExcel {
 						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode('dd/mm/yyyy');
 					}
 			}
-			
+
 			$min_value_key = min(array_keys($this->array_column_header[$sheetkey]));
 			$max_value_key = max(array_keys($this->array_column_header[$sheetkey]));
 			$range_session = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[$sheetkey]) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[$sheetkey]);
 			$this->workbook->getActiveSheet()->getStyle($range_session)->applyFromArray($styleArray);
-			
+
 			$this->row[$sheetkey] ++;
-			
+
 		} catch ( Exception $e ) {
 			unset($this->workbook);
 			$this->error = $e->getMessage();
@@ -472,7 +472,7 @@ class AgefoddExportExcel {
 		}
 		return 1;
 	}
-	
+
 	/**
 	 * Close Excel file
 	 *
@@ -496,8 +496,8 @@ class AgefoddExportExcel {
 						//If exists but not empty then add it else do not auto adjust
 						$column_array[]=PHPExcel_Cell::stringFromColumnIndex($i);
 					}
-					
-					if (array_key_exists('width', $this->array_column_header[$keysheet][$i]) 
+
+					if (array_key_exists('width', $this->array_column_header[$keysheet][$i])
 							&& !empty($this->array_column_header[$keysheet][$i]['width'])) {
 								$column_array_manually_sized[PHPExcel_Cell::stringFromColumnIndex($i)]=$this->array_column_header[$keysheet][$i]['width'];
 					}
@@ -505,11 +505,11 @@ class AgefoddExportExcel {
 				foreach ( $column_array as $columnID ) {
 					$this->workbook->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
 				}
-				
+
 				foreach ( $column_array_manually_sized as $columnID=>$size ) {
 					$this->workbook->getActiveSheet()->getColumnDimension($columnID)->setWidth($size);
 				}
-				
+
 				if (!empty($line_header_height)) {
 					for ($i=$this->rowheader[$keysheet]; $i <= $this->row[$keysheet]; $i++) {
 						$this->workbook->getActiveSheet()->getRowDimension($i)->setRowHeight($line_header_height);
@@ -518,21 +518,21 @@ class AgefoddExportExcel {
 				if (!empty($row_header_height)) {
 					$this->workbook->getActiveSheet()->getRowDimension($this->rowheader[$keysheet])->setRowHeight($row_header_height);
 				}
-				
+
 				if (!empty($freezepan)){
 					$this->workbook->getActiveSheet()->freezePaneByColumnAndRow(PHPExcel_Cell::stringFromColumnIndex($max_value_key),$this->rowheader[$keysheet]+1);
 				}
-				
+
 				$this->workbook->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
 				$this->workbook->getActiveSheet()->getPageSetup()->setPrintArea('A1:'.PHPExcel_Cell::stringFromColumnIndex($max_value_key).$this->row[$keysheet]);
-				
-				
+
+
 				//$this->workbook->getActiveSheet()->getPageMargins()->setTop(1);
 				$this->workbook->getActiveSheet()->getPageMargins()->setRight(0.20);
 				$this->workbook->getActiveSheet()->getPageMargins()->setLeft(0.20);
 				//$this->workbook->getActiveSheet()->getPageMargins()->setBottom(1);
 			}
-			
+
 			$this->workbook->setActiveSheetIndex(0);
 			$objWriter = PHPExcel_IOFactory::createWriter($this->workbook, 'Excel2007');
 			$objWriter->save($this->file);
@@ -548,7 +548,7 @@ class AgefoddExportExcel {
 		$objWriterCSV->save(str_replace('.php', '_excel.csv', __FILE__));
 		*/
 	}
-	
+
 	/**
 	 * Clean a cell to respect rules of Excel file cells
 	 *
@@ -558,7 +558,7 @@ class AgefoddExportExcel {
 	function excel_clean($newvalue) {
 		// Rule Dolibarr: No HTML
 		$newvalue = dol_string_nohtmltag($newvalue);
-		
+
 		return $newvalue;
 	}
 }

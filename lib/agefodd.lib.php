@@ -409,6 +409,11 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [2] = 'catcost';
 	$h ++;
 
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catbpf.php", 1);
+	$head [$h] [1] = $langs->trans("AgfReportBPFCategTabTitle");
+	$head [$h] [2] = 'catbpf';
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/about.php", 1);
 	$head [$h] [1] = $langs->trans("About");
 	$head [$h] [2] = 'about';

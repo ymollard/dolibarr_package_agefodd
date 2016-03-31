@@ -73,6 +73,8 @@ class modAgefodd extends DolibarrModules {
 		$this->dirs = array (
 				"/agefodd",
 				"/agefodd/training",
+				"/report",
+				"/report/bpf",
 		);
 		$r = 0;
 
@@ -1718,7 +1720,7 @@ class modAgefodd extends DolibarrModules {
 		$this->menu [$r] = array (
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
 				'type' => 'left',
-				'titre' => 'AgfMenuReportBFP',
+				'titre' => 'AgfMenuReportBPF',
 				'url' => '/agefodd/report/report_bpf.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 702,

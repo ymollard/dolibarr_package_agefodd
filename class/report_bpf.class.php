@@ -28,12 +28,13 @@ require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 /**
  * Class to build report by customer
  */
-class ReportBPF extends AgefoddExportExcel {
+class ReportBPF extends AgefoddExportExcel
+{
 	private $trainer_data = array ();
 	private $trainee_data = array ();
 	private $financial_data = array ();
-	private $financial_data_outcome=array();
-	
+	private $financial_data_outcome = array ();
+
 	/**
 	 * Constructor
 	 *
@@ -42,19 +43,19 @@ class ReportBPF extends AgefoddExportExcel {
 	public function __construct($db, $outputlangs) {
 		$outputlangs->load('agefodd@agefodd');
 		$outputlangs->load("main");
-		
+
 		$sheet_array = array (
 				0 => array (
 						'name' => 'bpf',
-						'title' => $outputlangs->transnoentities('AgfMenuReportBPF') 
-				) 
+						'title' => $outputlangs->transnoentities('AgfMenuReportBPF')
+				)
 		);
-		
+
 		$array_column_header = array ();
-		
+
 		return parent::__construct($db, $array_column_header, $outputlangs, $sheet_array);
 	}
-	
+
 	/**
 	 * Output filter line into file
 	 *
@@ -64,13 +65,13 @@ class ReportBPF extends AgefoddExportExcel {
 		dol_syslog(get_class($this) . "::write_filter ");
 		// Create a format for the column headings
 		try {
-			
+
 			// Manage filter
 			if (count($filter) > 0) {
 				foreach ( $this->sheet_array as $keysheet => $sheet ) {
-					
+
 					$this->workbook->setActiveSheetIndex($keysheet);
-					
+
 					foreach ( $filter as $key => $value ) {
 						if ($key == 'search_year') {
 							$str_cirteria = $this->outputlangs->transnoentities('Year') . ' ';
@@ -86,15 +87,15 @@ class ReportBPF extends AgefoddExportExcel {
 			$this->error = $e->getMessage();
 			return - 1;
 		}
-		
+
 		return 1;
 	}
-	
+
 	/**
 	 * Give complinat file name regarding filter
 	 *
 	 * @param $filter array an array filter
-	 *       
+	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function getSubTitlFileName($filter) {
@@ -112,58 +113,57 @@ class ReportBPF extends AgefoddExportExcel {
 		$str_sub_name = dol_sanitizeFileName($str_sub_name);
 		return $str_sub_name;
 	}
-	
+
 	/**
 	 * Wrtire Excel File
 	 *
 	 * @param $filter array filter array
-	 *       
+	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function write_file($filter) {
 		$this->outputlangs->load('agefodd@agefodd');
-		
+
 		$this->title = $this->outputlangs->transnoentities('AgfMenuReportBPF');
 		$this->subject = $this->outputlangs->transnoentities('AgfMenuReportBPF');
 		$this->description = $this->outputlangs->transnoentities('AgfMenuReportBPF');
 		$this->keywords = $this->outputlangs->transnoentities('AgfMenuReportBPF');
-		
+
 		$result = $this->open_file($this->file);
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Fetch Trainer
 		$result = $this->fetch_trainer($filter);
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Contruct header (column name)
 		$array_column_header = array ();
 		$array_column_header[0][0] = array (
 				'type' => 'text',
-				'title' => 'Formateur' 
+				'title' => $this->outputlangs->transnoentities('AgfFormateur')
 		);
-		
+
 		$array_column_header[0][1] = array (
 				'type' => 'int',
-				'title' => 'Nb de formateurs' 
+				'title' => $this->outputlangs->transnoentities('AgfFormateurNb')
 		);
 		$array_column_header[0][2] = array (
 				'type' => 'hours',
-				'title' => 'Nb d heures de formation dispensées' 
-		)
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHour')
+		);
 		// 'autosize' => 0
-		;
-		
+
 		$this->setArrayColumnHeader($array_column_header);
-		
+
 		$result = $this->write_header();
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Ouput Lines
 		$line_to_output = array ();
 		$array_total_output = array ();
@@ -171,53 +171,52 @@ class ReportBPF extends AgefoddExportExcel {
 			$line_to_output[0] = $label_type;
 			$line_to_output[1] = $trainer_data['nb'];
 			$line_to_output[2] = $trainer_data['time'];
-			
-			$array_total_output[0]='Total';
-			$array_total_output[1]+=$trainee_data['nb'];
-			$array_total_output[2]+=$trainee_data['time'];
-			
+
+			$array_total_output[0] = 'Total';
+			$array_total_output[1] += $trainee_data['nb'];
+			$array_total_output[2] += $trainee_data['time'];
+
 			$result = $this->write_line($line_to_output, 0);
 			if ($result < 0) {
 				return $result;
 			}
 		}
-		
+
 		$result = $this->write_line_total($array_total_output, '3d85c6');
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Fetch Trainee
-		$result = $this->fetch_trainee($filter);
+		/*$result = $this->fetch_trainee($filter);
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Contruct header (column name)
 		$array_column_header = array ();
 		$array_column_header[0][0] = array (
 				'type' => 'text',
-				'title' => 'Type de stagiaires' 
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFTypeParticipants')
 		);
-		
+
 		$array_column_header[0][1] = array (
 				'type' => 'int',
-				'title' => 'Nb de stagiaires' 
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
 		);
 		$array_column_header[0][2] = array (
 				'type' => 'hours',
-				'title' => 'Nb d heures stagaires' 
-		)
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
+		);
 		// 'autosize' => 0
-		;
-		
+
 		$this->setArrayColumnHeader($array_column_header);
-		
+
 		$result = $this->write_header();
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Ouput Lines
 		$line_to_output = array ();
 		$array_total_output = array ();
@@ -225,10 +224,10 @@ class ReportBPF extends AgefoddExportExcel {
 			$line_to_output[0] = $label_type;
 			$line_to_output[1] = $trainee_data['nb'];
 			$line_to_output[2] = $trainee_data['time'];
-			$array_total_output[0]='Total';
-			$array_total_output[1]+=$trainee_data['nb'];
-			$array_total_output[2]+=$trainee_data['time'];
-			
+			$array_total_output[0] = 'Total';
+			$array_total_output[1] += $trainee_data['nb'];
+			$array_total_output[2] += $trainee_data['time'];
+
 			$result = $this->write_line($line_to_output, 0);
 			if ($result < 0) {
 				return $result;
@@ -238,42 +237,42 @@ class ReportBPF extends AgefoddExportExcel {
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Fetch Financial data
 		$result = $this->fetch_financial($filter);
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Contruct header (column name)
 		$array_column_header = array ();
 		$array_column_header[0][0] = array (
 				'type' => 'text',
-				'title' => 'Origine des produits de l\'organisme' 
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFOrigProd')
 		);
-		
+
 		$array_column_header[0][1] = array (
 				'type' => 'number',
-				'title' => 'Montant' 
+				'title' => $this->outputlangs->transnoentities('Amount')
 		);
-		
+
 		$this->setArrayColumnHeader($array_column_header);
-		
+
 		$result = $this->write_header();
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Ouput Lines
 		$line_to_output = array ();
 		$array_total_output = array ();
 		foreach ( $this->financial_data as $label_type => $financial_data ) {
 			$line_to_output[0] = $label_type;
 			$line_to_output[1] = $financial_data;
-			
-			$array_total_output[0]='Total';
-			$array_total_output[1]+=$financial_data;
-			
+
+			$array_total_output[0] = $this->outputlangs->transnoentities('Total');
+			$array_total_output[1] += $financial_data;
+
 			$result = $this->write_line($line_to_output, 0);
 			if ($result < 0) {
 				return $result;
@@ -283,43 +282,43 @@ class ReportBPF extends AgefoddExportExcel {
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Fetch Financial data outcome
 		$result = $this->fetch_financial_outcome($filter);
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Contruct header (column name)
 		$array_column_header = array ();
-		
+
 		$array_column_header[0][0] = array (
 				'type' => 'text',
-				'title' => 'Code' 
+				'title' => $this->outputlangs->transnoentities('Code')
 		);
-		
+
 		$array_column_header[0][1] = array (
 				'type' => 'text',
-				'title' => 'Rubrique' 
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFRubrique')
 		);
-		
+
 		$array_column_header[0][2] = array (
 				'type' => 'text',
-				'title' => 'Charge' 
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFCharge')
 		);
-		
+
 		$array_column_header[0][3] = array (
 				'type' => 'number',
-				'title' => 'Montant' 
+				'title' => $this->outputlangs->transnoentities('Amount')
 		);
-		
+
 		$this->setArrayColumnHeader($array_column_header);
-		
+
 		$result = $this->write_header();
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		// Ouput Lines
 		$line_to_output = array ();
 		$array_total_output = array ();
@@ -328,11 +327,11 @@ class ReportBPF extends AgefoddExportExcel {
 			$line_to_output[1] = $financial_data['rubrique'];
 			$line_to_output[2] = $financial_data['label'];
 			$line_to_output[3] = $financial_data['amount'];
-			$array_total_output[0]='Total';
-			$array_total_output[1]='';
-			$array_total_output[2]='';
-			$array_total_output[3]+=$financial_data['amount'];
-			
+			$array_total_output[0] = 'Total';
+			$array_total_output[1] = '';
+			$array_total_output[2] = '';
+			$array_total_output[3] += $financial_data['amount'];
+
 			$result = $this->write_line($line_to_output, 0);
 			if ($result < 0) {
 				return $result;
@@ -341,19 +340,19 @@ class ReportBPF extends AgefoddExportExcel {
 		$result = $this->write_line_total($array_total_output, '3d85c6');
 		if ($result < 0) {
 			return $result;
-		}
-		
+		}*/
+
 		$this->row[0] ++;
 		$result = $this->write_filter($filter);
 		if ($result < 0) {
 			return $result;
 		}
-		
+
 		$this->close_file(0, 0, 0);
 		return count($this->trainer_data);
 		// return 1;
 	}
-	
+
 	/**
 	 * Load all objects in memory from database
 	 *
@@ -362,15 +361,15 @@ class ReportBPF extends AgefoddExportExcel {
 	 */
 	function fetch_trainer($filter = array()) {
 		global $langs, $conf;
-		
+
 		$minyear = dol_print_date(dol_now(), '%Y');
 		// find minimum invoice year with dolibarr
 		$sql = "SELECT MIN(YEAR(sess.dated)) as minyear";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess";
-		
-		dol_syslog(get_class($this) . "::fetch_ca sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
+
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
@@ -378,28 +377,28 @@ class ReportBPF extends AgefoddExportExcel {
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_ca " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. $this->error, LOG_ERR);
 			return - 1;
 		}
 		$this->db->free($resql);
-		
+
 		if (array_key_exists('startyear', $filter) && $filter['startyear'] < $minyear) {
 			$this->error = $langs->trans('AgfReportMinimumYear', $minyear);
 			return - 1;
 		}
-		
+
 		// find max year to report
 		if (array_key_exists('startyear', $filter)) {
 			$max_year = $filter['startyear'];
 		} else {
 			$max_year = dol_print_date(dol_now(), '%Y');
 		}
-		
+
 		if ($max_year < $minyear) {
 			$this->error = $langs->trans('AgfReportMaxYear', $max_year);
 			return - 1;
 		}
-		
+
 		// For Nb Trainer
 		$sql = "select count(DISTINCT form.rowid) as cnt, SUM(TIME_TO_SEC(TIMEDIFF(formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession,fromtype.intitule";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess";
@@ -409,8 +408,8 @@ class ReportBPF extends AgefoddExportExcel {
 		$sql .= " INNER JOIN llx_agefodd_session_formateur_calendrier as formtime ON formtime.fk_agefodd_session_formateur=sessform.rowid";
 		$sql .= " WHERE YEAR(sess.dated)=" . $filter['search_year'];
 		$sql .= " GROUP BY fromtype.intitule";
-		
-		dol_syslog(get_class($this) . "::fetch_trainee sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -426,7 +425,7 @@ class ReportBPF extends AgefoddExportExcel {
 		}
 		$this->db->free($resql);
 	}
-	
+
 	/**
 	 * Load all objects in memory from database
 	 *
@@ -435,7 +434,7 @@ class ReportBPF extends AgefoddExportExcel {
 	 */
 	function fetch_trainee($filter = array()) {
 		global $langs, $conf;
-		
+
 		// For Nb Trainee
 		$sql = "select count(DISTINCT sta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession, statype.intitule ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
@@ -445,8 +444,8 @@ class ReportBPF extends AgefoddExportExcel {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
 		$sql .= " WHERE YEAR(sess.dated)=" . $filter['search_year'];
 		$sql .= " GROUP BY statype.intitule ";
-		
-		dol_syslog(get_class($this) . "::fetch_trainer nb sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch_trainer nb", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -462,7 +461,7 @@ class ReportBPF extends AgefoddExportExcel {
 		}
 		$this->db->free($resql);
 	}
-	
+
 	/**
 	 * Load all objects in memory from database
 	 *
@@ -471,230 +470,252 @@ class ReportBPF extends AgefoddExportExcel {
 	 */
 	function fetch_financial($filter = array()) {
 		global $langs, $conf;
-		
-		// 1.a :: Entreprises pour la formation de leurs salariés
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		// Customer is Entreprise Francaise
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.fk_typent IN (101)  ";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (6,8,9,24))  ";
-		//Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 1.a sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['1.a:Entreprises pour la formation de leurs salariés'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_ENTFRENCH)) {
+			// 1.a :: Entreprises pour la formation de leurs salariés
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			// Customer is Entreprise Francaise
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.rowid IN ";
+			$sql .= " (SELECT fk_soc FROM " . MAIN_DB_PREFIX . "categorie_societe WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_ENTFRENCH . "))  ";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . ")  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2)) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 1.a", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['1.a:Entreprises pour la formation de leurs salariés'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 1.a" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 1.a" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 2.a :: OPCA au titre du plan de formation
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		// Customer is OPCA type
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.fk_typent IN (103)  ";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (6,8,9,24))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 2.a sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['2.a:OPCA au titre du plan de formation'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_OPCA)) {
+			// 2.a :: OPCA au titre du plan de formation
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			// Customer is OPCA type
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.rowid IN ";
+			$sql .= " (SELECT fk_soc FROM " . MAIN_DB_PREFIX . "categorie_societe WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_OPCA . "))  ";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 2.a", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['2.a:OPCA au titre du plan de formation'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 2.a" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 2.a" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 3.a :: Pouvoirs publics Pour leurs agents
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		// Customer is Administration type
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.fk_typent IN (5)  ";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (6,8,9,24))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 3.a sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['3.a:Pouvoirs publics Pour leurs agents'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_ADMINISTRATION)) {
+			// 3.a :: Pouvoirs publics Pour leurs agents
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			// Customer is Administration type
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.rowid IN  ";
+			$sql .= " (SELECT fk_soc FROM " . MAIN_DB_PREFIX . "categorie_societe WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_ADMINISTRATION . "))  ";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 3.a", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['3.a:Pouvoirs publics Pour leurs agents'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 3.a" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 3.a" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 4 :: Particuliers
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		// Customer is Particulier type
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.fk_typent IN (8)  ";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (6,8,9,24))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 4 sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['4:Particuliers'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_PARTICULIER)) {
+			// 4 :: Particuliers
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			// Customer is Particulier type
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.rowid IN  ";
+			$sql .= " (SELECT fk_soc FROM " . MAIN_DB_PREFIX . "categorie_societe WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PARTICULIER . "))  ";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 4", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['4:Particuliers'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 4" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 4" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 5 :: Prestataires de formation
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		// Customer is Prestataires de formation
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.fk_typent IN (104)  ";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (6,8,9,24))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 5 sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['5:Prestataires de formation'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_PRESTA)) {
+			// 5 :: Prestataires de formation
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			// Customer is Prestataires de formation
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.rowid IN  ";
+			$sql .= " (SELECT fk_soc FROM " . MAIN_DB_PREFIX . "categorie_societe WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRESTA . "))  ";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 5", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['5:Prestataires de formation'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 5" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 5" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 6.a :: Autres produits Formations HTVA (facturées à des entreprises étrangères)
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		// Customer is Entreprise étrangére
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.fk_typent IN (102)  ";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (6,8,9,24))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 6.a sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['6.a:Autres produitsFormations HTVA (facturées à des entreprises étrangères)'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
+			// 6.a :: Autres produits Formations HTVA (facturées à des entreprises étrangères)
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			// Customer is Entreprise étrangére
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc AND so.rowid IN  ";
+			$sql .= " (SELECT fk_soc FROM " . MAIN_DB_PREFIX . "categorie_societe WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_FOREIGNCOMP . "))  ";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2)";
+
+			dol_syslog(get_class($this) . "::fetch_financial 6.a", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['6.a:Autres produitsFormations HTVA (facturées à des entreprises étrangères)'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 6.a" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 6.a" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 6.b :: Outils pédagogiques
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-		// Product in categorie Pédagogique and children
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (10))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 6.b sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['6.b:Outils pédagogiques'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
+			// 6.b :: Outils pédagogiques
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
+			// Product in categorie Pédagogique and children
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_TOOLPEDA . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 6.b", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['6.b:Outils pédagogiques'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 6.b" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 6.b" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
-		
-		// 6.f :: Autres produits liés à la formation
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-		// Product in categorie Frais
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
-		// Invoice concern only session match with year criteria
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'].")";
-		$sql .= " AND f.fk_statut in (1,2) ";
-		
-		dol_syslog(get_class($this) . "::fetch_financial 6.b sql=" . $sql, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data['6.f:Autres produits liés à la formation'] = $obj->amount;
+
+		if (! empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
+			// 6.f :: Autres produits liés à la formation
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
+			// Product in categorie Frais
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
+			// Invoice concern only session match with year criteria
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND f.fk_statut in (1,2) ";
+
+			dol_syslog(get_class($this) . "::fetch_financial 6.b", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data['6.f:Autres produits liés à la formation'] = $obj->amount;
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial 6.b" . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial 6.b" . $this->error, LOG_ERR);
-			return - 1;
+			$this->db->free($resql);
 		}
-		$this->db->free($resql);
 	}
-	
+
 	/**
 	 * Load all objects in memory from database
 	 *
@@ -703,7 +724,7 @@ class ReportBPF extends AgefoddExportExcel {
 	 */
 	function fetch_financial_outcome($filter = array()) {
 		global $langs, $conf;
-		
+
 		// 60 B :: Achats (fournitures)
 		$sql = "SELECT SUM(facdet.total_ht) as amount ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
@@ -713,10 +734,10 @@ class ReportBPF extends AgefoddExportExcel {
 		// Invoice not concern by session
 		$sql .= " AND f.rowid  NOT IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
 		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') ";
-		$sql .= " AND YEAR(sess.dated)=" . $filter['search_year'].")";
+		$sql .= " AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
 		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
-		
-		dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B  sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -725,7 +746,7 @@ class ReportBPF extends AgefoddExportExcel {
 							'code' => '60',
 							'rubrique' => 'B',
 							'label' => 'Achats (fournitures)',
-							'amount' => $obj->amount 
+							'amount' => $obj->amount
 					);
 				}
 			}
@@ -735,19 +756,20 @@ class ReportBPF extends AgefoddExportExcel {
 			return - 1;
 		}
 		$this->db->free($resql);
-		
+
 		// 6226 :: Honoraires de formation
 		$sql = "SELECT SUM(facdet.total_ht) as amount ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (65))  ";
+		// Honoraire
+		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_FEEPRESTA . "))  ";
 		// Invoice concern only session
 		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_trainer' AND YEAR(sess.dated)=" . $filter['search_year'].")";
+		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_trainer' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
 		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
-		
-		dol_syslog(get_class($this) . "::fetch_financial_outcome 604  sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch_financial_outcome 604 ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -766,7 +788,7 @@ class ReportBPF extends AgefoddExportExcel {
 			return - 1;
 		}
 		$this->db->free($resql);
-		
+
 		// 6132 :: Locations liées à la formation
 		$sql = "SELECT SUM(facdet.total_ht) as amount ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
@@ -774,10 +796,10 @@ class ReportBPF extends AgefoddExportExcel {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
 		// Invoice concern only session
 		$sql .= " WHERE f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_room' AND YEAR(sess.dated)=" . $filter['search_year'].")";
+		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_room' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
 		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
-		
-		dol_syslog(get_class($this) . "::fetch_financial_outcome Locations liées à la formation  sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch_financial_outcome Locations liées à la formation ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -796,18 +818,18 @@ class ReportBPF extends AgefoddExportExcel {
 			return - 1;
 		}
 		$this->db->free($resql);
-		
-		// 62	C :: Autres services extérieurs (Honoraires, commissions, déplacements, réceptions, cadeaux, frais bancaires, postes et telecommunications)
+
+		// 62 C :: Autres services extérieurs (Honoraires, commissions, déplacements, réceptions, cadeaux, frais bancaires, postes et telecommunications)
 		$sql = "SELECT SUM(facdet.total_ht) as amount ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
 		// Invoice concern only session
 		$sql .= " WHERE f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_missions' AND YEAR(sess.dated)=" . $filter['search_year'].")";
+		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_missions' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
 		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
-		
-		dol_syslog(get_class($this) . "::fetch_financial_outcome Locations liées à la formation  sql=" . $sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch_financial_outcome Locations liées à la formation ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -826,9 +848,9 @@ class ReportBPF extends AgefoddExportExcel {
 			return - 1;
 		}
 		$this->db->free($resql);
-		
+
 		/*
-		 
+
 		 Charges
 		 60	A	Achats (fournitures)
 		 604		Achats de prestations de formation
