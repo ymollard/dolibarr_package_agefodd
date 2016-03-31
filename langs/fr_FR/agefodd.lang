@@ -1088,3 +1088,7 @@ AgfTrainerDocument=Document pour le formateur
 AgfLikeFichePedgao=Utilisé le document comme programme de formation
 AgfErrorLikeFichePedgao=Erreur lors de la transformation en programe de formation 
 AgfTimeSchedule=Horaire par défaut
+AgfMenuReport=Rapport
+Permission103016=Voir les marges des sessions
+Permission103017=Voir les rapports
+Permission103018=Voir le BPF

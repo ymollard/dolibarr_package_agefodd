@@ -1078,3 +1078,7 @@ AgfAddTrainingProgram=Rellenar el temario de formación de la sesión %s
 AgfAddTrainingProgramNotExists=El temario de formación de la sesión %s no existe
 AgfAddTrainingProgramMod=Rellenar el temario de formación (con módulo) de la sesión %s
 AgfAddTrainingProgramModNotExists=El temario de formación (con módulo) de la sesión %s no existe
+AgfMenuReport=Report
+Permission103016=See Margins on sessions
+Permission103017=See reports
+Permission103018=See report BPF (french law report)

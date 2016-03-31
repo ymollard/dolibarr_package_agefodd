@@ -946,3 +946,7 @@ AgfTypePrestaHelp=Contact fournisseur qui est le fomateur prestataire de la sess
 AgfAttestationEndTraining=Attestation de fin de formation
 AgfAttestationPresenceTraining=Attestation de présence
 AgfNoCursus=No cursus
+AgfMenuReport=Report
+Permission103016=See Margins on sessions
+Permission103017=See reports
+Permission103018=See report BPF (french law report)

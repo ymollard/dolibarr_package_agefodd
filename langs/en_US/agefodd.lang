@@ -1083,3 +1083,7 @@ AgfAddTrainingProgramModNotExists=The training programm (with modules) of the se
 AgfPlaceUseInOtherSession=Room (location) is already use for other session on same dates 
 AgfDeleteOnlySelectedLines=Delete only selected lines
 AgfNoCursus=No cursus
+AgfMenuReport=Report
+Permission103016=See Margins on sessions
+Permission103017=See reports
+Permission103018=See report BPF (french law report)
