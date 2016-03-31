@@ -21,8 +21,10 @@
  * \brief File of class to generate report for agefodd
  * \author Florian Henry
  */
-require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel.php';
-require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
+//require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel.php';
+require_once '../includes/phpoffice/phpexcel/Classes/PHPExcel.php';
+//require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
+require_once '../includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
 require_once DOL_DOCUMENT_ROOT. '/core/lib/date.lib.php';
 
 /**
