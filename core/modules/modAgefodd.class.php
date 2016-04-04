@@ -619,7 +619,7 @@ class modAgefodd extends DolibarrModules {
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
-						'$conf->agefodd->enabled'
+						'$conf->agefodd->enabled',
 				)
 
 		);
@@ -760,7 +760,7 @@ class modAgefodd extends DolibarrModules {
 				's.fk_session_agefodd' => 'AgefoddMenuAction',
 				's.fk_stagiaire' => 'AgfNbreParticipants',
 				's.fk_agefodd_stagiaire_type' => 'AgfNbreParticipants',
-				's.datec' => 'AgfNbreParticipants'
+				's.datec' => 'AgfNbreParticipants',
 		);
 		$this->import_tables_array[$r] = array (
 				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire'
@@ -769,22 +769,22 @@ class modAgefodd extends DolibarrModules {
 				's.fk_session_agefodd' => 'Id*',
 				's.fk_stagiaire' => 'Id*',
 				's.fk_agefodd_stagiaire_type' => "AgfTraineeType",
-				's.datec' => 'DateCreation'
+				's.datec' => 'DateCreation',
 		);
 
 		$this->import_fieldshidden_array[$r] = array (
 				's.fk_user_author' => 'user->id',
-				's.fk_user_mod' => 'user->id'
+				's.fk_user_mod' => 'user->id',
 		);
 		$this->import_convertvalue_array[$r] = array ();
 		$this->import_regex_array[$r] = array (
-				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$'
+				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$',
 		);
 		$this->import_examplevalues_array[$r] = array (
 				's.fk_session_agefodd' => '999999',
 				's.fk_stagiaire' => '1',
 				's.fk_agefodd_stagiaire_type' => $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
-				's.datec' => '2013-11-12'
+				's.datec' => '2013-11-12',
 		);
 
 		// Trainee export
@@ -951,7 +951,7 @@ class modAgefodd extends DolibarrModules {
 		$this->export_TypeFields_array[$r] = array (
 				's.rowid' => "Text",
 				's.dated' => 'Date',
-				's.datef' => 'Date'
+				's.datef' => 'Date',
 		);
 		$this->export_entities_array[$r] = array (
 				's.rowid' => "Id",

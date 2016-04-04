@@ -25,6 +25,7 @@
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
+if (! $res) die("Include of main fails");
 
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_admlevel.class.php');

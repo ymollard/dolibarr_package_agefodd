@@ -434,8 +434,10 @@ class Agefodd_index {
 		global $langs;
 		
 		$sql = "SELECT count(*) as total";
-		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
+		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as asa";
+		$sql .= " INNER JOIN ".MAIN_DB_PREFIX . "agefodd_session as ags ON asa.fk_agefodd_session = ags.rowid";
 		$sql .= " WHERE archive = 0";
+		$sql .= " AND ags.entity IN (" . getEntity('agsession') . ")";
 		
 		dol_syslog(get_class($this) . "::fetch_tache_en_cours", LOG_DEBUG);
 		$resql = $this->db->query($sql);
