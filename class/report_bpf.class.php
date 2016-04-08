@@ -878,5 +878,207 @@ class ReportBPF extends AgefoddExportExcel
 		 69	J	Impôts sur les bénéfices et assimilés
 		 Total des charges*/
 	}
+
+	public function createDefaultCategAffectConst() {
+		global $conf;
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Entreprise française\',2,\'\',NULL,1,\'agefodd\')';
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_ENTFRENCH)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_ENTFRENCH);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_ENTFRENCH', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - OPCA\',2,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_OPCA)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_OPCA);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_OPCA', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Admnistration\',2,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_ADMINISTRATION)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_ADMINISTRATION);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_ADMINISTRATION', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Particulier\',2,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_PARTICULIER)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_PARTICULIER);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_PARTICULIER', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Prestataire\',2,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_PRESTA)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_PRESTA);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_PRESTA', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_FOREIGNCOMP);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_FOREIGNCOMP', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Produit Formation\',0,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_PRODPEDA);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_PRODPEDA', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Outils pédagogiques\',0,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_TOOLPEDA);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_TOOLPEDA', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Frais prestataires\',0,\'\',NULL,1,\'agefodd\')';
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+			$selected_categ=array();
+			if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA)) {
+				$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_FEEPRESTA);
+			}
+			$selected_categ[]=$idcateg;
+
+			$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_FEEPRESTA', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+			if (! $res > 0) {
+				$error ++;
+			}
+		}
+
+		if (!empty($error)) {
+			return -1;
+		}
+	}
 }
 

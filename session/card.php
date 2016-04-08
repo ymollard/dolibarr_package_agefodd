@@ -948,8 +948,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			if (! (empty($agf->id))) {
 				$head = session_prepare_head($agf);
 
-				if ($agf->type_session == 1)
+				if ($agf->type_session == 1) {
 					$styledisplay = ' style="display:none" ';
+				}
 
 				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 

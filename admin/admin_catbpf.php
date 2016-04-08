@@ -26,6 +26,7 @@ if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 
 require_once '../class/html.formagefodd.class.php';
+require_once '../class/report_bpf.class.php';
 require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php";
@@ -143,6 +144,13 @@ if ($action == 'setvar') {
 	} else {
 		setEventMessage($langs->trans("Error") . " " . $msg, 'errors');
 	}
+} elseif ($action=='createcateg') {
+	$report_bpf = new ReportBPF($db, $langs);
+	$result=$report_bpf->createDefaultCategAffectConst();
+	if ($result<0) {
+		setEventMessages(null,$report_bpf->errors, 'errors');
+	}
+
 }
 
 /*
@@ -167,8 +175,23 @@ print_fiche_titre($langs->trans("AgefoddSetupDesc"), $linkback, 'setup');
 $head = agefodd_admin_prepare_head();
 dol_fiche_head($head, 'catbpf', $langs->trans("Module103000Name"), 0, "agefodd@agefodd");
 
+
+print_titre($langs->trans("AgfAdmBPFCreateCategorie"));
+
+print '<table class="noborder" width="100%">';
+
+print '<tr class="pair">';
+print '<td width="10%"><div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=createcateg">' . $langs->trans("AgfAdmBPFCreateCategorie") . '</a></td>';
+print '<td align="rigth">';
+print $form->textwithpicto('', $langs->trans("AgfAdmBPFCreateCategorieHelp"), 1, 'help');
+print '</td>';
+print "</tr>\n";
+print '</table>';
+
 // Admin var of module
 print_titre($langs->trans("AgfAdmVar"));
+
+
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
 print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
@@ -209,7 +232,7 @@ print '</td>';
 print '</tr>';
 
 // Cat OPCA
-print '<tr class="pair"><td>' . $langs->trans("AgfReportBPFCategOPCA") . '</td>';
+print '<tr class="impair"><td>' . $langs->trans("AgfReportBPFCategOPCA") . '</td>';
 print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
@@ -261,7 +284,7 @@ print '</td>';
 print '</tr>';
 
 // Cat Particulier
-print '<tr class="pair"><td>' . $langs->trans("AgfReportBPFCategParticulier") . '</td>';
+print '<tr class="impair"><td>' . $langs->trans("AgfReportBPFCategParticulier") . '</td>';
 print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
@@ -314,7 +337,7 @@ print '</tr>';
 
 
 // Cat Entrprise Etrangére
-print '<tr class="pair"><td>' . $langs->trans("AgfReportBPFCategForeignComp") . '</td>';
+print '<tr class="impair"><td>' . $langs->trans("AgfReportBPFCategForeignComp") . '</td>';
 print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
@@ -366,7 +389,7 @@ print '</td>';
 print '</tr>';
 
 // Tool Pedagogique
-print '<tr class="pair"><td>' . $langs->trans("AgfReportBPFCategToolPeda") . '</td>';
+print '<tr class="impair"><td>' . $langs->trans("AgfReportBPFCategToolPeda") . '</td>';
 print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
@@ -423,6 +446,9 @@ print '</table>';
 print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '">';
 
 print '</form>';
+
+
+
 
 llxFooter();
 $db->close();

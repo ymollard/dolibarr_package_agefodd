@@ -71,9 +71,9 @@ if (! empty($search_year)) {
  * Actions
  */
 if ($action == 'builddoc') {
-	
+
 	if (count($filter) > 0 && !empty($filter['search_year'])) {
-		
+
 		$outputlangs = $langs;
 		$newlang = $lang_id;
 		if ($conf->global->MAIN_MULTILANGS && empty($newlang))
@@ -82,17 +82,17 @@ if ($action == 'builddoc') {
 			$outputlangs = new Translate("", $conf);
 			$outputlangs->setDefaultLang($newlang);
 		}
-		
+
 		$outputlangs->load('agefodd@agefodd');
-		
-		$report_bpf = new ReportBPF($db, $outputlangs, $filter);
-		
+
+		$report_bpf = new ReportBPF($db, $outputlangs);
+
 		// $report_by_cust->file = $upload_dir . 'reportbycust-' . dol_print_date(dol_now(), 'dayhourlog') . '.xlsx';
 		$file_sub_title = $report_bpf->getSubTitlFileName($filter);
 		$report_bpf->file = $upload_dir . 'reportbpf-' . $file_sub_title . '.xlsx';
-		
+
 		$result = $report_bpf->write_file($filter);
-		if ($result < 0) {	
+		if ($result < 0) {
 			setEventMessage($report_bpf->error, 'errors');
 		} elseif ($result == 0) {
 			setEventMessage($langs->trans("NoData"), 'warnings');
@@ -103,9 +103,9 @@ if ($action == 'builddoc') {
 		setEventMessage($langs->trans("AgfRptSelectAtLeastOneCriteria"), 'errors');
 	}
 } elseif ($action == 'remove_file') {
-	
+
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-	
+
 	$langs->load("other");
 	$file = $upload_dir . '/' . GETPOST('file');
 	$ret = dol_delete_file($file, 0, 0, 0, '');
@@ -133,7 +133,7 @@ print '</tr>';
 print '</table>' . "\n";
 
 $liste = array (
-		'excel2007' => 'Excel 2007' 
+		'excel2007' => 'Excel 2007'
 );
 $formfile->show_documents('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
 
