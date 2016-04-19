@@ -364,7 +364,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// Send order by mail
 				$legende = $langs->trans("AgfFactureSeeBonMail", $line->comref);
-				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/card.php?mainmenu=commercial&id=' . $line->fk_element . '&action=presend&mode=init" alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
 				$mess .=img_picto($legende, 'stcomm0').'</a>';
 				
 				// Unlink order
@@ -374,7 +374,7 @@ function show_fac($file, $socid, $mdle) {
 				
 				// See order card
 				$legende = $langs->trans("AgfFactureSeeProp") . ' ' . $line->comref;
-				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '"  ' . $target . '>';
+				$mess .= '<a href="' . DOL_URL_ROOT . '/commande/card.php?mainmenu=commercial&id=' . $line->fk_element . '" alt="' . $legende . '" title="' . $legende . '"  ' . $target . '>';
 				$mess .=img_picto($legende, 'edit') . $line->comref . '</a>';
 				require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 				$order = new Commande($db);
@@ -395,7 +395,7 @@ function show_fac($file, $socid, $mdle) {
 		if (! empty($conf->global->AGF_NO_MANUAL_CREATION_DOC)) {
 			// Generate order
 			$legende = $langs->trans("AgfFactureGenererBon");
-			$mess .= '<a href="' . DOL_URL_ROOT . '/commande/fiche.php?mainmenu=commercial&action=create&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . DOL_URL_ROOT . '/commande/card.php?mainmenu=commercial&action=create&socid=' . $socid . '" alt="' . $legende . '" title="' . $legende . '">';
 			$mess .= img_picto($legende, 'filenew').'</a>';
 		}
 		
