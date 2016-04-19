@@ -75,7 +75,7 @@ if ($action == 'invoice_addline') {
 
 	// Find product description
 	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn);
+	$result = $prod->fetch($product_fourn,$product_fourn_ref);
 	if ($result < 0) {
 		setEventMessage($prod->error, 'errors');
 	}
