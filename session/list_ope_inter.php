@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2012-2014  Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -90,7 +90,7 @@ if (! empty($search_month)) {
 if (! empty($search_year)) {
 	$filter ['YEAR(s.dated)'] = $search_year;
 }
-if (! empty($search_teacher_id) && $search_site != - 1) {
+if (! empty($search_teacher_id) && $search_teacher_id != - 1) {
 	$filter ['sf.rowid'] = $search_teacher_id;
 }
 if ($search_teacher_status != '' && $search_teacher_status != - 1) {
@@ -143,7 +143,7 @@ $resql = $agf->fetch_all_inter($sortorder, $sortfield, $conf->liste_limit, $offs
 
 if ($resql != - 1) {
 	$num = $resql;
-	
+
 	if (! empty($search_id)) {
 		$option .= '&search_id=' . $search_id;
 	}
@@ -170,23 +170,23 @@ if ($resql != - 1) {
 	}
 	if (! empty($search_trainning_name))
 		$option .= '&search_trainning_name=' . $search_trainning_name;
-	
+
 	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
-	
+
 	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";
-	
+
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
 	$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
 	$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
-	
+
 	print '<div class="liste_titre">';
 	print $moreforfilter;
 	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
-	
+
 	print '</div>';
-	
+
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
@@ -196,7 +196,7 @@ if ($resql != - 1) {
 	print '<td style="border: 1px solid black" id="totalamountfact"></td>'; // fact HTHF
 	print '<td colspan="5"></td>';
 	print '</tr>';
-	
+
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
@@ -222,111 +222,111 @@ if ($resql != - 1) {
 	print "</tr>\n";
 	// Search Bar
 	print '<tr class="liste_titre">';
-	
+
 	// Id
 	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
-	
+
 	// Trainer
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_session_status($search_status, "search_status", 't.active=1', 1);
 	print '</td>';
-	
+
 	// date start
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Intitule
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
 	print '</td>';
-	
+
 	// MontantHT
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Trainer
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
 	print '</td>';
-	
+
 	// Trainer status
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_trainer_session_status('search_teacher_status', $search_teacher_status, array (
 			0,
 			1,
 			2,
-			3 
+			3
 	), 1);
 	print '</td>';
-	
+
 	// Formateur RN
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Lieu
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
 	print '</td>';
-	
+
 	// Lieu status
 	print '<td class="liste_titre">';
 	$array_room_status = array (
 			'option' => 'Option',
-			'confirm' => 'Confirmé' 
+			'confirm' => 'Confirmé'
 	);
 	print $form->selectarray('search_room_status', $array_room_status, $search_room_status, 1);
 	print '</td>';
-	
+
 	// Nb Part /Soc /Sub
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Nb nb inscript/confirm/canceled
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Convoc
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Support
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// FEE edit
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Fact Client
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Att RN
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// FEE Env
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// FAct Formateur
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Fact Lieu
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	// Comment
 	print '<td class="liste_titre" align="right">';
 	print '</td>';
-	
+
 	print "</tr>\n";
 	print '</form>';
-	
+
 	$var = true;
 	foreach ( $agf->lines as $line ) {
-		
+
 		if ($line->id != $oldid) {
 			// Affichage tableau des sessions
 			$var = ! $var;
@@ -339,18 +339,18 @@ if ($resql != - 1) {
 			$color_a = '';
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
-			
+
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->id . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->id . '</a></td>';
-			
+
 			print '<td>' . $line->status_lib . '</td>';
 			print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 			print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
-			
+
 			// Montant HT
 			$agf_fin = new Agefodd_session_element($db);
 			$agf_fin->fetch_by_session($line->id);
 			print '<td>' . price($agf_fin->propal_sign_amount) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
-			
+
 			// trainer
 			print '<td>';
 			$trainer = new Agefodd_teacher($db);
@@ -363,13 +363,13 @@ if ($resql != - 1) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			
+
 			// Trainer status
 			print '<td>';
 			$statictrainercal = new Agefodd_session_formateur($db);
 			print $statictrainercal->LibStatut($line->trainer_status, 0);
 			print '</td>';
-			
+
 			// Trainer RN
 			if ($line->trainerrn) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -379,10 +379,10 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// Lieu
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
-			
+
 			// Lieu status
 			print '<td>';
 			if ($line->is_date_res_confirm_site) {
@@ -391,7 +391,7 @@ if ($resql != - 1) {
 				print 'Option';
 			}
 			print '</td>';
-			
+
 			// Nb Part /Soc /Sub
 			if (! empty($line->nb_subscribe_min)) {
 				if ($line->nb_confirm >= $line->nb_subscribe_min) {
@@ -419,11 +419,11 @@ if ($resql != - 1) {
 			}
 			print $line->nb_confirm . '/' . $nbsoc . '/' . $nbsubro;
 			print '</td>';
-			
+
 			// Nb incrit/confirm/cancell
-			
+
 			print '<td>' . $line->nb_prospect . '/' . $line->nb_cancelled . '</td>';
-			
+
 			// Convoc
 			if ($line->convoc) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -433,7 +433,7 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// Support
 			if ($line->support) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -443,7 +443,7 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// FEE Edit
 			if ($line->support) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -453,15 +453,15 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// Fact Clients
 			print '<td nowrap="nowrap"	>';
-			
+
 			print price($agf_fin->invoice_ongoing_amount + $agf_fin->invoice_payed_amount) . $langs->getCurrencySymbol($conf->currency);
 			print '</td>';
-			
+
 			$totalfactprice += $agf_fin->invoice_ongoing_amount + $agf_fin->invoice_payed_amount;
-			
+
 			// Att RN
 			if ($line->attrn) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -471,7 +471,7 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// FEE Env.
 			if ($line->ffeenv) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -481,7 +481,7 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// Fact Formateur
 			if ($line->invtrainer) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -491,7 +491,7 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			// Fact lieu
 			if ($line->invroom) {
 				$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
@@ -501,15 +501,15 @@ if ($resql != - 1) {
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
 			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
-			
+
 			print '<td title="' . stripslashes($line->notes) . '">' . stripslashes(dol_trunc($line->notes, 30)) . '</td>';
-			
+
 			$totalsellprice += $agf_fin->propal_sign_amount;
-			
+
 			print "</tr>\n";
 		} else {
 			print "<tr $bc[$var]>";
-			
+
 			print '<td colspan="5"></td>';
 			// trainer
 			print '<td>';
@@ -524,17 +524,17 @@ if ($resql != - 1) {
 			}
 			print '</td>';
 			print '<td colspan="15"></td>';
-			
+
 			print "</tr>\n";
 		}
-		
+
 		$oldid = $line->id;
-		
+
 		$i ++;
 	}
-	
+
 	print "</table>";
-	
+
 	print '<script type="text/javascript" language="javascript">' . "\n";
 	print '$(document).ready(function() {
 						$("#totalamount").append("' . price($totalsellprice) . $langs->getCurrencySymbol($conf->currency) . '");

@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2012-2014  Florian Henry   <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ $search_type_affect = GETPOST('search_type_affect', 'alpha');
 
 if (empty($search_type_affect))
 	$search_type_affect = 'thirdparty';
-	
+
 	// Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_trainning_name = '';
@@ -82,7 +82,7 @@ $filter = array ();
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
 }
-if (! empty($search_teacher_id)) {
+if (! empty($search_teacher_id)  && $search_teacher_id != - 1) {
 	$filter ['f.rowid'] = $search_teacher_id;
 }
 if (! empty($search_training_ref)) {
@@ -227,10 +227,10 @@ $result = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, $conf->lis
 
 if ($result >= 0) {
 	$num = $result;
-	
+
 	$option = '&socid=' . $socid . '&search_type_affect=' . $search_type_affect . '&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
-	
+
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
@@ -249,7 +249,7 @@ if ($result >= 0) {
 	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
 	print '<td></td>';
 	print "</tr>\n";
-	
+
 	// Search bar
 	/*$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
@@ -281,81 +281,81 @@ if ($result >= 0) {
 		}
 		$addcriteria = true;
 	}*/
-	
+
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 	print '<input type="hidden" name="socid" value="' . $socid . '" >';
 	print '<tr class="liste_titre">';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="10">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_type_session('search_type_session', $search_type_session, 1);
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_session_status($status_view, 'status', '', 1);
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
 	print '</td>';
-	
+
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
-	
+
 	print "</tr>\n";
 	print '</form>';
-	
+
 	$var = true;
 	foreach ( $agf->lines as $line ) {
-		
+
 		if ($line->rowid != $oldid) {
-			
+
 			// Affichage tableau des sessions
 			$var = ! $var;
-			
+
 			($line->status == 4) ? $style_archive = ' style="background: gray"' : $style_archive = '';
-			
+
 			if (empty($style_archive)) {
 				$style = $bc [$var];
 			} else {
 				$style = $style_archive;
 			}
-			
+
 			print "<tr " . $style . ">";
 			// Calcul de la couleur du lien en fonction de la couleur définie sur la session
 			// http://www.w3.org/TR/AERT#color-contrast
@@ -365,17 +365,17 @@ if ($result >= 0) {
 			$color_a = '';
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
-			
+
 			if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
 				$target = ' target="_blanck" ';
 			} else {
 				$target = '';
 			}
-			
+
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '"' . $target . '>' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
-			
+
 			print '<td>';
-			
+
 			if (! empty($line->socid) && $line->socid != - 1) {
 				$soc = new Societe($db);
 				$soc->fetch($line->socid);
@@ -384,7 +384,7 @@ if ($result >= 0) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			
+
 			print '<td>';
 			$trainer = new Agefodd_teacher($db);
 			if (! empty($line->trainerrowid)) {
@@ -396,7 +396,7 @@ if ($result >= 0) {
 				print '&nbsp;';
 			}
 			print '</td>';
-			
+
 			print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 			print '<td>' . $line->ref . '</td>';
 			print '<td>' . $line->training_ref_interne . '</td>';
@@ -433,12 +433,12 @@ if ($result >= 0) {
 			print '<td></td>';
 			print "</tr>\n";
 		}
-		
+
 		$oldid = $line->rowid;
-		
+
 		$i ++;
 	}
-	
+
 	print "</table>";
 } elseif ($result == 0) {
 	print $langs->trans('AgfNoSession');
