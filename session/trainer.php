@@ -84,13 +84,14 @@ if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agef
 
 if ($action == 'edit' && $user->rights->agefodd->creer) {
 
-	if (empty($formid)) {
-		setEventMessage($langs->trans('ErrorFieldRequired',$lans->trans('AgfFormateur')),'errors');
+	if (empty($formid) && ($form_update_x > 0 || $form_add_x > 0)) {
+		setEventMessage($langs->trans('ErrorFieldRequired',$langs->trans('AgfFormateur')),'errors');
 		$form_update_x=0;
 		$form_add_x=0;
 	}
 
 	if ($form_update_x > 0) {
+
 		$agf = new Agefodd_session_formateur($db);
 
 		$agf->opsid = GETPOST('opsid', 'int');
