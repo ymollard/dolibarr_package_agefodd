@@ -113,7 +113,7 @@ if (! $mesg) {
 	$px1->mode = 'depth';
 	$px1->SetTitle($langs->trans("AgfNumberOfSessionsByMonth"));
 	
-	$px1->draw($filenamenb, $fileurlnb);
+	$px1->draw($filenamenb);
 } else {
 	setEventMessage($mesg, 'errors');
 }
@@ -151,10 +151,12 @@ if (! $mesg) {
 	$px2->mode = 'depth';
 	$px2->SetTitle($langs->trans("AmountOfBillsByMonthHT"));
 	
-	$px2->draw($filenameamount, $fileurlamount);
+	$px2->draw($filenameamount);
 }
 
 $data = $stats->getAverageByMonthWithPrevYear($endyear, $startyear);
+
+$filename_avg = $dir . "/sessionsavg-" . $year . ".png";
 
 $px3 = new DolGraph();
 $mesg = $px3->isGraphKo();
@@ -178,7 +180,7 @@ if (! $mesg) {
 	$px3->mode = 'depth';
 	$px3->SetTitle($langs->trans("AmountAverage"));
 	
-	$px3->draw($filename_avg, $fileurl_avg);
+	$px3->draw($filename_avg);
 }
 
 // Show array
