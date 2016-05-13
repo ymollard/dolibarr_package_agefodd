@@ -568,7 +568,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 			$stagiaire_type = $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
 		}
 		print '<tr class="agelfoddline"><td>' . $langs->trans("AgfPublic") . '</td><td colspan="3">';
-		print $formAgefodd->select_type_stagiaire($stagiaire_type, 'stagiaire_type', '', 1);
+		print $formAgefodd->select_type_stagiaire($stagiaire_type, 'stagiaire_type', 'active=1', 1);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTraineeSocDocUse') . '</td><td colspan="3">';
 		print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
