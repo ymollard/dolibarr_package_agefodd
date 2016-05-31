@@ -1767,7 +1767,7 @@ class modAgefodd extends DolibarrModules {
 	 *
 	 * @return int if OK, 0 if KO
 	 */
-	function init() {
+	function init($options = '') {
 		global $conf;
 
 		$sql = array ();
@@ -1799,7 +1799,7 @@ class modAgefodd extends DolibarrModules {
 	 *
 	 * @return int if OK, 0 if KO
 	 */
-	function remove() {
+	function remove($options = '') {
 		$sql = array ();
 
 		return $this->_remove($sql);
