@@ -129,9 +129,9 @@ if ($result >= 0) {
 		$option .= '&search_tel=' . $search_tel;
 	if (! empty($search_mail))
 		$option .= '&search_mail=' . $search_mail;
-	
+
 	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result, $nbtotalofrecords);
-	
+
 	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
@@ -139,7 +139,7 @@ if ($result >= 0) {
 		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
 	if (! empty($page))
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
-	
+
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
@@ -150,56 +150,56 @@ if ($result >= 0) {
 	print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";
-	
+
 
 	print '<tr class="liste_titre">';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_name" value="' . $search_name . '" size="10">';
 	print '<input type="text" class="flat" name="search_firstname" value="' . $search_firstname . '" size="10">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $formcompagny->select_civility($search_civ, 'search_civ');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_tel" value="' . $search_tel . '" size="10">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_mail" value="' . $search_mail . '" size="20">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
-	
+
 	print "</tr>\n";
-	
+
 	$var = true;
 	foreach ( $agf->lines as $line ) {
-		
+
 		// Affichage liste des stagiaires
 		$var = ! $var;
 		print "<tr $bc[$var]>";
 		print '<td><a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "user") . ' ' . $line->rowid . '</a></td>';
 		print '<td>' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</td>';
-		
+
 		$contact_static = new Contact($db);
 		$contact_static->civility_id = $line->civilite;
-		
+
 		print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 		print '<td>';
 		if ($line->socid) {
-			print '<a href="' . dol_buildpath('/comm/fiche.php', 1) . '?socid=' . $line->socid . '">';
+			print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $line->socid . '">';
 			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($line->socname, 20) . '</a>';
 		} else {
 			print '&nbsp;';
@@ -210,7 +210,7 @@ if ($result >= 0) {
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 	}
-	
+
 	print "</table>";
 	print '</form>';
 } else {
