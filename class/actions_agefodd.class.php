@@ -53,17 +53,17 @@ class ActionsAgefodd
 	 * @param object $hookmanager class instance
 	 * @return void
 	 */
-	public function printSearchForm($parameters, &$object, &$action, $hookmanager) {
+	/*public function printSearchForm($parameters, &$object, &$action, $hookmanager) {
 		global $conf, $langs;
 		$langs->load('agefodd@agefodd');
 
-		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH)) {
+		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && DOL_VERSION <= 3.8) {
 			$out = printSearchForm(dol_buildpath('/agefodd/session/list.php', 1), dol_buildpath('/agefodd/session/list.php', 1), img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"), 'agefodd', 'search_id');
 			$out .= printSearchForm(dol_buildpath('/agefodd/trainee/list.php', 1), dol_buildpath('/agefodd/trainee/list.php', 1), img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"), 'agefodd', 'search_namefirstname');
 		}
 
 		$this->resprints = $out;
-	}
+	}*/
 
 	/**
 	 * addSearchEntry Method Hook Call
