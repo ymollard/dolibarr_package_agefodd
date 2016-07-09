@@ -1205,46 +1205,6 @@ class FormAgefodd extends Form {
 	}
 
 	/**
-	 * Output a HTML code to select a color
-	 *
-	 * @param string $set_color
-	 * @param string $prefix HTML field
-	 * @return string HTML result
-	 */
-	public function  select_color($set_color = '', $htmlname = 'f_color') {
-		$out = '<input id="' . $htmlname . '" type="text" size="8" name="' . $htmlname . '" value="' . $set_color . '" />';
-
-		$out .= '<script type="text/javascript" language="javascript">
-			$(document).ready(function() {
-			$("#' . $htmlname . '").css("backgroundColor", \'#' . $set_color . '\');
-				$("#' . $htmlname . '").ColorPicker({
-					color: \'#' . $set_color . '\',
-						onShow:function(colpkr) {
-						$(colpkr).fadeIn(500);
-						return false;
-	},
-						onHide:function(colpkr) {
-						$(colpkr).fadeOut(500);
-						return false;
-	},
-						onChange:function(hsb, hex, rgb) {
-						$("#' . $htmlname . '").css("backgroundColor", \'#\' + hex);
-							$("#' . $htmlname . '").val(hex);
-	},
-								onSubmit:function(hsb, hex, rgb) {
-								$("#' . $htmlname . '").val(hex);
-	}
-	});
-	})
-									.bind(\'keyup\',function(){
-									$(this).ColorPickerSetColor(this.value);
-	});
-									</script>';
-
-		return $out;
-	}
-
-	/**
 	 * Show filter form in agenda view
 	 *
 	 * @param Object $form

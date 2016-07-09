@@ -43,6 +43,7 @@ require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_opca.class.php');
 
@@ -772,13 +773,12 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
  */
 
 llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', array (
-		'/agefodd/includes/jquery/plugins/colorpicker/js/colorpicker.js',
 		'/agefodd/includes/lib.js'
 ), array (
-		'/agefodd/includes/jquery/plugins/colorpicker/css/colorpicker.css'
 ));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
+$formother=new FormOther($db);
 
 /*
  * Action create
@@ -819,7 +819,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	} else {
 		$exclude_array = array ();
 	}
-	$form->select_users((empty($commercial) ? $user->id : $commercial), 'commercial', 1, $exclude_array);
+	$form->select_dolusers((empty($commercial) ? $user->id : $commercial), 'commercial', 1, $exclude_array);
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfDateDebut") . '</span></td><td>';
@@ -1006,34 +1006,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<td>' . $agf->formref . '</td></tr>';
 
 					print '<tr><td>' . $langs->trans("Color") . '</td>';
-					print '<td><input id="colorpicker" type="text" size="8" name="color" value="' . $agf->color . '" /></td></tr>';
+					print '<td>';
+					print $formother->selectColor($agf->color,'color');
+					print '</td></tr>';
 
-					print '<script type="text/javascript" language="javascript">
-						$(document).ready(function() {
-						$("#colorpicker").css("backgroundColor", \'#' . $agf->color . '\');
-							$("#colorpicker").ColorPicker({
-							color: \'#' . $agf->color . '\',
-								onShow: function (colpkr) {
-								$(colpkr).fadeIn(500);
-								return false;
-				},
-								onHide: function (colpkr) {
-								$(colpkr).fadeOut(500);
-								return false;
-				},
-								onChange: function (hsb, hex, rgb) {
-								$("#colorpicker").css("backgroundColor", \'#\' + hex);
-								$("#colorpicker").val(hex);
-				},
-								onSubmit: function (hsb, hex, rgb) {
-								$("#colorpicker").val(hex);
-				}
-				});
-				})
-								.bind(\'keyup\', function(){
-								$(this).ColorPickerSetColor(this.value);
-				});
-								</script>';
 					print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 					print '<td>';
 					if (empty($conf->global->AGF_ALLOW_ADMIN_COMMERCIAL)) {
