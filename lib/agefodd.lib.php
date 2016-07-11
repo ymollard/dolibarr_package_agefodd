@@ -117,6 +117,11 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [2] = 'card';
 	$h ++;
 
+	$head [$h] [0] = dol_buildpath('/agefodd/session/calendar.php', 1) . '?id=' . $id;
+	$head [$h] [1] = $langs->trans("AgfCalendrier");
+	$head [$h] [2] = 'calendar';
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
 	$head [$h] [2] = 'subscribers';
