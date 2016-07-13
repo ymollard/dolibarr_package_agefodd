@@ -1121,3 +1121,4 @@ AgfReportBPFCategFeePresta=Catégorie des honoraire des formateurs
 AgfReportBPFCategFeePrestaHelp=Activer le module categorie, crée les catégorie produit/service pour les produit pedagorique et affecté a vos produits/services qui sont de ce(s) categorie(s)
 AgfAdmBPFCreateCategorie=Crée les catégories types BPF
 AgfAdmBPFCreateCategorieHelp=Crée les categorie par defaut utilisé dans le BPF. Ceci n'est utile que si vous n'avez pas déja vos catégorie produit et client qui peuvent être utilisé pour le BPF
+AgfContactSign=Signataire convention
