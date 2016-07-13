@@ -380,7 +380,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
 
 	$signataire='';
-	if (!empty(trim($agf->contactname))) {
+	$contactname=trim($agf->contactname);
+	if (!empty($contactname)) {
 		$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
 		$intro2 .= ucfirst(strtolower($agf->contactcivilite)) . ' ' . $agf->contactname;
 		$intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
@@ -524,7 +525,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$sig = $agf_soc->nom . "\n";
 		$sig .= $langs->trans('AgfConvArtSig') . ' ';
 		//$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
-		if (!empty(trim($agf->contactname))) {
+		$contactname=trim($agf->contactname);
+		if (!empty($contactname)) {
 			$sig .= $agf->contactname;
 		} elseif (!empty($signataire)) {
 			$sig .= $signataire;
