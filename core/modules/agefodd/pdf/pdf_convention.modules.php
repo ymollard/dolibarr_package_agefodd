@@ -675,7 +675,7 @@ class pdf_convention extends ModelePDFAgefodd {
 
 				$this->str = $outputlangs->transnoentities('AgfPDFConv20') . ' ' . $mysoc->town . ', ' . $date . $outputlangs->transnoentities('AgfPDFConv21') . ' ';
 				$nombre = $pdf->PageNo(); // page suivante = annexe1
-				$this->str .= $outputlangs->transnoentities('AgfPDFConv22') . " " . $nombre . " (" . $literal [$nombre - 1] . ") " . $outputlangs->transnoentities('AgfPDFConv23') . ' ';
+				$this->str .= $outputlangs->transnoentities('AgfPDFConv22') . " " . $literal [$nombre - 1] . " (" . $nombre . ") " . $outputlangs->transnoentities('AgfPDFConv23') . ' ';
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 

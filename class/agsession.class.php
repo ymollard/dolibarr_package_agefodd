@@ -3161,7 +3161,7 @@ class Agsession extends CommonObject
 		print '<td>' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
 
 		print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
-		print '<td><a href="' . dol_buildpath('/user/fiche.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
+		print '<td><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
 
 		print '<tr><td>' . $langs->trans("AgfDuree") . '</td>';
 		print '<td>' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)</td></tr>';
@@ -3298,13 +3298,13 @@ class Agsession extends CommonObject
 			$duree = 0;
 			for($i = 0; $i < $blocNumber; $i ++) {
 				if ($i > 6) {
-					$styledisplay=" style=\"display:none\" ";
+					$styledisplay = " style=\"display:none\" ";
 				} else {
-					$styledisplay=" ";
+					$styledisplay = " ";
 				}
 				if ($calendrier->lines[$i]->date_session != $old_date) {
 					if ($i > 0) {
-						print '</tr><tr '.$styledisplay.' class="otherdate" ><td width="150px" style="border:0px;">&nbsp;</td>';
+						print '</tr><tr ' . $styledisplay . ' class="otherdate" ><td width="150px" style="border:0px;">&nbsp;</td>';
 					}
 					print '<td width="150px">';
 					print dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td><td>';
@@ -3348,11 +3348,11 @@ class Agsession extends CommonObject
 				print '$(document).ready(function () { ' . "\n";
 				print '		$(\'#switchtime\').click(function(){' . "\n";
 				print '			$(\'.otherdate\').toggle()' . "\n";
-				print '			if ($(\'#switchtime\').text()==\'+\') { '. "\n";
-				print '				$(\'#switchtime\').text(\'-\'); '. "\n";
-				print '			}else { '. "\n";
-				print '				$(\'#switchtime\').text(\'+\'); '. "\n";
-				print '			} '. "\n";
+				print '			if ($(\'#switchtime\').text()==\'+\') { ' . "\n";
+				print '				$(\'#switchtime\').text(\'-\'); ' . "\n";
+				print '			}else { ' . "\n";
+				print '				$(\'#switchtime\').text(\'+\'); ' . "\n";
+				print '			} ' . "\n";
 				print '			' . "\n";
 				print '		});' . "\n";
 				print '});' . "\n";
