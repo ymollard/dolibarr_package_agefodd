@@ -4291,6 +4291,8 @@ class Agsession extends CommonObject
 				}
 			}
 
+			$invoice->linked_objects=array('propal'=>$frompropalid);
+
 			$invoice->note_public = $propal->note_public;
 		}
 
@@ -4339,7 +4341,7 @@ class Agsession extends CommonObject
 				foreach ( $invoice->lines as $invline ) {
 					if ($invline->fk_product == $this->fk_product) {
 						$invoice_line = new FactureLigne($this->db);
-						$result = $invoice_line->fetch($invline->rowid);
+						$result = $invoice_line->fetch($invline->id);
 						if ($result < 0) {
 							$this->errors[] = $invoice_line->error;
 							$error ++;
@@ -4349,6 +4351,12 @@ class Agsession extends CommonObject
 							$error ++;
 						}
 						$invoice_line->desc .= $this->avgpricedesc;
+
+						//TODO : fix this into fetch from dolibarr
+						if (empty($invoice_line->multicurrency_subprice)) $invoice_line->multicurrency_subprice=0;
+						if (empty($invoice_line->multicurrency_total_ht)) $invoice_line->multicurrency_total_ht=0;
+						if (empty($invoice_line->multicurrency_total_tva)) $invoice_line->multicurrency_total_tva=0;
+						if (empty($invoice_line->multicurrency_total_ttc)) $invoice_line->multicurrency_total_ttc=0;
 						$result = $invoice_line->update(1);
 						if ($result < 0) {
 							$this->errors[] = $invoice_line->error;

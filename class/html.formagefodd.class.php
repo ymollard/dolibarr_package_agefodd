@@ -408,7 +408,7 @@ class FormAgefodd extends Form {
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox($htmlname, $event, 3);
+				$out .= ajax_combobox($htmlname, $event, 1);
 			}
 
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
@@ -587,7 +587,7 @@ class FormAgefodd extends Form {
 
 		$sql .= " ORDER BY sp.lastname ASC";
 
-		dol_syslog(get_class($this) . "::selectcontactscustom");
+		dol_syslog(get_class($this) . "::selectcontactscustom",LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);

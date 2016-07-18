@@ -147,7 +147,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agf->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agf->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agf->status_in_session = GETPOST('stagiaire_session_status', 'int');
-		$agfsta->fk_socpeople_sign = $fk_socpeople_sign;
+		$agf->fk_socpeople_sign = $fk_socpeople_sign;
 
 		$result = $agf->create($user);
 
@@ -634,7 +634,7 @@ if (! empty($id)) {
 			print '<input type="hidden" name="stagerowid" value="' . $stagiaires->lines[$i]->stagerowid . '">' . "\n";
 			print '<td width="20px" align="center"><a name="newstag" id="newstag"></a>' . ($i + 1) . '</td>';
 			print '<td colspan="2" width="500px">';
-			print '<label for="' . $htmlname . '" style="width:45%; display: inline-block;margin-left:5px;">' . $langs->trans('AgfSelectStagiaire') . '</label>';
+			print '<label for="' . $htmlname . '" style="display: inline-block;margin-left:5px;">' . $langs->trans('AgfSelectStagiaire') . '</label>';
 			print $formAgefodd->select_stagiaire('', 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')', 1);
 
 			if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
