@@ -408,7 +408,7 @@ class FormAgefodd extends Form {
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox($htmlname, $event, 3);
+				$out .= ajax_combobox($htmlname, $event, 1);
 			}
 
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
@@ -587,7 +587,7 @@ class FormAgefodd extends Form {
 
 		$sql .= " ORDER BY sp.lastname ASC";
 
-		dol_syslog(get_class($this) . "::selectcontactscustom");
+		dol_syslog(get_class($this) . "::selectcontactscustom",LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -1202,46 +1202,6 @@ class FormAgefodd extends Form {
 		}
 
 		return $this->selectarray($htmlname, $array_status, $selectval, $showempty);
-	}
-
-	/**
-	 * Output a HTML code to select a color
-	 *
-	 * @param string $set_color
-	 * @param string $prefix HTML field
-	 * @return string HTML result
-	 */
-	public function  select_color($set_color = '', $htmlname = 'f_color') {
-		$out = '<input id="' . $htmlname . '" type="text" size="8" name="' . $htmlname . '" value="' . $set_color . '" />';
-
-		$out .= '<script type="text/javascript" language="javascript">
-			$(document).ready(function() {
-			$("#' . $htmlname . '").css("backgroundColor", \'#' . $set_color . '\');
-				$("#' . $htmlname . '").ColorPicker({
-					color: \'#' . $set_color . '\',
-						onShow:function(colpkr) {
-						$(colpkr).fadeIn(500);
-						return false;
-	},
-						onHide:function(colpkr) {
-						$(colpkr).fadeOut(500);
-						return false;
-	},
-						onChange:function(hsb, hex, rgb) {
-						$("#' . $htmlname . '").css("backgroundColor", \'#\' + hex);
-							$("#' . $htmlname . '").val(hex);
-	},
-								onSubmit:function(hsb, hex, rgb) {
-								$("#' . $htmlname . '").val(hex);
-	}
-	});
-	})
-									.bind(\'keyup\',function(){
-									$(this).ColorPickerSetColor(this.value);
-	});
-									</script>';
-
-		return $out;
 	}
 
 	/**

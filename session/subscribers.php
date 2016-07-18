@@ -58,6 +58,10 @@ $fk_soc_link=GETPOST('fk_soc_link', 'int');
 if ($fk_soc_link<0) {
 	$fk_soc_link=0;
 }
+$fk_socpeople_sign=GETPOST('fk_socpeople_sign', 'int');
+if ($fk_socpeople_sign<0) {
+	$fk_socpeople_sign=0;
+}
 
 if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd->modifier)) {
 
@@ -70,6 +74,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agfsta->fk_session_agefodd = GETPOST('sessid', 'int');
 		$agfsta->fk_soc_link = $fk_soc_link;
 		$agfsta->fk_soc_requester = $fk_soc_requester;
+		$agfsta->fk_socpeople_sign = $fk_socpeople_sign;
 		$agfsta->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agfsta->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
@@ -142,6 +147,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agf->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agf->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agf->status_in_session = GETPOST('stagiaire_session_status', 'int');
+		$agf->fk_socpeople_sign = $fk_socpeople_sign;
 
 		$result = $agf->create($user);
 
@@ -418,6 +424,11 @@ if (! empty($id)) {
 					print $form->select_company($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0);
 					print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
 					print $form->select_company($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0);
+
+					if ($agf->type_session == 1) {
+						print '<br>' . $langs->trans('AgfContactSign') . ' ';
+						$form->select_contacts($stagiaires->lines[$i]->socid,$fk_socpeople_sign, 'fk_socpeople_sign', 1, '', '', 1, '', 1);
+					}
 					/*
 					 * Manage trainee Funding for inter-enterprise
 					* Display only if first of the thridparty list
@@ -589,6 +600,15 @@ if (! empty($id)) {
 					} else {
 						print '&nbsp;';
 					}
+					if (! empty($stagiaires->lines[$i]->fk_socpeople_sign)) {
+						$contactstatic = new Contact($db);
+						$contactstatic->fetch($stagiaires->lines[$i]->fk_socpeople_sign);
+						if (! empty($contactstatic->id)) {
+							print '<br>' . $langs->trans('AgfContactSign') . ':' . $contactstatic->getNomUrl(1);
+						}
+					} else {
+						print '&nbsp;';
+					}
 					print '</td>';
 
 					print '<td>';
@@ -614,7 +634,7 @@ if (! empty($id)) {
 			print '<input type="hidden" name="stagerowid" value="' . $stagiaires->lines[$i]->stagerowid . '">' . "\n";
 			print '<td width="20px" align="center"><a name="newstag" id="newstag"></a>' . ($i + 1) . '</td>';
 			print '<td colspan="2" width="500px">';
-			print '<label for="' . $htmlname . '" style="width:45%; display: inline-block;margin-left:5px;">' . $langs->trans('AgfSelectStagiaire') . '</label>';
+			print '<label for="' . $htmlname . '" style="display: inline-block;margin-left:5px;">' . $langs->trans('AgfSelectStagiaire') . '</label>';
 			print $formAgefodd->select_stagiaire('', 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')', 1);
 
 			if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
@@ -961,6 +981,15 @@ if (! empty($id)) {
 					$socstatic->fetch($stagiaires->lines[$i]->fk_soc_requester);
 					if (! empty($socstatic->id)) {
 						print '<br>' . $langs->trans('AgfTypeRequester') . ':' . $socstatic->getNomUrl(1);
+					}
+				} else {
+					print '&nbsp;';
+				}
+				if (! empty($stagiaires->lines[$i]->fk_socpeople_sign)) {
+					$contactstatic = new Contact($db);
+					$contactstatic->fetch($stagiaires->lines[$i]->fk_socpeople_sign);
+					if (! empty($socstatic->id)) {
+						print '<br>' . $langs->trans('AgfContactSign') . ':' . $contactstatic->getNomUrl(1);
 					}
 				} else {
 					print '&nbsp;';

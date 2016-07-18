@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_stagiaire (
   fk_stagiaire integer NOT NULL,
   fk_agefodd_stagiaire_type integer NOT NULL,
   fk_soc_link integer NULL,
+  fk_socpeople_sign integer NULL,
   fk_soc_requester integer NULL,
   status_in_session integer NULL,
   fk_user_author integer NOT NULL,
