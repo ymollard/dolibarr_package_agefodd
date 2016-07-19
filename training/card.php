@@ -437,7 +437,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCateg") . '</td><td>';
 	print $formagefodd->select_training_categ(GETPOST('categid'), 'categid', 't.active=1');
 	if ($user->admin)
-		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionnarySetup"), 1);
+		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
 
 	print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
@@ -576,7 +576,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCateg") . '</td><td>';
 				print $formagefodd->select_training_categ($agf->fk_c_category, 'categid', 't.active=1');
 				if ($user->admin)
-					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionnarySetup"), 1);
+					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 				print "</td></tr>";
 
 				print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
