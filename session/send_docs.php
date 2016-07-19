@@ -1369,7 +1369,7 @@ if (! empty($id)) {
 
 					print '<tr class="liste_titre">' . "\n";
 					print '<td colspan=3>';
-					print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines[$i]->socid . '">' . $agf->lines[$i]->socname . '</a></td>' . "\n";
+					print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $agf->lines[$i]->socid . '">' . $agf->lines[$i]->socname . '</a></td>' . "\n";
 					print '</tr>' . "\n";
 
 					document_send_line($langs->trans("AgfPDFConvocation"), "convocation", $agf->lines[$i]->socid);

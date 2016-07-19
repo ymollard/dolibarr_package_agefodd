@@ -633,7 +633,7 @@ if ($id) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
 				print '	<td>';
-				print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
+				print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';

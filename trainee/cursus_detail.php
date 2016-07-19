@@ -140,7 +140,7 @@ if (! empty($id) && ! empty($cursus_id)) {
 		
 		if (! empty($agf->fk_socpeople)) {
 			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-			print '<td><a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf->fk_socpeople . '">' . strtoupper($agf->nom) . '</a></td></tr>';
+			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . strtoupper($agf->nom) . '</a></td></tr>';
 		} else {
 			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
 			print '<td>' . strtoupper($agf->nom) . '</td></tr>';
@@ -158,7 +158,7 @@ if (! empty($id) && ! empty($cursus_id)) {
 		
 		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 		if ($agf->socid) {
-			print '<a href="' . dol_buildpath('/comm/fiche.php', 1) . '?socid=' . $agf->socid . '">';
+			print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $agf->socid . '">';
 			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($agf->socname, 20) . '</a>';
 		} else {
 			print '&nbsp;';

@@ -597,7 +597,7 @@ if (! empty($id)) {
 				$societe = new Societe($db);
 				$societe->fetch($agf->lines[$i]->socid);
 
-				// print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '" name="socid' . $agf->lines [$i]->socid . '" id="socid' . $agf->lines [$i]->socid . '">' . $agf->lines [$i]->code_client . ' - ' . $agf->lines [$i]->socname . ' (' . $type_link_label . ')</a></td>' . "\n";
+				// print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $agf->lines [$i]->socid . '" name="socid' . $agf->lines [$i]->socid . '" id="socid' . $agf->lines [$i]->socid . '">' . $agf->lines [$i]->code_client . ' - ' . $agf->lines [$i]->socname . ' (' . $type_link_label . ')</a></td>' . "\n";
 				print $societe->getNomUrl(1) . ' (' . $type_link_label . ')';
 				// Anchor
 				print '<a name="socid' . $agf->lines[$i]->socid . '" id="socid' . $agf->lines[$i]->socid . '"></a>';

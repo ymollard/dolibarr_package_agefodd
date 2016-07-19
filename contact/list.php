@@ -109,7 +109,7 @@ if (! empty($linenum)) {
 		print '<td' . $style . '>' . $agf->lines [$i]->civilite . '</td>';
 		print '<td' . $style . '>';
 		if ($agf->lines [$i]->socid) {
-			print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines [$i]->socid . '">';
+			print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $agf->lines [$i]->socid . '">';
 			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($agf->lines [$i]->socname, 20) . '</a>';
 		} else
 			print '&nbsp;';
