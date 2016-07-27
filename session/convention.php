@@ -355,7 +355,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$intro1 .= ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
 	}
 
-	$intro1 .= ' ' . $langs->trans('AgfConvIntro1_3') . ' ' . $mysoc->address . ' ' . $mysoc->zip . ' ' . $mysoc->town;
+	$addr = preg_replace( "/\r|\n/", " ", $mysoc->address . ', ' . $mysoc->zip . ' ' . $mysoc->town );
+	$intro1 .= $langs->trans('AgfConvIntro1_3') . ' ' . $addr;
 	if (! empty($mysoc->idprof1)) {
 		$intro1 .= $langs->trans('AgfConvIntro1_4') . ' ' . $mysoc->idprof1;
 	}
@@ -376,7 +377,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 
 	// intro2
-	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $agf_soc->address . " " . $agf_soc->zip . " " . $agf_soc->town . ",";
+	$addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
+	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $addr  . ",";
 	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
 
 	$signataire='';
@@ -472,8 +474,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);
 	$resql3 = $agf_place->fetch($agf->placeid);
-	$adresse = $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville;
-	$art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $adresse . '.';
+	$addr = preg_replace( "/\r|\n/", " ", $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville );
+	$art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $addr . '.';
 
 	// texte 2
 	if ($agf_conv->art2)
@@ -514,7 +516,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if ($agf_conv->art7)
 		$art7 = $agf_conv->art7;
 	else {
-		$art7 = $langs->trans('AgfConvArt7_1');
+		$art7 = $langs->trans('AgfConvArt7_1'). ' ';
 		$art7 .= $langs->trans('AgfConvArt7_2') . ' ' . $mysoc->town . ".";
 	}
 
