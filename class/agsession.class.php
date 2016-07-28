@@ -3503,10 +3503,10 @@ class Agsession extends CommonObject
 				$error ++;
 			}
 
-			$order->client = $soc;
+			$order->thirdparty = $soc;
 
 			$order->socid = $socid;
-			$order->date_commande = dol_now();
+			$order->date = dol_now();
 			$order->modelpdf = $conf->global->COMMANDE_ADDON_PDF;
 
 			if (! empty($this->fk_product)) {
@@ -3577,14 +3577,14 @@ class Agsession extends CommonObject
 				}
 
 				// Calculate price
-				$tva_tx = get_default_tva($mysoc, $order->client, $product->id);
+				$tva_tx = get_default_tva($mysoc, $order->thirdparty, $product->id);
 
 				// multiprix
-				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($order->client->price_level)) {
-					$pu_ht = $prod->multiprices[$order->client->price_level];
-					$pu_ttc = $prod->multiprices_ttc[$order->client->price_level];
-					$price_min = $prod->multiprices_min[$order->client->price_level];
-					$price_base_type = $prod->multiprices_base_type[$order->client->price_level];
+				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($order->thirdparty->price_level)) {
+					$pu_ht = $prod->multiprices[$order->thirdparty->price_level];
+					$pu_ttc = $prod->multiprices_ttc[$order->thirdparty->price_level];
+					$price_min = $prod->multiprices_min[$order->thirdparty->price_level];
+					$price_base_type = $prod->multiprices_base_type[$order->thirdparty->price_level];
 				} elseif (! empty($conf->global->PRODUIT_CUSTOMER_PRICES)) {
 					$sql = "SELECT ";
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
@@ -3757,7 +3757,7 @@ class Agsession extends CommonObject
 			return - 1;
 		}
 
-		$propal->client = $soc;
+		$propal->thirdparty = $soc;
 		$propal->socid = $socid;
 		$propal->date = dol_now();
 		if (! empty($soc->cond_reglement_id)) {
@@ -3850,14 +3850,14 @@ class Agsession extends CommonObject
 			}
 
 			// Calculate price
-			$tva_tx = get_default_tva($mysoc, $propal->client, $product->id);
+			$tva_tx = get_default_tva($mysoc, $propal->thirdparty, $product->id);
 
 			// multiprix
-			if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($propal->client->price_level)) {
-				$pu_ht = $product->multiprices[$propal->client->price_level];
-				$pu_ttc = $product->multiprices_ttc[$propal->client->price_level];
-				$price_min = $product->multiprices_min[$propal->client->price_level];
-				$price_base_type = $product->multiprices_base_type[$propal->client->price_level];
+			if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($propal->thirdparty->price_level)) {
+				$pu_ht = $product->multiprices[$propal->thirdparty->price_level];
+				$pu_ttc = $product->multiprices_ttc[$propal->thirdparty->price_level];
+				$price_min = $product->multiprices_min[$propal->thirdparty->price_level];
+				$price_base_type = $product->multiprices_base_type[$propal->thirdparty->price_level];
 			} elseif (! empty($conf->global->PRODUIT_CUSTOMER_PRICES)) {
 				$sql = "SELECT ";
 				$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
@@ -4179,7 +4179,7 @@ class Agsession extends CommonObject
 			}
 
 			// Calculate price
-			$tva_tx = get_default_tva($mysoc, $invoice->client, $product->id);
+			$tva_tx = get_default_tva($mysoc, $invoice->thirdparty, $product->id);
 
 			if (! empty($frompropalid)) {
 				require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
@@ -4201,11 +4201,11 @@ class Agsession extends CommonObject
 
 			if (empty($amount)) {
 				// multiprix
-				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($propal->client->price_level)) {
-					$pu_ht = $product->multiprices[$invoice->client->price_level];
-					$pu_ttc = $product->multiprices_ttc[$invoice->client->price_level];
-					$price_min = $product->multiprices_min[$invoice->client->price_level];
-					$price_base_type = $product->multiprices_base_type[$invoice->client->price_level];
+				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($propal->thirdparty->price_level)) {
+					$pu_ht = $product->multiprices[$invoice->thirdparty->price_level];
+					$pu_ttc = $product->multiprices_ttc[$invoice->thirdparty->price_level];
+					$price_min = $product->multiprices_min[$invoice->thirdparty->price_level];
+					$price_base_type = $product->multiprices_base_type[$invoice->thirdparty->price_level];
 				} elseif (! empty($conf->global->PRODUIT_CUSTOMER_PRICES)) {
 					$sql = "SELECT ";
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
