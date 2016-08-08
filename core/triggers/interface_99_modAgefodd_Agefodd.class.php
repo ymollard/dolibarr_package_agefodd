@@ -472,7 +472,7 @@ class InterfaceAgefodd {
 
 			foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
 				$objectlinked=reset($objectslinked);
-				if ($objectlinked->element == 'propal' || $objectlinked->element == 'commande') {
+				if (($objectlinked->element == 'propal' || $objectlinked->element == 'commande') && ($objectlinked->socid==$object->socid)) {
 
 					$agf_fin = new Agefodd_session_element($this->db);
 
