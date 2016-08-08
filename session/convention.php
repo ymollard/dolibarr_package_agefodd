@@ -412,7 +412,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			}
 		}
 	}
-	//$intro2 .= '.';
 
 	// article 1
 	// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)
@@ -443,7 +442,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$art1 .= "\n";
 
 	// Durée de formation
-	$art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $agf->duree . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n". "\n";
+	$art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $agf->duree . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n";
 
 	$calendrier = new Agefodd_sesscalendar($db);
 	$resql = $calendrier->fetch_all($sessid);
@@ -466,11 +465,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$old_date = $calendrier->lines [$i]->date_session;
 	}
 
-	$art1 .= $langs->trans('AgfConvArt1_13') . "\n". "\n";
+	$art1 .= "\n". $langs->trans('AgfConvArt1_13') . "\n". "\n";
 
 
 	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
-	$art1 .= $langs->trans('AgfConvArt1_17') . "\n";
+	$art1 .= $langs->trans('AgfConvArt1_17') . "\n". "\n";
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);
 	$resql3 = $agf_place->fetch($agf->placeid);
