@@ -149,8 +149,9 @@ if (! $mesg) {
 	$px2->SetHorizTickIncrement(1);
 	$px2->SetPrecisionY(0);
 	$px2->mode = 'depth';
-	$px2->SetTitle($langs->trans("AmountOfBillsByMonthHT"));
 	
+	$px2->SetTitle($langs->trans("AmountOfSessionsByMonthHT"));
+
 	$px2->draw($filenameamount);
 }
 
