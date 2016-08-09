@@ -1123,3 +1123,5 @@ AgfAdmBPFCreateCategorie=Crée les catégories types BPF
 AgfAdmBPFCreateCategorieHelp=Crée les categorie par defaut utilisé dans le BPF. Ceci n'est utile que si vous n'avez pas déja vos catégorie produit et client qui peuvent être utilisé pour le BPF
 AgfModifyCalendar=Modifier le calendrier
 AgfContactSign=Signataire convention
+AgfRefPropalAuto=Génération de la référence client de la proposition automatique
+AgfRefPropalAutoHelp=Depuis l'onglet Docuement liée, lors de la création d'une propostion commerciale assisté, la référence est automatique, elle contiens le nom de la formation et les dates

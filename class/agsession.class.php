@@ -2886,6 +2886,7 @@ class Agsession extends CommonObject
 			// current user is saleman of customersession
 			$sql .= ' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user=' . $user->id . ')))';
 
+			//TODO : What is it for hard coded dependancy on other module...
 			if ($conf->volvo->enabled) {
 
 				$sql .= ' OR (s.rowid IN (SELECT sessform.fk_session FROM ' . MAIN_DB_PREFIX . 'agefodd_session_element as elem';
@@ -3790,13 +3791,18 @@ class Agsession extends CommonObject
 			} else {
 				$desc = $this->formintitule . "\n";
 			}
+			$refclient = dol_trunc($desc,35);
+
 			$desc .= "\n" . dol_print_date($this->dated, 'day');
+
+			$refclient .= "\n" . dol_print_date($this->dated, 'day');;
 			if ($this->datef != $this->dated) {
 				$desc .= '-' . dol_print_date($this->datef, 'day');
+				$refclient .= '-' . dol_print_date($this->datef, 'day');
 			}
 
 			if (! empty($conf->global->AGF_REF_PROPAL_AUTO)) {
-				$propal->ref_client = str_replace("\n", ' ', $desc);
+				$propal->ref_client = str_replace("\n",' ',$refclient);
 			}
 
 			if (! empty($this->duree_session)) {
