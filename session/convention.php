@@ -117,7 +117,7 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$outputlangs = $langs;
 	$newlang = GETPOST('lang_id', 'alpha');
 	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
-		$newlang = $object->client->default_lang;
+		$newlang = $object->thirdparty->default_lang;
 	if (! empty($newlang)) {
 		$outputlangs = new Translate("", $conf);
 		$outputlangs->setDefaultLang($newlang);
@@ -355,7 +355,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$intro1 .= ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
 	}
 
-	$intro1 .= ' ' . $langs->trans('AgfConvIntro1_3') . ' ' . $mysoc->address . ' ' . $mysoc->zip . ' ' . $mysoc->town;
+	$addr = preg_replace( "/\r|\n/", " ", $mysoc->address . ', ' . $mysoc->zip . ' ' . $mysoc->town );
+	$intro1 .= $langs->trans('AgfConvIntro1_3') . ' ' . $addr;
 	if (! empty($mysoc->idprof1)) {
 		$intro1 .= $langs->trans('AgfConvIntro1_4') . ' ' . $mysoc->idprof1;
 	}
@@ -376,7 +377,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 
 	// intro2
-	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $agf_soc->address . " " . $agf_soc->zip . " " . $agf_soc->town . ",";
+	$addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
+	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $addr  . ",";
 	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
 
 	$signataire='';
@@ -410,7 +412,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			}
 		}
 	}
-	//$intro2 .= '.';
 
 	// article 1
 	// Mise en page (Cf. fonction "liste_a_puce()" du fichier pdf_convention_modele.php)
@@ -441,7 +442,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$art1 .= "\n";
 
 	// Durée de formation
-	$art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $agf->duree . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n". "\n";
+	$art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $agf->duree . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n";
 
 	$calendrier = new Agefodd_sesscalendar($db);
 	$resql = $calendrier->fetch_all($sessid);
@@ -464,16 +465,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$old_date = $calendrier->lines [$i]->date_session;
 	}
 
-	$art1 .= $langs->trans('AgfConvArt1_13') . "\n". "\n";
+	$art1 .= "\n". $langs->trans('AgfConvArt1_13') . "\n". "\n";
 
 
 	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
-	$art1 .= $langs->trans('AgfConvArt1_17') . "\n";
+	$art1 .= $langs->trans('AgfConvArt1_17') . "\n". "\n";
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);
 	$resql3 = $agf_place->fetch($agf->placeid);
-	$adresse = $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville;
-	$art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $adresse . '.';
+	$addr = preg_replace( "/\r|\n/", " ", $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville );
+	$art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $addr . '.';
 
 	// texte 2
 	if ($agf_conv->art2)
@@ -514,7 +515,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if ($agf_conv->art7)
 		$art7 = $agf_conv->art7;
 	else {
-		$art7 = $langs->trans('AgfConvArt7_1');
+		$art7 = $langs->trans('AgfConvArt7_1'). ' ';
 		$art7 .= $langs->trans('AgfConvArt7_2') . ' ' . $mysoc->town . ".";
 	}
 

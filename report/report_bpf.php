@@ -77,7 +77,7 @@ if ($action == 'builddoc') {
 		$outputlangs = $langs;
 		$newlang = $lang_id;
 		if ($conf->global->MAIN_MULTILANGS && empty($newlang))
-			$newlang = $object->client->default_lang;
+			$newlang = $object->thirdparty->default_lang;
 		if (! empty($newlang)) {
 			$outputlangs = new Translate("", $conf);
 			$outputlangs->setDefaultLang($newlang);

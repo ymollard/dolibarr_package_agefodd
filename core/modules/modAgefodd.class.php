@@ -113,8 +113,8 @@ class modAgefodd extends DolibarrModules {
 				3
 		);
 		$this->need_dolibarr_version = array (
-				3,
-				7
+				4,
+				0
 		);
 		$this->langfiles = array (
 				'agefodd@agefodd'
@@ -508,6 +508,14 @@ class modAgefodd extends DolibarrModules {
 		$this->const[$r][3] = '';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
+		$r ++;
+
+		$this->const [$r] [0] = "AGF_REF_PROPAL_AUTO";
+		$this->const [$r] [1] = "yesno";
+		$this->const [$r] [2] = '1';
+		$this->const [$r] [3] = '';
+		$this->const [$r] [4] = 0;
+		$this->const [$r] [5] = 0;
 		$r ++;
 
 		foreach ( array (
@@ -1269,7 +1277,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 100,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 2
@@ -1284,7 +1292,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/training/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 101,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1299,7 +1307,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/training/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 102,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1314,7 +1322,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/training/list.php?arch=1',
 				'langs' => 'agefodd@agefodd',
 				'position' => 103,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1328,7 +1336,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/training/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 104,
-				'enabled' => '$user->rights->agefodd->creer',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer',
 				'perms' => '$user->rights->agefodd->creer',
 				'target' => '',
 				'user' => 0
@@ -1343,7 +1351,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 201,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1357,7 +1365,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list.php?status=1',
 				'langs' => 'agefodd@agefodd',
 				'position' => 202,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1371,7 +1379,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list.php?status=2',
 				'langs' => 'agefodd@agefodd',
 				'position' => 203,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1385,7 +1393,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list.php?status=3',
 				'langs' => 'agefodd@agefodd',
 				'position' => 203,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1399,7 +1407,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list.php?status=5',
 				'langs' => 'agefodd@agefodd',
 				'position' => 204,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1413,7 +1421,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list.php?status=4',
 				'langs' => 'agefodd@agefodd',
 				'position' => 205,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1427,7 +1435,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/archive_year.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 206,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1441,7 +1449,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 207,
-				'enabled' => '$user->rights->agefodd->creer',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer',
 				'perms' => '$user->rights->agefodd->creer',
 				'target' => '',
 				'user' => 0
@@ -1455,7 +1463,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/stats/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 208,
-				'enabled' => '$user->rights->agefodd->viewstats',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->viewstats',
 				'perms' => '$user->rights->agefodd->viewstats',
 				'target' => '',
 				'user' => 0
@@ -1469,7 +1477,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/session/list_ope.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 209,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1496,7 +1504,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/trainee/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 301,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1510,7 +1518,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/trainee/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 302,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1524,7 +1532,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/trainee/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 303,
-				'enabled' => '$user->rights->agefodd->creer',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer',
 				'perms' => '$user->rights->agefodd->creer',
 				'target' => '',
 				'user' => 0
@@ -1538,7 +1546,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/trainee/card.php?action=create&importfrom=contact',
 				'langs' => 'agefodd@agefodd',
 				'position' => 304,
-				'enabled' => '$user->rights->agefodd->creer',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer',
 				'perms' => '$user->rights->agefodd->creer',
 				'target' => '',
 				'user' => 0
@@ -1553,7 +1561,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/site/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 401,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1567,7 +1575,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/site/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 402,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1581,7 +1589,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/trainer/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 403,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1595,7 +1603,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/contact/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 404,
-				'enabled' => '!($conf->global->AGF_CONTACT_DOL_SESSION)',
+				'enabled' => '$conf->agefodd->enabled && !($conf->global->AGF_CONTACT_DOL_SESSION)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1610,7 +1618,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '',
 				'langs' => 'agefodd@agefodd',
 				'position' => 501,
-				'enabled' => '$user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 2
@@ -1624,7 +1632,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/agenda/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 502,
-				'enabled' => '$user->rights->agefodd->agenda',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agenda',
 				'perms' => '$user->rights->agefodd->agenda',
 				'target' => '',
 				'user' => 0
@@ -1638,7 +1646,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/agenda/pertrainer.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 503,
-				'enabled' => '$user->rights->agefodd->agenda',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agenda',
 				'perms' => '$user->rights->agefodd->agenda',
 				'target' => '',
 				'user' => 0
@@ -1652,7 +1660,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/agenda/pertrainer.php?type=trainerext',
 				'langs' => 'agefodd@agefodd',
 				'position' => 504,
-				'enabled' => '$user->rights->agefodd->agendatrainer',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agendatrainer',
 				'perms' => '$user->rights->agefodd->agendatrainer',
 				'target' => '',
 				'user' => 2
@@ -1667,7 +1675,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/cursus/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 601,
-				'enabled' => '$conf->global->AGF_MANAGE_CURSUS',
+				'enabled' => '$conf->agefodd->enabled && $conf->global->AGF_MANAGE_CURSUS',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1681,7 +1689,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/cursus/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 602,
-				'enabled' => '$conf->global->AGF_MANAGE_CURSUS',
+				'enabled' => '$conf->agefodd->enabled && $conf->global->AGF_MANAGE_CURSUS',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1695,7 +1703,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/cursus/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 603,
-				'enabled' => '$conf->global->AGF_MANAGE_CURSUS',
+				'enabled' => '$conf->agefodd->enabled && $conf->global->AGF_MANAGE_CURSUS',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1710,7 +1718,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/report/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 701,
-				'enabled' => '$user->rights->agefodd->report',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
@@ -1724,7 +1732,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/report/report_bpf.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 702,
-				'enabled' => '$user->rights->agefodd->report->bpf',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report->bpf',
 				'perms' => '$user->rights->agefodd->report->bpf',
 				'target' => '',
 				'user' => 0
@@ -1739,7 +1747,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/admin/admin_agefodd.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 701,
-				'enabled' => '$conf->global->AGF_DEMO_MODE',
+				'enabled'=>'$conf->agefodd->enabled && $conf->global->AGF_DEMO_MODE',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1753,7 +1761,7 @@ class modAgefodd extends DolibarrModules {
 				'url' => '/agefodd/admin/admin_agefodd.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 702,
-				'enabled' => '$conf->global->AGF_DEMO_MODE',
+				'enabled'=>'$conf->agefodd->enabled && $conf->global->AGF_DEMO_MODE',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0

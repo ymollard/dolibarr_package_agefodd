@@ -614,7 +614,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 				$this->str = $agf_conv->art6;
-				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'J');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
 				// Pied de page

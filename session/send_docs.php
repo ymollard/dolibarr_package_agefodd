@@ -82,10 +82,10 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 	if ($result > 0) {
 		$result = $object->fetch_thirdparty();
 
-		$sendto = array ();
+		$sendto = array();
 		if (! empty($send_to)) {
 			// Le destinataire a ete fourni via le champ libre
-			$sendto = array (
+			$sendto = array(
 					$send_to
 			);
 			$sendtoid = 0;
@@ -362,10 +362,10 @@ if ($_POST['addfile']) {
 	$action = $pre_action;
 }
 
-$extrajs = array (
+$extrajs = array(
 		'/agefodd/includes/multiselect/js/ui.multiselect.js'
 );
-$extracss = array (
+$extracss = array(
 		'/agefodd/includes/multiselect/css/ui.multiselect.css',
 		'/agefodd/css/agefodd.css'
 );
@@ -404,7 +404,7 @@ if (! empty($id)) {
 		 * Confirm delete
 		 */
 		if ($action == 'delete') {
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete");
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete");
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -571,7 +571,6 @@ if (! empty($id)) {
 						// Add certificate A4
 						$filename = 'certificateA4_' . $agf->id . '_' . $socid . '.pdf';
 						$file = $conf->agefodd->dir_output . '/' . $filename;
-						print '$file=' . $file;
 						if (file_exists($file)) {
 							$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						}
@@ -579,7 +578,6 @@ if (! empty($id)) {
 						// Add certificate card
 						$filename = 'certificatecard_' . $agf->id . '_' . $socid . '.pdf';
 						$file = $conf->agefodd->dir_output . '/' . $filename;
-						print '$file=' . $file;
 						if (file_exists($file)) {
 							$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						}
@@ -587,8 +585,7 @@ if (! empty($id)) {
 				} elseif ($action == 'presend_cloture') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 
-
-						// Ajout attestations de présence
+					// Ajout attestations de présence
 					$filename = 'attestation_' . $agf->id . '_' . $socid . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
@@ -597,7 +594,7 @@ if (! empty($id)) {
 						print '<div class="error">' . $langs->trans('AgfAttestationNotExists') . '</div>';
 					}
 
-						// Ajout Fichier courrier cloture
+					// Ajout Fichier courrier cloture
 					$filename = 'courrier-cloture_' . $agf->id . '_' . $socid . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
@@ -678,7 +675,7 @@ if (! empty($id)) {
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
 				$num = $agftrainersess->fetch_formateur_per_session($id);
-				$withto = array ();
+				$withto = array();
 				if ($num > 0) {
 					foreach ( $agftrainersess->lines as $formateur ) {
 						if ($formateur->email != '')
@@ -747,7 +744,7 @@ if (! empty($id)) {
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
 				$num = $agftrainersess->fetch_formateur_per_session($id);
-				$withto = array ();
+				$withto = array();
 				if ($num > 0) {
 					foreach ( $agftrainersess->lines as $formateur ) {
 						if ($formateur->email != '')
@@ -823,7 +820,7 @@ if (! empty($id)) {
 				if ($result < 0) {
 					setEventMessage($agf_trainer_session->error, 'errors');
 				} elseif (! empty($agf_trainer_session->formid)) {
-					$withto = array ();
+					$withto = array();
 					$agf_trainer = new Agefodd_teacher($db);
 					$agf_trainer->fetch($agf_trainer_session->formid);
 					$withto[$agf_trainer->fk_socpeople] = $agf_trainer->lastname . ' ' . $agf_trainer->name . ' - ' . $agf_trainer->email;
@@ -847,9 +844,9 @@ if (! empty($id)) {
 					if ($result < 0) {
 						setEventMessage($agf_trainer_session->error, 'errors');
 					} elseif (is_array($agf_trainer_session->lines) && count($agf_trainer_session->lines) > 0) {
-						$withto = array ();
+						$withto = array();
 						$agf_trainer = new Agefodd_teacher($db);
-						foreach($agf_trainer_session->lines as $linetrainer) {
+						foreach ( $agf_trainer_session->lines as $linetrainer ) {
 							$agf_trainer->fetch($linetrainer->opsid);
 							$withto[$linetrainer->socpeopleid] = $linetrainer->lastname . ' ' . $linetrainer->name . ' - ' . $linetrainer->email;
 						}
@@ -860,7 +857,7 @@ if (! empty($id)) {
 					if ($result < 0) {
 						setEventMessage($agf_trainer_session->error, 'errors');
 					} elseif (! empty($agf_trainer_session->formid)) {
-						$withto = array ();
+						$withto = array();
 						$agf_trainer = new Agefodd_teacher($db);
 						$agf_trainer->fetch($agf_trainer_session->formid);
 						$withto[$agf_trainer->fk_socpeople] = $agf_trainer->lastname . ' ' . $agf_trainer->name . ' - ' . $agf_trainer->email;
@@ -879,7 +876,7 @@ if (! empty($id)) {
 				$formmail->param['models'] = 'convention';
 				$formmail->param['pre_action'] = 'presend_convention';
 
-				$withto = array ();
+				$withto = array();
 
 				// Convention peut être envoyé à l'opca ou au commanditaire
 
@@ -951,7 +948,7 @@ if (! empty($id)) {
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_attestation') {
 
-				$withto = array ();
+				$withto = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendAttestation', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendAttestationBody', '__FORMINTITULE__');
@@ -1036,7 +1033,7 @@ if (! empty($id)) {
 				}
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_cloture") {
-				$withto = array ();
+				$withto = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendDossierCloture', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendDossierClotureBody', '__FORMINTITULE__');
@@ -1118,7 +1115,7 @@ if (! empty($id)) {
 				$formmail->param['models'] = 'convocation';
 				$formmail->param['pre_action'] = 'presend_convocation';
 
-				$withto = array ();
+				$withto = array();
 
 				// Envoi de fichier libre
 				$formmail->withfile = 2;
@@ -1190,7 +1187,7 @@ if (! empty($id)) {
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_conseils") {
 
-				$withto = array ();
+				$withto = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendConseil', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendConseilBody', '__FORMINTITULE__');
@@ -1238,7 +1235,7 @@ if (! empty($id)) {
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_accueil") {
 
-				$withto = array ();
+				$withto = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendCourrierAcceuil', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendCourrierAcceuilBody', '__FORMINTITULE__');
@@ -1369,7 +1366,7 @@ if (! empty($id)) {
 
 					print '<tr class="liste_titre">' . "\n";
 					print '<td colspan=3>';
-					print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $agf->lines[$i]->socid . '">' . $agf->lines[$i]->socname . '</a></td>' . "\n";
+					print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $agf->lines[$i]->socid . '">' . $agf->lines[$i]->socname . '</a></td>' . "\n";
 					print '</tr>' . "\n";
 
 					document_send_line($langs->trans("AgfPDFConvocation"), "convocation", $agf->lines[$i]->socid);

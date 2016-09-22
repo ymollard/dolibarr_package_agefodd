@@ -339,6 +339,16 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
+	$filtertraining = GETPOST('AGF_FILTER_TRAINER_TRAINING', 'alpha');
+	$res = dolibarr_set_const($db, 'AGF_FILTER_TRAINER_TRAINING', $filtertraining, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$refpropalauto = GETPOST('AGF_REF_PROPAL_AUTO', 'alpha');
+	$res = dolibarr_set_const($db, 'AGF_REF_PROPAL_AUTO', $refpropalauto, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
@@ -1502,6 +1512,24 @@ if ($conf->use_javascript_ajax) {
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfFilterTrainerTrainingHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_REF_PROPAL_AUTO
+print '<tr class="pair"><td>' . $langs->trans("AgfRefPropalAuto") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_REF_PROPAL_AUTO', $input_array);
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_REF_PROPAL_AUTO", $arrval, $conf->global->AGF_REF_PROPAL_AUTO);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfRefPropalAutoHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 

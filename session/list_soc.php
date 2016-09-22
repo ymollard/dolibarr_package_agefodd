@@ -151,7 +151,7 @@ if (! empty($conf->global->SOCIETE_USEPREFIX)) // Old not used prefix field
 	print '<tr><td>' . $langs->trans('Prefix') . '</td><td colspan="3">' . $object->prefix_comm . '</td></tr>';
 }
 
-if ($object->client) {
+if ($object->thirdparty) {
 	print '<tr><td>';
 	print $langs->trans('CustomerCode') . '</td><td colspan="3">';
 	print $object->code_client;

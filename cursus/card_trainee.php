@@ -282,7 +282,7 @@ if (! empty($id)) {
 			print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 			print '<td>';
 			if ($line->socid) {
-				print '<a href="' . dol_buildpath('/comm/fiche.php', 1) . '?socid=' . $line->socid . '">';
+				print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $line->socid . '">';
 				print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($line->socname, 20) . '</a>';
 			} else {
 				print '&nbsp;';

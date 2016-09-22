@@ -676,7 +676,7 @@ class Agefodd_place extends CommonObject {
 		
 		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 		if ($this->socid) {
-			print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $this->socid . '">';
+			print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $this->socid . '">';
 			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($this->socname, 20) . '</a>';
 		} else {
 			print '&nbsp;';

@@ -356,7 +356,7 @@ if (! empty($id)) {
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
 			print '	<td>';
-			print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
+			print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
 			print '</td></tr>';
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -535,7 +535,7 @@ if (! empty($id)) {
 
 							print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 							print '	<td>';
-							print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf_opca->fk_socpeople_OPCA . '">' . $agf_opca->contact_name_OPCA . '</a>';
+							print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf_opca->fk_socpeople_OPCA . '">' . $agf_opca->contact_name_OPCA . '</a>';
 							print '</td></tr>';
 
 							print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -567,7 +567,7 @@ if (! empty($id)) {
 					print '<td width="20%" style="border-left: 0px;">';
 					// Display thridparty link with trainee
 					if ($stagiaires->lines[$i]->socid) {
-						print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $stagiaires->lines[$i]->socid . '">';
+						print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $stagiaires->lines[$i]->socid . '">';
 						print img_object($langs->trans("ShowCompany"), "company");
 						if (! empty($stagiaires->lines[$i]->soccode))
 							print ' ' . $stagiaires->lines[$i]->soccode . '-';
@@ -831,7 +831,7 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
 				print '	<td>';
-				print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
+				print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -913,7 +913,7 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 						print '	<td>';
-						print '<a href="' . dol_buildpath('/contact/fiche.php', 1) . '?id=' . $agf_opca->fk_socpeople_OPCA . '">' . $agf_opca->contact_name_OPCA . '</a>';
+						print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf_opca->fk_socpeople_OPCA . '">' . $agf_opca->contact_name_OPCA . '</a>';
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -945,7 +945,7 @@ if (! empty($id)) {
 				print '<td style="border-left: 0px; border-right: 0px;">';
 				// Infos organisme de rattachement
 				if ($stagiaires->lines[$i]->socid) {
-					print '<a href="' . DOL_URL_ROOT . '/comm/fiche.php?socid=' . $stagiaires->lines[$i]->socid . '">';
+					print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $stagiaires->lines[$i]->socid . '">';
 					print img_object($langs->trans("ShowCompany"), "company");
 					if (! empty($stagiaires->lines[$i]->soccode))
 						print ' ' . $stagiaires->lines[$i]->soccode . '-';
