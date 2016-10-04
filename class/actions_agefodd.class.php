@@ -90,6 +90,8 @@ class ActionsAgefodd
 			);
 		}
 		$this->results = $arrayresult;
+
+		return 0;
 	}
 
 	/**
