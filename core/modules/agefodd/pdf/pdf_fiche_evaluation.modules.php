@@ -33,23 +33,23 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 class pdf_fiche_evaluation extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
-	               
+
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
-	
+
 	/**
 	 * \brief Constructor
 	 * \param db Database handler
 	 */
 	function __construct($db) {
 		global $conf, $langs, $mysoc;
-		
+
 		$this->db = $db;
 		$this->name = "fiche_evaluation";
 		$this->description = $langs->trans('AgfModPDFFicheEval');
-		
+
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
@@ -57,7 +57,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 		$this->page_hauteur = $formatarray['height'];
 		$this->format = array (
 				$this->page_largeur,
-				$this->page_hauteur 
+				$this->page_hauteur
 		);
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
@@ -68,17 +68,17 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
-		
+
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
-		
+
 		// Get source company
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
 	}
-	
+
 	/**
 	 * \brief Fonction generant le document sur le disque
 	 * \param agf Objet document a generer (ou id si ancienne methode)
@@ -88,38 +88,38 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
 		global $user, $langs, $conf, $mysoc;
-		
+
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
-		
+
 		if (! is_object($agf)) {
 			$id = $agf;
 			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
 		}
-		
+
 		// Definition of $dir and $file
 		$dir = $conf->agefodd->dir_output;
 		$file = $dir . '/' . $file;
-		
+
 		if (! file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
 			}
 		}
-		
+
 		if (file_exists($dir)) {
 			$pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
-			
+
 			if (class_exists('TCPDF')) {
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
-			
+
 			$pdf->Open();
 			$pagenb = 0;
-			
+
 			$pdf->SetTitle($outputlangs->convToOutputCharset($agf->ref));
 			$pdf->SetSubject($outputlangs->transnoentities("Invoice"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
@@ -127,14 +127,14 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($agf->ref) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
 				$pdf->SetCompression(false);
-			
+
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
-			
+
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
-			
+
 			if ($result) {
 				// New page
 				$pdf->AddPage();
@@ -143,12 +143,12 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 				$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				
+
 				$default_font_size = pdf_getPDFFontSize($outputlangs);
-				
+
 				$posy = $this->marge_haute;
 				$posx = $this->page_largeur - $this->marge_droite - 55;
-				
+
 				// Logo
 				$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
 				if ($this->emetteur->logo) {
@@ -172,7 +172,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 					$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 				}
 				// Other Logo
-				if ($conf->multicompany->enabled) {
+				if ($conf->multicompany->enabled && !empty($conf->global->AGF_MULTICOMPANY_MULTILOGO)) {
 					$sql = 'SELECT value FROM ' . MAIN_DB_PREFIX . 'const WHERE name =\'MAIN_INFO_SOCIETE_LOGO\' AND entity=1';
 					$resql = $this->db->query($sql);
 					if (! $resql) {
@@ -191,12 +191,12 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 							} else {
 								$posx=$this->marge_gauche+100;
 							}
-							
-							$pdf->Image($otherlogo, $posx, $posy, 0, $logo_height);	
+
+							$pdf->Image($otherlogo, $posx, $posy, 0, $logo_height);
 						}
 					}
 				}
-				
+
 				// Affichage du logo commanditaire (optionnel)
 				if ($conf->global->AGF_USE_LOGO_CLIENT) {
 					$staticsoc = new Societe($this->db);
@@ -208,23 +208,23 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
 					}
 				}
-				
+
 				// Sender properties
 				// Show sender
 				$posy = $this->marge_haute;
 				$posx = $this->marge_gauche;
-				
+
 				$hautcadre = 30;
 				$pdf->SetXY($posx, $posy);
 				$pdf->SetFillColor(255, 255, 255);
 				$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
-				
+
 				// Show sender name
 				$pdf->SetXY($posx, $posy);
 				$pdf->SetFont('', 'B', $default_font_size);
 				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 				$posy = $pdf->GetY();
-				
+
 				// Show sender information
 				$pdf->SetXY($posx, $posy);
 				$pdf->SetFont('', '', $default_font_size - 1);
@@ -241,17 +241,17 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$pdf->SetXY($posx, $posy);
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-				
+
 				$posY = $pdf->GetY() + 10;
-				
+
 				$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				
+
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
 				$this->str = $outputlangs->transnoentities($mysoc->url);
 				$this->width = $pdf->GetStringWidth($this->str);
-				
+
 				// alignement du bord droit du container avec le haut de la page
 				$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 				$baseline_angle = (M_PI / 2); // angle droit
@@ -259,14 +259,14 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
 				$baseline_width = $this->width;
 				$pdf->SetXY($baseline_x, $baseline_y);
-				
+
 				/*
 				 * Corps de page
 				 */
-				
+
 				$posX = $this->marge_gauche;
 				$posY = $posY + 5;
-				
+
 				/**
 				 * *** Titre ****
 				 */
@@ -276,7 +276,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$this->str = $outputlangs->transnoentities('AgfFicheEval');
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
 				$posY += 10;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$this->str = $agf->intitule_custo;
@@ -288,13 +288,13 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 				$posY += $hauteur + 3;
-				
+
 				/**
 				 * *** Date et formateur ****
 				 */
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 9);
-				
+
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval1') . " ";
 				if ($agf->dated == $agf->datef)
@@ -303,7 +303,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 					$this->str .= ' ' . dol_print_date($agf->dated) . ' au ' . dol_print_date($agf->datef);
 				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C');
 				$posY += 4;
-				
+
 				$formateurs = new Agefodd_session_formateur($this->db);
 				$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 				$form_str = "";
@@ -313,17 +313,17 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 					if ($i < ($nbform - 1))
 						$forma_str .= ', ';
 				}
-				
+
 				$pdf->SetXY($posX, $posY);
 				($nbform > 1) ? $this->str = $outputlangs->transnoentities('AgfPDFFicheEval2') . " " : $this->str = $outputlangs->transnoentities('AgfPDFFicheEval3') . " ";
 				$this->str .= $forma_str;
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 				$posY = $pdf->GetY() + 5;
-				
+
 				/**
 				 * *** Trainee Information ************
 				 */
-				
+
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNameTrainee') . ' : .....................';
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
@@ -332,24 +332,24 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalEmailTrainee') . ' : .....................';
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 				$posY = $pdf->GetY() + 5;
-				
+
 				/**
 				 * *** Objectifs pedagogique de la formation ****
 				 */
-				
+
 				// Récuperation
 				$agf_op = new Agefodd($this->db, "", $id);
 				$result2 = $agf_op->fetch_objpeda_per_formation($agf->formid);
-				
+
 				$width = 160;
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval4');
 				$pdf->MultiCell($width, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 				$posY = $pdf->GetY() + 1;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
-				
+
 				for($y = 0; $y < count($agf_op->line); $y ++) {
 					// Intitulé
 					$posY = $pdf->GetY();
@@ -357,13 +357,13 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1, 'L', 0);
 					$posY_after = $pdf->GetY();
 					$hauteur = ($posY_after - $posY);
-					
+
 					// Oui
 					$pdf->SetXY($posX + $width, $posY);
 					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
 					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 					$pdf->Rect($posX + $width, $posY, 10, $hauteur);
-					
+
 					// Non
 					$pdf->SetXY($posX + $width + 10, $posY);
 					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
@@ -371,19 +371,19 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 					$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
 				}
 				$posY = $pdf->GetY() + 5;
-				
+
 				/**
 				 * *** présentation echelle de notation ****
 				 */
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
 				$pdf->SetXY($posX, $posY);
 				$this->str = $outputlangs->transnoentities('AgfPDFFicheEval5');
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 				$posY = $pdf->GetY() + 1;
-				
+
 				$col_larg = $this->espaceH_dispo / 5;
-				
+
 				// ligne 1
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
 				$pdf->SetXY($posX, $posY);
@@ -397,7 +397,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$pdf->SetXY($posX + (4 * $col_larg), $posY);
 				$pdf->Cell($col_larg, 5, $outputlangs->convToOutputCharset("5"), 1, 0, 'C');
 				$posY += 5;
-				
+
 				// ligne 2
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->SetXY($posX, $posY);
@@ -407,86 +407,86 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval9'), 1, 0, 'C');
 				$pdf->Cell($col_larg, 5, $outputlangs->transnoentities('AgfPDFFicheEval10'), 1, 0, 'C');
 				$posY += 5 + 10;
-				
+
 				/**
 				 * *** lignes d'évaluations ****
 				 */
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$hauteur_ligne = 6;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval11'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval12'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval13'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval14'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval15'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval16'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval17'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval18'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval19'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval20'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(170, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval21'), 1, 0, 'L');
 				$pdf->Cell(10, $hauteur_ligne, $outputlangs->convToOutputCharset(""), 1, 0, 'C');
 				$posY += 5 + $hauteur_ligne;
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 11);
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(0, $hauteur_ligne, $outputlangs->transnoentities('AgfPDFFicheEval22'), 0, 0, 'C');
 				$posY += $hauteur_ligne;
-				
+
 				/**
 				 * *** bloc commentaire ****
 				 */
-				
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
 				$pdf->SetXY($posX, $posY);
 				$pdf->Cell(0, 5, $outputlangs->transnoentities('AgfPDFFicheEval23'), 0, 0, 'L');
-				
+
 				$hauteur = $this->page_hauteur - 20 - $posY - 5;
-				
+
 				$pdf->Rect($posX, $posY, $this->espaceH_dispo, $hauteur);
-				
+
 				// Pied de page
 				$this->_pagefoot($pdf, $agf, $outputlangs);
 				// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
@@ -498,7 +498,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 			$pdf->Output($file, 'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
-			
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -507,7 +507,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 		$this->error = $langs->trans("ErrorUnknown");
 		return 0; // Erreur par defaut
 	}
-	
+
 	/**
 	 * \brief Show header of page
 	 * \param pdf Object PDF
@@ -517,12 +517,12 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 	 */
 	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs) {
 		global $conf, $langs;
-		
+
 		$outputlangs->load("main");
-		
+
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}
-	
+
 	/**
 	 * \brief Show footer of page
 	 * \param pdf PDF factory
@@ -532,7 +532,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
-		
+
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		return pdf_agfpagefoot($pdf, $outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 1, $hidefreetext);
