@@ -1017,7 +1017,7 @@ if ($action != 'create' && $action != 'edit' && $action != "edit_subrogation" &&
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	}
 
-	if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && ! $agf->type_session > 0) {
+	if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && ! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit_subrogation&id=' . $id . '">' . $langs->trans('AgfModifySubrogation') . '</a>';
 	} else {
 		if ($agf->type_session)
