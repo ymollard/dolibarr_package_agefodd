@@ -314,7 +314,8 @@ class pdf_convention extends ModelePDFAgefodd {
 				} else {
 					$this->str = dol_print_date($agf->dated, 'daytext');
 				}
-				$pdf->SetXY($this->marge_gauche, $this->marge_haute + 185);
+				$pdf->SetY($pdf->getY()+10);
+				$pdf->SetX($this->marge_gauche);
 				$pdf->MultiCell(0, 5, $this->str, 0, 'C');
 
 				// If customer is personnal entity, the french low ask contrat and not convention
