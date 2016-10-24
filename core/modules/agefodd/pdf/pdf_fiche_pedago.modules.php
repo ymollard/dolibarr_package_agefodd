@@ -487,6 +487,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				$this->pdf->SetXY($posX, $posY);
+				if (empty($fontsize)) {
+					$fontsize = $this->default_font_size;
+				}
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
 				$this->str = $programme;
 				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
