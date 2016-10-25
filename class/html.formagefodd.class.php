@@ -1022,7 +1022,7 @@ class FormAgefodd extends Form {
 	 * @return string The HTML control
 	 */
 	public function  select_time($selectval = '', $htmlname = 'period', $enabled=1) {
-		$time = 7;
+		$time = 5;
 		$heuref = 23;
 		$min = 0;
 		$options = '<option value=""></option>' . "\n";
