@@ -60,6 +60,9 @@ $pre_action = GETPOST('pre_action', 'alpha');
 $id = GETPOST('id', 'int');
 $socid = GETPOST('socid', 'int');
 $sessiontrainerid = GETPOST('sessiontrainerid', 'int');
+$removedfile= GETPOST('removedfile');
+$addfile=GETPOST('addfile');
+$cancel=GETPOST('cancel');
 
 $form = new Form($db);
 $formmail = new FormAgefoddsenddocs($db);
@@ -68,7 +71,7 @@ $formAgefodd = new FormAgefodd($db);
 /*
  * Envoi document unique
  */
-if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_POST['cancel']) {
+if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel)) {
 	$langs->load('mails');
 
 	$send_to = GETPOST('sendto', 'alpha');
@@ -334,7 +337,7 @@ if ($action == 'send' && ! $_POST['addfile'] && ! $_POST['removedfile'] && ! $_P
 /*
  * Remove file in email form
  */
-if (! empty($_POST['removedfile'])) {
+if (! empty($removedfile)) {
 	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
 
 	// Set tmp user directory
@@ -342,7 +345,7 @@ if (! empty($_POST['removedfile'])) {
 	$upload_dir_tmp = $vardir . '/temp';
 
 	// TODO Delete only files that was uploaded from email form
-	$mesg = dol_remove_file_process($_POST['removedfile'], 0, 1);
+	$mesg = dol_remove_file_process($removedfile, 0, 1);
 
 	$action = $pre_action;
 }
@@ -350,7 +353,7 @@ if (! empty($_POST['removedfile'])) {
 /*
  * Add file in email form
  */
-if ($_POST['addfile']) {
+if (!empty($addfile)) {
 	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
 
 	// Set tmp user directory TODO Use a dedicated directory for temp mails files
@@ -1334,7 +1337,7 @@ if (! empty($id)) {
 		/*
 		 * Envoi fiche pédagogique
 		 */
-		if (! $action || GETPOST('cancel')) {
+		if (! $action || !empty($cancel)) {
 
 			dol_htmloutput_mesg($mesg, $mesgs);
 
