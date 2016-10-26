@@ -423,7 +423,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 				}
 
 				if (strpos($programme,'{breakpage}')!==false) {
-
+				
+					$this->_pagefoot($agf, $outputlangs);
+					$this->pdf->AddPage();
+					$this->_pagehead($agf, $outputlangs);
+					$posY = $this->pdf->GetY() + 5;
+				
 					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
 					$this->pdf->SetXY($posX, $posY);
 					$this->str = $outputlangs->transnoentities('AgfProgramme');
@@ -431,25 +436,29 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$posY = $this->pdf->GetY();
 					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-
+				
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 					$this->pdf->SetXY($posX, $posY);
-
+				
 					$programme_array = array ();
 					$programme_array = explode('{breakpage}',$programme);
+				
 					if (count($programme_array)>0) {
+						$i=0;
 						foreach($programme_array as $programme_detail) {
-
-							$this->_pagefoot($agf, $outputlangs);
-							$this->pdf->AddPage();
-							$this->_pagehead($agf, $outputlangs);
-							$posY = $this->pdf->GetY() + 5;
-
 							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 							$this->str = $programme_detail;
 							$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 							$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
-							$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+							//$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+				
+							if (($i+1)<count($programme_array)) {
+								$this->_pagefoot($agf, $outputlangs);
+								$this->pdf->AddPage();
+								$this->_pagehead($agf, $outputlangs);
+								$posY = $this->pdf->GetY() + 5;
+							}
+							$i++;
 						}
 					}
 				} else {
@@ -504,6 +513,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					} else {
 						$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 					}
+					//print '<BR>';
+					//print '$fontsize='.$fontsize;
 					//exit;
 					/**
 					 * *** Programme ****
