@@ -17,6 +17,7 @@ Fix : Issue #12
 New : Can upload files on training (optionnaly to replace training program)
 Fix : Invoice created from Document liked was not associated to Session
 New : Add BPF report
+NEW : Add {breakpage} tag into traiing program to mange manually break page on long program training
 	
 
 ***** ChangeLog for 2.1.15 compared to 2.1.14 *****

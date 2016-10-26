@@ -422,80 +422,112 @@ class pdf_fiche_pedago extends ModelePDFAgefodd {
 					$programme = $agf->programme;
 				}
 
-				// Determine if jump pages is needed
-				$height = $this->getRealHeightLine($programme) + 10 + $this->espace_apres_titre + 2;
-				//print 'Real $height='.$height;
-				//print '<BR>';
+				if (strpos($programme,'{breakpage}')!==false) {
 
-				$height_left = $this->page_hauteur - $this->marge_basse - $posY;
-				//print 'Real $$height_left='.$height_left;
-				//print '<BR>';
-				$fontsize = $this->default_font_size;
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+					$this->pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfProgramme');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
-				if ($height > $height_left) {
-					//print 'sdqsd';
-					// Save this value bacause reset into this method
-					$header_height = $this->hearder_height_custom;
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+					$this->pdf->SetXY($posX, $posY);
 
-					// Check if needed to reduce text font size to fitt all in one page
-					$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize) + 10 + $this->espace_apres_titre + 2;
-					//print 'TOTAL $height='.$height;
-					// print '<BR>';
-					// print ' $fontsize='.$fontsize;
-					// print '<BR>';
+					$programme_array = array ();
+					$programme_array = explode('{breakpage}',$programme);
+					if (count($programme_array)>0) {
+						foreach($programme_array as $programme_detail) {
 
-					$total_height_left = $this->page_hauteur - $header_height - 80;
+							$this->_pagefoot($agf, $outputlangs);
+							$this->pdf->AddPage();
+							$this->_pagehead($agf, $outputlangs);
+							$posY = $this->pdf->GetY() + 5;
 
-					//print ' $$total_height_left='.$total_height_left;
-					//print '<BR>';
-					if ($height > $total_height_left) {
-						$allin_a_page = false;
-
-						while ( $allin_a_page !== true && $fontsize > 0 ) {
-							$fontsize --;
-
-							$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize);
-						//	print '$fontsize='.$fontsize;
-						//	 print '$height='.$height;
-						//	 print '<BR>';
-							if ($height <= $total_height_left) {
-								$allin_a_page = true;
-							}
+							$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+							$this->str = $programme_detail;
+							$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+							$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
+							$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 						}
 					}
-					$this->hearder_height_custom = $header_height;
-
-					$this->_pagefoot($agf, $outputlangs);
-					$this->pdf->AddPage();
-					$this->_pagehead($agf, $outputlangs);
-					$posY = $this->pdf->GetY() + 5;
 				} else {
+					// Determine if jump pages is needed
+					$height = $this->getRealHeightLine($programme) + 10 + $this->espace_apres_titre + 2;
+					//print 'Real $height='.$height;
+					//print '<BR>';
+
+					$height_left = $this->page_hauteur - $this->marge_basse - $posY;
+					//print 'Real $$height_left='.$height_left;
+					//print '<BR>';
+					$fontsize = $this->default_font_size;
+
+					//We must add page because no more space for the program
+					if ($height > $height_left) {
+						//print 'sdqsd';
+						// Save this value bacause reset into this method
+						$header_height = $this->hearder_height_custom;
+
+						// Check if needed to reduce text font size to fitt all in one page
+						$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize) + 10 + $this->espace_apres_titre + 2;
+						//print 'TOTAL $height='.$height;
+						// print '<BR>';
+						// print ' $fontsize='.$fontsize;
+						// print '<BR>';
+
+						$total_height_left = $this->page_hauteur - $header_height - 80;
+
+						//print ' $$total_height_left='.$total_height_left;
+						//print '<BR>';
+						if ($height > $total_height_left) {
+							$allin_a_page = false;
+
+							while ( $allin_a_page !== true && $fontsize > 0 ) {
+								$fontsize --;
+
+								$height = $this->getTotalHeightLine($programme, $agf, $outputlangs, $fontsize);
+							//	print '$fontsize='.$fontsize;
+							//	 print '$height='.$height;
+							//	 print '<BR>';
+								if ($height <= $total_height_left) {
+									$allin_a_page = true;
+								}
+							}
+						}
+						$this->hearder_height_custom = $header_height;
+
+						$this->_pagefoot($agf, $outputlangs);
+						$this->pdf->AddPage();
+						$this->_pagehead($agf, $outputlangs);
+						$posY = $this->pdf->GetY() + 5;
+					} else {
+						$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+					}
+					//exit;
+					/**
+					 * *** Programme ****
+					 */
+
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+					$this->pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfProgramme');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+					$this->pdf->SetXY($posX, $posY);
+					if (empty($fontsize)) {
+						$fontsize = $this->default_font_size;
+					}
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
+					$this->str = $programme;
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+					$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
-				//exit;
-				/**
-				 * *** Programme ****
-				 */
-
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfProgramme');
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
-				$this->pdf->SetXY($posX, $posY);
-				if (empty($fontsize)) {
-					$fontsize = $this->default_font_size;
-				}
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
-				$this->str = $programme;
-				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
-				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
-
 				// $this->pdf->SetXY($posX, $this->pdf->GetY());
 				// Pied de page
 				$this->_pagefoot($agf, $outputlangs);
