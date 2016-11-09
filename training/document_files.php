@@ -51,7 +51,7 @@ $asfichepedago = GETPOST('asfichepedago','int');
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire) {
 	accessforbidden();
 }
-	
+
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
@@ -81,7 +81,7 @@ if ($result < 0) {
  * Actions
  */
 
-include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
+include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
 //Copy file uploaded as a training program file
 if (!empty($asfichepedago)) {
@@ -111,52 +111,52 @@ if ($object->id) {
 		$langs->load("mails");
 	}
 
-	
+
 	$out_js = '<script>' . "\n";
 	$out_js .= '$(document).ready(function () { ' . "\n";
 	$out_js .= '	$(\'#formuserfile > table > tbody:last-child\').append(\'<tr><td><input type="checkbox" value="1" name="asfichepedago" id="asfichepedago"/>'.$langs->trans('AgfLikeFichePedgao').'</td></tr>\'); ' . "\n";
 	$out_js .= '});' . "\n";
 	$out_js .= '</script>' . "\n";
-	
+
 	print $out_js;
-	
+
 	$head = training_prepare_head($object);
-	
+
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfCatalogDetail"), 0, 'bill');
-	
+
 	$form = new Form($db);
-	
+
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file['size'];
 	}
-	
+
 	print '<table class="border" width="100%">';
-	
+
 	print "<tr>";
 	print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
 	print $form->showrefnav($object, 'id', '', 1, 'rowid', 'id');
 	print '</td></tr>';
-	
+
 	print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
 	print '<td colspan=2>' . stripslashes($object->intitule) . '</td></tr>';
-	
+
 	print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
 	print $object->ref_obj . '</td></tr>';
-	
+
 	print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
 	print $object->ref_interne . '</td></tr>';
 	print '</table>';
 	print '</div>';
-	
+
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
-	
-	
+
+
 } else {
 	accessforbidden('', 0, 0);
 }
