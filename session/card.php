@@ -158,7 +158,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$error ++;
 		}
 
-		$result = $agf->fetch_other_session_sameplacedate();
+		$result = $agf->fetchOtherSessionSameplacedate();
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 			$error ++;
@@ -436,7 +436,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			}
 		}
 
-		$result = $agf->fetch_other_session_sameplacedate();
+		$result = $agf->fetchOtherSessionSameplacedate();
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 			$error ++;

@@ -4444,36 +4444,104 @@ class Agsession extends CommonObject
 	}
 
 	/**
-	 *
-	 * @return number
 	 */
-	public function fetch_other_session_sameplacedate() {
+	public function fetchOtherSessionSameplacedate() {
 		$this->lines_place = array ();
 
-		if (! empty($this->id) && ! empty($this->fk_session_place)) {
+		$place_to_test = array ();
 
-			$sql = "SELECT ";
-			$sql .= "DISTINCT ag.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as ag ";
-			$sql .= " WHERE ag.fk_session_place=" . $this->fk_session_place;
-			$sql .= " AND ag.dated BETWEEN '" . $this->db->idate($this->dated) . "' AND '" . $this->db->idate($this->datef) . "' ";
-			$sql .= " AND ag.datef BETWEEN '" . $this->db->idate($this->dated) . "' AND '" . $this->db->idate($this->datef) . "' ";
-
-			dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
-			$resql = $this->db->query($sql);
-			if ($resql) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$line = new AgfSessionLine();
-					$line->rowid = $obj->rowid;
-					$this->lines_place[] = $line;
-				}
-
-				return 1;
-			} else {
-				$this->error = "Error " . $this->db->lasterror();
-				dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
-				return - 1;
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_place WHERE control_occupation IS NOT NULL';
+		dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			while ( $obj = $this->db->fetch_object($resql) ) {
+				$place_to_test[] = $obj->rowid;
 			}
 		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+
+		$sql = "SELECT ";
+		$sql .= "DISTINCT agcal.date_session,agcal.heured,agcal.heuref FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as agcal";
+		$sql .= " WHERE  agcal.fk_agefodd_session=" . $this->id;
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			while ( $obj = $this->db->fetch_object($resql) ) {
+
+				$date_to_test_array[] = array('dated'=>$this->db->jdate($obj->heured),'datef'=>$this->db->jdate($obj->heuref));
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+
+
+		if (count($date_to_test_array) == 0) {
+			$date_to_test_array[] = array (
+					'dated' => $this->dated,
+					'datef' => $this->datef
+			);
+		}
+
+		if (! empty($this->id) && ! empty($this->fk_session_place) && in_array($this->fk_session_place, $place_to_test)) {
+			foreach ( $date_to_test_array as $date_data ) {
+
+				$sql = "SELECT ";
+				$sql .= "DISTINCT ag.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as ag ";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as agcal ON ag.rowid=agcal.fk_agefodd_session";
+				$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON (ag.status = agf_status.rowid  AND agf_status.code<>\'NOT\')';
+				$sql .= " WHERE ag.fk_session_place=" . $this->fk_session_place;
+				$sql .= " AND (ag.dated BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+				$sql .= " AND (ag.datef BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+
+				dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$line = new AgfSessionLine();
+						$line->rowid = $obj->rowid;
+						//$line->typeevent='session';
+						$this->lines_place[] = $line;
+					}
+				} else {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+					return - 1;
+				}
+			}
+
+			//find event on calendar (not only session)
+			/*foreach ( $date_to_test_array as $date_data ) {
+
+				$sql = "SELECT ";
+				$sql .= "DISTINCT actcomm.id as rowid FROM " . MAIN_DB_PREFIX . "actioncomm as actcomm ";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "actioncomm_extrafields as actcomm_extra ON actcomm.id=actcomm_extra.fk_object";
+				$sql .= " WHERE actcomm_extra.location=" . $this->fk_session_place;
+				$sql .= " AND (actcomm.datep BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+				$sql .= " AND (actcomm.datep2 BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+
+				dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$line = new AgfSessionLine();
+						$line->rowid = $obj->rowid;
+						$line->typeevent='actioncomm';
+						$this->lines_place[] = $line;
+					}
+				} else {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+					return - 1;
+				}
+			}*/
+
+			return 1;
+		} else {
+
 			return 1;
 		}
 	}
