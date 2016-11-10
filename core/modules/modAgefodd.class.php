@@ -73,8 +73,8 @@ class modAgefodd extends DolibarrModules {
 		$this->dirs = array (
 				"/agefodd",
 				"/agefodd/training",
-				"/report",
-				"/report/bpf",
+				"/agefodd/report",
+				"/agefodd/report/bpf",
 		);
 		$r = 0;
 
