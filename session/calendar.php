@@ -72,6 +72,11 @@ $modperiod = GETPOST('modperiod', 'int');
 $period_remove = GETPOST('period_remove', 'int');
 $period_remove_all = GETPOST('period_remove_all', 'int');
 
+$delete_calsel = GETPOST('deletecalsel_x', 'alpha');
+if (! empty($delete_calsel)) {
+	$action = 'delete_calsel';
+}
+
 /*
  * Actions delete period
  */
@@ -124,7 +129,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 
 		$date_session = dol_mktime(0, 0, 0, GETPOST('datemonth', 'int'), GETPOST('dateday', 'int'), GETPOST('dateyear', 'int'));
 
-		$heure_tmp_arr = array ();
+		$heure_tmp_arr = array();
 
 		$heured_tmp = GETPOST('dated', 'alpha');
 		if (! empty($heured_tmp)) {
@@ -204,7 +209,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 			$agf->date_session = dol_mktime(0, 0, 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
 
 			// From calendar selection
-			$heure_tmp_arr = array ();
+			$heure_tmp_arr = array();
 
 			$heured_tmp = GETPOST('datenewd', 'alpha');
 			if (! empty($heured_tmp)) {
@@ -302,16 +307,43 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 	}
 }
 
+if ($action == 'delete_calsel') {
+	$deleteselcal = GETPOST('deleteselcal', 'array');
+	if (count($deleteselcal) > 0) {
+		foreach ( $deleteselcal as $lineid ) {
+			$calrem = new Agefodd_sesscalendar($db);
+			$result = $calrem->remove($lineid);
+			if ($result < 0) {
+				setEventMessage($calrem->error, 'errors');
+				$error ++;
+			}
+		}
+	}
+	if (! $error) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
+		exit();
+	}
+}
 
 /*
  * View
  */
 
-llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', array (
+llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', array(
 		'/agefodd/includes/lib.js'
-), array ());
+), array());
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
+
+if (!empty($anchor)) {
+print '<script type="text/javascript">
+						jQuery(document).ready(function () {
+							jQuery(function() {' . "\n";
+print '				 $(\'html, body\').animate({scrollTop: $("#' . $anchor . '").offset().top-20}, 500,\'easeInOutCubic\');';
+print '			});
+					});
+					</script> ';
+}
 
 /*
  * Action create
@@ -383,6 +415,17 @@ if ($id) {
 			} else {
 				$old_date = 0;
 				$duree = 0;
+				print '<tr class="liste_titre">';
+				print '<th class="liste_titre">';
+				if ($user->rights->agefodd->modifier) {
+					print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete', '', false, 1) . '" border="0" align="absmiddle" name="deletecalsel" title="' . $langs->trans("AgfDeleteOnlySelectedLines") . '" alt="' . $langs->trans("AgfDeleteOnlySelectedLines") . '">';
+				}
+				print '</th>';
+				print '<th class="liste_titre">' . $langs->trans('Date') . '</th>';
+				print '<th class="liste_titre">' . $langs->trans('Hours') . '</th>';
+				print '<th class="liste_titre"></th>';
+
+				print '</tr>';
 				for($i = 0; $i < $blocNumber; $i ++) {
 					if ($calendrier->lines[$i]->id == $modperiod && ! empty($period_remove))
 						print '<tr bgcolor="#d5baa8">' . "\n";
@@ -408,6 +451,9 @@ if ($id) {
 						}
 						print '</td>';
 					} else {
+						if ($user->rights->agefodd->modifier) {
+							print '<td  width="1%"><input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$i]->id . '"/></td>';
+						}
 						print '<td width="20%">' . dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td>';
 						print '<td  width="150px">' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
 						if ($user->rights->agefodd->modifier) {
@@ -514,7 +560,7 @@ if ($id) {
 				print '<tr>';
 				print '<td>';
 				print $langs->trans('AgfWeekdayModels');
-				foreach ( array (
+				foreach ( array(
 						1,
 						2,
 						3,
@@ -597,187 +643,13 @@ if ($id) {
 			print '</form>';
 			print '</div>';
 		} else {
-
-			print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-			print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-			print '</div>';
-
-			// Print session card
-			$agf->printSessionInfo();
-
-			print '&nbsp';
-
-			/*
-			 * Manage founding ressources depend type inter-enterprise or extra-enterprise
-			 */
-			if (! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-				print '&nbsp;';
-				print '<table class="border" width="100%">';
-				print '<tr><td>' . $langs->trans("AgfSubrocation") . '</td>';
-				if ($agf->is_OPCA == 1) {
-					$isOPCA = ' checked="checked" ';
-				} else {
-					$isOPCA = '';
-				}
-				print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" ' . $isOPCA . '/></td></tr>';
-
-				print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
-				print '	<td>';
-				print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
-				print '</td></tr>';
-
-				print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
-				print '	<td>';
-				print dol_print_address($agf->OPCA_adress, 'gmap', 'thirdparty', 0);
-				print '</td></tr>';
-
-				print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
-				print '	<td>';
-				print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople_OPCA . '">' . $agf->contact_name_OPCA . '</a>';
-				print '</td></tr>';
-
-				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
-				print '<td>';
-				print $agf->num_OPCA_soc;
-				print '</td></tr>';
-
-				print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-				if ($agf->is_date_ask_OPCA == 1) {
-					$chckisDtOPCA = 'checked="checked"';
-				} else {
-					$chckisDtOPCA = '';
-				}
-				print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' />';
-				print dol_print_date($agf->date_ask_OPCA, 'daytext');
-				print '</td></tr>';
-
-				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumFile") . '</td>';
-				print '<td>';
-				print $agf->num_OPCA_file;
-				print '</td></tr>';
-
-				print '</table>';
-			}
-
-			/*
-			 * Cost management
-			 */
-			$spend_cost = 0;
-			$cashed_cost = 0;
-
-			print '&nbsp;';
-			print '<table class="border" width="100%">';
-			print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-			print '<td>' . price($agf->cost_trainer) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
-			$spend_cost += $agf->cost_trainer;
-
-			print '<tr><td width="20%">' . $langs->trans("AgfCoutSalle") . '</td>';
-			print '<td>' . price($agf->cost_site) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
-			$spend_cost += $agf->cost_site;
-
-			print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
-			print '<td>' . price($agf->cost_trip) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
-			$spend_cost += $agf->cost_trip;
-
-			print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
-			print '<td><strong>' . price($spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td></tr>';
-
-			print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-			print '<td>' . price($agf->sell_price) . ' ' . $langs->trans('Currency' . $conf->currency) . ' ' . $other_amount . '</td></tr>';
-			$cashed_cost += $agf->sell_price;
-
-			print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutRevient") . '</strong></td>';
-			if ($cashed_cost > 0) {
-				$percentmargin = price(((($cashed_cost - $spend_cost) * 100) / $cashed_cost), 0, $langs, 1, 0, 1) . '%';
-			} else {
-				$percentmargin = "n/a";
-			}
-
-			print '<td><strong>' . price($cashed_cost - $spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong> (' . $percentmargin . ')</td></tr>';
-
-			print '</table>';
-
-			/*
-			 * Manage trainers
-			 */
-			print '&nbsp;';
-			print '<table class="border" width="100%">';
-
-			$formateurs = new Agefodd_session_formateur($db);
-			$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-			print '<tr><td width="20%" valign="top">';
-			print $langs->trans("AgfFormateur");
-			if ($nbform > 0)
-				print ' (' . $nbform . ')';
-			print '</td>';
-			if ($nbform < 1) {
-				print '<td style="text-decoration: blink;">' . $langs->trans("AgfNobody") . '</td></tr>';
-			} else {
-				print '<td>';
-
-				print '<table class="nobordernopadding">';
-				for($i = 0; $i < $nbform; $i ++) {
-					print '<tr><td width="50%">';
-					// Infos trainers
-					print '<a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $formateurs->lines[$i]->formid . '">';
-					print img_object($langs->trans("ShowContact"), "contact") . ' ';
-					print strtoupper($formateurs->lines[$i]->lastname) . ' ' . ucfirst($formateurs->lines[$i]->firstname) . '</a>';
-					print ' ' . $formateurs->lines[$i]->getLibStatut(3);
-					print '</td>';
-
-					// Print trainer calendar
-					if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
-
-						print '<td>';
-
-						print '<table class="nobordernopadding">';
-
-						$alertday = false;
-						require_once ('../class/agefodd_session_formateur_calendrier.class.php');
-						$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
-						$result = $trainer_calendar->fetch_all($formateurs->lines[$i]->opsid);
-						if ($result < 0) {
-							setEventMessage($trainer_calendar->error, 'errors');
-						}
-						foreach ( $trainer_calendar->lines as $line ) {
-							if (($line->date_session < $agf->dated) || ($line->date_session > $agf->datef))
-								$alertday = true;
-							print '<tr><td>';
-							print dol_print_date($line->heured, 'dayhourtext');
-							print '</td></tr>';
-							if ($line->heuref != $line->heured) {
-								print '<tr><td>';
-								print dol_print_date($line->heuref, 'dayhourtext');
-								print '</td></tr>';
-							}
-						}
-						// Print warning message if trainer calendar date are not set within session date
-						if ($alertday) {
-							print img_warning($langs->trans("AgfCalendarDayOutOfScope"));
-							print $langs->trans("AgfCalendarDayOutOfScope");
-							setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
-						}
-
-						print '</table>';
-						print '</td>';
-					}
-					print '</tr>';
-				}
-
-				print '</table>';
-
-				print '</td>';
-				print "</tr>\n";
-			}
-			print "</table>";
-
-			print '</div>';
+			print $langs->trans('AgfNoSession');
 		}
 	} else {
-		print $langs->trans('AgfNoSession');
+		setEventMessage($agf->error, 'errors');
 	}
 } else {
-	setEventMessage($agf->error, 'errors');
+	print $langs->trans('AgfNoSession');
 }
 
 /*

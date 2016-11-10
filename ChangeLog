@@ -20,6 +20,7 @@ New : Add BPF report
 New : Add {breakpage} tag into traiing program to mange manually break page on long program training
 New : Add place control use in the same dates only for controled location
 New : Only for Dolibarr 4.0.x version minimum
+New : Better calendar session deletion management
 
 ***** ChangeLog for 2.1.15 compared to 2.1.14 *****
 Fix : Fix training colors
