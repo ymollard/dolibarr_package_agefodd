@@ -49,7 +49,7 @@ $ref = GETPOST('ref', 'alpha');
 // Security check
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
-	
+
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
@@ -82,7 +82,7 @@ if ($result < 0) {
  * Actions
 */
 
-include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
+include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
 /*
 // Post file
@@ -96,7 +96,7 @@ if (GETPOST ( 'sendit' ) && ! empty ( $conf->global->MAIN_UPLOAD_DOC )) {
 if ($action == 'confirm_deletefile' && $confirm == 'yes') {
 	if ($object->id) {
 		$file = $upload_dir . "/" . GETPOST ( 'urlfile' ); // Do not use urldecode here ($_GET and $_REQUEST are already decoded by PHP).
-		
+
 		$ret = dol_delete_file ( $file, 0, 0, 0, $object );
 		if ($ret)
 			setEventMessage ( $langs->trans ( "FileWasRemoved", GETPOST ( 'urlfile' ) ) );
@@ -125,48 +125,48 @@ if ($object->id) {
 	if (! empty($conf->notification->enabled))
 		$langs->load("mails");
 	$head = session_prepare_head($object);
-	
+
 	$form = new Form($db);
-	
+
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
-	
+
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file ['size'];
 	}
-	
+
 	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 	print '</div>';
-	
+
 	// Print session card
 	$object->printSessionInfo();
-	
+
 	print '&nbsp';
 	print '</div>';
-	
+
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
-	
+
 	/*
 	if ($action == 'delete') {
 		$ret = $form->form_confirm ( $_SERVER ["PHP_SELF"] . '?id=' . $object->id . '&urlfile=' . urlencode ( GETPOST ( "urlfile" ) ), $langs->trans ( 'DeleteFile' ), $langs->trans ( 'ConfirmDeleteFile' ), 'confirm_deletefile', '', 0, 1 );
 		if ($ret == 'html')
 			print '<br>';
 	}
-	
+
 	$formfile = new FormFile ( $db );
-	
+
 	// Show upload form
 	$formfile->form_attach_new_file ( $_SERVER ["PHP_SELF"] . '?id=' . $object->id, '', 0, 0, $user->rights->agefodd->creer, 50, $object );
-	
+
 	// List of document
 	$formfile->list_of_documents ( $filearray, $object, 'agefodd' );
-	
+
 	print "<br><br>";*/
 } else {
 	accessforbidden('', 0, 0);
