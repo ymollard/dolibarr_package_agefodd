@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,10 +74,11 @@ print '<tr class="liste"><td>' . $langs->trans("AgfIndexSessDo") . ' </td><td al
 $resql = $agf->fetch_heures_sessions_nb();
 print '<tr class="liste"><td>' . $langs->trans("AgfIndexHourSessDo") . ' </td><td align="right">' . $agf->total . '&nbsp;</td></tr>';
 $total_heures = $agf->total;
-if ($total_heures == 0)
+if ($total_heures == 0) {
 	$total_heures = 1;
+}
 	
-	// Nbre d'heures stagiaires délivrées
+// Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
 print '<tr class="liste"><td>' . $langs->trans("AgfIndexHourTrainneDo") . '  </td><td align="right">' . $agf->total . '&nbsp;</td></tr>';
 

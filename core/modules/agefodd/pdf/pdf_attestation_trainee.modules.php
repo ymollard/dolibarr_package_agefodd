@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -260,7 +260,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 12);
 				$hauteur = 0;
 				for($y = 0; $y < count($agf_op->lines); $y ++) {
-					$newY = $pdf->getY() + 1;
+					$newY = $pdf->GetY() + 1;
 					$pdf->SetXY($this->marge_gauche + 62, $pdf->GetY());
 					$width = 160;
 					$StringWidth = $pdf->GetStringWidth($agf_op->lines [$y]->intitule);

@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2009-2010	Erick Bullier		<eb.dev@ebiconsulting.fr>
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 				$rmin = sprintf("%02d", $min % 60);
 				$hour = floor($min / 60);
 				
-				$newY = $pdf->getY() + 5;
+				$newY = $pdf->GetY() + 5;
 				$pdf->SetXY($this->marge_gauche + 1, $newY);
 				$this->str = $outputlangs->transnoentities('AgfPDFAttestationCursus5') . " " . $hour . $outputlangs->transnoentities('AgfPDFAttestationCursus6');
 				$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);

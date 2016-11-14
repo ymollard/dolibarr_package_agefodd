@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  * Copyright (C) 2012		JF FERRY	<jfefe@aternatik.fr>
  * Copyright (C) 2014-2015 Philippe Grand  <philippe.grand@atoo-net.com>
  *
@@ -30,32 +30,32 @@ $langs->load('agefodd@agefodd');
  *
  * @param object $object training
  * @return array head table of tabs
- *        
+ *
  */
 function training_prepare_head($object) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$hselected = $h;
 	$h ++;
-	
-	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?training_view=1&search_training_ref=' . $object->ref_obj;
+
+	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?training_view=1&search_training_ref=' . urlencode($object->ref_obj);
 	$head [$h] [1] = $langs->trans("AgfMenuSess");
 	$head [$h] [2] = 'sessions';
 	$hselected = $h;
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/training/training_adm.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgftrainingAdmTask");
 	$head [$h] [2] = 'trainingadmtask';
 	$hselected = $h;
 	$h ++;
-	
+
 	if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
 		$head [$h] [0] = dol_buildpath('/agefodd/training/trainer.php', 1) . '?id=' . $object->id;
 		$head [$h] [1] = $langs->trans("AgfTrainingTrainer");
@@ -63,27 +63,33 @@ function training_prepare_head($object) {
 		$hselected = $h;
 		$h ++;
 	}
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/training/modules.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfTrainingModule");
 	$head [$h] [2] = 'trainingmodule';
 	$hselected = $h;
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/training/note.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfNote");
 	$head [$h] [2] = 'notes';
 	$hselected = $h;
 	$h ++;
-	
+
+	$head [$h] [0] = dol_buildpath('/agefodd/training/document_files.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("Documents");
+	$head [$h] [2] = 'documentfiles';
+	$hselected = $h;
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath('/agefodd/training/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$hselected = $h;
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_training');
-	
+
 	return $head;
 }
 
@@ -96,91 +102,96 @@ function training_prepare_head($object) {
  */
 function session_prepare_head($object, $showconv = 0) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	if ($showconv) {
 		$id = $object->sessid;
 	} else {
 		$id = $object->id;
 	}
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
-	
+
+	$head [$h] [0] = dol_buildpath('/agefodd/session/calendar.php', 1) . '?id=' . $id;
+	$head [$h] [1] = $langs->trans("AgfCalendrier");
+	$head [$h] [2] = 'calendar';
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
 	$head [$h] [2] = 'subscribers';
 	$h ++;
-	
+
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers_certif.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfFormateur");
 	$head [$h] [2] = 'trainers';
 	$h ++;
-	
+
 	/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$object->id;
 	 $head[$h][1] = $langs->trans("AgfFichePresence");
 	$head[$h][2] = 'presence';
 	$h++;*/
 	// TODO fiche de presence
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfAdmSuivi");
 	$head [$h] [2] = 'administrative';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfLinkedDocuments");
 	$head [$h] [2] = 'document';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfLinkedDocumentsByTrainee");
 	$head [$h] [2] = 'document_trainee';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfSendDocuments");
 	$head [$h] [2] = 'send_docs';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Documents");
 	$head [$h] [2] = 'documentfiles';
 	$h ++;
-	
+
 	if ($showconv) {
 		$head [$h] [0] = dol_buildpath('/agefodd/session/convention.php', 1) . '?id=' . $object->id . '&sessid=' . $object->sessid;
 		$head [$h] [1] = $langs->trans("AgfConvention");
 		$head [$h] [2] = 'convention';
 		$h ++;
 	}
-	
+
 	if (! empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
-		
+
 		$head [$h] [0] = dol_buildpath('/agefodd/session/cost.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCostManagement");
 		$head [$h] [2] = 'cost';
 		$h ++;
 	}
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/info.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_session');
-	
+
 	return $head;
 }
 
@@ -192,33 +203,33 @@ function session_prepare_head($object, $showconv = 0) {
  */
 function trainee_prepare_head($object, $showcursus = 0) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
-	
+
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head [$h] [0] = dol_buildpath('/agefodd/trainee/certificate.php', 1) . '?id=' . $object->id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/session.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfSessionDetail");
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
-	
+
 	if ($conf->global->AGF_MANAGE_CURSUS) {
 		$head [$h] [0] = dol_buildpath('/agefodd/trainee/cursus.php', 1) . '?id=' . $object->id;
 		$head [$h] [1] = $langs->trans("AgfMenuCursus");
 		$head [$h] [2] = 'cursus';
 		$h ++;
-		
+
 		if (! empty($showcursus)) {
 			$head [$h] [0] = dol_buildpath('/agefodd/trainee/cursus_detail.php', 1) . '?id=' . $object->id . '&cursus_id=' . $object->cursus_id;
 			$head [$h] [1] = $langs->trans("AgfCursusDetail");
@@ -226,14 +237,14 @@ function trainee_prepare_head($object, $showcursus = 0) {
 			$h ++;
 		}
 	}
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_trainee');
-	
+
 	return $head;
 }
 
@@ -245,27 +256,27 @@ function trainee_prepare_head($object, $showcursus = 0) {
  */
 function trainer_prepare_head($object) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/session.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfSessionDetail");
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_trainer');
-	
+
 	return $head;
 }
 
@@ -277,22 +288,22 @@ function trainer_prepare_head($object) {
  */
 function contact_prepare_head($object) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/contact/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_contact');
-	
+
 	return $head;
 }
 
@@ -304,32 +315,32 @@ function contact_prepare_head($object) {
  */
 function site_prepare_head($object) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/site/reg_int.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfRegInt");
 	$head [$h] [2] = 'reg_int_tab';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_site=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfMenuSess");
 	$head [$h] [2] = 'sessions';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/site/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_site');
-	
+
 	return $head;
 }
 
@@ -341,27 +352,27 @@ function site_prepare_head($object) {
  */
 function cursus_prepare_head($object) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/cursus/card.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Card");
 	$head [$h] [2] = 'card';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/cursus/card_trainee.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfMenuActStagiaire");
 	$head [$h] [2] = 'trainee';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath('/agefodd/cursus/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_cursus');
-	
+
 	return $head;
 }
 
@@ -372,44 +383,49 @@ function cursus_prepare_head($object) {
  */
 function agefodd_admin_prepare_head() {
 	global $langs, $conf;
-	
+
 	$langs->load("agefodd@agefodd");
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_agefodd.php", 1);
 	$head [$h] [1] = $langs->trans("Settings");
 	$head [$h] [2] = 'settings';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/formation_catalogue_extrafields.php", 1);
 	$head [$h] [1] = $langs->trans("ExtraFieldsTraining");
 	$head [$h] [2] = 'attributetraining';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/session_extrafields.php", 1);
 	$head [$h] [1] = $langs->trans("ExtraFieldsSessions");
 	$head [$h] [2] = 'attributesession';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/cursus_extrafields.php", 1);
 	$head [$h] [1] = $langs->trans("ExtraFieldsCursus");
 	$head [$h] [2] = 'attributecursus';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catcost.php", 1);
 	$head [$h] [1] = $langs->trans("AgfCategCostCateg");
 	$head [$h] [2] = 'catcost';
 	$h ++;
-	
+
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catbpf.php", 1);
+	$head [$h] [1] = $langs->trans("AgfReportBPFCategTabTitle");
+	$head [$h] [2] = 'catbpf';
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/about.php", 1);
 	$head [$h] [1] = $langs->trans("About");
 	$head [$h] [2] = 'about';
 	$h ++;
-	
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd');
-	
+
 	return $head;
 }
 
@@ -421,47 +437,47 @@ function agefodd_admin_prepare_head() {
  */
 function agf_calendars_prepare_head($param) {
 	global $langs, $conf, $user;
-	
+
 	$h = 0;
 	$head = array ();
-	
+
 	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_month'.($param?'&'.$param:'');
 	$head[$h][1] = $langs->trans("AgfMenuAgenda");
 	$head[$h][2] = 'cardmonth';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_week'.($param?'&'.$param:'');
 	$head[$h][1] = $langs->trans("AgfMenuAgendaViewWeek");
 	$head[$h][2] = 'cardweek';
 	$h++;
-	
+
 	//$paramday=$param;
 	//if (preg_match('/&month=\d+/',$paramday) && ! preg_match('/&day=\d+/',$paramday)) $paramday.='&day=1';
 	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_day'.($param?'&'.$param:'');
 	$head[$h][1] = $langs->trans("AgfMenuAgendaViewDay");
 	$head[$h][2] = 'cardday';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/agefodd/agenda/pertrainer.php", 1).($param?'?'.$param:'');
 	$head[$h][1] = $langs->trans("AgfMenuAgendaViewPerUser");
 	$head[$h][2] = 'cardperuser';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/agefodd/agenda/listactions.php", 1).($param?'?'.$param:'');
 	$head[$h][1] = $langs->trans("AgfMenuAgendaViewList");
 	$head[$h][2] = 'cardlist';
 	$h++;
-	
+
 	$object=new stdClass();
-	
+
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
 	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
 	// $this->tabs = array('entity:-tabname);   												to remove a tab
 	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda');
-	
+
 	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda','remove');
-	
+
 	return $head;
 }
 
@@ -472,11 +488,11 @@ function agf_calendars_prepare_head($param) {
  */
 function ebi_get_adm_level_number() {
 	global $db;
-	
+
 	$sql = "SELECT l.rowid, l.level_rank";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as l";
 	$sql .= " WHERE l.level_rank = 0";
-	
+
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -495,11 +511,11 @@ function ebi_get_adm_level_number() {
  */
 function ebi_get_adm_training_level_number() {
 	global $db;
-	
+
 	$sql = "SELECT l.rowid, l.level_rank";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as l";
 	$sql .= " WHERE l.level_rank = 0";
-	
+
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
@@ -519,11 +535,11 @@ function ebi_get_adm_training_level_number() {
  */
 function ebi_get_level_number($session) {
 	global $db;
-	
+
 	$sql = "SELECT l.rowid, l.level_rank";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as l";
 	$sql .= " WHERE l.level_rank = 0 AND l.fk_agefodd_session=" . $session;
-	
+
 	dol_syslog("ebi_get_level_number sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
@@ -544,60 +560,60 @@ function ebi_get_level_number($session) {
  */
 function ebi_get_adm_lastFinishLevel($sessid) {
 	global $db;
-	
+
 	$totaldone = 0;
-	
+
 	$sql = "SELECT rowid";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 	$sql .= ' WHERE s.level_rank =0 ';
 	$sql .= " AND fk_agefodd_session = " . $sessid;
-	
+
 	dol_syslog("ebi_get_adm_lastFinishLevel sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
 		if (! empty($num)) {
 			while ( $obj = $db->fetch_object($result) ) {
-				
+
 				$sqlinner = "SELECT count(*) as cnt";
 				$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 				$sqlinner .= ' WHERE s.level_rank <>0 ';
 				$sqlinner .= " AND fk_parent_level = " . $obj->rowid . " AND fk_agefodd_session = " . $sessid;
 				$sqlinner .= " AND archive = 1";
-				
+
 				dol_syslog("ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG);
 				$resultinner = $db->query($sqlinner);
 				if ($resultinner) {
 					$objinner = $db->fetch_object($resultinner);
-					
+
 					$nbtaskdone = $objinner->cnt;
-					
+
 					$db->free($resultinner);
 				} else {
 					$error = "Error " . $db->lasterror();
 					// print $error;
 					return - 1;
 				}
-				
+
 				$sqlinner = "SELECT count(*) as cnt";
 				$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 				$sqlinner .= ' WHERE s.level_rank <>0 ';
 				$sqlinner .= " AND fk_parent_level = " . $obj->rowid . " AND fk_agefodd_session = " . $sessid;
-				
+
 				dol_syslog("ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG);
 				$resultinner = $db->query($sqlinner);
 				if ($resultinner) {
 					$objinner = $db->fetch_object($resultinner);
-					
+
 					$nbtotaltask = $objinner->cnt;
-					
+
 					$db->free($resultinner);
 				} else {
 					$error = "Error " . $db->lasterror();
 					// print $error;
 					return - 1;
 				}
-				
+
 				dol_syslog("ebi_get_adm_lastFinishLevel nbtotaltask=" . $nbtotaltask, LOG_DEBUG);
 				// No child check status
 				if ($nbtotaltask == 0) {
@@ -605,32 +621,32 @@ function ebi_get_adm_lastFinishLevel($sessid) {
 					$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 					$sqlinner .= " WHERE rowid=" . $obj->rowid;
 					$sqlinner .= " AND archive = 1";
-					
+
 					dol_syslog("ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG);
 					$resultinner = $db->query($sqlinner);
 					if ($resultinner) {
 						$objinner = $db->fetch_object($resultinner);
-						
+
 						$nbtaskdone = $objinner->cnt;
-						
+
 						$db->free($resultinner);
 					} else {
 						$error = "Error " . $db->lasterror();
 						// print $error;
 						return - 1;
 					}
-					
+
 					$sqlinner = "SELECT count(*) as cnt";
 					$sqlinner .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 					$sqlinner .= " WHERE rowid=" . $obj->rowid;
-					
+
 					dol_syslog("ebi_get_adm_lastFinishLevel sqlinner=" . $sqlinner, LOG_DEBUG);
 					$resultinner = $db->query($sqlinner);
 					if ($resultinner) {
 						$objinner = $db->fetch_object($resultinner);
-						
+
 						$nbtotaltask = $objinner->cnt;
-						
+
 						$db->free($resultinner);
 					} else {
 						$error = "Error " . $db->lasterror();
@@ -638,7 +654,7 @@ function ebi_get_adm_lastFinishLevel($sessid) {
 						return - 1;
 					}
 				}
-				
+
 				dol_syslog("ebi_get_adm_lastFinishLevel nbtaskdone=" . $nbtaskdone . " nbtotaltask=" . $nbtotaltask, LOG_DEBUG);
 				// If number task done = nb task to do or no child level
 				if (($nbtaskdone == $nbtotaltask))
@@ -663,17 +679,17 @@ function ebi_get_adm_lastFinishLevel($sessid) {
  */
 function ebi_get_adm_indice_action_child($id) {
 	global $db;
-	
+
 	$sql = "SELECT MAX(s.indice) as nb_action";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
-	
+
 	dol_syslog("agefodd:lib:ebi_get_adm_indice_action_child sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
 		$obj = $db->fetch_object($result);
-		
+
 		$db->free($result);
 		return $obj->nb_action;
 	} else {
@@ -692,7 +708,7 @@ function ebi_get_adm_indice_action_child($id) {
  */
 function ebi_get_adm_indice_per_rank($lvl_rank, $parent_level = '', $type = 'MIN') {
 	global $db;
-	
+
 	$sql = "SELECT ";
 	if ($type == 'MIN') {
 		$sql .= ' MIN(s.indice) ';
@@ -705,12 +721,12 @@ function ebi_get_adm_indice_per_rank($lvl_rank, $parent_level = '', $type = 'MIN
 	if ($parent_level != '') {
 		$sql .= " AND s.fk_parent_level=" . $parent_level;
 	}
-	
+
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
 		$obj = $db->fetch_object($result);
-		
+
 		$db->free($result);
 		return $obj->indice;
 	} else {
@@ -729,7 +745,7 @@ function ebi_get_adm_indice_per_rank($lvl_rank, $parent_level = '', $type = 'MIN
  */
 function ebi_get_adm_training_indice_per_rank($lvl_rank, $parent_level = '', $type = 'MIN') {
 	global $db;
-	
+
 	$sql = "SELECT ";
 	if ($type == 'MIN') {
 		$sql .= ' MIN(s.indice) ';
@@ -742,12 +758,12 @@ function ebi_get_adm_training_indice_per_rank($lvl_rank, $parent_level = '', $ty
 	if ($parent_level != '') {
 		$sql .= " AND s.fk_parent_level=" . $parent_level;
 	}
-	
+
 	$result = $db->query($sql);
 	if ($result) {
 		$num = $db->num_rows($result);
 		$obj = $db->fetch_object($result);
-		
+
 		$db->free($result);
 		return $obj->indice;
 	} else {
@@ -828,11 +844,11 @@ function ebi_liste_a_puce($text, $form = false) {
  */
 function ebi_get_adm_get_next_indice_action($id) {
 	global $db;
-	
+
 	$sql = "SELECT MAX(s.indice) as nb_action";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
-	
+
 	dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
@@ -845,23 +861,23 @@ function ebi_get_adm_get_next_indice_action($id) {
 			$sql = "SELECT MAX(s.indice) as nb_action";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel WHERE rowid=" . $id . ")";
-			
+
 			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
 				$obj = $db->fetch_object($result);
-				
+
 				$db->free($result);
 				return intval(intval($obj->nb_action) + 1);
 			} else {
-				
+
 				$error = "Error " . $db->lasterror();
 				return - 1;
 			}
 		}
 	} else {
-		
+
 		$error = "Error " . $db->lasterror();
 		return - 1;
 	}
@@ -875,11 +891,11 @@ function ebi_get_adm_get_next_indice_action($id) {
  */
 function ebi_get_adm_training_get_next_indice_action($id) {
 	global $db;
-	
+
 	$sql = "SELECT MAX(s.indice) as nb_action";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
-	
+
 	dol_syslog("ebi_get_adm_training_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
@@ -892,23 +908,23 @@ function ebi_get_adm_training_get_next_indice_action($id) {
 			$sql = "SELECT MAX(s.indice) as nb_action";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel WHERE rowid=" . $id . ")";
-			
+
 			dol_syslog("ebi_get_adm_training_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
 				$obj = $db->fetch_object($result);
-				
+
 				$db->free($result);
 				return intval(intval($obj->nb_action) + 1);
 			} else {
-				
+
 				$error = "Error " . $db->lasterror();
 				return - 1;
 			}
 		}
 	} else {
-		
+
 		$error = "Error " . $db->lasterror();
 		return - 1;
 	}
@@ -923,12 +939,12 @@ function ebi_get_adm_training_get_next_indice_action($id) {
  */
 function ebi_get_next_indice_action($id, $sessionid) {
 	global $db;
-	
+
 	$sql = "SELECT MAX(s.indice) as nb_action";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 	$sql .= " WHERE fk_parent_level=" . $id;
 	$sql .= " AND fk_agefodd_session=" . $sessionid;
-	
+
 	dol_syslog("ebi_get_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 	$result = $db->query($sql);
 	if ($result) {
@@ -942,23 +958,23 @@ function ebi_get_next_indice_action($id, $sessionid) {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE rowid=" . $id . " AND fk_agefodd_session=" . $sessionid . ")";
 			$sql .= " AND fk_agefodd_session=" . $sessionid;
-			
+
 			dol_syslog("ebi_get_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 			$result = $db->query($sql);
 			if ($result) {
 				$num = $db->num_rows($result);
 				$obj = $db->fetch_object($result);
-				
+
 				$db->free($result);
 				return intval(intval($obj->nb_action) + 1);
 			} else {
-				
+
 				$error = "Error " . $db->lasterror();
 				return - 1;
 			}
 		}
 	} else {
-		
+
 		$error = "Error " . $db->lasterror();
 		return - 1;
 	}
@@ -972,7 +988,7 @@ function ebi_get_next_indice_action($id, $sessionid) {
  */
 function agf_hex2rgb($hex) {
 	$hex = str_replace("#", "", $hex);
-	
+
 	if (strlen($hex) == 3) {
 		$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
 		$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
@@ -985,7 +1001,7 @@ function agf_hex2rgb($hex) {
 	$rgb = array (
 			$r,
 			$g,
-			$b 
+			$b
 	);
 	// return implode(",", $rgb); // returns the rgb values separated by commas
 	return $rgb; // returns an array with the rgb values
@@ -1073,7 +1089,7 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		// Mail
 		if ($fromcompany->email)
 		{
-			$line2.=($line2?" - ":"").$outputlangs->transnoentities("Courriel").": ".$fromcompany->email;
+			$line2.=($line2?" - ":"").$outputlangs->transnoentities("Mail").": ".$fromcompany->email;
 		}
 		// Juridical status
 		if ($fromcompany->forme_juridique_code)
@@ -1110,7 +1126,7 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 			if (preg_match('/\((.*)\)/i',$field,$reg)) $field=$reg[1];
 			$line3.=($line3?" - ":"").$field.": ".$outputlangs->convToOutputCharset($fromcompany->idprof3);
 		}
-		if (! empty($conf->global->AGF_ORGANISME_PREF)) 
+		if (! empty($conf->global->AGF_ORGANISME_PREF))
 		{
 			$field=$outputlangs->transnoentities('AgfPDFFoot7',$conf->global->AGF_ORGANISME_NUM).' - '.$outputlangs->transnoentities('AgfPDFFoot8');
 			if (preg_match('/(.*)/i',$field,$reg)) $field=$reg[1];
@@ -1119,13 +1135,13 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 
 	// Line 4 of company infos
 	$line4="";
-	
+
 	// Prof Id 3
 	if ($fromcompany->tva_intra != '')
 	{
 		$line4.=($line4?" - ":"").$outputlangs->transnoentities("VATIntraShort").": ".$outputlangs->convToOutputCharset($fromcompany->tva_intra);
 	}
-	
+
 	// Set free text font size
 	if (! empty($conf->global->ULTIMATEPDF_FREETEXT_FONT_SIZE)) {
 		$freetextfontsize=$conf->global->ULTIMATEPDF_FREETEXT_FONT_SIZE;
@@ -1146,7 +1162,7 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 
 	$marginwithfooter=$marge_basse + $freetextheight + (! empty($line1)?3:0) + (! empty($line2)?3:0) + (! empty($line3)?3:0) + (! empty($line4)?3:0);
 	$posy=$marginwithfooter+0;
-	
+
 	if ($line)	// Free text
 	{
 		$pdf->SetXY($dims['lm'],-$posy);
@@ -1164,21 +1180,19 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		$pdf->SetXY($dims['lm'],-$posy+4);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line1, 0, 'C', 0);
 		$posy-=7;
-		$pdf->SetFont('','',7);
 	}
 
 	if (! empty($line2))
 	{
-		$pdf->SetFont('','I',7);
+		$pdf->SetFont('','I',6);
 		$pdf->SetXY($dims['lm']-6,-$posy);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line2, 0, 'C', 0);
 		$posy-=3;
-		$pdf->SetFont('','',7);
 	}
 
 	if (! empty($line3))
 	{
-		$pdf->SetFont('','I',7);
+		$pdf->SetFont('','I',6);
 		$pdf->SetXY($dims['lm']-6,-$posy);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line3, 0, 'C', 0);
 	}
@@ -1189,7 +1203,16 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		$pdf->SetXY($dims['lm'],-$posy);
 		$pdf->MultiCell($dims['wk']-$dims['rm'], 2, $line4, 0, 'C', 0);
 	}
-	
+
+	// Show page nb only on iso languages (so default Helvetica font)
+	if (strtolower(pdf_getPDFFont($outputlangs)) == 'helvetica')
+	{
+		$pdf->SetXY(-20,-$posy);
+		//print 'xxx'.$pdf->PageNo().'-'.$pdf->getAliasNbPages().'-'.$pdf->getAliasNumPage();exit;
+		if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
+		else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);
+	}
+
 	$posy-=3;
 	$pdf->SetXY($dims['lm'],-$posy);
 

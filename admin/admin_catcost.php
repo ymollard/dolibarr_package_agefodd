@@ -29,6 +29,7 @@ require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php");
+require_once DOL_DOCUMENT_ROOT . "/categories/class/categorie.class.php";
 
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
@@ -37,17 +38,17 @@ $action = GETPOST('action', 'alpha');
 
 
 if ($action == 'setvar') {
-	
+
 	$categ = GETPOST('AGF_CAT_PRODUCT_CHARGES', 'array');
 	if (empty($categ)) {
 		$res = dolibarr_set_const($db, 'AGF_CAT_PRODUCT_CHARGES', '', 'chaine', 0, '', $conf->entity);
 	} else {
 		$res = dolibarr_set_const($db, 'AGF_CAT_PRODUCT_CHARGES', implode(',', $categ), 'chaine', 0, '', $conf->entity);
 	}
-	
+
 	if (! $res > 0)
 		$error ++;
-	
+
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
@@ -101,8 +102,8 @@ print '<tr class="pair"><td>' . $langs->trans("AgfCategOverheadCost") . '</td>';
 print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
-	
-$sql = ' SELECT rowid, label FROM '.MAIN_DB_PREFIX.'categorie WHERE type=0 AND entity IN ('.getEntity('category',1).')';
+
+$sql = ' SELECT rowid, label FROM '.MAIN_DB_PREFIX.'categorie WHERE type='.Categorie::TYPE_PRODUCT.' AND entity IN ('.getEntity('category',1).')';
 $resql= $db->query($sql);
 if (!$resql) {
 	setEventMessage($db->lasterror,'errors');

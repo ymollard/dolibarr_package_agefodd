@@ -3,7 +3,7 @@
  * Copyright (C) 2003-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (c) 2004-2012 Laurent Destailleur <eldy@users.sourceforge.net>
  * Copyright (C) 2012 Marcos García <marcosgdf@gmail.com>
- * Copyright (C) 2013-2014 Florian Henry  <florian.henry@open-concept.pro>
+ * Copyright (C) 2013-2016 Florian Henry  <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ if (! $mesg) {
 	$px1->mode = 'depth';
 	$px1->SetTitle($langs->trans("AgfNumberOfSessionsByMonth"));
 	
-	$px1->draw($filenamenb, $fileurlnb);
+	$px1->draw($filenamenb);
 } else {
 	setEventMessage($mesg, 'errors');
 }
@@ -149,12 +149,15 @@ if (! $mesg) {
 	$px2->SetHorizTickIncrement(1);
 	$px2->SetPrecisionY(0);
 	$px2->mode = 'depth';
-	$px2->SetTitle($langs->trans("AmountOfBillsByMonthHT"));
 	
-	$px2->draw($filenameamount, $fileurlamount);
+	$px2->SetTitle($langs->trans("AmountOfSessionsByMonthHT"));
+
+	$px2->draw($filenameamount);
 }
 
 $data = $stats->getAverageByMonthWithPrevYear($endyear, $startyear);
+
+$filename_avg = $dir . "/sessionsavg-" . $year . ".png";
 
 $px3 = new DolGraph();
 $mesg = $px3->isGraphKo();
@@ -178,7 +181,7 @@ if (! $mesg) {
 	$px3->mode = 'depth';
 	$px3->SetTitle($langs->trans("AmountAverage"));
 	
-	$px3->draw($filename_avg, $fileurl_avg);
+	$px3->draw($filename_avg);
 }
 
 // Show array

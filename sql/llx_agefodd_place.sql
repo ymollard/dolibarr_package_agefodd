@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   fk_pays integer,
   tel varchar(20),
   fk_societe integer NOT NULL,
+  fk_socpeople integer,
+  timeschedule text,
   notes text,
   acces_site text,
   note1 text,

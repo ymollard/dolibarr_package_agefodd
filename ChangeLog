@@ -1,5 +1,27 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 2.1.16 compared to 2.1.15 *****
+New : Add option to do not auto generate propal ref
+Fix/New : Manage convention signataire in a better way for inter entreprise
+New : Calendar tab to mamange separatly session calendar
+New : is session salemans is empty, it will be affected automaticly to first customer saleman
+New : Add pages numbers on all PDF documents
+Fix : French translation
+Fix : Add training program to proposal work not correctly
+Fix : Issue #16
+Fix : Issue #15
+Fix : Issue #14
+Fix : Issue #18
+Fix : Issue #23
+Fix : Issue #12
+New : Can upload files on training (optionnaly to replace training program)
+Fix : Invoice created from Document linked was not associated to Session
+New : Add BPF report
+New : Add {breakpage} tag into traiing program to mange manually break page on long program training
+New : Add place control use in the same dates only for controled location
+New : Only for Dolibarr 4.0.x version minimum
+New : Better calendar session deletion management
+
 ***** ChangeLog for 2.1.15 compared to 2.1.14 *****
 Fix : Fix training colors
 Fix : Fix bug on new time session

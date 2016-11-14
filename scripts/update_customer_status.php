@@ -195,11 +195,11 @@ if ($result > 0 && ! empty($user->id)) {
 	}
 	
 	//Contact client suivi propal => Destinataire catalogue
-	$sql = "UPDATE llx_socpeople_extrafields SET ct_catalogue=1 ";
+	$sql = "UPDATE " . MAIN_DB_PREFIX . "socpeople_extrafields SET ct_catalogue=1 ";
 	$sql .= " WHERE fk_object IN ( ";
-	$sql .= " SELECT elemcnt.fk_socpeople FROM llx_agefodd_session as sess ";
-	$sql .= " INNER JOIN llx_agefodd_session_element as sesselem ON sesselem.fk_session_agefodd=sess.rowid AND sesselem.element_type='propal' ";
-	$sql .= " INNER JOIN llx_element_contact as elemcnt ON elemcnt.element_id=sesselem.fk_element AND elemcnt.fk_c_type_contact=41)";
+	$sql .= " SELECT elemcnt.fk_socpeople FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselem ON sesselem.fk_session_agefodd=sess.rowid AND sesselem.element_type='propal' ";
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "element_contact as elemcnt ON elemcnt.element_id=sesselem.fk_element AND elemcnt.fk_c_type_contact=41)";
 	
 	dol_syslog('/agefodd/scripts/update_customer_status.php:Contact client suivi propal => Destinataire catalogue: sql='.$sql,LOG_DEBUG);
 	$resql = $db->query($sql);
@@ -212,11 +212,11 @@ if ($result > 0 && ! empty($user->id)) {
 	
 
 	//Contact client suivi pédagogique => Contact principal
-	$sql = "UPDATE llx_socpeople_extrafields SET ct_principal=1 ";
+	$sql = "UPDATE " . MAIN_DB_PREFIX . "socpeople_extrafields SET ct_principal=1 ";
 	$sql .= " WHERE fk_object IN ( ";
-	$sql .= " SELECT elemcnt.fk_socpeople FROM llx_agefodd_session as sess ";
-	$sql .= " INNER JOIN llx_agefodd_session_element as sesselem ON sesselem.fk_session_agefodd=sess.rowid AND sesselem.element_type='propal' ";
-	$sql .= " INNER JOIN llx_element_contact as elemcnt ON elemcnt.element_id=sesselem.fk_element AND elemcnt.fk_c_type_contact=192 ";
+	$sql .= " SELECT elemcnt.fk_socpeople FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselem ON sesselem.fk_session_agefodd=sess.rowid AND sesselem.element_type='propal' ";
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "element_contact as elemcnt ON elemcnt.element_id=sesselem.fk_element AND elemcnt.fk_c_type_contact=192 ";
 	$sql .= " WHERE sess.type_session=1)";
 	
 	dol_syslog('/agefodd/scripts/update_customer_status.php:Contact client suivi pédagogique => Contact principal: sql='.$sql,LOG_DEBUG);

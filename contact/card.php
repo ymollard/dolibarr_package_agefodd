@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012-2014 Florian Henry    <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry    <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,7 +125,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="action" value="create_confirm">' . "\n";
 	
 	print '<div class="warning">' . $langs->trans("AgfContactNewWarning1");
-	print ' <a href="' . DOL_URL_ROOT . '/contact/fiche.php?action=create">' . $langs->trans("AgfContactNewWarning2") . '</a>.';
+	print ' <a href="' . DOL_URL_ROOT . '/contact/card.php?action=create">' . $langs->trans("AgfContactNewWarning2") . '</a>.';
 	print $langs->trans("AgfContactNewWarning3") . '</div>' . "\n";
 	
 	print '<table class="border" width="100%">' . "\n";
@@ -217,7 +217,7 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 	if ($user->rights->agefodd->creer) {
-		print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/fiche.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
+		print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/card.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 	}

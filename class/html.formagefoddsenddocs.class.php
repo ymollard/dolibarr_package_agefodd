@@ -4,7 +4,7 @@
  * Copyright (C) 2005-2011 Regis Houssin <regis@dolibarr.fr>
  * Copyright (C) 2010-2011 Juanjo Menent <jmenent@2byte.es>
  * Copyright (C) 2012 	   JF FERRY <jfefe@aternatik.fr>
- * Copyright (C) 2012-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -363,12 +363,12 @@ class FormAgefoddsenddocs extends FormMail {
 			$out .= '<td>';
 			// TODO Trick to have param removedfile containing nb of image to delete. But this does not works without javascript
 			$out .= '<input type="hidden" class="removedfilehidden" name="removedfile" value="">' . "\n";
-			$out .= '<script type="text/javascript" language="javascript">';
-			$out .= 'jQuery(document).ready(public function  () {';
-			$out .= '    jQuery(".removedfile").click(public function () {';
-			$out .= '        jQuery(".removedfilehidden").val(jQuery(this).val());';
-			$out .= '    });';
-			$out .= '})';
+			$out .= '<script type="text/javascript" language="javascript">'. "\n";
+			$out.= 'jQuery(document).ready(function () {'. "\n";
+			$out.= '    jQuery(".removedfile").click(function() {'. "\n";
+			$out.= '        jQuery(".removedfilehidden").val(jQuery(this).val());'. "\n";
+			$out.= '    });'. "\n";
+			$out.= '})'. "\n";
 			$out .= '</script>' . "\n";
 			if (count($listofpaths)) {
 				foreach ( $listofpaths as $key => $val ) {
@@ -390,7 +390,8 @@ class FormAgefoddsenddocs extends FormMail {
 			} else {
 				$out .= $langs->trans("NoAttachedFiles") . '<br>';
 			}
-			if ($this->withfile == 2) // Can add other files
+			// Can add other files
+			if ($this->withfile == 2)
 {
 				$out .= '<input type="file" class="flat" id="addedfile" name="addedfile" value="' . $langs->trans("Upload") . '" />';
 				$out .= ' ';

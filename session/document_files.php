@@ -4,7 +4,7 @@
  * Copyright (C) 2004-2010 Laurent Destailleur <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2012 Regis Houssin <regis.houssin@capnetworks.com>
  * Copyright (C) 2010 Juanjo Menent <jmenent@2byte.es>
- * Copyright (C) 2013-2014 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2013-2016 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ if ($object->id) {
 	print '</div>';
 	
 	$modulepart = 'agefodd';
-	$permission = $user->rights->agefodd->creer;
+	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 	

@@ -177,7 +177,6 @@ if ($action =='delete_action')
  */
 
 $help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&oacute;dulo_Agenda';
-llxHeader('', $langs->trans("Agenda"), $help_url);
 
 $form = new Form($db);
 $formagefodd = new FormAgefodd($db);
@@ -254,24 +253,39 @@ $title = $langs->trans("DoneAndToDoActions");
 
 $param = '';
 $region = '';
-if ($filter_commercial)
-	$param .= "&commercial=" . $filter_commercial;
-if ($filter_customer)
-	$param .= "&fk_soc=" . $filter_customer;
-if ($filter_contact)
-	$param .= "&contact=" . $filter_contact;
-if ($filter_trainer)
-	$param .= "&trainerid=" . $filter_trainer;
-if ($type)
-	$param .= "&type=" . $type;
-if ($action == 'show_day' || $action == 'show_week')
-	$param .= '&action=' . $action;
-if ($filter_type_session != '')
-	$param .= '&type_session=' . $filter_type_session;
-if ($display_only_trainer_filter != '')
-	$param .= '&displayonlytrainerfilter=' . $display_only_trainer_filter;
+if ($filter_commercial) {
+	$param .= "&commercial=" . $filter_commercial;	
+}
 
+if ($filter_customer) {
+	$param .= "&fk_soc=" . $filter_customer;
+}
+if ($filter_contact) {
+	$param .= "&contact=" . $filter_contact;
+}
+if ($filter_trainer) {
+	$param .= "&trainerid=" . $filter_trainer;
+}
+if ($type) {
+	$param .= "&type=" . $type;
+}
+if ($action == 'show_day' || $action == 'show_week') {
+	$param .= '&action=' . $action;
+}
+	
+if ($filter_type_session != '') {
+	$param .= '&type_session=' . $filter_type_session;
+}
+if ($display_only_trainer_filter != '') {
+	$param .= '&displayonlytrainerfilter=' . $display_only_trainer_filter;
+}
+if ($filter_location){
+	$param .= '&location=' . $filter_location;
+}
 $param .= "&maxprint=" . $maxprint;
+
+
+llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
 
 // Show navigation bar
 if (empty($action) || $action=='show_month')
