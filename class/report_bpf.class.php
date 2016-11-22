@@ -502,6 +502,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_BPF_ENTFRENCH/AGF_CAT_BPF_PRODPEDA";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_OPCA)) {
@@ -533,6 +537,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_BPF_OPCA/AGF_CAT_BPF_PRODPEDA";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_ADMINISTRATION)) {
@@ -564,6 +572,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_BPF_PRODPEDA/AGF_CAT_BPF_ADMINISTRATION";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_PARTICULIER)) {
@@ -595,6 +607,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_PRODUCT_CHARGES";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_PRESTA)) {
@@ -626,6 +642,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_PRODUCT_CHARGES";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
@@ -657,6 +677,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_PRODUCT_CHARGES";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
@@ -715,6 +739,10 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+		} else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_PRODUCT_CHARGES";
+			dol_syslog(get_class($this) . ":: " . $this->error, LOG_ERR);
+			return - 1;
 		}
 	}
 
@@ -727,69 +755,81 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_financial_outcome($filter = array()) {
 		global $langs, $conf;
 
-		// 60 B :: Achats (fournitures)
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
-		// Invoice not concern by session
-		$sql .= " AND f.rowid  NOT IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') ";
-		$sql .= " AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
-		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
+		if (! empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
+			// 60 B :: Achats (fournitures)
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
+			// Invoice not concern by session
+			$sql .= " AND f.rowid  NOT IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') ";
+			$sql .= " AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
 
-		dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B ", LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data_outcome[] = array (
-							'code' => '60',
-							'rubrique' => 'B',
-							'label' => 'Achats (fournitures)',
-							'amount' => $obj->amount
-					);
+			dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B ", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data_outcome[] = array (
+								'code' => '60',
+								'rubrique' => 'B',
+								'label' => 'Achats (fournitures)',
+								'amount' => $obj->amount
+						);
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B " . $this->error, LOG_ERR);
+				return - 1;
 			}
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
+			$this->db->free($resql);
+		}else {
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_PRODUCT_CHARGES";
 			dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B " . $this->error, LOG_ERR);
 			return - 1;
 		}
-		$this->db->free($resql);
 
-		// 6226 :: Honoraires de formation
-		$sql = "SELECT SUM(facdet.total_ht) as amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-		// Honoraire
-		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_FEEPRESTA . "))  ";
-		// Invoice concern only session
-		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_trainer' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
-		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
+		if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA)) {
+			// 6226 :: Honoraires de formation
+			$sql = "SELECT SUM(facdet.total_ht) as amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
+			// Honoraire
+			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_FEEPRESTA . "))  ";
+			// Invoice concern only session
+			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_trainer' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
 
-		dol_syslog(get_class($this) . "::fetch_financial_outcome 604 ", LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			if ($this->db->num_rows($resql)) {
-				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->financial_data_outcome[] = array (
-							'code' => '6226',
-							'rubrique' => '',
-							'label' => 'Honoraires de formation',
-							'amount' => $obj->amount
-					);
+			dol_syslog(get_class($this) . "::fetch_financial_outcome 604 ", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						$this->financial_data_outcome[] = array (
+								'code' => '6226',
+								'rubrique' => '',
+								'label' => 'Honoraires de formation',
+								'amount' => $obj->amount
+						);
+					}
 				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::fetch_financial_outcome 604 " . $this->error, LOG_ERR);
+				return - 1;
 			}
+			$this->db->free($resql);
 		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_financial_outcome 604 " . $this->error, LOG_ERR);
+			$this->error = "Error Set Up Module Agefodd On category BPF or product categorie not complete AGF_CAT_BPF_FEEPRESTA";
+			dol_syslog(get_class($this) . "::fetch_financial_outcome 6226 " . $this->error, LOG_ERR);
 			return - 1;
 		}
-		$this->db->free($resql);
 
 		// 6132 :: Locations liées à la formation
 		$sql = "SELECT SUM(facdet.total_ht) as amount ";

@@ -594,7 +594,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	} else {
 		$exclude_array = array ();
 	}
-	$form->select_dolusers((empty($commercial) ? $user->id : $commercial), 'commercial', 1, $exclude_array);
+	print $form->select_dolusers((empty($commercial) ? $user->id : $commercial), 'commercial', 1, $exclude_array);
 	print '</td></tr>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfDateDebut") . '</span></td><td>';
@@ -794,7 +794,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					} else {
 						$exclude_array = array ();
 					}
-					$form->select_users($agf->commercialid, 'commercial', 1, $exclude_array);
+					print $form->select_dolusers($agf->commercialid, 'commercial', 1, $exclude_array);
 					print '</td></tr>';
 
 					print '<tr><td>' . $langs->trans("AgfDuree") . '</td>';
