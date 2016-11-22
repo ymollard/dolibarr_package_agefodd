@@ -151,6 +151,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$error = 0;
 
 		$agf = new Agsession($db);
+		$agf->id=$id;
 
 		$fk_session_place = GETPOST('place', 'int');
 		if (($fk_session_place == - 1) || (empty($fk_session_place))) {
@@ -436,6 +437,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			}
 		}
 
+		$agf->id=$new_session_id;
 		$result = $agf->fetchOtherSessionSameplacedate();
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');

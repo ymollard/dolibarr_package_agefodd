@@ -349,7 +349,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 	print '<td><input name="timeschedule" class="flat" size="50" value="' . GETPOST('timeschedule', 'alpha') . '"></td></tr>';
 
-	if (GETPOST('timeschedule', 'alpha') == 0 || empty(GETPOST('timeschedule', 'alpha'))) {
+	$timeschedule=GETPOST('timeschedule', 'alpha');
+	if ($timeschedule == 0 || empty($timeschedule)) {
 		$checked = '';
 	} else {
 		$checked = 'checked="checked"';
