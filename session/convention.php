@@ -442,7 +442,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$art1 .= "\n";
 
 	// Durée de formation
-	$art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $agf->duree . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n";
+	$art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $agf->duree_session . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n";
 
 	$calendrier = new Agefodd_sesscalendar($db);
 	$resql = $calendrier->fetch_all($sessid);
