@@ -1086,3 +1086,5 @@ AgfNoCursus=No cursus
 AgfMenuReport=Report
 AgfRefPropalAuto=Génération de la référence client de la proposition automatique
 AgfRefPropalAutoHelp=Depuis l'onglet Docuement liée, lors de la création d'une propostion commerciale assisté, la référence est automatique, elle contiens le nom de la formation et les dates
+ImportDataset_agefoddtraingingprogram=Agefodd - Import des formations du catalogues
+ExportDataset_TrainingProgram=Agefodd - Export des formations du catalogues

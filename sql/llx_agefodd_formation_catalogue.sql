@@ -46,5 +46,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   fk_c_category integer NULL,
   certif_duration varchar(30) NULL,
   color varchar(32) NULL,
-  tms timestamp NOT NULL
+  tms timestamp NOT NULL,
+  import_key varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB;

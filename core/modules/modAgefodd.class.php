@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.0';
+		$this->version = '3.0.1';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -672,7 +672,7 @@ class modAgefodd extends DolibarrModules
 		$this->import_convertvalue_array[$r] = array(
 				's.fk_soc' => array(
 						'rule' => 'fetchidfromref',
-						'file' => '/societe/class/societe.class.php',
+						'classfile' => '/societe/class/societe.class.php',
 						'class' => 'Societe',
 						'method' => 'fetch',
 						'element' => 'ThirdParty'
@@ -794,6 +794,110 @@ class modAgefodd extends DolibarrModules
 				's.fk_agefodd_stagiaire_type' => $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE,
 				's.datec' => '2013-11-12'
 		);
+
+		//Import training program
+		$r ++;
+		$this->import_code[$r] = $this->rights_class . '_' . $r;
+		$this->import_label[$r] = 'ImportDataset_agefoddtraingingprogram';
+		$this->import_icon[$r] = 'agefodd@agefodd';
+		$this->import_entities_array[$r] = array(
+				's.ref' => 'AgfCatalogDetail',
+				's.ref_interne' => 'AgfCatalogDetail',
+				's.intitule' => "AgfCatalogDetail",
+				's.duree' => "AgfCatalogDetail",
+				's.public' => "AgfCatalogDetail",
+				's.methode' => "AgfCatalogDetail",
+				's.but' => "AgfCatalogDetail",
+				's.programme' => "AgfCatalogDetail",
+				's.pedago_usage' => "AgfCatalogDetail",
+				's.sanction' => "AgfCatalogDetail",
+				's.prerequis' => "AgfCatalogDetail",
+				's.fk_product' => "AgfCatalogDetail",
+				's.archive' => "AgfCatalogDetail",
+				's.note_private' => "AgfCatalogDetail",
+				's.note_public' => "AgfCatalogDetail",
+				's.nb_subscribe_min' => "AgfCatalogDetail",
+				's.fk_c_category' => "AgfCatalogDetail",
+				's.certif_duration' => "AgfCatalogDetail",
+				's.color' => "AgfCatalogDetail",
+				's.datec' => "AgfCatalogDetail"
+		);
+		$this->import_tables_array[$r] = array(
+				's' => MAIN_DB_PREFIX . 'agefodd_formation_catalogue'
+		);
+		$this->import_fields_array[$r] = array(
+				's.ref' => 'Ref*',
+				's.ref_interne' => 'AgfRefInterne',
+				's.intitule' => "AgfIntitule",
+				's.duree' => "AgfDuree",
+				's.public' => "AgfPublic",
+				's.methode' => "AgfMethode",
+				's.but' => "AgfBut",
+				's.programme' => "AgfProgramme",
+				's.pedago_usage' => "AgfPedagoUsage",
+				's.sanction' => "AgfSanction",
+				's.prerequis' => "AgfPrerequis",
+				's.fk_product' => "AgfProductServiceLinked",
+				's.archive' => "AgfArchiver",
+				's.note_private' => "NotePrivate",
+				's.note_public' => "NotePublic",
+				's.nb_subscribe_min' => "AgfNbMintarget",
+				's.fk_c_category' => "AgfTrainingCateg",
+				's.certif_duration' => "AgfCertificateDuration",
+				's.color' => "Color",
+				's.datec' => "DateCreation"
+		);
+		// Add extra fields
+		$sql="SELECT name, label, fieldrequired FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_formation_catalogue' AND entity = ".$conf->entity;
+		$resql=$this->db->query($sql);
+		if ($resql)    // This can fail when class is used on old database (during migration for example)
+		{
+			while ($obj=$this->db->fetch_object($resql))
+			{
+				$fieldname='extra.'.$obj->name;
+				$fieldlabel=ucfirst($obj->label);
+				$this->import_fields_array[$r][$fieldname]=$fieldlabel.($obj->fieldrequired?'*':'');
+			}
+		}
+		$this->import_fieldshidden_array[$r] = array(
+				's.fk_user_author' => 'user->id',
+				's.fk_user_mod' => 'user->id',
+		);
+		$this->import_convertvalue_array[$r] = array(
+				's.fk_product' => array(
+						'rule' => 'fetchidfromref',
+						'classfile' => '/product/class/product.class.php',
+						'class' => 'Product',
+						'method' => 'fetch',
+						'element' => 'product'
+				)
+		);
+		$this->import_regex_array[$r] = array(
+				's.datec' => '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$'
+		);
+		$this->import_examplevalues_array[$r] = array(
+				's.ref' => 'FOR1601_00001',
+				's.ref_interne' => 'FO16012000',
+				's.intitule' => "Formation",
+				's.duree' => "1",
+				's.public' => "Tous public",
+				's.methode' => "Participative",
+				's.but' => "But",
+				's.programme' => "programe",
+				's.pedago_usage' => "Methode pédagogique",
+				's.sanction' => "Diplome",
+				's.prerequis' => "Savoir lire et écrire",
+				's.fk_product' => "PRD01",
+				's.archive' => "0",
+				's.note_private' => "",
+				's.note_public' => "",
+				's.nb_subscribe_min' => "5",
+				's.fk_c_category' => "1",
+				's.certif_duration' => "1",
+				's.color' => "DDDDDD",
+				's.datec' => "2016-12-31",
+		);
+
 
 		// Trainee export
 		$r = 0;
@@ -1009,69 +1113,11 @@ class modAgefodd extends DolibarrModules
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants'
 		);
 
-		$sql = "SELECT name, label, type, param FROM " . MAIN_DB_PREFIX . "extrafields WHERE elementtype = 'agefodd_formation_catalogue'";
-		$resql = $this->db->query($sql);
-		if ($resql) // This can fail when class is used on old database (during migration for example)
-{
-			global $langs;
-			while ( $obj = $this->db->fetch_object($resql) ) {
-				$fieldname = 'extracatalogue.' . $obj->name;
-				$fieldlabel = $langs->trans('AgfTraining') . '-' . ucfirst($obj->label);
-				$typeFilter = "Text";
-				switch ($obj->type) {
-					case 'int' :
-					case 'double' :
-					case 'price' :
-						$typeFilter = "Numeric";
-						break;
-					case 'date' :
-					case 'datetime' :
-						$typeFilter = "Date";
-						break;
-					case 'boolean' :
-						$typeFilter = "Boolean";
-						break;
-					case 'sellist' :
-						$typeFilter = "List:" . $obj->param;
-						break;
-				}
-				$this->export_fields_array[$r][$fieldname] = $fieldlabel;
-				$this->export_TypeFields_array[$r][$fieldname] = $typeFilter;
-				$this->export_entities_array[$r][$fieldname] = 'AgfCatalogDetail';
-			}
-		}
+		$keyforselect='agefodd_formation_catalogue'; $keyforelement='AgfCatalogDetail'; $keyforaliasextra='extracatalogue';
+		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
 
-		$sql = "SELECT name, label, type, param FROM " . MAIN_DB_PREFIX . "extrafields WHERE elementtype = 'agefodd_session'";
-		$resql = $this->db->query($sql);
-		if ($resql) // This can fail when class is used on old database (during migration for example)
-{
-			global $langs;
-			while ( $obj = $this->db->fetch_object($resql) ) {
-				$fieldname = 'extrasession.' . $obj->name;
-				$fieldlabel = $langs->trans('Training') . '-' . ucfirst($obj->label);
-				$typeFilter = "Text";
-				switch ($obj->type) {
-					case 'int' :
-					case 'double' :
-					case 'price' :
-						$typeFilter = "Numeric";
-						break;
-					case 'date' :
-					case 'datetime' :
-						$typeFilter = "Date";
-						break;
-					case 'boolean' :
-						$typeFilter = "Boolean";
-						break;
-					case 'sellist' :
-						$typeFilter = "List:" . $obj->param;
-						break;
-				}
-				$this->export_fields_array[$r][$fieldname] = $fieldlabel;
-				$this->export_TypeFields_array[$r][$fieldname] = $typeFilter;
-				$this->export_entities_array[$r][$fieldname] = 'AgfSessionDetail';
-			}
-		}
+		$keyforselect='agefodd_session'; $keyforelement='AgfSessionDetail'; $keyforaliasextra='extrasession';
+		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
 
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
@@ -1097,6 +1143,95 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
+
+
+		// training export
+		$r ++;
+		$this->export_code[$r] = $this->rights_class . '_' . $r;
+		$this->export_label[$r] = 'ExportDataset_TrainingProgram';
+		$this->export_icon[$r] = 'bill';
+		$this->export_permission[$r] = array(
+				array(
+						"agefodd",
+						"export"
+				)
+		);
+		$this->export_fields_array[$r] = array(
+				's.rowid' => 'Id',
+				's.ref' => 'Ref',
+				's.ref_interne' => 'AgfRefInterne',
+				's.intitule' => "AgfIntitule",
+				's.duree' => "AgfDuree",
+				's.public' => "AgfPublic",
+				's.methode' => "AgfMethode",
+				's.but' => "AgfBut",
+				's.programme' => "AgfProgramme",
+				's.pedago_usage' => "AgfPedagoUsage",
+				's.sanction' => "AgfSanction",
+				's.prerequis' => "AgfPrerequis",
+				's.fk_product' => "AgfProductServiceLinked",
+				's.archive' => "AgfArchiver",
+				's.note_private' => "NotePrivate",
+				's.note_public' => "NotePublic",
+				's.nb_subscribe_min' => "AgfNbMintarget",
+				's.fk_c_category' => "AgfTrainingCateg",
+				's.certif_duration' => "AgfCertificateDuration",
+				's.color' => "Color",
+		);
+
+		$this->export_TypeFields_array[$r] = array(
+				's.rowid' => "Text",
+				's.ref' => "Text",
+				's.ref_interne' => 'Text',
+				's.intitule' => "Text",
+				's.duree' => "Text",
+				's.public' => "Text",
+				's.methode' => "Text",
+				's.but' => "Text",
+				's.programme' => "Text",
+				's.pedago_usage' => "Text",
+				's.sanction' => "Text",
+				's.prerequis' => "Text",
+				's.fk_product' => "Text",
+				's.archive' => "Text",
+				's.note_private' => "Text",
+				's.note_public' => "Text",
+				's.nb_subscribe_min' => "Text",
+				's.fk_c_category' => "Text",
+				's.certif_duration' => "Text",
+				's.color' => "Text",
+		);
+		$this->export_entities_array[$r] = array(
+				's.rowid' => "AgfCatalogDetail",
+				's.ref' => "AgfCatalogDetail",
+				's.ref_interne' => 'AgfCatalogDetail',
+				's.intitule' => "AgfCatalogDetail",
+				's.duree' => "AgfCatalogDetail",
+				's.public' => "AgfCatalogDetail",
+				's.methode' => "AgfCatalogDetail",
+				's.but' => "AgfCatalogDetail",
+				's.programme' => "AgfCatalogDetail",
+				's.pedago_usage' => "AgfCatalogDetail",
+				's.sanction' => "AgfCatalogDetail",
+				's.prerequis' => "AgfCatalogDetail",
+				's.fk_product' => "AgfCatalogDetail",
+				's.archive' => "AgfCatalogDetail",
+				's.note_private' => "AgfCatalogDetail",
+				's.note_public' => "AgfCatalogDetail",
+				's.nb_subscribe_min' => "AgfCatalogDetail",
+				's.fk_c_category' => "AgfCatalogDetail",
+				's.certif_duration' => "AgfCatalogDetail",
+				's.color' => "AgfCatalogDetail",
+		);
+
+		$keyforselect='agefodd_formation_catalogue'; $keyforelement='AgfCatalogDetail'; $keyforaliasextra='extra';
+		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
+
+		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
+		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as s';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extra ON extra.fk_object = s.rowid';
+
+
 
 		// Array to add new pages in new tabs
 		// $this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');

@@ -2,6 +2,7 @@ English Dolibarr ChangeLog
 
 ***** ChangeLog for 3.0.0 compared to 3.0.1 *****
 FIX : Do not output chapter if empty into training program
+NEW : Import/Export training program
 
 
 ***** ChangeLog for 2.1.16 compared to 3.0.0 *****
