@@ -1,5 +1,9 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.0 compared to 3.0.1 *****
+FIX : Do not output chapter if empty into training program
+
+
 ***** ChangeLog for 2.1.16 compared to 3.0.0 *****
 New : Add option to do not auto generate propal ref
 Fix/New : Manage convention signataire in a better way for inter entreprise

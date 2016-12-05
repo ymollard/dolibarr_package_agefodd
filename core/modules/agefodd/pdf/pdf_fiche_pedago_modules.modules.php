@@ -223,40 +223,41 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 
 				// Récuperation
 				$result2 = $agf->fetch_objpeda_per_formation($agf->id);
-
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1); // $this->pdf->SetFont('Arial','B',9);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfObjPeda');
-
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
-
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size); // $this->pdf->SetFont('Arial','',9);
-				$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
-				for($y = 0; $y < count($agf->lines); $y ++) {
-
+				if (count($agf->lines) > 0) {
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1); // $this->pdf->SetFont('Arial','B',9);
 					$this->pdf->SetXY($posX, $posY);
-					$hauteur = dol_nboflines_bis($agf->lines[$y]->intitule, 100) * 4;
+					$this->str = $outputlangs->transnoentities('AgfObjPeda');
 
-					$this->pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf->lines[$y]->priorite . '.   ' . $agf->lines[$y]->intitule), 0, 'L');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size); // $this->pdf->SetFont('Arial','',9);
+					$width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
+					for($y = 0; $y < count($agf->lines); $y ++) {
+
+						$this->pdf->SetXY($posX, $posY);
+						$hauteur = dol_nboflines_bis($agf->lines[$y]->intitule, 100) * 4;
+
+						$this->pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf->lines[$y]->priorite . '.   ' . $agf->lines[$y]->intitule), 0, 'L');
+						$posY = $this->pdf->GetY();
+					}
+					/*$obj_peda_array=array();
+					 for($y = 0; $y < count($agf->lines); $y ++) {
+
+					 $this->pdf->SetXY($posX, $posY);
+					 $obj_peda_array[] = $agf->lines [$y]->priorite.'-'.$agf->lines [$y]->intitule;
+					 }
+					 if (count($obj_peda_array)>0) {
+					 $obj_peda_array_str='  '.$this->pdf->unichr(149).' ';
+					 $obj_peda_array_str.=implode('  '.$this->pdf->unichr(149).' ',$obj_peda_array);
+
+					 $this->pdf->MultiCell($width, 0, $outputlangs->convToOutputCharset($obj_peda_array_str), 0, 'L');
+					 }*/
+					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
-				/*$obj_peda_array=array();
-				 for($y = 0; $y < count($agf->lines); $y ++) {
-
-				 $this->pdf->SetXY($posX, $posY);
-				 $obj_peda_array[] = $agf->lines [$y]->priorite.'-'.$agf->lines [$y]->intitule;
-				 }
-				 if (count($obj_peda_array)>0) {
-				 $obj_peda_array_str='  '.$this->pdf->unichr(149).' ';
-				 $obj_peda_array_str.=implode('  '.$this->pdf->unichr(149).' ',$obj_peda_array);
-
-				 $this->pdf->MultiCell($width, 0, $outputlangs->convToOutputCharset($obj_peda_array_str), 0, 'L');
-				 }*/
-				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 
 				/**
 				 * *** Pré requis ****
@@ -286,102 +287,105 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				/**
 				 * *** Public ****
 				 */
+				if (! empty($agf->public)) {
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+					$this->pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfPublic');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfPublic');
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$this->str = ucfirst($agf->public);
 
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf->public);
+					$this->pdf->SetXY($posX, $posY);
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 
-				$this->pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
-				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
-
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+				}
 				/**
 				 * *** Moyens pédagogique ****
 				 */
 
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfPedagoUsage');
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+				if (! empty($agf->pedago_usage)) {
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+					$this->pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfPedagoUsage');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf->pedago_usage);
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$this->str = ucfirst($agf->pedago_usage);
 
-				$this->pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+					$this->pdf->SetXY($posX, $posY);
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
-				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
-
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+				}
 				/**
 				 * *** Sanction ****
 				 */
+				if (! empty($agf->sanction)) {
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+					$this->pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfSanction');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfSanction');
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$this->str = ucfirst($agf->sanction);
 
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf->sanction);
+					$this->pdf->SetXY($posX, $posY);
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 
-				$this->pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
-				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text + 2;
-
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text + 2;
+				}
 				// Methode pedago ****
 
-				$height = $this->getTotalHeightLine($agf->methode, $agf, $outputlangs, $fontsize);
+				if (! empty($agf->methode)) {
+					$height = $this->getTotalHeightLine($agf->methode, $agf, $outputlangs, $fontsize);
 
-				$height_left = $this->page_hauteur - $this->marge_basse - $posY;
-				if ($height > $height_left) {
-					$this->_pagefoot($agf, $outputlangs);
-					$this->pdf->AddPage();
-					$this->_pagehead($agf, $outputlangs);
-					$posY = $this->pdf->GetY() + 5;
-				} else {
+					$height_left = $this->page_hauteur - $this->marge_basse - $posY;
+					if ($height > $height_left) {
+						$this->_pagefoot($agf, $outputlangs);
+						$this->pdf->AddPage();
+						$this->_pagehead($agf, $outputlangs);
+						$posY = $this->pdf->GetY() + 5;
+					} else {
+						$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
+					}
+
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+
+					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+					$this->pdf->SetXY($posX, $posY);
+					$this->str = $outputlangs->transnoentities('AgfMethode');
+					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $this->pdf->GetY();
+					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+
+					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$this->str = $agf->methode;
+					$hauteur = dol_nboflines_bis($this->str, 50) * 4;
+					$this->pdf->SetXY($posX, $posY);
+					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
+
+					$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
-
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
-
-				$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfMethode');
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
-
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = $agf->methode;
-				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-				$this->pdf->SetXY($posX, $posY);
-				$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-
-				$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', '', '2', '', '', '', '', $ishtml);
-				$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 
 				// Durée
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
