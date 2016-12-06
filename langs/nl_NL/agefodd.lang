@@ -956,3 +956,5 @@ AgfSessionContactFirstName=Prénom contact session
 AgfSessionContactLastName=Nom contact session
 AgfSessionContactEmail=Prénom contact email
 AgfSessionContactPhone=Nom contact Téléhpone
+ImportDataset_agefoddtraingingprogram=Agefodd - Import des formations du catalogues
+ExportDataset_TrainingProgram=Agefodd - Export des formations du catalogues
