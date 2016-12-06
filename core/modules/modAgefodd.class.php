@@ -925,6 +925,10 @@ class modAgefodd extends DolibarrModules
 				'contactsessopca.civility as contactsessopcaciv' => 'AgfOPCASessContactCiv',
 				'contactsessopca.lastname as contactsessopcalastname' => 'AgfOPCASessContactFirstName',
 				'contactsessopca.firstname as contactsessopcalastname' => 'AgfOPCASessContactLastName',
+				'contactsession.firstname as contactsessionfirstname' => 'AgfSessionContactFirstName',
+				'contactsession.lastname as contactsessionlastname' => 'AgfSessionContactLastName',
+				'contactsession.email as contactsessionemail' => 'AgfSessionContactEmail',
+				'contactsession.phone as contactsessionphone' => 'AgfSessionContactPhone',
 				'c.intitule' => 'AgfFormIntitule',
 				'c.ref' => 'Ref',
 				'c.ref_interne' => 'AgfFormCodeInterne',
@@ -957,9 +961,12 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$this->export_TypeFields_array[$r] = array(
-				's.rowid' => "Text",
+				'c.rowid' => "Text",
+				'c.intitule' => 'Text',
+				'c.ref' => 'Text',
+				'c.ref_interne' => 'Text',
 				's.dated' => 'Date',
-				's.datef' => 'Date'
+				's.datef' => 'Date',
 		);
 		$this->export_entities_array[$r] = array(
 				's.rowid' => "Id",
@@ -978,6 +985,10 @@ class modAgefodd extends DolibarrModules
 				'contactsessopca.civility as contactsessopcaciv' => 'AgfSessionDetail',
 				'contactsessopca.lastname as contactsessopcalastname' => 'AgfSessionDetail',
 				'contactsessopca.firstname as contactsessopcalastname' => 'AgfSessionDetail',
+				'contactsession.firstname as contactsessionfirstname' => 'AgfSessionDetail',
+				'contactsession.lastname as contactsessionlastname' => 'AgfSessionDetail',
+				'contactsession.email as contactsessionemail' => 'AgfSessionDetail',
+				'contactsession.phone as contactsessionphone' => 'AgfSessionDetail',
 				'c.intitule' => 'AgfCatalogDetail',
 				'c.ref' => 'AgfCatalogDetail',
 				'c.ref_interne' => 'AgfCatalogDetail',
@@ -1095,6 +1106,9 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socstaopca ON socstaopca.rowid = staopca.fk_soc_opca';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactstaopca ON contactstaopca.rowid = staopca.fk_socpeople_opca';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as statusdict ON statusdict.rowid = s.status';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_contact as sesscontact ON sesscontact.fk_session_agefodd = s.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_contact as agfcontact ON agfcontact.rowid = sesscontact.fk_agefodd_contact';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsession ON contactsession.rowid = agfcontact.fk_socpeople';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
 

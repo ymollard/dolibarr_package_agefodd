@@ -1126,3 +1126,7 @@ AgfContactSign=Signataire convention
 AgfRefPropalAuto=Génération de la référence client de la proposition automatique
 AgfRefPropalAutoHelp=Depuis l'onglet Docuement liée, lors de la création d'une propostion commerciale assisté, la référence est automatique, elle contiens le nom de la formation et les dates
 AgfOccupationControl=Vérification de la disponibilité
+AgfSessionContactFirstName=Prénom contact session
+AgfSessionContactLastName=Nom contact session
+AgfSessionContactEmail=Prénom contact email
+AgfSessionContactPhone=Nom contact Téléhpone
