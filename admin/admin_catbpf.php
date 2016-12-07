@@ -315,7 +315,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_CUSTOMER . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_SUPPLIER . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');

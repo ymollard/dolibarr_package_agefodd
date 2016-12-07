@@ -922,7 +922,19 @@ class ReportBPF extends AgefoddExportExcel
 	public function createDefaultCategAffectConst() {
 		global $conf;
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Entreprise française\',2,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',2,\'\',NULL,1,\'agefodd\')';
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$parent=$this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+		}
+
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Entreprise française\',2,\'\',NULL,1,\'agefodd\')';
 
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -945,7 +957,7 @@ class ReportBPF extends AgefoddExportExcel
 
 		}
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - OPCA\',2,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - OPCA\',2,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -967,7 +979,7 @@ class ReportBPF extends AgefoddExportExcel
 
 		}
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Admnistration\',2,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Admnistration\',2,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -988,7 +1000,7 @@ class ReportBPF extends AgefoddExportExcel
 			}
 		}
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Particulier\',2,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Particulier\',2,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -1009,7 +1021,18 @@ class ReportBPF extends AgefoddExportExcel
 			}
 		}
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Prestataire\',2,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',1,\'\',NULL,1,\'agefodd\')';
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$parent=$this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+		}
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Prestataire\',1,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -1031,7 +1054,7 @@ class ReportBPF extends AgefoddExportExcel
 		}
 
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -1052,7 +1075,20 @@ class ReportBPF extends AgefoddExportExcel
 			}
 		}
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Produit Formation\',0,\'\',NULL,1,\'agefodd\')';
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',0,\'\',NULL,1,\'agefodd\')';
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$parent=$this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+		}
+
+
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Produit Formation\',0,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -1073,7 +1109,7 @@ class ReportBPF extends AgefoddExportExcel
 			}
 		}
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Outils pédagogiques\',0,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Outils pédagogiques\',0,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -1095,7 +1131,7 @@ class ReportBPF extends AgefoddExportExcel
 		}
 
 
-		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF - Frais prestataires\',0,\'\',NULL,1,\'agefodd\')';
+		$sql =' INSERT INTO '.MAIN_DB_PREFIX.'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,'.$parent.',\'BPF - Frais prestataires\',0,\'\',NULL,1,\'agefodd\')';
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -1115,6 +1151,7 @@ class ReportBPF extends AgefoddExportExcel
 				$error ++;
 			}
 		}
+
 
 		if (!empty($error)) {
 			return -1;
