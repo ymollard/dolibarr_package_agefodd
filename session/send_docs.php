@@ -60,9 +60,9 @@ $pre_action = GETPOST('pre_action', 'alpha');
 $id = GETPOST('id', 'int');
 $socid = GETPOST('socid', 'int');
 $sessiontrainerid = GETPOST('sessiontrainerid', 'int');
-$removedfile= GETPOST('removedfile');
-$addfile=GETPOST('addfile');
-$cancel=GETPOST('cancel');
+$removedfile = GETPOST('removedfile');
+$addfile = GETPOST('addfile');
+$cancel = GETPOST('cancel');
 
 $form = new Form($db);
 $formmail = new FormAgefoddsenddocs($db);
@@ -353,7 +353,7 @@ if (! empty($removedfile)) {
 /*
  * Add file in email form
  */
-if (!empty($addfile)) {
+if (! empty($addfile)) {
 	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
 
 	// Set tmp user directory TODO Use a dedicated directory for temp mails files
@@ -875,7 +875,29 @@ if (! empty($id)) {
 			} elseif ($action == 'presend_convention') {
 
 				$formmail->withtopic = $langs->trans('AgfSendConvention', '__FORMINTITULE__');
-				$formmail->withbody = $langs->trans('AgfSendConventionBody', '__FORMINTITULE__');
+				// $formmail->withbody = $langs->trans('AgfSendConventionBody', '__FORMINTITULE__');
+
+				if ($agf->dated == $agf->datef) {
+					$date_courier_conv .= $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
+				} else {
+					$date_courier_conv .= $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytext') . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
+				}
+
+				$formmail->withbody = $langs->transnoentities('AgfPDFCourrierAcceuil4') . "\n\n\n";
+
+				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierConv1Email') . "\n";
+				$formmail->withbody .= '« ';
+				if (! empty($agf->intitule_custo)) {
+					$formmail->withbody .= $agf->intitule_custo;
+				} else {
+					$formmail->withbody .= $agf->formintitule;
+				}
+				$formmail->withbody .= " » " . $langs->transnoentities('AgfPDFCourrierConv2') . " " . $date_courier_conv . ".\n\n";
+				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierConv3') . "\n\n";
+
+				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierAcceuil11') . "\n\n";
+				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierAcceuil13');
+
 				$formmail->param['models'] = 'convention';
 				$formmail->param['pre_action'] = 'presend_convention';
 
@@ -1337,7 +1359,7 @@ if (! empty($id)) {
 		/*
 		 * Envoi fiche pédagogique
 		 */
-		if (! $action || !empty($cancel)) {
+		if (! $action || ! empty($cancel)) {
 
 			dol_htmloutput_mesg($mesg, $mesgs);
 
