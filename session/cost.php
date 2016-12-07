@@ -686,7 +686,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '</td>';
 
 						print '<td  align="left" style="padding-left:10px">';
-						print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1));
+						print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
 						print '</td>';
 
 						print '<td  align="left" style="padding-left:10px">';
@@ -744,7 +744,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
-				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1));
+				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
@@ -834,7 +834,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
-				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1));
+				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
@@ -903,7 +903,7 @@ if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_mission
 	print '</td>';
 
 	print '<td  align="left" style="padding-left:10px">';
-	print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1));
+	print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$mysoc,$mysoc);
 	print '</td>';
 
 	print '<td  align="left" style="padding-left:10px">';
@@ -1004,7 +1004,7 @@ if (! empty($place->id)) {
 					print '</td>';
 
 					print '<td  align="left" style="padding-left:10px">';
-					print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1));
+					print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
 					print '</td>';
 
 					print '<td  align="left" style="padding-left:10px">';
@@ -1060,7 +1060,7 @@ if (! empty($place->id)) {
 			print '</td>';
 
 			print '<td  align="left" style="padding-left:10px">';
-			print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1));
+			print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$place->thirdparty,$mysoc);
 			print '</td>';
 
 			print '<td  align="left" style="padding-left:10px">';
