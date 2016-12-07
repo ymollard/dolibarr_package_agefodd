@@ -5,6 +5,7 @@ NEW : Add trainer attachement file tab
 NEW : Add place attachement file tab
 FIX : PDF, always use session duration instead of training programm duration
 FIX : PDF, Always check Aquired on session objectifs on attestation end training 
+NEW : PDF,  add chevalet documents
 
 
 ***** ChangeLog for 3.0.0 compared to 3.0.1 *****
