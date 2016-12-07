@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_element (
   fk_soc integer NOT NULL,
   element_type		varchar(50) NOT NULL,
   fk_element		integer NOT NULL,
-  fk_sub_element	integer NOT NULL,
+  fk_sub_element	integer DEFAULT NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
