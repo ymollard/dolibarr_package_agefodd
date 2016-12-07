@@ -4069,7 +4069,7 @@ class Agsession extends CommonObject
 
 		$this->db->begin();
 
-		$invoice->client = $soc;
+		$invoice->thirdparty = $soc;
 
 		$invoice->socid = $socid;
 		$invoice->date = dol_now();
