@@ -131,7 +131,6 @@ if ($search_type_session != '' && $search_type_session != - 1) {
 }
 if (! empty($status_view)) {
 	$filter ['s.status'] = $status_view;
-	$search_session_status=$status_view;
 }
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;

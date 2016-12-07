@@ -267,7 +267,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 				$this->str .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef);
 			else
 				$this->str .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef);
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf_duree->duree . $outputlangs->transnoentities('AgfPDFAttestation6');
+			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf->duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$newY = $newY + 10;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
@@ -314,6 +314,9 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 					$pdf->line($this->posxnotevaluated-1, $beforeY, $this->posxnotevaluated-1, $beforeY + $height_obj);
 
 					$newY = $pdf->GetY();
+
+					$pdf->SetXY($this->posxacquired+4, $beforeY);
+					$pdf->MultiCell($width, 0, $outputlangs->transnoentities('X'), 0, 'L', 0);
 				}
 			}
 
