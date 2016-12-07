@@ -69,7 +69,7 @@ $object = new Agsession($db);
 $result = $object->fetch($id);
 
 if ($result < 0) {
-	setEventMessage($agf->error, 'errors');
+	setEventMessage($object->error, 'errors');
 } else {
 	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
 }

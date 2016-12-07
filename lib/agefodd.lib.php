@@ -270,6 +270,11 @@ function trainer_prepare_head($object) {
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
 
+	$head [$h] [0] = dol_buildpath('/agefodd/trainer/document_files.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("Documents");
+	$head [$h] [2] = 'documentfiles';
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
@@ -327,6 +332,11 @@ function site_prepare_head($object) {
 	$head [$h] [0] = dol_buildpath('/agefodd/site/reg_int.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfRegInt");
 	$head [$h] [2] = 'reg_int_tab';
+	$h ++;
+
+	$head [$h] [0] = dol_buildpath('/agefodd/site/document_files.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("Documents");
+	$head [$h] [2] = 'documentfiles';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_site=' . $object->id;

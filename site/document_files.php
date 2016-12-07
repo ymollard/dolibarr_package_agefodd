@@ -32,9 +32,11 @@ if (! $res)
 	die("Include of main fails");
 
 require_once '../lib/agefodd.lib.php';
-require_once '../class/agefodd_formation_catalogue.class.php';
+require_once '../class/agefodd_place.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once '../class/html.formagefodd.class.php';
 
@@ -48,7 +50,7 @@ $ref = GETPOST('ref', 'alpha');
 $asfichepedago = GETPOST('asfichepedago','int');
 
 // Security check
-if (! $user->rights->agefodd->agefodd_formation_catalogue->lire) {
+if (! $user->rights->agefodd->agefodd_place->lire) {
 	accessforbidden();
 }
 
@@ -67,14 +69,13 @@ if (! $sortorder)
 if (! $sortfield)
 	$sortfield = "name";
 
-$object = new Agefodd($db);
+$object = new Agefodd_place($db);
 $result = $object->fetch($id);
-
 if ($result < 0) {
 	setEventMessage($object->error, 'errors');
 } else {
-	$upload_dir = $conf->agefodd->dir_output . "/training/". $object->id;
-	$relativepathwithnofile="training/" . $object->id.'/';
+	$upload_dir = $conf->agefodd->dir_output . "/trainer/". $object->id;
+	$relativepathwithnofile="trainer/" . $object->id.'/';
 }
 
 /*
@@ -83,15 +84,6 @@ if ($result < 0) {
 
 include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
-//Copy file uploaded as a training program file
-if (!empty($asfichepedago)) {
-	$destfile=$_FILES['userfile']['name'];
-	$path_parts=pathinfo($destfile);
-	$result=dol_copy($upload_dir.'/'.$destfile, $conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.'.$path_parts['extension']);
-	if ($result<0) {
-		setEventMessages($langs->trans('AgfErrorCopyFile'), null,'errors');
-	}
-}
 
 /*
  * View
@@ -101,7 +93,7 @@ $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
 $help_url = '';
-llxHeader('', $langs->trans("AgfCatalogDetail") . ' - ' . $langs->trans("Files"), $help_url);
+llxHeader('', $langs->trans("AgfTeacher") . ' - ' . $langs->trans("Files"), $help_url);
 
 if ($object->id) {
 	/*
@@ -111,18 +103,9 @@ if ($object->id) {
 		$langs->load("mails");
 	}
 
+	$head = site_prepare_head($object);
 
-	$out_js = '<script>' . "\n";
-	$out_js .= '$(document).ready(function () { ' . "\n";
-	$out_js .= '	$(\'#formuserfile > table > tbody:last-child\').append(\'<tr><td><input type="checkbox" value="1" name="asfichepedago" id="asfichepedago"/>'.$langs->trans('AgfLikeFichePedgao').'</td></tr>\'); ' . "\n";
-	$out_js .= '});' . "\n";
-	$out_js .= '</script>' . "\n";
-
-	print $out_js;
-
-	$head = training_prepare_head($object);
-
-	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfCatalogDetail"), 0, 'bill');
+	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessPlace"), 0, 'address');
 
 	$form = new Form($db);
 
@@ -135,24 +118,32 @@ if ($object->id) {
 
 	print '<table class="border" width="100%">';
 
-	print "<tr>";
-	print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
-	print $form->showrefnav($object, 'id', '', 1, 'rowid', 'id');
-	print '</td></tr>';
+	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
+	print '<td>' . $form->showrefnav($object, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 
-	print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
-	print '<td colspan=2>' . stripslashes($object->intitule) . '</td></tr>';
+	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
+	print '<td>' . $object->ref_interne . '</td></tr>';
 
-	print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
-	print $object->ref_obj . '</td></tr>';
+	print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
+	if ($object->socid) {
+		$soc = new Societe($db);
+		$soc->fetch($object->socid);
+		print $soc->getNomUrl();
+	} else {
+		print '&nbsp;';
+	}
+	print '</tr>';
 
-	print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
-	print $object->ref_interne . '</td></tr>';
+	print '<tr><td valign="top">' . $langs->trans("Contact") . '</td><td>';
+	$contact = new Contact($db);
+	$contact->fetch($object->fk_socpeople);
+	print $contact->getNomUrl();
+	print '</tr>';
 	print '</table>';
 	print '</div>';
 
 	$modulepart = 'agefodd';
-	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
+	$permission = ($user->rights->agefodd->agefodd_place->creer);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 

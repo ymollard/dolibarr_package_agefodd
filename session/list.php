@@ -131,6 +131,7 @@ if ($search_type_session != '' && $search_type_session != - 1) {
 }
 if (! empty($status_view)) {
 	$filter ['s.status'] = $status_view;
+	$search_session_status=$status_view;
 }
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
@@ -170,10 +171,12 @@ $formother = new FormOther($db);
 
 if ($status_view == 1) {
 	$title = $langs->trans("AgfMenuSessDraftList");
-	if (empty($sortorder))
+	if (empty($sortorder)) {
 		$sortorder = "ASC";
-	if (empty($sortfield))
+	}
+	if (empty($sortfield)) {
 		$sortfield = "s.datec";
+	}
 } elseif ($status_view == 2) {
 	$title = $langs->trans("AgfMenuSessConfList");
 } elseif ($status_view == 3) {
