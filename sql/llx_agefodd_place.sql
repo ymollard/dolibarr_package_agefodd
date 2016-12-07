@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   fk_societe integer NOT NULL,
   fk_socpeople integer,
   timeschedule text,
+  control_occupation smallint NOT NULL DEFAULT 0,
   notes text,
   acces_site text,
   note1 text,
