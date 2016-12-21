@@ -109,6 +109,7 @@ class Agsession extends CommonObject
 	public $avgpricedesc;
 	public $fk_soc_presta;
 	public $fk_socpeople_presta;
+	public $fk_soc_employer;
 
 	/**
 	 * Constructor
@@ -179,6 +180,7 @@ class Agsession extends CommonObject
 		$sql .= "fk_soc_requester,";
 		$sql .= "fk_socpeople_requester,";
 		$sql .= "fk_socpeople_presta,";
+		$sql .= "fk_soc_employer,";
 		$sql .= "fk_formation_catalogue,";
 		$sql .= "fk_session_place,";
 		$sql .= "nb_place,";
@@ -200,6 +202,7 @@ class Agsession extends CommonObject
 		$sql .= " " . (! isset($this->fk_soc_requester) ? 'NULL' : "'" . $this->fk_soc_requester . "'") . ",";
 		$sql .= " " . (empty($this->fk_socpeople_requester) ? 'NULL' : "'" . $this->fk_socpeople_requester . "'") . ",";
 		$sql .= " " . (empty($this->fk_socpeople_presta) ? 'NULL' : "'" . $this->fk_socpeople_presta . "'") . ",";
+		$sql .= " " . (empty($this->fk_soc_employer) ? 'NULL' : "'" . $this->fk_soc_employer . "'") . ",";
 		$sql .= " " . (! isset($this->fk_formation_catalogue) ? 'NULL' : "'" . $this->fk_formation_catalogue . "'") . ",";
 		$sql .= " " . (! isset($this->fk_session_place) ? 'NULL' : "'" . $this->fk_session_place . "'") . ",";
 		$sql .= " " . (! isset($this->nb_place) ? 'NULL' : $this->nb_place) . ",";
@@ -434,6 +437,7 @@ class Agsession extends CommonObject
 		$sql .= " t.fk_soc_requester,";
 		$sql .= " t.fk_socpeople_requester,";
 		$sql .= " t.fk_socpeople_presta,";
+		$sql .= " t.fk_soc_employer,";
 		$sql .= " t.fk_formation_catalogue,";
 		$sql .= " c.intitule as formintitule,";
 		$sql .= " c.rowid as formid,";
@@ -509,6 +513,8 @@ class Agsession extends CommonObject
 		$sql .= " ON agecont.fk_socpeople = socp.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as socOPCA ";
 		$sql .= " ON t.fk_soc_OPCA = socOPCA.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as socEmployer ";
+		$sql .= " ON t.fk_soc_employer = socEmployer.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
 		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactpresta ";
@@ -531,6 +537,7 @@ class Agsession extends CommonObject
 				$this->fk_soc_requester = $obj->fk_soc_requester;
 				$this->fk_socpeople_requester = $obj->fk_socpeople_requester;
 				$this->fk_socpeople_presta = $obj->fk_socpeople_presta;
+				$this->fk_soc_employer = $obj->fk_soc_employer;
 				$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$this->formintitule = $obj->formintitule;
 				$this->formid = $obj->formid;
@@ -1531,6 +1538,10 @@ class Agsession extends CommonObject
 			$this->fk_soc_requester = trim($this->fk_soc_requester);
 		if ($this->fk_soc_requester == - 1)
 			unset($this->fk_soc_requester);
+		if (isset($this->fk_soc_employer))
+			$this->fk_soc_employer = trim($this->fk_soc_employer);
+		if ($this->fk_soc_employer == - 1)
+			unset($this->fk_soc_employer);
 		if (isset($this->fk_socpeople_requester))
 			$this->fk_socpeople_requester = trim($this->fk_socpeople_requester);
 		if (isset($this->fk_socpeople_presta))
@@ -1616,6 +1627,7 @@ class Agsession extends CommonObject
 
 			$sql .= " fk_soc=" . (isset($this->fk_soc) ? $this->fk_soc : "null") . ",";
 			$sql .= " fk_soc_requester=" . (isset($this->fk_soc_requester) ? $this->fk_soc_requester : "null") . ",";
+			$sql .= " fk_soc_employer=" . (isset($this->fk_soc_employer) ? $this->fk_soc_employer : "null") . ",";
 			$sql .= " fk_socpeople_requester=" . (isset($this->fk_socpeople_requester) ? $this->fk_socpeople_requester : "null") . ",";
 			$sql .= " fk_socpeople_presta=" . (isset($this->fk_socpeople_presta) ? $this->fk_socpeople_presta : "null") . ",";
 			$sql .= " fk_formation_catalogue=" . (isset($this->fk_formation_catalogue) ? $this->fk_formation_catalogue : "null") . ",";
@@ -2146,6 +2158,7 @@ class Agsession extends CommonObject
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
+		$sql .= " ,s.fk_soc_employer";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,socp.rowid as contactid";
 		$sql .= " ,s.sell_price";
@@ -2310,6 +2323,7 @@ class Agsession extends CommonObject
 					$line->socrequestername = $obj->socrequestername;
 					$line->fk_socpeople_requester = $obj->fk_socpeople_requester;
 					$line->fk_socpeople_presta = $obj->fk_socpeople_presta;
+					$line->fk_soc_employer = $obj->fk_soc_employer;
 					$line->trainerrowid = $obj->trainerrowid;
 					$line->type_session = $obj->type_session;
 					$line->is_date_res_site = $obj->is_date_res_site;
@@ -2400,6 +2414,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,s.fk_soc_requester";
+		$sql .= " ,s.fk_soc_employer";
 		$sql .= " ,sorequester.nom as socrequestername,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task0,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND (datea) ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task1,";
@@ -2514,6 +2529,7 @@ class Agsession extends CommonObject
 					$line->intitule_custo = $obj->intitule_custo;
 					$line->socrequesterid = $obj->fk_soc_requester;
 					$line->socrequestername = $obj->socrequestername;
+					$line->fk_soc_employer = $obj->fk_soc_employer;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
@@ -2560,6 +2576,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.duree_session";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,s.sell_price,";
+		$sql .= " ,s.fk_soc_employer,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=0 OR status_in_session IS NULL) AND fk_session_agefodd=s.rowid) as nb_prospect,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1 OR status_in_session=3) AND fk_session_agefodd=s.rowid) as nb_confirm,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE status_in_session=6 AND fk_session_agefodd=s.rowid) as nb_cancelled,";
@@ -2661,6 +2678,7 @@ class Agsession extends CommonObject
 					$line->is_date_res_site = $obj->is_date_res_site;
 					$line->is_date_res_confirm_site = $obj->is_date_res_confirm_site;
 					$line->sell_price = $obj->sell_price;
+					$line->fk_soc_employer = $obj->fk_soc_employer;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
@@ -2867,6 +2885,28 @@ class Agsession extends CommonObject
 			$sql .= " ON s.status = dictstatus.rowid";
 
 			$type_affect = $langs->trans('AgfTypeTraineeRequester');
+		} elseif ($filter['type_affect'] == 'employer') {
+			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
+			$sql .= " ON c.rowid = s.fk_formation_catalogue";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
+			$sql .= " ON p.rowid = s.fk_session_place";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
+			$sql .= " ON s.rowid = ss.fk_session_agefodd";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
+			$sql .= " ON s.rowid = sa.fk_agefodd_session";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
+			$sql .= " ON so.rowid = s.fk_soc_employer AND s.fk_soc=" . $socid;
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
+			$sql .= " ON sf.fk_session = s.rowid";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
+			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
+			$sql .= " ON f.fk_socpeople = socpf.rowid";
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
+			$sql .= " ON s.status = dictstatus.rowid";
+
+			$type_affect = $langs->trans('AgfTypeEmployee');
 		}
 
 		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
@@ -3235,6 +3275,17 @@ class Agsession extends CommonObject
 				setEventMessage($contactstatic->error, 'errors');
 			}
 			print $contactstatic->getNomUrl(1);
+		}
+		print '</td></tr>';
+
+		print '<tr><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
+		print '<td>';
+		if ((! empty($this->fk_soc_employer)) && ($this->fk_soc_employer > 0)) {
+			$result = $socstatic->fetch($this->fk_soc_employer);
+			if ($result < 0) {
+				setEventMessage($socstatic->error, 'errors');
+			}
+			print $socstatic->getNomUrl(1);
 		}
 		print '</td></tr>';
 
@@ -4648,6 +4699,7 @@ class AgfSessionLine
 	public $fk_socpeople_requester;
 	public $admin_task_close_session;
 	public $trainingcolor;
+	public $fk_soc_employer;
 	public function __construct() {
 		return 1;
 	}
@@ -4688,6 +4740,7 @@ class AgfSessionLineTask
 	public $duree_session;
 	public $socrequesterid;
 	public $socrequestername;
+	public $fk_soc_employer;
 	public function __construct() {
 		return 1;
 	}
@@ -4767,6 +4820,7 @@ class AgfSessionLineInter
 	public $is_date_res_site;
 	public $is_date_res_confirm_site;
 	public $sell_price;
+	public $fk_soc_employer;
 	public function __construct() {
 		return 1;
 	}

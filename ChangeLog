@@ -1,5 +1,10 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.2 compared to 3.0.3 *****
+NEW : Add field on session for sous traitance
+FIX : Allow to remove thirdparty and contact on session (if combox use)
+
+
 ***** ChangeLog for 3.0.1 compared to 3.0.2 *****
 NEW : Add trainer attachement file tab
 NEW : Add place attachement file tab
