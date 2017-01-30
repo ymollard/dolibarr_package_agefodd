@@ -348,7 +348,7 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 			print $langs->trans("AgfFactureFacNoResult");
 		}
 		if ($type_link == 'prop') {
-			print $langs->trans("AgfFacturePropcNoResult");
+			print $langs->trans("AgfFacturePropNoResult");
 		}
 		print '</td>';
 	}
