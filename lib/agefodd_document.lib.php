@@ -869,6 +869,16 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		// Check if file exist
 		print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_trainer_doc&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
 		print '</td></tr>' . "\n";
+	} else if ($mdle == 'attestationendtraining') {
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		$filename = 'attestationendtraining_' . $id . '_' . $socid . '.pdf';
+		$file = $conf->agefodd->dir_output . '/' . $filename;
+		if (file_exists($file)) {
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestationendtraining&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+		} else
+			print $langs->trans('AgfDocNotDefined');
+		print '</td></tr>' . "\n";
 	} else {
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
