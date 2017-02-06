@@ -232,7 +232,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 							$this->str .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef);
 						else
 							$this->str .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef);
-						$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf_duree->duree . $outputlangs->transnoentities('AgfPDFAttestation6');
+						$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf->duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 
 						$newY = $newY + 10;

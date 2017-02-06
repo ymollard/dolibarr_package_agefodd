@@ -170,10 +170,12 @@ $formother = new FormOther($db);
 
 if ($status_view == 1) {
 	$title = $langs->trans("AgfMenuSessDraftList");
-	if (empty($sortorder))
+	if (empty($sortorder)) {
 		$sortorder = "ASC";
-	if (empty($sortfield))
+	}
+	if (empty($sortfield)) {
 		$sortfield = "s.datec";
+	}
 } elseif ($status_view == 2) {
 	$title = $langs->trans("AgfMenuSessConfList");
 } elseif ($status_view == 3) {

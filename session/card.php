@@ -86,7 +86,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 }
 
 /*
- * Actions delete period
+ * Actions remove thirdparty
  */
 
 if ($action == 'remove_cust' && $user->rights->agefodd->modifier) {
@@ -96,6 +96,82 @@ if ($action == 'remove_cust' && $user->rights->agefodd->modifier) {
 	unset($agf->fk_soc);
 	$agf->contactid = 0;
 	$agf->sourcecontactid = 0;
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
+if ($action == 'remove_requester' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	unset($agf->fk_soc_requester);
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
+if ($action == 'remove_contact' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	$agf->contactid = 0;
+	$agf->sourcecontactid = 0;
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
+if ($action == 'remove_contactrequester' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	unset($agf->fk_socpeople_requester);
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
+if ($action == 'remove_contactpresta' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	unset($agf->fk_socpeople_presta);
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
+if ($action == 'remove_employer' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	unset($agf->fk_soc_employer);
 	$result = $agf->update($user);
 
 	if ($result > 0) {
@@ -274,6 +350,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 		$fk_socpeople_requester = GETPOST('fk_socpeople_requester', 'int');
 		$fk_socpeople_presta = GETPOST('fk_socpeople_presta', 'int');
+		$fk_soc_employer = GETPOST('fk_soc_employer', 'int');
 		$color = GETPOST('color', 'alpha');
 		$nb_place = GETPOST('nb_place', 'int');
 		$nb_stagiaire = GETPOST('nb_stagiaire', 'int');
@@ -291,6 +368,8 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$agf->fk_soc = $fk_soc;
 		if (! empty($fk_soc_requester))
 			$agf->fk_soc_requester = $fk_soc_requester;
+		if (! empty($fk_soc_employer))
+			$agf->fk_soc_employer = $fk_soc_employer;
 		if (! empty($fk_socpeople_requester))
 			$agf->fk_socpeople_requester = $fk_socpeople_requester;
 		if (! empty($fk_socpeople_presta))
@@ -375,6 +454,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 
 		}
 		$agf->fk_socpeople_presta = GETPOST('fk_socpeople_presta', 'int');
+		$agf->fk_soc_employer = GETPOST('fk_soc_employer', 'int');
 
 		$agf->fk_formation_catalogue = $training_id;
 		$agf->fk_session_place = $fk_session_place;
@@ -675,6 +755,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$formAgefodd->select_contacts_custom(0, GETPOST('fk_socpeople_presta', 'int'), 'fk_socpeople_presta', 1, '', '', 1, '', 1, 0, array (), false, 1);
 	print '</td></tr>';
 
+	print '<tr><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
+	print '<td>';
+	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 1, 1, 0, array());
+	print '</td></tr>';
+
 	print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 	print $form->select_produits($agf->fk_product, 'productid', '', 10000, 0, 1, 2, '', 0, array ());
 	print "</td></tr>";
@@ -831,6 +916,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					if (! empty($agf->fk_soc) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_cust">' . img_delete($langs->trans('Delete')) . '</a>';
 					}
+					print '</td></tr>';
 
 					if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 						print '<tr><td>' . $langs->trans("AgfSessionContact") . '</td>';
@@ -842,12 +928,18 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						}
 						print '</td>';
 						print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolContactHelp"), 1, 'help') . '</td></tr></table>';
+						if (! empty($agf->sourcecontactid) && ! empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_contact">' . img_delete($langs->trans('Delete')) . '</a>';
+						}
 						print '</td></tr>';
 					} else {
 						print '<tr><td>' . $langs->trans("AgfSessionContact") . '</td>';
 						print '<td><table class="nobordernopadding"><tr><td>';
 						print $formAgefodd->select_agefodd_contact($agf->contactid, 'contact', '', 1);
 						print '</td><td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddContactHelp"), 1, 'help') . '</td></tr></table>';
+						if (! empty($agf->contactid) && ! empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_contact">' . img_delete($langs->trans('Delete')) . '</a>';
+						}
 						print '</td></tr>';
 					}
 
@@ -863,6 +955,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							)
 					);
 					print $form->select_company($agf->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0, $events);
+					if (! empty($agf->fk_soc_requester) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_requester">' . img_delete($langs->trans('Delete')) . '</a>';
+					}
+					print '</td></tr>';
 
 					print '<tr><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
 					print '<td><table class="nobordernopadding"><tr><td>';
@@ -873,6 +969,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					}
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
+					if (! empty($agf->fk_socpeople_requester) && ! empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_contactrequester">' . img_delete($langs->trans('Delete')) . '</a>';
+					}
 					print '</td></tr>';
 
 					print '<tr><td>' . $langs->trans("AgfTypePresta") . '</td>';
@@ -880,6 +979,19 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					$formAgefodd->select_contacts_custom(0, $agf->fk_socpeople_presta, 'fk_socpeople_presta', 1, '', '', 1, '', 1, 0, array (), false, 1);
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfTypePrestaHelp"), 1, 'help') . '</td></tr></table>';
+					if (! empty($agf->fk_socpeople_presta) && ! empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_contactpresta">' . img_delete($langs->trans('Delete')) . '</a>';
+					}
+					print '</td></tr>';
+
+					print '<tr><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
+					print '<td><table class="nobordernopadding"><tr><td>';
+					print $form->select_company($agf->fk_soc_employer, 'fk_soc_employer', '', 1, 1, 0, array());
+					print '</td>';
+					print '<td>' . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help') . '</td></tr></table>';
+					if (! empty($agf->fk_soc_employer) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_employer">' . img_delete($langs->trans('Delete')) . '</a>';
+					}
 					print '</td></tr>';
 
 					print '<tr><td>' . $langs->trans("AgfLieu") . '</td>';

@@ -839,7 +839,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
-				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
+				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
@@ -911,7 +911,7 @@ if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_mission
 	print '</td>';
 
 	print '<td  align="left" style="padding-left:10px">';
-	print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$socsell,$mysoc);
+	print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$mysoc,$mysoc);
 	print '</td>';
 
 	print '<td  align="left" style="padding-left:10px">';
@@ -1006,13 +1006,12 @@ if (! empty($place->id)) {
 					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 					print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 					print '</td>';
-					//$filtertype='', $filtre='', $ajaxoptions=array(), $hidelabel=0, $alsoproductwithnosupplierprice=0
 					print '<td align="left" style="padding-left:10px">';
 					print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
 					print '</td>';
 
 					print '<td  align="left" style="padding-left:10px">';
-					print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
+					print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
 					print '</td>';
 
 					print '<td  align="left" style="padding-left:10px">';

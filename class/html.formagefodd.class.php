@@ -923,7 +923,8 @@ class FormAgefodd extends Form {
 				'thirdparty' => $langs->trans('ThirdParty'),
 				'trainee' => $langs->trans('AgfParticipant'),
 				'requester' => $langs->trans('AgfTypeRequester'),
-				'trainee_requester' => $langs->trans('AgfTypeTraineeRequester')
+				'trainee_requester' => $langs->trans('AgfTypeTraineeRequester'),
+				'employer' => $langs->trans('AgfTypeEmployee'),
 		);
 
 		if ($conf->global->AGF_ADVANCE_COST_MANAGEMENT) {

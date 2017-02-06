@@ -116,6 +116,9 @@ class pdf_convention extends ModelePDFAgefodd {
 
 		// Definition of $dir and $file
 		$dir = $conf->agefodd->dir_output;
+		// Definition of $dir and $file
+		$dir = $conf->agefodd->dir_output;
+		$fileori=$file;
 		$file = $dir . '/' . $file;
 
 		if (! file_exists($dir)) {
@@ -326,6 +329,9 @@ class pdf_convention extends ModelePDFAgefodd {
 				}
 				$pdf->SetXY($this->marge_gauche, $this->marge_haute + 190);
 				$pdf->MultiCell(0, 5, $this->str, 0, 'C');
+
+				$pdf->SetXY($this->marge_gauche, $this->marge_haute + 205);
+				$pdf->MultiCell(0, 5, $outputlangs->trans('AgfConvention').' N°:'.str_replace('.pdf','',str_replace('convention_',' ',$fileori)), 0, 'C');
 
 				// Determine the total number of page
 				$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';

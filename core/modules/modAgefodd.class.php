@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.1';
+		$this->version = '3.0.3';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -74,6 +74,8 @@ class modAgefodd extends DolibarrModules
 		$this->dirs = array(
 				"/agefodd",
 				"/agefodd/training",
+				"/agefodd/trainer",
+				"/agefodd/place",
 				"/agefodd/report",
 				"/agefodd/report/bpf"
 		);
@@ -555,6 +557,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'Admin not allowed by default';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "PRODUIT_DESC_IN_FORM";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = '';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -1509,7 +1519,7 @@ class modAgefodd extends DolibarrModules
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessDraftList',
-				'url' => '/agefodd/session/list.php?status=1',
+				'url' => '/agefodd/session/list.php?search_session_status=1',
 				'langs' => 'agefodd@agefodd',
 				'position' => 202,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
@@ -1523,7 +1533,7 @@ class modAgefodd extends DolibarrModules
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessConfList',
-				'url' => '/agefodd/session/list.php?status=2',
+				'url' => '/agefodd/session/list.php?search_session_status=2',
 				'langs' => 'agefodd@agefodd',
 				'position' => 203,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
@@ -1537,7 +1547,7 @@ class modAgefodd extends DolibarrModules
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessNotDoneList',
-				'url' => '/agefodd/session/list.php?status=3',
+				'url' => '/agefodd/session/list.php?search_session_status=3',
 				'langs' => 'agefodd@agefodd',
 				'position' => 203,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
@@ -1551,7 +1561,7 @@ class modAgefodd extends DolibarrModules
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessDoneList',
-				'url' => '/agefodd/session/list.php?status=5',
+				'url' => '/agefodd/session/list.php?search_session_status=5',
 				'langs' => 'agefodd@agefodd',
 				'position' => 204,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
@@ -1565,7 +1575,7 @@ class modAgefodd extends DolibarrModules
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'titre' => 'AgfMenuSessArchList',
-				'url' => '/agefodd/session/list.php?status=4',
+				'url' => '/agefodd/session/list.php?search_session_status=4',
 				'langs' => 'agefodd@agefodd',
 				'position' => 205,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',

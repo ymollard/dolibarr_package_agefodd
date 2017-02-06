@@ -488,7 +488,7 @@ class doc_generic_session_odt extends ModelePDFAgefodd
 	 */
 	function get_substitutionarray_session($object, $outputlangs, $array_key = 'object') {
 		global $conf;
-require_once '';
+		//require_once '';
 
 		$sumpayed = '';
 		$alreadypayed = '';

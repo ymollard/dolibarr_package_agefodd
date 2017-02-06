@@ -280,8 +280,6 @@ class pdf_courrier extends ModelePDFAgefodd {
 				$this->madame_monsieur = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4');
 				$this->str = '';
 
-
-
 				if (! (empty($agf->contactname))) {
 					$contact_static = new Contact($this->db);
 					$contact_static->civility_id = $agf->contactcivilite;

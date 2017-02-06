@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   fk_soc_OPCA integer DEFAULT NULL,
   fk_socpeople_OPCA integer DEFAULT NULL,
   fk_socpeople_presta integer DEFAULT NULL,
+  fk_soc_employer integer DEFAULT NULL,
   num_OPCA_soc varchar(100) DEFAULT NULL,
   num_OPCA_file varchar(100) DEFAULT NULL,
   fk_user_author integer NOT NULL,
