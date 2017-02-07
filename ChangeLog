@@ -1,5 +1,9 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.3 compared to 3.0.4 *****
+NEW : Can send End training attestation into send doc  
+FIX : Product cost management
+
 ***** ChangeLog for 3.0.2 compared to 3.0.3 *****
 NEW : Add field on session for sous traitance
 FIX : Allow to remove thirdparty and contact on session (if combox use)
