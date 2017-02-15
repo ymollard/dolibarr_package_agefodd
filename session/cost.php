@@ -35,8 +35,8 @@ require_once ('../class/agefodd_session_formateur_calendrier.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once ('../class/agefodd_place.class.php');
 
@@ -48,7 +48,7 @@ $id = GETPOST('id', 'int');
 $action = GETPOST('action', 'alpha');
 $opsid = GETPOST('opsid', 'int');
 $socid = GETPOST('socid', 'int');
-$product_fourn = GETPOST('product_fourn', 'int');
+$product_fourn = GETPOST('product_fourn', 'alpha');
 $product_fourn_ref = GETPOST('search_product_fourn', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
@@ -63,6 +63,39 @@ if ($result < 0) {
 	setEventMessage($agf->error, 'errors');
 }
 
+$socsell = new Societe($db);
+if (!empty($socid)) {
+	$result = $socsell->fetch($socid);
+	if ($result < 0) {
+		setEventMessage($socsell->error, 'errors');
+	}
+}
+
+
+//If price is not defined Dolibarr combox return idprod_XXX
+//else return the fourn price id....
+if (strpos($product_fourn,'idprod_')!==false) {
+	$product_fourn=str_replace('idprod_', '', $product_fourn);
+} else {
+	require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.product.class.php');
+	
+	$prodfourn=new ProductFournisseur($db);
+	$result =$prodfourn->fetch_product_fournisseur_price($product_fourn);
+	if ($result < 0) {
+		setEventMessage($socsell->error, 'errors');
+	} else {
+		$product_fourn = $prodfourn->fk_product;
+	}
+}
+if (!empty($product_fourn)) {
+	// Find product
+	$prod = new Product($db);
+	$result = $prod->fetch($product_fourn, $product_fourn_ref);
+	if ($result < 0) {
+		setEventMessage($prod->error, 'errors');
+	}
+}
+
 /*
  * Action
  */
@@ -72,14 +105,7 @@ if ($action == 'invoice_addline') {
 
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->fetch($idelement);
-
-	// Find product description
-	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn,$product_fourn_ref);
-	if ($result < 0) {
-		setEventMessage($prod->error, 'errors');
-	}
-
+	
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
 		$error ++;
@@ -178,13 +204,6 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 
 	$suplier_invoice->lines[0] = ( object ) array ();
 
-	// Find product description
-	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn, $product_fourn_ref);
-	if ($result < 0) {
-		setEventMessage($prod->error, 'errors');
-	}
-
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
 		$error ++;
@@ -251,13 +270,6 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$suplier_invoice->date_echeance = dol_now();
 
 	$suplier_invoice->lines[0] = ( object ) array ();
-
-	// Find product description
-	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn, $product_fourn_ref);
-	if ($result < 0) {
-		setEventMessage($prod->error, 'errors');
-	}
 
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
@@ -332,14 +344,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$suplier_invoice->date_echeance = dol_now();
 
 	$suplier_invoice->lines[0] = ( object ) array ();
-
-	// Find product description
-	$prod = new Product($db);
-	$result = $prod->fetch($product_fourn, $product_fourn_ref);
-	if ($result < 0) {
-		setEventMessage($prod->error, 'errors');
-	}
-
+	
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
 		$error ++;
@@ -678,7 +683,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '<td nowrap="nowrap">';
 						// print $langs->trans('AgfSelectFournProduct');
 						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
-						print $formAgefodd->select_produits_fournisseurs_agefodd($contact_static->thirdparty->id, $product_fourn, 'product_fourn');
+						print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 						print '</td>';
 
 						print '<td align="left" style="padding-left:10px">';
@@ -736,7 +741,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 
 				print '<td nowrap="nowrap">';
 				// print $langs->trans('AgfSelectFournProduct');
-				print $formAgefodd->select_produits_fournisseurs_agefodd($contact_static->thirdparty->id, $product_fourn, 'product_fourn');
+				print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 				print '</td>';
 
 				print '<td align="left" style="padding-left:10px">';
@@ -826,7 +831,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 				print '<td nowrap="nowrap">';
 				// print $langs->trans('AgfSelectFournProduct');
 				print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
-				print $formAgefodd->select_produits_fournisseurs_agefodd($contact_static->thirdparty->id, $product_fourn, 'product_fourn');
+				print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 				print '</td>';
 
 				print '<td align="left" style="padding-left:10px">';
@@ -878,6 +883,9 @@ foreach ( $agf_fin->lines as $line_fin ) {
 }
 
 if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_missions') {
+	
+	
+
 	// New lines direct creation
 	print '<tr>';
 
@@ -895,7 +903,7 @@ if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_mission
 
 	print '<td nowrap="nowrap">';
 	// print $langs->trans('AgfSelectFournProduct');
-	print $formAgefodd->select_produits_fournisseurs_agefodd($socid, $product_fourn, 'product_fourn');
+	print $form->select_produits_fournisseurs($socid, $product_fourn, 'product_fourn','','',array(),0,1);
 	print '</td>';
 
 	print '<td align="left" style="padding-left:10px">';
@@ -971,7 +979,7 @@ if (! empty($place->id)) {
 	print '&nbsp;';
 	print $place->thirdparty->getNomUrl(1);
 	print '</td>';
-
+	
 	// If contact is a contact of a supllier
 	if ($place->thirdparty->fournisseur == 1) {
 
@@ -996,9 +1004,8 @@ if (! empty($place->id)) {
 					print '<td nowrap="nowrap">';
 					// print $langs->trans('AgfSelectFournProduct');
 					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
-					print $formAgefodd->select_produits_fournisseurs_agefodd($contact_static->thirdparty->id, $product_fourn, 'product_fourn');
+					print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 					print '</td>';
-
 					print '<td align="left" style="padding-left:10px">';
 					print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
 					print '</td>';
@@ -1052,7 +1059,7 @@ if (! empty($place->id)) {
 
 			print '<td nowrap="nowrap">';
 			// print $langs->trans('AgfSelectFournProduct');
-			print $formAgefodd->select_produits_fournisseurs_agefodd($place->thirdparty->id, $product_fourn, 'product_fourn');
+			print $form->select_produits_fournisseurs($place->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 			print '</td>';
 
 			print '<td align="left" style="padding-left:10px">';
