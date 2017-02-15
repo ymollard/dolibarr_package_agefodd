@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.3 compared to 3.0.4 *****
+NEW : Create event on trainer document send
+
 ***** ChangeLog for 3.0.2 compared to 3.0.3 *****
 NEW : Add field on session for sous traitance
 FIX : Allow to remove thirdparty and contact on session (if combox use)
