@@ -263,14 +263,6 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 
 						}
 
-						// Incrustation image tampon
-						/*if ($conf->global->AGF_INFO_TAMPON) {
-							$dir = $conf->agefodd->dir_output . '/images/';
-							$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-							if (file_exists($img_tampon))
-								$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 20, $newY + 1, 20);
-						}*/
-
 						if (!empty($agf_duree->qr_code_info)) {
 							dol_include_once('/agefodd/class/tcpdfbarcode_agefodd.modules.php');
 							$qr_code = new modTcpdfbarcode_agefood;
@@ -280,10 +272,6 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 							$dir = $conf->agefodd->dir_output . '/images/';
 							$img_tampon = $dir . 'barcode_'.$agf_duree->id.'_QRCODE.png';
 							$pdf->Image($img_tampon, $this->marge_gauche + 60, $newY, 15 , 15);
-
-							/*$pdf->SetXY($this->marge_gauche + 10, $newY);
-							$pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $this->marge_gauche + 10, $newY, true, 0, 1);*/
-
 						}
 
 
