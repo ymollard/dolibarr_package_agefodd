@@ -1095,3 +1095,4 @@ AgfSessionContactEmail=Prénom contact email
 AgfSessionContactPhone=Nom contact Téléhpone
 ImportDataset_agefoddtraingingprogram=Agefodd - Import des formations du catalogues
 ExportDataset_TrainingProgram=Agefodd - Export des formations du catalogues
+AgfQRCodeCertifInfo=Information on QR code on credit card certificate
