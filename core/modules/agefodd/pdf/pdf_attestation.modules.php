@@ -368,6 +368,7 @@ class pdf_attestation extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$this->str=$outputlangs->transnoentities('AgfOnlyPresentTraineeGetAttestation', $outputlangs->transnoentities('PL_NONE'));
 				$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C'); // Set interline to 3
+				setEventMessage($this->str,'warnings');
 			}
 			$pdf->Close();
 			$pdf->Output($file, 'F');
