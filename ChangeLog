@@ -2,6 +2,7 @@ English Dolibarr ChangeLog
 
 ***** ChangeLog for 3.0.4 compared to 3.0.5 *****
 NEW : Certificate card format PDF
+NEW : Add field on training that craate an QR code on credit card 
 
 ***** ChangeLog for 3.0.3 compared to 3.0.4 *****
 NEW : Can send End training attestation into send doc  
