@@ -1028,7 +1028,7 @@ class Agefodd extends CommonObject {
 	 *
 	 * @param unknown $training
 	 */
-	public function setTrainingTrainer($trainers = array()) {
+	public function setTrainingTrainer($trainers = array(),$user) {
 		global $conf;
 
 		$error = 0;
@@ -1046,8 +1046,8 @@ class Agefodd extends CommonObject {
 		}
 		if (empty($error) && count($trainers) > 0) {
 			foreach ( $trainers as $key => $trainerid ) {
-				$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . 'agefodd_formateur_training(fk_trainer,fk_training) ';
-				$sql .= ' VALUES (' . $trainerid . ',' . $this->id . ')';
+				$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . 'agefodd_formateur_training(fk_trainer,fk_training,fk_user_author,datec,fk_user_mod,tms) ';
+				$sql .= ' VALUES (' . $trainerid . ',' . $this->id . ','.$user->id.',\''.$this->db->idate(dol_now()).'\','.$user->id.',\''.$this->db->idate(dol_now()).'\')';
 
 				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
