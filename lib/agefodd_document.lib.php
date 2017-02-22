@@ -321,7 +321,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 
 		// Envoie par mail
 		$legende = $langs->trans("AgfSendDoc");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestationendtraining_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($langs->trans("AgfSendDoc"), 'stcomm0').'</a>';
 	} else {
 		// Génereration des documents
