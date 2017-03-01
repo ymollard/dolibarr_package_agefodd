@@ -367,10 +367,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		if ($agf->dated == $agf->datef)
+		if ($agf->dated == $agf->datef) {
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
-		else
+		}
+		else {
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
+		}
+
+		$this->str .= ' (' . $agf->duree . ' h)';
+
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
