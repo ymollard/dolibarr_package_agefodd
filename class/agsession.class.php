@@ -4203,6 +4203,7 @@ class Agsession extends CommonObject
 
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
+					$num_OPCA_file_array=array();
 					foreach ( $session_trainee->lines as $line ) {
 
 						// Do not output not present or cancelled trainee
@@ -4218,7 +4219,10 @@ class Agsession extends CommonObject
 								$soc_name = $socsatic->name;
 							}
 							if (! empty($sessionOPCA->num_OPCA_file) && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-								$desc_OPCA = "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $soc_name;
+								if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
+									$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $soc_name;
+									$num_OPCA_file_array[$sessionOPCA->num_OPCA_file]=$soc_name;
+								}
 							}
 							$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 						}
