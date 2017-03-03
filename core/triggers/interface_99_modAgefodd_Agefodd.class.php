@@ -741,6 +741,7 @@ class InterfaceAgefodd {
 						if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 							$desc_trainee = "\n";
 							$nbtrainee = 0;
+							$num_OPCA_file_array=array();
 							foreach ( $session_trainee->lines as $line ) {
 
 								// Do not output not present or cancelled trainee
@@ -749,7 +750,10 @@ class InterfaceAgefodd {
 										$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id,$line->stagerowid);
 									}
 									if (! empty($sessionOPCA->num_OPCA_file)) {
-										$desc_OPCA = "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
+										if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
+											$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
+											$num_OPCA_file_array[$sessionOPCA->num_OPCA_file]=$line->socname;
+										}
 									}
 									$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 									$nbtrainee ++;
