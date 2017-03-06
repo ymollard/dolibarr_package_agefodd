@@ -3350,13 +3350,13 @@ class Agsession extends CommonObject
 			$duree = 0;
 			for($i = 0; $i < $blocNumber; $i ++) {
 				if ($i > 6) {
-					$styledisplay = " style=\"display:none\" ";
+					$styledisplay = " style=\"display:none\" class=\"otherdate\" ";
 				} else {
 					$styledisplay = " ";
 				}
 				if ($calendrier->lines[$i]->date_session != $old_date) {
 					if ($i > 0) {
-						print '</tr><tr ' . $styledisplay . ' class="otherdate" ><td width="150px" style="border:0px;">&nbsp;</td>';
+						print '</tr><tr ' . $styledisplay . '><td width="150px" style="border:0px;">&nbsp;</td>';
 					}
 					print '<td width="150px">';
 					print dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td><td>';
@@ -3395,11 +3395,11 @@ class Agsession extends CommonObject
 				setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
 			}
 			if ($blocNumber > 6) {
-				print '<tr><td>&nbsp;</td><td colspan="2" style="font-weight: bold; font-size:150%" id="switchtime">+</td></tr>';
+				print '<tr><td>&nbsp;</td><td colspan="2" style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtime">+</td></tr>';
 				print '<script>' . "\n";
 				print '$(document).ready(function () { ' . "\n";
 				print '		$(\'#switchtime\').click(function(){' . "\n";
-				print '			$(\'.otherdate\').toggle()' . "\n";
+				print '			$(\'.otherdate\').toggle();' . "\n";
 				print '			if ($(\'#switchtime\').text()==\'+\') { ' . "\n";
 				print '				$(\'#switchtime\').text(\'-\'); ' . "\n";
 				print '			}else { ' . "\n";
