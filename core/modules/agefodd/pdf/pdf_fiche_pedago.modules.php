@@ -430,10 +430,10 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				if (strpos($programme, '{breakpage}') !== false) {
 
-					$this->_pagefoot($agf, $outputlangs);
-					$this->pdf->AddPage();
-					$this->_pagehead($agf, $outputlangs);
-					$posY = $this->pdf->GetY() + 5;
+					//$this->_pagefoot($agf, $outputlangs);
+					//$this->pdf->AddPage();
+					//$this->_pagehead($agf, $outputlangs);
+					//$posY = $this->pdf->GetY() + 5;
 
 					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
 					$this->pdf->SetXY($posX, $posY);
@@ -459,9 +459,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 							// $posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 
 							if (($i + 1) < count($programme_array)) {
-								if ($i>0) {
-									$this->_pagefoot($agf, $outputlangs);
-								}
+								$this->_pagefoot($agf, $outputlangs);
 								$this->pdf->AddPage();
 								$this->_pagehead($agf, $outputlangs);
 								$posY = $this->pdf->GetY() + 5;
