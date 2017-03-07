@@ -430,10 +430,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 				if (strpos($programme, '{breakpage}') !== false) {
 
-					//$this->_pagefoot($agf, $outputlangs);
-					//$this->pdf->AddPage();
-					//$this->_pagehead($agf, $outputlangs);
-					//$posY = $this->pdf->GetY() + 5;
+					$posY = $this->pdf->GetY() + 5;
 
 					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
 					$this->pdf->SetXY($posX, $posY);
