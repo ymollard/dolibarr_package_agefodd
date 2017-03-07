@@ -459,7 +459,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 							// $posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 
 							if (($i + 1) < count($programme_array)) {
-								$this->_pagefoot($agf, $outputlangs);
+								if ($i>0) {
+									$this->_pagefoot($agf, $outputlangs);
+								}
 								$this->pdf->AddPage();
 								$this->_pagehead($agf, $outputlangs);
 								$posY = $this->pdf->GetY() + 5;
