@@ -528,7 +528,11 @@ if (! empty($id)) {
 
 							$hourhtml .= '<tr></table>';
 
-							$totaltimetrainer = '<td>(' . dol_print_date($totaltime, 'hourduration', 'tz') . ')</td>';
+							$min = floor($totaltime / 60);
+							$rmin = sprintf("%02d", $min % 60);
+							$hour = floor($min / 60);
+
+							$totaltimetrainer = '<td>(' . $hour . ':' . $rmin . ')</td>';
 
 							$hourhtml .= '</td>';
 

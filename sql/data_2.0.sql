@@ -1,10 +1,35 @@
-INSERT INTO llx_agefodd_stagiaire_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod,active) VALUES
-(1,'Financement par l''employeur (contrat pro.)', 3, now(), now(), 0, 0,1),
-(2,'Financement par l''employeur (autre)', 4, now(), now(), 0, 0,1),
-(3,'Demandeur d''emploi avec financement public', 5, now(), now(), 0, 0,1),
-(4,'Autre', 6, now(), now(), 0, 0,1),
-(5,'DIF', 1, now(), now(), 0, 0,0),
-(6,'Période PRO', 2, now(), now(), 0, 0,1);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(1, 'Financement par l''employeur (contrat pro.)', 2, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(2, 'Financement par l''employeur', 1, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(3, 'Dispositifs spécifiques pour les personnes en recherche d''emploi', 4, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(4, 'Autre dispositifs (plan de formation, périodes de professionnalisation,...)', 5, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(5, 'Compte personnel de formation (CPF)', 3, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(6, 'Période PRO', 99, 0, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(7, 'Congés individuel de formation (CIF)', 2, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(8, 'Fond d''assurance formation de non-salariés', 6, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(9, 'Pouvoirs publics pour la formation de leurs agents', 7, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(10, 'Pouvoirs publics pour la formation de publics spécifiques : Instances européenne', 8, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(11, 'Pouvoirs publics pour la formation de publics spécifiques : Etat', 9, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(12, ' Pouvoirs publics pour la formation de publics spécifiques : Conseils régionaux', 10, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(13, 'Pouvoirs publics pour la formation de publics spécifiques : Pôle emploi', 11, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(14, 'Pouvoirs publics pour la formation de publics spécifiques : Autres ressources pu', 12, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(15, 'Contrats conclus avec des personnes à titre individuel et à leurs frais', 13, 1, now(), now(), 0, 0);
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, datec, tms, fk_user_author, fk_user_mod) VALUES
+(16, 'Contrats conclus avec d’autres organismes de formation', 14, 1, now(), now(), 0, 0);
 
 INSERT INTO llx_agefodd_formateur_type (rowid,intitule, sort, datec, tms, fk_user_author, fk_user_mod, active) VALUES
 (1,'Formateur interne', 0, now(), now(), 0, 0,1),

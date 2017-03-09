@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.5 compared to 3.0.6 *****
+NEW : Better trainee category for french BPF 
+
 ***** ChangeLog for 3.0.4 compared to 3.0.5 *****
 NEW : Certificate card format PDF
 NEW : Add field on training that craate an QR code on credit card 
