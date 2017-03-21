@@ -45,7 +45,7 @@ class Agefodd_teacher extends CommonObject {
 	public $categories = array ();
 	public $dict_categories = array ();
 	public $trainings = array ();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -55,11 +55,11 @@ class Agefodd_teacher extends CommonObject {
 		$this->db = $DB;
 		$this->type_trainer_def = array (
 				0 => 'user',
-				1 => 'socpeople' 
+				1 => 'socpeople'
 		);
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -70,7 +70,7 @@ class Agefodd_teacher extends CommonObject {
 	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
 		if (isset($this->entity))
 			$this->entity = trim($this->entity);
@@ -86,7 +86,7 @@ class Agefodd_teacher extends CommonObject {
 			$this->fk_user_author = trim($this->fk_user_author);
 		if (isset($this->fk_user_mod))
 			$this->fk_user_mod = trim($this->fk_user_mod);
-			
+
 			// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formateur(";
 		$sql .= "fk_socpeople,fk_user, type_trainer, fk_user_author, fk_user_mod, entity, datec";
@@ -96,7 +96,7 @@ class Agefodd_teacher extends CommonObject {
 			$sql .= 'NULL, ';
 			$sql .= " " . $this->fk_user . ", ";
 			$sql .= "'" . $this->type_trainer_def[0] . "', ";
-		} 
+		}
 		// trainer is Dolibarr contact
 		elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 			$sql .= " " . $this->spid . ", ";
@@ -108,9 +108,9 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " " . $conf->entity . ",";
 		$sql .= "'" .$this->db->idate(dol_now())."'" ;
 		$sql .= ")";
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -122,7 +122,7 @@ class Agefodd_teacher extends CommonObject {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -131,7 +131,7 @@ class Agefodd_teacher extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -145,7 +145,7 @@ class Agefodd_teacher extends CommonObject {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
@@ -154,7 +154,7 @@ class Agefodd_teacher extends CommonObject {
 	 */
 	public function fetch($id, $arch = 0) {
 		global $langs, $mysoc;
-		
+
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
 		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civility as sp_civilite, ";
@@ -167,7 +167,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
 		$sql .= " WHERE f.rowid = " . $id;
 		$sql .= " AND f.entity IN (" . getEntity('agsession') . ")";
-		
+
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -177,7 +177,7 @@ class Agefodd_teacher extends CommonObject {
 				$this->ref = $obj->rowid; // Use for show_next_prev
 				$this->archive = $obj->archive;
 				$this->type_trainer = $obj->type_trainer;
-				
+
 				// trainer is user
 				if ($this->type_trainer == $this->type_trainer_def[0]) {
 					$this->fk_user = $obj->fk_user;
@@ -190,7 +190,7 @@ class Agefodd_teacher extends CommonObject {
 					$this->address = $mysoc->address;
 					$this->zip = $mysoc->zip;
 					$this->town = $mysoc->town;
-				} 
+				}
 				// trainer is Dolibarr contact
 				elseif ($this->type_trainer == $this->type_trainer_def[1]) {
 					$this->spid = $obj->spid;
@@ -205,8 +205,8 @@ class Agefodd_teacher extends CommonObject {
 					$this->zip = $obj->s_zip;
 					$this->town = $obj->s_town;
 				}
-				
-				
+
+
 				$sql_inner='SELECT cat.rowid as catid, dict.rowid as dictid,dict.code,dict.label,dict.description ';
 				$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category as cat';
 				$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict as dict';
@@ -228,8 +228,8 @@ class Agefodd_teacher extends CommonObject {
 					$this->errors[] = "Error " . $this->db->lasterror();
 					$error++;
 				}
-				
-				
+
+
 				$sql_inner='SELECT training.rowid as linkid, dict.rowid as trainingid,dict.ref,dict.ref_interne,dict.intitule ';
 				$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training as training';
 				$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue as dict';
@@ -251,15 +251,15 @@ class Agefodd_teacher extends CommonObject {
 					$this->errors[] = "Error " . $this->db->lasterror();
 					$error++;
 				}
-				
+
 			}
 			$this->db->free($resql);
 		} else {
 			$this->errors[] = "Error " . $this->db->lasterror();
 			$error++;
 		}
-		
-		
+
+
 		if (empty($error)) {
 			return 1;
 		} else {
@@ -270,7 +270,7 @@ class Agefodd_teacher extends CommonObject {
 			return - 1 * $error;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
@@ -284,9 +284,9 @@ class Agefodd_teacher extends CommonObject {
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
 		global $langs;
-		
+
 		$error=0;
-		
+
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
 		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civility as sp_civilite, ";
@@ -300,7 +300,7 @@ class Agefodd_teacher extends CommonObject {
 		if ($arch == 0 || $arch == 1) {
 			$sql .= " AND f.archive = " . $arch;
 		}
-			
+
 			// Manage filter
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
@@ -326,21 +326,21 @@ class Agefodd_teacher extends CommonObject {
 		if (! empty($limit)) {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
-		
+
 		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
-			
+
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-			
+
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
-					
+
 					$line = new AgfTrainerLine();
-					
+
 					$line->id = $obj->rowid;
 					$line->type_trainer = $obj->type_trainer;
 					$line->archive = $obj->archive;
@@ -354,7 +354,7 @@ class Agefodd_teacher extends CommonObject {
 						$line->email = $obj->u_email;
 						$line->phone_mobile = $obj->u_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
-					} 
+					}
 					// trainer is Dolibarr contact
 					elseif ($line->type_trainer == $this->type_trainer_def[1]) {
 						$line->spid = $obj->spid;
@@ -366,7 +366,7 @@ class Agefodd_teacher extends CommonObject {
 						$line->phone_mobile = $obj->sp_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
 					}
-					
+
 					$sql_inner='SELECT cat.rowid as catid, dict.rowid as dictid,dict.code,dict.label,dict.description ';
 					$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category as cat';
 					$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict as dict';
@@ -388,7 +388,7 @@ class Agefodd_teacher extends CommonObject {
 						$this->errors[] = "Error " . $this->db->lasterror();
 						$error++;
 					}
-					
+
 					$sql_inner='SELECT training.rowid as linkid, dict.rowid as trainingid,dict.ref,dict.ref_interne,dict.intitule ';
 					$sql_inner.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training as training';
 					$sql_inner.=' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue as dict';
@@ -410,7 +410,7 @@ class Agefodd_teacher extends CommonObject {
 						$this->errors[] = "Error " . $this->db->lasterror();
 						$error++;
 					}
-					
+
 					$this->lines[$i] = $line;
 					$i ++;
 				}
@@ -420,8 +420,8 @@ class Agefodd_teacher extends CommonObject {
 			$this->errors[] = "Error " . $this->db->lasterror();
 			$error++;
 		}
-		
-		
+
+
 		if (empty($error)) {
 			return $num;
 		} else {
@@ -432,7 +432,7 @@ class Agefodd_teacher extends CommonObject {
 			return - 1 * $error;
 		}
 	}
-	
+
 	/**
 	 * Give information on the object
 	 *
@@ -441,12 +441,12 @@ class Agefodd_teacher extends CommonObject {
 	 */
 	public function info($id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.datec, f.tms, f.fk_user_mod, f.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " WHERE f.rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -459,7 +459,7 @@ class Agefodd_teacher extends CommonObject {
 				$this->user_creation = $obj->fk_user_author;
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -467,7 +467,7 @@ class Agefodd_teacher extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -478,12 +478,12 @@ class Agefodd_teacher extends CommonObject {
 	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		// Check parameters
 		// Put here code to add control on parameters values
-		
+
 		// Update request
 		if (! isset($this->archive))
 			$this->archive = 0;
@@ -491,9 +491,9 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " fk_user_mod=" . $user->id . " ,";
 		$sql .= " archive=" . $this->archive . " ";
 		$sql .= " WHERE rowid = " . $this->id;
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::update ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -504,7 +504,7 @@ class Agefodd_teacher extends CommonObject {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -513,7 +513,7 @@ class Agefodd_teacher extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -527,7 +527,7 @@ class Agefodd_teacher extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -538,10 +538,10 @@ class Agefodd_teacher extends CommonObject {
 	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formateur";
 		$sql .= " WHERE rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::remove ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
+
 		if ($resql) {
 			return 1;
 		} else {
@@ -549,9 +549,9 @@ class Agefodd_teacher extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $label
 	 * @return string
 	 */
@@ -563,26 +563,26 @@ class Agefodd_teacher extends CommonObject {
 			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return number|unknown
 	 */
 	public function fetchAllCategories() {
-		
+
 		global $conf;
-		
-		
+
+
 		$sql = 'SELECT dict.rowid as dictid,dict.code,dict.label,dict.description ';
 		$sql.=' FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict as dict WHERE dict.active=1';
-		
+
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->dict_categories = array ();
-				
+
 			$num = $this->db->num_rows($resql);
-				
+
 			if ($num) {
 				while ( $objcat = $this->db->fetch_object($resql) ) {
 					$trainer_cat = new AgfTrainerCategorie();
@@ -598,25 +598,25 @@ class Agefodd_teacher extends CommonObject {
 			dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
 			return - 1;
 		}
-		
+
 		return $num;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $categories
 	 */
-	public function setTrainerCat($categories=array()) {
-		
+	public function setTrainerCat($categories=array(),$user) {
+
 		global $conf;
-		
+
 		$error=0;
-		
+
 		$this->db->begin();
-		
-		
+
+
 		$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category WHERE fk_trainer='.$this->id;
-		
+
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (!$resql) {
@@ -624,12 +624,12 @@ class Agefodd_teacher extends CommonObject {
 			dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
 			$error++;
 		}
-		
+
 		if (empty($error) && count($categories)>0) {
 			foreach($categories as $key=>$catid) {
-				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_category(fk_trainer,fk_category) ';
-				$sql .= ' VALUES ('.$this->id.','.$catid.')';
-				
+				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_category(fk_trainer,fk_category,fk_user_author,datec,fk_user_mod,tms) ';
+				$sql .= ' VALUES ('.$this->id.','.$catid.','.$user->id.',\''.$this->db->idate(dol_now()).'\','.$user->id.',\''.$this->db->idate(dol_now()).'\')';
+
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (!$resql) {
@@ -639,8 +639,8 @@ class Agefodd_teacher extends CommonObject {
 				}
 			}
 		}
-		
-		
+
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -654,22 +654,22 @@ class Agefodd_teacher extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $training
 	 */
-	public function setTrainerTraining($training=array()) {
-	
+	public function setTrainerTraining($training=array(),$user) {
+
 		global $conf;
-	
+
 		$error=0;
-	
+
 		$this->db->begin();
-	
-	
+
+
 		$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formateur_training WHERE fk_trainer='.$this->id;
-	
+
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (!$resql) {
@@ -677,12 +677,12 @@ class Agefodd_teacher extends CommonObject {
 			dol_syslog(get_class($this) . "::".__METHOD__." ERROR :" . $this->error, LOG_ERR);
 			$error++;
 		}
-	
+
 		if (empty($error) && count($training)>0) {
 			foreach($training as $key=>$trainingid) {
-				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_training(fk_trainer,fk_training) ';
-				$sql .= ' VALUES ('.$this->id.','.$trainingid.')';
-	
+				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_training(fk_trainer,fk_training,fk_user_author,datec,fk_user_mod,tms) ';
+				$sql .= ' VALUES ('.$this->id.','.$trainingid.','.$user->id.',\''.$this->db->idate(dol_now()).'\','.$user->id.',\''.$this->db->idate(dol_now()).'\')';
+
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if (!$resql) {
@@ -692,8 +692,8 @@ class Agefodd_teacher extends CommonObject {
 				}
 			}
 		}
-	
-	
+
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -727,7 +727,7 @@ class AgfTrainerLine {
 		return 1;
 	}
 	/**
-	 * 
+	 *
 	 * @param string $label
 	 * @return string
 	 */

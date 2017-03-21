@@ -108,7 +108,9 @@ class modAgefodd extends DolibarrModules
 				'modBanque',
 				'modFournisseur',
 				'modService',
-				'modAgenda'
+				'modAgenda',
+				'modCategorie',
+				'modFckeditor'
 		);
 		$this->requiredby = array();
 		$this->phpmin = array(

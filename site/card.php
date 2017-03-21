@@ -222,6 +222,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 					$result = $agf->import_customer_adress($user);
 					if ($result < 0) {
 						setEventMessage($agf->error, 'errors');
+						$action='create';
 						$error ++;
 					}
 				}
@@ -241,6 +242,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 				}
 			} else {
 				setEventMessage($agf->error, 'errors');
+				$action='create';
 			}
 		} else {
 			Header("Location: list.php");
@@ -252,7 +254,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 /*
  * View
  */
-
 $title = ($action == 'create' ? $langs->trans("AgfCreatePlace") : $langs->trans("AgfSessPlace"));
 llxHeader('', $title);
 
