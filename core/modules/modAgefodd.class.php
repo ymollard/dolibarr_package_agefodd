@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.6';
+		$this->version = '3.0.7';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -234,7 +234,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_CONTACT_DOL_SESSION";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '0';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -315,7 +315,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_FCKEDITOR_ENABLE_TRAINING";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Use WISIWYG on training information';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -355,7 +355,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_DOL_TRAINER_AGENDA";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Manage time by session for trainer';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -435,7 +435,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_CONTACT_NOT_MANDATORY_ON_SESSION";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '0';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Contact is not mandatory on session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -1704,6 +1704,20 @@ class modAgefodd extends DolibarrModules
 				'langs' => 'agefodd@agefodd',
 				'position' => 304,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer',
+				'perms' => '$user->rights->agefodd->creer',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu[$r] = array(
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
+				'type' => 'left',
+				'titre' => 'AgfCertificate',
+				'url' => '/agefodd/certificate/list.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 305,
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer && !empty($conf->global->AGF_MANAGE_CERTIF)',
 				'perms' => '$user->rights->agefodd->creer',
 				'target' => '',
 				'user' => 0

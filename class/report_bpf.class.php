@@ -102,8 +102,12 @@ class ReportBPF extends AgefoddExportExcel
 		$str_sub_name = '';
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if ($key == 'search_year') {
-					$str_sub_name .= $this->outputlangs->transnoentities('Year');
+				if ($key == 'search_date_start') {
+					$str_sub_name .= $this->outputlangs->transnoentities('From');
+					$str_sub_name .= $value;
+				}
+				if ($key == 'search_date_end') {
+					$str_sub_name .= $this->outputlangs->transnoentities('To');
 					$str_sub_name .= $value;
 				}
 			}
@@ -408,7 +412,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur_type as fromtype ON fromtype.rowid=sessform.fk_agefodd_formateur_type";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as form ON form.rowid=sessform.fk_agefodd_formateur";
 		$sql .= " INNER JOIN llx_agefodd_session_formateur_calendrier as formtime ON formtime.fk_agefodd_session_formateur=sessform.rowid";
-		$sql .= " WHERE YEAR(sess.dated)=" . $filter['search_year'];
+		$sql .= " WHERE sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 		$sql .= " GROUP BY fromtype.intitule";
 
 		dol_syslog(get_class($this) . "::fetch_trainee", LOG_DEBUG);
@@ -444,7 +448,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as statype ON statype.rowid=sesssta.fk_agefodd_stagiaire_type ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
-		$sql .= " WHERE YEAR(sess.dated)=" . $filter['search_year'];
+		$sql .= " WHERE sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 		$sql .= " GROUP BY statype.intitule ";
 
 		dol_syslog(get_class($this) . "::fetch_trainer nb", LOG_DEBUG);
@@ -485,7 +489,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . ")  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2)) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 1.a", LOG_DEBUG);
@@ -520,7 +525,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 2.a", LOG_DEBUG);
@@ -555,7 +561,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 3.a", LOG_DEBUG);
@@ -590,7 +597,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 4", LOG_DEBUG);
@@ -625,7 +633,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 5", LOG_DEBUG);
@@ -660,7 +669,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRODPEDA . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2)";
 
 			dol_syslog(get_class($this) . "::fetch_financial 6.a", LOG_DEBUG);
@@ -693,7 +703,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_TOOLPEDA . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 6.b", LOG_DEBUG);
@@ -722,7 +733,8 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
 			// Invoice concern only session match with year criteria
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
+			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice' ";
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 			$sql .= " AND f.fk_statut in (1,2) ";
 
 			dol_syslog(get_class($this) . "::fetch_financial 6.b", LOG_DEBUG);
@@ -765,8 +777,8 @@ class ReportBPF extends AgefoddExportExcel
 			// Invoice not concern by session
 			$sql .= " AND f.rowid  NOT IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
 			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') ";
-			$sql .= " AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
-			$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
+			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."')";
+			$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 
 			dol_syslog(get_class($this) . "::fetch_financial_outcome 60 B ", LOG_DEBUG);
 			$resql = $this->db->query($sql);
@@ -804,7 +816,7 @@ class ReportBPF extends AgefoddExportExcel
 			// Invoice concern only session
 			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
 			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_trainer' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
-			$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
+			$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 
 			dol_syslog(get_class($this) . "::fetch_financial_outcome 604 ", LOG_DEBUG);
 			$resql = $this->db->query($sql);
@@ -839,7 +851,7 @@ class ReportBPF extends AgefoddExportExcel
 		// Invoice concern only session
 		$sql .= " WHERE f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
 		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_room' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
-		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
+		$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 
 		dol_syslog(get_class($this) . "::fetch_financial_outcome Locations liées à la formation ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -869,7 +881,7 @@ class ReportBPF extends AgefoddExportExcel
 		// Invoice concern only session
 		$sql .= " WHERE f.rowid IN (SELECT sesselement.fk_element FROM llx_agefodd_session_element as sesselement INNER JOIN llx_agefodd_session as sess ";
 		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type='invoice_supplier_missions' AND YEAR(sess.dated)=" . $filter['search_year'] . ")";
-		$sql .= " AND YEAR(f.datef)=" . $filter['search_year'];
+		$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start'])."' AND '".$this->db->idate($filter['search_date_end'])."'";
 
 		dol_syslog(get_class($this) . "::fetch_financial_outcome Locations liées à la formation ", LOG_DEBUG);
 		$resql = $this->db->query($sql);

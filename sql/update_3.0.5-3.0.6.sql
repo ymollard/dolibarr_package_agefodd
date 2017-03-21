@@ -3,3 +3,6 @@ UPDATE llx_agefodd_stagiaire_type SET intitule='Autre dispositifs (plan de forma
 UPDATE llx_agefodd_stagiaire_type SET intitule='Compte personnel de formation (CPF)' WHERE rowid=5;
 UPDATE llx_agefodd_stagiaire_type SET active=0 WHERE rowid=6;
 
+
+
+

@@ -24,8 +24,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formateur_category_dict (
   label varchar(100),
   description text,
   active smallint NOT NULL DEFAULT 0,
-  fk_user_author integer NOT NULL,
-  datec datetime NOT NULL,
-  fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL
 ) ENGINE=InnoDB;

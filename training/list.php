@@ -55,7 +55,7 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$limit = $conf->liste_limit;
+$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -65,7 +65,7 @@ if (empty($arch)) {
 } else {
 	$option .= '&arch=' . $arch;
 }
-	
+
 	// Search criteria
 $search_intitule = GETPOST("search_intitule");
 $search_ref = GETPOST("search_ref");
@@ -78,7 +78,7 @@ $search_id = GETPOST('search_id', 'int');
 $search_categ = GETPOST('search_categ', 'int');
 if ($search_categ == - 1)
 	$search_categ = '';
-	
+
 	// Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_intitule = '';
@@ -132,7 +132,7 @@ if (! empty($search_categ)) {
 
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
 
-print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER ['PHP_SELF'], '&arch=' . $arch, $sortfield, $sortorder, '', $resql);
+
 
 $i = 0;
 
@@ -144,6 +144,9 @@ if (! empty($sortorder))
 	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
 if (! empty($page))
 	print '<input type="hidden" name="page" value="' . $page . '"/>';
+
+	print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER ['PHP_SELF'], '&arch=' . $arch, $sortfield, $sortorder, '', $resql,$resql,'title_generic.png', 0, '', '', $limit);
+
 
 print '<table class="noborder" width="100%">';
 print "<tr class=\"liste_titre\">";
@@ -202,7 +205,7 @@ print '</form>';
 $var = true;
 if ($resql > 0) {
 	foreach ( $agf->lines as $line ) {
-		
+
 		// Affichage tableau des formations
 		$var = ! $var;
 		print "<tr $bc[$var]>";
@@ -216,7 +219,7 @@ if ($resql > 0) {
 		print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		print '<td>' . $line->nbsession . '</td>';
 		print "</tr>\n";
-		
+
 		$i ++;
 	}
 } else {

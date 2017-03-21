@@ -25,11 +25,8 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_type (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
-  intitule varchar(80) NOT NULL,
+  intitule varchar(255) NOT NULL,
   sort smallint NOT NULL,
   active integer NULL,
-  datec datetime,
-  tms timestamp NOT NULL,
-  fk_user_author integer NOT NULL,
-  fk_user_mod integer NOT NULL
+  tms timestamp NOT NULL
 ) ENGINE=InnoDB;

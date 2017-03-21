@@ -26,8 +26,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formateur_type (
   intitule varchar(80) NOT NULL,
   sort smallint NOT NULL,
   active integer NULL,
-  datec datetime,
-  tms timestamp NOT NULL,
-  fk_user_author integer NOT NULL,
-  fk_user_mod integer NOT NULL
+  tms timestamp NOT NULL
 ) ENGINE=InnoDB;
