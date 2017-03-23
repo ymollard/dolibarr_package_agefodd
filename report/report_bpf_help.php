@@ -77,9 +77,9 @@ print '4 - <a href="'.dol_buildpath('/admin/dict.php').'">'.$langs->trans('AgfTr
 print "<br>\n";
 print '6 - Tous les participants sont renseignés sur les sessions (sinon les sessions sans participant ne seront pas comptabilisées)';
 print "<br>\n";
-print '7 - Assurez vous que le calendrier des sessions soit correctement renseigné dans chaque sessions';
+print '7 - Assurez vous que le calendrier des sessions soit correctement renseigné dans chaque session';
 print "<br>\n";
-print '8 - Assurez vous que le calendrier des formateurs est correctement renseigné dans chaque sessions';
+print '8 - Assurez vous que le calendrier des formateurs soit correctement renseigné dans chaque session';
 print "<br>\n";
 print '9 - Assurez vous que les tiers (client/fournisseur) soient bien dans les bonnes catégories';
 print "<br>\n";
