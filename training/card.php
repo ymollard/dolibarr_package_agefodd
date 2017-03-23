@@ -124,6 +124,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
 			$agf->fk_c_category = GETPOST('categid', 'int');
+			$agf->fk_c_category_bpf = GETPOST('categidbpf', 'int');
 			$agf->color = GETPOST('color', 'alpha');
 			$agf->qr_code_info = GETPOST('qr_code_info');
 
@@ -207,6 +208,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
 			$agf->fk_c_category = GETPOST('categid', 'int');
+			$agf->fk_c_category_bpf = GETPOST('categidbpf', 'int');
 			$agf->qr_code_info = GETPOST('qr_code_info');
 
 			if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
@@ -485,6 +487,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
 
+	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
+	print $formagefodd->select_training_categ(GETPOST('categidbpf'), 'categidbpf', 't.active=1');
+	if ($user->admin)
+		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+	print "</td></tr>";
+
 	print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 	print $form->select_produits(GETPOST('productid'), 'productid', '', 10000);
 	print "</td></tr>";
@@ -628,6 +636,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				if ($user->admin)
 					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 				print "</td></tr>";
+
+				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
+				print $formagefodd->select_training_categ_bpf($agf->fk_c_category_bpf, 'categidbpf', 't.active=1');
+				if ($user->admin)
+					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+					print "</td></tr>";
 
 				print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 				print $form->select_produits($agf->fk_product, 'productid', '', 10000);
@@ -838,6 +852,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				print '<tr><td>' . $langs->trans("AgfTrainingCateg") . '</td><td  colspan=2>';
 				print $agf->category_lib;
+				print "</td></tr>";
+
+				print '<tr><td>' . $langs->trans("AgfTrainingCategBPF") . '</td><td  colspan=2>';
+				print $agf->category_lib_bpf;
 				print "</td></tr>";
 
 				print '<tr><td>' . $langs->trans("AgfProductServiceLinked") . '</td><td colspan=2>';

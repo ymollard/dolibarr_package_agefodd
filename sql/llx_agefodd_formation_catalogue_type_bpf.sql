@@ -23,7 +23,7 @@
 -- Structure de la table llx_agefodd_formation_catalogue_type
 --
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue_type (
+CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue_type_bpf (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   code varchar(30) NOT NULL,
   intitule varchar(1000) NOT NULL,

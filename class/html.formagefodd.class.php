@@ -404,7 +404,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY fullname";
 
-		dol_syslog(get_class($this) . "::select_stagiaire", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -468,7 +468,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY socname";
 
-		dol_syslog(get_class($this) . "::select_agefodd_contact", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo) {
@@ -587,7 +587,7 @@ class FormAgefodd extends Form {
 
 		$sql .= " ORDER BY sp.lastname ASC";
 
-		dol_syslog(get_class($this) . "::selectcontactscustom",LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__,LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -696,7 +696,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY sp.lastname,u.lastname";
 
-		dol_syslog(get_class($this) . "::select_formateur", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 
@@ -759,7 +759,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 
-		dol_syslog(get_class($this) . "::select_type_stagiaire", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 
@@ -816,7 +816,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 
-		dol_syslog(get_class($this) . "::select_type_formateur", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 
@@ -847,7 +847,7 @@ class FormAgefodd extends Form {
 			return $out;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_type_formateur " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__." ". $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -873,7 +873,7 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 
-		dol_syslog(get_class($this) . "::select_session_status", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 
@@ -904,7 +904,7 @@ class FormAgefodd extends Form {
 			return $out;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_session_status " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__.' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -959,9 +959,13 @@ class FormAgefodd extends Form {
 		}
 		$sql .= " ORDER BY t.sort";
 
-		dol_syslog(get_class($this) . "::select_training_categ", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
+
+			if ($conf->use_javascript_ajax) {
+				$out .= ajax_combobox($htmlname, array(),1,0,'200px');
+			}
 
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
@@ -986,7 +990,64 @@ class FormAgefodd extends Form {
 			return $out;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_training_categ " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+
+	/**
+	 * Display list of training category
+	 *
+	 * @param int $selectid Id de la session selectionner
+	 * @param string $htmlname Name of HTML control
+	 * @param string $filter SQL part for filter
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	public function  select_training_categ_bpf($selectid, $htmlname = 'stagiaire_type', $filter = '', $showempty = 1) {
+		global $conf, $langs;
+
+		$sql = "SELECT t.rowid, t.code, t.intitule";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as t";
+		if (! empty($filter)) {
+			$sql .= ' WHERE ' . $filter;
+		}
+		$sql .= " ORDER BY t.sort";
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$result = $this->db->query($sql);
+		if ($result) {
+
+			if ($conf->use_javascript_ajax) {
+				$out .= ajax_combobox($htmlname, array(),1,0,'200px');
+			}
+
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value="-1"></option>';
+				$num = $this->db->num_rows($result);
+				$i = 0;
+				if ($num) {
+					while ( $i < $num ) {
+						$obj = $this->db->fetch_object($result);
+						$label = stripslashes($obj->code . ' - ' . $obj->intitule);
+
+						if ($selectid > 0 && $selectid == $obj->rowid) {
+							$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+						} else {
+							$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+						}
+						$i ++;
+					}
+				}
+				$out .= '</select>';
+				$this->db->free($result);
+				return $out;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__METHOD__. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}

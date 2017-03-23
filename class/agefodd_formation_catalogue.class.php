@@ -57,7 +57,9 @@ class Agefodd extends CommonObject {
 	public $fk_formation_catalogue;
 	public $priorite;
 	public $fk_c_category;
+	public $fk_c_category_bpf;
 	public $category_lib;
+	public $category_lib_bpf;
 	public $certif_duration;
 	public $colors;
 	public $qr_code_info;
@@ -119,6 +121,9 @@ class Agefodd extends CommonObject {
 		if ($this->fk_c_category == - 1)
 			$this->fk_c_category = 0;
 
+		if ($this->fk_c_category_bpf == - 1)
+			$this->fk_c_category_bpf = 0;
+
 			// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formation_catalogue(";
 		$sql .= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,";
@@ -127,6 +132,7 @@ class Agefodd extends CommonObject {
 		$sql .= ",pedago_usage";
 		$sql .= ",sanction";
 		$sql .= ",qr_code_info";
+		$sql .= ",fk_c_category_bpf";
 		$sql .= ") VALUES (";
 		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
 		$sql .= " " . (! isset($this->ref_obj) ? 'NULL' : "'" . $this->ref_obj . "'") . ",";
@@ -149,7 +155,8 @@ class Agefodd extends CommonObject {
 		$sql .= " " . (empty($this->certif_duration) ? "null" : "'" . $this->certif_duration . "'") . ', ';
 		$sql .= " " . (empty($this->pedago_usage) ? "null" : "'" . $this->pedago_usage . "'") . ', ';
 		$sql .= " " . (empty($this->sanction) ? "null" : "'" . $this->sanction . "'") . ', ';
-		$sql .= " " . (empty($this->qr_code_info) ? "null" : "'" . $this->qr_code_info . "'");
+		$sql .= " " . (empty($this->qr_code_info) ? "null" : "'" . $this->qr_code_info . "'") . ', ';
+		$sql .= " " . (empty($this->fk_c_category_bpf) ? "null" : $this->fk_c_category_bpf);
 		$sql .= ")";
 
 		$this->db->begin();
@@ -214,8 +221,11 @@ class Agefodd extends CommonObject {
 		$sql .= " ,c.sanction";
 		$sql .= " ,c.color";
 		$sql .= " ,c.qr_code_info";
+		$sql .= " ,c.fk_c_category_bpf";
+		$sql .= " ,dictcatbpf.code as catcodebpf ,dictcatbpf.intitule as catlibbpf";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat ON dictcat.rowid=c.fk_c_category";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as dictcatbpf ON dictcatbpf.rowid=c.fk_c_category_bpf";
 		if ($id && ! $ref)
 			$sql .= " WHERE c.rowid = " . $id;
 		if (! $id && $ref)
@@ -252,6 +262,10 @@ class Agefodd extends CommonObject {
 				$this->fk_c_category = $obj->fk_c_category;
 				if (! empty($obj->catcode) || ! empty($obj->catlib)) {
 					$this->category_lib = $obj->catcode . ' - ' . $obj->catlib;
+				}
+				$this->fk_c_category_bpf = $obj->fk_c_category_bpf;
+				if (! empty($obj->catcodebpf) || ! empty($obj->catlibbpf)) {
+					$this->category_lib_bpf = $obj->catcodebpf. ' - ' . $obj->catlibbpf;
 				}
 				$this->certif_duration = $obj->certif_duration;
 				$this->pedago_usage = $obj->pedago_usage;
@@ -345,8 +359,12 @@ class Agefodd extends CommonObject {
 		if ($this->fk_c_category == - 1) {
 			$this->fk_c_category = 0;
 		}
+		if ($this->fk_c_category_bpf == - 1) {
+			$this->fk_c_category_bpf= 0;
+		}
 
 		$this->fk_c_category = $this->db->escape(trim($this->fk_c_category));
+		$this->fk_c_category_bpf= $this->db->escape(trim($this->fk_c_category_bpf));
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -375,6 +393,7 @@ class Agefodd extends CommonObject {
 		$sql .= " fk_product=" . (! empty($this->fk_product) ? $this->fk_product : "null") . ",";
 		$sql .= " nb_subscribe_min=" . (! empty($this->nb_subscribe_min) ? $this->nb_subscribe_min : "null") . ",";
 		$sql .= " fk_c_category=" . (! empty($this->fk_c_category) ? $this->fk_c_category : "null") . ",";
+		$sql .= " fk_c_category_bpf=" . (! empty($this->fk_c_category_bpf) ? $this->fk_c_category_bpf : "null") . ",";
 		$sql .= " certif_duration=" . (! empty($this->certif_duration) ? "'" . $this->certif_duration . "'" : "null") . ",";
 		$sql .= " color=" . (! empty($this->color) ? "'" . $this->color . "'" : "null"). ",";
 		$sql .= " qr_code_info=" . (! empty($this->qr_code_info) ? "'" . $this->qr_code_info . "'" : "null");
@@ -751,6 +770,7 @@ class Agefodd extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
+		$sql .= "dictcatbpf.code as catcodebpf ,dictcatbpf.intitule as catlibbpf,";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.status=4) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.status=4) as nbsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
@@ -758,6 +778,8 @@ class Agefodd extends CommonObject {
 		$sql .= " ON c.rowid = a.fk_formation_catalogue";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as dictcat";
 		$sql .= " ON dictcat.rowid = c.fk_c_category";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as dictcatbpf";
+		$sql .= " ON dictcatbpf.rowid = c.fk_c_category_bpf";
 
 		foreach ( $filter as $key => $value ) {
 			if (strpos($key, 'extra.') !== false) {
@@ -775,7 +797,7 @@ class Agefodd extends CommonObject {
 				// To allow $filter['YEAR(s.dated)']=>$year
 				if ($key == 'c.datec') {
 					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date($value, '%Y-%m-%d') . '\'';
-				} elseif ($key == 'c.duree' || $key == 'c.fk_c_category') {
+				} elseif ($key == 'c.duree' || $key == 'c.fk_c_category' || $key == 'c.fk_c_category_bpf') {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
@@ -815,6 +837,7 @@ class Agefodd extends CommonObject {
 					$line->fk_product = $obj->fk_product;
 					$line->nb_subscribe_min = $obj->nb_subscribe_min;
 					$line->category_lib = $obj->catcode . ' - ' . $obj->catlib;
+					$line->category_lib_bpf = $obj->catcodebpf . ' - ' . $obj->catlibbpf;
 
 					$this->lines[$i] = $line;
 

@@ -121,7 +121,18 @@ if ($action == 'builddoc') {
 	$action = '';
 }
 
-dol_fiche_head($head, 'AgfMenuReportBPF', $langs->trans("AgfMenuReportBPF"), 0, 'bill');
+
+print load_fiche_titre($langs->trans("AgfMenuReportBPF"));
+
+
+print "<br>\n";
+
+print ' <a href="'.dol_buildpath('/agefodd/report/report_bpf_help.php',1).'">'.$langs->trans('AgfMenuReportBPFHelp').'</a>';
+
+
+print "<br>\n";
+
+print "<br>\n";
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 

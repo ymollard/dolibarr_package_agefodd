@@ -76,8 +76,13 @@ $search_duree = GETPOST('search_duree');
 // 'int' ) );
 $search_id = GETPOST('search_id', 'int');
 $search_categ = GETPOST('search_categ', 'int');
-if ($search_categ == - 1)
+if ($search_categ == - 1) {
 	$search_categ = '';
+}
+$search_categ_bpf = GETPOST('search_categ_bpf', 'int');
+if ($search_categ_bpf == - 1) {
+	$search_categ_bpf = '';
+}
 
 	// Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -129,7 +134,10 @@ if (! empty($search_categ)) {
 	$filter ['c.fk_c_category'] = $search_categ;
 	$option .= '&search_categ=' . $search_categ;
 }
-
+if (! empty($search_categ_bpf)) {
+	$filter ['c.fk_c_category_bpf'] = $search_categ_bpf;
+	$option .= '&search_categ_bpf=' . $search_categ_bpf;
+}
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
 
 
@@ -155,6 +163,7 @@ print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.
 print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVER ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVER ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("AgfDateC"), $_SERVER ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVER ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
@@ -180,6 +189,10 @@ print '</td>';
 
 print '<td class="liste_titre">';
 print $formagefodd->select_training_categ($search_categ, 'search_categ', 't.active=1');
+print '</td>';
+
+print '<td class="liste_titre">';
+print $formagefodd->select_training_categ_bpf($search_categ_bpf, 'search_categ_bpf', 't.active=1');
 print '</td>';
 
 print '<td class="liste_titre">';
@@ -213,7 +226,8 @@ if ($resql > 0) {
 		print '<td>' . stripslashes($line->intitule) . '</td>';
 		print '<td>' . $line->ref . '</td>';
 		print '<td>' . $line->ref_interne . '</td>';
-		print '<td>' . $line->category_lib . '</td>';
+		print '<td>' . dol_trunc($line->category_lib). '</td>';
+		print '<td>' . dol_trunc($line->category_lib_bpf). '</td>';
 		print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
 		print '<td>' . $line->duree . '</td>';
 		print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';

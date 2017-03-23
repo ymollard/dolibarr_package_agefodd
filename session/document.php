@@ -97,7 +97,11 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 		if ($type_link == 'fac') {
 			$obj_link = new Facture($db);
 			$obj_link->fetch($agf->fk_element);
-			$resultdel = $obj_link->delete();
+			if (DOL_VERSION<=4.0) {
+				$resultdel = $obj_link->delete();
+			} else {
+				$resultdel = $obj_link->delete($user);
+			}
 		}
 		if ($type_link == 'prop') {
 			$obj_link = new Propal($db);

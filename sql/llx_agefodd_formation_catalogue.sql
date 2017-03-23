@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   fk_product integer,
   nb_subscribe_min integer NULL,
   fk_c_category integer NULL,
+  fk_c_category_bpf integer NULL,
   certif_duration varchar(30) NULL,
   qr_code_info varchar(500) NULL,
   color varchar(32) NULL,
