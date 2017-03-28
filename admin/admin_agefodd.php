@@ -124,11 +124,41 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+
 	$head_color = GETPOST('AGF_HEAD_COLOR', 'alpha');
 	if (! empty($head_color)) {
 		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', $head_color, 'chaine', 0, '', $conf->entity);
 	} else {
 		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', 'CB4619', 'chaine', 0, '', $conf->entity);
+	}
+	if (! $res > 0)
+		$error ++;
+	
+
+	$head_color = GETPOST('AGF_HEADER_COLOR_BG', 'alpha');
+	if (! empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_BG', $head_color, 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_BG', 'FFFFFF', 'chaine', 0, '', $conf->entity);
+	}
+	if (! $res > 0)
+		$error ++;
+
+	$head_color = GETPOST('AGF_HEADER_COLOR_TEXT', 'alpha');
+	if (! empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_TEXT', $head_color, 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_TEXT', 'FFFFFF', 'chaine', 0, '', $conf->entity);
+	}
+	if (! $res > 0)
+		$error ++;
+		
+		
+	$head_color = GETPOST('AGF_COLOR_LINE', 'alpha');
+	if (! empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_COLOR_LINE', $head_color, 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_COLOR_LINE', 'FFFFFF', 'chaine', 0, '', $conf->entity);
 	}
 	if (! $res > 0)
 		$error ++;
@@ -827,6 +857,30 @@ print '<tr class="impair">';
 print '<td>' . $langs->trans("AgfPDFHeadColor") . '</td>';
 print '<td nowrap="nowrap">';
 print $formother->selectColor($conf->global->AGF_HEAD_COLOR, "AGF_HEAD_COLOR");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+// Background color for header
+print '<tr class="pair">';
+print '<td>' . $langs->trans("AgfPDFHeaderColorBg") . '</td>';
+print '<td nowrap="nowrap">';
+print $formother->selectColor($conf->global->AGF_HEADER_COLOR_BG, "AGF_HEADER_COLOR_BG");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+// olor for header
+print '<tr class="pair">';
+print '<td>' . $langs->trans("AgfPDFHeaderColorText") . '</td>';
+print '<td nowrap="nowrap">';
+print $formother->selectColor($conf->global->AGF_HEADER_COLOR_TEXT, "AGF_HEADER_COLOR_TEXT");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+// Color for lines
+print '<tr class="impair">';
+print '<td>' . $langs->trans("AgfPDFColorLines") . '</td>';
+print '<td nowrap="nowrap">';
+print $formother->selectColor($conf->global->AGF_COLOR_LINE, "AGF_COLOR_LINE");
 print '</td>';
 print '<td></td>';
 print "</tr>";

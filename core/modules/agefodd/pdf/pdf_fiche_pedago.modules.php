@@ -82,6 +82,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
+		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
+		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -169,7 +172,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				 */
 
 				$posX = $this->marge_gauche;
-				$posY = $this->pdf->GetY() + 5;
+				$posY = $this->pdf->GetY() + 20;
 
 				/**
 				 * *** Titre ****
@@ -203,7 +206,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = $outputlangs->transnoentities('AgfBut');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -231,7 +234,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -257,7 +260,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = $outputlangs->transnoentities('AgfPrerequis');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -282,7 +285,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfPublic');
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -304,7 +307,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfPedagoUsage');
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -328,7 +331,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfSanction');
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -364,7 +367,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfMethode');
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -384,7 +387,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
 				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+				$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 
@@ -437,7 +440,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfProgramme');
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
@@ -528,7 +531,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->str = $outputlangs->transnoentities('AgfProgramme');
 					$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $this->pdf->GetY();
-					$this->pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 					$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
@@ -579,7 +582,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		pdf_pagehead($this->pdf, $outputlangs, $this->pdf->page_hauteur);
 
 		$posY_ori = $this->pdf->GetY();
-		$this->pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+		$this->pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
+		
+		// Fill header with background color
+		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
+		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
 
 		$posY = $this->marge_haute;
 		$posX = $this->page_largeur - $this->marge_droite - 55;
@@ -637,7 +644,6 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 		$hautcadre = 30;
 		$this->pdf->SetXY($posx, $posy);
-		$this->pdf->SetFillColor(255, 255, 255);
 		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 		// Show sender name
