@@ -41,6 +41,9 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	/**
 	 * \brief Constructor
@@ -81,6 +84,9 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
+		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
+		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -172,7 +178,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 
 			// On met en place le cadre
-			$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+			$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 			//$ep_line1 = 0.5;
 			//$pdf->SetLineWidth($ep_line1);
 

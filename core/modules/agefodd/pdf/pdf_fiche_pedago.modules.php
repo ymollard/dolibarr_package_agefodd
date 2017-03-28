@@ -38,6 +38,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	// pdf instance
 	protected $pdf;
@@ -166,6 +169,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// New page
 				$outputlangs->load("main");
 				$this->pdf->AddPage();
+				
 				$this->_pagehead($agf, $outputlangs);
 				/*
 				 * Corps de page
@@ -189,7 +193,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				$this->str = $agf->intitule;
 				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
 				// cadre
-				$this->pdf->SetFillColor(255);
+				$this->pdf->SetFillColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$this->pdf->Rect($posX, $posY - 1, $this->espaceH_dispo, $hauteur + 3);
 				// texte
 				$this->pdf->SetXY($posX, $posY);
