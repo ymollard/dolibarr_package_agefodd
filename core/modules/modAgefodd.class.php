@@ -283,6 +283,30 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][5] = 0;
 
 		$r ++;
+		$this->const[$r][0] = "AGF_HEADER_COLOR_BG";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'FFFFFF';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_HEADER_COLOR_TEXT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '000000';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_COLOR_LINE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '1A60C9';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
 		$this->const[$r][0] = "AGF_HEAD_COLOR";
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '1A60C9';
