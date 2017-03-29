@@ -195,6 +195,8 @@ class pdf_chevalet extends ModelePDFAgefodd {
 				$this->str .= ' (' . $line->poste . ')';
 			}
 			$pdf->MultiCell(0, 20, $outputlangs->convToOutputCharset($this->str), 1, "C");
+			$pdf->MultiCell(0, 20, '', 1, "C");
+			$pdf->MultiCell(0, 5, '', 0, "C");
 		}
 
 		// Pied de page
