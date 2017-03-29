@@ -39,6 +39,9 @@ class pdf_conseils extends ModelePDFAgefodd {
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	/**
 	 * \brief		Constructor
@@ -76,6 +79,9 @@ class pdf_conseils extends ModelePDFAgefodd {
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
+		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
+		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -153,7 +159,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$pagenb ++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+				$pdf->SetTextColor($this->colorheaderText [0], $this->colorheaderText [1], $this->colorheaderText [2]);
 
 				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
 
@@ -219,7 +225,6 @@ class pdf_conseils extends ModelePDFAgefodd {
 
 				$hautcadre=30;
 				$pdf->SetXY($posx,$posy);
-				$pdf->SetFillColor(255,255,255);
 				$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 				// Show sender name
@@ -251,7 +256,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 
 				$posY = $pdf->GetY() + 10;
 
-				$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+				$pdf->SetDrawColor($this->colorLine [0], $this->colorLine [1], $this->colorLine [2]);
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 				// Mise en page de la baseline
@@ -426,6 +431,10 @@ class pdf_conseils extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
+		
+		// Fill header with background color
+		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
+		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
 
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}

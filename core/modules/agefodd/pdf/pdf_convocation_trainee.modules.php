@@ -41,6 +41,9 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	/**
 	 * \brief Constructor
@@ -78,6 +81,9 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
+		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
+		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -154,9 +160,11 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->AddPage();
 			$pagenb ++;
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
+			
+				
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$pdf->MultiCell(0, 3, '', 0, 'J');
-			$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+			$pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
 
 			$posy = $this->marge_haute;
 			$posx = $this->page_largeur - $this->marge_droite - 55;
@@ -216,7 +224,6 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 
 			$hautcadre = 30;
 			$pdf->SetXY($posx, $posy);
-			$pdf->SetFillColor(255, 255, 255);
 			$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 			// Show sender name
@@ -245,7 +252,7 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 
 			$posY = $pdf->GetY() + 10;
 
-			$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+			$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 			$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 			// Mise en page de la baseline
@@ -400,6 +407,10 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
+		
+		// Fill header with background color
+		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
+		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
 
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}
