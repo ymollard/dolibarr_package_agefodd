@@ -104,7 +104,7 @@ if ($action == 'builddoc') {
 		} else {
 			setEventMessage($langs->trans("FileSuccessfullyBuilt"));
 			if (count($report_bpf->warnings)>0) {
-				array_unshift($report_bpf->warnings, $langs->trans("AgfReportBPFDataInconsistency"));
+				setEventMessage($langs->trans("AgfReportBPFDataInconsistency"), 'errors');
 				setEventMessages(null,$report_bpf->warnings, 'warnings');
 			}
 
