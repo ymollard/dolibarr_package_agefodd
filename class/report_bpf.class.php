@@ -1017,7 +1017,7 @@ class ReportBPF extends AgefoddExportExcel
 			$this->db->free($resql);
 		}
 
-		if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA)) {
+		if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA) && !empty($conf->global->AGF_CAT_BPF_PRESTA)) {
 			// dont Achats de prestation de formation et honoraires de formation
 			$sql = "SELECT SUM(facdet.total_ht) as amount ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
