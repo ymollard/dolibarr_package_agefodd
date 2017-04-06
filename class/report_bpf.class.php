@@ -741,7 +741,7 @@ class ReportBPF extends AgefoddExportExcel
 						'idtype' => '13'
 				),
 				array(
-						'label' => 'Personnes en recherche d’emploi bénéficiant d’un financement public',
+						'label' => 'Personnes en recherche d’emploi bénéficiant d’un financement OPCA',
 						'idtype' => '3'
 				),
 				array(
