@@ -359,6 +359,10 @@ function show_trainer_mission($session_trainerid) {
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
