@@ -169,27 +169,29 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
-		foreach ( $this->financial_data as $label_type => $financial_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $financial_data;
+		if (is_array($this->financial_data) && count($this->financial_data) > 0) {
+			foreach ( $this->financial_data as $label_type => $financial_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $financial_data;
 
-			$array_total_output[0] = $this->outputlangs->transnoentities('Total');
-			$array_total_output[1] += $financial_data;
+				$array_total_output[0] = $this->outputlangs->transnoentities('Total');
+				$array_total_output[1] += $financial_data;
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
-		}
 
-		// Fetch Financial data Bock d
-		$result = $this->fetch_financial_d($filter);
-		if ($result < 0) {
-			return $result;
+			// Fetch Financial data Bock d
+			$result = $this->fetch_financial_d($filter);
+			if ($result < 0) {
+				return $result;
+			}
 		}
 
 		// Contruct header (column name)
@@ -214,6 +216,7 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
+		if (is_array($this->financial_data_d) && count($this->financial_data_d) > 0) {
 		foreach ( $this->financial_data_d as $label_type => $financial_data ) {
 			$line_to_output[0] = $label_type;
 			$line_to_output[1] = $financial_data;
@@ -229,6 +232,7 @@ class ReportBPF extends AgefoddExportExcel
 		$result = $this->write_line_total($array_total_output, '3d85c6');
 		if ($result < 0) {
 			return $result;
+		}
 		}
 
 		// Fetch Trainer Block E
