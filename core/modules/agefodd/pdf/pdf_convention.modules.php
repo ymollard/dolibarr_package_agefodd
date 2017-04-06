@@ -122,8 +122,6 @@ class pdf_convention extends ModelePDFAgefodd {
 
 		// Definition of $dir and $file
 		$dir = $conf->agefodd->dir_output;
-		// Definition of $dir and $file
-		$dir = $conf->agefodd->dir_output;
 		$fileori=$file;
 		$file = $dir . '/' . $file;
 
