@@ -266,24 +266,26 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		$array_total_output[1] = 0;
 		$array_total_output[2] = 0;
-		foreach ( $this->trainer_data as $label_type => $trainer_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $trainer_data['nb'];
-			$line_to_output[2] = $trainer_data['time'];
+		if (is_array($this->trainer_data) && count($this->trainer_data) > 0) {
+			foreach ( $this->trainer_data as $label_type => $trainer_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainer_data['nb'];
+				$line_to_output[2] = $trainer_data['time'];
 
-			$array_total_output[0] = 'Total';
-			$array_total_output[1] += $trainer_data['nb'];
-			$array_total_output[2] += $trainer_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainer_data['nb'];
+				$array_total_output[2] += $trainer_data['time'];
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
 		}
 
 		// Fetch Trainee Block F -1
@@ -319,22 +321,24 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
-		foreach ( $this->trainee_data as $label_type => $trainee_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $trainee_data['nb'];
-			$line_to_output[2] = $trainee_data['time'];
-			$array_total_output[0] = 'Total';
-			$array_total_output[1] += $trainee_data['nb'];
-			$array_total_output[2] += $trainee_data['time'];
+		if (is_array($this->trainee_data) && count($this->trainee_data) > 0) {
+			foreach ( $this->trainee_data as $label_type => $trainee_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainee_data['nb'];
+				$line_to_output[2] = $trainee_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainee_data['nb'];
+				$array_total_output[2] += $trainee_data['time'];
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
 		}
 
 		// Fetch Trainee Block F -2
@@ -370,22 +374,24 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
-		foreach ( $this->trainee_data_f2 as $label_type => $trainee_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $trainee_data['nb'];
-			$line_to_output[2] = $trainee_data['time'];
-			$array_total_output[0] = 'Total';
-			$array_total_output[1] += $trainee_data['nb'];
-			$array_total_output[2] += $trainee_data['time'];
+		if (is_array($this->trainee_data_f2) && count($this->trainee_data_f2) > 0) {
+			foreach ( $this->trainee_data_f2 as $label_type => $trainee_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainee_data['nb'];
+				$line_to_output[2] = $trainee_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainee_data['nb'];
+				$array_total_output[2] += $trainee_data['time'];
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
 		}
 
 		// Fetch Trainee Block F -3
@@ -421,22 +427,24 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
-		foreach ( $this->trainee_data_f3 as $label_type => $trainee_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $trainee_data['nb'];
-			$line_to_output[2] = $trainee_data['time'];
-			$array_total_output[0] = 'Total';
-			$array_total_output[1] += $trainee_data['nb'];
-			$array_total_output[2] += $trainee_data['time'];
+		if (is_array($this->trainee_data_f3) && count($this->trainee_data_f3) > 0) {
+			foreach ( $this->trainee_data_f3 as $label_type => $trainee_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainee_data['nb'];
+				$line_to_output[2] = $trainee_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainee_data['nb'];
+				$array_total_output[2] += $trainee_data['time'];
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
 		}
 
 		// Fetch Trainee Block F -4
@@ -472,22 +480,24 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
-		foreach ( $this->trainee_data_f4 as $label_type => $trainee_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $trainee_data['nb'];
-			$line_to_output[2] = $trainee_data['time'];
-			$array_total_output[0] = 'Total';
-			$array_total_output[1] += $trainee_data['nb'];
-			$array_total_output[2] += $trainee_data['time'];
+		if (is_array($this->trainee_data_f4) && count($this->trainee_data_f4) > 0) {
+			foreach ( $this->trainee_data_f4 as $label_type => $trainee_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainee_data['nb'];
+				$line_to_output[2] = $trainee_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainee_data['nb'];
+				$array_total_output[2] += $trainee_data['time'];
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
 		}
 
 		$this->close_file(0, 0, 0);
@@ -1017,7 +1027,7 @@ class ReportBPF extends AgefoddExportExcel
 			$this->db->free($resql);
 		}
 
-		if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA) && !empty($conf->global->AGF_CAT_BPF_PRESTA)) {
+		if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA) && ! empty($conf->global->AGF_CAT_BPF_PRESTA)) {
 			// dont Achats de prestation de formation et honoraires de formation
 			$sql = "SELECT SUM(facdet.total_ht) as amount ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
