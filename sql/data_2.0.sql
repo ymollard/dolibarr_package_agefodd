@@ -3,7 +3,7 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALU
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (2, 'Financement par l''employeur', 1, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
-(3, 'Dispositifs spécifiques pour les personnes en recherche d''emploi', 4, 1, '2017-03-23 12:00:00');
+(3, 'Dispositifs spécifiques pour les personnes en recherche d''emploi financement publique', 4, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (4, 'Autre dispositifs (plan de formation, périodes de professionnalisation,...)', 5, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
@@ -30,6 +30,8 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALU
 (15, 'Contrats conclus avec des personnes à titre individuel et à leurs frais', 13, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (16, 'Contrats conclus avec d’autres organismes de formation', 14, 1, '2017-03-23 12:00:00');
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
+(17, 'Dispositifs spécifiques pour les personnes en recherche d''emploi financement OPCA', 4, 1, '2017-03-23 12:00:00');
 
 INSERT INTO llx_agefodd_formateur_type (rowid,intitule, sort, active, tms) VALUES
 (1,'Formateur interne', 0, 1,'2017-03-23 12:00:00');

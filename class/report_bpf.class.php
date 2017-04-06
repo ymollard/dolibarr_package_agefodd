@@ -738,11 +738,11 @@ class ReportBPF extends AgefoddExportExcel
 				),
 				array(
 						'label' => 'Personnes en recherche d’emploi bénéficiant d’un financement public',
-						'idtype' => '13'
+						'idtype' => '3'
 				),
 				array(
 						'label' => 'Personnes en recherche d’emploi bénéficiant d’un financement OPCA',
-						'idtype' => '3'
+						'idtype' => '17'
 				),
 				array(
 						'label' => 'Particuliers à leurs propres frais',
@@ -847,7 +847,7 @@ class ReportBPF extends AgefoddExportExcel
 						'checkOPCA' => 1
 				),
 				array(
-						'idtypesta' => 3,
+						'idtypesta' => '17,3',
 						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 						'confprodlabel' => 'AgfReportBPFCategProdPeda',
 						'label' => 'C-d OPCA pour des formations dispensées dans le cadre des dispositifs spécifiques pour les personnes en recherche d’emploi',
