@@ -425,8 +425,10 @@ if (! empty($id)) {
 					print $form->select_company($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0);
 					print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
 					print $form->select_company($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0);
-					print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
-					print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . $stagiaires->lines[$i]->hour_foad. '" />';
+					if (!empty($conf->global->AGF_MANAGE_BPF)) {
+						print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
+						print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . $stagiaires->lines[$i]->hour_foad. '" />';
+					}
 
 					if ($agf->type_session == 1) {
 						print '<br>' . $langs->trans('AgfContactSign') . ' ';
@@ -654,8 +656,10 @@ if (! empty($id)) {
 			print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
 			print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
 			print $form->select_company(0, 'fk_soc_requester', '', 1, 1, 0);
-			print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
-			print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load'). '" />';
+			if (!empty($conf->global->AGF_MANAGE_BPF)) {
+				print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
+				print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load'). '" />';
+			}
 
 			if ($user->rights->agefodd->modifier) {
 				print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="stag_add" alt="' . $langs->trans("AgfModSave") . '" ">';
@@ -947,7 +951,7 @@ if (! empty($id)) {
 						print '</table>';
 					} else {
 						print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
-						if (!empty($stagiaires->lines[$i]->hour_foad)) {
+						if (!empty($stagiaires->lines[$i]->hour_foad) && !empty($conf->global->AGF_MANAGE_BPF)) {
 							print '<br>'.  $langs->trans('AgfHourFOAD') . ' : '.$stagiaires->lines[$i]->hour_foad . ' ' . $langs->trans('Hour') . '(s)';
 						}
 					}

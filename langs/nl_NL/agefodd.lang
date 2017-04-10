@@ -959,3 +959,5 @@ AgfSessionContactPhone=Nom contact Téléhpone
 ImportDataset_agefoddtraingingprogram=Agefodd - Import des formations du catalogues
 ExportDataset_TrainingProgram=Agefodd - Export des formations du catalogues
 AgfQRCodeCertifInfo=Information on QR code on credit card certificate
+AgfManageBPF=Manage BPF
+AgfManageBPFHelp=French legal document to provide to french admnistration one a year

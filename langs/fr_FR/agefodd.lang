@@ -1191,3 +1191,5 @@ AgfReportBPFChaperG=G. BILAN PÉDAGOGIQUE : STAGIAIRES DONT LA FORMATION A ÉTÉ
 AgfBPFExplanationChaperG=Le temps comptabilisé est issu des sessions au statut <strong> "réalisées" </strong><br> - le calendrier de la session sert de base de calcul<br> - le statut des participants dans les sessions doit être <strong> %s </strong> ou <strong> %s </strong><br> - il <strong>a y</strong> un sous traitant défini sur la session
 AgfReportBPFDataInconsistency=Des paramétrage sont manquants, les données du rapport peuvent être incohérentes ou manquantes
 AgfHourFOAD=Nombre d'heure en parcourt FOAD 
+AgfManageBPF=Activé la gestion du BPF
+AgfManageBPFHelp=Le Bilan pédagoque et financier (BPF) est une obligation légale en France à remettre aux administrations

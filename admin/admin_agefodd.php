@@ -133,7 +133,7 @@ if ($action == 'setvar') {
 	}
 	if (! $res > 0)
 		$error ++;
-	
+
 
 	$head_color = GETPOST('AGF_HEADER_COLOR_BG', 'alpha');
 	if (! empty($head_color)) {
@@ -152,8 +152,8 @@ if ($action == 'setvar') {
 	}
 	if (! $res > 0)
 		$error ++;
-		
-		
+
+
 	$head_color = GETPOST('AGF_COLOR_LINE', 'alpha');
 	if (! empty($head_color)) {
 		$res = dolibarr_set_const($db, 'AGF_COLOR_LINE', $head_color, 'chaine', 0, '', $conf->entity);
@@ -376,6 +376,11 @@ if ($action == 'setvarother') {
 
 	$refpropalauto = GETPOST('AGF_REF_PROPAL_AUTO', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_REF_PROPAL_AUTO', $refpropalauto, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$use_managebpf = GETPOST('AGF_MANAGE_BPF', 'int');
+	$res = dolibarr_set_const($db, 'AGF_MANAGE_BPF', $use_managebpf, 'yesno', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -1584,6 +1589,25 @@ if ($conf->use_javascript_ajax) {
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfRefPropalAutoHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+
+// Update global variable AGF_MANAGE_BPF
+print '<tr class="impair"><td>' . $langs->trans("AgfManageBPF") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_MANAGE_BPF');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_MANAGE_BPF", $arrval, $conf->global->AGF_MANAGE_BPF);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 

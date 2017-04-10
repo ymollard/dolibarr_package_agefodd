@@ -733,23 +733,23 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 		$array_data = array(
 				array(
-						'label' => 'Salariés bénéficiant d un financement par l employeur, par un OPCA ou un OPACIF',
+						'label' => 'a-Salariés bénéficiant d un financement par l employeur, par un OPCA ou un OPACIF',
 						'idtype' => '1,2,7,5,4'
 				),
 				array(
-						'label' => 'Personnes en recherche d’emploi bénéficiant d’un financement public',
+						'label' => 'b-Personnes en recherche d’emploi bénéficiant d’un financement public',
 						'idtype' => '3'
 				),
 				array(
-						'label' => 'Personnes en recherche d’emploi bénéficiant d’un financement OPCA',
+						'label' => 'c-Personnes en recherche d’emploi bénéficiant d’un financement OPCA',
 						'idtype' => '17'
 				),
 				array(
-						'label' => 'Particuliers à leurs propres frais',
+						'label' => 'd-Particuliers à leurs propres frais',
 						'idtype' => '15'
 				),
 				array(
-						'label' => 'Autres stagiaires',
+						'label' => 'e-Autres stagiaires',
 						'idtype' => ''
 				)
 		);
@@ -787,6 +787,7 @@ class ReportBPF extends AgefoddExportExcel
 						$this->trainee_data[$data['label']]['nb'] = $obj->cnt - $total_cnt;
 						$this->trainee_data[$data['label']]['time'] = $obj->timeinsession - $total_timeinsession;
 					}
+
 				}
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
@@ -794,6 +795,40 @@ class ReportBPF extends AgefoddExportExcel
 				return - 1;
 			}
 			$this->db->free($resql);
+
+
+			if ($data['idtype']=='1,2,7,5,4') {
+				$sql = "SELECT SUM(nb_stagiaire) AS cnt, SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session AS sess ";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd = sess.rowid ";
+				$sql .= " AND sesssta.status_in_session IN (3 , 4) ";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type AS statype ON statype.rowid = sesssta.fk_agefodd_stagiaire_type ";
+				$sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (1 , 2, 7, 5, 4) ";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier AS statime ON statime.fk_agefodd_session = sess.rowid ";
+				$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+				$sql .= " AND sess.status IN (5) ";
+				$sql .= " AND sess.fk_socpeople_presta IS NULL ";
+				$sql .= " AND sess.force_nb_stagiaire=1 ";
+
+				dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					if ($this->db->num_rows($resql)) {
+						if ($obj = $this->db->fetch_object($resql)) {
+							$this->trainee_data[$data['label']]['nb'] += $obj->cnt;
+							$this->trainee_data[$data['label']]['time'] += $obj->timeinsession;
+							$total_cnt += $obj->cnt;
+							$total_timeinsession += $obj->timeinsession;
+						}
+					}
+				} else {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::" . __METHOD__ . " " . $data['label'] . " " . $this->error, LOG_ERR);
+					return - 1;
+				}
+				$this->db->free($resql);
+
+			}
 		}
 	}
 

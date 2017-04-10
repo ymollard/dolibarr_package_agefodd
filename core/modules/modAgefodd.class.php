@@ -594,6 +594,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
+		$r ++;
+		$this->const[$r][0] = "AGF_MANAGE_BPF";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Manage BPF';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array();
@@ -1924,7 +1932,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/report/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 701,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_MANAGE_BPF',
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
@@ -1938,7 +1946,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/report/report_bpf.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 702,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report->bpf',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report->bpf && $conf->global->AGF_MANAGE_BPF',
 				'perms' => '$user->rights->agefodd->report->bpf',
 				'target' => '',
 				'user' => 0
