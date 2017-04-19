@@ -2416,7 +2416,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.fk_soc_requester";
 		$sql .= " ,s.fk_soc_employer";
 		$sql .= " ,sorequester.nom as socrequestername,";
-		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task0,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu) AND archive <> 1) as task0,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND (datea) ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task1,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval8day . ") AND (datea - INTERVAL " . $interval3day . ") ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task2,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task3";
@@ -3350,13 +3350,13 @@ class Agsession extends CommonObject
 			$duree = 0;
 			for($i = 0; $i < $blocNumber; $i ++) {
 				if ($i > 6) {
-					$styledisplay = " style=\"display:none\" ";
+					$styledisplay = " style=\"display:none\" class=\"otherdate\" ";
 				} else {
 					$styledisplay = " ";
 				}
 				if ($calendrier->lines[$i]->date_session != $old_date) {
 					if ($i > 0) {
-						print '</tr><tr ' . $styledisplay . ' class="otherdate" ><td width="150px" style="border:0px;">&nbsp;</td>';
+						print '</tr><tr ' . $styledisplay . '><td width="150px" style="border:0px;">&nbsp;</td>';
 					}
 					print '<td width="150px">';
 					print dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td><td>';
@@ -3395,11 +3395,11 @@ class Agsession extends CommonObject
 				setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
 			}
 			if ($blocNumber > 6) {
-				print '<tr><td>&nbsp;</td><td colspan="2" style="font-weight: bold; font-size:150%" id="switchtime">+</td></tr>';
+				print '<tr><td>&nbsp;</td><td colspan="2" style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtime">+</td></tr>';
 				print '<script>' . "\n";
 				print '$(document).ready(function () { ' . "\n";
 				print '		$(\'#switchtime\').click(function(){' . "\n";
-				print '			$(\'.otherdate\').toggle()' . "\n";
+				print '			$(\'.otherdate\').toggle();' . "\n";
 				print '			if ($(\'#switchtime\').text()==\'+\') { ' . "\n";
 				print '				$(\'#switchtime\').text(\'-\'); ' . "\n";
 				print '			}else { ' . "\n";
@@ -4203,6 +4203,7 @@ class Agsession extends CommonObject
 
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
+					$num_OPCA_file_array=array();
 					foreach ( $session_trainee->lines as $line ) {
 
 						// Do not output not present or cancelled trainee
@@ -4218,7 +4219,10 @@ class Agsession extends CommonObject
 								$soc_name = $socsatic->name;
 							}
 							if (! empty($sessionOPCA->num_OPCA_file) && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-								$desc_OPCA = "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $soc_name;
+								if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
+									$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $soc_name;
+									$num_OPCA_file_array[$sessionOPCA->num_OPCA_file]=$soc_name;
+								}
 							}
 							$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 						}

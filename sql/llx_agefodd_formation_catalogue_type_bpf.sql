@@ -1,5 +1,7 @@
 -- ============================================================================
--- Copyright (C) 2015 Florian HENRY <florian.henry@open-concept.pro>
+-- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
+-- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
+-- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,12 +19,15 @@
 --
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_formateur_category_dict (
+--
+-- Structure de la table llx_agefodd_formation_catalogue_type
+--
+
+CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue_type_bpf (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
-  entity integer NOT NULL DEFAULT 1,
-  code varchar(20) NOT NULL,
-  label varchar(100),
-  description text,
-  active smallint NOT NULL DEFAULT 0,
+  code varchar(30) NOT NULL,
+  intitule varchar(1000) NOT NULL,
+  sort smallint NOT NULL,
+  active integer NULL,
   tms timestamp NOT NULL
 ) ENGINE=InnoDB;

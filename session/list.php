@@ -163,6 +163,7 @@ if ($page == - 1) {
 $offset = $conf->liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
+$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
@@ -272,7 +273,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 
 
 }
-$resql = $agf->fetch_all($sortorder, $sortfield, $conf->liste_limit, $offset, $filter, $user);
+$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user);
 
 if ($resql != - 1) {
 	$num = $resql;
@@ -328,8 +329,6 @@ if ($resql != - 1) {
 	if ($search_type_session != '' && $search_type_session != - 1)
 		$option .= '&search_type_session=' . $search_type_session;
 
-	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
-
 	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
 	if (! empty($status_view))
 		print '<input type="hidden" name="status" value="' . $status_view . '"/>';
@@ -343,6 +342,8 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
 	if (! empty($page))
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
+
+	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 		// If the user can view prospects other than his'
 	if ($user->rights->societe->client->voir || $socid) {

@@ -124,11 +124,41 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+
 	$head_color = GETPOST('AGF_HEAD_COLOR', 'alpha');
 	if (! empty($head_color)) {
 		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', $head_color, 'chaine', 0, '', $conf->entity);
 	} else {
 		$res = dolibarr_set_const($db, 'AGF_HEAD_COLOR', 'CB4619', 'chaine', 0, '', $conf->entity);
+	}
+	if (! $res > 0)
+		$error ++;
+
+
+	$head_color = GETPOST('AGF_HEADER_COLOR_BG', 'alpha');
+	if (! empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_BG', $head_color, 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_BG', 'FFFFFF', 'chaine', 0, '', $conf->entity);
+	}
+	if (! $res > 0)
+		$error ++;
+
+	$head_color = GETPOST('AGF_HEADER_COLOR_TEXT', 'alpha');
+	if (! empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_TEXT', $head_color, 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_HEADER_COLOR_TEXT', 'FFFFFF', 'chaine', 0, '', $conf->entity);
+	}
+	if (! $res > 0)
+		$error ++;
+
+
+	$head_color = GETPOST('AGF_COLOR_LINE', 'alpha');
+	if (! empty($head_color)) {
+		$res = dolibarr_set_const($db, 'AGF_COLOR_LINE', $head_color, 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_COLOR_LINE', 'FFFFFF', 'chaine', 0, '', $conf->entity);
 	}
 	if (! $res > 0)
 		$error ++;
@@ -346,6 +376,11 @@ if ($action == 'setvarother') {
 
 	$refpropalauto = GETPOST('AGF_REF_PROPAL_AUTO', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_REF_PROPAL_AUTO', $refpropalauto, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$use_managebpf = GETPOST('AGF_MANAGE_BPF', 'int');
+	$res = dolibarr_set_const($db, 'AGF_MANAGE_BPF', $use_managebpf, 'yesno', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -827,6 +862,30 @@ print '<tr class="impair">';
 print '<td>' . $langs->trans("AgfPDFHeadColor") . '</td>';
 print '<td nowrap="nowrap">';
 print $formother->selectColor($conf->global->AGF_HEAD_COLOR, "AGF_HEAD_COLOR");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+// Background color for header
+print '<tr class="pair">';
+print '<td>' . $langs->trans("AgfPDFHeaderColorBg") . '</td>';
+print '<td nowrap="nowrap">';
+print $formother->selectColor($conf->global->AGF_HEADER_COLOR_BG, "AGF_HEADER_COLOR_BG");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+// olor for header
+print '<tr class="pair">';
+print '<td>' . $langs->trans("AgfPDFHeaderColorText") . '</td>';
+print '<td nowrap="nowrap">';
+print $formother->selectColor($conf->global->AGF_HEADER_COLOR_TEXT, "AGF_HEADER_COLOR_TEXT");
+print '</td>';
+print '<td></td>';
+print "</tr>";
+// Color for lines
+print '<tr class="impair">';
+print '<td>' . $langs->trans("AgfPDFColorLines") . '</td>';
+print '<td nowrap="nowrap">';
+print $formother->selectColor($conf->global->AGF_COLOR_LINE, "AGF_COLOR_LINE");
 print '</td>';
 print '<td></td>';
 print "</tr>";
@@ -1530,6 +1589,25 @@ if ($conf->use_javascript_ajax) {
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfRefPropalAutoHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+
+// Update global variable AGF_MANAGE_BPF
+print '<tr class="impair"><td>' . $langs->trans("AgfManageBPF") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_MANAGE_BPF');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_MANAGE_BPF", $arrval, $conf->global->AGF_MANAGE_BPF);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 

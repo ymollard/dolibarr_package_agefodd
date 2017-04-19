@@ -42,7 +42,8 @@ if (! $user->rights->agefodd->lire)
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
-$search_year = GETPOST('search_year');
+$search_date_start= dol_mktime(0, 0, 0, GETPOST('search_date_startmonth', 'int'), GETPOST('search_date_startday', 'int'), GETPOST('search_date_startyear', 'int'));
+$search_date_end= dol_mktime(0, 0, 0, GETPOST('search_date_endmonth', 'int'), GETPOST('search_date_endday', 'int'), GETPOST('search_date_endyear', 'int'));
 
 $modelexport = GETPOST('modelexport', 'alpha');
 $lang_id = GETPOST('lang_id');
@@ -63,8 +64,12 @@ $formfile = new FormFile($db);
 
 $filter = array ();
 
-if (! empty($search_year)) {
-	$filter['search_year'] = $search_year;
+if (! empty($search_date_start)) {
+	$filter['search_date_start'] = $search_date_start;
+}
+
+if (! empty($search_date_end)) {
+	$filter['search_date_end'] = $search_date_end;
 }
 
 /*
@@ -72,7 +77,7 @@ if (! empty($search_year)) {
  */
 if ($action == 'builddoc') {
 
-	if (count($filter) > 0 && !empty($filter['search_year'])) {
+	if (count($filter) > 0 && !empty($filter['search_date_start']) && !empty($filter['search_date_end'])) {
 
 		$outputlangs = $langs;
 		$newlang = $lang_id;
@@ -98,6 +103,11 @@ if ($action == 'builddoc') {
 			setEventMessage($langs->trans("NoData"), 'warnings');
 		} else {
 			setEventMessage($langs->trans("FileSuccessfullyBuilt"));
+			if (count($report_bpf->warnings)>0) {
+				setEventMessage($langs->trans("AgfReportBPFDataInconsistency"), 'errors');
+				setEventMessages(null,$report_bpf->warnings, 'warnings');
+			}
+
 		}
 	} else {
 		setEventMessage($langs->trans("AgfRptSelectAtLeastOneCriteria"), 'errors');
@@ -116,16 +126,40 @@ if ($action == 'builddoc') {
 	$action = '';
 }
 
-dol_fiche_head($head, 'AgfMenuReportBPF', $langs->trans("AgfMenuReportBPF"), 0, 'bill');
+
+print load_fiche_titre($langs->trans("AgfMenuReportBPF"));
+
+
+print "<br>\n";
+
+print ' <a href="'.dol_buildpath('/agefodd/report/report_bpf_help.php',1).'">'.$langs->trans('AgfMenuReportBPFHelp').'</a>';
+
+
+print "<br>\n";
+
+print "<br>\n";
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 
 print '<table class="border" width="100%">';
 
+if (empty($search_date_start)) {
+	$search_date_start = dol_get_first_day(dol_print_date(dol_now(),'%Y'));
+}
+if (empty($search_date_end)) {
+	$search_date_end= dol_get_last_day(dol_print_date(dol_now(),'%Y'));
+}
+
 print '<tr>';
-print '<td>' . $langs->trans('Year').'</td>';
+print '<td>' . $langs->trans('From').'</td>';
 print '<td>';
-print $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 15, 0);
+print $form->select_date($search_date_start,'search_date_start',0,0,0,'',1,1);
+print '</td>';
+print '</tr>';
+print '<tr>';
+print '<td>' . $langs->trans('to').'</td>';
+print '<td>';
+print $form->select_date($search_date_end,'search_date_end',0,0,0,'',1,1);
 print '</td>';
 print '</tr>';
 
@@ -135,7 +169,7 @@ print '</table>' . "\n";
 $liste = array (
 		'excel2007' => 'Excel 2007'
 );
-$formfile->show_documents('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
+print $formfile->showdocuments('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
 
 // TODO : Hack to update link on document form because merge export is always link to export ...
 echo '<script type="text/javascript">

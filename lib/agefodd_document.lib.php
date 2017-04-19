@@ -121,7 +121,10 @@ function show_conv($file, $socid, $nom_courrier) {
 				$legende = $langs->trans("AgfDocOpen");
 				$mess .= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 				$mess .=img_picto($file.':'.$file, 'pdf2').'</a>';
-
+				if (function_exists('getAdvancedPreviewUrl')) {
+					$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+					if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+				}
 				// Regenerer
 				$legende = $langs->trans("AgfDocRefresh");
 				$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&convid=' . $conv->id . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -186,6 +189,10 @@ function show_doc($file, $socid, $nom_courrier) {
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($file.':'.$file, 'pdf2').'</a>';
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -321,7 +328,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 
 		// Envoie par mail
 		$legende = $langs->trans("AgfSendDoc");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_attestationendtraining_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($langs->trans("AgfSendDoc"), 'stcomm0').'</a>';
 	} else {
 		// Génereration des documents
@@ -352,6 +359,10 @@ function show_trainer_mission($session_trainerid) {
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -794,6 +805,18 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
+	} else if ($mdle == 'fiche_presence_empty') {
+
+		print '<td style="border-left:0px; width:200px"  align="right">';
+		// Check if file exist
+		// $filename = 'fiche_presence_'.$id.'_'.$socid.'.pdf';
+		$filename = 'fiche_presence_empty_' . $id . '.pdf';
+		$file = $conf->agefodd->dir_output . '/' . $filename;
+		if (file_exists($file)) {
+			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_presence_empty&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+		} else
+			print $langs->trans('AgfDocNotDefined');
+			print '</td></tr>' . "\n";
 	} else if ($mdle == 'attestation') {
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist

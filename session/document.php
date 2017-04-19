@@ -97,7 +97,11 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 		if ($type_link == 'fac') {
 			$obj_link = new Facture($db);
 			$obj_link->fetch($agf->fk_element);
-			$resultdel = $obj_link->delete();
+			if (DOL_VERSION<=4.0) {
+				$resultdel = $obj_link->delete();
+			} else {
+				$resultdel = $obj_link->delete($user);
+			}
 		}
 		if ($type_link == 'prop') {
 			$obj_link = new Propal($db);
@@ -674,7 +678,7 @@ if (! empty($id)) {
 					document_line($langs->trans("AgfCourrierCloture"), "courrier", $agf->lines[$i]->socid, 'cloture');
 					if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 						document_line($langs->trans("AgfPDFCertificateA4"), "certificateA4", $agf->lines[$i]->socid);
-						document_line($langs->trans("AgfPDFCertificateCard"), 2, "certificatecard", $agf->lines [$i]->socid);
+						document_line($langs->trans("AgfPDFCertificateCard"), "certificatecard", $agf->lines [$i]->socid);
 					}
 				} elseif ($agf->lines[$i]->typeline=='trainee_presta') {
 					document_line($langs->trans("AgfContratPrestation"), "contrat_presta", $agf->lines[$i]->socid);

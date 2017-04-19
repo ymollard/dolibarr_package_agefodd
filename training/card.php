@@ -124,7 +124,9 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
 			$agf->fk_c_category = GETPOST('categid', 'int');
+			$agf->fk_c_category_bpf = GETPOST('categidbpf', 'int');
 			$agf->color = GETPOST('color', 'alpha');
+			$agf->qr_code_info = GETPOST('qr_code_info');
 
 			if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 				$certif_year = GETPOST('certif_year', 'int');
@@ -206,6 +208,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
 			$agf->fk_c_category = GETPOST('categid', 'int');
+			$agf->fk_c_category_bpf = GETPOST('categidbpf', 'int');
+			$agf->qr_code_info = GETPOST('qr_code_info');
 
 			if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 				$certif_year = GETPOST('certif_year', 'int');
@@ -483,6 +487,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
 
+	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
+	print $formagefodd->select_training_categ(GETPOST('categidbpf'), 'categidbpf', 't.active=1');
+	if ($user->admin)
+		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+	print "</td></tr>";
+
 	print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 	print $form->select_produits(GETPOST('productid'), 'productid', '', 10000);
 	print "</td></tr>";
@@ -532,6 +542,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	$doleditor = new DolEditor('sanction', GETPOST('sanction'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
+
+	if ($conf->global->AGF_MANAGE_CERTIF) {
+		print '<tr><td valign="top">' . $langs->trans("AgfQRCodeCertifInfo") . '</td><td>';
+		print '<input name="qr_code_info" class="flat" size="50" value="' . GETPOST('qr_code_info') . '"></td></tr>';
+	}
 
 	if (! empty($extrafields->attribute_label)) {
 		print $agf->showOptionals($extrafields, 'edit');
@@ -622,6 +637,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 				print "</td></tr>";
 
+				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
+				print $formagefodd->select_training_categ_bpf($agf->fk_c_category_bpf, 'categidbpf', 't.active=1');
+				if ($user->admin)
+					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+					print "</td></tr>";
+
 				print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
 				print $form->select_produits($agf->fk_product, 'productid', '', 10000);
 				print "</td></tr>";
@@ -676,6 +697,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				$doleditor = new DolEditor('sanction', $agf->sanction, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print "</td></tr>";
+
+				if ($conf->global->AGF_MANAGE_CERTIF) {
+					print '<tr><td valign="top">' . $langs->trans("AgfQRCodeCertifInfo") . '</td><td>';
+					print '<input name="qr_code_info" class="flat" size="50" value="' . $agf->qr_code_info . '"></td></tr>';
+				}
+
 
 				if (! empty($extrafields->attribute_label)) {
 					print $agf->showOptionals($extrafields, 'edit');
@@ -827,6 +854,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print $agf->category_lib;
 				print "</td></tr>";
 
+				print '<tr><td>' . $langs->trans("AgfTrainingCategBPF") . '</td><td  colspan=2>';
+				print $agf->category_lib_bpf;
+				print "</td></tr>";
+
 				print '<tr><td>' . $langs->trans("AgfProductServiceLinked") . '</td><td colspan=2>';
 				if (! empty($agf->fk_product)) {
 					$product = new Product($db);
@@ -905,6 +936,21 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					$but = stripslashes(nl2br($agf->sanction));
 				}
 				print $but . '</td></tr>';
+
+				if ($conf->global->AGF_MANAGE_CERTIF) {
+					print '<tr><td>' . $langs->trans("AgfQRCodeCertifInfo") . '</td><td colspan=2>';
+					if (!empty($agf->qr_code_info)) {
+						dol_include_once('/agefodd/class/tcpdfbarcode_agefodd.modules.php');
+						$qr_code = new modTcpdfbarcode_agefood;
+						$qr_code->is2d=true;
+						$result=$qr_code->writeBarCode($agf->qr_code_info,'QRCODE','Y',1,0,$agf->id);
+						// Generate on the fly and output barcode with generator
+						$url=DOL_URL_ROOT.'/viewimage.php?modulepart=barcode&amp;generator=tcpdfbarcode&amp;code='.urlencode($agf->qr_code_info).'&amp;encoding=QRCODE';
+						//print $url;
+						print '<img src="'.$url.'" title="'.$agf->qr_code_info.'" border="0">';
+					}
+					print '</td></tr>';
+				}
 
 				if (! empty($extrafields->attribute_label)) {
 					print $agf->showOptionals($extrafields);

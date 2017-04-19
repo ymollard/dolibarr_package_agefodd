@@ -488,7 +488,7 @@ class Agefodd_index {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as f";
 		$sql .= " ON sess.fk_formation_catalogue = f.rowid";
 		$sql .= " WHERE s.archive = 0 AND (NOW() < s.datef)";
-		$sql .= " AND s.status IN (1,2)";
+		$sql .= " AND sess.status IN (1,2)";
 		if (! empty($delais_sup) && ! empty($delais_inf)) {
 			if ($delais_sup != 1)
 				$delais_sup_sql = 's.datea - INTERVAL ' . $intervalday_sup;

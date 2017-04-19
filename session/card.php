@@ -1427,8 +1427,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							// Info funding type
 							if ($stagiaires->lines[$i]->type && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 								print '<div class=adminaction>';
-								print $langs->trans("AgfStagiaireModeFinancement");
-								print '-<span>' . stripslashes($stagiaires->lines[$i]->type) . '</span></div>';
+								print '<span>' . stripslashes($stagiaires->lines[$i]->type) . '</span></div>';
 							} else {
 								print '&nbsp;';
 							}

@@ -108,7 +108,8 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -126,14 +127,17 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, 0, 0, $filter);
 }
-$resql = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+$resql = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($resql != - 1) {
 	$num = $resql;
-	
+
+	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="socid" value="' . $socid . '"/>';
+
 	$option = '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
-	
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
@@ -152,7 +156,7 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
 	print '<td></td>';
 	print "</tr>\n";
-	
+
 	// Search bar
 	$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
@@ -176,63 +180,62 @@ if ($resql != - 1) {
 		}
 		$addcriteria = true;
 	}
-	
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-	print '<input type="hidden" name="socid" value="' . $socid . '"/>';
+
+
 	print '<tr class="liste_titre">';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="10">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	// print $formAgefodd->
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form');
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre">';
 	print '</td>';
-	
+
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
-	
+
 	print "</tr>\n";
 	print '</form>';
-	
+
 	$var = true;
 	foreach ( $agf->lines as $line ) {
-		
+
 		// Affichage tableau des sessions
 		$var = ! $var;
 		print "<tr $bc[$var]>";
@@ -244,10 +247,10 @@ if ($resql != - 1) {
 		$color_a = '';
 		if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
-		
+
 		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="../session/card.php?id=' . $line->id_session . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->id_session . '</a></td>';
 		print '<td>';
-		
+
 		if (! empty($line->customer_id) && $line->customer_id != - 1) {
 			$soc = new Societe($db);
 			$soc->fetch($line->customer_id);
@@ -263,20 +266,20 @@ if ($resql != - 1) {
 		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 		print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
 		print '<td>' . $line->certif_code . '</td>';
-		
+
 		print '<td>' . $line->certif_label . '</td>';
-		
+
 		print '<td>' . dol_print_date($line->certif_dt_start, 'daytextshort') . '</td>';
-		
+
 		print '<td>' . dol_print_date($line->certif_dt_end, 'daytextshort') . '</td>';
 		print '<td></td>';
 		print "</tr>\n";
-		
+
 		$oldid = $line->rowid;
-		
+
 		$i ++;
 	}
-	
+
 	print "</table>";
 } else {
 	setEventMessage($agf->error, 'errors');

@@ -155,7 +155,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
 		$sql .= " " . (! isset($this->acces_site) ? 'NULL' : "'" . $this->db->escape($this->acces_site) . "'") . ",";
 		$sql .= " " . (! isset($this->note1) ? 'NULL' : "'" . $this->db->escape($this->note1) . "'") . ",";
-		$sql .= " " . (! isset($this->control_occupation) ? 'NULL' : "'" . $this->db->escape($this->control_occupation) . "'") . ",";
+		$sql .= " " . (empty($this->control_occupation) ? '0' :  $this->db->escape($this->control_occupation)) . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= "'" . $this->db->idate(dol_now()) . "'";
@@ -461,7 +461,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
 		$sql .= " acces_site=" . (isset($this->acces_site) ? "'" . $this->db->escape($this->acces_site) . "'" : "null") . ",";
 		$sql .= " note1=" . (isset($this->note1) ? "'" . $this->db->escape($this->note1) . "'" : "null") . ",";
-		$sql .= " control_occupation=" . (isset($this->control_occupation) ? "'" . $this->db->escape($this->control_occupation) . "'" : "null") . ",";
+		$sql .= " control_occupation=" . (!empty($this->control_occupation) ? $this->db->escape($this->control_occupation) : "0") . ",";
 		$sql .= " archive=" . $this->archive . ",";
 		if (! empty($this->fk_reg_interieur)) {
 			$sql .= " fk_reg_interieur=" . (isset($this->fk_reg_interieur) ? $this->fk_reg_interieur : "null") . ",";

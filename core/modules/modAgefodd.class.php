@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.3';
+		$this->version = '3.0.8';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -108,11 +108,13 @@ class modAgefodd extends DolibarrModules
 				'modBanque',
 				'modFournisseur',
 				'modService',
-				'modAgenda'
+				'modAgenda',
+				'modCategorie',
+				'modFckeditor'
 		);
 		$this->requiredby = array();
 		$this->phpmin = array(
-				4,
+				5,
 				3
 		);
 		$this->need_dolibarr_version = array(
@@ -234,7 +236,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_CONTACT_DOL_SESSION";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '0';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Use dolibarr or agefodd contact for session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -281,6 +283,30 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][5] = 0;
 
 		$r ++;
+		$this->const[$r][0] = "AGF_HEADER_COLOR_BG";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'FFFFFF';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_HEADER_COLOR_TEXT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '000000';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_COLOR_LINE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '1A60C9';
+		$this->const[$r][3] = 'Text color of PDF in hexadecimal';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
 		$this->const[$r][0] = "AGF_HEAD_COLOR";
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '1A60C9';
@@ -315,7 +341,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_FCKEDITOR_ENABLE_TRAINING";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Use WISIWYG on training information';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -355,7 +381,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_DOL_TRAINER_AGENDA";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Manage time by session for trainer';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -435,7 +461,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_CONTACT_NOT_MANDATORY_ON_SESSION";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '0';
+		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Contact is not mandatory on session';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -568,6 +594,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
+		$r ++;
+		$this->const[$r][0] = "AGF_MANAGE_BPF";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Manage BPF';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array();
@@ -582,58 +616,67 @@ class modAgefodd extends DolibarrModules
 						MAIN_DB_PREFIX . "agefodd_formateur_type",
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
-						MAIN_DB_PREFIX . "agefodd_formateur_category_dict"
+						MAIN_DB_PREFIX . "agefodd_formateur_category_dict",
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf",
 				),
 				'tablib' => array(
 						"AgfTraineeType",
 						"AgfTrainerTypeDict",
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
-						"AgfTrainerCategoryDict"
+						"AgfTrainerCategoryDict",
+						"AgfTrainingCategTblBPF",
 				),
 				'tabsql' => array(
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_type as f',
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
-						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f'
+						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f',
 				),
 				'tabsqlsort' => array(
 						'sort ASC',
 						'sort ASC',
 						'sort ASC',
 						'sort ASC',
-						'code ASC'
+						'code ASC',
+						'sort ASC',
 				),
 				'tabfield' => array(
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort",
-						"code,label,description"
+						"code,label,description",
+						"code,intitule,sort",
 				),
 				'tabfieldvalue' => array(
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort",
-						"code,label,description"
+						"code,label,description",
+						"code,intitule,sort",
 				),
 				'tabfieldinsert' => array(
 						"intitule,sort",
 						"intitule,sort",
 						"intitule,sort",
 						"code,intitule,sort",
-						"code,label,description"
+						"code,label,description",
+						"code,intitule,sort",
 				),
 				'tabrowid' => array(
 						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
-						"rowid"
+						"rowid",
+						"rowid",
 				),
 				'tabcond' => array(
+						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
@@ -1711,6 +1754,20 @@ class modAgefodd extends DolibarrModules
 
 		$r ++;
 		$this->menu[$r] = array(
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuActStagiaire',
+				'type' => 'left',
+				'titre' => 'AgfCertificate',
+				'url' => '/agefodd/certificate/list.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 305,
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->creer && !empty($conf->global->AGF_MANAGE_CERTIF)',
+				'perms' => '$user->rights->agefodd->creer',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuLogistique',
@@ -1875,7 +1932,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/report/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 701,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_MANAGE_BPF',
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
@@ -1889,7 +1946,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/report/report_bpf.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 702,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report->bpf',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report->bpf && $conf->global->AGF_MANAGE_BPF',
 				'perms' => '$user->rights->agefodd->report->bpf',
 				'target' => '',
 				'user' => 0

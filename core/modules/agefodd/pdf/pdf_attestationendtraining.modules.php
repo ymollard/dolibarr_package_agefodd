@@ -41,6 +41,9 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	/**
 	 * \brief Constructor
@@ -390,6 +393,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$this->str = $outputlangs->transnoentities('AgfOnlyPresentTraineeGetAttestation', $outputlangs->transnoentities('PL_NONE'));
 				$pdf->MultiCell(0, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C'); // Set interline to 3
+				setEventMessage($this->str,'warnings');
 			}
 			$pdf->Close();
 			$pdf->Output($file, 'F');
@@ -465,12 +469,16 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
+		
+		// Fill header with background color
+		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
+		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 
-		$pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+		$pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
 
 		$posy = $this->marge_haute;
 		$posx = $this->page_largeur - $this->marge_droite - 55;
@@ -530,7 +538,6 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 
 			$hautcadre = 30;
 			$pdf->SetXY($posx, $posy);
-			$pdf->SetFillColor(255, 255, 255);
 			$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 			// Show sender name
@@ -557,6 +564,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 			$posy = $pdf->GetY();
 		}
+		$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 	}
 
 	/**

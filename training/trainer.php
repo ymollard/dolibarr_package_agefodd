@@ -56,7 +56,7 @@ $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 if ($action == 'updatetrainer' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	$agf->id = $id;
 	$training_trainer = GETPOST('trainertraining', 'array');
-	$result = $agf->setTrainingTrainer($training_trainer);
+	$result = $agf->setTrainingTrainer($training_trainer,$user);
 	if ($result < 0) {
 		$action = 'edittrainer';
 		setEventMessage($agf->error, 'errors');
@@ -70,10 +70,10 @@ if ($action == 'updatetrainer' && $user->rights->agefodd->agefodd_formation_cata
 $title = $langs->trans("AgfCatalogDetail");
 
 llxHeader('', $title, '', '', '', '', array (
-		'/agefodd/includes/multiselect/js/ui.multiselect.js' 
+		'/agefodd/includes/multiselect/js/ui.multiselect.js'
 ), array (
 		'/agefodd/includes/multiselect/css/ui.multiselect.css',
-		'/agefodd/css/agefodd.css' 
+		'/agefodd/css/agefodd.css'
 ));
 
 $form = new Form($db);
@@ -98,7 +98,7 @@ print '<form name="create_contact" action="' . $_SERVER ['PHP_SELF'] . '" method
 print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 print '<input type="hidden" name="action" value="updatetrainer">' . "\n";
 print '<input type="hidden" name="id" value="'.$id.'">' . "\n";
-	
+
 
 print '<table class="border" width="100%">';
 
@@ -126,7 +126,7 @@ print '<td>';
 if ($action == 'edittrainer' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	$option_trainer = array ();
 	$selected_trainer = array ();
-	
+
 	// Build selected categorie
 	if (is_array($agf->trainers) && count($agf->trainers) > 0) {
 		foreach ( $agf->trainers as $trainer ) {

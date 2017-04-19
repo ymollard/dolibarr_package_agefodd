@@ -51,6 +51,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $tms = '';
 	public $lines = array ();
 	public $lines_state = array ();
+	public $hour_foad;
 
 	/**
 	 * Constructor
@@ -94,6 +95,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " ,fk_soc_link";
 		$sql .= " ,fk_soc_requester";
 		$sql .= " ,fk_socpeople_sign";
+		$sql .= " ,hour_foad";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire";
 		$sql .= " WHERE rowid= " . $id;
 
@@ -113,6 +115,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 			$this->fk_user_mod = $obj->fk_user_mod;
 			$this->datec = $this->db->jdate($obj->datec);
 			$this->status_in_session = $obj->status_in_session;
+			$this->hour_foad= $obj->hour_foad;
 
 			$this->db->free($resql);
 		} else {
@@ -152,6 +155,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " sope.poste,";
 		$sql .= " sa.fonction";
 		$sql .= " ,ss.fk_socpeople_sign";
+		$sql .= " ,ss.hour_foad";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -201,6 +205,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$line->fk_soc_requester = $obj->fk_soc_requester;
 				$line->typeid = $obj->typeid;
 				$line->status_in_session = $obj->status_in_session;
+				$line->hour_foad= $obj->hour_foad;
 				$line->place_birth = $obj->place_birth;
 				if (empty($obj->date_birth)) {
 					$line->date_birth = $this->db->jdate($obj->birthday);
@@ -250,6 +255,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$sql .= " sope.poste,";
 				$sql .= " sa.fonction";
 				$sql .= " ,ss.fk_socpeople_sign";
+				$sql .= " ,ss.hour_foad";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 				$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -293,6 +299,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 							$line->fk_soc_requester = $obj->fk_soc_requester;
 							$line->typeid = $obj->typeid;
 							$line->status_in_session = $obj->status_in_session;
+							$line->hour_foad= $obj->hour_foad;
 							$line->place_birth = $obj->place_birth;
 							if (empty($obj->date_birth)) {
 								$line->date_birth = $this->db->jdate($obj->birthday);
@@ -368,6 +375,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " sope.poste,";
 		$sql .= " sa.fonction";
 		$sql .= " ,ss.fk_socpeople_sign";
+		$sql .= " ,ss.hour_foad";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 		$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -418,6 +426,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$line->fk_soc_requester = $obj->fk_soc_requester;
 				$line->typeid = $obj->typeid;
 				$line->status_in_session = $obj->status_in_session;
+				$line->hour_foad= $obj->hour_foad;
 				$line->place_birth = $obj->place_birth;
 				if (empty($obj->date_birth)) {
 					$line->date_birth = $this->db->jdate($obj->birthday);
@@ -475,6 +484,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->fk_soc_link = $this->db->escape(trim($this->fk_soc_link));
 		$this->fk_soc_requester = $this->db->escape(trim($this->fk_soc_requester));
 		$this->fk_socpeople_sign = $this->db->escape(trim($this->fk_socpeople_sign));
+		$this->hour_foad= $this->db->escape(trim($this->hour_foad));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -521,6 +531,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " ,fk_soc_link";
 		$sql .= " ,fk_soc_requester";
 		$sql .= " ,fk_socpeople_sign";
+		$sql .= " ,hour_foad";
 		$sql .= ") VALUES (";
 		$sql .= $this->fk_session_agefodd . ', ';
 		$sql .= $this->fk_stagiaire . ', ';
@@ -531,7 +542,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= "'" . $this->db->idate(dol_now()) . "',";
 		$sql .= ((! empty($this->fk_soc_link)) ? $this->fk_soc_link : "NULL") . ",";
 		$sql .= ((! empty($this->fk_soc_requester)) ? $this->fk_soc_requester : "NULL") . ",";
-		$sql .= ((! empty($this->fk_socpeople_sign)) ? $this->fk_socpeople_sign : "NULL");
+		$sql .= ((! empty($this->fk_socpeople_sign)) ? $this->fk_socpeople_sign : "NULL") . ",";
+		$sql .= ((! empty($this->hour_foad)) ? price2num($this->hour_foad): "NULL");
 		$sql .= ")";
 
 		$this->db->begin();
@@ -733,6 +745,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->fk_soc_link = $this->db->escape(trim($this->fk_soc_link));
 		$this->fk_soc_requester = $this->db->escape(trim($this->fk_soc_requester));
 		$this->fk_socpeople_sign = $this->db->escape(trim($this->fk_socpeople_sign));
+		$this->hour_foad= $this->db->escape(trim($this->hour_foad));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -749,7 +762,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " fk_agefodd_stagiaire_type=" . (isset($this->fk_agefodd_stagiaire_type) ? $this->fk_agefodd_stagiaire_type : "0") . ",";
 		$sql .= " fk_soc_link=" . (!empty($this->fk_soc_link) ? $this->fk_soc_link : "null") . ",";
 		$sql .= " fk_soc_requester=" . (!empty($this->fk_soc_requester) ? $this->fk_soc_requester : "null"). ",";
-		$sql .= " fk_socpeople_sign=" . (!empty($this->fk_socpeople_sign) ? $this->fk_socpeople_sign : "null");
+		$sql .= " fk_socpeople_sign=" . (!empty($this->fk_socpeople_sign) ? $this->fk_socpeople_sign : "null"). ",";
+		$sql .= " hour_foad=" . (!empty($this->hour_foad) ? price2num($this->hour_foad): "null");
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
@@ -978,6 +992,7 @@ class AgfTraineeSessionLine {
 	public $fk_soc_link;
 	public $fk_soc_requester;
 	public $fk_socpeople_sign;
+	public $hour_foad;
 	public function __construct() {
 		return 1;
 	}

@@ -43,6 +43,9 @@ class pdf_convention extends ModelePDFAgefodd {
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	/**
 	 * \brief		Constructor
@@ -81,6 +84,9 @@ class pdf_convention extends ModelePDFAgefodd {
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
+		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
+		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
 
 		$this->defaultFontSize = 9;
 
@@ -114,8 +120,6 @@ class pdf_convention extends ModelePDFAgefodd {
 			$ret = $agf->fetch($agf_conv->sessid);
 		}
 
-		// Definition of $dir and $file
-		$dir = $conf->agefodd->dir_output;
 		// Definition of $dir and $file
 		$dir = $conf->agefodd->dir_output;
 		$fileori=$file;
@@ -173,10 +177,15 @@ class pdf_convention extends ModelePDFAgefodd {
 				// New page
 				$pdf->AddPage();
 				$pagenb ++;
+				
+				// Fill header with background color
+				$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
+				$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
+				
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
-				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+				$pdf->SetTextColor($this->colorheaderText [0], $this->colorheaderText [1], $this->colorheaderText[2]);
 
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
@@ -215,7 +224,6 @@ class pdf_convention extends ModelePDFAgefodd {
 
 				$hautcadre=30;
 				$pdf->SetXY($posx,$posy);
-				$pdf->SetFillColor(255,255,255);
 				$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 				// Show sender name
@@ -247,7 +255,7 @@ class pdf_convention extends ModelePDFAgefodd {
 
 				$posY = $pdf->GetY() + 10;
 
-				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+				$pdf->SetTextColor($this->colorLine [0], $this->colorLine [1], $this->colorLine [2]);
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 				// Mise en page de la baseline
@@ -291,7 +299,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				} else {
 					$titre = $outputlangs->transnoentities('AgfPDFConvention');
 				}
-
+				$pdf->SetTextColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 				$pdf->MultiCell(0, 5, $titre, 0, 'C');
 
 				// TItre page de garde 2

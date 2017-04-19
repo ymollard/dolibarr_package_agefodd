@@ -78,6 +78,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agfsta->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agfsta->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
+		$agfsta->hour_foad= GETPOST('hour_foad','int');
 
 		if ($agfsta->update($user) > 0) {
 			$redirect = true;
@@ -148,6 +149,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agf->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
 		$agf->status_in_session = GETPOST('stagiaire_session_status', 'int');
 		$agf->fk_socpeople_sign = $fk_socpeople_sign;
+		$agf->hour_foad = GETPOST('hour_foad','int');
 
 		$result = $agf->create($user);
 
@@ -220,7 +222,6 @@ if ($action == 'update_subrogation' && ($user->rights->agefodd->creer || $user->
 				if ($result > 0) {
 					setEventMessage($langs->trans('Save'), 'mesgs');
 					if ($_POST['saveandclose'] != '') {
-
 						Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 					} else {
 						Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
@@ -424,6 +425,10 @@ if (! empty($id)) {
 					print $form->select_company($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0);
 					print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
 					print $form->select_company($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0);
+					if (!empty($conf->global->AGF_MANAGE_BPF)) {
+						print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
+						print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . $stagiaires->lines[$i]->hour_foad. '" />';
+					}
 
 					if ($agf->type_session == 1) {
 						print '<br>' . $langs->trans('AgfContactSign') . ' ';
@@ -561,6 +566,9 @@ if (! empty($id)) {
 							print '</table>';
 						} else {
 							print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
+							if (!empty($stagiaires->lines[$i]->hour_foad)) {
+								print '<br>'.  $langs->trans('AgfHourFOAD') . ' : '.$stagiaires->lines[$i]->hour_foad . ' ' . $langs->trans('Hour') . '(s)';
+							}
 						}
 					}
 					print '</td>';
@@ -648,6 +656,10 @@ if (! empty($id)) {
 			print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
 			print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
 			print $form->select_company(0, 'fk_soc_requester', '', 1, 1, 0);
+			if (!empty($conf->global->AGF_MANAGE_BPF)) {
+				print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
+				print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load'). '" />';
+			}
 
 			if ($user->rights->agefodd->modifier) {
 				print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="stag_add" alt="' . $langs->trans("AgfModSave") . '" ">';
@@ -939,6 +951,9 @@ if (! empty($id)) {
 						print '</table>';
 					} else {
 						print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
+						if (!empty($stagiaires->lines[$i]->hour_foad) && !empty($conf->global->AGF_MANAGE_BPF)) {
+							print '<br>'.  $langs->trans('AgfHourFOAD') . ' : '.$stagiaires->lines[$i]->hour_foad . ' ' . $langs->trans('Hour') . '(s)';
+						}
 					}
 				}
 				print '</td>';
@@ -958,8 +973,7 @@ if (! empty($id)) {
 				// Infos mode de financement
 				if (($stagiaires->lines[$i]->type) && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 					print '<div class=adminaction>';
-					//print $langs->trans("AgfStagiaireModeFinancement");
-					print '-<span>' . stripslashes($stagiaires->lines[$i]->type) . '</span></div>';
+					print '<span>' . stripslashes($stagiaires->lines[$i]->type) . '</span></div>';
 				} else {
 					print '&nbsp;';
 				}

@@ -37,6 +37,9 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 	protected $colorfooter;
 	protected $colortext;
 	protected $colorhead;
+	protected $colorheaderBg;
+	protected $colorheaderText;
+	protected $colorLine;
 
 	// pdf instance
 	protected $pdf;
@@ -81,6 +84,9 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
 		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
+		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
+		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
+		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -168,7 +174,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				 */
 
 				$posX = $this->marge_gauche;
-				$posY = $this->pdf->GetY() + 5;
+				$posY = $this->pdf->GetY() + 20;
 
 				/**
 				 * *** Titre ****
@@ -598,11 +604,16 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 	 */
 	function _pagehead($object, $outputlangs) {
 		global $conf, $mysoc;
+		
+		// Fill header with background color
+		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
+		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
+		
 
 		pdf_pagehead($this->pdf, $outputlangs, $this->pdf->page_hauteur);
 
 		$posY_ori = $this->pdf->GetY();
-		$this->pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
+		$this->pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
 
 		$posY = $this->marge_haute;
 		$posX = $this->page_largeur - $this->marge_droite - 55;
@@ -660,7 +671,6 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 
 		$hautcadre = 30;
 		$this->pdf->SetXY($posx, $posy);
-		$this->pdf->SetFillColor(255, 255, 255);
 		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 		// Show sender name

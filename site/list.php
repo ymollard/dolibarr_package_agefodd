@@ -78,7 +78,7 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$limit = $conf->liste_limit;
+$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -90,7 +90,7 @@ $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 $linenum = count($agf->lines);
 
-print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum);
+
 
 print '<div width="100%" align="right">';
 if ($arch == 2) {
@@ -109,6 +109,9 @@ if (! empty($sortorder))
 	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
 if (! empty($page))
 	print '<input type="hidden" name="page" value="' . $page . '"/>';
+
+
+print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum, $linenum,'title_generic.png', 0, '', '', $limit);
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -144,11 +147,11 @@ if ($result > 0) {
 	$var = true;
 	$i = 0;
 	while ( $i < $linenum ) {
-		
+
 		if (!empty($agf->lines [$i]->socid)) {
 			$soc->fetch($agf->lines [$i]->socid);
 		}
-		
+
 		// Affichage liste des sites de formation
 		$var = ! $var;
 		($agf->lines [$i]->archive == 1) ? $style = ' style="color:gray;"' : $style = '';
@@ -160,7 +163,7 @@ if ($result > 0) {
 		print '</td>' . "\n";
 		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->tel) . '</td>' . "\n";
 		print '</tr>' . "\n";
-		
+
 		$i ++;
 	}
 } else {
