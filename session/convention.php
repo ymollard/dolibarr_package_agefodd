@@ -364,7 +364,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$intro1 .= ' ' . $langs->trans('AgfConvIntro1_5') . ' ' . $conf->global->AGF_ORGANISME_PREF;
 	} else {
 		$intro1 .= ' ' . $langs->trans('AgfConvIntro1_6');
-		$intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM;
+		$intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM. ' '. $langs->trans('AgfConvOrg1');
 	}
 	if (! empty($conf->global->AGF_ORGANISME_REPRESENTANT)) {
 		$intro1 .= $langs->trans('AgfConvIntro1_8') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . $langs->trans('AgfConvIntro1_9');
@@ -378,8 +378,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	// intro2
 	$addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
-	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $addr  . ",";
-	$intro2 .= ' ' . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
+	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name . $langs->trans('AgfConvIntro2_2') . ' ' . $addr ;
+	if (!empty($agf_soc->idprof2)) {
+		$intro2 .= ", ". $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
+	}
 
 	$signataire='';
 	$contactname=trim($agf->contactname);
