@@ -39,6 +39,7 @@ require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
 
 $langs->load("other");
+$langs->load("companies");
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -81,29 +82,43 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		if ($result > 0) {
 			setEventMessage($agf->error, 'errors');
 		}
-
-		$fk_socpeople = GETPOST('fk_socpeople', 'int');
-
-		$agf->nom = GETPOST('nom', 'alpha');
-		$agf->prenom = GETPOST('prenom', 'alpha');
-		$agf->civilite = GETPOST('civility_id', 'alpha');
-		$agf->socid = GETPOST('societe', 'int');
-		$agf->fonction = GETPOST('fonction', 'alpha');
-		$agf->tel1 = GETPOST('tel1', 'alpha');
-		$agf->tel2 = GETPOST('tel2', 'alpha');
-		$agf->mail = GETPOST('mail', 'alpha');
-		$agf->note = GETPOST('note', 'alpha');
-		$agf->date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
-		if (! empty($fk_socpeople))
-			$agf->fk_socpeople = $fk_socpeople;
-		$agf->place_birth = GETPOST('place_birth', 'alpha');
-		$result = $agf->update($user);
-
-		if ($result > 0) {
-			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
-			exit();
+		
+		$socid = GETPOST('societe', 'int');
+		if ($socid==-1) {
+			$socid=0;
+		}
+		
+		if (empty($socid)) {
+			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
+			$error ++;
+		}
+		
+		if (empty($error)) {
+			$fk_socpeople = GETPOST('fk_socpeople', 'int');
+	
+			$agf->nom = GETPOST('nom', 'alpha');
+			$agf->prenom = GETPOST('prenom', 'alpha');
+			$agf->civilite = GETPOST('civility_id', 'alpha');
+			$agf->socid = GETPOST('societe', 'int');
+			$agf->fonction = GETPOST('fonction', 'alpha');
+			$agf->tel1 = GETPOST('tel1', 'alpha');
+			$agf->tel2 = GETPOST('tel2', 'alpha');
+			$agf->mail = GETPOST('mail', 'alpha');
+			$agf->note = GETPOST('note', 'alpha');
+			$agf->date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
+			if (! empty($fk_socpeople))
+				$agf->fk_socpeople = $fk_socpeople;
+			$agf->place_birth = GETPOST('place_birth', 'alpha');
+			$result = $agf->update($user);
+	
+			if ($result > 0) {
+				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+				exit();
+			} else {
+				setEventMessage($agf->error, 'errors');
+			}
 		} else {
-			setEventMessage($agf->error, 'errors');
+			$action='edit';
 		}
 	} else {
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
@@ -127,13 +142,17 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			$firstname = GETPOST('prenom', 'alpha');
 			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
+			
 
 			$create_thirdparty = GETPOST('create_thirdparty', 'int');
 
 			if ($socid==-1) {
 				unset($socid);
 			}
-
+			if ($create_thirdparty==-1) {
+				unset($create_thirdparty);
+			}
+			
 			if (empty($name) || empty($firstname)) {
 				setEventMessage($langs->trans('AgfNameRequiredForParticipant'), 'errors');
 				$error ++;
@@ -143,7 +162,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$error ++;
 			}
 			if (empty($socid) && empty($create_thirdparty)) {
-				setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
+				setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 				$error ++;
 			}
 
