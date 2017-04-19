@@ -159,7 +159,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 					// New page
 					$pdf->AddPage();
 					$pagenb ++;
-					
+
 					$this->_pagehead($pdf, $agf, 1, $outputlangs);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 					$pdf->MultiCell(0, 3, '', 0, 'J');
@@ -383,12 +383,14 @@ class pdf_convocation extends ModelePDFAgefodd {
 					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $pdf->GetY() + 8;
 
-					// Incrustation image tampon
-					if ($conf->global->AGF_INFO_TAMPON) {
-						$dir = $conf->agefodd->dir_output . '/images/';
-						$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-						if (file_exists($img_tampon))
-							$pdf->Image($img_tampon, 120, $posY, 50);
+					if (!empty($conf->global->AGF_ADD_SIGN_TO_CONVOC)) {
+						// Incrustation image tampon
+						if ($conf->global->AGF_INFO_TAMPON) {
+							$dir = $conf->agefodd->dir_output . '/images/';
+							$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+							if (file_exists($img_tampon))
+								$pdf->Image($img_tampon, 120, $posY, 50);
+						}
 					}
 
 					// Pied de page

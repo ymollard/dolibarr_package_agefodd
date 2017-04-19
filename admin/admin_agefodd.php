@@ -384,6 +384,16 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
+	$add_progrm_to_conv = GETPOST('AGF_ADD_PROGRAM_TO_CONV', 'int');
+	$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONV', $add_progrm_to_conv, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$add_img_to_conv = GETPOST('AGF_ADD_SIGN_TO_CONVOC', 'int');
+	$res = dolibarr_set_const($db, 'AGF_ADD_SIGN_TO_CONVOC', $add_img_to_conv, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
@@ -1610,6 +1620,43 @@ print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
+
+// Update global variable AGF_ADD_PROGRAM_TO_CONV
+print '<tr class="pair"><td>' . $langs->trans("AgfAddProgramToConv") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_PROGRAM_TO_CONV');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ADD_PROGRAM_TO_CONV", $arrval, $conf->global->AGF_ADD_PROGRAM_TO_CONV);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_ADD_SIGN_TO_CONVOC
+print '<tr class="impair"><td>' . $langs->trans("AgfAddSignImageToConvoc") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_SIGN_TO_CONVOC');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ADD_SIGN_TO_CONVOC", $arrval, $conf->global->AGF_ADD_SIGN_TO_CONVOC);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
 
 if (! $conf->use_javascript_ajax) {
 	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';

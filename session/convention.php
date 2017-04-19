@@ -625,35 +625,47 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print $formAgefodd->agfmultiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected_id);
 	print '</td></tr>';
 
+
+
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 	print '<td><textarea name="intro1" rows="3" cols="0" class="flat" style="width:360px;">' . $intro1 . '</textarea></td></tr>';
 
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
 	print '<td><textarea name="intro2" rows="3" cols="0" class="flat" style="width:360px;">' . $intro2 . '</textarea></td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt1") . '</td>';
+	$chapter=1;
+
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art1" rows="3" cols="0" class="flat" style="width:360px;">' . $art1 . '</textarea>';
 	print img_picto($langs->trans('AgfExplainNbparticipants'), 'info').$langs->trans('AgfExplainNbparticipants');
 	print '</td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt2") . '</td>';
-	print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $art2 . '</textarea></td></tr>';
+	if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+		$chapter++;
+		print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+		print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $art2 . '</textarea></td></tr>';
+	}
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt3") . '</td>';
+	$chapter++;
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">' . $art3 . '</textarea>';
 	print img_picto($langs->trans('AgfExplainListTrainee'), 'info').$langs->trans('AgfExplainListTrainee');
 	print '</td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt4") . '</td>';
+	$chapter++;
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art4" rows="3" cols="0" class="flat" style="width:360px;">' . $art4 . '</textarea></td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt5") . '</td>';
+	$chapter++;
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art5" rows="3" cols="0" class="flat" style="width:360px;">' . $art5 . '</textarea></td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt6") . '</td>';
+	$chapter++;
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art6" rows="3" cols="0" class="flat" style="width:360px;">' . $art6 . '</textarea></td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt7") . '</td>';
+	$chapter++;
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art7" rows="3" cols="0" class="flat" style="width:360px;">' . $art7 . '</textarea></td></tr>';
 
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
@@ -771,27 +783,36 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
 			print '<td><textarea name="intro2" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->intro2 . '</textarea></td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt1") . '</td>';
+			$chapter=1;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art1" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art1 . '</textarea></td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt2") . '</td>';
-			print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art2 . '</textarea></td></tr>';
+			if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+				$chapter++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+				print '<td><textarea name="art2" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art2 . '</textarea></td></tr>';
+			}
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt3") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art3" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art3 . '</textarea>';
 			print img_picto($langs->trans('AgfExplainListTrainee'), 'info').$langs->trans('AgfExplainListTrainee');
 			print '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt4") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art4" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art4 . '</textarea></td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt5") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art5" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art5 . '</textarea></td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt6") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art6" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art6 . '</textarea></td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt7") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art7" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->art7 . '</textarea></td></tr>';
 
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
@@ -923,25 +944,34 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
 			print '<td>' . nl2br($agf->intro2) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt1") . '</td>';
+			$chapter=1;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . ebi_liste_a_puce($agf->art1, true) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt2") . '</td>';
-			print '<td>' . nl2br($agf->art2) . '</td></tr>';
+			if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+				$chapter++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+				print '<td>' . nl2br($agf->art2) . '</td></tr>';
+			}
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt3") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . nl2br($agf->art3) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt4") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . nl2br($agf->art4) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt5") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . nl2br($agf->art5) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt6") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . nl2br($agf->art6) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt7") . '</td>';
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . nl2br($agf->art7) . '</td></tr>';
 
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';

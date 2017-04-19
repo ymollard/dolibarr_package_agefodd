@@ -177,11 +177,11 @@ class pdf_convention extends ModelePDFAgefodd {
 				// New page
 				$pdf->AddPage();
 				$pagenb ++;
-				
+
 				// Fill header with background color
 				$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 				$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
-				
+
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
@@ -444,17 +444,19 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
-				$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv12');
-				$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 0);
-				$posY += $this->hApresTitreArticle;
+				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
+					$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv12');
+					$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 0);
+					$posY += $this->hApresTitreArticle;
 
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-				$this->str = $agf_conv->art2;
-				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+					$this->str = $agf_conv->art2;
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+					$posY = $pdf->GetY() + $this->hApresCorpsArticle;
+				}
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
@@ -718,7 +720,7 @@ class pdf_convention extends ModelePDFAgefodd {
 					$dir = $conf->agefodd->dir_output . '/images/';
 					$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 					if (file_exists($img_tampon))
-						$pdf->Image($img_tampon, $posX + $this->marge_gauche, $pdf->GetY() + 6, 50);
+						$pdf->Image($img_tampon, $posX + $this->marge_gauche, $pdf->GetY() + 6, 60);
 				}
 
 				// signature du client
@@ -744,30 +746,32 @@ class pdf_convention extends ModelePDFAgefodd {
 				/*
 				 * Page 4 (Annexe 1)
 				*/
-				$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
-				if (is_file($infile)) {
-					$count = $pdf->setSourceFile($infile);
-					// import all page
-					for($i = 1; $i <= $count; $i ++) {
-						// New page
-						$pdf->AddPage();
-						$pagenb ++;
-						$this->_pagehead($pdf, $agf, 1, $outputlangs);
-						$this->defaultFontSize = 9;
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-						$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
-						$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-						$posX = $this->marge_gauche;
-						$posY = $this->marge_haute;
+				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
+					if (is_file($infile)) {
+						$count = $pdf->setSourceFile($infile);
+						// import all page
+						for($i = 1; $i <= $count; $i ++) {
+							// New page
+							$pdf->AddPage();
+							$pagenb ++;
+							$this->_pagehead($pdf, $agf, 1, $outputlangs);
+							$this->defaultFontSize = 9;
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+							$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
+							$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+							$posX = $this->marge_gauche;
+							$posY = $this->marge_haute;
 
-						$tplIdx = $pdf->importPage($i);
-						$pdf->useTemplate($tplIdx, 0, 0, $this->page_largeur);
+							$tplIdx = $pdf->importPage($i);
+							$pdf->useTemplate($tplIdx, 0, 0, $this->page_largeur);
 
-						// Pied de page
-						$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
-						$pdf->SetXY($this->droite - 20, $this->page_hauteur - 10);
-						$pdf->Cell(0, 3, 'page ' . $pdf->PageNo() . '/' . intval(5 + $this->count_page_anexe), 0, 0, 'C');
+							// Pied de page
+							$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
+							$pdf->SetXY($this->droite - 20, $this->page_hauteur - 10);
+							$pdf->Cell(0, 3, 'page ' . $pdf->PageNo() . '/' . intval(5 + $this->count_page_anexe), 0, 0, 'C');
+						}
 					}
 				}
 			} else {
