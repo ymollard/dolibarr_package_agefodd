@@ -391,7 +391,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
 	} else {
 
-		//Trainee link to thhe company convention
+		//Trainee link to the company convention
 		$stagiaires = new Agefodd_session_stagiaire($db);
 		$result=$stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
 		if ($result<0) {

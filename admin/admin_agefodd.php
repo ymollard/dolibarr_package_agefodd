@@ -394,6 +394,11 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
+	$add_progrm_to_convmail = GETPOST('AGF_ADD_PROGRAM_TO_CONVMAIL', 'int');
+	$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONVMAIL', $add_progrm_to_convmail, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
@@ -1635,7 +1640,23 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_ADD_PROGRAM_TO_CONVMAIL
+print '<tr class="impair"><td>' . $langs->trans("AgfAddProgramToConvMail") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_PROGRAM_TO_CONVMAIL');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ADD_PROGRAM_TO_CONVMAIL", $arrval, $conf->global->AGF_ADD_PROGRAM_TO_CONVMAIL);
+}
+print '</td>';
+print '<td align="center">';
 print '</td>';
 print '</tr>';
 
@@ -1653,7 +1674,6 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 

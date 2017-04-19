@@ -126,6 +126,36 @@ class ActionsAgefodd
 	}
 
 	/**
+	 * elementList Method Hook Call
+	 *
+	 * @param array $parameters parameters
+	 * @param Object &$object Object to use hooks on
+	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param object $hookmanager class instance
+	 * @return void
+	 */
+	public function emailElementlist($parameters, &$object, &$action, $hookmanager) {
+		global $langs,$conf,$user;
+		$langs->load('agefodd@agefodd');
+
+		$this->results['fiche_pedago']=$langs->trans('AgfMailToSendFichePedago');
+		$this->results['fiche_presence']=$langs->trans('AgfMailToSendFichePresence');
+		$this->results['mission_trainer']=$langs->trans('AgfMailToSendMissionTrainer');
+		$this->results['trainer_doc']=$langs->trans('AgfMailToSendMissionTrainerDoc');
+		$this->results['fiche_presence_direct']=$langs->trans('AgfMailToSendFichePresenceDirect');
+		$this->results['fiche_presence_empty']=$langs->trans('AgfMailToSendFichePresenceEmpty');
+		$this->results['convention']=$langs->trans('AgfMailToSendConvention');
+		$this->results['attestation']=$langs->trans('AgfMailToSendAttestation');
+		$this->results['cloture']=$langs->trans('AgfMailToSendCloture');
+		$this->results['conseils']=$langs->trans('AgfMailToSendConseil');
+		$this->results['convocation']=$langs->trans('AgfMailToSendConvocation');
+		$this->results['courrier-accueil']=$langs->trans('AgfMailToSendCourrierAcceuil');
+		$this->results['attestationendtraining']=$langs->trans('AgfMailToSendAttestationEndTraining');
+
+		return 0;
+	}
+
+	/**
 	 *
 	 * @param unknown $parameters
 	 * @param unknown $object

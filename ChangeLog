@@ -3,6 +3,7 @@ English Dolibarr ChangeLog
 ***** ChangeLog for 3.0.9 compared to 3.0.8 *****
 NEW : Add admin option to include program into convention
 NEW : Add admin option to include signature image into convocation
+NEW : Add email tempates management with dictionnary
 
 ***** ChangeLog for 3.0.6 compared to 3.0.7 *****
 NEW : Franch BPF 2017 available 

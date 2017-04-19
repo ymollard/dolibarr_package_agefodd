@@ -68,6 +68,10 @@ $form = new Form($db);
 $formmail = new FormAgefoddsenddocs($db);
 $formAgefodd = new FormAgefodd($db);
 
+if (GETPOST('modelselected')) {
+	$action = GETPOST('pre_action');
+}
+
 /*
  * Envoi document unique
  */
@@ -488,11 +492,14 @@ if (! empty($id)) {
 				$formmail->clear_attached_files();
 				if ($action == 'presend_convention') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
-					// Ajout fiche péda
-					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
-					$file = $conf->agefodd->dir_output . '/' . $filename;
-					if (file_exists($file)) {
-						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+
+					if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONVMAIL)) {
+						// Ajout fiche péda
+						$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
+						$file = $conf->agefodd->dir_output . '/' . $filename;
+						if (file_exists($file)) {
+							$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						}
 					}
 					$filename = 'conseils_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
@@ -858,6 +865,7 @@ if (! empty($id)) {
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_presence_direct') {
+
 				$formmail->withtopic = $langs->trans('AgfSendFeuillePresence', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendFeuillePresenceBody', '__FORMINTITULE__');
 				$formmail->param['models'] = 'fiche_presence_direct';
@@ -1580,7 +1588,7 @@ if (! empty($id)) {
 
 			$formmail->withdeliveryreceipt = 1;
 
-			$formmail->withbody .= "\n\n__SIGNATURE__\n";
+			$formmail->withbody .= '\n\n__SIGNATURE__\n';
 
 			if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
 				$formmail->withbody = str_replace('\n', '<BR>', $formmail->withbody);

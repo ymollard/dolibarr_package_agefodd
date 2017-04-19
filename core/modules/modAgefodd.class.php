@@ -95,7 +95,8 @@ class modAgefodd extends DolibarrModules
 				'hooks' => array(
 						'searchform',
 						'pdfgeneration',
-						'propalcard'
+						'propalcard',
+						'admin'
 				)
 		);
 
@@ -607,6 +608,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Add program to convention';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_ADD_PROGRAM_TO_CONVMAIL";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Add program to convention mail';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
