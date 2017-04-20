@@ -636,17 +636,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
-				$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv16');
-				$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 0);
-				$posY += $this->hApresTitreArticle;
 
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-				$this->str = $agf_conv->art6;
-				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'J');
-				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
 				// Pied de page
 				$this->_pagefoot($pdf, $agf, $outputlangs);
@@ -665,6 +655,18 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 				$posX = $this->marge_gauche;
 				$posY = $this->marge_haute;
+
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
+				$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv16');
+				$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 0);
+				$posY += $this->hApresTitreArticle;
+
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+				$this->str = $agf_conv->art6;
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'J');
+				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
