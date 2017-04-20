@@ -151,6 +151,9 @@ class ActionsAgefodd
 		$this->results['convocation']=$langs->trans('AgfMailToSendConvocation');
 		$this->results['courrier-accueil']=$langs->trans('AgfMailToSendCourrierAcceuil');
 		$this->results['attestationendtraining']=$langs->trans('AgfMailToSendAttestationEndTraining');
+		$this->results['attestation_trainee']=$langs->trans('AgfMailToSendAttestationParticipants');
+		$this->results['convocation_trainee']=$langs->trans('AgfMailToSendConventionParticipants');
+		$this->results['attestationendtraining_trainee']=$langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
 
 		return 0;
 	}
