@@ -431,10 +431,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$obj_peda = new Agefodd($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
 	if (count( $obj_peda->lines)>0) {
-		$art1 .= $langs->trans('AgfConvArt1_4') . "\n". "\n";
+		$art1 .= $langs->trans('AgfConvArt1_4') . "\n";
 	}
 	foreach ( $obj_peda->lines as $line ) {
-		$art1 .= "-	" . $line->intitule . "\n". "\n";
+		$art1 .= "-	" . $line->intitule . "\n";
+	}
+	if (count( $obj_peda->lines)>0) {
+		$art1 .= "\n";
 	}
 	$art1 .= $langs->trans('AgfConvArt1_6') . "\n". "\n";
 	$art1 .= $langs->trans('AgfConvArt1_7');
