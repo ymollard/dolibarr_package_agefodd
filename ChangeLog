@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.10 compared to 3.0.9 *****
+NEW : Add chapter into convention
+
 ***** ChangeLog for 3.0.9 compared to 3.0.8 *****
 NEW : Add admin option to include program into convention
 NEW : Add admin option to include signature image into convocation

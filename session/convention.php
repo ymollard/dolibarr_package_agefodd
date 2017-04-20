@@ -156,6 +156,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$art6 = GETPOST('art6');
 		$art7 = GETPOST('art7');
 		$art8 = GETPOST('art8');
+		$art9 = GETPOST('art9');
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
@@ -189,6 +190,8 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 			$agf->art7 = $art7;
 		if (! empty($art8))
 			$agf->art8 = $art8;
+		if (! empty($art9))
+			$agf->art9 = $art9;
 		if (! empty($sig))
 			$agf->sig = $sig;
 		if (! empty($fk_element))
@@ -236,6 +239,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$art6 = GETPOST('art6');
 		$art7 = GETPOST('art7');
 		$art8 = GETPOST('art8');
+		$art9 = GETPOST('art9');
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
@@ -274,6 +278,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$agf->art7 = $art7;
 			if (! empty($art8))
 				$agf->art8 = $art8;
+			if (! empty($art9))
+				$agf->art9 = $art9;
 			if (! empty($sig))
 				$agf->sig = $sig;
 			if (! empty($notes))
@@ -509,6 +515,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$art5 = $langs->trans('AgfConvArt5_1');
 	}
 
+	// texte 9
+	if ($agf_conv->art9)
+		$art9 = $agf_conv->art9;
+		else {
+			$art9 = $langs->trans('AgfConvArt9_1'). "\n";
+			$art9 .= $langs->trans('AgfConvArt9_2');
+		}
+
 	// article 6
 	if ($agf_conv->art6) {
 		$art6 = $agf_conv->art6;
@@ -670,6 +684,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$chapter++;
 	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	print '<td><textarea name="art9" rows="7" cols="5" class="flat" style="width:560px;">' . $art9 . '</textarea></td></tr>';
+
+	$chapter++;
+	print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 	print '<td><textarea name="art6" rows="7" cols="5" class="flat" style="width:560px;">' . $art6 . '</textarea></td></tr>';
 
 	$chapter++;
@@ -814,6 +832,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$chapter++;
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td><textarea name="art5" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art5 . '</textarea></td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td><textarea name="art9" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art9 . '</textarea></td></tr>';
 
 			$chapter++;
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
@@ -973,6 +995,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$chapter++;
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
 			print '<td>' . nl2br($agf->art5) . '</td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art9) . '</td></tr>';
 
 			$chapter++;
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';

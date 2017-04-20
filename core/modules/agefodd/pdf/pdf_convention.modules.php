@@ -78,7 +78,7 @@ class pdf_convention extends ModelePDFAgefodd {
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 
-		$this->hApresTitreArticle = 10;
+		$this->hApresTitreArticle = 7;
 		$this->hApresCorpsArticle = 8;
 
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
@@ -609,6 +609,20 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', $this->defaultFontSize - 2);
 				$pdf->Cell(0, 4, $outputlangs->transnoentities("AmountInCurrency", $outputlangs->transnoentitiesnoconv("Currency" . $conf->currency)), 0, 0, 'R', 0);
 				$posY += $this->hApresCorpsArticle + 4;
+
+
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
+				$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv28');
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY += $this->hApresTitreArticle;
+
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+				$this->str = $agf_conv->art9;
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
+
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
