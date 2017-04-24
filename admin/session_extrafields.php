@@ -28,9 +28,8 @@ require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
-if (empty($conf->global->AGF_DEMO_MODE)) {
-	if (! $user->admin)
-		accessforbidden();
+if (! $user->rights->agefodd->admin && ! $user->admin) {
+	accessforbidden();
 }
 
 $langs->load("admin");
@@ -52,7 +51,7 @@ $action = GETPOST('action', 'alpha');
 $attrname = GETPOST('attrname', 'alpha');
 $elementtype = 'agefodd_session'; // Must be the $table_element of the class that manage extrafield
 
-	
+
 	/*
  * Actions
  */
@@ -126,7 +125,7 @@ if ($action != 'create' && $action != 'edit') {
 if ($action == 'create') {
 	print "<br>";
 	print_titre($langs->trans('NewAttribute'));
-	
+
 	require DOL_DOCUMENT_ROOT . '/core/tpl/admin_extrafields_add.tpl.php';
 }
 
@@ -138,7 +137,7 @@ if ($action == 'create') {
 if ($action == 'edit' && ! empty($attrname)) {
 	print "<br>";
 	print_titre($langs->trans("FieldEdition", $attrname));
-	
+
 	require DOL_DOCUMENT_ROOT . '/core/tpl/admin_extrafields_edit.tpl.php';
 }
 

@@ -31,6 +31,10 @@ require_once (DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php");
 require_once DOL_DOCUMENT_ROOT . "/categories/class/categorie.class.php";
 
+if (! $user->rights->agefodd->admin && ! $user->admin) {
+	accessforbidden();
+}
+
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
 

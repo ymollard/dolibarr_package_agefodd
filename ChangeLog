@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.11 compared to 3.0.10 *****
+NEW : Add new right to acces module admin even if user is not dolibarr administrator
+
 ***** ChangeLog for 3.0.10 compared to 3.0.9 *****
 NEW : Add chapter into convention
 

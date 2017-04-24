@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012-2014		Florian Henry			<florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2017	Florian Henry	<florian.henry@open-concept.pro>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,10 +39,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
 
-if (empty($conf->global->AGF_DEMO_MODE)) {
-	if (! $user->admin)
-		accessforbidden();
-}
+if (! $user->rights->agefodd->admin && ! $user->admin)
+	accessforbidden();
 
 $action = GETPOST('action', 'alpha');
 $updatedaytodate=GETPOST('updatedaytodate');
@@ -694,8 +692,9 @@ foreach ( $dirmodels as $reldir ) {
 						$htmltooltip = '';
 						$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 						$nextval = $module->getNextValue($mysoc, $agf);
-						if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
-{
+						// Keep " on nextval
+						if ("$nextval" != $langs->trans("AgfNotAvailable"))
+						{
 							$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 							if ($nextval) {
 								$htmltooltip .= $nextval . '<br>';
@@ -1819,7 +1818,6 @@ print '</tr>';
 
 print '<tr class="pair"><td>' . $langs->trans("Agf1DayShift") . '</td>';
 print '<td align="left">';
-//print $conf->global->AGF_1DAYSHIFT;
 print $formAgefodd->select_time($conf->global->AGF_1DAYSHIFT, 'AGF_1DAYSHIFT');
 print '</td>';
 print '</tr>';
@@ -1839,13 +1837,10 @@ print $formAgefodd->select_time($conf->global->AGF_4DAYSHIFT, 'AGF_4DAYSHIFT');
 print '</td>';
 print '</tr>';
 
-
 print '<tr class="impair"><td colspan="2" align="right"><input type="submit" class="button" name="updatedaytodate" value="' . $langs->trans("Save") . '"></td>';
 
 print '</table>';
 print '</form>';
-
-
 
 llxFooter();
 $db->close();

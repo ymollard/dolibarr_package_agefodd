@@ -24,7 +24,7 @@
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
-		                                           
+
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/agefodd.lib.php';
@@ -35,11 +35,10 @@ $langs->load("agefodd@agefodd");
 
 
 // Access control
-if (empty($conf->global->AGF_DEMO_MODE)) {
-	if (! $user->admin)
-		accessforbidden();
+if (! $user->rights->agefodd->admin && ! $user->admin) {
+	accessforbidden();
 }
-	
+
 	// Parameters
 $action = GETPOST('action', 'alpha');
 
@@ -71,9 +70,7 @@ print '<BR><a href="http://www.open-concept.pro/images/doc/Agefodd%20-%20User%20
 print '<BR>--------------------------------';
 
 
-$buffer .= file_get_contents(dol_buildpath('/agefodd/README-FR', 0));
-$buffer .= "\n------------------------------------------\n";
-$buffer .= file_get_contents(dol_buildpath('/agefodd/README-EN', 0));
+$buffer .= file_get_contents(dol_buildpath('/agefodd/README.md', 0));
 print Markdown($buffer);
 
 print '<BR>';

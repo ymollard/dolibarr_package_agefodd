@@ -20,7 +20,7 @@ INSTALL AGEFODD
 INSTAL FROM GIT (into "custom" directory)
 ---------------
 
-	$git clone git@git.framasoft.org:open-concept.pro/dolibarr_agefodd.git agefodd
+	$git clone git@git.framasoft.org:atm-consulting/dolibarr_agefodd.git agefodd
 
 DOCUMENTATION
 ---------------
@@ -44,7 +44,7 @@ DOLIBARR WIKI PAGE
 LIVE DEMO
 ---------------
 
-	http://demo.open-concept.pro/dolibarr_agefodd/htdocs/
+	http://dolibarr.atm-consulting.fr/dolibarr_agefodd/htdocs/
 
 Other Licences
 --------------
@@ -55,6 +55,6 @@ Uses [Michel Fortin's PHP Markdown](http://michelf.ca/projets/php-markdown/) Lic
 CONTACT
 -----------------------
 Web site Agefodd project : 
-	https://git.framasoft.org/open-concept.pro/dolibarr_agefodd
+	https://git.framasoft.org/atm-consulting/dolibarr_agefodd
 	
-Florian HENRY <florian.henry@open-concept.pro>
+Florian HENRY <contact@atm-consulting.fr>
