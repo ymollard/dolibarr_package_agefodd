@@ -348,9 +348,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$result = $agf_last->fetch_last_conv_per_socity($socid);
 	if ($result > 0) {
 		$agf_conv = new Agefodd_convention($db);
-		$result = $agf_conv->fetch($agf_last->sessid, $socid);
-		if ($agf_last->sessid)
-			$last_conv = 'ok';
+		if (!empty($agf_last->sessid)) {
+			$result = $agf_conv->fetch($agf_last->sessid, $socid);
+			if ($agf_last->sessid) {
+				$last_conv = 'ok';
+			}
+		}
 	}
 
 	// intro1
