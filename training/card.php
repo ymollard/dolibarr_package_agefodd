@@ -482,13 +482,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print '<input name="nbmintarget" class="flat" size="5" value="' . GETPOST('nbmintarget', 'int') . '"></td></tr>';
 
 	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCateg") . '</td><td>';
-	print $formagefodd->select_training_categ(GETPOST('categid'), 'categid', 't.active=1');
+	print $formagefodd->select_training_categ(GETPOST('categid'), 'categid', 't.active=1', 1);
 	if ($user->admin)
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
 
 	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
-	print $formagefodd->select_training_categ_bpf(GETPOST('categidbpf'), 'categidbpf', 't.active=1');
+	print $formagefodd->select_training_categ_bpf(GETPOST('categidbpf'), 'categidbpf', 't.active=1', 1);
 	if ($user->admin)
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
@@ -632,13 +632,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '<input name="nbmintarget" class="flat" size="5" value="' . $agf->nb_subscribe_min . '"></td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCateg") . '</td><td>';
-				print $formagefodd->select_training_categ($agf->fk_c_category, 'categid', 't.active=1');
+				print $formagefodd->select_training_categ($agf->fk_c_category, 'categid', 't.active=1' ,1);
 				if ($user->admin)
 					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 				print "</td></tr>";
 
 				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
-				print $formagefodd->select_training_categ_bpf($agf->fk_c_category_bpf, 'categidbpf', 't.active=1');
+				print $formagefodd->select_training_categ_bpf($agf->fk_c_category_bpf, 'categidbpf', 't.active=1' ,1);
 				if ($user->admin)
 					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 					print "</td></tr>";
