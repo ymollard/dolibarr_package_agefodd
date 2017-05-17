@@ -178,7 +178,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 
 			// On met en place le cadre
-			$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+			$pdf->SetDrawColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
 			//$ep_line1 = 0.5;
 			//$pdf->SetLineWidth($ep_line1);
 
