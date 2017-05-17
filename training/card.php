@@ -488,7 +488,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print "</td></tr>";
 
 	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
-	print $formagefodd->select_training_categ(GETPOST('categidbpf'), 'categidbpf', 't.active=1');
+	print $formagefodd->select_training_categ_bpf(GETPOST('categidbpf'), 'categidbpf', 't.active=1');
 	if ($user->admin)
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
