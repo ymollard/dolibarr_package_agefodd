@@ -1007,8 +1007,10 @@ class ReportBPF extends AgefoddExportExcel
 				)
 		);
 
+
+		$result = $this->_getAmountFin($array_fin[0], $filter);
 		foreach ( $array_fin as $key => $data ) {
-			$result = $this->_getAmountFin($data, $filter);
+			//$result = $this->_getAmountFin($data, $filter);
 			if ($result < 0) {
 				return - 1;
 			}
@@ -1574,7 +1576,8 @@ class ReportBPF extends AgefoddExportExcel
 			// return - 1;
 		}
 
-		if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']}) && (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']}))) {
+		if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']}) || (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']}))) {
+
 			$sql = "SELECT
 	   		SUM(fd.total_ht) as amount
 			FROM
