@@ -1008,9 +1008,8 @@ class ReportBPF extends AgefoddExportExcel
 		);
 
 
-		$result = $this->_getAmountFin($array_fin[0], $filter);
 		foreach ( $array_fin as $key => $data ) {
-			//$result = $this->_getAmountFin($data, $filter);
+			$result = $this->_getAmountFin($data, $filter);
 			if ($result < 0) {
 				return - 1;
 			}
