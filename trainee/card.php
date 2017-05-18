@@ -82,20 +82,20 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		if ($result > 0) {
 			setEventMessage($agf->error, 'errors');
 		}
-		
+
 		$socid = GETPOST('societe', 'int');
 		if ($socid==-1) {
 			$socid=0;
 		}
-		
+
 		if (empty($socid)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
 		}
-		
+
 		if (empty($error)) {
 			$fk_socpeople = GETPOST('fk_socpeople', 'int');
-	
+
 			$agf->nom = GETPOST('nom', 'alpha');
 			$agf->prenom = GETPOST('prenom', 'alpha');
 			$agf->civilite = GETPOST('civility_id', 'alpha');
@@ -110,7 +110,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				$agf->fk_socpeople = $fk_socpeople;
 			$agf->place_birth = GETPOST('place_birth', 'alpha');
 			$result = $agf->update($user);
-	
+
 			if ($result > 0) {
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 				exit();
@@ -142,7 +142,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			$firstname = GETPOST('prenom', 'alpha');
 			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
-			
+
 
 			$create_thirdparty = GETPOST('create_thirdparty', 'int');
 
@@ -152,7 +152,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			if ($create_thirdparty==-1) {
 				unset($create_thirdparty);
 			}
-			
+
 			if (empty($name) || empty($firstname)) {
 				setEventMessage($langs->trans('AgfNameRequiredForParticipant'), 'errors');
 				$error ++;
@@ -472,7 +472,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
-	print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 1, 1);
+	print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	print '</td></tr>';
 
 	print '<tr class="create_thirdparty_block"><td>' . $langs->trans("ThirdPartyName") . '</td>';
@@ -590,10 +590,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		print $formAgefodd->select_type_stagiaire($stagiaire_type, 'stagiaire_type', 'active=1', 1);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTraineeSocDocUse') . '</td><td colspan="3">';
-		print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
+		print $form->select_thirdparty_list(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTypeRequester') . '</td><td colspan="3">';
-		print $form->select_company(0, 'fk_soc_requester', '', 1, 1, 0);
+		print $form->select_thirdparty_list(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 		print '</td></tr>';
 		if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
 			print '<tr class="agelfoddline"><td>' . $langs->trans('Status') . '</td><td colspan="3">';
@@ -652,7 +652,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 
-					print $form->select_company($agf->socid, 'societe', '(s.client IN (1,3,2))', 1, 1);
+					print $form->select_thirdparty_list($agf->socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 
 					print '</td></tr>';
 

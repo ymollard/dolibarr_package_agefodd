@@ -49,7 +49,7 @@ if ($training_id < 0)
 
 if (empty($userid))
 	unset($userid);
-	
+
 	// Security check
 if ($user->societe_id > 0) {
 	$action = '';
@@ -112,7 +112,7 @@ if (! $mesg) {
 	$px1->SetPrecisionY(0);
 	$px1->mode = 'depth';
 	$px1->SetTitle($langs->trans("AgfNumberOfSessionsByMonth"));
-	
+
 	$px1->draw($filenamenb);
 } else {
 	setEventMessage($mesg, 'errors');
@@ -149,7 +149,7 @@ if (! $mesg) {
 	$px2->SetHorizTickIncrement(1);
 	$px2->SetPrecisionY(0);
 	$px2->mode = 'depth';
-	
+
 	$px2->SetTitle($langs->trans("AmountOfSessionsByMonthHT"));
 
 	$px2->draw($filenameamount);
@@ -180,7 +180,7 @@ if (! $mesg) {
 	$px3->SetPrecisionY(0);
 	$px3->mode = 'depth';
 	$px3->SetTitle($langs->trans("AmountAverage"));
-	
+
 	$px3->draw($filename_avg);
 }
 
@@ -207,7 +207,7 @@ dol_fiche_head($head, 'byyear', $langs->trans("Statistics"));
 if (empty($socid)) {
 	print '<table class="notopnoleftnopadd" width="100%"><tr>';
 	print '<td align="center" valign="top">';
-	
+
 	// Show filter box
 	print '<form name="stats" method="POST" action="' . $_SERVER ["PHP_SELF"] . '">';
 	print '<input type="hidden" name="mode" value="' . $mode . '">';
@@ -215,22 +215,24 @@ if (empty($socid)) {
 	print '<tr><td class="liste_titre" colspan="2">' . $langs->trans("Filter") . '</td></tr>';
 	// Company
 	print '<tr><td>' . $langs->trans("ThirdParty") . '</td><td>';
-	if ($mode == 'customer')
+	if ($mode == 'customer') {
 		$filter = 's.client in (1,2,3)';
-	if ($mode == 'supplier')
+	}
+	if ($mode == 'supplier') {
 		$filter = 's.fournisseur = 1';
-	print $form->select_company($socid, 'socid', $filter, 1);
+	}
+	print $form->select_thirdparty_list($socid, 'socid', $filter, 'SelectThirdParty');
 	print '</td></tr>';
 	// User
 	print '<tr><td>' . $langs->trans("User") . '/' . $langs->trans("SalesRepresentative") . '</td><td>';
 	print $form->select_users($userid, 'userid', 1);
 	print '</td></tr>';
-	
+
 	// Formation$
 	print '<tr><td>' . $langs->trans("AgfTraining") . '</td><td>';
 	print $formagf->select_formation($training_id, 'training_id', 'intitule', 1);
 	print '</td></tr>';
-	
+
 	// Year
 	print '<tr><td>' . $langs->trans("Year") . '</td><td>';
 	if (! in_array($year, $arrayyears))

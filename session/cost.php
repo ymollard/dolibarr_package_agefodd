@@ -78,7 +78,7 @@ if (strpos($product_fourn,'idprod_')!==false) {
 	$product_fourn=str_replace('idprod_', '', $product_fourn);
 } else {
 	require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.product.class.php');
-	
+
 	$prodfourn=new ProductFournisseur($db);
 	$result =$prodfourn->fetch_product_fournisseur_price($product_fourn);
 	if ($result < 0) {
@@ -105,7 +105,7 @@ if ($action == 'invoice_addline') {
 
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->fetch($idelement);
-	
+
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
 		$error ++;
@@ -344,7 +344,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$suplier_invoice->date_echeance = dol_now();
 
 	$suplier_invoice->lines[0] = ( object ) array ();
-	
+
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
 		$error ++;
@@ -883,15 +883,15 @@ foreach ( $agf_fin->lines as $line_fin ) {
 }
 
 if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_missions') {
-	
-	
+
+
 
 	// New lines direct creation
 	print '<tr>';
 
 	// Create new supplier invoice
 	print '<td width="20%" valign="top">';
-	print $form->select_company($socid, 'socid', 's.fournisseur=1', 1);
+	print $form->select_company($socid, 'socid', 's.fournisseur=1', 'SelectThirdParty');
 	print '</td>';
 
 	print '<td>';
@@ -929,7 +929,7 @@ if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_mission
 	print '<tr>';
 	print '<td width="20%" valign="top">';
 	// print $langs->trans('AgfSelectFournProduct');
-	print $form->select_company($socid, 'socidlink', 's.fournisseur=1', 1);
+	print $form->select_thirdparty_list($socid, 'socidlink', 's.fournisseur=1', 'SelectThirdParty');
 	print '</td>';
 
 	print '<td>';
@@ -979,7 +979,7 @@ if (! empty($place->id)) {
 	print '&nbsp;';
 	print $place->thirdparty->getNomUrl(1);
 	print '</td>';
-	
+
 	// If contact is a contact of a supllier
 	if ($place->thirdparty->fournisseur == 1) {
 

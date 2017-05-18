@@ -1332,9 +1332,9 @@ class FormAgefodd extends Form {
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					print $form->select_company($filter_customer, 'fk_soc', '', 1, 1, 0, $events);
+					print $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 				} else {
-					print $form->select_company($filter_customer, 'fk_soc', '', 1, 1);
+					print $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1);
 				}
 				print '</td></tr>';
 				print '<tr>';
