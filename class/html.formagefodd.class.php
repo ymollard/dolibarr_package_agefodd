@@ -525,7 +525,7 @@ class FormAgefodd extends Form {
 	 * @return int if KO, Nb of contact in list if OK
 	 */
 	function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
-		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
+		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event, $supplier);
 		return $this->num;
 	}
 
@@ -600,7 +600,7 @@ class FormAgefodd extends Form {
 			}
 
 			if ($htmlname != 'none' || $options_only)
-				$out .= '<select class="flat' . ($moreclass ? ' ' . $moreclass : '') . '" id="' . $htmlname . '" name="' . $htmlname . '">';
+				$out .= '<select class="flat' . ($moreclass ? ' ' . $moreclass : '') . '" id="' . $htmlname . '" name="' . $htmlname . '"'.$nodatarole.'>';
 			if ($showempty == 1)
 				$out .= '<option value="0"' . ($selected == '0' ? ' selected' : '') . '></option>';
 			if ($showempty == 2)
