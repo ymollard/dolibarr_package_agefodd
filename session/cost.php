@@ -891,7 +891,7 @@ if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_mission
 
 	// Create new supplier invoice
 	print '<td width="20%" valign="top">';
-	print $form->select_company($socid, 'socid', 's.fournisseur=1', 'SelectThirdParty');
+	print $form->select_thirdparty_list($socid, 'socid', 's.fournisseur=1', 'SelectThirdParty');
 	print '</td>';
 
 	print '<td>';
