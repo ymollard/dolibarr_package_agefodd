@@ -1585,7 +1585,7 @@ class ReportBPF extends AgefoddExportExcel
 			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture
 			WHERE
 			    f.fk_statut IN (1 , 2) ";
-			if (! empty($data['confprod'])) {
+			if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']})) {
 				$sql .= " AND fd.fk_product IN (SELECT
 			            cp.fk_product
 			        FROM
@@ -1594,7 +1594,7 @@ class ReportBPF extends AgefoddExportExcel
 			            cp.fk_categorie IN (" . $conf->global->{$data['confprod']} . "))";
 			}
 
-			if (! empty($data['confcust'])) {
+			if (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']})) {
 				$sql .= " AND f.fk_soc IN (SELECT
 			            cs.fk_soc
 			        FROM
