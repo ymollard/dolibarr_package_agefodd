@@ -251,7 +251,7 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 							$newY = $pdf->GetY()+1;
 							$text = $outputlangs->transnoentities('AgfPDFCertificate15').' '.$agf_certif->mark.' - '.$text = $outputlangs->transnoentities('AgfPDFCertificate16').' '.dol_print_date($agf_certif->certif_dt_end,'daytext','tzserver',$outputlangs);
 							$pdf->SetXY($this->marge_gauche + 1, $newY);
-							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
 							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 						}
 
