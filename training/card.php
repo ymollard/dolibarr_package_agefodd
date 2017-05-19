@@ -789,14 +789,14 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				// confirm delete
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
+					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
 
 				// Confirm clone
 				if ($action == 'clone') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
+					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
@@ -808,7 +808,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					if ($action == 'active')
 						$value = 0;
 
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
@@ -1033,6 +1033,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogique") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 					print img_picto('fiche_pedago_' . $id . '.pdf:fiche_pedago_' . $id . '.pdf', 'pdf2') . '</a>';
+					if (function_exists('getAdvancedPreviewUrl')) {
+						$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_' . $id . '.pdf');
+						if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+					}
 					print '</td></tr>';
 				}
 
@@ -1041,6 +1045,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogiqueModule") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 					print img_picto('fiche_pedago_modules_' . $id . '.pdf:fiche_pedago_modules_' . $id . '.pdf', 'pdf2') . '</a>';
+					if (function_exists('getAdvancedPreviewUrl')) {
+						$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_modules_' . $id . '.pdf');
+						if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+					}
 					print '</td></tr>';
 				}
 

@@ -391,7 +391,7 @@ if (! empty($id)) {
 
 	if (! empty($period_remove)) {
 		// Param url = id de la periode à supprimer - id session
-		$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?modperiod=' . GETPOST('modperiod') . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
+		$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?modperiod=' . GETPOST('modperiod') . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
 		if ($ret == 'html')
 			print '<br>';
 	}
@@ -430,7 +430,7 @@ if (! empty($id)) {
 		 */
 		if (! empty($form_remove_var)) {
 			// Param url = id de la ligne formateur dans session - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?opsid=" . GETPOST('opsid') . '&id=' . $id, $langs->trans("AgfDeleteForm"), $langs->trans("AgfConfirmDeleteForm"), "confirm_delete_form", '', '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?opsid=" . GETPOST('opsid') . '&id=' . $id, $langs->trans("AgfDeleteForm"), $langs->trans("AgfConfirmDeleteForm"), "confirm_delete_form", '', '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}

@@ -271,7 +271,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			 * Delete confirm
 			 */
 			if ($action == 'delete') {
-				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteTeacher"), $langs->trans("AgfConfirmDeleteTeacher"), "confirm_delete", '', '', 1);
+				$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteTeacher"), $langs->trans("AgfConfirmDeleteTeacher"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
@@ -285,7 +285,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				if ($action == 'active')
 					$value = 0;
 
-				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+				$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}

@@ -475,7 +475,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	print '</td></tr>';
 
-	print '<tr class="create_thirdparty_block"><td>' . $langs->trans("ThirdPartyName") . '</td>';
+	print '<tr class="create_thirdparty_block"><td class="fieldrequired">' . $langs->trans("ThirdPartyName") . '</td>';
 	print '<td colspan="3" ><input name="societe_name" class="flat" size="50" value="' . GETPOST('societe_name', 'alpha') . '"></td></tr>';
 
 	// Address
@@ -739,7 +739,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				print '<input type="submit" class="butAction" name="save" value="' . $langs->trans("Save") . '"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 				if (! empty($agf->fk_socpeople)) {
-					print '<a class="butAction" href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
+					print '<a class="butAction" href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '&action=edit">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 				}
 				print '</td></tr>';
 				print '</table>';
@@ -752,7 +752,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				* Confirmation de la suppression
 				*/
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteTrainee"), "confirm_delete", '', '', 1);
+					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteTrainee"), "confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}

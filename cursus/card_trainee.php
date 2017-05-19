@@ -150,7 +150,7 @@ if (! empty($id)) {
 		*/
 		if ($action == 'delete_trainee') {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTraineeCursus"), $langs->trans("AgfConfirmRemoveTraineeCursus"), "confirm_delete_training", '', '', 1);
+			$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTraineeCursus"), $langs->trans("AgfConfirmRemoveTraineeCursus"), "confirm_delete_training", '', '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}

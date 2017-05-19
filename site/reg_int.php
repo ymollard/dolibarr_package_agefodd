@@ -251,7 +251,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			 * Delete confirm
 			*/
 			if ($action == 'delete') {
-				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id . '&idreg=' . $agf_place->fk_reg_interieur, $langs->trans("AgfDeleteRegint"), $langs->trans("AgfConfirmRegInt"), "confirm_delete", '', '', 1);
+				$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?id=" . $id . '&idreg=' . $agf_place->fk_reg_interieur, $langs->trans("AgfDeleteRegint"), $langs->trans("AgfConfirmRegInt"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}

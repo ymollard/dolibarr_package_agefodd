@@ -708,6 +708,7 @@ function show_facopca($file, $socid, $mdle) {
  * @param string $nom_courrier
  */
 function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
+
 	print '<tr style="height:14px">' . "\n";
 
 	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";

@@ -973,7 +973,8 @@ if ($conf->global->AGF_INFO_TAMPON) {
 		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removeimagesup">' . img_delete($langs->trans("Delete")) . '</a>';
 	}
 } else {
-	print '<img height="30" src="' . DOL_URL_ROOT . '/theme/common/nophoto.jpg">';
+	$nophoto='/public/theme/common/nophoto.png';
+	print '<img height="30" src="'.DOL_URL_ROOT.$nophoto.'">';
 }
 print '</td></tr></table>';
 print '<td align="center">';

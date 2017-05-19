@@ -172,7 +172,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			 * Confirmation de la suppression
 			*/
 			if ($action == 'delete') {
-				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteContact"), $langs->trans("AgfConfirmDeleteContact"), "confirm_delete", '', '', 1);
+				$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteContact"), $langs->trans("AgfConfirmDeleteContact"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
@@ -186,7 +186,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				if ($action == 'active')
 					$value = 0;
 				
-				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+				$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}

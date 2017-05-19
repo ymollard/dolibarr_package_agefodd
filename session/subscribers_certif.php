@@ -179,7 +179,7 @@ if (! empty($id)) {
 	*/
 	if ($_POST ["certif_remove_x"]) {
 		// Param url = id de la ligne stagiaire dans session - id session
-		$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . $_POST ["certifrowid"] . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
+		$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . $_POST ["certifrowid"] . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
 		if ($ret == 'html')
 			print '<br>';
 	}

@@ -300,7 +300,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				 * Confirm delete
 				*/
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteCursus"), $langs->trans("AgfConfirmDeleteCursus"), "confirm_delete", '', '', 1);
+					$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteCursus"), $langs->trans("AgfConfirmDeleteCursus"), "confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
@@ -313,7 +313,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					if ($action == 'active')
 						$value = 0;
 					
-					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+					$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}
@@ -323,7 +323,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				*/
 				if ($action == 'delete_training') {
 					// Param url = id de la ligne stagiaire dans session - id session
-					$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTrainingCursus"), $langs->trans("AgfConfirmRemoveTrainingCursus"), "confirm_delete_training", '', '', 1);
+					$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTrainingCursus"), $langs->trans("AgfConfirmRemoveTrainingCursus"), "confirm_delete_training", '', '', 1);
 					if ($ret == 'html')
 						print '<br>';
 				}

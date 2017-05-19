@@ -664,7 +664,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 	print '<td>' . $formAgefodd->select_type_session('type_session', 0) . '</td></tr>';
 
-	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfSessionCommercial") . '</span></td>';
+	print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 	print '<td>';
 	$commercial = GETPOST('commercial', 'int');
 	if (empty($conf->global->AGF_ALLOW_ADMIN_COMMERCIAL)) {
@@ -1094,8 +1094,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 					print '<table style="nobordernopadding" align="right">';
 					print '<tr><td align="center" colspan=2><br/><br/>';
-					print '<input type="submit" class="butAction" name="save" value="' . $langs->trans("Save") . '"> &nbsp; ';
-					print '<input type="submit" class="butAction" name="saveandclose" value="' . $langs->trans("SaveAndClose") . '"> &nbsp; ';
+					print '<input type="submit" class="butAction" name="saveandclose" value="' . $langs->trans("Save") . '"> &nbsp; ';
 					print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 					print '</td></tr>';
 					print '</table>';
@@ -1108,7 +1107,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					 * Confirm delete
 					 */
 					if ($action == 'delete') {
-						$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
+						$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
 						if ($ret == 'html')
 							print '<br>';
 					}
@@ -1117,7 +1116,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					 * confirm archive update status
 					 */
 					if (isset($_GET["arch"])) {
-						$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+						$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 						if ($ret == 'html')
 							print '<br>';
 					}
@@ -1145,7 +1144,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										'value' => 1
 								)
 						);
-						$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
+						$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
 						if ($ret == 'html')
 							print '<br>';
 					}

@@ -550,7 +550,7 @@ if ($action == 'unlink') {
 				'name' => 'deleteobject'
 		);
 	}
-	$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
+	$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
 	if ($ret == 'html')
 		print '<br>';
 }
@@ -589,7 +589,7 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 		$opsid_param = '';
 	}
 
-	$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&type=' . $type . $opsid_param, $langs->trans("AgfFactureSelectInvoice"), '', "link_confirm", $form_question, '', 1);
+	$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&type=' . $type . $opsid_param, $langs->trans("AgfFactureSelectInvoice"), '', "link_confirm", $form_question, '', 1);
 	if ($ret == 'html')
 		print '<br>';
 }

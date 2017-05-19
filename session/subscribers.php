@@ -314,7 +314,7 @@ if (! empty($id)) {
 		*/
 		if ($stag_remove_x) {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -705,7 +705,7 @@ if (! empty($id)) {
 				}
 			}
 
-			if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
+			if ((empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) && $nbstag>0) {
 				print '<br><br>';
 				foreach ( $stagiaires->labelstatut_short as $statuskey => $statuslabelshort ) {
 					if ($statuskey == 0 || $statuskey == 2 || $statuskey == 3 || $statuskey == 5 || $statuskey == 6) {

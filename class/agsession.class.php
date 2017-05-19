@@ -3977,13 +3977,13 @@ class Agsession extends CommonObject
 				$result = $propal->add_contact($this->sourcecontactid, 40, 'external');
 				if ($result < 0) {
 					$this->errors[] = $propal->error;
-					$error ++;
+					//$error ++;
 				}
 				// Contact client suivi propale
 				$result = $propal->add_contact($this->sourcecontactid, 41, 'external');
 				if ($result < 0) {
 					$this->errors[] = $propal->error;
-					$error ++;
+					//$error ++;
 				}
 			}
 			if (! empty($this->commercialid)) {
@@ -3991,7 +3991,7 @@ class Agsession extends CommonObject
 				$result = $propal->add_contact($this->commercialid, 31, 'internal');
 				if ($result < 0) {
 					$this->errors[] = $propal->error;
-					$error ++;
+					//$error ++;
 				}
 			}
 		}

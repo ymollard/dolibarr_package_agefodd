@@ -431,7 +431,7 @@ if (! empty($id)) {
 					'name' => 'propalid'
 			);
 
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateOrderFromSession"), '', "createorder_confirm", $form_question, '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateOrderFromSession"), '', "createorder_confirm", $form_question, '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -467,7 +467,7 @@ if (! empty($id)) {
 					'name' => 'amount'
 			);
 
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateInvoiceOPCAFromSession"), '', "createinvoice_confirm", $form_question, '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateInvoiceOPCAFromSession"), '', "createinvoice_confirm", $form_question, '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}
@@ -500,7 +500,7 @@ if (! empty($id)) {
 						'name' => 'deleteobject'
 				);
 			}
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
 			if ($ret == 'html')
 				print '<br>';
 		}

@@ -255,7 +255,7 @@ if ($user->rights->agefodd->creer) {
 			 * Delete confirm
 			*/
 			if (GETPOST('delete', 'int') == '1') {
-				$ret = $form->form_confirm("administrative.php?id=" . $id . "&actid=" . $actid, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteAction"), "confirm_delete", '', '', 1);
+				$ret = $form->formconfirm("administrative.php?id=" . $id . "&actid=" . $actid, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteAction"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
@@ -386,7 +386,7 @@ if ($user->rights->agefodd->creer) {
 							$src_state = dol_buildpath('/agefodd/img/ok.png', 1);
 						} else {
 							$txtalt = $langs->trans("AgfTerminatedPoint");
-							$src_state = dol_buildpath('/agefodd/img/no.png', 1);
+							$src_state = dol_buildpath('/agefodd/img/next.png', 1);
 						}
 						
 						print '<td align="center" valign="top"><a href="' . $_SERVER ['PHP_SELF'] . '?action=update_archive&id=' . $id . '&actid=' . $line->id . '"><img alt="' . $txtalt . '" src="' . $src_state . '"/></a></td>';

@@ -831,7 +831,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                     	// We decide to choose color of owner of event (event->userownerid is user id of owner, event->userassigned contains all users assigned to event)
                     	if (! empty($cacheusers[$event->userownerid]->color)) $color=$cacheusers[$event->userownerid]->color;
                     }
-                    else if ($event->type_code == 'ICALEVENT')
+                    /*else if ($event->type_code == 'ICALEVENT')
                     {
 						$numical ++;
 						if (! empty($event->icalname)) {
@@ -842,7 +842,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						}
 						$color = $event->icalcolor;
                     	$cssclass=(! empty($event->icalname)?'family_ext'.md5($event->icalname):'family_other unmovable');
-                    }
+                    }*/
                     else if ($event->type_code == 'BIRTHDAY')
                     {
                     	$numbirthday++; $colorindex=2; $cssclass='family_birthday unmovable'; $color=sprintf("%02x%02x%02x",$theme_datacolor[$colorindex][0],$theme_datacolor[$colorindex][1],$theme_datacolor[$colorindex][2]);
@@ -862,20 +862,27 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                     	// We decide to choose color of owner of event (event->userownerid is user id of owner, event->userassigned contains all users assigned to event)
                     	if (! empty($cacheusers[$event->userownerid]->color)) $color=$cacheusers[$event->userownerid]->color;
 					}
-					if ($color == - 1) 					// Color was not forced. Set color according to color index.
-					{
+					//if ($color == - 1) 					// Color was not forced. Set color according to color index.
+					//{
 						if (! isset($event->trainer_status)) {
 							if (isset($event->sessionstatus)) {
-								if ($event->sessionstatus == 'ENV')
-									$color = 'ffcc66';
-								if ($event->sessionstatus == 'CONF')
-									$color = '33cc00';
-								if ($event->sessionstatus == 'NOT')
-									$color = 'ff6600';
-								if ($event->sessionstatus == 'ARCH')
-									$color = 'c0c0c0';
+								if ($event->sessionstatus == 'ENV') {
+									$colorbis = 'ffcc66';
+								}
+								elseif ($event->sessionstatus == 'CONF') {
+									$colorbis= '33cc00';
+								}
+								elseif ($event->sessionstatus == 'NOT') {
+									$colorbis= 'ff6600';
+								}
+								elseif ($event->sessionstatus == 'ARCH') {
+									$colorbis= 'c0c0c0';
+								}
+								elseif ($event->sessionstatus == 'DONE') {
+									$colorbis= '4562c0';
+								}
 							} else {
-								$color = 'c0c0c0';
+								$colorbis= 'c0c0c0';
 							}
 						} else {
 							if ($event->trainer_status == 0)
@@ -893,7 +900,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							if ($event->trainer_status == 6)
 								$color = 'cc0000';
 						}
-					}
+					//}
 					$cssclass = $cssclass . ' ' . $cssclass . '_day_' . $ymd;
 					
                     // Defined style to disable drag and drop feature
@@ -927,7 +934,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                     print '<ul class="cal_event" style="'.$h.'">';	// always 1 li per ul, 1 ul per event
                     print '<li class="cal_event" style="'.$h.'">';
                     print '<table class="cal_event'.(empty($event->transparency)?'':' cal_event_busy').'" style="'.$h;
-                    print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.dol_color_minus($color,1).'));';
+                    print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.$colorbis.'));';
                     //if (! empty($event->transparency)) print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.dol_color_minus($color,1).'));';
                     //else print 'background-color: transparent !important; background: none; border: 1px solid #bbb;';
                     print ' -moz-border-radius:4px;" width="100%"><tr>';

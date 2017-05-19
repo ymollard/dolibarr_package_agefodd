@@ -872,7 +872,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			 * Confirmation de la suppression
 			*/
 			if ($action == 'delete') {
-				$ret = $form->form_confirm("convention.php?id=" . $id . '&sessid=' . $agf->sessid, $langs->trans("AgfDeleteConvention"), $langs->trans("AgfConfirmDeleteConvention"), "confirm_delete", '', '', 1);
+				$ret = $form->formconfirm("convention.php?id=" . $id . '&sessid=' . $agf->sessid, $langs->trans("AgfDeleteConvention"), $langs->trans("AgfConfirmDeleteConvention"), "confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
@@ -880,7 +880,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			 * Confirmation de l'archivage/activation suppression
 			*/
 			if (isset($_GET ["arch"])) {
-				$ret = $form->form_confirm("convention.php?arch=" . $_GET ["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+				$ret = $form->formconfirm("convention.php?arch=" . $_GET ["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				if ($ret == 'html')
 					print '<br>';
 			}
