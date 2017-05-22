@@ -397,6 +397,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$signataire='';
 	$contactname=trim($agf->contactname);
+	var_dump($contactname);
 	if (!empty($contactname)) {
 		$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
 		$intro2 .= ucfirst(strtolower($agf->contactcivilite)) . ' ' . $agf->contactname;
@@ -411,18 +412,18 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		} else {
 			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
 
-				$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
-
 				foreach ($stagiaires->lines as $line) {
 					if (!empty($line->fk_socpeople_sign)) {
 						$socpsign=new Contact($db);
 						$socpsign->fetch($line->fk_socpeople_sign);
 						$signataire=$socpsign->getFullName($langs).' ';
-						$intro2 .= $signataire;
 					}
 				}
+				if (!empty($signataire)) {
+					$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' '.$signataire.' '. $langs->trans('AgfConvIntro2_5');
+				}
 
-				$intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
+
 			}
 		}
 	}
