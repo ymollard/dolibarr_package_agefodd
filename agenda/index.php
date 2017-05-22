@@ -90,9 +90,9 @@ $canedit = 1;
 
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
-	
+
 	$filter_trainer = $user->id;
-	
+
 	if (! $user->rights->agefodd->agendatrainer)
 		accessforbidden();
 } else {
@@ -193,7 +193,7 @@ if (empty($action) || $action=='show_month')
 	$next = dol_get_next_month($month, $year);
 	$next_year = $next ['year'];
 	$next_month = $next ['month'];
-	
+
     $max_day_in_prev_month = date("t",dol_mktime(0,0,0,$prev_month,1,$prev_year));  // Nb of days in previous month
 	$max_day_in_month = date("t", dol_mktime(0, 0, 0, $month, 1, $year)); // Nb of days in next month
     // tmpday is a negative or null cursor to know how many days before the 1st to show on month view (if tmpday=0, 1st is monday)
@@ -215,21 +215,21 @@ if ($action=='show_week')
 	$first_day = $prev ['first_day'];
     $first_month= $prev['first_month'];
     $first_year = $prev['first_year'];
-	
+
 	$week = $prev ['week'];
-	
+
 	$day = ( int ) $day;
     $next = dol_get_next_week($first_day, $week, $first_month, $first_year);
 	$next_year = $next ['year'];
 	$next_month = $next ['month'];
 	$next_day = $next ['day'];
-	
+
     // Define firstdaytoshow and lastdaytoshow (warning: lastdaytoshow is last second to show + 1)
     $firstdaytoshow=dol_mktime(0,0,0,$first_month,$first_day,$first_year);
 	$lastdaytoshow=dol_time_plus_duree($firstdaytoshow, 7, 'd');
-	
+
 	$max_day_in_month = date("t", dol_mktime(0, 0, 0, $month, 1, $year));
-	
+
 	$tmpday = $first_day;
 }
 if ($action == 'show_day')
@@ -242,7 +242,7 @@ if ($action == 'show_day')
 	$next_year = $next ['year'];
 	$next_month = $next ['month'];
 	$next_day = $next ['day'];
-	
+
     // Define firstdaytoshow and lastdaytoshow (warning: lastdaytoshow is last second to show + 1)
 	$firstdaytoshow = dol_mktime(0, 0, 0, $prev_month, $prev_day, $prev_year);
 	$lastdaytoshow = dol_mktime(0, 0, 0, $next_month, $next_day, $next_year);
@@ -254,7 +254,7 @@ $title = $langs->trans("DoneAndToDoActions");
 $param = '';
 $region = '';
 if ($filter_commercial) {
-	$param .= "&commercial=" . $filter_commercial;	
+	$param .= "&commercial=" . $filter_commercial;
 }
 
 if ($filter_customer) {
@@ -272,7 +272,7 @@ if ($type) {
 if ($action == 'show_day' || $action == 'show_week') {
 	$param .= '&action=' . $action;
 }
-	
+
 if ($filter_type_session != '') {
 	$param .= '&type_session=' . $filter_type_session;
 }
@@ -425,7 +425,7 @@ if (! empty($filter_customer)) {
 	$sql .= " AND agf.fk_soc=" . $filter_customer;
 }
 if (! empty($filter_contact)) {
-	
+
 	if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 		$sql .= " AND contact.fk_socpeople=" . $filter_contact;
 	} else {
@@ -433,7 +433,7 @@ if (! empty($filter_contact)) {
 	}
 }
 if (! empty($filter_trainer)) {
-	
+
 	if ($type == 'trainer') {
 		$sql .= " AND trainer.fk_user=" . $filter_trainer;
 	} else {
@@ -472,7 +472,7 @@ if ($resql)
         	$i++;
         	continue;
         }
-		
+
 		// Create a new object action
 		$event = new ActionComm($db);
 		$event->id = $obj->id;
@@ -485,7 +485,7 @@ if ($resql)
         $event->authorid=$obj->fk_user_author;		// user id of creator
         $event->userownerid=$obj->fk_user_action;	// user id of owner
         $event->fetch_userassigned();				// This load $event->userassigned
-		
+
 		$event->sessionid = $obj->sessionid;
 		$event->sessiontype = $obj->sessiontype;
 		$event->sessionstatus = $obj->sessionstatus;
@@ -496,10 +496,10 @@ if ($resql)
 		$event->fulldayevent = $obj->fulldayevent;
 		$event->location = $obj->location;
         $event->transparency=$obj->transparency;
-		
+
 		$event->societe->id = $obj->fk_soc;
 		$event->contact->id = $obj->fk_contact;
-		
+
 		// Defined date_start_in_calendar and date_end_in_calendar property
 		// They are date start and end of action but modified to not be outside calendar view.
         if ($event->percentage <= 0)
@@ -519,7 +519,7 @@ if ($resql)
         {
 			$event->ponctuel = 1;
 		}
-		
+
 		// Check values
         if ($event->date_end_in_calendar < $firstdaytoshow ||
         $event->date_start_in_calendar >= $lastdaytoshow)
@@ -530,28 +530,28 @@ if ($resql)
         {
             if ($event->date_start_in_calendar < $firstdaytoshow) $event->date_start_in_calendar=$firstdaytoshow;
             if ($event->date_end_in_calendar >= $lastdaytoshow) $event->date_end_in_calendar=($lastdaytoshow-1);
-				
+
 				// Add an entry in actionarray for each day
 			$daycursor = $event->date_start_in_calendar;
 			$annee = date('Y', $daycursor);
 			$mois = date('m', $daycursor);
 			$jour = date('d', $daycursor);
-			
+
 			// Loop on each day covered by action to prepare an index to show on calendar
             $loop=true; $j=0;
 			$daykey = dol_mktime(0, 0, 0, $mois, $jour, $annee);
             do
             {
                 //if ($event->id==408) print 'daykey='.$daykey.' '.$event->datep.' '.$event->datef.'<br>';
-				
+
 				$eventarray [$daykey] [] = $event;
 				$j ++;
-				
+
 				$daykey += 60 * 60 * 24;
                 if ($daykey > $event->date_end_in_calendar) $loop=false;
             }
             while ($loop);
-			
+
             //print 'Event '.$i.' id='.$event->id.' (start='.dol_print_date($event->datep).'-end='.dol_print_date($event->datef);
             //print ' startincalendar='.dol_print_date($event->date_start_in_calendar).'-endincalendar='.dol_print_date($event->date_end_in_calendar).') was added in '.$j.' different index key of array<br>';
 		}
@@ -598,10 +598,10 @@ if (empty($action) || $action == 'show_month') // View by month
 		$i ++;
 	}
 	echo " </tr>\n";
-	
+
 	$todayarray = dol_getdate($now, 'fast');
 	$todaytms = dol_mktime(0, 0, 0, $todayarray ['mon'], $todayarray ['mday'], $todayarray ['year']);
-	
+
     // In loops, tmpday contains day nb in current month (can be zero or negative for days of previous month)
 	// var_dump($eventarray);
     for ($iter_week = 0; $iter_week < 6 ; $iter_week++)
@@ -673,9 +673,9 @@ elseif ($action == 'show_week') // View by week
 		$i ++;
 	}
 	echo " </tr>\n";
-	
+
 	echo " <tr>\n";
-	
+
     for ($iter_day = 0; $iter_day < 7; $iter_day++)
     {
 			// Show days of the current week
@@ -684,20 +684,20 @@ elseif ($action == 'show_week') // View by week
 		$tmpday = $tmparray['mday'];
 		$tmpmonth = $tmparray['mon'];
 		$tmpyear = $tmparray['year'];
-			
+
 			$style = 'cal_current_month';
         if ($iter_day == 6) $style.=' cal_other_month_right';
 			$today = 0;
 			$todayarray = dol_getdate($now, 'fast');
         if ($todayarray['mday']==$tmpday && $todayarray['mon']==$tmpmonth && $todayarray['year']==$tmpyear) $today=1;
         if ($today) $style='cal_today';
-			
+
 		echo '  <td class="'.$style.'" width="14%" valign="top">';
 		show_day_events($db, $tmpday, $tmpmonth, $tmpyear, $month, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300, $display_only_trainer_filter);
 		echo "  </td>\n";
 	}
 	echo " </tr>\n";
-	
+
 	echo "</table>\n";
     echo '<form id="move_event" action="" method="POST"><input type="hidden" name="action" value="mupdate">';
     echo '<input type="hidden" name="backtopage" value="'.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'].'">';
@@ -718,7 +718,7 @@ else    // View by day
 	$todayarray = dol_getdate($now, 'fast');
     if ($todayarray['mday']==$day && $todayarray['mon']==$month && $todayarray['year']==$year) $today=1;
     //if ($today) $style='cal_today';
-	
+
 	$timestamp = dol_mktime(12, 0, 0, $month, $day, $year);
 	$arraytimestamp = dol_getdate($timestamp);
     echo '<table width="100%" class="nocellnopadd cal_month">';
@@ -760,7 +760,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 	global $action, $filter, $filtert,  $status, $actioncode, $filter_trainer;
 	global $theme_datacolor;
     global $cachethirdparties, $cachecontacts, $cacheusers, $colorindexused;
-	
+
     print "\n".'<div id="dayevent_'.sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day).'" class="dayevent">';
 
     // Line with title of day
@@ -779,7 +779,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
     if ($user->rights->agenda->myactions->create || $user->rights->agenda->allactions->create)
     {
 		$newparam .= '&month=' . str_pad($month, 2, "0", STR_PAD_LEFT) . '&year=' . $year;
-		
+
 		// $param='month='.$monthshown.'&year='.$year;
 		$hourminsec = '100000';
         print '<a href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create&datep='.sprintf("%04d%02d%02d",$year,$month,$day).$hourminsec.'&backtopage='.urlencode($_SERVER["PHP_SELF"].($newparam?'?'.$newparam:'')).'">';
@@ -791,14 +791,14 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
     // Line with td contains all div of each events
     print '<tr height="'.$minheight.'"><td valign="top" colspan="2" class="sortable" style="padding-bottom: 2px;">';
 	print '<div style="width: 100%; position: relative;">';
-	
+
 	// $curtime = dol_mktime (0, 0, 0, $month, $day, $year);
     $i=0; $nummytasks=0; $numother=0; $numbirthday=0; $numical=0; $numicals=array();
 	$ymd = sprintf("%04d", $year) . sprintf("%02d", $month) . sprintf("%02d", $day);
-	
+
     $nextindextouse=count($colorindexused);	// At first run this is 0, so fist user has 0, next 1, ...
 	// print $nextindextouse;
-	
+
     foreach ($eventarray as $daykey => $notused)
     {
 		$annee = date('Y', $daykey);
@@ -813,7 +813,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					$keysofuserassigned=array_keys($event->userassigned);
 
 					$ponct = ($event->date_start_in_calendar == $event->date_end_in_calendar);
-					
+
                     // Define $color (Hex string like '0088FF') and $cssclass of event
                     $color=-1; $colorindex=-1;
        				if (in_array($user->id, $keysofuserassigned))
@@ -864,45 +864,49 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					}
 					//if ($color == - 1) 					// Color was not forced. Set color according to color index.
 					//{
-						if (! isset($event->trainer_status)) {
-							if (isset($event->sessionstatus)) {
-								if ($event->sessionstatus == 'ENV') {
-									$colorbis = 'ffcc66';
-								}
-								elseif ($event->sessionstatus == 'CONF') {
-									$colorbis= '33cc00';
-								}
-								elseif ($event->sessionstatus == 'NOT') {
-									$colorbis= 'ff6600';
-								}
-								elseif ($event->sessionstatus == 'ARCH') {
-									$colorbis= 'c0c0c0';
-								}
-								elseif ($event->sessionstatus == 'DONE') {
-									$colorbis= '4562c0';
-								}
-							} else {
+					if (! isset($event->trainer_status)) {
+						if (isset($event->sessionstatus)) {
+							if ($event->sessionstatus == 'ENV') {
+								$colorbis = 'ffcc66';
+							}
+							elseif ($event->sessionstatus == 'CONF') {
+								$colorbis= '33cc00';
+							}
+							elseif ($event->sessionstatus == 'NOT') {
+								$colorbis= 'ff6600';
+							}
+							elseif ($event->sessionstatus == 'ARCH') {
 								$colorbis= 'c0c0c0';
 							}
+							elseif ($event->sessionstatus == 'DONE') {
+								$colorbis= '4562c0';
+							}
 						} else {
-							if ($event->trainer_status == 0)
-								$color = 'ffffcc';
-							if ($event->trainer_status == 1)
-								$color = '66ff99';
-							if ($event->trainer_status == 2)
-								$color = '33ff33';
-							if ($event->trainer_status == 3)
-								$color = '3366ff';
-							if ($event->trainer_status == 4)
-								$color = '33ccff';
-							if ($event->trainer_status == 5)
-								$color = 'cc6600';
-							if ($event->trainer_status == 6)
-								$color = 'cc0000';
+							$colorbis= 'c0c0c0';
 						}
+					} else {
+						if ($event->trainer_status == 0)
+							$color = 'ffffcc';
+						if ($event->trainer_status == 1)
+							$color = '66ff99';
+						if ($event->trainer_status == 2)
+							$color = '33ff33';
+						if ($event->trainer_status == 3)
+							$color = '3366ff';
+						if ($event->trainer_status == 4)
+							$color = '33ccff';
+						if ($event->trainer_status == 5)
+							$color = 'cc6600';
+						if ($event->trainer_status == 6)
+							$color = 'cc0000';
+					}
+					if (empty($colorbis)) {
+						$colorbis=$color;
+					}
+
 					//}
 					$cssclass = $cssclass . ' ' . $cssclass . '_day_' . $ymd;
-					
+
                     // Defined style to disable drag and drop feature
                     if ($event->type_code =='AC_OTH_AUTO')
                     {
@@ -950,13 +954,13 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                         {
 							// print $event->getNomUrl(2).' ';
 						}
-						
+
 						// Date
                         if (empty($event->fulldayevent))
                         {
 							// print '<strong>';
 							$daterange = '';
-							
+
 							// Show hours (start ... end)
 							$tmpyearstart = date('Y', $event->date_start_in_calendar);
 							$tmpmonthstart = date('m', $event->date_start_in_calendar);
@@ -994,7 +998,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                             {
 								$savlabel = $event->libelle;
 								$event->libelle = $daterange;
-								
+
 								if (! empty($display_only_trainer_filter)) {
 									if ($event->sessiontype == 0) {
 										$event->libelle .= '-' . $langs->trans('AgfFormTypeSessionIntra');
@@ -1008,7 +1012,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 									if ($result < 0) {
 										setEventMessage($agf->error, 'errors');
 									}
-									
+
 									$event->libelle .= '<BR>';
 									if (is_array($agf_trainer->lines) && count($agf_trainer->lines) > 0) {
 										$event->libelle .= '&nbsp;' . $langs->trans('AgfFormateur') . ':';
@@ -1017,9 +1021,9 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 										}
 									}
 								}
-								
+
 								print $event->getNomUrl(0);
-								
+
 								$event->libelle = $savlabel;
                             }
                             else
@@ -1036,16 +1040,16 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 								print $langs->trans("EventOnFullDay") . "<br>\n";
 							}
 						}
-						
+
 						// Show title
 						if ($event->type_code == 'ICALEVENT')
 							print dol_trunc($event->libelle, $maxnbofchar);
 						else
 							print '<a href="../session/card.php?id=' . $event->sessionid . '">' . $event->sessionid . '</a> - ' . $event->getNomUrl(0, $maxnbofchar, 'cal_event');
-						
+
 						if ($event->type_code == 'ICALEVENT')
 							print '<br>(' . dol_trunc($event->icalname, $maxnbofchar) . ')';
-							
+
 							// If action related to company / contact
                         $linerelatedto='';$length=16;
                         if (! empty($event->societe->id) && ! empty($event->contact->id)) $length=round($length/2);
@@ -1074,7 +1078,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                         }
                         if ($linerelatedto) print '<br>'.$linerelatedto;
 					}
-					
+
 					// Show location
                     if ($showinfo)
                     {
@@ -1084,25 +1088,25 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							print $langs->trans("Location") . ': ' . $event->location;
 						}
 					}
-					
+
 					print '</td>';
 					// Status - Percent
 					print '<td align="right" class="nowrap">';
-					
+
 					if (! empty($event->sessionid) && $showinfo) {
-						
+
 						require_once '../class/agsession.class.php';
 						$agf = new Agsession($db);
 						$result = $agf->fetch($event->sessionid);
 						if ($result < 0) {
 							setEventMessage($agf->error, 'errors');
 						}
-						
+
 						if (empty($extralabels)) {
 							$extrafields = new ExtraFields($db);
 							$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
 						}
-						
+
 						require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 						$product = new Product($db);
 						if (! empty($agf->fk_product)) {
@@ -1111,14 +1115,14 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 								setEventMessage($agf->error, 'errors');
 							}
 						}
-						
+
 						require_once '../class/agefodd_session_formateur.class.php';
 						$agf_trainer = new Agefodd_session_formateur($db);
 						$result = $agf_trainer->fetch_formateur_per_session($event->sessionid);
 						if ($result < 0) {
 							setEventMessage($agf->error, 'errors');
 						}
-						
+
 						if (! empty($product->id)) {
 							print $langs->trans("Product") . ': ' . $product->getNomUrl(1);
 						}
@@ -1126,9 +1130,9 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						print '<BR>';
 						print '&nbsp;' . $langs->trans('AgfParticipants') . ':' . $agf->nb_stagiaire;
 						print '&nbsp;' . $langs->trans('AgfSessionCommercial') . ':' . $agf->commercialname;
-						
+
 						print '<BR>';
-						
+
 						if (is_array($agf_trainer->lines) && count($agf_trainer->lines) > 0) {
 							print '&nbsp;' . $langs->trans('AgfFormateur') . ':';
 							foreach ( $agf_trainer->lines as $line ) {
@@ -1141,8 +1145,8 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                     print '</ul>';
 					print '</div><!-- end event '.$i.' -->'."\n";
 					$i ++;
-				} 
-				else 
+				}
+				else
 				{
 					print '<a href="' . $_SERVER ['PHP_SELF'] . '?month=' . $monthshown . '&year=' . $year;
 					print ($status ? '&status=' . $status : '') . ($filter ? '&filter=' . $filter : '');
@@ -1155,12 +1159,12 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					// $ok=false; // To avoid to show twice the link
 				}
 			}
-			
+
 			break;
 		}
 	}
     if (! $i) print '&nbsp;';
-	
+
     if (! empty($conf->global->MAIN_JS_SWITCH_AGENDA) && $i > $maxprint && $maxprint)
     {
 		print '<div id="more_' . $ymd . '">' . img_picto("all", "1downarrow_selected.png") . ' +' . $langs->trans("More") . '...</div>';
@@ -1168,18 +1172,18 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 		print '<script type="text/javascript">' . "\n";
 		print 'jQuery(document).ready(function () {' . "\n";
 		print 'jQuery("#more_' . $ymd . '").click(function() { reinit_day_' . $ymd . '(); });' . "\n";
-		
+
 		print 'function reinit_day_' . $ymd . '() {' . "\n";
 		print 'var nb=0;' . "\n";
 		// TODO Loop on each element of day $ymd and start to toggle once $maxprint has been reached
 		print 'jQuery(".family_mytasks_day_' . $ymd . '").toggle();';
 		print '}' . "\n";
-		
+
 		print '});' . "\n";
 
 		print '</script>' . "\n";
 	}
-	
+
     print '</div>';
 	print '</td></tr>';
 

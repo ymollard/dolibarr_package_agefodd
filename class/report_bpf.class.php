@@ -1610,8 +1610,9 @@ class ReportBPF extends AgefoddExportExcel
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session AS sess ON sess.rowid = se.fk_session_agefodd
 			                AND se.element_type = 'invoice'
-			                AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'
-							AND sess.status IN (5)";
+							AND sess.status IN (5)
+							INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid
+							AND statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 
 			if (! empty($data['employer'])) {
 				$sql .= " AND sess.fk_soc_employer IS NOT NULL ";
@@ -1619,16 +1620,19 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ss ON ss.fk_session_agefodd = sess.rowid
 			                AND ss.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")";
-			if (empty($data['checkOPCA'])) {
+			if (empty($data['checkOPCA']) && empty($data['employer'])) {
 				$sql .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sta.fk_soc AND factin.rowid=se.fk_element))";
-			} else {
+			} elseif (!empty($data['checkOPCA'])) {
 				$sql .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_opca AS opca ON opca.fk_session_trainee = ss.rowid AND opca.fk_session_agefodd=sess.rowid
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = opca.fk_soc_OPCA AND factin.rowid=se.fk_element))";
+			} elseif (!empty($data['employer'])) {
+				$sql .= " INNER JOIN
+			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sess.fk_soc_employer AND factin.rowid=se.fk_element))";
 			}
 			if (! empty($data['checkOPCA'])) {
 				$sql .= " OR (f.rowid IN (SELECT DISTINCT
@@ -1638,8 +1642,9 @@ class ReportBPF extends AgefoddExportExcel
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session AS sessopca ON sessopca.rowid = seopca.fk_session_agefodd
 			                AND seopca.element_type = 'invoice'
-			                AND sessopca.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'
-							AND sessopca.status IN (5)";
+							AND sessopca.status IN (5)
+							INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statimeopca ON statimeopca.fk_agefodd_session=sessopca.rowid
+							AND statimeopca.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statimeopca.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 				if (! empty($data['employer'])) {
 					$sql .= "  AND sessopca.fk_soc_employer IS NOT NULL ";
 				}
