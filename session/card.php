@@ -1107,18 +1107,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					 * Confirm delete
 					 */
 					if ($action == 'delete') {
-						$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
-						if ($ret == 'html')
-							print '<br>';
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
 					}
 
 					/*
 					 * confirm archive update status
 					 */
 					if (isset($_GET["arch"])) {
-						$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-						if ($ret == 'html')
-							print '<br>';
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 					}
 
 					// Confirm clone
@@ -1144,9 +1140,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										'value' => 1
 								)
 						);
-						$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
-						if ($ret == 'html')
-							print '<br>';
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
 					}
 
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';

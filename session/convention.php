@@ -548,8 +548,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if ($agf_conv->sig)
 		$sig = $agf_conv->sig;
 	else {
-		$sig = $agf_soc->nom . "\n";
-		$sig .= $langs->trans('AgfConvArtSig') . ' ';
+		$sig = $agf_soc->name . "\n";
+		$sig .= $langs->trans('AgfConvArtSigCli') . ' ';
 		//$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
 		$contactname=trim($agf->contactname);
 		if (!empty($contactname)) {
@@ -574,7 +574,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<table class="border" width="100%">' . "\n";
 
 	print '<tr><td valign="top" width="200px">' . $langs->trans("Company") . '</td>';
-	print '<td>' . $agf_soc->nom . '</td></tr>';
+	print '<td>' . $agf_soc->name. '</td></tr>';
 
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfElementToUse") . '</td>';
 	print '<td>';
@@ -872,17 +872,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			 * Confirmation de la suppression
 			*/
 			if ($action == 'delete') {
-				$ret = $form->formconfirm("convention.php?id=" . $id . '&sessid=' . $agf->sessid, $langs->trans("AgfDeleteConvention"), $langs->trans("AgfConfirmDeleteConvention"), "confirm_delete", '', '', 1);
-				if ($ret == 'html')
-					print '<br>';
+				print $form->formconfirm("convention.php?id=" . $id . '&sessid=' . $agf->sessid, $langs->trans("AgfDeleteConvention"), $langs->trans("AgfConfirmDeleteConvention"), "confirm_delete", '', '', 1);
 			}
 			/*
 			 * Confirmation de l'archivage/activation suppression
 			*/
 			if (isset($_GET ["arch"])) {
-				$ret = $form->formconfirm("convention.php?arch=" . $_GET ["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-				if ($ret == 'html')
-					print '<br>';
+				print $form->formconfirm("convention.php?arch=" . $_GET ["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 			}
 
 			// Create a list of customer for each convention

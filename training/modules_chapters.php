@@ -44,7 +44,7 @@ $moduletitle = GETPOST('moduletitle', 'alpha');
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
 	accessforbidden();
-	
+
 	// Load translation files required by the page
 $langs->load("agefodd@agefodd");
 
@@ -58,7 +58,7 @@ $error = 0;
 */
 
 if ($action == "add") {
-	
+
 	$object->entity=$conf->entity;
 	$object->fk_formation_catalogue = $fk_formation_catalogue;
 	$object->title = GETPOST('moduletitle');
@@ -67,7 +67,7 @@ if ($action == "add") {
 	$object->obj_peda = GETPOST('obj_peda');
 	$object->sort_order = GETPOST('sort_order');
 	$object->status=1;
-	
+
 	$result = $object->create($user);
 	if ($result < 0) {
 		$action = 'create';
@@ -81,13 +81,13 @@ if ($action == "add") {
 		$action = 'edit';
 		setEventMessage($object->error, 'errors');
 	}
-	
+
 	$object->title = GETPOST('moduletitle');
 	$object->content_text = GETPOST('content_text');
 	$object->duration = GETPOST('duration');
 	$object->obj_peda = GETPOST('obj_peda');
 	$object->sort_order = GETPOST('sort_order');
-	
+
 	$result = $object->update($user);
 	if ($result < 0) {
 		$action = 'edit';
@@ -115,7 +115,7 @@ if ($action == "add") {
 
 $title = $langs->trans('AgfTrainingModule');
 if ($action == 'create') {
-	
+
 	if (! empty($fk_formation_catalogue)) {
 		$result = $object_training->fetch($fk_formation_catalogue);
 		if ($result < 0) {
@@ -125,12 +125,12 @@ if ($action == 'create') {
 	} else {
 		setEventMessage('Page call with wrong argument', 'errors');
 	}
-	
+
 	$subtitle = $langs->trans("AgfTrainingModule") . ' - ' . $object_training->title;
 	$button_text = 'Create';
 	$action_next = 'add';
 } elseif ($action == 'edit' || $action == 'delete') {
-	
+
 	if (! empty($id)) {
 		$result = $object->fetch($id);
 		if ($result < 0) {
@@ -141,7 +141,7 @@ if ($action == 'create') {
 			setEventMessage($object->error, 'errors');
 		}
 	}
-	
+
 	$button_text = 'Modify';
 	$action_next = 'update';
 }
@@ -155,23 +155,21 @@ $formadmin = new FormAdmin($db);
 $now = dol_now();
 
 if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-	
+
 	// Confirm form
-	$formconfirm = '';
 	if ($action == 'delete') {
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id.'&fk_formation_catalogue='.$fk_formation_catalogue, $langs->trans('AgfDeleteTrainingModule'), $langs->trans('AgfConfirmDeleteModule'), 'confirm_delete', '', 0, 1);
+		print $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id.'&fk_formation_catalogue='.$fk_formation_catalogue, $langs->trans('AgfDeleteTrainingModule'), $langs->trans('AgfConfirmDeleteModule'), 'confirm_delete', '', 0, 1);
 	}
-	print $formconfirm;
-	
+
 	print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="fk_formation_catalogue" value="' . $fk_formation_catalogue . '">';
 	print '<input type="hidden" name="action" value="' . $action_next . '">';
 	print '<input type="hidden" name="id" value="' . $id . '">';
-	
+
 	print '<table class="border" width="100%">';
 	print '<tr>';
-	
+
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('AgfPosition');
 	print '</td>';
@@ -187,7 +185,7 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	print '<input type="text" name="sort_order" size="2" value="' . $object->sort_order . '"/>';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('Title');
 	print '</td>';
@@ -195,7 +193,7 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	print '<input type="text" name="moduletitle" size="50" value="' . $object->title . '"/>';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td width="20%">';
 	print $langs->trans('AgfPDFFichePeda1');
 	print '</td>';
@@ -203,7 +201,7 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	print '<input type="text" name="duration" size="2" value="' . $object->duration . '"/>';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr>';
 	print '<td width="20%">';
 	print $langs->trans('AgfObjPeda');
@@ -218,8 +216,8 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	$doleditor->Create();
 	print '</td>';
 	print '</tr>';
-	
-	
+
+
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('AgfContenu');
@@ -234,14 +232,14 @@ if (($action == 'create' || $action == 'edit' || $action == 'delete') && $user->
 	$doleditor->Create();
 	print '</td>';
 	print '</tr>';
-	
+
 	print '</table>';
-	
+
 	print '<center>';
 	print '<input type="submit" class="button" value="' . $langs->trans($button_text) . '">';
 	print '&nbsp;<input type="button" class="button" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
 	print '</center>';
-	
+
 	print '</form>';
 }
 

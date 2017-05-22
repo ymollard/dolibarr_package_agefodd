@@ -401,9 +401,7 @@ if (! empty($id)) {
 		 * Confirm delete
 		*/
 		if ($action == 'delete') {
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
 		}
 
 		/*
@@ -431,9 +429,7 @@ if (! empty($id)) {
 					'name' => 'propalid'
 			);
 
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateOrderFromSession"), '', "createorder_confirm", $form_question, '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateOrderFromSession"), '', "createorder_confirm", $form_question, '', 1);
 		}
 
 		/*
@@ -467,9 +463,7 @@ if (! empty($id)) {
 					'name' => 'amount'
 			);
 
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateInvoiceOPCAFromSession"), '', "createinvoice_confirm", $form_question, '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?socid=" . $socid . "&id=" . $id, $langs->trans("AgfCreateInvoiceOPCAFromSession"), '', "createinvoice_confirm", $form_question, '', 1);
 		}
 
 		/*
@@ -500,9 +494,7 @@ if (! empty($id)) {
 						'name' => 'deleteobject'
 				);
 			}
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
 		}
 
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">' . "\n";

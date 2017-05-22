@@ -96,7 +96,7 @@ if (empty($sortorder))
 	$sortorder = "ASC";
 if (empty($sortfield))
 	$sortfield = "sta.nom";
-	
+
 	/*
  * Associate training to cursus
 */
@@ -137,52 +137,50 @@ $formcompagny = new FormCompany($db);
 if (! empty($id)) {
 	$agf = new Agefodd_cursus($db);
 	$result = $agf->fetch($id);
-	
+
 	if ($result > 0) {
 		$head = cursus_prepare_head($agf);
-		
+
 		dol_fiche_head($head, 'trainee', $langs->trans("AgfCursusParticipants"), 0, 'calendarweek');
-		
+
 		// Display View mode
-		
+
 		/*
 		 * Confirm delete trainee
 		*/
 		if ($action == 'delete_trainee') {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTraineeCursus"), $langs->trans("AgfConfirmRemoveTraineeCursus"), "confirm_delete_training", '', '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTraineeCursus"), $langs->trans("AgfConfirmRemoveTraineeCursus"), "confirm_delete_training", '', '', 1);
 		}
-		
+
 		print '<table class="border" width="100%">';
-		
+
 		print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 		print '<td>' . $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td>';
 		print '<td>' . $agf->ref_interne . '</td></tr>';
-		
+
 		print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
 		print '<td>' . $agf->intitule . '</td></tr>';
-		
+
 		print '<tr><td valign="top">' . $langs->trans("NotePublic") . '</td>';
 		print '<td>' . $agf->note_public . '</td></tr>';
-		
+
 		print '<tr><td valign="top">' . $langs->trans("NotePrivate") . '</td>';
 		print '<td>' . $agf->note_private . '</td></tr>';
-		
+
 		print "</table>";
-		
+
 		print '</div>';
 	} else {
 		setEventMessage($agf->error, 'errors');
 	}
-	
+
 	/*
  * Manage trainee
 */
-	
+
 	$trainee = new Agefodd_stagiaire_cursus($db);
 	$trainee->fk_cursus = $agf->id;
 	$result = $trainee->fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset, $filter);
@@ -190,9 +188,9 @@ if (! empty($id)) {
 		setEventMessage($trainee->error, 'errors');
 	}
 	$nbtrainee = count($trainee->lines);
-	
+
 	print_barre_liste($langs->trans("AgfMenuActStagiaire"), $page, $_SERVER ['PHP_SELF'], '&id=' . $id, $sortfield, $sortorder, "", $nbtrainee);
-	
+
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
 	if ($nbtrainee < 1) {
@@ -201,7 +199,7 @@ if (! empty($id)) {
 		print '<td>' . $langs->trans("AgfMenuActStagiaire") . ' (' . $nbtrainee . ')' . '</td>';
 	}
 	print '</tr>';
-	
+
 	if ($nbtrainee > 0) {
 		print '<table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
@@ -213,7 +211,7 @@ if (! empty($id)) {
 		print_liste_field_titre($langs->trans("AgfSessionToDoInCursus"), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder);
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
-		
+
 		// Search bar
 		$url_form = $_SERVER ["PHP_SELF"] . '?id=' . $agf->id;
 		$addcriteria = false;
@@ -236,49 +234,49 @@ if (! empty($id)) {
 				$url_form .= '&page=' . $page;
 			}
 		}
-		
+
 		print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 		print '<input type="hidden" value="' . $id . '" name="id">';
 		print '<tr class="liste_titre">';
-		
+
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_name" value="' . $search_name . '" size="10">';
 		print '<input type="text" class="flat" name="search_firstname" value="' . $search_firstname . '" size="10">';
 		print '</td>';
-		
+
 		print '<td class="liste_titre">';
 		print $formcompagny->select_civility($search_civ, 'search_civ');
 		print '</td>';
-		
+
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
 		print '</td>';
-		
+
 		print '<td class="liste_titre">';
 		print '</td>';
-		
+
 		print '<td class="liste_titre">';
 		print '</td>';
-		
+
 		print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 		print '&nbsp; ';
 		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 		print '</td>';
-		
+
 		print "</tr>\n";
 		print '</form>';
-		
+
 		$var = true;
 		foreach ( $trainee->lines as $line ) {
-			
+
 			// Affichage liste des stagiaires
 			$var = ! $var;
 			print "<tr $bc[$var]>";
 			print '<td><a href="../trainee/card.php?id=' . $line->starowid . '">' . img_object($langs->trans("AgfShowDetails"), "user") . ' ' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</a></td>';
-			
+
 			$contact_static = new Contact($db);
 			$contact_static->civility_id = $line->civilite;
-			
+
 			print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 			print '<td>';
 			if ($line->socid) {
@@ -293,15 +291,15 @@ if (! empty($id)) {
 			print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		}
-		
+
 		print "</table>";
 	}
-	
+
 	if ($user->rights->agefodd->modifier) {
 		print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '" method="post">' . "\n";
 		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 		print '<input type="hidden" name="action" value="addtrainee">' . "\n";
-		
+
 		print '<table class="noborder" width="100%">';
 		print '<tr>';
 		print '<td>' . $langs->trans('AgfStagiaireAdd');

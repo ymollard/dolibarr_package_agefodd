@@ -435,9 +435,7 @@ if (! empty($id)) {
 		 * Confirm delete
 		 */
 		if ($action == 'delete') {
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete");
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete");
 		}
 
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">' . "\n";
