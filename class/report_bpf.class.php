@@ -1780,8 +1780,11 @@ function fetch_financial_d($filter = array()) {
 			FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
-			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture
-			WHERE
+			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture ";
+			if (!empty($data['employer'])) {
+				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+			}
+			$sql .= " WHERE
 			    f.fk_statut IN (1 , 2) ";
 			if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']})) {
 				$sql .= " AND fd.fk_product IN (SELECT
