@@ -48,39 +48,39 @@ $certif_edit_x = GETPOST('certif_edit_x', 'alpha');
 $certifid = GETPOST('certifid', 'int');
 
 if ($action == 'edit' && $user->rights->agefodd->creer) {
-	
+
 	$certif_sta_id = GETPOST('modstaid', 'int');
 	$certif_session_sta_id = GETPOST('sessionstarowid', 'int');
 	$certif_id = GETPOST('certifid', 'int');
-	
+
 	$certif_code = GETPOST('certif_code', 'alpha');
 	$certif_label = GETPOST('certif_label', 'alpha');
 	$certif_dt_start = dol_mktime(0, 0, 0, GETPOST('dt_startmonth', 'int'), GETPOST('dt_startday', 'int'), GETPOST('dt_startyear', 'int'));
 	$certif_dt_end = dol_mktime(0, 0, 0, GETPOST('dt_endmonth', 'int'), GETPOST('dt_endday', 'int'), GETPOST('dt_endyear', 'int'));
 	$certif_dt_warning = dol_mktime(0, 0, 0, GETPOST('dt_warningmonth', 'int'), GETPOST('dt_warningday', 'int'), GETPOST('dt_warningyear', 'int'));
-	
+
 	if (! empty($certif_save_x)) {
 		$agf_certif = new Agefodd_stagiaire_certif($db);
 		$result = $agf_certif->fetch($certifid);
 		if ($result < 0) {
 			setEventMessage($agf_certif->error, 'errors');
 		} else {
-			
+
 			$agf_certif->certif_code = $certif_code;
 			$agf_certif->certif_label = $certif_label;
 			$agf_certif->certif_dt_start = $certif_dt_start;
 			$agf_certif->certif_dt_end = $certif_dt_end;
 			$agf_certif->certif_dt_warning = $certif_dt_warning;
-			
+
 			// Existing certification
 			if (! empty($agf_certif->id)) {
 				$result = $agf_certif->update($user);
 				if ($result < 0) {
 					setEventMessage($agf_certif->error, 'errors');
 				} else {
-					
+
 					$certif_type_array = $agf_certif->get_certif_type();
-					
+
 					if (is_array($certif_type_array) && count($certif_type_array) > 0) {
 						foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
 							$certif_state = GETPOST('certifstate_' . $certif_type_id);
@@ -90,7 +90,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 							}
 						}
 					}
-					
+
 					Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
 					exit();
 				}
@@ -101,7 +101,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 
 if ($action == 'confirm_delete_certif' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	$certifrowid = GETPOST('certifrowid', 'int');
-	
+
 	$agf_certif = new Agefodd_stagiaire_certif($db);
 	$result = $agf_certif->fetch($certifrowid);
 	if ($result < 0) {
@@ -129,35 +129,33 @@ llxHeader('', $langs->trans("AgfStagiaireDetail"));
 if ($id) {
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->fetch($id);
-	
+
 	if ($result) {
 		$agf_certif = new Agefodd_stagiaire_certif($db);
 		$result = $agf_certif->fetch_all_by_trainee($id);
 		if ($result < 0) {
 			setEventMessage($agf_certif->error, 'errors');
 		}
-		
+
 		$form = new Form($db);
-		
+
 		/*
 		 * Confirmation de la suppression
 		*/
 		if ($_POST ["certif_remove_x"]) {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . GETPOST('certifid') . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . GETPOST('certifid') . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
 		}
-		
+
 		$head = trainee_prepare_head($agf);
-		
+
 		dol_fiche_head($head, 'certificate', $langs->trans("AgfStagiaireDetailCertificate"), 0, 'user');
-		
+
 		print '<table class="border" width="100%">';
-		
+
 		print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td>' . $form->showrefnav($agf, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-		
+
 		if (! empty($agf->fk_socpeople)) {
 			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
 			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . strtoupper($agf->nom) . '</a></td></tr>';
@@ -165,17 +163,17 @@ if ($id) {
 			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
 			print '<td>' . strtoupper($agf->nom) . '</td></tr>';
 		}
-		
+
 		print '<tr><td>' . $langs->trans("Firstname") . '</td>';
 		print '<td>' . ucfirst($agf->prenom) . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
-		
+
 		$contact_static = new Contact($db);
 		$contact_static->civility_id = $agf->civilite;
-		
+
 		print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-		
+
 		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 		if ($agf->socid) {
 			print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $agf->socid . '">';
@@ -184,31 +182,31 @@ if ($id) {
 			print '&nbsp;';
 		}
 		print '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("AgfFonction") . '</td>';
 		print '<td>' . $agf->fonction . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("Phone") . '</td>';
 		print '<td>' . dol_print_phone($agf->tel1) . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("Mobile") . '</td>';
 		print '<td>' . dol_print_phone($agf->tel2) . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("Mail") . '</td>';
 		print '<td>' . dol_print_email($agf->mail, $agf->id, $agf->socid, 'AC_EMAIL', 25) . '</td></tr>';
-		
+
 		print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 		if (! empty($agf->note))
 			$notes = nl2br($agf->note);
 		else
 			$notes = $langs->trans("AgfUndefinedNote");
 		print '<td>' . stripslashes($notes) . '</td></tr>';
-		
+
 		print "</table>";
 		print '</div>';
-		
+
 		print_fiche_titre($langs->trans("AgfCertificate"));
-		
+
 		if (count($agf_certif->lines) > 0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
@@ -223,7 +221,7 @@ if ($id) {
 			print '<th class="liste_titre">' . $langs->trans('AgfCertifType') . '</th>';
 			print '<th width="5%"></th>';
 			print '</tr>';
-			
+
 			$style = 'impair';
 			foreach ( $agf_certif->lines as $line ) {
 				if ($style == 'class="pair"') {
@@ -231,10 +229,10 @@ if ($id) {
 				} else {
 					$style = 'class="pair"';
 				}
-				
+
 				if (GETPOST('certif_remove_x') != '' && GETPOST('certifid') == $line->id)
 					$style = 'bgcolor="#d5baa8"';
-				
+
 				if ($certifid == $line->id && (! empty($certif_edit_x))) {
 					print '<form name="obj_update_' . $line->id . '" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '"  method="POST">' . "\n";
 					print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
@@ -247,7 +245,7 @@ if ($id) {
 					print '<td><a href="' . dol_buildpath('/agefodd/session/subscribers_certif.php', 1) . '?id=' . $line->fk_session_agefodd . '">' . $agf_session->formintitule . '</a></td>';
 					print '<td>';
 					print dol_print_date($agf_session->dated, 'daytext');
-					
+
 					print '</td>';
 					print '<td><input type="hidden" name="certif_code" value="' . $line->certif_code . '">' . $line->certif_code . '</td>';
 					print '<td><input type="text" size="10" name="certif_label"  value="' . $line->certif_label . '"></td>';
@@ -279,7 +277,7 @@ if ($id) {
 					print '</tr>';
 					print '</form>';
 				} else {
-					
+
 					print '<form name="obj_see_' . $line->id . '" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '"  method="POST">' . "\n";
 					print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 					print '<input type="hidden" name="certifid" value="' . $line->id . '">' . "\n";

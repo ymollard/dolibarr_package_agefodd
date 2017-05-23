@@ -314,9 +314,7 @@ if (! empty($id)) {
 		*/
 		if ($stag_remove_x) {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
 		}
 
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';

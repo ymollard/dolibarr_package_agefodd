@@ -72,7 +72,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	$agf = new Agefodd_cursus($db);
 	$agf->id = $id;
 	$result = $agf->delete($user);
-	
+
 	if ($result > 0) {
 		Header("Location: list.php");
 		exit();
@@ -87,12 +87,12 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 	if ($confirm == "yes") {
 		$agf = new Agefodd_cursus($db);
-		
+
 		$result = $agf->fetch($id);
-		
+
 		$agf->archive = $arch;
 		$result = $agf->update($user);
-		
+
 		if ($result > 0) {
 			Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
 			exit();
@@ -111,18 +111,18 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 if ($action == 'update' && $user->rights->agefodd->creer) {
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_cursus($db);
-		
+
 		$result = $agf->fetch($id);
 		if ($result > 0) {
 			$agf->ref_interne = GETPOST('ref_interne', 'alpha');
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->note_private = GETPOST('note_private', 'alpha');
 			$agf->note_public = GETPOST('note_public', 'alpha');
-			
+
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
-			
+
 			$result = $agf->update($user);
-			
+
 			if ($result > 0) {
 				Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
 				exit();
@@ -146,18 +146,18 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_cursus($db);
-		
+
 		$agf->ref_interne = GETPOST('ref_interne', 'alpha');
 		$agf->intitule = GETPOST('intitule', 'alpha');
 		$agf->note_private = GETPOST('note_private', 'alpha');
 		$agf->note_public = GETPOST('note_public', 'alpha');
-		
+
 		$extrafields->setOptionalsFromPost($extralabels, $agf);
-		
+
 		$result = $agf->create($user);
-		
+
 		if ($result > 0) {
-			
+
 			if ($url_return)
 				Header("Location: " . $url_return);
 			else
@@ -212,31 +212,31 @@ $formAgefodd = new FormAgefodd($db);
 */
 if ($action == 'create' && $user->rights->agefodd->creer) {
 	print_fiche_titre($langs->trans("AgfMenuCursusNew"));
-	
+
 	print '<form name="create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm">' . "\n";
-	
+
 	print '<input type="hidden" name="url_return" value="' . $url_return . '">' . "\n";
-	
+
 	print '<table class="border" width="100%">' . "\n";
-	
+
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfRefInterne") . '</span></td>';
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfIntitule") . '</span></td>';
 	print '<td><input name="intitule" class="flat" size="50" value=""></td></tr>';
-	
+
 	print '<tr><td valign="top">' . $langs->trans("NotePublic") . '</td>';
 	print '<td><textarea name="note_public" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	
+
 	print '<tr><td valign="top">' . $langs->trans("NotePrivate") . '</td>';
 	print '<td><textarea name="note_private" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
-	
+
 	if (! empty($extrafields->attribute_label)) {
 		print $agf->showOptionals($extrafields, 'edit');
 	}
-	
+
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" name="importadress" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
@@ -249,39 +249,39 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if ($id) {
 		$agf = new Agefodd_cursus($db);
 		$result = $agf->fetch($id);
-		
+
 		if ($result > 0) {
 			$head = cursus_prepare_head($agf);
-			
+
 			dol_fiche_head($head, 'card', $langs->trans("AgfMenuCursus"), 0, 'document');
-			
+
 			// Card in edit mode
 			if ($action == 'edit') {
 				print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '" method="post">' . "\n";
 				print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 				print '<input type="hidden" name="action" value="update">' . "\n";
 				print '<input type="hidden" name="id" value="' . $id . '">' . "\n";
-				
+
 				print '<table class="border" width="100%">' . "\n";
 				print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 				print '<td>' . $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
-				
+
 				print '<tr><td  class="fieldrequired">' . $langs->trans("AgfRefInterne") . '</td>';
 				print '<td><input name="ref_interne" class="flat" size="50" value="' . $agf->ref_interne . '"></td></tr>';
-				
+
 				print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfIntitule") . '</span></td>';
 				print '<td><input name="intitule" class="flat" size="50" value="' . $agf->intitule . '"></td></tr>';
-				
+
 				print '<tr><td valign="top">' . $langs->trans("NotePublic") . '</td>';
 				print '<td><textarea name="note_public" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->note_public . '</textarea></td></tr>';
-				
+
 				print '<tr><td valign="top">' . $langs->trans("NotePrivate") . '</td>';
 				print '<td><textarea name="note_private" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->note_private . '</textarea></td></tr>';
-				
+
 				if (! empty($extrafields->attribute_label)) {
 					print $agf->showOptionals($extrafields, 'edit');
 				}
-				
+
 				print '</table>';
 				print '</div>';
 				print '<table style=noborder align="right">';
@@ -291,18 +291,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				print '</td></tr>';
 				print '</table>';
 				print '</form>';
-				
+
 				print '</div>' . "\n";
 			} else {
 				// Display View mode
-				
+
 				/*
 				 * Confirm delete
 				*/
 				if ($action == 'delete') {
-					$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteCursus"), $langs->trans("AgfConfirmDeleteCursus"), "confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER ['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteCursus"), $langs->trans("AgfConfirmDeleteCursus"), "confirm_delete", '', '', 1);
 				}
 				/*
 				 * Confirm archive
@@ -312,45 +310,41 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						$value = 1;
 					if ($action == 'active')
 						$value = 0;
-					
-					$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+
+					print $form->formconfirm($_SERVER ['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				}
-				
+
 				/*
 				 * Confirm delete
 				*/
 				if ($action == 'delete_training') {
 					// Param url = id de la ligne stagiaire dans session - id session
-					$ret = $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTrainingCursus"), $langs->trans("AgfConfirmRemoveTrainingCursus"), "confirm_delete_training", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTrainingCursus"), $langs->trans("AgfConfirmRemoveTrainingCursus"), "confirm_delete_training", '', '', 1);
 				}
-				
+
 				print '<table class="border" width="100%">';
-				
+
 				print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 				print '<td>' . $form->showrefnav($agf, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-				
+
 				print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td>';
 				print '<td>' . $agf->ref_interne . '</td></tr>';
-				
+
 				print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
 				print '<td>' . $agf->intitule . '</td></tr>';
-				
+
 				print '<tr><td valign="top">' . $langs->trans("NotePublic") . '</td>';
 				print '<td>' . $agf->note_public . '</td></tr>';
-				
+
 				print '<tr><td valign="top">' . $langs->trans("NotePrivate") . '</td>';
 				print '<td>' . $agf->note_private . '</td></tr>';
-				
+
 				if (! empty($extrafields->attribute_label)) {
 					print $agf->showOptionals($extrafields);
 				}
-				
+
 				print "</table>";
-				
+
 				print '</div>';
 			}
 		} else {
@@ -394,14 +388,14 @@ if ($action != 'edit' && $action != 'create') {
 	/*
 	 * Manage training
 	*/
-	
+
 	if (empty($sortorder))
 		$sortorder = "ASC";
 	if (empty($sortfield))
 		$sortfield = "f.ref";
-	
+
 	print '&nbsp';
-	
+
 	$training = new Agefodd_formation_cursus($db);
 	$training->fk_cursus = $agf->id;
 	$result = $training->fetch_formation_per_cursus($sortorder, $sortfield, $limit, $offset);
@@ -409,9 +403,9 @@ if ($action != 'edit' && $action != 'create') {
 		setEventMessage($training->error, 'errors');
 	}
 	$nbcursus = count($training->lines);
-	
+
 	print_barre_liste($langs->trans("AgfTraining"), $page, $_SERVER ['PHP_SELF'], '&id=' . $id, $sortfield, $sortorder, "", $nbcursus);
-	
+
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
 	if ($nbcursus < 1) {
@@ -420,7 +414,7 @@ if ($action != 'edit' && $action != 'create') {
 		print '<td>' . $langs->trans("AgfTraining") . ' (' . $nbcursus . ')' . '</td>';
 	}
 	print '</tr>';
-	
+
 	if ($nbcursus > 0) {
 		print '<tr class="liste_titre">';
 		print_liste_field_titre($langs->trans("AgfFormRef"), $_SERVER ['PHP_SELF'], "f.ref", '', '', '', $sortfield, $sortorder);
@@ -428,19 +422,19 @@ if ($action != 'edit' && $action != 'create') {
 		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], 'f.intitule', '', '', '', $sortfield, $sortorder);
 		print '<td></td>';
 		print "</tr>\n";
-		
+
 		$var = true;
-		
+
 		foreach ( $training->lines as $line ) {
-			
+
 			$var = ! $var;
-			
+
 			if ($action == 'delete_training' && $line->id == GETPOST('lineid', 'int')) {
 				print '<tr bgcolor="#d5baa8">';
 			} else {
 				print "<tr $bc[$var]>";
 			}
-			
+
 			print '<td>' . $line->ref . '</td>';
 			print '<td>' . $line->ref_interne . '</td>';
 			print '<td>' . $line->intitule . '</td>';
@@ -449,24 +443,24 @@ if ($action != 'edit' && $action != 'create') {
 		}
 	}
 	print "</table>";
-	
+
 	if ($user->rights->agefodd->modifier) {
 		print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '" method="post">' . "\n";
 		print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 		print '<input type="hidden" name="action" value="addtraining">' . "\n";
-		
+
 		print '<table class="noborder" width="100%">';
 		print '<tr>';
 		print '<td>' . $langs->trans('AgfAddTraining');
 		print $formAgefodd->select_formation('', 'training_id', 'intitule', 1, 0, array (), array (
-				' AND c.rowid NOT IN (SELECT fk_formation_catalogue FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_cursus WHERE fk_cursus=' . $id . ')' 
+				' AND c.rowid NOT IN (SELECT fk_formation_catalogue FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_cursus WHERE fk_cursus=' . $id . ')'
 		));
 		print '<input type="submit" class="butAction" value="' . $langs->trans("Add") . '"></td>';
 		print '</tr>';
 		print "</table>";
 		print '</form>';
 	}
-	
+
 	print '</div>';
 }
 

@@ -39,7 +39,7 @@ $moduletitle = GETPOST('moduletitle', 'alpha');
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
 	accessforbidden();
-	
+
 	// Load translation files required by the page
 $langs->load("agefodd@agefodd");
 
@@ -52,7 +52,7 @@ if (! empty($id)) {
 		setEventMessage($object->error, 'errors');
 	}
 	$result = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array (
-			't.fk_formation_catalogue' => $id 
+			't.fk_formation_catalogue' => $id
 	));
 	if ($result < 0) {
 		setEventMessage($object->error, 'errors');
@@ -72,9 +72,9 @@ $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 
 if ($action == "add") {
 	$object->title = $moduletitle;
-	
+
 	//$extrafields->setOptionalsFromPost($extralabels, $object);
-	
+
 	$result = $object->create($user);
 	if ($result < 0) {
 		$action = 'create';
@@ -119,9 +119,8 @@ $head = training_prepare_head($object);
 dol_fiche_head($head, 'trainingmodule', $langs->trans("AgfTrainingModule"), 0, 'label');
 
 // Confirm form
-$formconfirm = '';
 if ($action == 'delete') {
-	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'confirm_delete', '', 0, 1);
+	print $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'confirm_delete', '', 0, 1);
 }
 print '<table class="border" width="100%">';
 print "<tr>";
@@ -143,14 +142,14 @@ print_fiche_titre($langs->trans("AgfTrainingModule"));
 if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 	foreach ( $object_modules->lines as $line_chapter ) {
 		print '<table class="border" width="100%">';
-		
+
 		if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
 			print '<tr><td rowspan="5" width="20px">';
 			print '<a href="' . dol_buildpath('/agefodd/training/modules_chapters.php', 1) . '?id=' . $line_chapter->id . '&fk_formation_catalogue='.$object->id.'&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 			print '<a href="' . dol_buildpath('/agefodd/training/modules_chapters.php', 1) . '?id=' . $line_chapter->id . '&fk_formation_catalogue='.$object->id.'&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 			print '</td></tr>';
 		}
-		
+
 		print '<tr>';
 		print '<td  width="20%">';
 		print $langs->trans('Title');
@@ -159,7 +158,7 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 		print $line_chapter->title;
 		print '</td>';
 		print '</tr>';
-		
+
 		print '<tr>';
 		print '<td  width="20%">';
 		print $langs->trans('AgfPDFFichePeda1');
@@ -168,7 +167,7 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 		print price($line_chapter->duration);
 		print '</td>';
 		print '</tr>';
-		
+
 		print '<tr>';
 		print '<td  width="20%">';
 		print $langs->trans('AgfObjPeda');
@@ -177,7 +176,7 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 		print $line_chapter->obj_peda;
 		print '</td>';
 		print '</tr>';
-		
+
 		print '<tr>';
 		print '<td  width="20%">';
 		print $langs->trans('AgfContenu');
@@ -186,7 +185,7 @@ if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {
 		print $line_chapter->content_text;
 		print '</td>';
 		print '</tr>';
-		
+
 		print '</table>';
 	}
 }

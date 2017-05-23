@@ -789,16 +789,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				// confirm delete
 				if ($action == 'delete') {
-					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
 				}
 
 				// Confirm clone
 				if ($action == 'clone') {
-					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
 				}
 
 				// confirm archive
@@ -808,9 +804,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					if ($action == 'active')
 						$value = 0;
 
-					$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				}
 
 				print '<table class="border" width="100%">';

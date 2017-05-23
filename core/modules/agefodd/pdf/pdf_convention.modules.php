@@ -331,7 +331,7 @@ class pdf_convention extends ModelePDFAgefodd {
 
 				// If customer is personnal entity, the french low ask contrat and not convention
 				if ($customer->typent_id == 8) {
-					$this->str = $outputlangs->transnoentities('AgfConvTrainees').':' . $customer->name; // Trainer Name;
+					$this->str = $outputlangs->transnoentities('AgfConvTrainees').': ' . $customer->name; // Trainer Name;
 				} else {
 					$this->str = $customer->name; // Customer Name;
 				}
@@ -727,7 +727,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				// signature de l'organisme de formation
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-				$this->str = $mysoc->name . "\n" . $langs->transnoentities('AgfConvArtSig') . " " . $conf->global->AGF_ORGANISME_REPRESENTANT . " (*)";
+				$this->str = $mysoc->name . "\n" . $langs->transnoentities('AgfConvArtSigOrg') . " " . $conf->global->AGF_ORGANISME_REPRESENTANT . " (*)";
 				$pdf->MultiCell($this->espaceH_dispo / 2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'C');
 				$hauteurA = dol_nboflines_bis($this->str, 50) * 3;
 
