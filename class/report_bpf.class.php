@@ -555,18 +555,20 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					if (array_key_exists($key, $this->trainee_data_f2)) {
+					if (array_key_exists($key, $this->trainee_data_f2) && !empty($obj->timeinsession)) {
 						$this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
-					} else {
+					} /*else {
 						$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
 						$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
-					}
+					}*/
 				}
 			}
 		} else {
@@ -611,6 +613,8 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
 
@@ -619,12 +623,12 @@ class ReportBPF extends AgefoddExportExcel
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					if (array_key_exists($key, $this->trainee_data_f2)) {
+					if (array_key_exists($key, $this->trainee_data_f2) && !empty($obj->timeinsession)) {
 						$this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
-					} else {
+					} /*else {
 						$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
 						$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
-					}
+					}*/
 				}
 			}
 		} else {
@@ -681,6 +685,8 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as catform ON catform.rowid=formation.fk_c_category_bpf ";
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
 		$sql .= " GROUP BY catform.intitule";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -688,12 +694,12 @@ class ReportBPF extends AgefoddExportExcel
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					if (array_key_exists($obj->intitule, $this->trainee_data_f3)) {
+					if (array_key_exists($obj->intitule, $this->trainee_data_f3)  && !empty($obj->timeinsession)) {
 						$this->trainee_data_f3[$obj->intitule]['time'] += $obj->timeinsession;
-					} else {
+					} /*else {
 						$this->trainee_data_f3[$obj->intitule]['nb'] = $obj->cnt;
 						$this->trainee_data_f3[$obj->intitule]['time'] = $obj->timeinsession;
-					}
+					}*/
 				}
 			}
 		} else {
@@ -750,6 +756,8 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as catform ON catform.rowid=formation.fk_c_category ";
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
 		$sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -757,12 +765,12 @@ class ReportBPF extends AgefoddExportExcel
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					if (array_key_exists($obj->intitule, $this->trainee_data_f4)) {
+					if (array_key_exists($obj->intitule, $this->trainee_data_f4) && !empty($obj->timeinsession) ) {
 						$this->trainee_data_f4[$obj->intitule]['time'] += $obj->timeinsession;
-					} else {
+					} /*else {
 						$this->trainee_data_f4[$obj->intitule]['nb'] = $obj->cnt;
 						$this->trainee_data_f4[$obj->intitule]['time'] = $obj->timeinsession;
-					}
+					}*/
 				}
 			}
 		} else {
@@ -819,18 +827,20 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					if (array_key_exists($key, $this->trainee_data_g)) {
+					if (array_key_exists($key, $this->trainee_data_g)  && !empty($obj->timeinsession)) {
 						$this->trainee_data_g[$key]['time'] += $obj->timeinsession;
-					} else {
+					}/* else {
 						$this->trainee_data_g[$key]['nb'] = $obj->cnt;
 						$this->trainee_data_g[$key]['time'] = $obj->timeinsession;
-					}
+					}*/
 				}
 			}
 		} else {
@@ -971,12 +981,10 @@ class ReportBPF extends AgefoddExportExcel
 			if ($resql) {
 				if ($this->db->num_rows($resql)) {
 					while ( $obj = $this->db->fetch_object($resql) ) {
-						if (! empty($obj->timeinsession)) {
-							if (array_key_exists($data['label'], $this->trainee_data)) {
-								$this->trainee_data[$data['label']]['time'] += $obj->timeinsession;
-								$total_timeinsession += $obj->timeinsession;
+						if (array_key_exists($data['label'], $this->trainee_data) && !empty($obj->timeinsession)) {
+							$this->trainee_data[$data['label']]['time'] += $obj->timeinsession;
+							$total_timeinsession += $obj->timeinsession;
 						}
-					}
 				}
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
