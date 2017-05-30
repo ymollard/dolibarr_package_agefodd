@@ -676,7 +676,8 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad) as timeinsession ,catform.intitule ";
+
+		$sql = "select SUM(sesssta.hour_foad) as timeinsession, catform.intitule ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -961,9 +962,10 @@ class ReportBPF extends AgefoddExportExcel
 			}
 
 			// Add time from FOAD
-			$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad) as timeinsession ";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+			$sql = "select SUM(sessstaout.hour_foad) as timeinsession ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sessstaout";
+			$sql .= " WHERE sessstaout.fk_session_agefodd IN (SELECT sess.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as statype ON statype.rowid=sesssta.fk_agefodd_stagiaire_type ";
 			if (! empty($data['idtype'])) {
 				$sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (" . $data['idtype'] . ") ";
@@ -972,9 +974,9 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
 			$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			$sql .= " AND sess.status IN (5)";
-			$sql .= " AND sess.fk_socpeople_presta IS NULL";
-			$sql .= " AND sesssta.hour_foad IS  NOT NULL";
-			$sql .= " AND sesssta.hour_foad <> 0";
+			$sql .= " AND sess.fk_socpeople_presta IS NULL)";
+			$sql .= " AND sessstaout.hour_foad IS  NOT NULL";
+			$sql .= " AND sessstaout.hour_foad <> 0";
 
 			dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
 			$resql = $this->db->query($sql);
@@ -1064,7 +1066,8 @@ function fetch_financial_c($filter = array()) {
 					'label' => 'C-1 Produits provenant des entreprises pour la formation de leurs salariés',
 					'confcust' => '',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 1,
@@ -1084,7 +1087,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
-					'checkOPCA' => 1
+					'checkOPCA' => 1,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 5,
@@ -1104,7 +1108,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
-					'checkOPCA' => 1
+					'checkOPCA' => 1,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 4,
@@ -1114,7 +1119,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
-					'checkOPCA' => 1
+					'checkOPCA' => 1,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 8,
@@ -1123,7 +1129,8 @@ function fetch_financial_c($filter = array()) {
 					'label' => 'C-3 des fonds d assurance formation de non-salariés',
 					'confcust' => '',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 9,
@@ -1133,7 +1140,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 10,
@@ -1143,7 +1151,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 1,
 			),
 			array(
 					'idtypesta' => 11,
@@ -1153,7 +1162,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 1,
 			),
 			array(
 					'idtypesta' => 12,
@@ -1163,7 +1173,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 1,
 			),
 			array(
 					'idtypesta' => 13,
@@ -1173,7 +1184,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 1,
 			),
 			array(
 					'idtypesta' => 14,
@@ -1183,7 +1195,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 1,
 			),
 			array(
 					'idtypesta' => 15,
@@ -1193,7 +1206,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_PARTICULIER',
 					'confcustlabel' => 'AgfReportBPFCategParticulier',
 					'employer' => 0,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 0,
 			),
 			array(
 					'idtypesta' => 16,
@@ -1202,7 +1216,8 @@ function fetch_financial_c($filter = array()) {
 					'label' => 'C-11 Contrats conclus avec d’autres organismes de formation',
 					'confcust' => '',
 					'employer' => 1,
-					'checkOPCA' => 0
+					'checkOPCA' => 0,
+					'checkPV' => 0,
 			)
 	);
 
@@ -1823,9 +1838,13 @@ function fetch_financial_d($filter = array()) {
 			                AND ss.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")";
 			if (empty($data['checkOPCA']) && empty($data['employer'])) {
 				$sql .= " INNER JOIN
-			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire
-			                INNER JOIN
-			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sta.fk_soc AND factin.rowid=se.fk_element))";
+			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire";
+			      $sql .= " INNER JOIN
+			            " . MAIN_DB_PREFIX . "facture AS factin ON ";
+			      if (empty($data['checkPV'])) {
+			      	$sql .= " factin.fk_soc = sta.fk_soc AND ";
+			      }
+			      $sql .= " factin.rowid=se.fk_element))";
 			} elseif (!empty($data['checkOPCA'])) {
 				$sql .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_opca AS opca ON opca.fk_session_trainee = ss.rowid AND opca.fk_session_agefodd=sess.rowid
