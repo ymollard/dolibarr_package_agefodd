@@ -1961,7 +1961,7 @@ class modAgefodd extends DolibarrModules
 				'type' => 'left',
 				'titre' => 'AgfMenuReport',
 				'leftmenu' => 'AgfMenuReport',
-				'url' => '/agefodd/report/index.php',
+				'url' => '/agefodd/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 701,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_MANAGE_BPF',
