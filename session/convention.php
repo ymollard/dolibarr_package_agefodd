@@ -397,7 +397,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$signataire='';
 	$contactname=trim($agf->contactname);
-	var_dump($contactname);
 	if (!empty($contactname)) {
 		$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
 		$intro2 .= ucfirst(strtolower($agf->contactcivilite)) . ' ' . $agf->contactname;
