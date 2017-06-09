@@ -411,7 +411,11 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				} else {
 					$duree = $agf_session->duree_session;
 				}
-				$jour = $duree / 7;
+				if (empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
+					$jour = $duree / 7;
+				} else {
+					$jour = $duree / $conf->global->AGF_NB_HOUR_IN_DAYS;
+				}
 
 				// $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
 				if ($jour < 1)
@@ -604,11 +608,11 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 	 */
 	function _pagehead($object, $outputlangs) {
 		global $conf, $mysoc;
-		
+
 		// Fill header with background color
 		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
-		
+
 
 		pdf_pagehead($this->pdf, $outputlangs, $this->pdf->page_hauteur);
 

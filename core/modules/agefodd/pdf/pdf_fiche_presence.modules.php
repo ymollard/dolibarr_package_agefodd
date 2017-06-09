@@ -379,7 +379,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
 		}
 
-		$this->str .= ' (' . $agf->duree . ' h)';
+		$this->str .= ' (' . $agf->duree_session. ' h)';
 
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -680,11 +680,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
-		
+
 		// Fill header with background color
 		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
-		
+
 
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}

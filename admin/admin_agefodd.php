@@ -214,6 +214,11 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+	$nb_hours_in_days = GETPOST('AGF_NB_HOUR_IN_DAYS', 'int');
+	$res = dolibarr_set_const($db, 'AGF_NB_HOUR_IN_DAYS', $nb_hours_in_days, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	if ($_FILES["imagesup"]["tmp_name"]) {
 		if (preg_match('/([^\\/:]+)$/i', $_FILES["imagesup"]["name"], $reg)) {
 			$original_file = $reg[1];
@@ -988,6 +993,16 @@ print '<td align="left">';
 print $formAgefodd->select_session_status($conf->global->AGF_DEFAULT_SESSION_STATUS, "AGF_DEFAULT_SESSION_STATUS", 't.active=1');
 print '</td>';
 print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+
+// Nb hours in days
+print '<tr class="pair"><td>' . $langs->trans("AgfNbHourInDays") . '</td>';
+print '<td align="left">';
+print '<input type="text"   name="AGF_NB_HOUR_IN_DAYS" value="' . $conf->global->AGF_NB_HOUR_IN_DAYS. '" size="4" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfNbHourInDaysHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 
