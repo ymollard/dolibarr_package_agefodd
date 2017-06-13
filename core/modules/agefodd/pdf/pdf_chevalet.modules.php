@@ -34,7 +34,8 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
-class pdf_chevalet extends ModelePDFAgefodd {
+class pdf_chevalet extends ModelePDFAgefodd
+{
 	var $emetteur; // Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
@@ -58,7 +59,7 @@ class pdf_chevalet extends ModelePDFAgefodd {
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width']; // use standard but reverse width and height to get Landscape format
 		$this->page_hauteur = $formatarray['height']; // use standard but reverse width and height to get Landscape format
-		$this->format = array (
+		$this->format = array(
 				$this->page_largeur,
 				$this->page_hauteur
 		);
@@ -71,7 +72,7 @@ class pdf_chevalet extends ModelePDFAgefodd {
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
-		$this->default_font_size=12;
+		$this->default_font_size = 12;
 
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -169,14 +170,11 @@ class pdf_chevalet extends ModelePDFAgefodd {
 
 		// New page
 		$pdf->AddPage();
-		$pagenb ++;
 		$this->_pagehead($pdf, $agf, 1, $outputlangs);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
 		$posY = $this->marge_haute;
 		$posX = $this->page_largeur - $this->marge_droite - 55;
-
-
 
 		/**
 		 * *** Bloc stagiaire ****
@@ -184,23 +182,33 @@ class pdf_chevalet extends ModelePDFAgefodd {
 		$agfsta = new Agefodd_session_stagiaire($this->db);
 		$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 20);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 25);
 
+		$i = 0;
 		foreach ( $agfsta->lines as $line ) {
+			$i ++;
 
 			// Nom
 			$pdf->SetXY($this->marge_droite, $pdf->getY());
-			$this->str = $line->nom . ' ' . $line->prenom. '   -   ' . dol_trunc($line->socname, 27);
+			$this->str = $line->nom . ' ' . $line->prenom . "\n" . dol_trunc($line->socname, 27);
 			if (! empty($line->poste)) {
 				$this->str .= ' (' . $line->poste . ')';
 			}
-			$pdf->MultiCell(0, 20, $outputlangs->convToOutputCharset($this->str), 1, "C");
-			$pdf->MultiCell(0, 20, '', 1, "C");
-			$pdf->MultiCell(0, 5, '', 0, "C");
+			$pdf->MultiCell(0, 30, '', 1, "C");
+			$pdf->MultiCell(0, 30, $outputlangs->convToOutputCharset($this->str), 1, "C");
+
+			if ($i % 4 == 0) {
+				$pdf->AddPage();
+				$this->_pagehead($pdf, $agf, 1, $outputlangs);
+				$posY = $this->marge_haute;
+				$posX = $this->page_largeur - $this->marge_droite - 55;
+			} else {
+				$pdf->MultiCell(0, 5, '', 0, "C");
+			}
 		}
 
 		// Pied de page
-		//$this->_pagefoot($pdf, $agf, $outputlangs);
+		// $this->_pagefoot($pdf, $agf, $outputlangs);
 		// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
 		if (method_exists($pdf, 'AliasNbPages')) {
 			$pdf->AliasNbPages();
