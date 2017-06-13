@@ -37,12 +37,18 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/date.lib.php');
 
 // Security check
-if (! $user->rights->agefodd->lire)
+if (! $user->rights->agefodd->lire) {
 	accessforbidden();
+}
+
 
 $langs->load('agefodd@agefodd');
 
 llxHeader('', $langs->trans('AgefoddShort'));
+
+if (!empty($user->societe_id)) {
+	exit;
+}
 
 print_barre_liste($langs->trans("AgfBilanGlobal"), $page, "index.php", "&socid=$socid", $sortfield, $sortorder, '', $num);
 
@@ -77,7 +83,7 @@ $total_heures = $agf->total;
 if ($total_heures == 0) {
 	$total_heures = 1;
 }
-	
+
 // Nbre d'heures stagiaires délivrées
 $resql = $agf->fetch_heures_stagiaires_nb();
 print '<tr class="liste"><td>' . $langs->trans("AgfIndexHourTrainneDo") . '  </td><td align="right">' . $agf->total . '&nbsp;</td></tr>';
@@ -197,20 +203,20 @@ print '&nbsp;';
 
 if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 	// tableau de bord travail
-	
+
 	$time_expiration = GETPOST('certif_time', 'int');
 	if (empty($time_expiration)) {
 		$time_expiration = 6;
 	}
-	
+
 	$filter_month_array = array (
 			1,
 			2,
 			3,
 			6,
-			12 
+			12
 	);
-	
+
 	print '<form name="search_certif" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
 	print '<div style="overflow:auto; height: 200px; overflow-x: hidden;">';
@@ -218,7 +224,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 	print '<tr class="liste_titre"><th>' . $langs->trans("AgfIndexCertif");
 	print '<select name="certif_time">';
 	foreach ( $filter_month_array as $i ) {
-		
+
 		if ($time_expiration == $i) {
 			$selected = 'selected="selected"';
 		} else {
@@ -229,12 +235,12 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 	print '</select>' . $langs->trans('Month');
 	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '</th></tr>';
-	
+
 	// List de stagaire concerné
-	
+
 	$result = $agf->fetch_certif_expire($time_expiration);
 	if ($result && (count($agf->lines) > 0)) {
-		
+
 		$style = 'impair';
 		foreach ( $agf->lines as $line ) {
 			if ($style == 'pair') {
@@ -242,7 +248,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 			} else {
 				$style = 'pair';
 			}
-			
+
 			print '<tr class="' . $style . '"><td>';
 			print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $line->customer_id . '">' . $line->customer_name . '</a>';
 			print '&nbsp;-&nbsp;<a href="' . dol_buildpath('/agefodd/certificate/list.php', 1) . '?socid=' . $line->customer_id . '&search_training_ref=' . $line->fromref . '">' . $line->fromintitule . '</a>';
@@ -251,7 +257,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 	} else {
 		print '<tr class="pair"><td>' . $langs->trans('AgfNoCertif') . '</td></tr>';
 	}
-	
+
 	print '</table>';
 	print '</div>';
 	print '</form>';

@@ -304,7 +304,7 @@ class Agefodd_teacher extends CommonObject {
 			// Manage filter
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if ($key == 'f.rowid') {
+				if ($key == 'f.rowid' || $key == 'f.fk_socpeople') {
 					$sql .= ' AND ' . $key . '=' . $value;
 				} elseif ($key == 'lastname') {
 					$sql .= ' AND ((s.lastname LIKE \'%' . $this->db->escape($value) . '%\') ';

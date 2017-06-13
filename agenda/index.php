@@ -757,7 +757,7 @@ $db->close();
  */
 function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60, $display_only_trainer_filter = 0) {
 	global $user, $conf, $langs;
-	global $action, $filter, $filtert,  $status, $actioncode, $filter_trainer;
+	global $action, $filter, $status, $actioncode, $filter_trainer;
 	global $theme_datacolor;
     global $cachethirdparties, $cachecontacts, $cacheusers, $colorindexused;
 
