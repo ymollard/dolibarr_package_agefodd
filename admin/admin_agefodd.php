@@ -219,6 +219,16 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+	$default_training_cat = GETPOST('AGF_DEFAULT_TRAINNING_CAT', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT', $default_training_cat, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	if ($_FILES["imagesup"]["tmp_name"]) {
 		if (preg_match('/([^\\/:]+)$/i', $_FILES["imagesup"]["name"], $reg)) {
 			$original_file = $reg[1];
@@ -1003,6 +1013,22 @@ print '<td align="left">';
 print '<input type="text"   name="AGF_NB_HOUR_IN_DAYS" value="' . $conf->global->AGF_NB_HOUR_IN_DAYS. '" size="4" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfNbHourInDaysHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Default training cat
+print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCat") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_training_categ($conf->global->AGF_DEFAULT_TRAINNING_CAT, 'AGF_DEFAULT_TRAINNING_CAT', 't.active=1', 1);
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Default training cat BPF
+print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCatBPF") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_training_categ_bpf($conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF, 'AGF_DEFAULT_TRAINNING_CAT_BPF', 't.active=1', 1);
+print '<td align="center">';
 print '</td>';
 print '</tr>';
 
