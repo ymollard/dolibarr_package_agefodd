@@ -1012,7 +1012,7 @@ class Agefodd extends CommonObject {
 				$trainer_array[$trainer->id] = $trainer->id;
 			}
 			$object->id = $newid;
-			$result_trainer = $object->setTrainingTrainer($trainer_array);
+			$result_trainer = $object->setTrainingTrainer($trainer_array, $user);
 			if ($result_trainer < 0) {
 				$this->errors[] = $object->error;
 				$error ++;
