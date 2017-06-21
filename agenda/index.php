@@ -389,7 +389,7 @@ if (! empty($filter_trainer)) {
 	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
 
-$sql .= ' WHERE a.entity IN (' . getEntity() . ')';
+$sql .= ' WHERE u.entity IN (' . getEntity('user') . ')';
 $sql .= ' AND a.elementtype=\'agefodd_agsession\'';
 if ($action == 'show_day') {
 	$sql .= " AND (";
@@ -1019,6 +1019,8 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 										foreach ( $agf_trainer->lines as $line ) {
 											$event->libelle .= strtoupper($line->lastname) . ' ' . ucfirst($line->firstname) . ',';
 										}
+									} else {
+										$event->libelle .= $langs->trans('AgfNobody');
 									}
 								}
 
