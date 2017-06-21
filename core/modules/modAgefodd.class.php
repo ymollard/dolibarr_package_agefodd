@@ -97,7 +97,8 @@ class modAgefodd extends DolibarrModules
 						'pdfgeneration',
 						'propalcard',
 						'admin'
-				)
+				),
+				'substitutions'=> '/agefodd/core/substitutions/'
 		);
 
 		// Dependencies
