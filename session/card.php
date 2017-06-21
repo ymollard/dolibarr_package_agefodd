@@ -1168,7 +1168,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 						print '	<td>';
-						print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+						if (DOL_VERSION < 6.0) {
+							print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+						} else {
+							print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+						}
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
@@ -1370,7 +1374,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 									print '	<td>';
-									print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+									if (DOL_VERSION < 6.0) {
+										print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+									} else {
+										print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+									}
 									print '</td></tr>';
 
 									print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';

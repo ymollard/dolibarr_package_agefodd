@@ -250,7 +250,11 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 			}
 
 			print '<tr class="' . $style . '"><td>';
-			print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $line->customer_id . '">' . $line->customer_name . '</a>';
+			if (DOL_VERSION < 6.0) {
+				print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $line->customer_id . '">' . $line->customer_name . '</a>';
+			} else {
+				print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $line->customer_id . '">' . $line->customer_name . '</a>';
+			}
 			print '&nbsp;-&nbsp;<a href="' . dol_buildpath('/agefodd/certificate/list.php', 1) . '?socid=' . $line->customer_id . '&search_training_ref=' . $line->fromref . '">' . $line->fromintitule . '</a>';
 			print '</td></tr>';
 		}

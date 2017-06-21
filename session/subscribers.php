@@ -345,7 +345,11 @@ if (! empty($id)) {
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 			print '	<td>';
-			print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+			if (DOL_VERSION < 6.0) {
+				print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+			} else {
+				print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+			}
 			print '</td></tr>';
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
@@ -533,7 +537,11 @@ if (! empty($id)) {
 
 							print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 							print '	<td>';
-							print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+							if (DOL_VERSION < 6.0) {
+								print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+							} else {
+								print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+							}
 							print '</td></tr>';
 
 							print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
@@ -831,7 +839,11 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 				print '	<td>';
-				print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+				if (DOL_VERSION < 6.0) {
+					print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+				} else {
+					print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+				}
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
@@ -918,7 +930,11 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 						print '	<td>';
-						print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+						if (DOL_VERSION < 6.0) {
+							print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+						} else {
+							print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+						}
 						print '</td></tr>';
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
