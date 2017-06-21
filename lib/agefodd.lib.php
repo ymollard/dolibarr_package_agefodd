@@ -238,6 +238,11 @@ function trainee_prepare_head($object, $showcursus = 0) {
 		}
 	}
 
+	$head [$h] [0] = dol_buildpath('/agefodd/trainee/document_files.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("Documents");
+	$head [$h] [2] = 'documentfiles';
+	$h ++;
+
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/info.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';

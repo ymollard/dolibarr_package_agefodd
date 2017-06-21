@@ -319,7 +319,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF2', $training);
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF2', $training.' (N°'.$agf->id.')');
 			$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
 

@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.11';
+		$this->version = '3.0.12';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -69,6 +69,9 @@ class modAgefodd extends DolibarrModules
 		// If file is in module/images directory, use this->picto=DOL_URL_ROOT.'/module/images/file.png'
 		$this->picto = 'agefodd@agefodd';
 
+		$this->editor_name = 'ATM Consulting';
+		$this->editor_url = 'https://www.atm-consulting.fr';
+
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
 		$this->dirs = array(
@@ -76,6 +79,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/training",
 				"/agefodd/trainer",
 				"/agefodd/place",
+				"/agefodd/trainee",
 				"/agefodd/report",
 				"/agefodd/report/bpf"
 		);

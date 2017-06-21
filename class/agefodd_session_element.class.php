@@ -1029,6 +1029,8 @@ class Agefodd_session_element extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function updateSellingPrice($user) {
+		global $conf;
+
 		// Update session selling price
 		$sell_price = 0;
 
@@ -1058,10 +1060,12 @@ class Agefodd_session_element extends CommonObject {
 
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session SET sell_price=\'' . price2num($sell_price) . '\' ';
 		$sql .= ' ,invoice_amount=\'' . price2num($invoiced_amount) . '\' ';
-		$sql .= ' ,cost_site=\'' . price2num($this->room_cost_amount) . '\' ';
-		$sql .= ' ,cost_trainer=\'' . price2num($this->trainer_cost_amount) . '\' ';
-		$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';
-		$sql .= ' ,cost_buy_charges=\'' . price2num($total_buy_charges) . '\' ';
+		if (!empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+			$sql .= ' ,cost_site=\'' . price2num($this->room_cost_amount) . '\' ';
+			$sql .= ' ,cost_trainer=\'' . price2num($this->trainer_cost_amount) . '\' ';
+			$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';
+			$sql .= ' ,cost_buy_charges=\'' . price2num($total_buy_charges) . '\' ';
+		}
 		$sql .= ' ,cost_sell_charges=\'' . price2num($total_sell_charges) . '\' ';
 		$sql .= 'WHERE rowid=' . $this->fk_session_agefodd;
 

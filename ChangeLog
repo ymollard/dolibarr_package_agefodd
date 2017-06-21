@@ -1,5 +1,10 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.12 compared to 3.0.11 *****
+NEW : Joined Files on Trainne card
+NEW : Compatible on Dolibarr 6.x
+NEW : if cost management is disabled, no cost automatic update on session finacial document linked
+
 ***** ChangeLog for 3.0.11 compared to 3.0.10 *****
 NEW : Add new right to acces module admin even if user is not dolibarr administrator
 

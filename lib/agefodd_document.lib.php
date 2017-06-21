@@ -239,6 +239,11 @@ function show_convo_trainee($file, $session_traineeid) {
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($file.':'.$file, 'pdf2').'</a>';
 
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
+
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -276,6 +281,11 @@ function show_attestation_trainee($file, $session_traineeid) {
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
+
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
@@ -321,6 +331,11 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 		$legende = $langs->trans("AgfDocOpen");
 		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
+
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
