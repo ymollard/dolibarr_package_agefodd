@@ -628,10 +628,10 @@ if (! empty($id)) {
 				if (strpos($agf->lines[$i]->typeline, 'OPCA') === false && $agf->lines[$i]->typeline!='trainee_presta') {
 					// Before training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
-					if (! empty($conf->global->MAIN_MODULE_PROPALE)) {
+					if (! empty($conf->propal->enabled)) {
 						document_line($langs->trans("Proposal"), "prop", $agf->lines[$i]->socid);
 					}
-					if (! empty($conf->global->MAIN_MODULE_COMMANDE)) {
+					if (! empty($conf->commande->enabled)) {
 						document_line($langs->trans("AgfBonCommande"), "bc", $agf->lines[$i]->socid);
 					}
 					document_line($langs->trans("AgfConvention"), "convention", $agf->lines[$i]->socid);
