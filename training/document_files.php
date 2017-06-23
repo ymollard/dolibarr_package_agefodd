@@ -85,7 +85,12 @@ include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
 //Copy file uploaded as a training program file
 if (!empty($asfichepedago)) {
-	$destfile=$_FILES['userfile']['name'];
+	if (is_array($_FILES['userfile']['name']) && count($_FILES['userfile']['name'])>0) {
+		$filename=$_FILES['userfile']['name'][0];
+	} else {
+		$filename=$_FILES['userfile']['name'];
+	}
+	$destfile=$filename;
 	$path_parts=pathinfo($destfile);
 	$result=dol_copy($upload_dir.'/'.$destfile, $conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.'.$path_parts['extension']);
 	if ($result<0) {
