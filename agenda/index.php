@@ -40,7 +40,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/agenda.lib.php';
 if (! empty($conf->projet->enabled)) {
 	require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
 }
-
+require_once '../class/agefodd_formateur.class.php';
 require_once '../lib/agefodd.lib.php';
 require_once '../class/html.formagefodd.class.php';
 require_once '../class/agefodd_session_formateur.class.php';
@@ -98,6 +98,21 @@ if ($type == 'trainer' || $type == 'trainerext') {
 } else {
 	if (! $user->rights->agefodd->agenda)
 		accessforbidden();
+}
+
+if ($type == 'trainerext' && !empty($user->contact_id)) {
+	//In this case this is an external trainer
+	$agf_trainer = new Agefodd_teacher($db);
+	$result=$agf_trainer->fetch_all('', '', '', '', 0, array('f.fk_socpeople'=>$user->contact_id));
+	if ($result<0) {
+		setEventMessages(null,$agf_trainer->errors,'errors');
+	} else {
+		if (is_array($agf_trainer->lines)&& count($agf_trainer->lines)>0) {
+			$filter_trainer=$agf_trainer->lines[0]->id;
+		} else {
+			accessforbidden();
+		}
+	}
 }
 
 $onlysession = GETPOST('onlysession', 'int');
