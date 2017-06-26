@@ -53,11 +53,14 @@ $url_back = GETPOST('url_back', 'alpha');
 $session_id = GETPOST('session_id', 'int');
 $importfrom = GETPOST('importfrom', 'alpha');
 
+$agf = new Agefodd_stagiaire($db);
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
+
 /*
  * Actions delete
 */
 if ($action == 'confirm_delete' && $confirm == "yes" && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
-	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->remove($id);
 
 	if ($result > 0) {
@@ -76,7 +79,6 @@ if ($action == 'confirm_delete' && $confirm == "yes" && ($user->rights->agefodd-
 */
 if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	if (! $_POST["cancel"]) {
-		$agf = new Agefodd_stagiaire($db);
 
 		$result = $agf->fetch($id);
 		if ($result > 0) {
@@ -109,6 +111,8 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			if (! empty($fk_socpeople))
 				$agf->fk_socpeople = $fk_socpeople;
 			$agf->place_birth = GETPOST('place_birth', 'alpha');
+
+			$extrafields->setOptionalsFromPost($extralabels, $agf);
 			$result = $agf->update($user);
 
 			if ($result > 0) {
@@ -133,8 +137,6 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	if (! $_POST["cancel"]) {
 		$error = 0;
-
-		$agf = new Agefodd_stagiaire($db);
 
 		if ($importfrom == 'create') {
 
@@ -261,6 +263,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 					}
 					$agf->fk_socpeople = $contact->id;
 				}
+				$extrafields->setOptionalsFromPost($extralabels, $agf);
 
 				$result = $agf->create($user);
 			}
@@ -549,6 +552,13 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+
+
+	if (! empty($extrafields->attribute_label)) {
+		print $agf->showOptionals($extrafields, 'edit');
+	}
+
+
 	print '</table>';
 	print '</div>';
 
@@ -732,6 +742,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;">' . stripslashes($agf->note) . '</textarea></td></tr>';
 
+				if (! empty($extrafields->attribute_label)) {
+					print $agf->showOptionals($extrafields, 'edit');
+				}
+
 				print '</table>';
 				print '</div>';
 				print '<table style=noborder align="right">';
@@ -812,6 +826,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				else
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td>' . stripslashes($notes) . '</td></tr>';
+
+				if (! empty($extrafields->attribute_label)) {
+					print $agf->showOptionals($extrafields);
+				}
 
 				print "</table>";
 

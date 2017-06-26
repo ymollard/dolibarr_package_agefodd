@@ -154,6 +154,11 @@ class Agefodd_stagiaire extends CommonObject {
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
 			}
+
+			$result = $this->insertExtraFields();
+			if ($result < 0) {
+				$error ++;
+			}
 		}
 
 		// Commit or rollback
@@ -239,6 +244,14 @@ class Agefodd_stagiaire extends CommonObject {
 					$this->date_birth = $this->db->jdate($obj->date_birth);
 				}
 			}
+
+			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+			$extrafields = new ExtraFields($this->db);
+			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
+			if (count($extralabels) > 0) {
+				$this->fetch_optionals($this->id, $extralabels);
+			}
+
 			$this->db->free($resql);
 
 			return 1;
@@ -484,6 +497,11 @@ class Agefodd_stagiaire extends CommonObject {
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
 			}
+
+			$result = $this->insertExtraFields();
+			if ($result < 0) {
+				$error ++;
+			}
 		}
 
 		// Commit or rollback
@@ -517,6 +535,14 @@ class Agefodd_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
+
+			$this->id = $id;
+			$result = $this->deleteExtraFields();
+			if ($result < 0) {
+				$error ++;
+				dol_syslog(get_class($this) . "::delete erreur " . $error . " " . $this->error, LOG_ERR);
+			}
+
 			$this->db->commit();
 			return 1;
 		} else {

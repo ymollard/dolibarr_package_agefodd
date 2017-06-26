@@ -1102,3 +1102,4 @@ AgfQRCodeCertifInfo=Information on QR code on credit card certificate
 AgfManageBPF=Manage BPF
 AgfManageBPFHelp=French legal document to provide to french admnistration one a year
 AgfAddProgramToConv=Add at the end of convention the training program
+ExtraFieldsTrainee=Extrafeilds Trainee

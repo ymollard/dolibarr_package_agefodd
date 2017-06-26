@@ -1223,7 +1223,7 @@ AgfNbHourInDays=Nombre d'heure dans la journée
 AgfNbHourInDaysHelp=Utilisaé pour les PDF de programme pédagogique
 AgfDefaultTrainingCat=Catégorie par defaut des formations à la création
 AgfDefaultTrainingCatBPF=Catégorie Prestation par defaut des formations à la création
-
+ExtraFieldsTrainee=Attributs supplémentaires (Participants)
 
 
 

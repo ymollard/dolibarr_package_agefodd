@@ -419,9 +419,16 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [2] = 'attributesession';
 	$h ++;
 
-	$head [$h] [0] = dol_buildpath("/agefodd/admin/cursus_extrafields.php", 1);
-	$head [$h] [1] = $langs->trans("ExtraFieldsCursus");
-	$head [$h] [2] = 'attributecursus';
+	if (!empty($conf->global->AGF_MANAGE_CURSUS)) {
+		$head [$h] [0] = dol_buildpath("/agefodd/admin/cursus_extrafields.php", 1);
+		$head [$h] [1] = $langs->trans("ExtraFieldsCursus");
+		$head [$h] [2] = 'attributecursus';
+		$h ++;
+	}
+
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/stagiaire_extrafields.php", 1);
+	$head [$h] [1] = $langs->trans("ExtraFieldsTrainee");
+	$head [$h] [2] = 'attributetrainee';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catcost.php", 1);
