@@ -35,6 +35,7 @@ require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_element.class.php');
+require_once ('../class/agefodd_session_formateur.class.php');
 require_once ('../class/agefodd_convention.class.php');
 require_once ('../class/agefodd_contact.class.php');
 require_once ('../class/agefodd_place.class.php');
@@ -480,6 +481,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$art1 .= ').' . "\n";
 
 		$old_date = $calendrier->lines [$i]->date_session;
+	}
+	
+	// Formateur
+	$formateurs = new Agefodd_session_formateur($db);
+	$nbform = $formateurs->fetch_formateur_per_session($agf->id);
+	foreach($formateurs->lines as $trainer) {
+		$TTrainer[] = $trainer->firstname . ' ' . $trainer->lastname;
+	} 
+	if ($nbform>0) {
+		$art1 .= "\n". $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
 	}
 
 	$art1 .= "\n". $langs->trans('AgfConvArt1_13') . "\n". "\n";
