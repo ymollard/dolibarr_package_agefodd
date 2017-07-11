@@ -2069,8 +2069,7 @@ class modAgefodd extends DolibarrModules
 
 		$return_init = $this->_init($sql);
 		$result = $result_table && $result_pgsql && $return_init;
-		var_dump($result_table,$result_pgsql,$return_init);
-		exit;
+
 		if (!$result) {
 			setEventMessage('Problem during Migration, please contact your administrator','errors');
 		}
