@@ -519,7 +519,12 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		$key = 'Formés par votre organisme pour son propre compte';
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -579,7 +584,12 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		$key = 'Formés par votre organisme pour le compte d’un autre organisme';
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -648,7 +658,12 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_trainee_f3($filter = array()) {
 		global $langs, $conf;
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,catform.intitule ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, catform.intitule, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -720,7 +735,12 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_trainee_f4($filter = array()) {
 		global $langs, $conf;
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,CONCAT(catform.code , '-', catform.intitule) as intitule ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, CONCAT(catform.code , '-', catform.intitule) as intitule, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -792,7 +812,12 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		$key = 'Formations confiées par votre organisme à un autre organisme de formation';
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -862,7 +887,12 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		// For Nb Trainer
-		$sql = "select count(DISTINCT form.rowid) as cnt, SUM(TIME_TO_SEC(TIMEDIFF(formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession,fromtype.intitule";
+		$sql = "select count(DISTINCT form.rowid) as cnt, fromtype.intitule, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur AS sessform ON sessform.fk_session=sess.rowid AND sessform.trainer_status IN (3,4)";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur_type as fromtype ON fromtype.rowid=sessform.fk_agefodd_formateur_type";
@@ -922,7 +952,12 @@ class ReportBPF extends AgefoddExportExcel
 
 		foreach ( $array_data as $key => $data ) {
 
-			$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+			$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
+			if ($this->db->type == 'pgsql') {
+				$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+			} else {
+				$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
+			}
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as statype ON statype.rowid=sesssta.fk_agefodd_stagiaire_type ";
@@ -996,7 +1031,11 @@ class ReportBPF extends AgefoddExportExcel
 			$this->db->free($resql);
 
 			if ($data['idtype'] == '1,2,7,5,4') {
-				$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+				if ($this->db->type == 'pgsql') {
+					$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF('second', statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+				} else {
+					$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+				}
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session AS sess ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier AS statime ON statime.fk_agefodd_session = sess.rowid ";
 				$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
