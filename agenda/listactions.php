@@ -253,15 +253,14 @@ if (! empty($filter_trainer)) {
 }
 $sql .= " WHERE c.id = a.fk_action";
 $sql .= ' AND a.fk_user_author = u.rowid';
-$sql .= ' AND a.entity IN (' . getEntity() . ')'; // To limit to entity
+$sql .= ' AND a.entity IN (' . getEntity('session') . ')'; // To limit to entity
 if ($pid)
 	$sql .= " AND a.fk_project=" . $db->escape($pid);
 if (! $user->rights->societe->client->voir && ! $socid)
 	$sql .= " AND (a.fk_soc IS NULL OR sc.fk_user = " . $user->id . ")";
-if ($socid)
+if ($socid) {
 	$sql .= " AND s.rowid = " . $socid;
-if ($type)
-	$sql .= " AND c.id = " . $type;
+}
 if ($status == 'done') {
 	$sql .= " AND (a.percent = 100 OR (a.percent = -1 AND a.datep2 <= '" . $db->idate($now) . "'))";
 }
