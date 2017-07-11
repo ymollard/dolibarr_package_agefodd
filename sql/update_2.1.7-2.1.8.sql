@@ -33,8 +33,13 @@ ALTER TABLE llx_agefodd_session DROP COLUMN archive;
 
 ALTER TABLE llx_agefodd_session ADD INDEX idx_agefodd_session_status (status);
 
-ALTER TABLE llx_agefodd_session MODIFY duree_session real NOT NULL DEFAULT 0;
-ALTER TABLE llx_agefodd_formation_catalogue MODIFY duree real NOT NULL DEFAULT 0;
+ALTER TABLE llx_agefodd_session MODIFY COLUMN duree_session real NOT NULL DEFAULT 0;
+-- VPGSQL8.2 ALTER TABLE llx_agefodd_session ALTER COLUMN intitule SET NOT NULL;
+-- VPGSQL8.2 ALTER TABLE llx_agefodd_session ALTER COLUMN intitule SET DEFAULT 0;
+
+ALTER TABLE llx_agefodd_formation_catalogue MODIFY COLUMN duree real NOT NULL DEFAULT 0;
+-- VPGSQL8.2 ALTER TABLE llx_agefodd_session ALTER COLUMN duree SET NOT NULL;
+-- VPGSQL8.2 ALTER TABLE llx_agefodd_session ALTER COLUMN duree SET DEFAULT 0;
 
 ALTER TABLE llx_agefodd_session ADD COLUMN is_date_res_confirm_site smallint NOT NULL DEFAULT 0 AFTER date_res_site;
 ALTER TABLE llx_agefodd_session ADD COLUMN date_res_confirm_site datetime DEFAULT NULL AFTER is_date_res_confirm_site;

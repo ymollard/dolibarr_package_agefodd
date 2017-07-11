@@ -2048,7 +2048,7 @@ class modAgefodd extends DolibarrModules
 
 		$sql = array();
 
-		$result = $this->load_tables();
+		$result_table = $this->load_tables();
 
 		if ($this->db->type == 'pgsql') {
 			dol_syslog(get_class($this) . "::init this->db->type=" . $this->db->type, LOG_DEBUG);
@@ -2060,12 +2060,21 @@ class modAgefodd extends DolibarrModules
 				$handle = @opendir($dir);
 				// Dir may not exists
 				if (is_resource($handle)) {
-					$result = run_sql($dir . 'agefodd_function.sql', 1, '', 1);
+					$result_pgsql = run_sql($dir . 'agefodd_function.sql', 1, '', 1);
 				}
 			}
+		} else {
+			$result_pgsql = 1;
 		}
 
-		return $this->_init($sql);
+		$return_init = $this->_init($sql);
+		$result = $result_table && $result_pgsql && $return_init;
+		var_dump($result_table,$result_pgsql,$return_init);
+		exit;
+		if (!$result) {
+			setEventMessage('Problem during Migration, please contact your administrator','errors');
+		}
+		return $result;
 	}
 
 	/**

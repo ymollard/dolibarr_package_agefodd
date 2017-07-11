@@ -805,7 +805,7 @@ class Agefodd extends CommonObject {
 			}
 		}
 
-		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule";
+		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule, dictcatbpf.code, dictcatbpf.intitule";
 		if (! empty($sortfield)) {
 			$sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder;
 		}

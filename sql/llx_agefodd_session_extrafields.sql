@@ -16,7 +16,7 @@
 --
 -- ========================================================================
 
-create table llx_agefodd_session_extrafields
+CREATE TABLE IF NOT EXISTS llx_agefodd_session_extrafields
 (
   rowid                     integer AUTO_INCREMENT PRIMARY KEY,
   tms                       timestamp,
