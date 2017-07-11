@@ -640,6 +640,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
+		$r ++;
+		$this->const[$r][0] = "AGF_DEFAULT_SESSION_TYPE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'default type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array();

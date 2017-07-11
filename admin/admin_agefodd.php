@@ -204,6 +204,11 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+	$def_type = GETPOST('AGF_DEFAULT_SESSION_TYPE', 'alpha');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_SESSION_TYPE', $def_type, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	$num_org = GETPOST('AGF_ORGANISME_NUM', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_NUM', $num_org, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
@@ -1006,6 +1011,14 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
+// Default session status
+print '<tr class="impair"><td>' . $langs->trans("AgfDefaultSessionType") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_type_session("AGF_DEFAULT_SESSION_TYPE",$conf->global->AGF_DEFAULT_SESSION_TYPE);
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
 
 // Nb hours in days
 print '<tr class="pair"><td>' . $langs->trans("AgfNbHourInDays") . '</td>';

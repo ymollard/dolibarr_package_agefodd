@@ -662,7 +662,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>' . $formAgefodd->select_formation(GETPOST('formation', 'int'), 'formation', 'intitule', 1) . '</td></tr>';
 
 	print '<tr><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
-	print '<td>' . $formAgefodd->select_type_session('type_session', 0) . '</td></tr>';
+	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
 
 	print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 	print '<td>';
