@@ -92,9 +92,9 @@ INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active,
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
 (3,'NOT', 'Non réalisée', 1, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
-(4,'ARCH', 'Archivé', 1, 1, '2013-01-01 00:00:00' );
+(4,'ARCH', 'Archivée', 1, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
-(5,'DONE', 'Réalisé', 1, 1, '2013-01-01 00:00:00' );
+(5,'DONE', 'Réalisée', 1, 1, '2013-01-01 00:00:00' );
 
 
 INSERT INTO llx_agefodd_formation_catalogue_type_bpf (rowid,code,intitule,sort,active,tms) VALUES
