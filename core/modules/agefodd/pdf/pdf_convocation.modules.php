@@ -70,7 +70,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 		$this->marge_droite = 15;
 		$this->marge_haute = 10;
 		$this->marge_basse = 10;
-		$this->defaultFontSize = 13;
+		$this->defaultFontSize = 12;
 		$this->unit = 'mm';
 		$this->oriantation = 'P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
@@ -329,15 +329,24 @@ class pdf_convocation extends ModelePDFAgefodd {
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 					$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation3') . ' ';
 					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-					$posY = $pdf->GetY() + 3;
+					$posY = $pdf->GetY();
 
+					$this->str ='';
 					foreach ( $agf_calendrier->lines as $line ) {
-						$pdf->SetXY($posX + 10, $posY);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-						$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
-						$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-						$posY = $pdf->GetY() + 2;
+						if ($line->date_session != $old_date) {
+							$this->str .= "\n";
+							$this->str .= dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+						} else {
+							$this->str .= ', ';
+							$this->str .= dol_print_date($line->heured, 'hour') . ' - ' . dol_print_date($line->heuref, 'hour');
+						}
+						$old_date = $line->date_session;
 					}
+
+					$pdf->SetXY($posX + 10, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+					//$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 					$posY = $pdf->GetY() + 8;
 
