@@ -4600,6 +4600,34 @@ class Agsession extends CommonObject
 			return 1;
 		}
 	}
+	
+	function load_all_data_agefodd_session($print_r=false) {
+		
+		global $db;
+		
+		// Chargement des participants
+		if(empty($this->TStagiairesSession)) {
+			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires->fetch_stagiaire_per_session($this->id);
+			$this->TStagiairesSession = $stagiaires->lines;
+		}
+		
+		// Chargement des horaires de la session
+		if(empty($this->THorairesSession)) {
+			$calendrier = new Agefodd_sesscalendar($db);
+			$calendrier->fetch_all($this->id);
+			$this->THorairesSession= $calendrier->lines;
+		}
+		
+		if($print_r) {
+			echo '<pre>';
+			print_r($this);
+			echo '</pre>';
+			exit;
+		}
+		
+	}
+	
 }
 
 /**

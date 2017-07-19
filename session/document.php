@@ -185,7 +185,9 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		}
 	}
 
-	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
+	if (strpos($model, 'agefodd') !== false) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_'.$model.'.modules.php';
+	
+	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model);
 }
 
 // Confirm create order

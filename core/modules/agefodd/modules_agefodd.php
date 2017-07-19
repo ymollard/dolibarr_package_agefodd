@@ -138,13 +138,14 @@ abstract class ModeleNumRefAgefodd {
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '') {
+function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '', $path_external_model='') {
 	global $conf, $langs;
 	$langs->load('agefodd@agefodd');
 	$langs->load('bills');
 	
 	// Charge le modele
-	$nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
+	if(empty($path_external_model)) $nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
+	else  $nomModele = dol_buildpath($path_external_model);
 	
 	if (file_exists($nomModele)) {
 		require_once ($nomModele);
