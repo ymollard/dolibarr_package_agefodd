@@ -4607,6 +4607,7 @@ class Agsession extends CommonObject
 		
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
+			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
@@ -4614,6 +4615,7 @@ class Agsession extends CommonObject
 		
 		// Chargement des horaires de la session
 		if(empty($this->THorairesSession)) {
+			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			$calendrier = new Agefodd_sesscalendar($db);
 			$calendrier->fetch_all($this->id);
 			$this->THorairesSession= $calendrier->lines;

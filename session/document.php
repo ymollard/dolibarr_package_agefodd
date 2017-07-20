@@ -54,6 +54,7 @@ if (! $user->rights->agefodd->lire) {
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
+$id_external_model = GETPOST('id_external_model');
 $socid = GETPOST('socid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $sessiontrainerid = GETPOST('sessiontrainerid', 'int');
@@ -187,7 +188,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 
 	if (strpos($model, 'agefodd') !== false) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_'.$model.'.modules.php';
 	
-	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model);
+	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model);
 }
 
 // Confirm create order

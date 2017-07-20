@@ -138,14 +138,14 @@ abstract class ModeleNumRefAgefodd {
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '', $path_external_model='') {
+function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '', $path_external_model='', $id_external_model='') {
 	global $conf, $langs;
 	$langs->load('agefodd@agefodd');
 	$langs->load('bills');
 	
 	// Charge le modele
 	if(empty($path_external_model)) $nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
-	else  $nomModele = dol_buildpath($path_external_model);
+	else $nomModele = dol_buildpath($path_external_model);
 	
 	if (file_exists($nomModele)) {
 		require_once ($nomModele);
@@ -158,7 +158,11 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
-		if ($obj->write_file($id, $outputlangs, $file, $socid, $courrier) > 0) {
+		
+		if(empty($path_external_model)) $res_writefile = $obj->write_file($id, $outputlangs, $file, $socid, $courrier);
+		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs);
+		
+		if ($res_writefile > 0) {
 			$outputlangs->charset_output = $sav_charset_output;
 			return 1;
 		} else {
