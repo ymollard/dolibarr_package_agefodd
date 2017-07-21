@@ -4618,7 +4618,14 @@ class Agsession extends CommonObject
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			$calendrier = new Agefodd_sesscalendar($db);
 			$calendrier->fetch_all($this->id);
-			$this->THorairesSession= $calendrier->lines;
+			$this->THorairesSession = $calendrier->lines;
+		}
+		
+		if(empty($this->TFormateursSession)) {
+			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+			$formateurs = new Agefodd_session_formateur($db);
+			$nbform = $formateurs->fetch_formateur_per_session($this->id);
+			$this->TFormateursSession = $formateurs->lines;
 		}
 		
 		if($print_r) {
