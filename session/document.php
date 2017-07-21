@@ -186,9 +186,9 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		}
 	}
 
-	if (strpos($model, 'agefodd') !== false) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_'.$model.'.modules.php';
+	if (strpos($model, 'agefodd') !== false) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 	
-	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model);
+	$result = agf_pdf_create($db, $id_tmp, '', (strpos($model, 'agefodd') !== false) ? 'rfltr_agefodd' : $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model);
 }
 
 // Confirm create order
