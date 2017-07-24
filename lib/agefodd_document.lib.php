@@ -760,26 +760,43 @@ function show_facopca($file, $socid, $mdle) {
  */
 function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
+	global $conf;
+	
 	print '<tr style="height:14px">' . "\n";
-
+	
+	$select_model='';
+	if($conf->referenceletters->enabled) {
+		$type=$mdle;
+		if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
+		elseif($mdle === 'attestation') $type = 'rfltr_agefodd_attestation';
+		$select_model = getSelectAgefoddModels($type, $socid);
+	}
+	
 	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
 	if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
-		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle) . '</td>' . "\n";
+		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle);
 	} elseif ($mdle == 'convention') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier);
 	} elseif ($mdle == 'facopca') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier);
 	} elseif ($mdle == 'convocation_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid);
 	} elseif ($mdle == 'attestation_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid);
 	} elseif ($mdle == 'attestationendtraining_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid);
 	} elseif ($mdle == 'mission_trainer') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid).'</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid);
 	} else {
-		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier);
 	}
+	
+	if($conf->referenceletters->enabled && !empty($select_model)) {
+		print '&nbsp;<a href="#" class="btn_show_external_model_list" class_to_show="custom_models_'.$type.$socid.'" onclick="return false;">+</a>&nbsp;';
+	}
+	
+	print $select_model.'</td>' . "\n";
+	
 	print '<td style="border-right:0px;">';
 
 	print $intitule;
@@ -961,3 +978,20 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		print '</td></tr>' . "\n";
 	}
 }
+
+function getSelectAgefoddModels($type, $socid=0) {
+	
+	dol_include_once('referenceletters/class/referenceletters_tools.class.php');
+	require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
+	
+	$form = new Form($db);
+	
+	$TModels = RfltrTools::getAgefoddModelList();
+	if(!empty($type) && !empty($TModels[$type])) {
+		$params = 'style="display:none;" ';
+		if(!empty($socid)) $params.= ' socid="'.$socid.'"';
+		return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$type.$socid);
+	}
+	
+}
+
