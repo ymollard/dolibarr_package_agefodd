@@ -1626,7 +1626,7 @@ function fetch_financial_d($filter = array()) {
 	/**
 	 *
 	 * @param array $data
-	 * @param unknown $filter
+	 * @param array $filter
 	 * @return number
 	 */
 	private function _getAmountFinC13($filter) {
@@ -1758,7 +1758,7 @@ function fetch_financial_d($filter = array()) {
 
 	/**
 	 *
-	 * @param unknown $filter
+	 * @param array $filter
 	 * @return number
 	 */
 	private function _getAmountFinC12($filter) {
@@ -1809,7 +1809,7 @@ function fetch_financial_d($filter = array()) {
 	/**
 	 *
 	 * @param array $data
-	 * @param unknown $filter
+	 * @param array $filter
 	 * @return number
 	 */
 	private function _getAmountFin($data = array(), $filter) {

@@ -160,10 +160,10 @@ class ActionsAgefodd
 
 	/**
 	 *
-	 * @param unknown $parameters
-	 * @param unknown $object
-	 * @param unknown $action
-	 * @param unknown $this
+	 * @param string $parameters
+	 * @param Object $object
+	 * @param string $action
+	 * @param Hookmanager $hookmanager
 	 * @return number
 	 */
 	function formBuilddocOptions($parameters, &$object, $action, $hookmanager) {
@@ -304,8 +304,8 @@ class ActionsAgefodd
 
 	/**
 	 *
-	 * @param unknown_type $pdf
-	 * @param unknown_type $files
+	 * @param object $pdf
+	 * @param array $files
 	 */
 	function concat(&$pdf, $files) {
 		foreach ( $files as $file ) {

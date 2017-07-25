@@ -91,8 +91,8 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 	/**
 	 * Create PDF File
 	 *
-	 * @param Session $agf Current Session or Id
-	 * @param langs $outputlangs langs to outpur document
+	 * @param object $agf Current Session or Id
+	 * @param object $outputlangs langs to outpur document
 	 * @param string $file file name to save
 	 * @param int $session_trainer_id trainer session id
 	 * @return number 1=ok, 0=ko

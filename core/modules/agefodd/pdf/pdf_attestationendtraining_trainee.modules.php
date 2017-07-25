@@ -424,7 +424,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 	/**
 	 * Show table for lines
 	 *
-	 * @param PDF $pdf PDF
+	 * @param object $pdf PDF
 	 * @param string $tab_top of table
 	 * @param string $tab_height table (rectangle)
 	 * @param int $nexY used)

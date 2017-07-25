@@ -395,7 +395,7 @@ class Agefodd_opca extends CommonObject {
 
 		$error = 0;
 
-		$object = new Agefoddopca($this->db);
+		$object = new self($this->db);
 
 		$this->db->begin();
 

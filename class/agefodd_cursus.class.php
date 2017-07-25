@@ -48,7 +48,7 @@ class Agefodd_cursus extends CommonObject {
 	public $tms = '';
 	public $lines = array ();
 	public $fk_stagiaire;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -58,7 +58,7 @@ class Agefodd_cursus extends CommonObject {
 		$this->db = $db;
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -69,9 +69,9 @@ class Agefodd_cursus extends CommonObject {
 	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		if (isset($this->ref_interne))
 			$this->ref_interne = trim($this->ref_interne);
 		if (isset($this->intitule))
@@ -80,10 +80,10 @@ class Agefodd_cursus extends CommonObject {
 			$this->note_private = trim($this->note_private);
 		if (isset($this->note_public))
 			$this->note_public = trim($this->note_public);
-			
+
 			// Check parameters
 			// Put here code to add control on parameters values
-		
+
 		if (empty($this->ref_interne)) {
 			$error ++;
 			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
@@ -92,12 +92,12 @@ class Agefodd_cursus extends CommonObject {
 			$error ++;
 			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
 		}
-		
+
 		if (! $error) {
-			
+
 			// Insert request
 			$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_cursus(";
-			
+
 			$sql .= "ref_interne,";
 			$sql .= "entity,";
 			$sql .= "intitule,";
@@ -107,9 +107,9 @@ class Agefodd_cursus extends CommonObject {
 			$sql .= "fk_user_mod,";
 			$sql .= "note_private,";
 			$sql .= "note_public";
-			
+
 			$sql .= ") VALUES (";
-			
+
 			$sql .= " " . (! isset($this->ref_interne) ? 'NULL' : "'" . $this->db->escape($this->ref_interne) . "'") . ",";
 			$sql .= " " . $conf->entity . ",";
 			$sql .= " " . (! isset($this->intitule) ? 'NULL' : "'" . $this->db->escape($this->intitule) . "'") . ",";
@@ -119,11 +119,11 @@ class Agefodd_cursus extends CommonObject {
 			$sql .= " " . $user->id . ",";
 			$sql .= " " . (! isset($this->note_private) ? 'NULL' : "'" . $this->db->escape($this->note_private) . "'") . ",";
 			$sql .= " " . (! isset($this->note_public) ? 'NULL' : "'" . $this->db->escape($this->note_public) . "'");
-			
+
 			$sql .= ")";
-			
+
 			$this->db->begin();
-			
+
 			dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -133,11 +133,11 @@ class Agefodd_cursus extends CommonObject {
 		}
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_cursus");
-			
+
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -155,7 +155,7 @@ class Agefodd_cursus extends CommonObject {
 				}
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -169,7 +169,7 @@ class Agefodd_cursus extends CommonObject {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -180,7 +180,7 @@ class Agefodd_cursus extends CommonObject {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-		
+
 		$sql .= " t.ref_interne,";
 		$sql .= " t.entity,";
 		$sql .= " t.intitule,";
@@ -191,20 +191,20 @@ class Agefodd_cursus extends CommonObject {
 		$sql .= " t.note_private,";
 		$sql .= " t.note_public,";
 		$sql .= " t.tms";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as t";
 		$sql .= " WHERE t.rowid = " . $id;
 		$sql .= " AND t.entity IN (" . getEntity('agsession') . ")";
-		
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$this->id = $obj->rowid;
 				$this->ref = $obj->rowid; // Needed for show_next_prev
-				
+
 				$this->ref_interne = $obj->ref_interne;
 				$this->entity = $obj->entity;
 				$this->intitule = $obj->intitule;
@@ -217,14 +217,14 @@ class Agefodd_cursus extends CommonObject {
 				$this->tms = $this->db->jdate($obj->tms);
 			}
 			$this->db->free($resql);
-			
+
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 			$extrafields = new ExtraFields($this->db);
 			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
 			if (count($extralabels) > 0) {
 				$this->fetch_optionals($this->id, $extralabels);
 			}
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -232,7 +232,7 @@ class Agefodd_cursus extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -243,9 +243,9 @@ class Agefodd_cursus extends CommonObject {
 	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		if (isset($this->ref_interne))
 			$this->ref_interne = trim($this->ref_interne);
 		if (isset($this->intitule))
@@ -254,7 +254,7 @@ class Agefodd_cursus extends CommonObject {
 			$this->note_private = trim($this->note_private);
 		if (isset($this->note_public))
 			$this->note_public = trim($this->note_public);
-		
+
 		if (empty($this->ref_interne)) {
 			$error ++;
 			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
@@ -263,14 +263,14 @@ class Agefodd_cursus extends CommonObject {
 			$error ++;
 			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
 		}
-		
+
 		if (! $error) {
 			// Check parameters
 			// Put here code to add a control on parameters values
-			
+
 			// Update request
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_cursus SET";
-			
+
 			$sql .= " ref_interne=" . (isset($this->ref_interne) ? "'" . $this->db->escape($this->ref_interne) . "'" : "null") . ",";
 			$sql .= " entity=" . $conf->entity . ",";
 			$sql .= " intitule=" . (isset($this->intitule) ? "'" . $this->db->escape($this->intitule) . "'" : "null") . ",";
@@ -278,11 +278,11 @@ class Agefodd_cursus extends CommonObject {
 			$sql .= " fk_user_mod=" . $user->id . ",";
 			$sql .= " note_private=" . (isset($this->note_private) ? "'" . $this->db->escape($this->note_private) . "'" : "null") . ",";
 			$sql .= " note_public=" . (isset($this->note_public) ? "'" . $this->db->escape($this->note_public) . "'" : "null");
-			
+
 			$sql .= " WHERE rowid=" . $this->id;
-			
+
 			$this->db->begin();
-			
+
 			dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -294,7 +294,7 @@ class Agefodd_cursus extends CommonObject {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -303,7 +303,7 @@ class Agefodd_cursus extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
 			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
 {
@@ -313,7 +313,7 @@ class Agefodd_cursus extends CommonObject {
 				}
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -327,7 +327,7 @@ class Agefodd_cursus extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -338,14 +338,14 @@ class Agefodd_cursus extends CommonObject {
 	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		$this->db->begin();
-		
+
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -354,11 +354,11 @@ class Agefodd_cursus extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_cursus";
 			$sql .= " WHERE rowid=" . $this->id;
-			
+
 			dol_syslog(get_class($this) . "::delete");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -366,7 +366,7 @@ class Agefodd_cursus extends CommonObject {
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		if (! $error) {
 			// Removed extrafields
 			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
@@ -378,7 +378,7 @@ class Agefodd_cursus extends CommonObject {
 				}
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -392,7 +392,7 @@ class Agefodd_cursus extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Load an object from its id and create a new one in database
 	 *
@@ -401,33 +401,33 @@ class Agefodd_cursus extends CommonObject {
 	 */
 	public function createFromClone($fromid) {
 		global $user, $langs;
-		
+
 		$error = 0;
-		
-		$object = new Agefoddcursus($this->db);
-		
+
+		$object = new self($this->db);
+
 		$this->db->begin();
-		
+
 		// Load source object
 		$object->fetch($fromid);
 		$object->id = 0;
 		$object->statut = 0;
-		
+
 		// Clear fields
 		// ...
-		
+
 		// Create clone
 		$result = $object->create($user);
-		
+
 		// Other options
 		if ($result < 0) {
 			$this->error = $object->error;
 			$error ++;
 		}
-		
+
 		if (! $error) {
 		}
-		
+
 		// End
 		if (! $error) {
 			$this->db->commit();
@@ -439,12 +439,12 @@ class Agefodd_cursus extends CommonObject {
 	}
 	public function info($id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as p";
 		$sql .= " WHERE p.rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::info ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -464,7 +464,7 @@ class Agefodd_cursus extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -473,7 +473,7 @@ class Agefodd_cursus extends CommonObject {
 	 */
 	public function initAsSpecimen() {
 		$this->id = 0;
-		
+
 		$this->ref_interne = '';
 		$this->entity = '';
 		$this->intitule = '';
@@ -484,7 +484,7 @@ class Agefodd_cursus extends CommonObject {
 		$this->note_public = '';
 		$this->tms = '';
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
@@ -497,10 +497,10 @@ class Agefodd_cursus extends CommonObject {
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-		
+
 		$sql .= " t.ref_interne,";
 		$sql .= " t.entity,";
 		$sql .= " t.intitule,";
@@ -516,22 +516,22 @@ class Agefodd_cursus extends CommonObject {
 		if ($arch == 0 || $arch == 1)
 			$sql .= " AND t.archive = " . $arch;
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
-		
+
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			
+
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
-			
+
 			$i = 0;
 			while ( $i < $num ) {
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$line = new AgfCursusLine();
-				
+
 				$line->id = $obj->rowid;
-				
+
 				$line->ref_interne = $obj->ref_interne;
 				$line->entity = $obj->entity;
 				$line->intitule = $obj->intitule;
@@ -542,9 +542,9 @@ class Agefodd_cursus extends CommonObject {
 				$line->note_private = $obj->note_private;
 				$line->note_public = $obj->note_public;
 				$line->tms = $this->db->jdate($obj->tms);
-				
+
 				$this->lines[$i] = $line;
-				
+
 				$i ++;
 			}
 			$this->db->free($resql);

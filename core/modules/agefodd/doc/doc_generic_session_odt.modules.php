@@ -191,7 +191,7 @@ class doc_generic_session_odt extends ModelePDFAgefodd
 	/**
 	 * Function to build a document on disk using the generic odt module.
 	 *
-	 * @param Propale $object Object source to build document
+	 * @param $object Object source to build document
 	 * @param Translate $outputlangs Lang output object
 	 * @param string $srctemplatepath Full path of source filename for generator using a template file
 	 * @param int $hidedetails Do not show line details
@@ -231,7 +231,7 @@ class doc_generic_session_odt extends ModelePDFAgefodd
 			// If $object is id instead of object
 			if (! is_object($object)) {
 				$id = $object;
-				$object = new Propale($this->db);
+				$object = new Propal($this->db);
 				$result = $object->fetch($id);
 				if ($result < 0) {
 					dol_print_error($this->db, $object->error);
@@ -483,7 +483,7 @@ class doc_generic_session_odt extends ModelePDFAgefodd
 	 *
 	 * @param Object $object Main object to use as data source
 	 * @param Translate $outputlangs Lang object to use for output
-	 * @param array_key $array_key Name of the key for return array
+	 * @param array $array_key Name of the key for return array
 	 * @return array Array of substitution
 	 */
 	function get_substitutionarray_session($object, $outputlangs, $array_key = 'object') {

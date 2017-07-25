@@ -1047,9 +1047,12 @@ class Agefodd extends CommonObject {
 		}
 	}
 
+
 	/**
 	 *
-	 * @param unknown $training
+	 * @param array $trainers
+	 * @param User $user
+	 * @return number
 	 */
 	public function setTrainingTrainer($trainers = array(),$user) {
 		global $conf;
