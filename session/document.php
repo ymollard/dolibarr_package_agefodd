@@ -186,9 +186,9 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		}
 	}
 
-	if (strpos($model, 'agefodd') !== false) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+	if (!empty($id_external_model)) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 	
-	$result = agf_pdf_create($db, $id_tmp, '', (strpos($model, 'agefodd') !== false) ? 'rfltr_agefodd' : $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model);
+	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model);
 }
 
 // Confirm create order
@@ -736,7 +736,7 @@ function print_js_external_models() {
 
 			// Sélection du modèle et génération du document
 			$(".id_external_model").change(function() {
-				document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=agefodd&action=create&id_external_model=' + $(this).val() + '&socid=' + $(this).attr('socid');
+				document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val() + '&socid=' + $(this).attr('socid');
 			});
 			
 		});

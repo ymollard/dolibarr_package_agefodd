@@ -151,6 +151,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		require_once ($nomModele);
 		
 		$classname = "pdf_" . $typeModele;
+		if(!empty($id_external_model)) $classname = 'pdf_rfltr_agefodd';
 		
 		$obj = new $classname($db);
 		$obj->message = $message;

@@ -760,17 +760,12 @@ function show_facopca($file, $socid, $mdle) {
  */
 function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
-	global $conf;
+	global $conf, $langs;
 	
 	print '<tr style="height:14px">' . "\n";
 	
 	$select_model='';
-	if($conf->referenceletters->enabled) {
-		$type=$mdle;
-		if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
-		elseif($mdle === 'attestation') $type = 'rfltr_agefodd_attestation';
-		$select_model = getSelectAgefoddModels($type, $socid);
-	}
+	if($conf->referenceletters->enabled) $select_model = getSelectAgefoddModels($mdle, $socid);
 	
 	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
 	if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
@@ -792,7 +787,7 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	}
 	
 	if($conf->referenceletters->enabled && !empty($select_model)) {
-		print '&nbsp;<a href="#" class="btn_show_external_model_list" class_to_show="custom_models_'.$type.$socid.'" onclick="return false;">+</a>&nbsp;';
+		print '&nbsp;<a href="#" class="btn_show_external_model_list" title="'.$langs->trans('AgfCustomEditions').'" class_to_show="custom_models_'.$mdle.$socid.'" onclick="return false;">+</a>&nbsp;';
 	}
 	
 	print $select_model.'</td>' . "\n";
@@ -979,18 +974,23 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	}
 }
 
-function getSelectAgefoddModels($type, $socid=0) {
+function getSelectAgefoddModels($mdle, $socid=0) {
 	
 	dol_include_once('referenceletters/class/referenceletters_tools.class.php');
 	require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 	
 	$form = new Form($db);
 	
+	$type='';
+	if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
+	elseif($mdle === 'attestation') $type = 'rfltr_agefodd_attestation';
+	elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_presence';
+	
 	$TModels = RfltrTools::getAgefoddModelList();
 	if(!empty($type) && !empty($TModels[$type])) {
-		$params = 'style="display:none;" ';
+		$params = 'style="display:none;" model="'.$mdle.'"';
 		if(!empty($socid)) $params.= ' socid="'.$socid.'"';
-		return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$type.$socid);
+		return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$mdle.$socid);
 	}
 	
 }
