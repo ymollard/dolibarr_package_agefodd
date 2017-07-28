@@ -35,7 +35,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 	var $prefix = 'HT';
 	var $error = '';
 	var $nom = "Simple";
-	
+
 	/**
 	 * Return description of numbering module
 	 *
@@ -45,7 +45,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 		global $langs;
 		return $langs->trans("AgfSimpleNumRefModelCertifDesc", $this->prefix);
 	}
-	
+
 	/**
 	 * Return an example of numbering module values
 	 *
@@ -54,7 +54,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 	function getExample() {
 		return $this->prefix . "2013-00001";
 	}
-	
+
 	/**
 	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
 	 * de conflits qui empechera cette numerotation de fonctionner.
@@ -63,10 +63,10 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 	 */
 	function canBeActivated() {
 		global $conf, $langs;
-		
+
 		$coyymm = '';
 		$max = '';
-		
+
 		$posindice = 8;
 		$sql = "SELECT MAX(SUBSTRING(certif_code FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif";
@@ -88,36 +88,36 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Return next value
 	 *
 	 * @param Societe $objtraining
-	 * @param Training $agf
+	 * @param object $agf
 	 * @return string if OK, 0 if KO
 	 */
 	function getNextValue($objtraining, $agf) {
 		global $db, $conf;
-		
+
 		$prefix = '';
-		
+
 		$sql = "SELECT";
 		$sql .= " t.ref_interne";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as t";
 		$sql .= " WHERE t.rowid=" . $objtraining->id;
-		
+
 		dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_DEBUG);
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
 			$prefix = $obj->ref_interne;
-			
+
 			// Format the two first certificate caracters
 			if (strlen($prefix) > 0) {
 				$prefix = str_replace(' ', '', $prefix);
 				$prefix = strtoupper($prefix);
-				
+
 				if (strlen($prefix) >= 2) {
 					$prefix = substr($prefix, 0, 2);
 				} else {
@@ -133,13 +133,13 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 		} else {
 			$this->prefix = $prefix;
 		}
-		
+
 		// D'abord on recupere la valeur max
 		$posindice = 8;
 		$sql = "SELECT MAX(SUBSTRING(certif_code FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif";
 		$sql .= " WHERE certif_code LIKE '" . $this->prefix . "____-%'";
-		
+
 		dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_DEBUG);
 		$resql = $db->query($sql);
 		if ($resql) {
@@ -152,22 +152,22 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 			dol_syslog("mod_agefoddcertif_simple::getNextValue", LOG_ERR);
 			return - 1;
 		}
-		
+
 		$date = empty($agf->date_c) ? dol_now() : $agf->date_c;
-		
+
 		// $yymm = strftime("%y%m",time());
 		$yyyy = strftime("%Y", $date);
 		$num = sprintf("%05s", $max + 1);
-		
+
 		dol_syslog("mod_agefoddcertif_simple::getNextValue return " . $this->prefix . $yyyy . "-" . $num);
 		return $this->prefix . $yyyy . "-" . $num;
 	}
-	
+
 	/**
 	 * Return next reference not yet used as a reference
 	 *
 	 * @param Societe $objsoc third party
-	 * @param Training $agf
+	 * @param object $agf
 	 * @return string Next not used reference
 	 */
 	function project_get_num($objsoc = 0, $agf = '') {

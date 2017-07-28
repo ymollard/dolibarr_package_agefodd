@@ -348,7 +348,7 @@ $paramnoaction=preg_replace('/action=[a-z_]+/','',$param);
 
 $head = agf_calendars_prepare_head($paramnoaction);
 dol_fiche_head($head, $tabactive, $langs->trans('AgfMenuAgenda'), 0, $picto);
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action);
 dol_fiche_end();
 
 $link = '';
@@ -879,27 +879,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 					}
 					//if ($color == - 1) 					// Color was not forced. Set color according to color index.
 					//{
-					if (! isset($event->trainer_status)) {
-						if (isset($event->sessionstatus)) {
-							if ($event->sessionstatus == 'ENV') {
-								$colorbis = 'ffcc66';
-							}
-							elseif ($event->sessionstatus == 'CONF') {
-								$colorbis= '33cc00';
-							}
-							elseif ($event->sessionstatus == 'NOT') {
-								$colorbis= 'ff6600';
-							}
-							elseif ($event->sessionstatus == 'ARCH') {
-								$colorbis= 'c0c0c0';
-							}
-							elseif ($event->sessionstatus == 'DONE') {
-								$colorbis= '4562c0';
-							}
-						} else {
-							$colorbis= 'c0c0c0';
-						}
-					} else {
+					if (isset($event->trainer_status)) {
 						if ($event->trainer_status == 0)
 							$color = 'ffffcc';
 						if ($event->trainer_status == 1)
@@ -914,6 +894,28 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 							$color = 'cc6600';
 						if ($event->trainer_status == 6)
 							$color = 'cc0000';
+					}
+					if (isset($event->sessionstatus)) {
+						if ($event->sessionstatus == 'ENV') {
+							$colorbis = 'ffcc66';
+						}
+						elseif ($event->sessionstatus == 'CONF') {
+							$colorbis= '33cc00';
+						}
+						elseif ($event->sessionstatus == 'NOT') {
+							$colorbis= 'ff6600';
+						}
+						elseif ($event->sessionstatus == 'ARCH') {
+							$colorbis= 'c0c0c0';
+						}
+						elseif ($event->sessionstatus == 'DONE') {
+							$colorbis= '4562c0';
+						}
+					} else {
+						$colorbis= 'c0c0c0';
+					}
+					if ($color==-1) {
+						$color='c0c0c0';
 					}
 					if (empty($colorbis)) {
 						$colorbis=$color;

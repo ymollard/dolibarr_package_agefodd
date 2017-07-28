@@ -1554,6 +1554,9 @@ if (! empty($id)) {
 							$withto[$line->fk_socpeople] = $line->nom . ' ' . $line->prenom . ' - ' . $line->email . ' (' . $langs->trans('AgfMailTypeContactTrainee') . ')';
 							$withtoname[$line->fk_socpeople] = $line->nom . ' ' . $line->prenom;
 						}
+						if (!empty($line->socname)) {
+							$withtocompanyname[$line->socid]=$line->socname;
+						}
 					}
 				}
 

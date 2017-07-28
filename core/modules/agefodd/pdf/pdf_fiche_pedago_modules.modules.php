@@ -721,7 +721,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 
 	/**
 	 *
-	 * @param unknown $txt
+	 * @param string $txt
 	 */
 	public function getRealHeightLine($txt) {
 		global $conf;

@@ -699,7 +699,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 	/**
 	 *
-	 * @param unknown $txt
+	 * @param string $txt
 	 */
 	public function getRealHeightLine($txt) {
 		global $conf;
@@ -758,9 +758,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 	/**
 	 *
-	 * @param unknown $txt
-	 * @param unknown $object
-	 * @param unknown $outputlangs
+	 * @param string $txt
+	 * @param object $object
+	 * @param object $outputlangs
 	 * @param number $fontsize
 	 */
 	public function getTotalHeightLine($txt, $object, $outputlangs, $fontsize = 8) {

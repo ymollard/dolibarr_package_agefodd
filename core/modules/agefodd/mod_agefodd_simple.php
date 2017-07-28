@@ -35,7 +35,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	var $prefix = 'FOR_';
 	var $error = '';
 	var $nom = "Simple";
-	
+
 	/**
 	 * Return description of numbering module
 	 *
@@ -45,7 +45,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 		global $langs;
 		return $langs->trans("AgfSimpleNumRefModelDesc", $this->prefix);
 	}
-	
+
 	/**
 	 * Return an example of numbering module values
 	 *
@@ -54,7 +54,7 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	function getExample() {
 		return $this->prefix . "0501-0001";
 	}
-	
+
 	/**
 	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
 	 * de conflits qui empechera cette numerotation de fonctionner.
@@ -63,10 +63,10 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	 */
 	function canBeActivated() {
 		global $conf, $langs;
-		
+
 		$coyymm = '';
 		$max = '';
-		
+
 		$posindice = 8;
 		$sql = "SELECT MAX(SUBSTRING(ref FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
@@ -88,28 +88,28 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Return next value
 	 *
 	 * @param Societe $objsoc party
-	 * @param Training $agf
+	 * @param object $agf
 	 * @return string if OK, 0 if KO
 	 */
 	function getNextValue($objsoc, $agf) {
 		global $db, $conf;
-		
+
 		$date = empty($agf->date_c) ? dol_now() : $agf->date_c;
-		
+
 		// $yymm = strftime("%y%m",time());
 		$yymm = strftime("%y%m", $date);
-		
+
 		// D'abord on recupere la valeur max
 		$posindice = 10;
 		$sql = "SELECT MAX(SUBSTRING(ref FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE ref like '" . $this->prefix . $yymm . "-%'";
-		
+
 		$resql = $db->query($sql);
 		dol_syslog("mod_agefodd_simple::getNextValue");
 		if ($resql) {
@@ -122,18 +122,18 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 			dol_syslog("mod_agefodd_simple::getNextValue");
 			return - 1;
 		}
-		
+
 		$num = sprintf("%04s", $max + 1);
-		
+
 		dol_syslog("mod_agefodd_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num);
 		return $this->prefix . $yymm . "-" . $num;
 	}
-	
+
 	/**
 	 * Return next reference not yet used as a reference
 	 *
 	 * @param Societe $objsoc third party
-	 * @param Training $agf
+	 * @param object $agf
 	 * @return string Next not used reference
 	 */
 	function project_get_num($objsoc = 0, $agf = '') {
