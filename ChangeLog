@@ -1,5 +1,9 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.15 compared to 3.0.14 *****
+FIX : Various fix
+NEW : new column for document models
+
 ***** ChangeLog for 3.0.14 compared to 3.0.13 *****
 FIX : Global review for PgSQL
 

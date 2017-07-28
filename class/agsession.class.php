@@ -4092,7 +4092,7 @@ class Agsession extends CommonObject
 	 * @param User $user that modify
 	 * @param int $socid id
 	 * @param int $frompropalid from proposal
-	 * @param real $amount to affect to session product
+	 * @param number $amount to affect to session product
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */

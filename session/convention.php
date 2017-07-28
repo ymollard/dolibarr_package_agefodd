@@ -390,7 +390,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
 	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name ;
 	if (!empty($addr)) {
-		$langs->trans('AgfConvIntro2_2') . ' ' . $addr ;
+		$intro2 .= ", ". $langs->trans('AgfConvIntro2_2') . ' ' . $addr ;
 	}
 	if (!empty($agf_soc->idprof2)) {
 		$intro2 .= ", ". $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;

@@ -737,7 +737,7 @@ class Agefodd_session_element extends CommonObject {
 
 		$error = 0;
 
-		$object = new Agefoddsessionelement($this->db);
+		$object = new self($this->db);
 
 		$this->db->begin();
 

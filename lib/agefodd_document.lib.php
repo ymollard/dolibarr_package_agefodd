@@ -27,9 +27,9 @@
 
 /**
  *
- * @param unknown $file
- * @param unknown $socid
- * @param unknown $nom_courrier
+ * @param string $file
+ * @param int $socid
+ * @param string $nom_courrier
  * @return string
  */
 function show_conv($file, $socid, $nom_courrier) {
@@ -172,9 +172,9 @@ function show_conv($file, $socid, $nom_courrier) {
 
 /**
  *
- * @param unknown $file
- * @param unknown $socid
- * @param unknown $nom_courrier
+ * @param string $file
+ * @param int $socid
+ * @param string $nom_courrier
  * @return string
  */
 function show_doc($file, $socid, $nom_courrier) {
@@ -223,8 +223,8 @@ function show_doc($file, $socid, $nom_courrier) {
 
 /**
  *
- * @param unknown $file
- * @param unknown $session_traineeid
+ * @param string $file
+ * @param int $session_traineeid
  * @return string
  */
 function show_convo_trainee($file, $session_traineeid) {
@@ -270,6 +270,13 @@ function show_convo_trainee($file, $session_traineeid) {
 	}
 	return $mess;
 }
+
+/**
+ *
+ * @param string $file
+ * @param int $session_traineeid
+ * @return string
+ */
 function show_attestation_trainee($file, $session_traineeid) {
 	global $langs, $conf, $id, $form, $idform;
 
@@ -316,8 +323,8 @@ function show_attestation_trainee($file, $session_traineeid) {
 
 /**
  *
- * @param unknown $file
- * @param unknown $session_traineeid
+ * @param string $file
+ * @param int $session_traineeid
  * @return string
  */
 function show_attestationendtraining_trainee($file, $session_traineeid) {
@@ -366,7 +373,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 
 /**
  *
- * @param unknown $session_trainerid
+ * @param int $session_trainerid
  * @return string
  */
 function show_trainer_mission($session_trainerid) {
@@ -410,9 +417,9 @@ function show_trainer_mission($session_trainerid) {
 
 /**
  *
- * @param unknown $file
- * @param unknown $socid
- * @param unknown $mdle
+ * @param string $file
+ * @param int $socid
+ * @param string $mdle
  * @return string
  */
 function show_fac($file, $socid, $mdle) {

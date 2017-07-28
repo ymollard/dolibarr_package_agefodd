@@ -91,8 +91,8 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 	/**
 	 * Create PDF File
 	 *
-	 * @param Session $agf Current Session or Id
-	 * @param langs $outputlangs langs to outpur document
+	 * @param object $agf Current Session or Id
+	 * @param object $outputlangs langs to outpur document
 	 * @param string $file file name to save
 	 * @param int $session_trainer_id trainer session id
 	 * @return number 1=ok, 0=ko
@@ -118,6 +118,11 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 
 				$agf_place = new Agefodd_place($this->db);
 				$agf_place->fetch($agf->placeid);
+
+				$contact_place=new Contact($this->db);
+				if (!empty($agf_place->fk_socpeople)) {
+					$contact_place->fetch($agf_place->fk_socpeople);
+				}
 
 				$agf_session_trainer = new Agefodd_session_formateur($this->db);
 				$agf_session_trainer->fetch($session_trainer_id);
@@ -348,9 +353,6 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 				}
 			}
 
-
-			$posY = $pdf->GetY() + 8;
-
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfTrainerMissionLetterPDF6') . ' ';
@@ -374,6 +376,37 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$this->str = $agf_place->cp. ' '. $agf_place->ville;
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 2;
+
+			if (!empty($contact_place->id)) {
+				$posY = $pdf->GetY() + 8;
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+				$this->str = ' ' . $outputlangs->transnoentities('AgfTrainerMissionLetterPDF6b') . ' ';
+				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$posY = $pdf->GetY() + 2;
+
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+				$this->str = $contact_place->getFullName($outputlangs).'<BR>';
+				if (!empty($contact_place->phone_pro)) {
+					$this->str .= '- '.dol_print_phone($contact_place->phone_pro, 'FR').'<BR>';
+				}
+				if (!empty($contact_place->phone_perso)) {
+					$this->str .= '- '.dol_print_phone($contact_place->phone_perso, 'FR').'<BR>';
+				}
+				if (!empty($contact_place->phone_mobile)) {
+					$this->str .= '- '.dol_print_phone($contact_place->phone_perso, 'FR').'<BR>';
+				}
+
+				if (!empty($contact_place->email)) {
+					$this->str .= '- '.$contact_place->email;
+				}
+
+				$pdf->writeHTMLCell(0, 4,$posX + 10, $posY, $outputlangs->convToOutputCharset($this->str), 0, 1);
+
+			}
+
+			$posY = $pdf->GetY() + 8;
 
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
@@ -399,7 +432,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF14').' '.$mysoc->name. ','.dol_print_date(dol_now(),'daytext','tzserver',$outputlangs);
+			$this->str = $outputlangs->transnoentities('AgfTrainerMissionLetterPDF14').' '.$mysoc->name. ', '.$outputlangs->transnoentities('AgfPDFConv19'). ' '.dol_print_date(dol_now(),'daytext','tzserver',$outputlangs);
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			//$posY = $pdf->GetY() + 8;
 			// Incrustation image tampon
