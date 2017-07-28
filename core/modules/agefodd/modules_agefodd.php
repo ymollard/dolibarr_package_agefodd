@@ -138,7 +138,7 @@ abstract class ModeleNumRefAgefodd {
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '', $path_external_model='', $id_external_model='') {
+function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $socid, $courrier = '', $path_external_model='', $id_external_model='', $obj_agefodd_convention='') {
 	global $conf, $langs;
 	$langs->load('agefodd@agefodd');
 	$langs->load('bills');
@@ -161,7 +161,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		$sav_charset_output = $outputlangs->charset_output;
 		
 		if(empty($path_external_model)) $res_writefile = $obj->write_file($id, $outputlangs, $file, $socid, $courrier);
-		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file);
+		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file, $obj_agefodd_convention);
 		
 		if ($res_writefile > 0) {
 			$outputlangs->charset_output = $sav_charset_output;

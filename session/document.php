@@ -134,7 +134,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 	$cour = GETPOST('cour', 'alpha');
 	$model = GETPOST('model', 'alpha');
 	$idform = GETPOST('idform', 'alpha');
-
+	
 	// Define output language
 	$outputlangs = $langs;
 	$newlang = GETPOST('lang_id', 'alpha');
@@ -185,10 +185,13 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 			}
 		}
 	}
-
-	if (!empty($id_external_model)) $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 	
-	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model);
+	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
+		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
+	}
+	
+	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
 }
 
 // Confirm create order
