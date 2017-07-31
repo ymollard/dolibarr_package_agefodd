@@ -129,12 +129,14 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 
 	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '_' . $agf->id . '.pdf';
 	
+	$field='id';
 	if (strpos($agf->model_doc, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 		$id_model_rfltr = (int)strtr($agf->model_doc, array('rfltr_agefodd_'=>''));
+		$field='sessid'; // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
 	}
 	
-	$result = agf_pdf_create($db, $agf->id, '', $model, $outputlangs, $file, $agf->socid, '', $path_external_model, $id_model_rfltr, $agf);
+	$result = agf_pdf_create($db, $agf->{$field}, '', $model, $outputlangs, $file, $agf->socid, '', $path_external_model, $id_model_rfltr, $agf);
 
 	if ($result > 0) {
 		Header("Location: " . dol_buildpath('/agefodd/session/document.php', 1) . "?id=" . $agf->sessid . '&socid=' . $agf->socid);

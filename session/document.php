@@ -153,6 +153,8 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$convention->fetch(0, 0, GETPOST('convid', 'int'));
 		$id_tmp = $convention->id;
 		$model = $convention->model_doc;
+		// Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
+		if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $id;
 		$model = str_replace('pdf_', '', $model);
 
 		$file = 'convention' . '_' . $id . '_' . $socid . '_' . $convention->id . '.pdf';
