@@ -991,6 +991,7 @@ function getSelectAgefoddModels($mdle, $socid=0) {
 	$type='';
 	if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
 	elseif($mdle === 'attestation') $type = 'rfltr_agefodd_attestation';
+	elseif($mdle === 'attestationendtraining') $type = 'rfltr_agefodd_attestation_fin_formation';
 	elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_presence';
 	
 	$TModels = RfltrTools::getAgefoddModelList();
