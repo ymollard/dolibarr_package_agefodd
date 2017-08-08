@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.8';
+		$this->version = '3.0.15';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -69,6 +69,9 @@ class modAgefodd extends DolibarrModules
 		// If file is in module/images directory, use this->picto=DOL_URL_ROOT.'/module/images/file.png'
 		$this->picto = 'agefodd@agefodd';
 
+		$this->editor_name = 'ATM Consulting';
+		$this->editor_url = 'https://www.atm-consulting.fr';
+
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
 		$this->dirs = array(
@@ -76,6 +79,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/training",
 				"/agefodd/trainer",
 				"/agefodd/place",
+				"/agefodd/trainee",
 				"/agefodd/report",
 				"/agefodd/report/bpf"
 		);
@@ -95,8 +99,10 @@ class modAgefodd extends DolibarrModules
 				'hooks' => array(
 						'searchform',
 						'pdfgeneration',
-						'propalcard'
-				)
+						'propalcard',
+						'admin'
+				),
+				'substitutions'=> '/agefodd/core/substitutions/'
 		);
 
 		// Dependencies
@@ -599,6 +605,46 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "yesno";
 		$this->const[$r][2] = '1';
 		$this->const[$r][3] = 'Manage BPF';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_ADD_PROGRAM_TO_CONV";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Add program to convention';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_ADD_PROGRAM_TO_CONVMAIL";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Add program to convention mail';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_ADD_SIGN_TO_CONVOC";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Add signature to convocation';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_NB_HOUR_IN_DAYS";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '7';
+		$this->const[$r][3] = 'Nb Hour in days';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_DEFAULT_SESSION_TYPE";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'default type';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -1465,6 +1511,13 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'report';
 		$this->rights[$r][5] = 'bpf';
 
+		$r ++;
+		$this->rights[$r][0] = 103019;
+		$this->rights[$r][1] = 'admin agefodd';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'admin';
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
@@ -1929,7 +1982,7 @@ class modAgefodd extends DolibarrModules
 				'type' => 'left',
 				'titre' => 'AgfMenuReport',
 				'leftmenu' => 'AgfMenuReport',
-				'url' => '/agefodd/report/index.php',
+				'url' => '/agefodd/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 701,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_MANAGE_BPF',
@@ -1960,9 +2013,9 @@ class modAgefodd extends DolibarrModules
 				'leftmenu' => 'AgfMenuDemoAdmin',
 				'url' => '/agefodd/admin/admin_agefodd.php',
 				'langs' => 'agefodd@agefodd',
-				'position' => 701,
-				'enabled' => '$conf->agefodd->enabled && $conf->global->AGF_DEMO_MODE',
-				'perms' => '$user->rights->agefodd->lire',
+				'position' => 801,
+				'enabled' => '$conf->agefodd->enabled',
+				'perms' => '$user->rights->agefodd->admin',
 				'target' => '',
 				'user' => 0
 		)
@@ -1975,9 +2028,9 @@ class modAgefodd extends DolibarrModules
 				'titre' => 'AgfMenuDemoAdminDetail',
 				'url' => '/agefodd/admin/admin_agefodd.php',
 				'langs' => 'agefodd@agefodd',
-				'position' => 702,
-				'enabled' => '$conf->agefodd->enabled && $conf->global->AGF_DEMO_MODE',
-				'perms' => '$user->rights->agefodd->lire',
+				'position' => 802,
+				'enabled' => '$conf->agefodd->enabled',
+				'perms' => '$user->rights->agefodd->admin',
 				'target' => '',
 				'user' => 0
 		);
@@ -1995,7 +2048,7 @@ class modAgefodd extends DolibarrModules
 
 		$sql = array();
 
-		$result = $this->load_tables();
+		$result_table = $this->load_tables();
 
 		if ($this->db->type == 'pgsql') {
 			dol_syslog(get_class($this) . "::init this->db->type=" . $this->db->type, LOG_DEBUG);
@@ -2007,12 +2060,20 @@ class modAgefodd extends DolibarrModules
 				$handle = @opendir($dir);
 				// Dir may not exists
 				if (is_resource($handle)) {
-					$result = run_sql($dir . 'agefodd_function.sql', 1, '', 1);
+					$result_pgsql = run_sql($dir . 'agefodd_function.sql', 1, '', 1);
 				}
 			}
+		} else {
+			$result_pgsql = 1;
 		}
 
-		return $this->_init($sql);
+		$return_init = $this->_init($sql);
+		$result = $result_table && $result_pgsql && $return_init;
+
+		if (!$result) {
+			setEventMessage('Problem during Migration, please contact your administrator','errors');
+		}
+		return $result;
 	}
 
 	/**

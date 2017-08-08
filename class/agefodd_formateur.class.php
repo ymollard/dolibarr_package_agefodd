@@ -304,7 +304,7 @@ class Agefodd_teacher extends CommonObject {
 			// Manage filter
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if ($key == 'f.rowid') {
+				if ($key == 'f.rowid' || $key == 'f.fk_socpeople') {
 					$sql .= ' AND ' . $key . '=' . $value;
 				} elseif ($key == 'lastname') {
 					$sql .= ' AND ((s.lastname LIKE \'%' . $this->db->escape($value) . '%\') ';
@@ -566,7 +566,7 @@ class Agefodd_teacher extends CommonObject {
 
 	/**
 	 *
-	 * @return number|unknown
+	 * @return number
 	 */
 	public function fetchAllCategories() {
 
@@ -602,9 +602,12 @@ class Agefodd_teacher extends CommonObject {
 		return $num;
 	}
 
+
 	/**
 	 *
-	 * @param unknown $categories
+	 * @param array $categories
+	 * @param User $user
+	 * @return number
 	 */
 	public function setTrainerCat($categories=array(),$user) {
 
@@ -655,9 +658,12 @@ class Agefodd_teacher extends CommonObject {
 		}
 	}
 
+
 	/**
 	 *
-	 * @param unknown $training
+	 * @param array $training
+	 * @param User $user
+	 * @return number
 	 */
 	public function setTrainerTraining($training=array(),$user) {
 

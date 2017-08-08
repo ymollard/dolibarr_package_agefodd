@@ -314,9 +314,7 @@ if (! empty($id)) {
 		*/
 		if ($stag_remove_x) {
 			// Param url = id de la ligne stagiaire dans session - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
-			if ($ret == 'html')
-				print '<br>';
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
 		}
 
 		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
@@ -347,7 +345,11 @@ if (! empty($id)) {
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 			print '	<td>';
-			print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+			if (DOL_VERSION < 6.0) {
+				print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+			} else {
+				print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+			}
 			print '</td></tr>';
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
@@ -422,9 +424,9 @@ if (! empty($id)) {
 					}
 
 					print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';
-					print $form->select_company($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 1, 1, 0);
+					print $form->select_thirdparty_list($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 					print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
-					print $form->select_company($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0);
+					print $form->select_thirdparty_list($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 					if (!empty($conf->global->AGF_MANAGE_BPF)) {
 						print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
 						print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . $stagiaires->lines[$i]->hour_foad. '" />';
@@ -461,7 +463,7 @@ if (! empty($id)) {
 										'add-customer-contact' => 'disabled'
 								)
 						);
-						print $form->select_company($agf_opca->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 1, 1, 0, $events);
+						print $form->select_thirdparty_list($agf_opca->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 'SelectThirdParty', 1, 0, $events);
 						print '</td></tr>';
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
@@ -535,7 +537,11 @@ if (! empty($id)) {
 
 							print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 							print '	<td>';
-							print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+							if (DOL_VERSION < 6.0) {
+								print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+							} else {
+								print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+							}
 							print '</td></tr>';
 
 							print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
@@ -653,9 +659,9 @@ if (! empty($id)) {
 			}
 
 			print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';
-			print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
+			print $form->select_thirdparty_list(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 			print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
-			print $form->select_company(0, 'fk_soc_requester', '', 1, 1, 0);
+			print $form->select_thirdparty_list(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 			if (!empty($conf->global->AGF_MANAGE_BPF)) {
 				print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
 				print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load'). '" />';
@@ -705,7 +711,7 @@ if (! empty($id)) {
 				}
 			}
 
-			if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
+			if ((empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) && $nbstag>0) {
 				print '<br><br>';
 				foreach ( $stagiaires->labelstatut_short as $statuskey => $statuslabelshort ) {
 					if ($statuskey == 0 || $statuskey == 2 || $statuskey == 3 || $statuskey == 5 || $statuskey == 6) {
@@ -773,7 +779,7 @@ if (! empty($id)) {
 								'add-customer-contact' => 'disabled'
 						)
 				);
-				print $form->select_company($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))', 1, 1, 0, $events);
+				print $form->select_thirdparty_list($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))','SelectThirdParty', 1, 0, $events);
 
 				// Print biller choice;
 				$socbiller = new Societe($db);
@@ -833,7 +839,11 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 				print '	<td>';
-				print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+				if (DOL_VERSION < 6.0) {
+					print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+				} else {
+					print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+				}
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
@@ -920,7 +930,11 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 						print '	<td>';
-						print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+						if (DOL_VERSION < 6.0) {
+							print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+						} else {
+							print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
+						}
 						print '</td></tr>';
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';

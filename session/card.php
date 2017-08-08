@@ -662,9 +662,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>' . $formAgefodd->select_formation(GETPOST('formation', 'int'), 'formation', 'intitule', 1) . '</td></tr>';
 
 	print '<tr><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
-	print '<td>' . $formAgefodd->select_type_session('type_session', 0) . '</td></tr>';
+	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
 
-	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfSessionCommercial") . '</span></td>';
+	print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 	print '<td>';
 	$commercial = GETPOST('commercial', 'int');
 	if (empty($conf->global->AGF_ALLOW_ADMIN_COMMERCIAL)) {
@@ -698,9 +698,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						'add-customer-contact' => 'disabled'
 				)
 		);
-		print $form->select_company($fk_soc_crea, 'fk_soc', '', 1, 1, 0, $events);
+		print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 	} else {
-		print $form->select_company($fk_soc_crea, 'fk_soc', '', 1, 1);
+		print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
 	}
 	print '</td></tr>';
 
@@ -736,7 +736,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					'add-customer-contact' => 'disabled'
 			)
 	);
-	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 1, 1, 0, $events);
+	print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
 	print '</td></tr>';
 
 	print '<tr><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
@@ -757,7 +757,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
 	print '<td>';
-	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 1, 1, 0, array());
+	print $form->select_thirdparty_list($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 	print '</td></tr>';
 
 	print '<tr><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
@@ -817,7 +817,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				$agf_fact = new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
 				$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
-				if (! empty($conf->global->MAIN_MODULE_COMMANDE)) {
+				if (! empty($conf->commande->enabled)) {
 					$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
 				}
 				$other_amount .= '/' . $langs->trans('AgfInvoiceAmountWaiting') . ' ' . $agf_fact->invoice_ongoing_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -909,9 +909,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										'add-customer-contact' => 'disabled'
 								)
 						);
-						print $form->select_company($agf->fk_soc, 'fk_soc', '', 1, 1, 0, $events);
+						print $form->select_thirdparty_list($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 					} else {
-						print $form->select_company($agf->fk_soc, 'fk_soc', '', 1, 1);
+						print $form->select_thirdparty_list($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1);
 					}
 					if (! empty($agf->fk_soc) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_cust">' . img_delete($langs->trans('Delete')) . '</a>';
@@ -954,7 +954,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					print $form->select_company($agf->fk_soc_requester, 'fk_soc_requester', '', 1, 1, 0, $events);
+					print $form->select_thirdparty_list($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
 					if (! empty($agf->fk_soc_requester) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_requester">' . img_delete($langs->trans('Delete')) . '</a>';
 					}
@@ -986,7 +986,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 					print '<tr><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
 					print '<td><table class="nobordernopadding"><tr><td>';
-					print $form->select_company($agf->fk_soc_employer, 'fk_soc_employer', '', 1, 1, 0, array());
+					print $form->select_thirdparty_list($agf->fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help') . '</td></tr></table>';
 					if (! empty($agf->fk_soc_employer) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
@@ -1094,8 +1094,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 					print '<table style="nobordernopadding" align="right">';
 					print '<tr><td align="center" colspan=2><br/><br/>';
-					print '<input type="submit" class="butAction" name="save" value="' . $langs->trans("Save") . '"> &nbsp; ';
-					print '<input type="submit" class="butAction" name="saveandclose" value="' . $langs->trans("SaveAndClose") . '"> &nbsp; ';
+					print '<input type="submit" class="butAction" name="saveandclose" value="' . $langs->trans("Save") . '"> &nbsp; ';
 					print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 					print '</td></tr>';
 					print '</table>';
@@ -1108,18 +1107,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					 * Confirm delete
 					 */
 					if ($action == 'delete') {
-						$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
-						if ($ret == 'html')
-							print '<br>';
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteSession"), "confirm_delete", '', '', 1);
 					}
 
 					/*
 					 * confirm archive update status
 					 */
 					if (isset($_GET["arch"])) {
-						$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-						if ($ret == 'html')
-							print '<br>';
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 					}
 
 					// Confirm clone
@@ -1145,9 +1140,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										'value' => 1
 								)
 						);
-						$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
-						if ($ret == 'html')
-							print '<br>';
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
 					}
 
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
@@ -1175,7 +1168,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 						print '	<td>';
-						print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+						if (DOL_VERSION < 6.0) {
+							print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+						} else {
+							print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf->fk_soc_OPCA . '">' . $agf->soc_OPCA_name . '</a>';
+						}
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCAAdress") . '</td>';
@@ -1377,7 +1374,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 									print '	<td>';
-									print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+									if (DOL_VERSION < 6.0) {
+										print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+									} else {
+										print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+									}
 									print '</td></tr>';
 
 									print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';

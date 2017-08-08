@@ -32,6 +32,10 @@ require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php";
 require_once DOL_DOCUMENT_ROOT . "/categories/class/categorie.class.php";
 
+if (! $user->rights->agefodd->admin && ! $user->admin) {
+	accessforbidden();
+}
+
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
 
@@ -115,25 +119,25 @@ if ($action == 'setvar') {
 	if (! $res > 0) {
 		$error ++;
 	}
-	
-	
+
+
 	$categ = GETPOST('AGF_CAT_BPF_FEEPRESTA', 'array');
 	if (empty($categ)) {
 		$res = dolibarr_set_const($db, 'AGF_CAT_BPF_FEEPRESTA', '', 'chaine', 0, '', $conf->entity);
 	} else {
 		$res = dolibarr_set_const($db, 'AGF_CAT_BPF_FEEPRESTA', implode(',', $categ), 'chaine', 0, '', $conf->entity);
 	}
-	
+
 	if (! $res > 0) {
 		$error ++;
 	}
-	
+
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
 		setEventMessage($langs->trans("Error") . " " . $msg, 'errors');
 	}
-	
+
 
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');

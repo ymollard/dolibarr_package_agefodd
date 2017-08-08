@@ -1093,3 +1093,6 @@ ExportDataset_TrainingProgram=Agefodd - Export des formations du catalogues
 AgfQRCodeCertifInfo=Information on QR code on credit card certificate
 AgfManageBPF=Manage BPF
 AgfManageBPFHelp=French legal document to provide to french admnistration one a year
+AgfAddProgramToConv=Add at the end of convention the training program
+AgfAddSignImageToConvoc=Ajouter le tampon (défini plus haut dans Image à ajouter sur les documents) sur les convocations
+AgfDefaultSessionType=Default type session

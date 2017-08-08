@@ -3977,13 +3977,13 @@ class Agsession extends CommonObject
 				$result = $propal->add_contact($this->sourcecontactid, 40, 'external');
 				if ($result < 0) {
 					$this->errors[] = $propal->error;
-					$error ++;
+					//$error ++;
 				}
 				// Contact client suivi propale
 				$result = $propal->add_contact($this->sourcecontactid, 41, 'external');
 				if ($result < 0) {
 					$this->errors[] = $propal->error;
-					$error ++;
+					//$error ++;
 				}
 			}
 			if (! empty($this->commercialid)) {
@@ -3991,7 +3991,7 @@ class Agsession extends CommonObject
 				$result = $propal->add_contact($this->commercialid, 31, 'internal');
 				if ($result < 0) {
 					$this->errors[] = $propal->error;
-					$error ++;
+					//$error ++;
 				}
 			}
 		}
@@ -4092,7 +4092,7 @@ class Agsession extends CommonObject
 	 * @param User $user that modify
 	 * @param int $socid id
 	 * @param int $frompropalid from proposal
-	 * @param real $amount to affect to session product
+	 * @param number $amount to affect to session product
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */

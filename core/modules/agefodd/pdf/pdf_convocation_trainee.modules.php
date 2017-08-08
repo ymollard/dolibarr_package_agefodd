@@ -71,7 +71,7 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 		$this->marge_droite = 15;
 		$this->marge_haute = 10;
 		$this->marge_basse = 10;
-		$this->defaultFontSize = 13;
+		$this->defaultFontSize = 12;
 		$this->unit = 'mm';
 		$this->oriantation = 'P';
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
@@ -160,8 +160,8 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->AddPage();
 			$pagenb ++;
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
-			
-				
+
+
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$pdf->MultiCell(0, 3, '', 0, 'J');
 			$pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
@@ -323,15 +323,24 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFConvocation3') . ' ';
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-			$posY = $pdf->GetY() + 3;
+			$posY = $pdf->GetY();
 
+			$this->str ='';
 			foreach ( $agf_calendrier->lines as $line ) {
-				$pdf->SetXY($posX + 10, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-				$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
-				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $pdf->GetY() + 2;
+				if ($line->date_session != $old_date) {
+					$this->str .= "\n";
+					$this->str .= dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+				} else {
+					$this->str .= ', ';
+					$this->str .= dol_print_date($line->heured, 'hour') . ' - ' . dol_print_date($line->heuref, 'hour');
+				}
+				$old_date = $line->date_session;
 			}
+
+			$pdf->SetXY($posX + 10, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
+			//$this->str = dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 			$posY = $pdf->GetY() + 8;
 
@@ -371,12 +380,14 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 			$posY = $pdf->GetY() + 8;
 
-			// Incrustation image tampon
-			if ($conf->global->AGF_INFO_TAMPON) {
-				$dir = $conf->agefodd->dir_output . '/images/';
-				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-				if (file_exists($img_tampon))
-					$pdf->Image($img_tampon, 120, $posY, 50);
+			if (!empty($conf->global->AGF_ADD_SIGN_TO_CONVOC)) {
+				// Incrustation image tampon
+				if ($conf->global->AGF_INFO_TAMPON) {
+					$dir = $conf->agefodd->dir_output . '/images/';
+					$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+					if (file_exists($img_tampon))
+						$pdf->Image($img_tampon, 120, $posY, 50);
+				}
 			}
 
 			// Pied de page
@@ -407,7 +418,7 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
-		
+
 		// Fill header with background color
 		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);

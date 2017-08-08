@@ -103,11 +103,10 @@ if ($action == 'builddoc') {
 			setEventMessage($langs->trans("NoData"), 'warnings');
 		} else {
 			setEventMessage($langs->trans("FileSuccessfullyBuilt"));
-			if (count($report_bpf->warnings)>0) {
-				setEventMessage($langs->trans("AgfReportBPFDataInconsistency"), 'errors');
-				setEventMessages(null,$report_bpf->warnings, 'warnings');
-			}
-
+		}
+		if (count($report_bpf->warnings)>0) {
+			setEventMessage($langs->trans("AgfReportBPFDataInconsistency"), 'errors');
+			setEventMessages(null,$report_bpf->warnings, 'warnings');
 		}
 	} else {
 		setEventMessage($langs->trans("AgfRptSelectAtLeastOneCriteria"), 'errors');

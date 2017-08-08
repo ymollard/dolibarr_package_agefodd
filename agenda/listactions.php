@@ -174,8 +174,6 @@ if ($filter)
 	$param .= "&filter=" . $filter;
 if ($filtera)
 	$param .= "&filtera=" . $filtera;
-if ($filtert)
-	$param .= "&filtert=" . $filtert;
 if ($filterd)
 	$param .= "&filterd=" . $filterd;
 if ($socid)
@@ -255,15 +253,14 @@ if (! empty($filter_trainer)) {
 }
 $sql .= " WHERE c.id = a.fk_action";
 $sql .= ' AND a.fk_user_author = u.rowid';
-$sql .= ' AND a.entity IN (' . getEntity() . ')'; // To limit to entity
+$sql .= ' AND a.entity IN (' . getEntity('session') . ')'; // To limit to entity
 if ($pid)
 	$sql .= " AND a.fk_project=" . $db->escape($pid);
 if (! $user->rights->societe->client->voir && ! $socid)
 	$sql .= " AND (a.fk_soc IS NULL OR sc.fk_user = " . $user->id . ")";
-if ($socid)
+if ($socid) {
 	$sql .= " AND s.rowid = " . $socid;
-if ($type)
-	$sql .= " AND c.id = " . $type;
+}
 if ($status == 'done') {
 	$sql .= " AND (a.percent = 100 OR (a.percent = -1 AND a.datep2 <= '" . $db->idate($now) . "'))";
 }
@@ -277,7 +274,7 @@ if (! empty($filter_customer)) {
 	$sql .= " AND agf.fk_soc=" . $filter_customer;
 }
 if (! empty($filter_contact)) {
-	
+
 	if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 		$sql .= " AND contact.fk_socpeople=" . $filter_contact;
 	} else {
@@ -285,7 +282,7 @@ if (! empty($filter_contact)) {
 	}
 }
 if (! empty($filter_trainer)) {
-	
+
 	if ($type == 'trainer') {
 		$sql .= " AND trainer.fk_user=" . $filter_trainer;
 	} else {
@@ -319,15 +316,15 @@ if ($resql) {
 	$actionstatic = new ActionComm($db);
 	$societestatic = new Societe($db);
 	$formagefodd = new FormAgefodd($db);
-	
+
 	$num = $db->num_rows($resql);
-	
+
 	$title = $langs->trans("DoneAndToDoActions");
 	if ($status == 'done')
 		$title = $langs->trans("DoneActions");
 	if ($status == 'todo')
 		$title = $langs->trans("ToDoActions");
-	
+
 	if ($socid) {
 		$societe = new Societe($db);
 		$societe->fetch($socid);
@@ -335,19 +332,19 @@ if ($resql) {
 	} else {
 		$newtitle = $langs->trans($title);
 	}
-	
+
 	$head = agf_calendars_prepare_head($paramnoaction);
-	
+
 	dol_fiche_head($head, 'cardlist', $langs->trans('AgfMenuAgenda'), 0, $picto);
 	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter,$filter_location);
 	dol_fiche_end();
-	
+
 	// Add link to show birthdays
 	$link = '';
-	
+
 	print_barre_liste($newtitle, $page, $_SERVER ["PHP_SELF"], $param, $sortfield, $sortorder, $link, $num, 0, '');
 	// print '<br>';
-	
+
 	$i = 0;
 	print '<table class="liste" width="100%">';
 	print '<tr class="liste_titre">';
@@ -362,19 +359,19 @@ if ($resql) {
 	print_liste_field_titre($langs->trans("DoneBy"), $_SERVER ["PHP_SELF"], "ud.login", $param, "", "", $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVER ["PHP_SELF"], "a.percent", $param, "", 'align="right"', $sortfield, $sortorder);
 	print "</tr>\n";
-	
+
 	$contactstatic = new Contact($db);
 	$now = dol_now();
 	$delay_warning = $conf->global->MAIN_DELAY_ACTIONS_TODO * 24 * 60 * 60;
-	
+
 	$var = true;
 	while ( $i < min($num, $limit) ) {
 		$obj = $db->fetch_object($resql);
-		
+
 		$var = ! $var;
-		
+
 		print "<tr $bc[$var]>";
-		
+
 		// Action (type)
 		print '<td>';
 		print '<a href="../session/card.php?id=' . $obj->sessionid . '">' . $obj->sessionid . '</a> - ';
@@ -383,12 +380,12 @@ if ($resql) {
 		$actionstatic->libelle = $obj->label;
 		print $actionstatic->getNomUrl(1);
 		print '</td>';
-		
+
 		// Titre
 		// print '<td>';
 		// print dol_trunc($obj->label,12);
 		// print '</td>';
-		
+
 		print '<td align="center" class="nowrap">';
 		print dol_print_date($db->jdate($obj->dp), "day");
 		$late = 0;
@@ -403,11 +400,11 @@ if ($resql) {
 		if ($late)
 			print img_warning($langs->trans("Late")) . ' ';
 		print '</td>';
-		
+
 		print '<td align="center" class="nowrap">';
 		print dol_print_date($db->jdate($obj->dp2), "day");
 		print '</td>';
-		
+
 		// Third party
 		print '<td>';
 		if ($obj->socid) {
@@ -418,7 +415,7 @@ if ($resql) {
 		} else
 			print '&nbsp;';
 		print '</td>';
-		
+
 		// Contact
 		print '<td>';
 		if ($obj->fk_contact > 0) {
@@ -430,7 +427,7 @@ if ($resql) {
 			print "&nbsp;";
 		}
 		print '</td>';
-		
+
 		// User author
 		print '<td align="left">';
 		if ($obj->useridauthor) {
@@ -441,7 +438,7 @@ if ($resql) {
 		} else
 			print '&nbsp;';
 		print '</td>';
-		
+
 		// User to do
 		print '<td align="left">';
 		if ($obj->useridtodo) {
@@ -452,7 +449,7 @@ if ($resql) {
 		} else
 			print '&nbsp;';
 		print '</td>';
-		
+
 		// User did
 		print '<td align="left">';
 		if ($obj->useriddone) {
@@ -463,10 +460,10 @@ if ($resql) {
 		} else
 			print '&nbsp;';
 		print '</td>';
-		
+
 		// Status/Percent
 		print '<td align="right" class="nowrap">' . $langs->trans('AgfStatusSession_' . $obj->sessionstatus) . '</td>';
-		
+
 		print "</tr>\n";
 		$i ++;
 	}

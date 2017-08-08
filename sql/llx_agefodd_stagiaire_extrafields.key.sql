@@ -1,5 +1,5 @@
--- ========================================================================
--- Copyright (C) 2013 Florian HENRY	<florian.henry@open-concept.pro>
+-- ===================================================================
+-- Copyright (C) 2017 Florian HENRY	<florian.henry@atm-consulting.fr>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -14,13 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program. If not, see <http://www.gnu.org/licenses/>.
 --
--- ========================================================================
+-- ===================================================================
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_extrafields
-(
-  rowid                     integer AUTO_INCREMENT PRIMARY KEY,
-  tms                       timestamp,
-  fk_object                 integer NOT NULL,
-  import_key                varchar(14)                          		-- import key
-) ENGINE=innodb;
 
+ALTER TABLE llx_agefodd_stagiaire_extrafields ADD INDEX idx_agefodd_stagiaire_extrafields (fk_object);

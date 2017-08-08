@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2012-2014		Florian Henry			<florian.henry@open-concept.pro>
+/* Copyright (C) 2017 Florian HENRY	<florian.henry@atm-consulting.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  */
 
 /**
- * \file /agefodd/admin/session_extrafield.php
+ * \file /agefodd/admin/stagiaire_extrafields.php
  * \ingroup agefodd
  * \brief Page to setup extra fields of session
  */
@@ -49,7 +49,7 @@ foreach ( $tmptype2label as $key => $val )
 
 $action = GETPOST('action', 'alpha');
 $attrname = GETPOST('attrname', 'alpha');
-$elementtype = 'agefodd_session'; // Must be the $table_element of the class that manage extrafield
+$elementtype = 'agefodd_stagiaire'; // Must be the $table_element of the class that manage extrafield
 
 
 	/*
@@ -70,9 +70,9 @@ print "<br>\n";
 
 $head = agefodd_admin_prepare_head();
 
-dol_fiche_head($head, 'attributesession', $langs->trans("AgefoddSetupDesc"));
+dol_fiche_head($head, 'attributetrainee', $langs->trans("AgefoddSetupDesc"));
 
-print $langs->trans("DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv("AgfMenuSess")) . '<br>' . "\n";
+print $langs->trans("DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv("AgfMenuActStagiaire")) . '<br>' . "\n";
 print '<br>';
 
 // Load attribute_label

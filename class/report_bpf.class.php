@@ -217,22 +217,22 @@ class ReportBPF extends AgefoddExportExcel
 		$line_to_output = array();
 		$array_total_output = array();
 		if (is_array($this->financial_data_d) && count($this->financial_data_d) > 0) {
-		foreach ( $this->financial_data_d as $label_type => $financial_data ) {
-			$line_to_output[0] = $label_type;
-			$line_to_output[1] = $financial_data;
+			foreach ( $this->financial_data_d as $label_type => $financial_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $financial_data;
 
-			$array_total_output[0] = $this->outputlangs->transnoentities('Total');
-			$array_total_output[1] += $financial_data;
+				$array_total_output[0] = $this->outputlangs->transnoentities('Total');
+				$array_total_output[1] += $financial_data;
 
-			$result = $this->write_line($line_to_output, 0);
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
-		}
-		$result = $this->write_line_total($array_total_output, '3d85c6');
-		if ($result < 0) {
-			return $result;
-		}
 		}
 
 		// Fetch Trainer Block E
@@ -518,7 +518,13 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_trainee_f2($filter = array()) {
 		global $langs, $conf;
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+		$key = 'Formés par votre organisme pour son propre compte';
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -533,8 +539,8 @@ class ReportBPF extends AgefoddExportExcel
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->trainee_data_f2['Formés par votre organisme pour son propre compte']['nb'] = $obj->cnt;
-					$this->trainee_data_f2['Formés par votre organisme pour son propre compte']['time'] = $obj->timeinsession;
+					$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
+					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
 				}
 			}
 		} else {
@@ -544,7 +550,46 @@ class ReportBPF extends AgefoddExportExcel
 		}
 		$this->db->free($resql);
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+		// Add time from FOAD
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, SUM(sesssta.hour_foad) as timeinsession ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
+		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sess.fk_socpeople_presta IS NULL";
+		$sql .= " AND sess.fk_soc_employer IS NULL";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					if (array_key_exists($key, $this->trainee_data_f2) && !empty($obj->timeinsession)) {
+						$this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
+					} /*else {
+						$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
+						$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
+					}*/
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
+
+		$key = 'Formés par votre organisme pour le compte d’un autre organisme';
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -559,8 +604,41 @@ class ReportBPF extends AgefoddExportExcel
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->trainee_data_f2['Formés par votre organisme pour le compte d’un autre organisme']['nb'] = $obj->cnt;
-					$this->trainee_data_f2['Formés par votre organisme pour le compte d’un autre organisme']['time'] = $obj->timeinsession;
+					$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
+					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
+
+		// Add time from FOAD
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, SUM(sesssta.hour_foad) as timeinsession ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
+		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
+		$sql .= " AND sess.fk_socpeople_presta IS NULL";
+		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					if (array_key_exists($key, $this->trainee_data_f2) && !empty($obj->timeinsession)) {
+						$this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
+					} /*else {
+						$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
+						$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
+					}*/
 				}
 			}
 		} else {
@@ -580,7 +658,12 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_trainee_f3($filter = array()) {
 		global $langs, $conf;
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,catform.intitule ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, catform.intitule, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -606,6 +689,41 @@ class ReportBPF extends AgefoddExportExcel
 			return - 1;
 		}
 		$this->db->free($resql);
+
+		// Add time from FOAD
+
+		$sql = "select SUM(sesssta.hour_foad) as timeinsession, catform.intitule ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as formation ON formation.rowid=sess.fk_formation_catalogue ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as catform ON catform.rowid=formation.fk_c_category_bpf ";
+		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
+		$sql .= " GROUP BY catform.intitule";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					if (array_key_exists($obj->intitule, $this->trainee_data_f3)  && !empty($obj->timeinsession)) {
+						$this->trainee_data_f3[$obj->intitule]['time'] += $obj->timeinsession;
+					} /*else {
+						$this->trainee_data_f3[$obj->intitule]['nb'] = $obj->cnt;
+						$this->trainee_data_f3[$obj->intitule]['time'] = $obj->timeinsession;
+					}*/
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
 	}
 
 	/**
@@ -617,7 +735,12 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_trainee_f4($filter = array()) {
 		global $langs, $conf;
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,CONCAT(catform.code , '-', catform.intitule) as intitule ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, CONCAT(catform.code , '-', catform.intitule) as intitule, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -643,6 +766,40 @@ class ReportBPF extends AgefoddExportExcel
 			return - 1;
 		}
 		$this->db->free($resql);
+
+		// Add time from FOAD
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad) as timeinsession,CONCAT(catform.code , '-', catform.intitule) as intitule ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as formation ON formation.rowid=sess.fk_formation_catalogue ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as catform ON catform.rowid=formation.fk_c_category ";
+		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
+		$sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					if (array_key_exists($obj->intitule, $this->trainee_data_f4) && !empty($obj->timeinsession) ) {
+						$this->trainee_data_f4[$obj->intitule]['time'] += $obj->timeinsession;
+					} /*else {
+						$this->trainee_data_f4[$obj->intitule]['nb'] = $obj->cnt;
+						$this->trainee_data_f4[$obj->intitule]['time'] = $obj->timeinsession;
+					}*/
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
 	}
 
 	/**
@@ -654,7 +811,13 @@ class ReportBPF extends AgefoddExportExcel
 	function fetch_trainee_g($filter = array()) {
 		global $langs, $conf;
 
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+		$key = 'Formations confiées par votre organisme à un autre organisme de formation';
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -669,8 +832,41 @@ class ReportBPF extends AgefoddExportExcel
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					$this->trainee_data_g['Formations confiées par votre organisme à un autre organisme de formation']['nb'] = $obj->cnt;
-					$this->trainee_data_g['Formations confiées par votre organisme à un autre organisme de formation']['time'] = $obj->timeinsession;
+					$this->trainee_data_g[$key]['nb'] = $obj->cnt;
+					$this->trainee_data_g[$key]['time'] = $obj->timeinsession;
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
+
+		// Add time from FOAD
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad) as timeinsession ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
+		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
+		$sql .= " AND sess.fk_soc_employer IS NULL";
+		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
+		$sql .= " AND sesssta.hour_foad <> 0";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					if (array_key_exists($key, $this->trainee_data_g)  && !empty($obj->timeinsession)) {
+						$this->trainee_data_g[$key]['time'] += $obj->timeinsession;
+					}/* else {
+						$this->trainee_data_g[$key]['nb'] = $obj->cnt;
+						$this->trainee_data_g[$key]['time'] = $obj->timeinsession;
+					}*/
 				}
 			}
 		} else {
@@ -691,7 +887,12 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		// For Nb Trainer
-		$sql = "select count(DISTINCT form.rowid) as cnt, SUM(TIME_TO_SEC(TIMEDIFF(formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession,fromtype.intitule";
+		$sql = "select count(DISTINCT form.rowid) as cnt, fromtype.intitule, ";
+		if ($this->db->type == 'pgsql') {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession";
+		} else {
+			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(formtime.heuref, formtime.heured)))/(24*60*60) as timeinsession";
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur AS sessform ON sessform.fk_session=sess.rowid AND sessform.trainer_status IN (3,4)";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur_type as fromtype ON fromtype.rowid=sessform.fk_agefodd_formateur_type";
@@ -751,7 +952,12 @@ class ReportBPF extends AgefoddExportExcel
 
 		foreach ( $array_data as $key => $data ) {
 
-			$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
+			$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
+			if ($this->db->type == 'pgsql') {
+				$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+			} else {
+				$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+			}
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as statype ON statype.rowid=sesssta.fk_agefodd_stagiaire_type ";
@@ -777,9 +983,6 @@ class ReportBPF extends AgefoddExportExcel
 						$total_cnt += $obj->cnt;
 						$total_timeinsession += $obj->timeinsession;
 					}
-
-
-
 				}
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
@@ -788,9 +991,51 @@ class ReportBPF extends AgefoddExportExcel
 			}
 			$this->db->free($resql);
 
+			if (empty($data['idtype'])) {
+				$this->trainee_data[$data['label']]['nb'] = $obj->cnt - $total_cnt;
+				$this->trainee_data[$data['label']]['time'] = $obj->timeinsession - $total_timeinsession;
+			}
 
-			if ($data['idtype']=='1,2,7,5,4') {
-				$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+			// Add time from FOAD
+			$sql = "select SUM(sessstaout.hour_foad) as timeinsession ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sessstaout";
+			$sql .= " WHERE sessstaout.fk_session_agefodd IN (SELECT sess.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as statype ON statype.rowid=sesssta.fk_agefodd_stagiaire_type ";
+			if (! empty($data['idtype'])) {
+				$sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (" . $data['idtype'] . ") ";
+			}
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
+			$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			$sql .= " AND sess.status IN (5)";
+			$sql .= " AND sess.fk_socpeople_presta IS NULL)";
+			$sql .= " AND sessstaout.hour_foad IS  NOT NULL";
+			$sql .= " AND sessstaout.hour_foad <> 0";
+
+			dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				if ($this->db->num_rows($resql)) {
+					while ( $obj = $this->db->fetch_object($resql) ) {
+						if (array_key_exists($data['label'], $this->trainee_data) && !empty($obj->timeinsession)) {
+							$this->trainee_data[$data['label']]['time'] += $obj->timeinsession;
+							$total_timeinsession += $obj->timeinsession;
+						}
+				}
+			} else {
+				$this->error = "Error " . $this->db->lasterror();
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+				return - 1;
+			}
+			$this->db->free($resql);
+
+			if ($data['idtype'] == '1,2,7,5,4') {
+				if ($this->db->type == 'pgsql') {
+					$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF('second', statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+				} else {
+					$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
+				}
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session AS sess ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier AS statime ON statime.fk_agefodd_session = sess.rowid ";
 				$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
@@ -819,7 +1064,7 @@ class ReportBPF extends AgefoddExportExcel
 				$sql .= " WHERE sess.rowid IN (SELECT fk_agefodd_session FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier AS statime ";
 				$sql .= " 		        WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "'";
 				$sql .= " 		        AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "') ";
-			    $sql .= " AND sess.status IN (5) ";
+				$sql .= " AND sess.status IN (5) ";
 				$sql .= " AND sess.fk_socpeople_presta IS NULL ";
 				$sql .= " AND sess.force_nb_stagiaire = 1";
 
@@ -838,279 +1083,287 @@ class ReportBPF extends AgefoddExportExcel
 					return - 1;
 				}
 				$this->db->free($resql);
-
-			}
-
-			if (empty($data['idtype'])) {
-				$this->trainee_data[$data['label']]['nb'] = $obj->cnt - $total_cnt;
-				$this->trainee_data[$data['label']]['time'] = $obj->timeinsession - $total_timeinsession;
 			}
 		}
 	}
+}
 
-	/**
-	 * Load all objects in memory from database
-	 *
-	 * @param array $filter output
-	 * @return int <0 if KO, >0 if OK
-	 */
-	function fetch_financial_c($filter = array()) {
-		global $langs, $conf;
+/**
+ * Load all objects in memory from database
+ *
+ * @param array $filter output
+ * @return int <0 if KO, >0 if OK
+ */
+function fetch_financial_c($filter = array()) {
+	global $langs, $conf;
 
-		$array_fin = array(
-				array(
-						'idtypesta' => 2,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-1 Produits provenant des entreprises pour la formation de leurs salariés',
-						'confcust' => '',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 1,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-a OPCA pour des formations dispensées dans la cadre des contrats de professionnalisation',
-						'confcust' => 'AGF_CAT_BPF_OPCA',
-						'confcustlabel' => 'AgfReportBPFCategOPCA',
-						'employer' => 0,
-						'checkOPCA' => 1
-				),
-				array(
-						'idtypesta' => 7,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-b OPCA pour des formations dispensées dans le cadre des congés individuels de formation',
-						'confcust' => 'AGF_CAT_BPF_OPCA',
-						'confcustlabel' => 'AgfReportBPFCategOPCA',
-						'employer' => 0,
-						'checkOPCA' => 1
-				),
-				array(
-						'idtypesta' => 5,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-c OPCA pour des formations dispensées dans le cadre du compte personnel de formation',
-						'confcust' => 'AGF_CAT_BPF_OPCA',
-						'confcustlabel' => 'AgfReportBPFCategOPCA',
-						'employer' => 0,
-						'checkOPCA' => 1
-				),
-				array(
-						'idtypesta' => '17,3',
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-d OPCA pour des formations dispensées dans le cadre des dispositifs spécifiques pour les personnes en recherche d’emploi',
-						'confcust' => 'AGF_CAT_BPF_OPCA',
-						'confcustlabel' => 'AgfReportBPFCategOPCA',
-						'employer' => 0,
-						'checkOPCA' => 1
-				),
-				array(
-						'idtypesta' => 4,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-e OPCA pour des formations dispensées dans le cadre d’autres dispositifs (plan de formation, périodes de professionnalisation, ...)',
-						'confcust' => 'AGF_CAT_BPF_OPCA',
-						'confcustlabel' => 'AgfReportBPFCategOPCA',
-						'employer' => 0,
-						'checkOPCA' => 1
-				),
-				array(
-						'idtypesta' => 8,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-3 des fonds d assurance formation de non-salariés',
-						'confcust' => '',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 9,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-4 Pouvoirs publics pour la formation de leurs agents (Etat, collectivités territoriales, établissements publics à caractère administratif)',
-						'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
-						'confcustlabel' => 'AgfReportBPFCategAdmnistration',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 10,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-5 Pouvoirs publics spécifiques Instances européennes',
-						'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
-						'confcustlabel' => 'AgfReportBPFCategAdmnistration',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 11,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-6 Pouvoirs publics spécifiques Etat',
-						'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
-						'confcustlabel' => 'AgfReportBPFCategAdmnistration',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 12,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-7 Pouvoirs publics spécifiques Conseils régionaux',
-						'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
-						'confcustlabel' => 'AgfReportBPFCategAdmnistration',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 13,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-8 Pouvoirs publics spécifiques Pôle emploi',
-						'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
-						'confcustlabel' => 'AgfReportBPFCategAdmnistration',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 14,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-9 Pouvoirs publics spécifiques Autres ressources publiques',
-						'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
-						'confcustlabel' => 'AgfReportBPFCategAdmnistration',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 15,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-10 Contrats conclus avec des personnes à titre individuel et à leurs frais',
-						'confcust' => 'AGF_CAT_BPF_PARTICULIER',
-						'confcustlabel' => 'AgfReportBPFCategParticulier',
-						'employer' => 0,
-						'checkOPCA' => 0
-				),
-				array(
-						'idtypesta' => 16,
-						'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-						'confprodlabel' => 'AgfReportBPFCategProdPeda',
-						'label' => 'C-11 Contrats conclus avec d’autres organismes de formation',
-						'confcust' => '',
-						'employer' => 1,
-						'checkOPCA' => 0
-				)
-		);
+	$array_fin = array(
+			array(
+					'idtypesta' => 2,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-1 Produits provenant des entreprises pour la formation de leurs salariés',
+					'confcust' => '',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 1,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-a OPCA pour des formations dispensées dans la cadre des contrats de professionnalisation',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1
+			),
+			array(
+					'idtypesta' => 7,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-b OPCA pour des formations dispensées dans le cadre des congés individuels de formation',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 5,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-c OPCA pour des formations dispensées dans le cadre du compte personnel de formation',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1
+			),
+			array(
+					'idtypesta' => '17,3',
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-d OPCA pour des formations dispensées dans le cadre des dispositifs spécifiques pour les personnes en recherche d’emploi',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 4,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-e OPCA pour des formations dispensées dans le cadre d’autres dispositifs (plan de formation, périodes de professionnalisation, ...)',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 8,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-3 des fonds d assurance formation de non-salariés',
+					'confcust' => '',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 9,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-4 Pouvoirs publics pour la formation de leurs agents (Etat, collectivités territoriales, établissements publics à caractère administratif)',
+					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 10,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-5 Pouvoirs publics spécifiques Instances européennes',
+					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 1,
+			),
+			array(
+					'idtypesta' => 11,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-6 Pouvoirs publics spécifiques Etat',
+					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 1,
+			),
+			array(
+					'idtypesta' => 12,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-7 Pouvoirs publics spécifiques Conseils régionaux',
+					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 1,
+			),
+			array(
+					'idtypesta' => 13,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-8 Pouvoirs publics spécifiques Pôle emploi',
+					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 1,
+			),
+			array(
+					'idtypesta' => 14,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-9 Pouvoirs publics spécifiques Autres ressources publiques',
+					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 1,
+			),
+			array(
+					'idtypesta' => 15,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-10 Contrats conclus avec des personnes à titre individuel et à leurs frais',
+					'confcust' => 'AGF_CAT_BPF_PARTICULIER',
+					'confcustlabel' => 'AgfReportBPFCategParticulier',
+					'employer' => 0,
+					'checkOPCA' => 0,
+					'checkPV' => 0,
+			),
+			array(
+					'idtypesta' => 16,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-11 Contrats conclus avec d’autres organismes de formation',
+					'confcust' => '',
+					'employer' => 1,
+					'checkOPCA' => 0,
+					'checkPV' => 0,
+			)
+	);
 
-		foreach ( $array_fin as $key => $data ) {
-			$result = $this->_getAmountFin($data, $filter);
-			if ($result < 0) {
-				return - 1;
-			}
-		}
-
-		// C - 12
-		$result = $this->_getAmountFinC12($filter);
-		if ($result < 0) {
-			return - 1;
-		}
-
-		// C - 13
-		$result = $this->_getAmountFinC13($filter);
+	foreach ( $array_fin as $key => $data ) {
+		$result = $this->_getAmountFin($data, $filter);
 		if ($result < 0) {
 			return - 1;
 		}
 	}
 
-	/**
-	 * Load all objects in memory from database
-	 *
-	 * @param array $filter output
-	 * @return int <0 if KO, >0 if OK
-	 */
-	function fetch_financial_d($filter = array()) {
-		global $langs, $conf;
-
-		if (empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
-			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost"));
-			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
-			// return - 1;
-		}
-
-		if (empty($conf->global->AGF_CAT_BPF_PRESTA)) {
-			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategPresta"));
-			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
-			// return - 1;
-		}
-
-		if (empty($conf->global->AGF_CAT_BPF_FEEPRESTA)) {
-			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategFeePresta"));
-			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
-			// return - 1;
-		}
-
-		if (! empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
-			// Total des charges de l’organisme liées à l’activité de formation
-			$sql = "SELECT SUM(facdet.total_ht) as amount ";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
-			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') AND sess.status IN (5) ";
-			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "')";
-			$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'";
-
-			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-			$resql = $this->db->query($sql);
-			if ($resql) {
-				if ($this->db->num_rows($resql)) {
-					while ( $obj = $this->db->fetch_object($resql) ) {
-						$this->financial_data_d['Total des charges de l’organisme liées à l’activité de formation'] = $obj->amount;
-					}
-				}
-			} else {
-				$this->error = "Error " . $this->db->lasterror();
-				dol_syslog(get_class($this) . "::" . __METHOD__ . " Total des charges de l’organisme liées à l’activité de formation " . $this->error, LOG_ERR);
-				return - 1;
-			}
-			$this->db->free($resql);
-		}
-
-		if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA) && ! empty($conf->global->AGF_CAT_BPF_PRESTA)) {
-			// dont Achats de prestation de formation et honoraires de formation
-			$sql = "SELECT SUM(facdet.total_ht) as amount ";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
-			$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_FEEPRESTA . "))  ";
-			$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ";
-			$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') AND sess.status IN (5) ";
-			$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "')";
-			$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'";
-			$sql .= " AND f.fk_soc IN (SELECT catfourn.fk_soc FROM " . MAIN_DB_PREFIX . "categorie_fournisseur as catfourn WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRESTA . "))";
-
-			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-			$resql = $this->db->query($sql);
-			if ($resql) {
-				if ($this->db->num_rows($resql)) {
-					while ( $obj = $this->db->fetch_object($resql) ) {
-						$this->financial_data_d['dont Achats de prestation de formation et honoraires de formation'] = $obj->amount;
-					}
-				}
-			} else {
-				$this->error = "Error " . $this->db->lasterror();
-				dol_syslog(get_class($this) . "::" . __METHOD__ . " Total des charges de l’organisme liées à l’activité de formation " . $this->error, LOG_ERR);
-				return - 1;
-			}
-			$this->db->free($resql);
-		}
+	// C - 12
+	$result = $this->_getAmountFinC12($filter);
+	if ($result < 0) {
+		return - 1;
 	}
+
+	// C - 13
+	$result = $this->_getAmountFinC13($filter);
+	if ($result < 0) {
+		return - 1;
+	}
+}
+
+/**
+ * Load all objects in memory from database
+ *
+ * @param array $filter output
+ * @return int <0 if KO, >0 if OK
+ */
+function fetch_financial_d($filter = array()) {
+	global $langs, $conf;
+
+	if (empty($conf->global->AGF_CAT_PRODUCT_CHARGES) && ! in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost")), $this->warnings)) {
+		$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost"));
+		dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
+		// return - 1;
+	}
+
+	if (empty($conf->global->AGF_CAT_BPF_PRESTA) && ! in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategPresta")), $this->warnings)) {
+		$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategPresta"));
+		dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
+		// return - 1;
+	}
+
+	if (empty($conf->global->AGF_CAT_BPF_FEEPRESTA) && ! in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategFeePresta")), $this->warnings)) {
+		$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategFeePresta"));
+		dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
+		// return - 1;
+	}
+
+	if (! empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
+		// Total des charges de l’organisme liées à l’activité de formation
+		$sql = "SELECT SUM(facdet.total_ht) as amount ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
+		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))  ";
+		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') AND sess.status IN (5) ";
+		$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "')";
+		$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					$this->financial_data_d['Total des charges de l’organisme liées à l’activité de formation'] = $obj->amount;
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . " Total des charges de l’organisme liées à l’activité de formation " . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
+	}
+
+	if (! empty($conf->global->AGF_CAT_BPF_FEEPRESTA) && ! empty($conf->global->AGF_CAT_BPF_PRESTA)) {
+		// dont Achats de prestation de formation et honoraires de formation
+		$sql = "SELECT SUM(facdet.total_ht) as amount ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "facture_fourn as f  ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det as facdet ON facdet.fk_facture_fourn=f.rowid  ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = f.fk_soc";
+		$sql .= " WHERE facdet.fk_product IN (SELECT catprod.fk_product FROM " . MAIN_DB_PREFIX . "categorie_product as catprod WHERE catprod.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_FEEPRESTA . "))  ";
+		$sql .= " AND f.rowid IN (SELECT sesselement.fk_element FROM " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ";
+		$sql .= " ON sess.rowid=sesselement.fk_session_agefodd AND sesselement.element_type IN ('invoice_supplier_trainer','invoice_supplier_missions','invoice_supplier_room') AND sess.status IN (5) ";
+		$sql .= " AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "')";
+		$sql .= " AND f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " AND f.fk_soc IN (SELECT catfourn.fk_soc FROM " . MAIN_DB_PREFIX . "categorie_fournisseur as catfourn WHERE fk_categorie IN (" . $conf->global->AGF_CAT_BPF_PRESTA . "))";
+
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				while ( $obj = $this->db->fetch_object($resql) ) {
+					$this->financial_data_d['dont Achats de prestation de formation et honoraires de formation'] = $obj->amount;
+				}
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::" . __METHOD__ . " Total des charges de l’organisme liées à l’activité de formation " . $this->error, LOG_ERR);
+			return - 1;
+		}
+		$this->db->free($resql);
+	}
+}
 
 	/**
 	 *
@@ -1373,25 +1626,25 @@ class ReportBPF extends AgefoddExportExcel
 	/**
 	 *
 	 * @param array $data
-	 * @param unknown $filter
+	 * @param array $filter
 	 * @return number
 	 */
 	private function _getAmountFinC13($filter) {
 		global $conf, $langs;
 
-		if (empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
+		if (empty($conf->global->AGF_CAT_PRODUCT_CHARGES) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost")),$this->warnings)) {
 			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost"));
 			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
 			// return - 1;
 		}
 
-		if (empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
+		if (empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategForeignComp")),$this->warnings)) {
 			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategForeignComp"));
 			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
 			// return - 1;
 		}
 
-		if (empty($conf->global->AGF_CAT_BPF_PRODPEDA)) {
+		if (empty($conf->global->AGF_CAT_BPF_PRODPEDA) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategProdPeda")),$this->warnings)) {
 			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfReportBPFCategProdPeda"));
 			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_WARNING);
 			// return - 1;
@@ -1505,7 +1758,7 @@ class ReportBPF extends AgefoddExportExcel
 
 	/**
 	 *
-	 * @param unknown $filter
+	 * @param array $filter
 	 * @return number
 	 */
 	private function _getAmountFinC12($filter) {
@@ -1556,34 +1809,38 @@ class ReportBPF extends AgefoddExportExcel
 	/**
 	 *
 	 * @param array $data
-	 * @param unknown $filter
+	 * @param array $filter
 	 * @return number
 	 */
 	private function _getAmountFin($data = array(), $filter) {
 		global $conf, $langs;
 
-		if (! empty($data['confprod']) && empty($conf->global->{$data['confprod']})) {
+		if (! empty($data['confprod']) && empty($conf->global->{$data['confprod']}) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities($data['confprodlabel'])),$this->warnings)) {
 			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities($data['confprodlabel']));
 			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_ERR);
 			// return - 1;
 		}
 
-		if (! empty($data['confcust']) && empty($conf->global->{$data['confcust']})) {
+		if (! empty($data['confcust']) && empty($conf->global->{$data['confcust']}) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities($data['confcustlabel'])),$this->warnings)) {
 			$this->warnings[] = $langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities($data['confcustlabel']));
 			dol_syslog(get_class($this) . ":: " . end($this->warnings), LOG_ERR);
 			// return - 1;
 		}
 
-		if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']}) && (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']}))) {
+		if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']}) || (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']}))) {
+
 			$sql = "SELECT
 	   		SUM(fd.total_ht) as amount
 			FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
-			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture
-			WHERE
+			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture ";
+			if (!empty($data['employer'])) {
+				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+			}
+			$sql .= " WHERE
 			    f.fk_statut IN (1 , 2) ";
-			if (! empty($data['confprod'])) {
+			if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']})) {
 				$sql .= " AND fd.fk_product IN (SELECT
 			            cp.fk_product
 			        FROM
@@ -1592,7 +1849,7 @@ class ReportBPF extends AgefoddExportExcel
 			            cp.fk_categorie IN (" . $conf->global->{$data['confprod']} . "))";
 			}
 
-			if (! empty($data['confcust'])) {
+			if (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']})) {
 				$sql .= " AND f.fk_soc IN (SELECT
 			            cs.fk_soc
 			        FROM
@@ -1608,8 +1865,9 @@ class ReportBPF extends AgefoddExportExcel
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session AS sess ON sess.rowid = se.fk_session_agefodd
 			                AND se.element_type = 'invoice'
-			                AND sess.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'
-							AND sess.status IN (5)";
+							AND sess.status IN (5)
+							INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid
+							AND statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 
 			if (! empty($data['employer'])) {
 				$sql .= " AND sess.fk_soc_employer IS NOT NULL ";
@@ -1617,16 +1875,23 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ss ON ss.fk_session_agefodd = sess.rowid
 			                AND ss.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")";
-			if (empty($data['checkOPCA'])) {
+			if (empty($data['checkOPCA']) && empty($data['employer'])) {
 				$sql .= " INNER JOIN
-			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire
-			                INNER JOIN
-			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sta.fk_soc AND factin.rowid=se.fk_element))";
-			} else {
+			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire";
+			      $sql .= " INNER JOIN
+			            " . MAIN_DB_PREFIX . "facture AS factin ON ";
+			      if (empty($data['checkPV'])) {
+			      	$sql .= " factin.fk_soc = sta.fk_soc AND ";
+			      }
+			      $sql .= " factin.rowid=se.fk_element))";
+			} elseif (!empty($data['checkOPCA'])) {
 				$sql .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_opca AS opca ON opca.fk_session_trainee = ss.rowid AND opca.fk_session_agefodd=sess.rowid
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = opca.fk_soc_OPCA AND factin.rowid=se.fk_element))";
+			} elseif (!empty($data['employer'])) {
+				$sql .= " INNER JOIN
+			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sess.fk_soc_employer AND factin.rowid=se.fk_element))";
 			}
 			if (! empty($data['checkOPCA'])) {
 				$sql .= " OR (f.rowid IN (SELECT DISTINCT
@@ -1636,8 +1901,9 @@ class ReportBPF extends AgefoddExportExcel
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session AS sessopca ON sessopca.rowid = seopca.fk_session_agefodd
 			                AND seopca.element_type = 'invoice'
-			                AND sessopca.dated BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end']) . "'
-							AND sessopca.status IN (5)";
+							AND sessopca.status IN (5)
+							INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statimeopca ON statimeopca.fk_agefodd_session=sessopca.rowid
+							AND statimeopca.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statimeopca.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 				if (! empty($data['employer'])) {
 					$sql .= "  AND sessopca.fk_soc_employer IS NOT NULL ";
 				}

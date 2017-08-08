@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
- * Copyright (C) 2012-2014		Florian Henry			<florian.henry@open-concept.pro>
+ * Copyright (C) 2012-2017	Florian Henry	<florian.henry@open-concept.pro>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,10 +39,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
 
-if (empty($conf->global->AGF_DEMO_MODE)) {
-	if (! $user->admin)
-		accessforbidden();
-}
+if (! $user->rights->agefodd->admin && ! $user->admin)
+	accessforbidden();
 
 $action = GETPOST('action', 'alpha');
 $updatedaytodate=GETPOST('updatedaytodate');
@@ -206,6 +204,11 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+	$def_type = GETPOST('AGF_DEFAULT_SESSION_TYPE', 'alpha');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_SESSION_TYPE', $def_type, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
 	$num_org = GETPOST('AGF_ORGANISME_NUM', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_NUM', $num_org, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
@@ -213,6 +216,21 @@ if ($action == 'setvar') {
 
 	$org_rep = GETPOST('AGF_ORGANISME_REPRESENTANT', 'alpha');
 	$res = dolibarr_set_const($db, 'AGF_ORGANISME_REPRESENTANT', $org_rep, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$nb_hours_in_days = GETPOST('AGF_NB_HOUR_IN_DAYS', 'int');
+	$res = dolibarr_set_const($db, 'AGF_NB_HOUR_IN_DAYS', $nb_hours_in_days, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$default_training_cat = GETPOST('AGF_DEFAULT_TRAINNING_CAT', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT', $default_training_cat, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -381,6 +399,21 @@ if ($action == 'setvarother') {
 
 	$use_managebpf = GETPOST('AGF_MANAGE_BPF', 'int');
 	$res = dolibarr_set_const($db, 'AGF_MANAGE_BPF', $use_managebpf, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$add_progrm_to_conv = GETPOST('AGF_ADD_PROGRAM_TO_CONV', 'int');
+	$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONV', $add_progrm_to_conv, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$add_img_to_conv = GETPOST('AGF_ADD_SIGN_TO_CONVOC', 'int');
+	$res = dolibarr_set_const($db, 'AGF_ADD_SIGN_TO_CONVOC', $add_img_to_conv, 'yesno', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$add_progrm_to_convmail = GETPOST('AGF_ADD_PROGRAM_TO_CONVMAIL', 'int');
+	$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONVMAIL', $add_progrm_to_convmail, 'yesno', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -679,8 +712,9 @@ foreach ( $dirmodels as $reldir ) {
 						$htmltooltip = '';
 						$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 						$nextval = $module->getNextValue($mysoc, $agf);
-						if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
-{
+						// Keep " on nextval
+						if ("$nextval" != $langs->trans("AgfNotAvailable"))
+						{
 							$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 							if ($nextval) {
 								$htmltooltip .= $nextval . '<br>';
@@ -959,7 +993,8 @@ if ($conf->global->AGF_INFO_TAMPON) {
 		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removeimagesup">' . img_delete($langs->trans("Delete")) . '</a>';
 	}
 } else {
-	print '<img height="30" src="' . DOL_URL_ROOT . '/theme/common/nophoto.jpg">';
+	$nophoto='/public/theme/common/nophoto.png';
+	print '<img height="30" src="'.DOL_URL_ROOT.$nophoto.'">';
 }
 print '</td></tr></table>';
 print '<td align="center">';
@@ -972,6 +1007,40 @@ print '<tr class="impair"><td>' . $langs->trans("AgfDefaultSessionStatus") . '</
 print '<td align="left">';
 print $formAgefodd->select_session_status($conf->global->AGF_DEFAULT_SESSION_STATUS, "AGF_DEFAULT_SESSION_STATUS", 't.active=1');
 print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Default session status
+print '<tr class="impair"><td>' . $langs->trans("AgfDefaultSessionType") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_type_session("AGF_DEFAULT_SESSION_TYPE",$conf->global->AGF_DEFAULT_SESSION_TYPE);
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Nb hours in days
+print '<tr class="pair"><td>' . $langs->trans("AgfNbHourInDays") . '</td>';
+print '<td align="left">';
+print '<input type="text"   name="AGF_NB_HOUR_IN_DAYS" value="' . $conf->global->AGF_NB_HOUR_IN_DAYS. '" size="4" ></td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfNbHourInDaysHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Default training cat
+print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCat") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_training_categ($conf->global->AGF_DEFAULT_TRAINNING_CAT, 'AGF_DEFAULT_TRAINNING_CAT', 't.active=1', 1);
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Default training cat BPF
+print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCatBPF") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_training_categ_bpf($conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF, 'AGF_DEFAULT_TRAINNING_CAT_BPF', 't.active=1', 1);
 print '<td align="center">';
 print '</td>';
 print '</tr>';
@@ -1611,6 +1680,58 @@ print $form->textwithpicto('', $langs->trans("AgfManageBPFHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 
+// Update global variable AGF_ADD_PROGRAM_TO_CONV
+print '<tr class="pair"><td>' . $langs->trans("AgfAddProgramToConv") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_PROGRAM_TO_CONV');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ADD_PROGRAM_TO_CONV", $arrval, $conf->global->AGF_ADD_PROGRAM_TO_CONV);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_ADD_PROGRAM_TO_CONVMAIL
+print '<tr class="impair"><td>' . $langs->trans("AgfAddProgramToConvMail") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_PROGRAM_TO_CONVMAIL');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ADD_PROGRAM_TO_CONVMAIL", $arrval, $conf->global->AGF_ADD_PROGRAM_TO_CONVMAIL);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_ADD_SIGN_TO_CONVOC
+print '<tr class="impair"><td>' . $langs->trans("AgfAddSignImageToConvoc") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ADD_SIGN_TO_CONVOC');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ADD_SIGN_TO_CONVOC", $arrval, $conf->global->AGF_ADD_SIGN_TO_CONVOC);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+
 if (! $conf->use_javascript_ajax) {
 	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
 	print '</tr>';
@@ -1752,7 +1873,6 @@ print '</tr>';
 
 print '<tr class="pair"><td>' . $langs->trans("Agf1DayShift") . '</td>';
 print '<td align="left">';
-//print $conf->global->AGF_1DAYSHIFT;
 print $formAgefodd->select_time($conf->global->AGF_1DAYSHIFT, 'AGF_1DAYSHIFT');
 print '</td>';
 print '</tr>';
@@ -1772,13 +1892,10 @@ print $formAgefodd->select_time($conf->global->AGF_4DAYSHIFT, 'AGF_4DAYSHIFT');
 print '</td>';
 print '</tr>';
 
-
 print '<tr class="impair"><td colspan="2" align="right"><input type="submit" class="button" name="updatedaytodate" value="' . $langs->trans("Save") . '"></td>';
 
 print '</table>';
 print '</form>';
-
-
 
 llxFooter();
 $db->close();

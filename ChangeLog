@@ -1,5 +1,31 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.15 compared to 3.0.14 *****
+FIX : Various fix
+NEW : new column for document models
+
+***** ChangeLog for 3.0.14 compared to 3.0.13 *****
+FIX : Global review for PgSQL
+
+***** ChangeLog for 3.0.13 compared to 3.0.12 *****
+NEW : Extrafields on trainee
+
+***** ChangeLog for 3.0.12 compared to 3.0.11 *****
+NEW : Joined Files on Trainne card
+NEW : Compatible on Dolibarr 6.x
+NEW : if cost management is disabled, no cost automatic update on session finacial document linked
+
+***** ChangeLog for 3.0.11 compared to 3.0.10 *****
+NEW : Add new right to acces module admin even if user is not dolibarr administrator
+
+***** ChangeLog for 3.0.10 compared to 3.0.9 *****
+NEW : Add chapter into convention
+
+***** ChangeLog for 3.0.9 compared to 3.0.8 *****
+NEW : Add admin option to include program into convention
+NEW : Add admin option to include signature image into convocation
+NEW : Add email tempates management with dictionnary
+
 ***** ChangeLog for 3.0.6 compared to 3.0.7 *****
 NEW : Franch BPF 2017 available 
 FIX : compatiblity for 5.0

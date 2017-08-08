@@ -52,8 +52,8 @@ print load_fiche_titre($langs->trans("AgfMenuReportBPFHelp"));
 print "<br>\n";
 
 print $langs->trans("AgfBPFIntro");
-print ' <a href="'.dol_buildpath('/agefodd/report/docBPF/CERFA10443-14.pdf').'">CERFA 10443 * 14</a>';
-print ' <a href="'.dol_buildpath('/agefodd/report/docBPF/notice_CERFA10443-14.pdf').'">(Notice 10443 * 14)</a>';
+print ' <a href="'.dol_buildpath('/agefodd/report/docBPF/CERFA10443-14.pdf',1).'">CERFA 10443 * 14</a>';
+print ' <a href="'.dol_buildpath('/agefodd/report/docBPF/notice_CERFA10443-14.pdf',1).'">(Notice 10443 * 14)</a>';
 print "<br>\n";
 print "<br>\n";
 

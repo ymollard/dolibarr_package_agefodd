@@ -79,7 +79,7 @@ class ActionsAgefodd
 		$langs->load('agefodd@agefodd');
 
 		$arrayresult = array ();
-		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire) {
+		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire && empty($user->societe_id)) {
 			$arrayresult['searchintoagefoddsession'] = array (
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
 					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
@@ -126,11 +126,44 @@ class ActionsAgefodd
 	}
 
 	/**
+	 * elementList Method Hook Call
 	 *
-	 * @param unknown $parameters
-	 * @param unknown $object
-	 * @param unknown $action
-	 * @param unknown $this
+	 * @param array $parameters parameters
+	 * @param Object &$object Object to use hooks on
+	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param object $hookmanager class instance
+	 * @return void
+	 */
+	public function emailElementlist($parameters, &$object, &$action, $hookmanager) {
+		global $langs,$conf,$user;
+		$langs->load('agefodd@agefodd');
+
+		$this->results['fiche_pedago']=$langs->trans('AgfMailToSendFichePedago');
+		$this->results['fiche_presence']=$langs->trans('AgfMailToSendFichePresence');
+		$this->results['mission_trainer']=$langs->trans('AgfMailToSendMissionTrainer');
+		$this->results['trainer_doc']=$langs->trans('AgfMailToSendMissionTrainerDoc');
+		$this->results['fiche_presence_direct']=$langs->trans('AgfMailToSendFichePresenceDirect');
+		$this->results['fiche_presence_empty']=$langs->trans('AgfMailToSendFichePresenceEmpty');
+		$this->results['convention']=$langs->trans('AgfMailToSendConvention');
+		$this->results['attestation']=$langs->trans('AgfMailToSendAttestation');
+		$this->results['cloture']=$langs->trans('AgfMailToSendCloture');
+		$this->results['conseils']=$langs->trans('AgfMailToSendConseil');
+		$this->results['convocation']=$langs->trans('AgfMailToSendConvocation');
+		$this->results['courrier-accueil']=$langs->trans('AgfMailToSendCourrierAcceuil');
+		$this->results['attestationendtraining']=$langs->trans('AgfMailToSendAttestationEndTraining');
+		$this->results['attestation_trainee']=$langs->trans('AgfMailToSendAttestationParticipants');
+		$this->results['convocation_trainee']=$langs->trans('AgfMailToSendConventionParticipants');
+		$this->results['attestationendtraining_trainee']=$langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
+
+		return 0;
+	}
+
+	/**
+	 *
+	 * @param string $parameters
+	 * @param Object $object
+	 * @param string $action
+	 * @param Hookmanager $hookmanager
 	 * @return number
 	 */
 	function formBuilddocOptions($parameters, &$object, $action, $hookmanager) {
@@ -271,8 +304,8 @@ class ActionsAgefodd
 
 	/**
 	 *
-	 * @param unknown_type $pdf
-	 * @param unknown_type $files
+	 * @param object $pdf
+	 * @param array $files
 	 */
 	function concat(&$pdf, $files) {
 		foreach ( $files as $file ) {

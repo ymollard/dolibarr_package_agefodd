@@ -4,7 +4,7 @@
  * Copyright (C) 2004-2010 Laurent Destailleur <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2012 Regis Houssin <regis.houssin@capnetworks.com>
  * Copyright (C) 2010 Juanjo Menent <jmenent@2byte.es>
- * Copyright (C) 2013-2016 Florian Henry <florian.henry@open-concept.pro>
+ * Copyright (C) 2013-2017 Florian Henry <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  */
 
 /**
- * \file /agefodd/session/document_files.php
+ * \file /agefodd/trainee/document_files.php
  * \ingroup agefodd
  * \brief files linked to session
  */
@@ -32,25 +32,26 @@ if (! $res)
 	die("Include of main fails");
 
 require_once '../lib/agefodd.lib.php';
-require_once ('../class/agsession.class.php');
+require_once ('../class/agefodd_stagiaire.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
-require_once ('../class/html.formagefodd.class.php');
+require_once '../class/html.formagefodd.class.php';
 
 $langs->load("companies");
 $langs->load('other');
 
 $action = GETPOST('action');
 $confirm = GETPOST('confirm');
-$id = (GETPOST('socid', 'int') ? GETPOST('socid', 'int') : GETPOST('id', 'int'));
+$id = GETPOST('id', 'int');
 $ref = GETPOST('ref', 'alpha');
 
 // Security check
-if (! $user->rights->agefodd->lire)
+if (! $user->rights->agefodd->lire) {
 	accessforbidden();
+}
 
-	// Get parameters
+// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
 $page = GETPOST("page", 'int');
@@ -65,92 +66,94 @@ if (! $sortorder)
 if (! $sortfield)
 	$sortfield = "name";
 
-$object = new Agsession($db);
+	$object= new Agefodd_stagiaire($db);
 $result = $object->fetch($id);
 
 if ($result < 0) {
 	setEventMessage($object->error, 'errors');
 } else {
-	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
+	$upload_dir = $conf->agefodd->dir_output . "/trainee/". $object->id;
+	$relativepathwithnofile="trainee/" . $object->id.'/';
 }
 
 /*
  * Actions
-*/
-
-/*
- * Actions
-*/
+ */
 
 include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
-/*
-// Post file
-if (GETPOST ( 'sendit' ) && ! empty ( $conf->global->MAIN_UPLOAD_DOC )) {
-	if ($object->id) {
-		dol_add_file_process ( $upload_dir, 0, 1, 'userfile' );
-	}
-}
-
-// Delete file
-if ($action == 'confirm_deletefile' && $confirm == 'yes') {
-	if ($object->id) {
-		$file = $upload_dir . "/" . GETPOST ( 'urlfile' ); // Do not use urldecode here ($_GET and $_REQUEST are already decoded by PHP).
-
-		$ret = dol_delete_file ( $file, 0, 0, 0, $object );
-		if ($ret)
-			setEventMessage ( $langs->trans ( "FileWasRemoved", GETPOST ( 'urlfile' ) ) );
-		else
-			setEventMessage ( $langs->trans ( "ErrorFailToDeleteFile", GETPOST ( 'urlfile' ) ), 'errors' );
-		header ( 'Location: ' . $_SERVER ["PHP_SELF"] . '?id=' . $object->id );
-		exit ();
-	}
-}
-*/
 
 /*
  * View
-*/
+ */
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
 $help_url = '';
-llxHeader('', $langs->trans("AgfSessionDocuments") . ' - ' . $langs->trans("Files"), $help_url);
+llxHeader('', $langs->trans("AgfStagiaireDetail") . ' - ' . $langs->trans("Files"), $help_url);
 
 if ($object->id) {
 	/*
 	 * Affichage onglets
-	*/
-	if (! empty($conf->notification->enabled))
+	 */
+	if (! empty($conf->notification->enabled)) {
 		$langs->load("mails");
-	$head = session_prepare_head($object);
+	}
+
+	$head = trainee_prepare_head($object);
+
+	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfStagiaireDetail"), 0, 'bill');
 
 	$form = new Form($db);
-
-	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
-		$totalsize += $file ['size'];
+		$totalsize += $file['size'];
 	}
 
-	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-	print '</div>';
+	print '<table class="border" width="100%">';
 
-	// Print session card
-	$object->printSessionInfo();
+	print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
+	print '<td>' . $form->showrefnav($object, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 
-	print '&nbsp';
+	print '<tr><td>' . $langs->trans("Firstname") . '</td>';
+	print '<td>' . ucfirst($object->prenom) . '</td></tr>';
+
+	if (! empty($object->fk_socpeople)) {
+		print '<tr><td>' . $langs->trans("Lastname") . '</td>';
+		print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $object->fk_socpeople . '">' . strtoupper($object->nom) . '</a></td></tr>';
+	} else {
+		print '<tr><td>' . $langs->trans("Lastname") . '</td>';
+		print '<td>' . strtoupper($object->nom) . '</td></tr>';
+	}
+
+	print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
+
+	$contact_static = new Contact($db);
+	$contact_static->civility_id = $object->civilite;
+
+	print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
+
+	print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
+	if ($object->socid) {
+		$soc = new Societe($db);
+		$soc->fetch($object->socid);
+		print $soc->getNomUrl(1);
+	} else {
+		print '&nbsp;';
+	}
+	print '</td></tr>';
+	print '</table>';
 	print '</div>';
 
 	$modulepart = 'agefodd';
-	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
+	$permission = ($user->rights->agefodd->creer);
 	$param = '&id=' . $object->id;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
+
 
 } else {
 	accessforbidden('', 0, 0);

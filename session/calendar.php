@@ -363,7 +363,7 @@ if ($id) {
 			$agf_fact = new Agefodd_session_element($db);
 			$agf_fact->fetch_by_session($agf->id);
 			$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
-			if (! empty($conf->global->MAIN_MODULE_COMMANDE)) {
+			if (! empty($conf->commande->enabled)) {
 				$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
 			}
 			$other_amount .= '/' . $langs->trans('AgfInvoiceAmountWaiting') . ' ' . $agf_fact->invoice_ongoing_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -388,15 +388,11 @@ if ($id) {
 			 */
 			if (! empty($period_remove)) {
 				// Param url = id de la periode à supprimer - id session
-				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?modperiod=' . $modperiod . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
-				if ($ret == 'html')
-					print '<br>';
+				print $form->formconfirm($_SERVER['PHP_SELF'] . '?modperiod=' . $modperiod . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
 			}
 			if (! empty($period_remove_all)) {
 				// Param url = id de la periode à supprimer - id session
-				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
-				if ($ret == 'html')
-					print '<br>';
+				print $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
 			}
 			print '<div class="tabBar">';
 			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";

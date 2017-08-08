@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2013 Florian HENRY	<florian.henry@open-concept.pro>
+-- Copyright (C) 2017 Florian HENRY	<florian.henry@atm-consulting.fr>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 --
 -- ========================================================================
 
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_extrafields
+CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire_extrafields
 (
   rowid                     integer AUTO_INCREMENT PRIMARY KEY,
   tms                       timestamp,

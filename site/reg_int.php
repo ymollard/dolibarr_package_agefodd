@@ -51,12 +51,12 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 	$agf = new Agefodd_reg_interieur($db);
 	$agf->id = $idreg;
 	$result = $agf->delete($user);
-	
+
 	if ($result > 0) {
 		$agf_place = new Agefodd_place($db);
 		$agf_place->id = $id;
 		$result = $agf_place->remove_reg_int($user);
-		
+
 		if ($result > 0) {
 			Header("Location: " . $_SERVER ['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
@@ -74,7 +74,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_reg_interieur($db);
-		
+
 		$result = $agf->fetch($idreg);
 		if ($result > 0) {
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
@@ -82,10 +82,10 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 			} else {
 				$agf->reg_int = GETPOST('reg_int');
 			}
-			
+
 			$agf->notes = GETPOST('notes');
 			$result = $agf->update($user);
-			
+
 			if ($result > 0) {
 				Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
 				exit();
@@ -108,7 +108,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer) {
 	if (! $_POST ["cancel"]) {
 		$agf = new Agefodd_reg_interieur($db);
-		
+
 		if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 			$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int'));
 		} else {
@@ -116,14 +116,14 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 		}
 		$agf->notes = GETPOST('notes');
 		$result = $agf->create($user);
-		
+
 		if ($result > 0) {
-			
+
 			$agf_place = new Agefodd_place($db);
 			$result_place = $agf_place->fetch($id);
 			$agf_place->fk_reg_interieur = $result;
 			$result = $agf_place->update($user);
-			
+
 			if ($result > 0) {
 				Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
 				exit();
@@ -176,26 +176,26 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm">' . "\n";
 	print '<input type="hidden" name="id" value="' . $id . '">' . "\n";
-	
+
 	print '<table class="border" width="100%">'. "\n";
-	
+
 	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>'. "\n";
 	print '<td>' . $form->showrefnav($agf_place, 'id', '', 1, 'rowid', 'id') . '</td></tr>'. "\n";
-	
+
 	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>'. "\n";
 	print '<td>' . $agf_place->ref_interne . '</td></tr>'. "\n";
-	
+
 	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>'. "\n";
 	$doleditor = new DolEditor('reg_int', GETPOST('reg_int'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>". "\n";
-	
+
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>'. "\n";
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>'. "\n";
-	
+
 	print '</table>'. "\n";
 	print '</div>'. "\n";
-	
+
 	print '<table style=noborder align="right">'. "\n";
 	print '<tr><td align="center" colspan="2">'. "\n";
 	print '<input type="submit" name="importadress" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
@@ -206,7 +206,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 } else {
 	// Card location
 	if ($result_place > 0 && $result_regint > 0) {
-		
+
 		// Card location interal rules Edit mode
 		if ($action == 'edit') {
 			print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '" method="post">' . "\n";
@@ -214,24 +214,24 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			print '<input type="hidden" name="action" value="update">' . "\n";
 			print '<input type="hidden" name="id" value="' . $id . '">' . "\n";
 			print '<input type="hidden" name="idreg" value="' . $agf_place->fk_reg_interieur . '">' . "\n";
-			
+
 			print '<table class="border" width="100%">';
-			
+
 			print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 			print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-			
+
 			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 			print '<td>' . $agf_place->ref_interne . '</td></tr>';
-			
+
 			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>';
 			$doleditor = new DolEditor('reg_int', $agf->reg_int, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 			$doleditor->Create();
 			print "</td></tr>";
-			
-			
+
+
 			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 			print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';
-			
+
 			print '</table>';
 			print '</div>';
 			print '<table style=noborder align="right">';
@@ -240,38 +240,36 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 			print '</td></tr>';
 			print '</table>';
-			
+
 			print '</form>';
-			
+
 			print '</div>' . "\n";
 		} else {
 			// Card location interal rules View mode
-			
+
 			/*
 			 * Delete confirm
 			*/
 			if ($action == 'delete') {
-				$ret = $form->form_confirm($_SERVER ['PHP_SELF'] . "?id=" . $id . '&idreg=' . $agf_place->fk_reg_interieur, $langs->trans("AgfDeleteRegint"), $langs->trans("AgfConfirmRegInt"), "confirm_delete", '', '', 1);
-				if ($ret == 'html')
-					print '<br>';
+				print $form->formconfirm($_SERVER ['PHP_SELF'] . "?id=" . $id . '&idreg=' . $agf_place->fk_reg_interieur, $langs->trans("AgfDeleteRegint"), $langs->trans("AgfConfirmRegInt"), "confirm_delete", '', '', 1);
 			}
-			
+
 			print '<table class="border" width="100%">';
-			
+
 			print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 			print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-			
+
 			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
 			print '<td>' . $agf_place->ref_interne . '</td></tr>';
-			
+
 			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
 			print '<td>' . $agf->reg_int . '</td></tr>';
-			
+
 			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 			print '<td>' . $agf->notes . '</td></tr>';
-			
+
 			print '</table>';
-			
+
 			print '</div>';
 		}
 	}

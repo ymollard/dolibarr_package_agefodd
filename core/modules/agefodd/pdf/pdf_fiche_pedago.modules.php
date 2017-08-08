@@ -169,7 +169,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				// New page
 				$outputlangs->load("main");
 				$this->pdf->AddPage();
-				
+
 				$this->_pagehead($agf, $outputlangs);
 				/*
 				 * Corps de page
@@ -403,7 +403,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				} else {
 					$duree = $agf_session->duree_session;
 				}
-				$jour = $duree / 7;
+				if (empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
+					$jour = $duree / 7;
+				} else {
+					$jour = $duree / $conf->global->AGF_NB_HOUR_IN_DAYS;
+				}
+
 
 				// $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
 				if ($jour < 1)
@@ -587,7 +592,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 		$posY_ori = $this->pdf->GetY();
 		$this->pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
-		
+
 		// Fill header with background color
 		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
@@ -694,7 +699,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 	/**
 	 *
-	 * @param unknown $txt
+	 * @param string $txt
 	 */
 	public function getRealHeightLine($txt) {
 		global $conf;
@@ -753,9 +758,9 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 
 	/**
 	 *
-	 * @param unknown $txt
-	 * @param unknown $object
-	 * @param unknown $outputlangs
+	 * @param string $txt
+	 * @param object $object
+	 * @param object $outputlangs
 	 * @param number $fontsize
 	 */
 	public function getTotalHeightLine($txt, $object, $outputlangs, $fontsize = 8) {

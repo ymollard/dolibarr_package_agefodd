@@ -44,16 +44,9 @@ if (! isset($conf->global->AGENDA_MAX_EVENTS_DAY_VIEW))
 	$conf->global->AGENDA_MAX_EVENTS_DAY_VIEW = 3;
 
 $filter = GETPOST("filter", '', 3);
-$filtert = GETPOST("usertodo", "int", 3) ? GETPOST("usertodo", "int", 3) : GETPOST("filtert", "int", 3);
 $usergroup = GETPOST("usergroup", "int", 3);
-// if (! ($usergroup > 0) && ! ($filtert > 0)) $filtert = $user->id;
-// $showbirthday = empty($conf->use_javascript_ajax)?GETPOST("showbirthday","int"):1;
-$showbirthday = 0;
 
-// If not choice done on calendar owner, we filter on user.
-if (empty($filtert) && empty($conf->global->AGENDA_ALL_CALENDARS)) {
-	$filtert = $user->id;
-}
+$showbirthday = 0;
 
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
@@ -70,30 +63,13 @@ if (! $sortfield)
 
 	// Security check
 $socid = GETPOST("socid", "int");
-if ($user->societe_id)
-	$socid = $user->societe_id;
-$result = restrictedArea($user, 'agenda', 0, '', 'myactions');
-if ($socid < 0)
-	$socid = '';
+if (! $user->rights->agefodd->agendatrainer) {
+	accessforbidden();
+}
+
 
 $type = GETPOST("type");
 $canedit = 1;
-
-if ($type == 'trainer' || $type == 'trainerext') {
-	$canedit = 0;
-
-	$filter_trainer = $user->id;
-
-	if (! $user->rights->agefodd->agendatrainer)
-		accessforbidden();
-} else {
-	if (! $user->rights->agefodd->agenda)
-		accessforbidden();
-}
-if (! $user->rights->agenda->allactions->read || $filter == 'mine') // If no permission to see all, we show only affected to me
-{
-	$filtert = $user->id;
-}
 
 // $action=GETPOST('action','alpha');
 $action = 'show_peruser'; // We use 'show_week' mode
@@ -112,6 +88,29 @@ $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
 $filter_location = GETPOST('location', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
+
+if ($type == 'trainer' || $type == 'trainerext') {
+	$canedit = 0;
+	$filter_trainer=$user->id;
+} else {
+	if (! $user->rights->agefodd->agenda) {
+		accessforbidden();
+	}
+}
+if ($type == 'trainerext' && !empty($user->contact_id)) {
+	//In this case this is an external trainer
+	$agf_trainer = new Agefodd_teacher($db);
+	$result=$agf_trainer->fetch_all('', '', '', '', 0, array('f.fk_socpeople'=>$user->contact_id));
+	if ($result<0) {
+		setEventMessages(null,$agf_trainer->errors,'errors');
+	} else {
+		if (is_array($agf_trainer->lines)&& count($agf_trainer->lines)>0) {
+			$filter_trainer=$agf_trainer->lines[0]->id;
+		} else {
+			accessforbidden();
+		}
+	}
+}
 
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
@@ -268,8 +267,6 @@ if ($status || isset($_GET['status']) || isset($_POST['status']))
 	$param .= "&amp;status=" . $status;
 if ($filter)
 	$param .= "&amp;filter=" . $filter;
-if ($filtert)
-	$param .= "&amp;filtert=" . $filtert;
 if ($usergroup)
 	$param .= "&amp;usergroup=" . $usergroup;
 if ($socid)
@@ -422,7 +419,7 @@ if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 }
 $sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 
-$sql .= ' WHERE a.entity IN (' . getEntity() . ')';
+$sql .= ' WHERE a.entity IN (' . getEntity('session') . ')';
 $sql .= ' AND a.elementtype=\'agefodd_agsession\'';
 if ($action == 'show_day') {
 	$sql .= " AND (";
@@ -467,8 +464,6 @@ if (! empty($filter_trainer)) {
 
 	if ($type == 'trainer') {
 		$sql .= " AND trainer.fk_user=" . $filter_trainer;
-	} elseif ($type == 'trainerext') {
-		$sql .= " AND trainer.fk_user=" . $user->id;
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
@@ -840,7 +835,7 @@ $db->close();
 function show_day_events2($username, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60, $showheader = false, $colorsbytype = array(), $var = false) {
 	global $db;
 	global $user, $conf, $langs, $hookmanager, $action;
-	global $filter, $filtert, $status, $actioncode; // Filters used into search form
+	global $filter, $status, $actioncode; // Filters used into search form
 	global $theme_datacolor; // Array with a list of different we can use (come from theme)
 	global $cachethirdparties, $cachecontacts, $colorindexused;
 	global $begin_h, $end_h;

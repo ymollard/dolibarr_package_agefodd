@@ -805,7 +805,7 @@ class Agefodd extends CommonObject {
 			}
 		}
 
-		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule";
+		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule, dictcatbpf.code, dictcatbpf.intitule";
 		if (! empty($sortfield)) {
 			$sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder;
 		}
@@ -1012,7 +1012,7 @@ class Agefodd extends CommonObject {
 				$trainer_array[$trainer->id] = $trainer->id;
 			}
 			$object->id = $newid;
-			$result_trainer = $object->setTrainingTrainer($trainer_array);
+			$result_trainer = $object->setTrainingTrainer($trainer_array, $user);
 			if ($result_trainer < 0) {
 				$this->errors[] = $object->error;
 				$error ++;
@@ -1047,9 +1047,12 @@ class Agefodd extends CommonObject {
 		}
 	}
 
+
 	/**
 	 *
-	 * @param unknown $training
+	 * @param array $trainers
+	 * @param User $user
+	 * @return number
 	 */
 	public function setTrainingTrainer($trainers = array(),$user) {
 		global $conf;

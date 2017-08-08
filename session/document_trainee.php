@@ -56,6 +56,11 @@ $id = GETPOST('id', 'int');
 $session_trainee_id = GETPOST('sessiontraineeid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 
+if (GETPOST('modelselected')) {
+	$action = GETPOST('pre_action');
+}
+
+
 /*
  * Action create and refresh pdf document
 */
@@ -647,6 +652,9 @@ if (! empty($id)) {
 			}
 
 			$withto = array ();
+			$withtoname = array ();
+			$withtocompanyname=array();
+
 
 			// Trainee List
 			$agf_trainnees = new Agefodd_session_stagiaire($db);
@@ -675,13 +683,14 @@ if (! empty($id)) {
 			}
 			if (! empty($thirdpartyid)) {
 				$withto[$thirdpartyid . '_third'] = $companyname . ' - ' . $send_email;
+				$withtocompanyname[$thirdpartyid] = $companyname;
 			}
 			if (!empty($agf_trainee->fk_socpeople)) {
-			$withto[$agf_trainee->fk_socpeople . '_socp'] = $agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail;
+				$withto[$agf_trainee->fk_socpeople . '_socp'] = $agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail;
+				$withtoname[] = $agf_trainee->nom . ' ' . $agf_trainee->prenom;
 			} else {
 				setEventMessage($langs->trans('AgfTraineeIsNotAContact',$agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail ),'warnings');
 			}
-
 			if (! empty($withto)) {
 				$formmail->withto = $withto;
 			}
@@ -691,13 +700,37 @@ if (! empty($id)) {
 			$formmail->withbody .= "\n\n\n__SIGNATURE__\n";
 
 			// Tableau des substitutions
-			$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;
+			if (! empty($agf->intitule_custo)) {
+				$formmail->substit ['__FORMINTITULE__'] = $agf->intitule_custo;
+			} else {
+				$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;
+			}
+
+			if (is_array($withtocompanyname) && count($withtocompanyname)>0) {
+				if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+					$formmail->substit['__THIRDPARTY_NAME__'] = implode('<BR>',$withtocompanyname);
+				} else {
+					$formmail->substit['__THIRDPARTY_NAME__'] = implode(', ',$withtocompanyname);
+				}
+			}
+
+			if (is_array($withtoname) && count($withtoname)>0) {
+				if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+					$formmail->substit['__CONTACTCIVNAME__'] = implode('<BR>',$withtoname);
+				} else {
+					$formmail->substit['__CONTACTCIVNAME__'] = implode(', ',$withtoname);
+				}
+
+			}
+
 			$formmail->substit ['__SIGNATURE__'] = $user->signature;
 			$formmail->substit ['__PERSONALIZED__'] = '';
 
 			// Tableau des parametres complementaires
 			$formmail->param ['action'] = 'send';
+			$formmail->param ['sessiontraineeid'] = $session_trainee_id;
 			$formmail->param ['id'] = $agf->id;
+			$formmail->param ['models_id'] = GETPOST('modelmailselected');
 			$formmail->param ['returnurl'] = $_SERVER ["PHP_SELF"] . '?id=' . $agf->id;
 
 			if ($action == 'presend_convocation_trainee') {
@@ -705,6 +738,8 @@ if (! empty($id)) {
 			} elseif ($action == 'presend_attestation_trainee' || $action == 'presend_attestationendtraining_trainee') {
 				print_fiche_titre($langs->trans('AgfSendDocuments'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			}
+
+
 			$formmail->show_form();
 
 			if (! empty($mesg)) {

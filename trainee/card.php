@@ -53,11 +53,14 @@ $url_back = GETPOST('url_back', 'alpha');
 $session_id = GETPOST('session_id', 'int');
 $importfrom = GETPOST('importfrom', 'alpha');
 
+$agf = new Agefodd_stagiaire($db);
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
+
 /*
  * Actions delete
 */
 if ($action == 'confirm_delete' && $confirm == "yes" && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
-	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->remove($id);
 
 	if ($result > 0) {
@@ -76,26 +79,25 @@ if ($action == 'confirm_delete' && $confirm == "yes" && ($user->rights->agefodd-
 */
 if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	if (! $_POST["cancel"]) {
-		$agf = new Agefodd_stagiaire($db);
 
 		$result = $agf->fetch($id);
 		if ($result > 0) {
 			setEventMessage($agf->error, 'errors');
 		}
-		
+
 		$socid = GETPOST('societe', 'int');
 		if ($socid==-1) {
 			$socid=0;
 		}
-		
+
 		if (empty($socid)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
 		}
-		
+
 		if (empty($error)) {
 			$fk_socpeople = GETPOST('fk_socpeople', 'int');
-	
+
 			$agf->nom = GETPOST('nom', 'alpha');
 			$agf->prenom = GETPOST('prenom', 'alpha');
 			$agf->civilite = GETPOST('civility_id', 'alpha');
@@ -109,8 +111,10 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			if (! empty($fk_socpeople))
 				$agf->fk_socpeople = $fk_socpeople;
 			$agf->place_birth = GETPOST('place_birth', 'alpha');
+
+			$extrafields->setOptionalsFromPost($extralabels, $agf);
 			$result = $agf->update($user);
-	
+
 			if ($result > 0) {
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 				exit();
@@ -134,15 +138,13 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 	if (! $_POST["cancel"]) {
 		$error = 0;
 
-		$agf = new Agefodd_stagiaire($db);
-
 		if ($importfrom == 'create') {
 
 			$name = GETPOST('nom', 'alpha');
 			$firstname = GETPOST('prenom', 'alpha');
 			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
-			
+
 
 			$create_thirdparty = GETPOST('create_thirdparty', 'int');
 
@@ -152,7 +154,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			if ($create_thirdparty==-1) {
 				unset($create_thirdparty);
 			}
-			
+
 			if (empty($name) || empty($firstname)) {
 				setEventMessage($langs->trans('AgfNameRequiredForParticipant'), 'errors');
 				$error ++;
@@ -261,6 +263,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 					}
 					$agf->fk_socpeople = $contact->id;
 				}
+				$extrafields->setOptionalsFromPost($extralabels, $agf);
 
 				$result = $agf->create($user);
 			}
@@ -472,10 +475,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
-	print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 1, 1);
+	print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	print '</td></tr>';
 
-	print '<tr class="create_thirdparty_block"><td>' . $langs->trans("ThirdPartyName") . '</td>';
+	print '<tr class="create_thirdparty_block"><td class="fieldrequired">' . $langs->trans("ThirdPartyName") . '</td>';
 	print '<td colspan="3" ><input name="societe_name" class="flat" size="50" value="' . GETPOST('societe_name', 'alpha') . '"></td></tr>';
 
 	// Address
@@ -549,6 +552,13 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+
+
+	if (! empty($extrafields->attribute_label)) {
+		print $agf->showOptionals($extrafields, 'edit');
+	}
+
+
 	print '</table>';
 	print '</div>';
 
@@ -590,10 +600,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		print $formAgefodd->select_type_stagiaire($stagiaire_type, 'stagiaire_type', 'active=1', 1);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTraineeSocDocUse') . '</td><td colspan="3">';
-		print $form->select_company(0, 'fk_soc_link', '', 1, 1, 0);
+		print $form->select_thirdparty_list(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTypeRequester') . '</td><td colspan="3">';
-		print $form->select_company(0, 'fk_soc_requester', '', 1, 1, 0);
+		print $form->select_thirdparty_list(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 		print '</td></tr>';
 		if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
 			print '<tr class="agelfoddline"><td>' . $langs->trans('Status') . '</td><td colspan="3">';
@@ -652,7 +662,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 
-					print $form->select_company($agf->socid, 'societe', '(s.client IN (1,3,2))', 1, 1);
+					print $form->select_thirdparty_list($agf->socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 
 					print '</td></tr>';
 
@@ -732,6 +742,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;">' . stripslashes($agf->note) . '</textarea></td></tr>';
 
+				if (! empty($extrafields->attribute_label)) {
+					print $agf->showOptionals($extrafields, 'edit');
+				}
+
 				print '</table>';
 				print '</div>';
 				print '<table style=noborder align="right">';
@@ -739,7 +753,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				print '<input type="submit" class="butAction" name="save" value="' . $langs->trans("Save") . '"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 				if (! empty($agf->fk_socpeople)) {
-					print '<a class="butAction" href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
+					print '<a class="butAction" href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '&action=edit">' . $langs->trans('AgfModifierFicheContact') . '</a>';
 				}
 				print '</td></tr>';
 				print '</table>';
@@ -752,9 +766,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				* Confirmation de la suppression
 				*/
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteTrainee"), "confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteTrainee"), "confirm_delete", '', '', 1);
 				}
 
 				print '<table class="border" width="100%">';
@@ -814,6 +826,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				else
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td>' . stripslashes($notes) . '</td></tr>';
+
+				if (! empty($extrafields->attribute_label)) {
+					print $agf->showOptionals($extrafields);
+				}
 
 				print "</table>";
 

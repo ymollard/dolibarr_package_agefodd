@@ -308,7 +308,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 					'add-customer-contact' => 'disabled'
 			)
 	);
-	print '<td>' . $form->select_company('', 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 0, 1, 0, $events) . '</td></tr>';
+	print '<td>' . $form->select_thirdparty_list('', 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 'SelectThirdParty', 1, 0, $events) . '</td></tr>';
 
 	print '<tr><td>' . $langs->trans("Contact") . '</td>';
 	print '<td>';
@@ -421,7 +421,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 								'add-customer-contact' => 'disabled'
 						)
 				);
-				print '<td>' . $form->select_company($agf->socid, 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 0, 1, 0,$events) . '</td></tr>';
+				print '<td>' . $form->select_thirdparty_list($agf->socid, 'societe', '((s.client IN (1,2,3)) OR (s.fournisseur=1))', 'SelectThirdParty', 1, 0,$events) . '</td></tr>';
 
 				print '<tr><td>' . $langs->trans("Contact") . '</td>';
 				print '<td>';
@@ -493,9 +493,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				 * Confirm delete
 				 */
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeletePlace"), $langs->trans("AgfConfirmDeletePlace"), "confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeletePlace"), $langs->trans("AgfConfirmDeletePlace"), "confirm_delete", '', '', 1);
 				}
 				/*
 				 * Confirm archive
@@ -506,9 +504,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 					if ($action == 'active')
 						$value = 0;
 
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+
 				}
 
 				print '<table class="border" width="100%">';

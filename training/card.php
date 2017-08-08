@@ -52,6 +52,9 @@ $arch = GETPOST('arch', 'int');
 $objpedamodif = GETPOST('objpedamodif', 'int');
 $objc = GETPOST('objc', 'int');
 
+$categid = GETPOST('categid', 'int');
+$categidbpf= GETPOST('categidbpf', 'int');
+
 $agf = new Agefodd($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
@@ -123,8 +126,8 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 			$agf->ref_interne = GETPOST('ref_interne', 'alpha');
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
-			$agf->fk_c_category = GETPOST('categid', 'int');
-			$agf->fk_c_category_bpf = GETPOST('categidbpf', 'int');
+			$agf->fk_c_category = $categid;
+			$agf->fk_c_category_bpf = $categidbpf;
 			$agf->color = GETPOST('color', 'alpha');
 			$agf->qr_code_info = GETPOST('qr_code_info');
 
@@ -207,8 +210,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			$agf->duree = GETPOST('duree', 'int');
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
-			$agf->fk_c_category = GETPOST('categid', 'int');
-			$agf->fk_c_category_bpf = GETPOST('categidbpf', 'int');
+			$agf->fk_c_category = $categid;
+			$agf->fk_c_category_bpf = $categidbpf;
 			$agf->qr_code_info = GETPOST('qr_code_info');
 
 			if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
@@ -482,13 +485,19 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print '<input name="nbmintarget" class="flat" size="5" value="' . GETPOST('nbmintarget', 'int') . '"></td></tr>';
 
 	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCateg") . '</td><td>';
-	print $formagefodd->select_training_categ(GETPOST('categid'), 'categid', 't.active=1');
+	if (empty($categid) && !empty($conf->global->AGF_DEFAULT_TRAINNING_CAT)) {
+		$categid=$conf->global->AGF_DEFAULT_TRAINNING_CAT;
+	}
+	print $formagefodd->select_training_categ($categid, 'categid', 't.active=1', 1);
 	if ($user->admin)
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
 
 	print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
-	print $formagefodd->select_training_categ(GETPOST('categidbpf'), 'categidbpf', 't.active=1');
+	if (empty($categidbpf) && !empty($conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF)) {
+		$categidbpf=$conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF;
+	}
+	print $formagefodd->select_training_categ_bpf($categidbpf, 'categidbpf', 't.active=1', 1);
 	if ($user->admin)
 		print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print "</td></tr>";
@@ -632,13 +641,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '<input name="nbmintarget" class="flat" size="5" value="' . $agf->nb_subscribe_min . '"></td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCateg") . '</td><td>';
-				print $formagefodd->select_training_categ($agf->fk_c_category, 'categid', 't.active=1');
+				print $formagefodd->select_training_categ($agf->fk_c_category, 'categid', 't.active=1' ,1);
 				if ($user->admin)
 					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 				print "</td></tr>";
 
 				print '<tr><td width="20%">' . $langs->trans("AgfTrainingCategBPF") . '</td><td>';
-				print $formagefodd->select_training_categ_bpf($agf->fk_c_category_bpf, 'categidbpf', 't.active=1');
+				print $formagefodd->select_training_categ_bpf($agf->fk_c_category_bpf, 'categidbpf', 't.active=1' ,1);
 				if ($user->admin)
 					print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 					print "</td></tr>";
@@ -789,16 +798,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				// confirm delete
 				if ($action == 'delete') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
 				}
 
 				// Confirm clone
 				if ($action == 'clone') {
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
 				}
 
 				// confirm archive
@@ -808,9 +813,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					if ($action == 'active')
 						$value = 0;
 
-					$ret = $form->form_confirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-					if ($ret == 'html')
-						print '<br>';
+					print $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 				}
 
 				print '<table class="border" width="100%">';
@@ -1033,6 +1036,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogique") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 					print img_picto('fiche_pedago_' . $id . '.pdf:fiche_pedago_' . $id . '.pdf', 'pdf2') . '</a>';
+					if (function_exists('getAdvancedPreviewUrl')) {
+						$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_' . $id . '.pdf');
+						if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+					}
 					print '</td></tr>';
 				}
 
@@ -1041,6 +1048,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogiqueModule") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 					print img_picto('fiche_pedago_modules_' . $id . '.pdf:fiche_pedago_modules_' . $id . '.pdf', 'pdf2') . '</a>';
+					if (function_exists('getAdvancedPreviewUrl')) {
+						$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_modules_' . $id . '.pdf');
+						if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+					}
 					print '</td></tr>';
 				}
 
