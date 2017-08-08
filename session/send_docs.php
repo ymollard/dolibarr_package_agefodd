@@ -660,6 +660,12 @@ if (! empty($id)) {
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file))
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+
+						$filename = 'convocation_' . $agf->id . '_' . $socline->socid . '.pdf';
+						$file = $conf->agefodd->dir_output . '/' . $filename;
+						if (file_exists($file)) {
+							$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						}
 				} elseif ($action == 'presend_attestation') {
 
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
