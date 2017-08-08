@@ -284,7 +284,7 @@ if ($filter_trainer) {
 if ($type) {
 	$param .= "&type=" . $type;
 }
-if ($action == 'show_day' || $action == 'show_week') {
+if ($action == 'show_day' || $action == 'show_week' || $action == 'show_month') {
 	$param .= '&action=' . $action;
 }
 
@@ -305,7 +305,7 @@ llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
 // Show navigation bar
 if (empty($action) || $action=='show_month')
 {
-    $nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	$nav ="<a href=\"?amp;year=".$prev_year."&amp;month=".$prev_month.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
 	$nav .= " <span id=\"month_name\">" . dol_print_date(dol_mktime(0, 0, 0, $month, 1, $year), "%b %Y");
 	$nav .= " </span>\n";
     $nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month.$param."\">".img_next($langs->trans("Next"))."</a>\n";
