@@ -102,7 +102,8 @@ class modAgefodd extends DolibarrModules
 						'propalcard',
 						'admin'
 				),
-				'substitutions'=> '/agefodd/core/substitutions/'
+				'substitutions'=> '/agefodd/core/substitutions/',
+				'models'=> 1
 		);
 
 		// Dependencies
