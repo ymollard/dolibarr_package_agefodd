@@ -900,6 +900,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as formtime ON formtime.fk_agefodd_session_formateur=sessform.rowid";
 		$sql .= " WHERE formtime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND formtime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
+		$sql .= " AND sess.rowid IN (SELECT DISTINCT fk_session_agefodd FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire)";
 		$sql .= " GROUP BY fromtype.intitule";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
