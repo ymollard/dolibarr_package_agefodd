@@ -21,7 +21,7 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALU
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (11, 'Pouvoirs publics pour la formation de publics spécifiques : Etat', 9, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
-(12, ' Pouvoirs publics pour la formation de publics spécifiques : Conseils régionaux', 10, 1, '2017-03-23 12:00:00');
+(12, 'Pouvoirs publics pour la formation de publics spécifiques : Conseils régionaux', 10, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (13, 'Pouvoirs publics pour la formation de publics spécifiques : Pôle emploi', 11, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
