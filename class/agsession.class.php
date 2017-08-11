@@ -4601,9 +4601,12 @@ class Agsession extends CommonObject
 		}
 	}
 	
-	function load_all_data_agefodd_session($print_r=false) {
+	function load_all_data_agefodd_session(&$object_refletter, $socid='', $print_r=false) {
 		
 		global $db;
+		
+		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainer = $socid;
+		//elseif($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainee = $socid; TODO quand on aura créé le modèle par participant
 		
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
@@ -4626,6 +4629,16 @@ class Agsession extends CommonObject
 			$formateurs = new Agefodd_session_formateur($db);
 			$nbform = $formateurs->fetch_formateur_per_session($this->id);
 			$this->TFormateursSession = $formateurs->lines;
+		}
+		
+		if(!empty($id_trainer)) {
+			
+			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+			
+			$agf_teacher = new Agefodd_teacher($db);
+			$agf_teacher->fetch($id_trainer);
+			$this->formateur_session = $agf_teacher;
+			
 		}
 		
 		if($print_r) {
