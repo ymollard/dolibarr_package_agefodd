@@ -415,6 +415,31 @@ function show_trainer_mission($session_trainerid) {
 	return $mess;
 }
 
+function show_trainer_contract($session_trainerid) {
+	global $langs, $conf, $id, $form, $idform;
+	
+	$model = 'contrat_trainer';
+	$file = $model . '_' . $session_trainerid . '.pdf';
+	
+	if (is_file($conf->agefodd->dir_output . '/' . $file)) {
+		// afficher
+		$legende = $langs->trans("AgfDocOpen");
+		$mess = '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= img_picto($file.':'.$file, 'pdf2').'</a>';
+		if (function_exists('getAdvancedPreviewUrl')) {
+			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
+			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+		}
+		
+		// Supprimer
+		$legende = $langs->trans("AgfDocDel");
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
+		
+	}
+	return $mess;
+}
+
 /**
  *
  * @param string $file
@@ -789,6 +814,8 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid);
 	} elseif ($mdle == 'mission_trainer') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid);
+	} elseif($mdle == 'contrat_trainer' && $conf->referenceletters->enabled && !empty($select_model)){
+		print '<td class="trainerid" trainerid="'.$socid.'" style="border-left:0px; width:250px" align="left">' . show_trainer_contract($socid);
 	} else {
 		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier);
 	}
@@ -993,6 +1020,7 @@ function getSelectAgefoddModels($mdle, $socid=0) {
 	elseif($mdle === 'attestation' || $mdle === 'attestation_trainee') $type = 'rfltr_agefodd_attestation';
 	elseif($mdle === 'attestationendtraining' || $mdle === 'attestationendtraining_trainee') $type = 'rfltr_agefodd_attestation_fin_formation';
 	elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_presence';
+	elseif($mdle === 'contrat_trainer') $type = 'rfltr_agefodd_contrat_trainer';
 	
 	$TModels = RfltrTools::getAgefoddModelList();
 	if(!empty($type) && !empty($TModels[$type])) {

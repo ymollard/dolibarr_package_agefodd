@@ -707,6 +707,8 @@ if (! empty($id)) {
 				print '</td>' . "\n";
 				print '</tr>' . "\n";
 				document_line($langs->trans("AgfTrainerMissionLetter"), "mission_trainer", $line->opsid);
+				$select_models = getSelectAgefoddModels("contrat_trainer", $socid); // Si la chaine est vide, aucun modèle de ce type n'existe
+				if(!empty($select_models)) document_line($langs->trans("AgfTrainerMissionLetter"), "contrat_trainer", $line->opsid);
 			}
 			print '</table>';
 		}
