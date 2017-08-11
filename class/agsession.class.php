@@ -4631,6 +4631,13 @@ class Agsession extends CommonObject
 			$this->TFormateursSession = $formateurs->lines;
 		}
 		
+		if(empty($this->lieu)) {
+			dol_include_once('/agefodd/class/agefodd_place.class.php');
+			$agf_place= new Agefodd_place($db);
+			$agf_place->fetch($this->placeid);
+			$this->lieu = $agf_place;
+		}
+		
 		if(!empty($id_trainer)) {
 			
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
