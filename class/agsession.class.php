@@ -4616,6 +4616,20 @@ class Agsession extends CommonObject
 			$this->TStagiairesSession = $stagiaires->lines;
 		}
 		
+		if(empty($this->TStagiairesSessionSoc)) {
+			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires->fetch_stagiaire_per_session($this->id,$socid);
+			$this->TStagiairesSessionSoc = $stagiaires->lines;
+		}
+		
+		if(empty($this->TStagiairesSessionSocMore)) {
+			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
+			$this->TStagiairesSessionSocMore = $stagiaires->lines;
+		}
+		
 		// Chargement des horaires de la session
 		if(empty($this->THorairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
