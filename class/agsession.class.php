@@ -4603,7 +4603,7 @@ class Agsession extends CommonObject
 	
 	function load_all_data_agefodd_session(&$object_refletter, $socid='', $print_r=false) {
 		
-		global $db;
+		global $db, $conf;
 		
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainer = $socid;
 		//elseif($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainee = $socid; TODO quand on aura créé le modèle par participant
@@ -4660,6 +4660,13 @@ class Agsession extends CommonObject
 			$agf_teacher->fetch($id_trainer);
 			$this->formateur_session = $agf_teacher;
 			
+		}
+		
+		foreach($conf->global as $conf_name=>$osef) {
+			
+			if(strpos($conf_name, 'AGF_') !== false) {
+				$this->{$conf_name} = $conf->global->{$conf_name};
+			}
 		}
 		
 		if($print_r) {
