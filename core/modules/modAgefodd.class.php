@@ -100,7 +100,8 @@ class modAgefodd extends DolibarrModules
 						'searchform',
 						'pdfgeneration',
 						'propalcard',
-						'admin'
+						'admin',
+						'emailtemplates'
 				),
 				'substitutions'=> '/agefodd/core/substitutions/',
 				'models'=> 1
