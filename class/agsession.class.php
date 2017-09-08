@@ -4601,19 +4601,41 @@ class Agsession extends CommonObject
 		}
 	}
 	
-	function load_all_data_agefodd_session(&$object_refletter, $socid='', $print_r=false) {
+	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {
 		
 		global $db, $conf;
 		
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainer = $socid;
 		//elseif($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainee = $socid; TODO quand on aura créé le modèle par participant
-		
+
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
+		}
+			
+			// Chargement des spécifique participants
+		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
+				$nbstag = count($obj_agefodd_convention->line_trainee);
+				$stagiaires_session_conv = new Agefodd_session_stagiaire($this->db);
+				
+				foreach ($obj_agefodd_convention->line_trainee as $trainee_session_id) {
+					$result = $stagiaires_session_conv->fetch($trainee_session_id);
+					if ($result < 0) {
+						setEventMessage($stagiaires->error, 'errors');
+					}
+					$stagiaire_conv = new Agefodd_stagiaire($this->db);
+					$result = $stagiaire_conv->fetch($stagiaires_session_conv->fk_stagiaire);
+					if ($result < 0) {
+						setEventMessage($stagiaire_conv->error, 'errors');
+					}
+					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
+				}
+			}
 		}
 		
 		if(empty($this->TStagiairesSessionSoc)) {
@@ -4636,6 +4658,12 @@ class Agsession extends CommonObject
 			$calendrier = new Agefodd_sesscalendar($db);
 			$calendrier->fetch_all($this->id);
 			$this->THorairesSession = $calendrier->lines;
+			if (is_array($calendrier->lines) && count($calendrier->lines)>0) {
+				foreach ($calendrier->lines as $line) {
+					$dates[$line->date_session]=$line->date_session;
+				}
+				$this->trainer_day_cost=$this->cost_trainer / count($dates);
+			}
 		}
 		
 		if(empty($this->TFormateursSession)) {
@@ -4659,6 +4687,14 @@ class Agsession extends CommonObject
 			$agf_teacher = new Agefodd_teacher($db);
 			$agf_teacher->fetch($id_trainer);
 			$this->formateur_session = $agf_teacher;
+			$this->formateur_session_societe = $agf_teacher->thirdparty;
+			
+		}
+		
+		if(!empty($socid)) {
+			$document_thirdparty = new Societe($db);
+			$document_thirdparty->fetch($socid);
+			$this->document_societe= $document_thirdparty;
 			
 		}
 		
