@@ -45,6 +45,7 @@ class Agefodd_teacher extends CommonObject {
 	public $categories = array ();
 	public $dict_categories = array ();
 	public $trainings = array ();
+	public $thirdparty;
 
 	/**
 	 * Constructor
@@ -162,6 +163,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
 		$sql .= " ,s.address as s_address, s.zip as s_zip, s.town as s_town";
+		$sql .= " ,s.fk_soc as soctrainerid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
@@ -190,6 +192,7 @@ class Agefodd_teacher extends CommonObject {
 					$this->address = $mysoc->address;
 					$this->zip = $mysoc->zip;
 					$this->town = $mysoc->town;
+					$this->thirdparty=$mysoc;
 				}
 				// trainer is Dolibarr contact
 				elseif ($this->type_trainer == $this->type_trainer_def[1]) {
@@ -204,6 +207,11 @@ class Agefodd_teacher extends CommonObject {
 					$this->address = $obj->s_address;
 					$this->zip = $obj->s_zip;
 					$this->town = $obj->s_town;
+					if (!empty($obj->soctrainerid)) {
+						$soctrainer= new Societe($this->db);
+						$soctrainer->fetch($obj->soctrainerid);
+						$this->thirdparty=$soctrainer;
+					}
 				}
 
 
@@ -283,7 +291,7 @@ class Agefodd_teacher extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
-		global $langs;
+		global $langs, $mysoc;
 
 		$error=0;
 
@@ -293,6 +301,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
 		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
+		$sql .= " ,s.fk_soc as soctrainerid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
@@ -341,6 +350,8 @@ class Agefodd_teacher extends CommonObject {
 
 					$line = new AgfTrainerLine();
 
+					$line->thirdparty=new stdClass();
+
 					$line->id = $obj->rowid;
 					$line->type_trainer = $obj->type_trainer;
 					$line->archive = $obj->archive;
@@ -354,6 +365,7 @@ class Agefodd_teacher extends CommonObject {
 						$line->email = $obj->u_email;
 						$line->phone_mobile = $obj->u_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
+						$line->thirdparty=$mysoc;
 					}
 					// trainer is Dolibarr contact
 					elseif ($line->type_trainer == $this->type_trainer_def[1]) {
@@ -365,6 +377,12 @@ class Agefodd_teacher extends CommonObject {
 						$line->email = $obj->sp_email;
 						$line->phone_mobile = $obj->sp_phone_mobile;
 						$line->fk_socpeople = $obj->fk_socpeople;
+						if (!empty($obj->soctrainerid)) {
+							$soctrainer= new Societe($this->db);
+							$soctrainer->fetch($obj->soctrainerid);
+							$line->thirdparty=$soctrainer;
+						}
+
 					}
 
 					$sql_inner='SELECT cat.rowid as catid, dict.rowid as dictid,dict.code,dict.label,dict.description ';
@@ -727,6 +745,7 @@ class AgfTrainerLine {
 	public $email;
 	public $phone_mobile;
 	public $fk_socpeople;
+	public $thirdparty;
 	public $categories = array ();
 	public $trainings = array ();
 	public function __construct() {
