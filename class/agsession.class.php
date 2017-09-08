@@ -4645,6 +4645,31 @@ class Agsession extends CommonObject
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
 		
+		//Trainee link to the company convention
+		$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		$stagiaires = new Agefodd_session_stagiaire($db);
+		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
+		if ($result<0) {
+			setEventMessage($stagiaires->error,'errors');
+		} else {
+			$this->signataire_inter_array=array();
+			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
+				
+				foreach ($stagiaires->lines as $line) {
+					if (!empty($line->fk_socpeople_sign)) {
+						$socpsign=new Contact($db);
+						$socpsign->fetch($line->fk_socpeople_sign);
+						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
+					}
+				}
+				
+			}
+			if (count($this->signataire_inter_array)>0) {
+				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
+				unset($this->signataire_inter_array);
+			}
+		}
+		
 		if(empty($this->TStagiairesSessionSocMore)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 			$stagiaires = new Agefodd_session_stagiaire($db);
