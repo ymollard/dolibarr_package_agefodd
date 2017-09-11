@@ -168,7 +168,11 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$file = $model . '_' . $sessiontrainerid . '.pdf';
 		$socid = $sessiontrainerid;
 		$id_tmp = $id;
-	} else {
+	} elseif (strpos($model, 'contrat_trainer') !== false) {
+		$file = $model . '_' . $sessiontrainerid . '.pdf';
+		$socid = $sessiontrainerid;
+		$id_tmp = $id;
+	}else {
 		$file = $model . '_' . $id . '.pdf';
 	}
 
@@ -268,7 +272,7 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif ($model == 'fiche_pedago') {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
-	} elseif (strpos($model, 'mission_trainer') !== false) {
+	} elseif (strpos($model, 'mission_trainer') !== false || strpos($model, 'contrat_trainer') !== false) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $sessiontrainerid . '.pdf';
 	} else {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '.pdf';
@@ -707,6 +711,8 @@ if (! empty($id)) {
 				print '</td>' . "\n";
 				print '</tr>' . "\n";
 				document_line($langs->trans("AgfTrainerMissionLetter"), "mission_trainer", $line->opsid);
+				$select_models = getSelectAgefoddModels("contrat_trainer", $socid); // Si la chaine est vide, aucun modèle de ce type n'existe
+				if(!empty($select_models)) document_line($langs->trans("AgfContratTrainer"), "contrat_trainer", $line->opsid);
 			}
 			print '</table>';
 		}

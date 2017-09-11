@@ -161,7 +161,7 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		$sav_charset_output = $outputlangs->charset_output;
 		
 		if(empty($path_external_model)) $res_writefile = $obj->write_file($id, $outputlangs, $file, $socid, $courrier);
-		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file, $obj_agefodd_convention);
+		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file, $obj_agefodd_convention, $socid);
 		
 		if ($res_writefile > 0) {
 			$outputlangs->charset_output = $sav_charset_output;
