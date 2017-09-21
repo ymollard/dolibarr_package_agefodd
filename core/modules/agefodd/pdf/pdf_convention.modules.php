@@ -155,6 +155,7 @@ class pdf_convention extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			$result=true;
 			$agf_comdetails = new Agefodd_convention($this->db);
 			$agf_comdetails->fetch(0, 0, $agf_conv->id);
 			if ($agf_conv->element_type == 'invoice') {
@@ -166,8 +167,9 @@ class pdf_convention extends ModelePDFAgefodd {
 			if ($agf_conv->element_type == 'propal') {
 				$result = $agf_comdetails->fetch_propal_lines($agf_conv->fk_element);
 			}
-			if (empty($agf_conv->element_type))
+			if (empty($agf_conv->element_type) && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 				$result = false;
+			}
 
 			if ($result) {
 				/*
@@ -284,8 +286,6 @@ class pdf_convention extends ModelePDFAgefodd {
 						}
 					}
 				}
-
-
 
 				// TItre page de garde 1
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 25);
@@ -518,6 +518,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				$posX = $this->marge_gauche;
 				$posY = $this->marge_haute;
 
+				if (empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
 				$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . ' - ' . $outputlangs->transnoentities('AgfPDFConv14');
@@ -609,6 +610,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', $this->defaultFontSize - 2);
 				$pdf->Cell(0, 4, $outputlangs->transnoentities("AmountInCurrency", $outputlangs->transnoentitiesnoconv("Currency" . $conf->currency)), 0, 0, 'R', 0);
 				$posY += $this->hApresCorpsArticle + 4;
+				}
 
 
 				$pdf->SetXY($posX, $posY);
@@ -790,7 +792,7 @@ class pdf_convention extends ModelePDFAgefodd {
 						}
 					}
 				}
-			} else {
+			} elseif (!empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 				$pdf->AddPage();
 
 				$pagenb ++;

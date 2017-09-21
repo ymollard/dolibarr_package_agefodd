@@ -97,12 +97,13 @@ function show_conv($file, $socid, $nom_courrier) {
 				$continue = false;
 			}
 	} else {
-		if (count($propal_array) == 0 && count($invoice_array)==0) {
+		if (count($propal_array) == 0 && count($invoice_array)==0 && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 			$mess = $form->textwithpicto('', $langs->trans("AgfFacturePropalHelp"), 1, 'help');
 			$continue = false;
 		}
 	}
-	if ((count($propal_array) == 0) && (count($order_array) == 0) && (count($invoice_array) == 0)) {
+
+	if ((count($propal_array) == 0) && (count($order_array) == 0) && (count($invoice_array) == 0) && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 		$mess = $form->textwithpicto('', $langs->trans("AgfFacturePropalHelp"), 1, 'warning');
 		$continue = false;
 	}

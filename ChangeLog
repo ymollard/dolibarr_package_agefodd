@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.16 compared to 3.0.15 *****
+NEW : Allow convention without financial document linked in module setup
+
 ***** ChangeLog for 3.0.15 compared to 3.0.14 *****
 FIX : Various fix
 NEW : new column for document models
