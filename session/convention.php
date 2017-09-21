@@ -254,7 +254,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			$element_type = $idtypeelement_array [1];
 		}
 
-		if (empty($fk_element)) {
+		if (empty($fk_element) && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('AgfElementToUse')), 'errors');
 			$action = 'create';
 		} else {
@@ -482,13 +482,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 		$old_date = $calendrier->lines [$i]->date_session;
 	}
-	
+
 	// Formateur
 	$formateurs = new Agefodd_session_formateur($db);
 	$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 	foreach($formateurs->lines as $trainer) {
 		$TTrainer[] = $trainer->firstname . ' ' . $trainer->lastname;
-	} 
+	}
 	if ($nbform>0) {
 		$art1 .= "\n". $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
 	}
@@ -814,6 +814,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '</td></tr>';
 
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
+
 			print '<td><textarea name="intro1" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->intro1 . '</textarea></td></tr>';
 
 			print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
@@ -940,7 +941,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvModelDoc") . '</td>';
 			print '<td>';
 			if (! empty($agf->model_doc)) {
-
 				$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
 				$file = $agf->model_doc . '.modules.php';
 				$class = $agf->model_doc;

@@ -97,12 +97,13 @@ function show_conv($file, $socid, $nom_courrier) {
 				$continue = false;
 			}
 	} else {
-		if (count($propal_array) == 0 && count($invoice_array)==0) {
+		if (count($propal_array) == 0 && count($invoice_array)==0 && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 			$mess = $form->textwithpicto('', $langs->trans("AgfFacturePropalHelp"), 1, 'help');
 			$continue = false;
 		}
 	}
-	if ((count($propal_array) == 0) && (count($order_array) == 0) && (count($invoice_array) == 0)) {
+
+	if ((count($propal_array) == 0) && (count($order_array) == 0) && (count($invoice_array) == 0) && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 		$mess = $form->textwithpicto('', $langs->trans("AgfFacturePropalHelp"), 1, 'warning');
 		$continue = false;
 	}
@@ -769,6 +770,7 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
 	print '<tr style="height:14px">' . "\n";
 
+
 	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
 	if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
 		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle) . '</td>' . "\n";
@@ -787,6 +789,7 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	} else {
 		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier) . '</td>' . "\n";
 	}
+
 	print '<td style="border-right:0px;">';
 
 	print $intitule;

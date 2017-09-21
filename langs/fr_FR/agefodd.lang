@@ -1226,5 +1226,5 @@ AgfDefaultTrainingCat=Catégorie par defaut des formations à la création
 AgfDefaultTrainingCatBPF=Catégorie Prestation par defaut des formations à la création
 ExtraFieldsTrainee=Attributs supplémentaires (Participants)
 AgfDefaultSessionType=Type de session par defaut
-
-
+AgfAllowConventionWithoutFinancial=Autoriser la génération de convention sans éléments financiés
+AgfAllowConventionWithoutFinancialHelp=Dans l'onglet "Document liés" d'une session, les convention ne peuvent normalement pas être crée sans devis/commande/facture
