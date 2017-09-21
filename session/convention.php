@@ -556,20 +556,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	}
 
 	// Signature du client
-	if ($agf_conv->sig)
-		$sig = $agf_conv->sig;
-	else {
-		$sig = $agf_soc->name . "\n";
-		$sig .= $langs->trans('AgfConvArtSigCli') . ' ';
-		//$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
-		$contactname=trim($agf->contactname);
-		if (!empty($contactname)) {
-			$sig .= $agf->contactname;
-		} elseif (!empty($signataire)) {
-			$sig .= $signataire;
-		}
-		$sig .= " (*)";
+	$sig = $agf_soc->name . "\n";
+	$sig .= $langs->trans('AgfConvArtSigCli') . ' ';
+	//$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
+	$contactname=trim($agf->contactname);
+	if (!empty($contactname)) {
+		$sig .= $agf->contactname;
+	} elseif (!empty($signataire)) {
+		$sig .= $signataire;
 	}
+	$sig .= " (*)";
 
 	print_fiche_titre($langs->trans("AgfNewConv"));
 
