@@ -392,6 +392,29 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				print '</td>';
 				print '</tr>';
 			}
+			
+			// Trainer type
+			print '<tr><td>Type de formateur</td>';
+			if ($agf->type_trainer == $agf->type_trainer_def[0]) print '<td>Formateur interne</td>';
+			else print '<td>Formateur externe</td>';
+			print '</tr>';
+			
+			// See trainer
+			if ($agf->type_trainer == $agf->type_trainer_def[1]) {
+			    if ($user->rights->societe->contact->creer) {
+			        require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
+			        $contact = new Contact($db);
+			        $contact->fetch($agf->spid);
+			        print '<tr><td>Voir le formateur</td><td>'.$contact->getNomUrl(1).'</td></tr>';
+			    }
+			} elseif ($agf->type_trainer == $agf->type_trainer_def[0]) {
+			    if ($user->rights->user->user->creer) {
+			        require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
+			        $u = new User($db);
+			        $u->fetch($agf->fk_user);
+			        print '<tr><td>Voir le formateur</td><td>'.$u->getNomUrl(1).'</td></tr>';
+			    }
+			}
 
 			print "</table>";
 			print '</form>';
@@ -410,20 +433,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'editcategory' && $action != 'edittraining') {
-	if ($agf->type_trainer == $agf->type_trainer_def[1]) {
-		if ($user->rights->societe->contact->creer) {
-			print '<a class="butAction" href="' . DOL_URL_ROOT . '/contact/card.php?id=' . $agf->spid . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
-		} else {
-			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheContact') . '</a>';
-		}
-	} elseif ($agf->type_trainer == $agf->type_trainer_def[0]) {
-		if ($user->rights->user->user->creer) {
-			print '<a class="butAction" href="' . DOL_URL_ROOT . '/user/card.php?id=' . $agf->fk_user . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
-		} else {
-			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifierFicheUser') . '</a>';
-		}
-	}
-
+	
 	if ($user->rights->agefodd->creer) {
 		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
