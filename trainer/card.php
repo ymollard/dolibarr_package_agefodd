@@ -394,9 +394,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			}
 			
 			// Trainer type
-			print '<tr><td>Type de formateur</td>';
-			if ($agf->type_trainer == $agf->type_trainer_def[0]) print '<td>Formateur interne</td>';
-			else print '<td>Formateur externe</td>';
+			print '<tr><td>'.$langs->trans('AgfTrainerType').'</td>';
+			print '<td>'.$langs->trans('AgfTrainerType'.ucfirst($agf->type_trainer)).'</td>';
 			print '</tr>';
 			
 			// See trainer
@@ -405,14 +404,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			        require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 			        $contact = new Contact($db);
 			        $contact->fetch($agf->spid);
-			        print '<tr><td>Voir le formateur</td><td>'.$contact->getNomUrl(1).'</td></tr>';
+			        print '<tr><td>'.$langs->trans('AgfSeeTrainer').'</td><td>'.$contact->getNomUrl(1).'</td></tr>';
 			    }
 			} elseif ($agf->type_trainer == $agf->type_trainer_def[0]) {
 			    if ($user->rights->user->user->creer) {
 			        require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 			        $u = new User($db);
 			        $u->fetch($agf->fk_user);
-			        print '<tr><td>Voir le formateur</td><td>'.$u->getNomUrl(1).'</td></tr>';
+			        print '<tr><td>'.$langs->trans('AgfSeeTrainer').'</td><td>'.$u->getNomUrl(1).'</td></tr>';
 			    }
 			}
 
