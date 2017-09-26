@@ -719,6 +719,7 @@ if (! empty($id)) {
 					}
 				}
 			}
+			if(!empty($conf->global->AGF_USE_REAL_HOURS)) print '<br><br><a class="butAction" href="#">Modifier les heures de présence</a>';
 			print '</td></tr>';
 		} else {
 			print '<br>';
