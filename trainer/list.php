@@ -128,7 +128,7 @@ print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "s.
 print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("PhoneMobile"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.email", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans('AgfTrainerType'), $_SERVER ['PHP_SELF'], "f.type_trainer", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans('AgfTrainerNature'), $_SERVER ['PHP_SELF'], "f.type_trainer", "", $option, '', $sortfield, $sortorder);
 print '<th width="5%">';
 print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 print '&nbsp; ';

@@ -394,7 +394,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			}
 			
 			// Trainer type
-			print '<tr><td>'.$langs->trans('AgfTrainerType').'</td>';
+			print '<tr><td>'.$langs->trans('AgfTrainerNature').'</td>';
 			print '<td>'.$langs->trans('AgfTrainerType'.ucfirst($agf->type_trainer)).'</td>';
 			print '</tr>';
 			
