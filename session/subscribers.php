@@ -49,6 +49,7 @@ $stag_add_x = GETPOST('stag_add_x', 'alpha');
 $stag_remove_x = GETPOST('stag_remove', 'alpha');
 $modstagid = GETPOST('modstagid', 'int');
 $newstag = GETPOST('newstag');
+$edithours = (bool)GETPOST('edithours');
 
 $fk_soc_requester=GETPOST('fk_soc_requester', 'int');
 if ($fk_soc_requester<0) {
@@ -160,6 +161,43 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 			setEventMessage($agf->error, 'errors');
 		}
 	}
+}
+
+/*
+ * Action editrealhours
+ */
+if ($action == 'editrealhours'){
+    require_once '../class/agefodd_session_stagiaire_heures.class.php';
+    
+    $hours = GETPOST('realhours');
+    
+    if(!empty($hours)){
+        foreach ($hours as $key => $value){
+            foreach ($value as $creneaux => $heures){
+                $agf = new Agefoddsessionstagiaireheures($db);
+                $result = $agf->fetch_by_session($id, $key, $creneaux);
+                
+                if($result){
+                   // édition d'heures existante
+                   if($agf->heures !== $heures) {
+                       $agf->heures = (float)$heures;
+                       //$agf->update();
+                   }
+                   
+                } else {
+                    // création d'heure
+                    $agf->fk_stagiaire = $key;
+                    $agf->fk_calendrier = $creneaux;
+                    $agf->fk_session = $id;
+                    $agf->heures = (float)$heures;
+                    $res=$agf->create($user);
+                }
+                
+            }
+        }
+    }
+    Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+    exit;
 }
 
 /*
@@ -382,11 +420,54 @@ if (! empty($id)) {
 
 			print '</table>';
 		}
-
+		
+		/*
+		 * Tableau d'édition des heures réelles
+		 */		
+		if (!empty($conf->global->AGF_USE_REAL_HOURS && $edithours)){
+		    print '<br><form name="editrealhours" action="' . $_SERVER['PHP_SELF'] . '?action=editrealhours&id=' . $id . '"  method="POST">' . "\n";
+		    print '<input type="hidden" name="action" value="editrealhours">';
+		    require_once '../class/agefodd_session_calendrier.class.php';
+		    $calendrier = new Agefodd_sesscalendar($db);
+		    $calendrier->fetch_all($agf->id);
+		    $blocNumber = count($calendrier->lines);
+		    
+		    print '<table class="noborder" width="100%">';
+		    print '<tr class="liste_titre">';
+		    print '<th>Participants</th><th colspan="'.$blocNumber.'" align="center">Créneaux horaires</th>';
+		    print '</tr>';
+		    print '<tr class="liste_titre"><th></th>';
+		    
+		    for ($i = 0; $i < $blocNumber; $i++){
+		        print '<th>'.dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y').'<br>'.dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</th>';
+		    }
+		    print '</tr>';
+		    
+		    $stagiaires = new Agefodd_session_stagiaire($db);
+		    $stagiaires->fetch_stagiaire_per_session($agf->id);
+		    $nbstag = count($stagiaires->lines);
+		    
+		    for($i = 0; $i < $nbstag; $i ++) {
+		        print '<tr><td>'.strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom).'</td>';
+		        for ($j = 0; $j < $blocNumber; $j++){
+		            $val = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured)/3600;
+		            print '<td><input name="realhours['.$stagiaires->lines[$i]->id.']['.$calendrier->lines[$j]->id.']" type="text" size="5" value='.$val.'></td>';
+		        }
+		        print '</tr>';
+		    }
+		    
+		    print '</table>';
+		    print '<div class="tabsAction"><input type="submit" class="butAction" value="'.$langs->trans('Save').'">';
+		    print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">'.$langs->trans('Cancel').'</a></div>';
+		    print '</form>';
+		    exit;
+		}
+		
 		print '<div class="tabBar">';
 		print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
 		print '<table class="border" width="100%">';
 
+		
 		/*
 		 *  Block update trainne info
 		*
@@ -719,7 +800,7 @@ if (! empty($id)) {
 					}
 				}
 			}
-			if(!empty($conf->global->AGF_USE_REAL_HOURS)) print '<br><br><a class="butAction" href="#">Modifier les heures de présence</a>';
+			if(!empty($conf->global->AGF_USE_REAL_HOURS)) print '<br><br><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&edithours=true">Modifier les heures de présence</a>';
 			print '</td></tr>';
 		} else {
 			print '<br>';
