@@ -1230,11 +1230,14 @@ AgfDefaultTrainingCat=Catégorie par defaut des formations à la création
 AgfDefaultTrainingCatBPF=Catégorie Prestation par defaut des formations à la création
 ExtraFieldsTrainee=Attributs supplémentaires (Participants)
 AgfDefaultSessionType=Type de session par defaut
-AgfAllowConventionWithoutFinancial=Autoriser la génération de convention sans éléments financiés
+AgfAllowConventionWithoutFinancial=Autoriser la génération de convention sans éléments financiers
 AgfAllowConventionWithoutFinancialHelp=Dans l'onglet "Document liés" d'une session, les convention ne peuvent normalement pas être crée sans devis/commande/facture
+<<<<<<< HEAD
+AgfUseRealHours=Utiliser le temps de présence réel des stagiaires
+AgfUseRealHoursHelp=Permet de saisir le temps de présence réel des stagiaires par créneau horaire du calendrier de session
+=======
 AgfGroupEventByDayInCalendar=Grouper les sessions par jour dans le calendrier des sessions
 AgfGroupEventByDayInCalendarHelp=Cette option peut perturber l'affichage du calendrier des sessions dans certaines conditions
 AgfTraineeDisplayGroupByStatus=Ordonnéer la liste les participants dans l'onglet fiche et participatns des sessions par statut puis par nom
 AgfTrainerAvailabilityOnlyWarning=Ne Bloque pas l'inscription d'un formateur si il est déja attribué à une autre session (juste un message d'alerte)
-AgfUseRealHours=Utiliser le temps de présence réel des stagiaires
-AgfUseRealHoursHelp=Permet de saisir le temps de présence réel des stagiaires par créneau horaire du calendrier de session
+>>>>>>> 1bcb2d01e0a08b9877e87be4c8490be7a89f6022

@@ -1,5 +1,11 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.17 compared to 3.0.16 *****
+NEW : Display trainer type on trainer list
+NEW : Option to Group session per day on session calendar
+NEW : Add filter on session calendar on session status
+NEW : Add option to warning or block if trainer is already book on another session
+
 ***** ChangeLog for 3.0.16 compared to 3.0.15 *****
 NEW : Allow convention without financial document linked in module setup
 

@@ -43,6 +43,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $heuref = '';
 	public $trainer_cost;
 	public $trainer_status;
+	public $trainer_status_in_session;
 	public $fk_actioncomm;
 	public $fk_user_author;
 	public $datec = '';
@@ -234,6 +235,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost,s.trainer_status ";
 		$sql .= " ,f.fk_session ";
+		$sql .= " ,f.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as f ON  f.rowid=s.fk_agefodd_session_formateur";
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
@@ -252,6 +254,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$this->trainer_cost = $obj->trainer_cost;
 				$this->trainer_status = $obj->trainer_status;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
+				$line->trainer_status_in_session = $obj->trainer_status_in_session;
 			}
 			$this->db->free($resql);
 
@@ -282,7 +285,8 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "s.trainer_status,";
 		$sql .= "s.fk_actioncomm,";
 		$sql .= "s.fk_user_author,";
-		$sql .= "sf.fk_session";
+		$sql .= "sf.fk_session,";
+		$sql .= "sf.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
 		$sql .= " WHERE s.fk_agefodd_session_formateur = " . $id;
@@ -309,6 +313,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->fk_session = $obj->fk_session;
+				$line->trainer_status_in_session = $obj->trainer_status_in_session;
 
 				$this->lines[$i] = $line;
 			}
@@ -340,14 +345,15 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "s.trainer_status,";
 		$sql .= "s.fk_actioncomm,";
 		$sql .= "s.fk_user_author,";
-		$sql .= "sf.fk_session";
+		$sql .= "sf.fk_session,";
+		$sql .= "sf.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer.rowid=sf.fk_agefodd_formateur";
 		$sql .= " WHERE trainer.rowid = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 
-		dol_syslog(get_class($this) . "::fetch_all_by_trainer", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -368,6 +374,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->fk_session = $obj->fk_session;
+				$line->trainer_status_in_session = $obj->trainer_status_in_session;
 
 				$this->lines[$i] = $line;
 			}
@@ -427,7 +434,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " date_session=" . (dol_strlen($this->date_session) != 0 ? "'" . $this->db->idate($this->date_session) . "'" : 'null') . ",";
 		$sql .= " heured=" . (dol_strlen($this->heured) != 0 ? "'" . $this->db->idate($this->heured) . "'" : 'null') . ",";
 		$sql .= " heuref=" . (dol_strlen($this->heuref) != 0 ? "'" . $this->db->idate($this->heuref) . "'" : 'null') . ",";
-		$sql .= " trainer_cost='" . (isset($this->trainer_cost) ? $this->trainer_cost : "null") . "',";
+		$sql .= " trainer_cost=" . (isset($this->trainer_cost) ? "'".$this->trainer_cost."'" : "null") . ",";
 		$sql .= " trainer_status=" . (isset($this->trainer_status) ? $this->trainer_status : "null") . ",";
 		$sql .= " fk_actioncomm=" . (isset($this->fk_actioncomm) ? $this->fk_actioncomm : "null") . ",";
 		$sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
