@@ -3360,8 +3360,9 @@ class Agsession extends CommonObject
 					}
 					print '<td width="150px">';
 					print dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td><td>';
-				} else
+				} else {
 					print ', ';
+				}
 				print dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
 
 				if (($calendrier->lines[$i]->date_session < $this->dated) || ($calendrier->lines[$i]->date_session > $this->datef))

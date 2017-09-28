@@ -32,7 +32,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
  */
 abstract class ModelePDFAgefodd extends CommonDocGenerator {
 	var $error = '';
-	
+
 	/**
 	 * Return list of active generation modules
 	 *
@@ -42,13 +42,43 @@ abstract class ModelePDFAgefodd extends CommonDocGenerator {
 	 */
 	static function liste_modeles($db, $maxfilenamelength = 0) {
 		global $conf;
-		
+
 		$type = 'agefodd';
 		$liste = array ();
-		
+
 		$liste [] = 'agefodd';
-		
+
 		return $liste;
+	}
+
+	/**
+	 *
+	 * @param string $txt
+	 */
+	public function getRealHeightLine($type = '') {
+		global $conf;
+
+		// Determine if jump pages is needed
+		$this->pdf->startTransaction();
+
+		$this->pdf->setPrintHeader(false);
+		$this->pdf->setPrintFooter(false);
+		$this->pdf->AddPage();
+
+		// store starting values
+		$start_y = $this->pdf->GetY();
+		// print '$start_y='.$start_y.'<br>';
+
+		$start_page = $this->pdf->getPage();
+
+		$height = 0;
+
+		// print content
+		if ($type == 'head') {
+			$this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
+		} elseif ($type == 'foot') {
+			$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
+		}
 	}
 }
 
@@ -57,7 +87,7 @@ abstract class ModelePDFAgefodd extends CommonDocGenerator {
  */
 abstract class ModeleNumRefAgefodd {
 	var $error = '';
-	
+
 	/**
 	 * Return if a module can be used or not
 	 *
@@ -66,7 +96,7 @@ abstract class ModeleNumRefAgefodd {
 	function isEnabled() {
 		return true;
 	}
-	
+
 	/**
 	 * Renvoi la description par defaut du modele de numerotation
 	 *
@@ -77,7 +107,7 @@ abstract class ModeleNumRefAgefodd {
 		$langs->load("agefodd@agefodd");
 		return $langs->trans("AgfNoDescription");
 	}
-	
+
 	/**
 	 * Renvoi un exemple de numerotation
 	 *
@@ -88,7 +118,7 @@ abstract class ModeleNumRefAgefodd {
 		$langs->load("agefodd@agefodd");
 		return $langs->trans("AgfNoExample");
 	}
-	
+
 	/**
 	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
 	 * de conflits qui empechera cette numerotation de fonctionner.
@@ -98,7 +128,7 @@ abstract class ModeleNumRefAgefodd {
 	function canBeActivated() {
 		return true;
 	}
-	
+
 	/**
 	 * Renvoi prochaine valeur attribuee
 	 *
@@ -110,7 +140,7 @@ abstract class ModeleNumRefAgefodd {
 		global $langs;
 		return $langs->trans("NotAvailable");
 	}
-	
+
 	/**
 	 * Renvoi version du module numerotation
 	 *
@@ -119,7 +149,7 @@ abstract class ModeleNumRefAgefodd {
 	function getVersion() {
 		global $langs;
 		$langs->load("admin");
-		
+
 		if ($this->version == 'development')
 			return $langs->trans("VersionDevelopment");
 		if ($this->version == 'experimental')
@@ -142,27 +172,27 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	global $conf, $langs;
 	$langs->load('agefodd@agefodd');
 	$langs->load('bills');
-	
+
 	// Charge le modele
 	if(empty($path_external_model)) $nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
 	else $nomModele = dol_buildpath($path_external_model);
-	
+
 	if (file_exists($nomModele)) {
 		require_once ($nomModele);
-		
+
 		$classname = "pdf_" . $typeModele;
 		if(!empty($id_external_model)) $classname = 'pdf_rfltr_agefodd';
-		
+
 		$obj = new $classname($db);
 		$obj->message = $message;
-		
+
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
-		
+
 		if(empty($path_external_model)) $res_writefile = $obj->write_file($id, $outputlangs, $file, $socid, $courrier);
 		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file, $obj_agefodd_convention, $socid);
-		
+
 		if ($res_writefile > 0) {
 			$outputlangs->charset_output = $sav_charset_output;
 			return 1;

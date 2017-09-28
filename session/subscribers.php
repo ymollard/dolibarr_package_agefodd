@@ -392,7 +392,15 @@ if (! empty($id)) {
 		*
 		*/
 		$stagiaires = new Agefodd_session_stagiaire($db);
-		$stagiaires->fetch_stagiaire_per_session($agf->id);
+		if (!empty($conf->global->AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS)) {
+			$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id,null, 0, 'ss.status_in_session,sa.nom');
+		} else {
+			$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
+		}
+
+		if ($resulttrainee < 0) {
+			setEventMessage($stagiaires->error, 'errors');
+		}
 		$nbstag = count($stagiaires->lines);
 		if ($nbstag > 0) {
 			$fk_soc_used = array ();
@@ -888,7 +896,15 @@ if (! empty($id)) {
 		print '<table class="border" width="100%">';
 
 		$stagiaires = new Agefodd_session_stagiaire($db);
-		$stagiaires->fetch_stagiaire_per_session($agf->id);
+		if (!empty($conf->global->AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS)) {
+			$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id,null, 0, 'ss.status_in_session,sa.nom');
+		} else {
+			$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
+		}
+
+		if ($resulttrainee < 0) {
+			setEventMessage($stagiaires->error, 'errors');
+		}
 		$nbstag = count($stagiaires->lines);
 		print '<tr><td  width="20%" valign="top" ';
 		if ($nbstag < 1) {

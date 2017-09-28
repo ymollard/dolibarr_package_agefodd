@@ -57,6 +57,7 @@ $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
 $filter_location = GETPOST('location', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
+$filter_session_status=GETPOST('search_session_status','array');
 
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
@@ -297,6 +298,12 @@ if ($display_only_trainer_filter != '') {
 if ($filter_location){
 	$param .= '&location=' . $filter_location;
 }
+if (is_array($filter_session_status) && count($filter_session_status)>0){
+	foreach($filter_session_status as $val) {
+		$param .= '&search_session_status[]=' . $val;
+	}
+
+}
 $param .= "&maxprint=" . $maxprint;
 
 
@@ -305,28 +312,53 @@ llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
 // Show navigation bar
 if (empty($action) || $action=='show_month')
 {
-	$nav ="<a href=\"?amp;year=".$prev_year."&amp;month=".$prev_month.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	if (DOL_VERSION < 6.0) {
+		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	} else {
+		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month.$param."\"><i class=\"fa fa-chevron-left\"></i></a> &nbsp;\n";
+	}
 	$nav .= " <span id=\"month_name\">" . dol_print_date(dol_mktime(0, 0, 0, $month, 1, $year), "%b %Y");
 	$nav .= " </span>\n";
-    $nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month.$param."\">".img_next($langs->trans("Next"))."</a>\n";
+	if (DOL_VERSION < 6.0) {
+	    $nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month.$param."\">".img_next($langs->trans("Next"))."</a>\n";
+	} else {
+		$nav.=" &nbsp; <a href=\"?year=".$next_year."&amp;month=".$next_month.$param."\"><i class=\"fa fa-chevron-right\"></i></a>\n";
+	}
     $nav.=" &nbsp; (<a href=\"?year=".$nowyear."&amp;month=".$nowmonth.$param."\">".$langs->trans("Today")."</a>)";
 	$picto = 'calendar';
 }
 if ($action=='show_week')
 {
-    $nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	if (DOL_VERSION < 6.0) {
+   		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	} else {
+		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\"><i class=\"fa fa-chevron-left\" title=\"".dol_escape_htmltag($langs->trans("Previous"))."\"></i></a> &nbsp;\n";
+	}
     $nav.=" <span id=\"month_name\">".dol_print_date(dol_mktime(0,0,0,$first_month,$first_day,$first_year),"%Y").", ".$langs->trans("Week")." ".$week;
 	$nav .= " </span>\n";
-    $nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month."&amp;day=".$next_day.$param."\">".img_next($langs->trans("Next"))."</a>\n";
+	if (DOL_VERSION < 6.0) {
+    	$nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month."&amp;day=".$next_day.$param."\">".img_next($langs->trans("Next"))."</a>\n";
+	} else {
+		$nav.=" &nbsp; <a href=\"?year=".$next_year."&amp;month=".$next_month."&amp;day=".$next_day.$param."\"><i class=\"fa fa-chevron-right\" title=\"".dol_escape_htmltag($langs->trans("Next"))."\"></i></a>\n";
+	}
     $nav.=" &nbsp; (<a href=\"?year=".$nowyear."&amp;month=".$nowmonth."&amp;day=".$nowday.$param."\">".$langs->trans("Today")."</a>)";
 	$picto = 'calendarweek';
 }
 if ($action=='show_day')
 {
-    $nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	
+	if (DOL_VERSION < 6.0) {
+   		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
+	} else {
+		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\"><i class=\"fa fa-chevron-left\"></i></a> &nbsp;\n";
+	}
 	$nav .= " <span id=\"month_name\">" . dol_print_date(dol_mktime(0, 0, 0, $month, $day, $year), "daytextshort");
 	$nav .= " </span>\n";
-    $nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month."&amp;day=".$next_day.$param."\">".img_next($langs->trans("Next"))."</a>\n";
+	if (DOL_VERSION < 6.0) {
+   		$nav.="<a href=\"?year=".$next_year."&amp;month=".$next_month."&amp;day=".$next_day.$param."\">".img_next($langs->trans("Next"))."</a>\n";
+	} else {
+		$nav.=" &nbsp; <a href=\"?year=".$next_year."&amp;month=".$next_month."&amp;day=".$next_day.$param."\"><i class=\"fa fa-chevron-right\"></i></a>\n";
+	}
     $nav.=" &nbsp; (<a href=\"?year=".$nowyear."&amp;month=".$nowmonth."&amp;day=".$nowday.$param."\">".$langs->trans("Today")."</a>)";
 	$picto = 'calendarday';
 }
@@ -348,7 +380,7 @@ $paramnoaction=preg_replace('/action=[a-z_]+/','',$param);
 
 $head = agf_calendars_prepare_head($paramnoaction);
 dol_fiche_head($head, $tabactive, $langs->trans('AgfMenuAgenda'), 0, $picto);
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status);
 dol_fiche_end();
 
 $link = '';
@@ -466,9 +498,12 @@ if ($filter_type_session != '') {
 if (! empty($filter_location)) {
 	$sql .= " AND agf.fk_session_place=" . $filter_location;
 }
+if (! empty($filter_session_status)) {
+	$sql .= " AND agf.status IN (" . implode(',',$filter_session_status).")";
+}
 
 // Sort on date
-$sql .= ' ORDER BY datep';
+$sql .= ' ORDER BY datep, agf.rowid';
 // print $sql;
 
 dol_syslog("agefodd/agenda/index.php", LOG_DEBUG);
@@ -477,6 +512,7 @@ if ($resql)
 {
 	$num = $db->num_rows($resql);
 	$i = 0;
+	$group_date=array();
     while ($i < $num)
     {
 		$obj = $db->fetch_object($resql);
@@ -488,10 +524,36 @@ if ($resql)
         	continue;
         }
 
+        if (!empty($conf->global->AGF_GROUP_BY_DAY_CAL)) {
+	        if (array_key_exists($obj->sessionid,$group_date) && $group_date[$obj->sessionid]==$obj->datep2) {
+	        	$i++;
+	        	continue;
+	        }
+        }
+
 		// Create a new object action
 		$event = new ActionComm($db);
 		$event->id = $obj->id;
         $event->datep=$db->jdate($obj->datep);      // datep and datef are GMT date
+
+        if (!empty($conf->global->AGF_GROUP_BY_DAY_CAL)) {
+	        $sql_group_date="SELECT MAX(datep2) as maxtimasameday FROM " . MAIN_DB_PREFIX . "actioncomm as a";
+	        $sql_group_date.=' WHERE a.fk_element='.$obj->sessionid.' AND a.elementtype=\'agefodd_agsession\'';
+	        $sql_group_date.= ' AND YEAR(datep)='.dol_print_date($db->jdate($obj->datep),'%Y').' AND MONTH(datep)='.dol_print_date($db->jdate($obj->datep),'%m');
+	        $sql_group_date.= ' AND DAY(datep)='.dol_print_date($db->jdate($obj->datep),'%d');
+	        dol_syslog("agefodd/agenda/index.php", LOG_DEBUG);
+	        $resql_group_date = $db->query($sql_group_date);
+	        if ($resql_group_date)
+	        {
+	        	$obj_group_date = $db->fetch_object($resql_group_date);
+	        	if (!empty($obj_group_date->maxtimasameday)){
+	        		$group_date[$obj->sessionid]=$obj_group_date->maxtimasameday;
+
+	        		$obj->datep2=$obj_group_date->maxtimasameday;
+	        	}
+	        }
+        }
+
 		$event->datef = $db->jdate($obj->datep2);
         $event->type_code=$obj->type_code;
         $event->type_label=$obj->type_label;
@@ -604,7 +666,12 @@ if (empty($action) || $action == 'show_month') // View by month
 	$newparam = preg_replace('/viewcal=[0-9]+&?/i', '', $newparam);
 	$newparam = preg_replace('/type=trainer/i', '', $newparam);
 	$newparam .= '&viewcal=1';
-	echo '<table width="100%" class="nocellnopadd cal_month">';
+	if (DOL_VERSION < 6.0) {
+		echo '<table width="100%" class="nocellnopadd cal_month">';
+	} else {
+		echo '<table width="100%" class="noborder nocellnopadd cal_pannel cal_month">';
+	}
+
 	echo ' <tr class="liste_titre">';
 	$i = 0;
     while ($i < 7)
@@ -663,7 +730,7 @@ if (empty($action) || $action == 'show_month') // View by month
 	}
 	echo "</table>\n";
     echo '<form id="move_event" action="" method="POST"><input type="hidden" name="action" value="mupdate">';
-    echo '<input type="hidden" name="backtopage" value="'.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'].'">';
+    echo '<input type="hidden" name="backtopage" value="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'?'.dol_escape_htmltag($_SERVER['QUERY_STRING']).'">';
     echo '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     echo '<input type="hidden" name="newdate" id="newdate">' ;
     echo '</form>';
@@ -679,7 +746,11 @@ elseif ($action == 'show_week') // View by week
 	$newparam = preg_replace('/year=[0-9]+&?/i', '', $newparam);
 	$newparam = preg_replace('/viewweek=[0-9]+&?/i', '', $newparam);
 	$newparam .= '&viewweek=1';
-	echo '<table width="100%" class="nocellnopadd cal_month">';
+	if (DOL_VERSION < 6.0) {
+		echo '<table width="100%" class="nocellnopadd cal_month">';
+	} else {
+		echo '<table width="100%" class="noborder nocellnopadd cal_pannel cal_month">';
+	}
 	echo ' <tr class="liste_titre">';
 	$i = 0;
     while ($i < 7)
@@ -695,7 +766,7 @@ elseif ($action == 'show_week') // View by week
     {
 			// Show days of the current week
 		$curtime = dol_time_plus_duree($firstdaytoshow, $iter_day, 'd');
-		$tmparray = dol_getdate($curtime,'fast');
+		$tmparray = dol_getdate($curtime, true);
 		$tmpday = $tmparray['mday'];
 		$tmpmonth = $tmparray['mon'];
 		$tmpyear = $tmparray['year'];
@@ -715,7 +786,7 @@ elseif ($action == 'show_week') // View by week
 
 	echo "</table>\n";
     echo '<form id="move_event" action="" method="POST"><input type="hidden" name="action" value="mupdate">';
-    echo '<input type="hidden" name="backtopage" value="'.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'].'">';
+    echo '<input type="hidden" name="backtopage" value="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'?'.dol_escape_htmltag($_SERVER['QUERY_STRING']).'">';
     echo '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     echo '<input type="hidden" name="newdate" id="newdate">' ;
     echo '</form>';
@@ -736,7 +807,11 @@ else    // View by day
 
 	$timestamp = dol_mktime(12, 0, 0, $month, $day, $year);
 	$arraytimestamp = dol_getdate($timestamp);
-    echo '<table width="100%" class="nocellnopadd cal_month">';
+	if (DOL_VERSION < 6.0) {
+    	echo '<table width="100%" class="nocellnopadd cal_month">';
+	} else {
+		echo '<table width="100%" class="noborder nocellnopadd cal_pannel cal_month">';
+	}
 	echo ' <tr class="liste_titre">';
 	echo '  <td align="center">' . $langs->trans("Day" . $arraytimestamp ['wday']) . "</td>\n";
 	echo " </tr>\n";
@@ -776,13 +851,27 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 	global $theme_datacolor;
     global $cachethirdparties, $cachecontacts, $cacheusers, $colorindexused;
 
-    print "\n".'<div id="dayevent_'.sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day).'" class="dayevent">';
+    if (DOL_VERSION < 6.0) {
+    	print "\n".'<div id="dayevent_'.sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day).'" class="dayevent">';
+    } else {
+    	$dateint = sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day);
+    	
+    	print "\n";
+    }
 
     // Line with title of day
 	$curtime = dol_mktime(0, 0, 0, $month, $day, $year);
-    print '<table class="nobordernopadding" width="100%">'."\n";
+	if (DOL_VERSION < 6.0) {
+	    print '<table class="nobordernopadding" width="100%">'."\n";
+	} else {
+		print '<div id="dayevent_'.$dateint.'" class="dayevent tagtable centpercent nobordernopadding">'."\n";
+	}
 
-	print '<tr><td align="left" class="nowrap">';
+	if (DOL_VERSION < 6.0) {
+		print '<tr><td align="left" class="nowrap">';
+	} else {
+		print '<div class="tagtr"><div class="nowrap float">';
+	}
 	print '<a href="' . $_SERVER ['PHP_SELF'];
 	print '?action=show_day&day=' . str_pad($day, 2, "0", STR_PAD_LEFT) . '&month=' . str_pad($month, 2, "0", STR_PAD_LEFT) . '&year=' . $year;
 	print $newparam;
@@ -790,7 +879,11 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
     if ($showinfo) print dol_print_date($curtime,'daytext');
     else print dol_print_date($curtime,'%d');
 	print '</a>';
-	print '</td><td align="right" class="nowrap">';
+	if (DOL_VERSION < 6.0) {
+		print '</td><td align="right" class="nowrap">';
+	} else {
+		print '</div><div class="floatright nowrap">';
+	}
     if ($user->rights->agenda->myactions->create || $user->rights->agenda->allactions->create)
     {
 		$newparam .= '&month=' . str_pad($month, 2, "0", STR_PAD_LEFT) . '&year=' . $year;
@@ -801,11 +894,20 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 		print img_picto($langs->trans("NewAction"), 'edit_add.png');
 		print '</a>';
 	}
-    print '</td></tr>'."\n";
+	if (DOL_VERSION < 6.0) {
+	    print '</td></tr>'."\n";
+	} else {
+		print '</div></div>'."\n";
+	}
 
     // Line with td contains all div of each events
-    print '<tr height="'.$minheight.'"><td valign="top" colspan="2" class="sortable" style="padding-bottom: 2px;">';
-	print '<div style="width: 100%; position: relative;">';
+	if (DOL_VERSION < 6.0) {
+		print '<tr height="'.$minheight.'"><td valign="top" colspan="2" class="sortable" style="padding-bottom: 2px;">';
+		print '<div style="width: 100%; position: relative;">';
+	} else {
+		print '<div class="tagtr">';
+		print '<div class="tagtd centpercent agendacell sortable">';
+	}
 
 	// $curtime = dol_mktime (0, 0, 0, $month, $day, $year);
     $i=0; $nummytasks=0; $numother=0; $numbirthday=0; $numical=0; $numicals=array();
@@ -939,7 +1041,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                             $cssclass.= " unmovable";
                         }
                     }
-                    else $cssclass.= " movable";
+                    else $cssclass.= "unmovable";
 
                     $h=''; $nowrapontd=1;
                     if ($action == 'show_day')  { $h='height: 100%; '; $nowrapontd=0; }
@@ -947,19 +1049,38 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 
 					// Show rect of event
                     print "\n";
-                    print '<!-- start event '.$i.' --><div id="event_'.$ymd.'_'.$i.'" class="event '.$cssclass.'"';
+
+                    print '<!-- start event '.$i.' -->'."\n";
+                    print '<div id="event_'.$ymd.'_'.$i.'" class="event '.$cssclass.'"';
                     //print ' style="height: 100px;';
                     //print ' position: absolute; top: 40px; width: 50%;';
                     //print '"';
                     print '>';
-                    print '<ul class="cal_event" style="'.$h.'">';	// always 1 li per ul, 1 ul per event
-                    print '<li class="cal_event" style="'.$h.'">';
-                    print '<table class="cal_event'.(empty($event->transparency)?'':' cal_event_busy').'" style="'.$h;
-                    print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.$colorbis.'));';
+                    if (DOL_VERSION < 6.0) {
+	                    print '<ul class="cal_event" style="'.$h.'">';	// always 1 li per ul, 1 ul per event
+						print '<li class="cal_event" style="'.$h.'">';
+						print '<table class="cal_event'.(empty($event->transparency)?'':' cal_event_busy').'" style="'.$h;
+						print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.$colorbis.'));';
+                    } else {
+                    	print '<table class="centpercent cal_event'.(empty($event->transparency)?'':' cal_event_busy').'" style="'.$h;
+                    	print 'background: #'.$color.';';
+                    	print 'background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.$colorbis.'));';
+                    }
                     //if (! empty($event->transparency)) print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.dol_color_minus($color,1).'));';
                     //else print 'background-color: transparent !important; background: none; border: 1px solid #bbb;';
-                    print ' -moz-border-radius:4px;" width="100%"><tr>';
-                    print '<td class="'.($nowrapontd?'nowrap ':'').'cal_event'.($event->type_code == 'BIRTHDAY'?' cal_event_birthday':'').'">';
+                    
+                    if (DOL_VERSION < 6.0) {
+                    	print ' -moz-border-radius:4px;" width="100%"><tr>';
+                    	print '<td class="'.($nowrapontd?'nowrap ':'').'cal_event'.($event->type_code == 'BIRTHDAY'?' cal_event_birthday':'').'">';
+                    } else {
+                    	//print ' -moz-border-radius:4px;"';
+                    	//print 'border: 1px solid #ccc" width="100%"';
+                    	print '">';
+                    	print '<tr>';
+                    	print '<td class="tdoverflow nobottom centpercent '.($nowrapontd?'nowrap ':'').'cal_event'.($event->type_code == 'BIRTHDAY'?' cal_event_birthday':'').'">';
+                    	
+                    	$daterange='';
+                    }
 					if ($event->type_code == 'BIRTHDAY') 					// It's a birthday
 					{
 						print $event->getNomUrl(1, $maxnbofchar, 'cal_event', 'birthday', 'contact');
@@ -1160,8 +1281,10 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						}
 					}
 					print '</td></tr></table>';
-                    print '</li>';
-                    print '</ul>';
+					if (DOL_VERSION < 6.0) {
+                    	print '</li>';
+                    	print '</ul>';
+					}
 					print '</div><!-- end event '.$i.' -->'."\n";
 					$i ++;
 				}
@@ -1203,10 +1326,15 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 		print '</script>' . "\n";
 	}
 
-    print '</div>';
-	print '</td></tr>';
+	if (DOL_VERSION < 6.0) {
+    	print '</div>';
+		print '</td></tr></table>';
+	} else {
+		print '</div></div>';       // td tr
+	}
 
-    print '</table></div>'."\n";
+	print '</div>';             // table
+	print "\n";
 }
 
 
