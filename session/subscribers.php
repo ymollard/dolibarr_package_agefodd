@@ -177,7 +177,6 @@ if ($action == 'editrealhours'){
             $agf = new Agsession($db);
             $agf->fetch($id);
             
-            
             // on enregistre les heures uniquement si le total d'heures stagiaire est différent de la durée de la session
             if ((float)$agf->duree_session !== (float)array_sum($value)){ 
                 foreach ($value as $creneaux => $heures){
