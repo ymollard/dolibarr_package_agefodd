@@ -132,6 +132,22 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//agefodd_session_calendrier
+$sql = 'SELECT fk_category as fk_category FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category WHERE fk_category NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_category.' dans '.MAIN_DB_PREFIX.'agefodd_formateur_category et non dans '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category WHERE fk_category NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
 
 
 
