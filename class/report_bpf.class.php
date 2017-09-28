@@ -545,26 +545,31 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
 					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
 				}
-				if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-				    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
-				    $sql .= "SUM(assh.heures)/24 as timeinsession";
-				    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
-				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
-				    $sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
-				    $sql .= " AND sess.status IN (5)";
-				    $sql .= " AND sess.fk_socpeople_presta IS NULL";
-				    $sql .= " AND sess.fk_soc_employer IS NULL";
-				    $resql = $this->db->query($sql);
-				    if ($resql) {
-				        if ($this->db->num_rows($resql)) {
-				            
-				           while($obj = $this->db->fetch_object($resql)){
-    				            $this->trainee_data_f2[$key]['nb'] += $obj->cnt;
-    				            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
-				           }
-				        }
-				    }
-				}
+				
+			}
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+			    $sql .= "SUM(assh.heures)/24 as timeinsession";
+			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+			    $sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			    $sql .= " AND sess.status IN (5)";
+			    $sql .= " AND sess.fk_socpeople_presta IS NULL";
+			    $sql .= " AND sess.fk_soc_employer IS NULL";
+			    $resql2 = $this->db->query($sql);
+			    if ($resql2) {
+			        if (empty($this->db->num_rows($resql))) {
+			            $this->trainee_data_f2[$key]['nb'] = 0;
+			            $this->trainee_data_f2[$key]['time'] = 0;
+			        }
+			        if ($this->db->num_rows($resql2)){
+			            while($obj = $this->db->fetch_object($resql2)){
+    			            $this->trainee_data_f2[$key]['nb'] += $obj->cnt;
+    			            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
+    			        }
+			        }
+			        
+			    }
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -970,7 +975,7 @@ class ReportBPF extends AgefoddExportExcel
 				),
 				array(
 						'label' => 'e-Autres stagiaires',
-						'idtype' => ''
+						'idtype' => '6,8,9,10,11,12,13,14,16'
 				)
 		);
 
@@ -993,6 +998,9 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			$sql .= " AND sess.status IN (5)";
 			$sql .= " AND sess.fk_socpeople_presta IS NULL";
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql .= " AND sesssta.status_in_session = 3";
+			}
 
 			$total_cnt = 0;
 			$total_timeinsession = 0;
@@ -1008,6 +1016,38 @@ class ReportBPF extends AgefoddExportExcel
 						$total_timeinsession += $obj->timeinsession;
 					}
 				}
+				if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+				    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+				    $sql .= "SUM(assh.heures)/24 as timeinsession";
+				    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+				    $sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
+				    $sql .= " AND sess.status IN (5)";
+				    $sql .= " AND sess.fk_socpeople_presta IS NULL";
+				    $sql .= " AND sess.fk_soc_employer IS NULL";
+				    $sql .= " AND sesssta.status_in_session = 4";
+				    if (! empty($data['idtype'])) {
+				        $sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (" . $data['idtype'] . ") ";
+				    }
+				    $resql2 = $this->db->query($sql);
+				    if ($resql2) {
+				        if (empty($this->db->num_rows($resql))) {
+				            $this->trainee_data[$data['label']]['nb'] = 0;
+				            $this->trainee_data[$data['label']]['time'] = 0;
+				        }
+				        if ($this->db->num_rows($resql2)){
+				            while($obj = $this->db->fetch_object($resql2)){
+				                $this->trainee_data[$data['label']]['nb'] += $obj->cnt;
+				                $this->trainee_data[$data['label']]['time'] += $obj->timeinsession;
+				                $total_cnt += $obj->cnt;
+				                $total_timeinsession += $obj->timeinsession;
+				            }
+				        }
+				        
+				    }
+				}
+				
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
 				dol_syslog(get_class($this) . "::" . __METHOD__ . " " . $data['label'] . " " . $this->error, LOG_ERR);
