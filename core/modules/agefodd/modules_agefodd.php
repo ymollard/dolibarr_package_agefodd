@@ -79,6 +79,48 @@ abstract class ModelePDFAgefodd extends CommonDocGenerator {
 		} elseif ($type == 'foot') {
 			$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 		}
+
+		if (empty($height)) {
+			// get the new Y
+			$end_y = $this->pdf->GetY();
+			$end_page = $this->pdf->getPage() - 1;
+			// calculate height
+			// print '$end_y='.$end_y.'<br>';
+			// print '$end_page='.$end_page.'<br>';
+
+			if (($end_page == $start_page || $end_page == 0) && $end_y > $start_y) {
+				$height = $end_y - $start_y;
+				// print 'aa$height='.$height.'<br>';
+			} else {
+				for($page = $start_page; $page <= $end_page; $page ++) {
+					$this->pdf->setPage($page);
+					// print '$page='.$page.'<br>';
+					if ($page == $start_page) {
+						// first page
+						$height = $this->page_hauteur - $start_y - $this->marge_basse;
+						// print '$height=$this->page_hauteur - $start_y - $this->marge_basse='.$this->page_hauteur .'-'. $start_y .'-'. $this->marge_basse.'='.$height.'<br>';
+					} elseif ($page == $end_page) {
+						// last page
+						// print '$height='.$height.'<br>';
+						$height += $end_y - $this->marge_haute;
+						// print '$height += $end_y - $this->marge_haute='.$end_y.'-'. $this->marge_haute.'='.$height.'<br>';
+					} else {
+						// print '$height='.$height.'<br>';
+						$height += $this->page_hauteur - $this->marge_haute - $this->marge_basse;
+						// print '$height += $this->page_hauteur - $this->marge_haute - $this->marge_basse='.$this->page_hauteur .'-'. $this->marge_haute .'-'. $this->marge_basse.'='.$height.'<br>';
+					}
+				}
+			}
+		}
+		$this->pdf->setPrintHeader(true);
+		$this->pdf->setPrintFooter(true);
+
+		// restore previous object
+		$this->pdf = $this->pdf->rollbackTransaction();
+		// print '$heightfinnal='.$height.'<br>';
+
+		// exit;
+		return $height;
 	}
 }
 
@@ -190,6 +232,8 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
 
+		var_dump($path_external_model);
+		exit;
 		if(empty($path_external_model)) $res_writefile = $obj->write_file($id, $outputlangs, $file, $socid, $courrier);
 		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file, $obj_agefodd_convention, $socid);
 

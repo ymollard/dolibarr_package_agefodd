@@ -4738,8 +4738,7 @@ class Agsession extends CommonObject
 			exit;
 		}
 		
-	}
-	
+	}	
 }
 
 /**
