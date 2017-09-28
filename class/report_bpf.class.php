@@ -547,7 +547,7 @@ class ReportBPF extends AgefoddExportExcel
 				}
 				if (!empty($conf->global->AGF_USE_REAL_HOURS)){
 				    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
-				    $sql .= "SUM(assh.heures) as timeinsession";
+				    $sql .= "SUM(assh.heures)/24 as timeinsession";
 				    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
 				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
 				    $sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
@@ -560,7 +560,7 @@ class ReportBPF extends AgefoddExportExcel
 				            
 				           while($obj = $this->db->fetch_object($resql)){
     				            $this->trainee_data_f2[$key]['nb'] += $obj->cnt;
-    				            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession/24;
+    				            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
 				           }
 				        }
 				    }

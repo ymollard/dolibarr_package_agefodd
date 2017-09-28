@@ -305,6 +305,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	}
 	
 	/**
+	 * Retourne un créneaux horaire de la session indiquée
 	 * 
 	 * @param int $id session
 	 * @param int $trainee

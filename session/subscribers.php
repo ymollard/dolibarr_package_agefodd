@@ -173,6 +173,7 @@ if ($action == 'editrealhours'){
     $hours = GETPOST('realhours');
     
     if(!empty($hours)){
+        
         foreach ($hours as $key => $value){
             $agf = new Agsession($db);
             $agf->fetch($id);
@@ -199,6 +200,11 @@ if ($action == 'editrealhours'){
                         $res=$agf->create($user);
                     }
                 }
+                // stagiaire partiellement présent
+                $stagiaires = new Agefodd_session_stagiaire($db);
+                $stagiaires->fetch($key);
+                $stagiaires->status_in_session = 4;
+                $res = $stagiaires->update($user);
                 
             } else {
                 // si les heures stagiaire sont égales à la durée de la session
@@ -215,7 +221,6 @@ if ($action == 'editrealhours'){
                 $stagiaires->fetch($key);
                 $stagiaires->status_in_session = 3;
                 $stagiaires->update($user);
-                $stagiaires->fetch($key);
             }
         }
     }
