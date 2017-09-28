@@ -1754,6 +1754,69 @@ if (! $conf->use_javascript_ajax) {
 	print '</tr>';
 }
 
+// Update global variable AGF_GROUP_BY_DAY_CAL
+print '<tr class="pair"><td>' . $langs->trans("AgfGroupEventByDayInCalendar") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_GROUP_BY_DAY_CAL');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_GROUP_BY_DAY_CAL", $arrval, $conf->global->AGF_GROUP_BY_DAY_CAL);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfGroupEventByDayInCalendarHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Update global variable AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS
+print '<tr class="pair"><td>' . $langs->trans("AgfTraineeDisplayGroupByStatus") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS", $arrval, $conf->global->AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+if (! $conf->use_javascript_ajax) {
+	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
+	print '</tr>';
+}
+
+// Update global variable AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY
+print '<tr class="pair"><td>' . $langs->trans("AgfTrainerAvailabilityOnlyWarning") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY", $arrval, $conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+if (! $conf->use_javascript_ajax) {
+	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
+	print '</tr>';
+}
+
+
 print '</table><br>';
 print '</form>';
 

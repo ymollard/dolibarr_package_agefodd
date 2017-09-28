@@ -541,7 +541,6 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $agf->id);
 			exit();
 		}
-
 		else {
 			$action = 'create';
 		}
@@ -1288,23 +1287,56 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								if ($result < 0) {
 									setEventMessage($trainer_calendar->error, 'errors');
 								}
-								foreach ( $trainer_calendar->lines as $line ) {
-									if (($line->date_session < $agf->dated) || ($line->date_session > $agf->datef))
+								$blocNumber = count($trainer_calendar->lines);
+								$old_date = 0;
+								for($i = 0; $i < $blocNumber; $i ++) {
+									if (($trainer_calendar->lines[$i]->date_session < $agf->dated) || ($trainer_calendar->lines[$i]->date_session > $agf->datef)) {
 										$alertday = true;
-									print '<tr><td>';
-									print dol_print_date($line->heured, 'dayhourtext');
-									print '</td></tr>';
-									if ($line->heuref != $line->heured) {
-										print '<tr><td>';
-										print dol_print_date($line->heuref, 'dayhourtext');
+									}
+
+									if ($i > 6) {
+										$styledisplay = " style=\"display:none\" class=\"otherdatetrainer\" ";
+									} else {
+										$styledisplay = " ";
+									}
+									if ($trainer_calendar->lines[$i]->date_session != $old_date) {
+										if ($i > 0) {
+											print '<tr ' . $styledisplay . '>';
+										}
+										print '<td>';
+										print dol_print_date($trainer_calendar->lines[$i]->date_session, 'daytext'). '&nbsp';
+									} else {
+										print ', ';
+									}
+									print dol_print_date($trainer_calendar->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$i]->heuref, 'hour');
+
+									if ($i == $blocNumber - 1) {
 										print '</td></tr>';
 									}
+									
+									$old_date = $trainer_calendar->lines[$i]->date_session;
 								}
 								// Print warning message if trainer calendar date are not set within session date
 								if ($alertday) {
 									print img_warning($langs->trans("AgfCalendarDayOutOfScope"));
 									print $langs->trans("AgfCalendarDayOutOfScope");
 									setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
+								}
+								if ($blocNumber > 6) {
+									print '<tr><td style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtimetrainer">+</td></tr>';
+									print '<script>' . "\n";
+									print '$(document).ready(function () { ' . "\n";
+									print '		$(\'#switchtimetrainer\').click(function(){' . "\n";
+									print '			$(\'.otherdatetrainer\').toggle();' . "\n";
+									print '			if ($(\'#switchtimetrainer\').text()==\'+\') { ' . "\n";
+									print '				$(\'#switchtimetrainer\').text(\'-\'); ' . "\n";
+									print '			}else { ' . "\n";
+									print '				$(\'#switchtimetrainer\').text(\'+\'); ' . "\n";
+									print '			} ' . "\n";
+									print '			' . "\n";
+									print '		});' . "\n";
+									print '});' . "\n";
+									print '</script>' . "\n";
 								}
 
 								print '</table>';
@@ -1328,7 +1360,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<table class="border" width="100%">';
 
 					$stagiaires = new Agefodd_session_stagiaire($db);
+					if (!empty($conf->global->AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS)) {
+						$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id,null, 0, 'ss.status_in_session,sa.nom');
+					} else {
 					$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
+					}
+
 					if ($resulttrainee < 0) {
 						setEventMessage($stagiaires->error, 'errors');
 					}
