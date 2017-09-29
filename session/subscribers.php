@@ -320,6 +320,19 @@ if ($action == 'updatetraineestatus') {
 		if ($result < 0) {
 			setEventMessage($stagiaires->error, 'errors');
 		} else {
+		    $statusinsession = GETPOST('statusinsession', 'int');
+		    // supprime les heures réelles des stagiaires entièrement présent
+		    if ($statusinsession == 3 && !empty($conf->global->AGF_USE_REAL_HOURS)){
+		        $stagiaires->fetch_stagiaire_per_session($agf->id);
+    		    foreach ($stagiaires->lines as $trainee){
+    		        $heures = new Agefoddsessionstagiaireheures($db);
+    		        $heures->fetch_all_by_session($agf->id, $trainee->id);
+    		        foreach ($heures->lines as $creneaux){
+    		            $creneaux->delete($user);
+    		        }
+    		    }
+		    }
+		    
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
 		}

@@ -45,7 +45,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $datec = '';
     public $fk_user_author;
     public $tms = '';
-    //public $lines = array();
+    public $lines = array();
     public $fk_calendrier;
     public $fk_session;
     public $heures;
@@ -358,6 +358,61 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	}
 	
 	/**
+	 * Retourne tous les créneaux horaire de la session indiquée d'un stagiaire
+	 *
+	 * @param int $id session
+	 * @param int $trainee
+	 * @param int $calendar
+	 */
+	public function fetch_all_by_session($id, $trainee)
+	{
+	    $sql = "SELECT t.rowid,";
+	    $sql .= " t.fk_stagiaire,";
+	    $sql .= " t.fk_session,";
+	    $sql .= " t.fk_calendrier,";
+	    $sql .= " t.heures,";
+	    $sql .= " t.fk_user_author,";
+	    $sql .= " t.datec,";
+	    $sql .= " t.tms,";
+	    $sql .= " CONCAT(a.nom,' ', a.prenom) as nom_stagiaire";
+	    $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as t";
+	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
+	    $sql .= " WHERE t.fk_session = " . $id;
+	    $sql .= " AND t.fk_stagiaire = " . $trainee;
+	    
+	    dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
+	    $resql = $this->db->query($sql);
+	    
+	    if ($resql) {
+	        if ($this->db->num_rows($resql)) {
+	            while($obj = $this->db->fetch_object($resql)){
+	                $line = new Agefoddsessionstagiaireheuresline();
+	                $line->id = $obj->rowid;
+	                $line->fk_stagiaire = $obj->fk_stagiaire;
+	                $line->nom_stagiaire = $obj->nom_stagiaire;
+	                $line->fk_session = $obj->fk_session;
+	                $line->fk_calendrier = $obj->fk_calendrier;
+	                $line->heures= $obj->heures;
+	                $line->fk_user_author = $obj->fk_user_author;
+	                $line->datec = $this->db->jdate($obj->datec);
+	                $line->tms = $this->db->jdate($obj->tms);
+	                
+	                $this->lines[] = $line;
+	            } 
+	        } else {
+	            return 0;
+	        }
+	        $this->db->free($resql);
+	        
+	        return 1;
+	    } else {
+	        $this->error = "Error " . $this->db->lasterror();
+	        dol_syslog(get_class($this) . "::fetch_by_session " . $this->error, LOG_ERR);
+	        return - 1;
+	    }
+	}
+	
+	/**
 	 * 
 	 * @param int $sessid
 	 * @param int $traineeid
@@ -400,8 +455,54 @@ class Agefoddsessionstagiaireheures extends CommonObject
  */
 class Agefoddsessionstagiaireheuresline
 {
+    public $error; // !< To return error code (or message)
+    public $errors = array (); // !< To return several error codes (or messages)
     public $id;
-    public $fk_calendier;
+    public $fk_stagiaire;
+    public $nom_stagiaire;
+    public $datec = '';
+    public $fk_user_author;
+    public $tms = '';
+    public $fk_calendrier;
     public $fk_session;
     public $heures;
+    
+    /**
+     * Delete object (trainne in session) in database
+     *
+     * @param int $id to delete
+     * @param int $notrigger triggers after, 1=disable triggers
+     * @return int <0 if KO, >0 if OK
+     */
+    public function delete($user, $notrigger = 0) {
+        global $db;
+        
+        $db->begin();
+        
+        $sql = "DELETE FROM " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire_heures';
+        $sql .= " WHERE rowid = " . $this->id;
+        
+        dol_syslog(get_class($this) . "::delete", LOG_DEBUG);
+        $resql = $db->query($sql);
+        
+        if ($resql) {
+            // ...
+        } else {
+            $error ++;
+            $this->errors[] = "Error " . $this->db->lasterror();
+        }
+        
+        // Commit or rollback
+        if ($error) {
+            foreach ( $this->errors as $errmsg ) {
+                dol_syslog(get_class($this) . "::remove " . $errmsg, LOG_ERR);
+                $this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+            }
+            $db->rollback();
+            return - 1 * $error;
+        } else {
+            $db->commit();
+            return 1;
+        }
+    }
 }

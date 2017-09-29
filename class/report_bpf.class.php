@@ -975,7 +975,8 @@ class ReportBPF extends AgefoddExportExcel
 				),
 				array(
 						'label' => 'e-Autres stagiaires',
-						'idtype' => '6,8,9,10,11,12,13,14,16'
+						//'idtype' => '6,8,9,10,11,12,13,14,16'
+				        'idtype' => ''
 				)
 		);
 
