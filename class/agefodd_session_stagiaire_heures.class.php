@@ -437,7 +437,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	            $stagiaire = new Agefodd_session_stagiaire($db);
 	            $stagiaire->fetch($traineeid);
 	            if ($stagiaire->status_in_session == 3){
-	                return -1;
+	                $agf = new Agsession($db);
+	                $agf->fetch($sessid);
+	                return $agf->duree_session;
 	            } else return 0;
 	        }
 	    }
