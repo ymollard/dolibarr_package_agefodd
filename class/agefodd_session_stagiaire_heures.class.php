@@ -430,10 +430,16 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $resql = $this->db->query($sql);
 	    if ($resql) {
 	        $obj = $this->db->fetch_object($resql);
-	        $agf = new Agsession($db);
-	        $agf->fetch($sessid);
-	        
-	        return (!empty($obj->total)) ? $obj->total : $agf->duree_session;
+	        if (!empty($obj->total)){
+	            return $obj->total;
+	        } else {
+	            require_once 'agefodd_session_stagiaire.class.php';
+	            $stagiaire = new Agefodd_session_stagiaire($db);
+	            $stagiaire->fetch($traineeid);
+	            if ($stagiaire->status_in_session == 3){
+	                return -1;
+	            } else return 0;
+	        }
 	    }
 	}
 	

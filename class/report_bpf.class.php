@@ -520,16 +520,11 @@ class ReportBPF extends AgefoddExportExcel
 
 		$key = 'Formés par votre organisme pour son propre compte';
 		$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
-		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		}
+		$sql .= "SUM(sess.duree_session)/24 as timeinsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
-		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
@@ -613,16 +608,11 @@ class ReportBPF extends AgefoddExportExcel
 
 		$key = 'Formés par votre organisme pour le compte d’un autre organisme';
 		$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
-		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		}
+		$sql .= "SUM(sess.duree_session)/24 as timeinsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
-		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
@@ -687,18 +677,13 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		$sql = "select count(DISTINCT sesssta.rowid) as cnt, catform.intitule, ";
-		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		}
+		$sql .= "SUM(sess.duree_session)/24 as timeinsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as formation ON formation.rowid=sess.fk_formation_catalogue ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as catform ON catform.rowid=formation.fk_c_category_bpf ";
-		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " GROUP BY catform.intitule";
 
@@ -764,18 +749,13 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		$sql = "select count(DISTINCT sesssta.rowid) as cnt, CONCAT(catform.code , '-', catform.intitule) as intitule, ";
-		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		}
+		$sql .= "SUM(sess.duree_session)/24 as timeinsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as formation ON formation.rowid=sess.fk_formation_catalogue ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as catform ON catform.rowid=formation.fk_c_category ";
-		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
 
@@ -841,16 +821,11 @@ class ReportBPF extends AgefoddExportExcel
 
 		$key = 'Formations confiées par votre organisme à un autre organisme de formation';
 		$sql = "select count(DISTINCT sesssta.rowid) as cnt, ";
-		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
-		}
+		$sql .= "SUM(sess.duree_session)/24 as timeinsession";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
-		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+		$sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
@@ -975,7 +950,6 @@ class ReportBPF extends AgefoddExportExcel
 				),
 				array(
 						'label' => 'e-Autres stagiaires',
-						//'idtype' => '6,8,9,10,11,12,13,14,16'
 				        'idtype' => ''
 				)
 		);
@@ -983,11 +957,7 @@ class ReportBPF extends AgefoddExportExcel
 		foreach ( $array_data as $key => $data ) {
 
 			$sql = "select count(DISTINCT sesssta.rowid) as cnt , ";
-			if ($this->db->type == 'pgsql') {
-				$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-			} else {
-				$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
-			}
+			$sql .= "SUM(sess.duree_session)/24 as timeinsession";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as statype ON statype.rowid=sesssta.fk_agefodd_stagiaire_type ";
@@ -995,8 +965,7 @@ class ReportBPF extends AgefoddExportExcel
 				$sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (" . $data['idtype'] . ") ";
 			}
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.fk_agefodd_session=sess.rowid ";
-			$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			$sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			$sql .= " AND sess.status IN (5)";
 			$sql .= " AND sess.fk_socpeople_presta IS NULL";
 			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
@@ -1057,8 +1026,8 @@ class ReportBPF extends AgefoddExportExcel
 			$this->db->free($resql);
 
 			if (empty($data['idtype'])) {
-				$this->trainee_data[$data['label']]['nb'] = $obj->cnt - $total_cnt;
-				$this->trainee_data[$data['label']]['time'] = $obj->timeinsession - $total_timeinsession;
+				$this->trainee_data[$data['label']]['nb'] = (!empty($obj->cnt)) ? ($obj->cnt - $total_cnt) : 0;
+				$this->trainee_data[$data['label']]['time'] = (!empty($obj->timeinsession)) ? ($obj->timeinsession - $total_timeinsession) : 0;
 			}
 
 			// Add time from FOAD
