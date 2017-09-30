@@ -72,29 +72,36 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agf = new Agsession($db);
 
 		$agfsta = new Agefodd_session_stagiaire($db);
+		$agfsta->fetch(GETPOST('stagerowid', 'int'));
 
-		$agfsta->id = GETPOST('stagerowid', 'int');
 		$agfsta->fk_session_agefodd = GETPOST('sessid', 'int');
 		$agfsta->fk_soc_link = $fk_soc_link;
 		$agfsta->fk_soc_requester = $fk_soc_requester;
 		$agfsta->fk_socpeople_sign = $fk_socpeople_sign;
 		$agfsta->fk_stagiaire = GETPOST('stagiaire', 'int');
 		$agfsta->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
-		$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
+
+        if (!empty($conf->global->AGF_USE_REAL_HOURS) && $agfsta->status_in_session !== GETPOST('stagiaire_session_status', 'int') && GETPOST('stagiaire_session_status', 'int') == 4){
+            $part = true;
+        } else {
+            $agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
+        }
 		$agfsta->hour_foad= GETPOST('hour_foad','int');
 
-		if (!empty($conf->global->AGF_USE_REAL_HOURS) && $agfsta->status_in_session !== 4){
-		    $agfssh = new Agefoddsessionstagiaireheures($db);
-		    
-		    $agfssh->fetch_all_by_session(GETPOST('sessid', 'int'), GETPOST('stagerowid', 'int'));
-		    foreach ($agfssh->lines as $heures) {
-		        $heures->delete($user);
-		    }
-		}
-		
 		if ($agfsta->update($user) > 0) {
+
+            if (!empty($conf->global->AGF_USE_REAL_HOURS) && $agfsta->status_in_session !== 4){
+
+                $agfssh = new Agefoddsessionstagiaireheures($db);
+                $agfssh->fetch_all_by_session(GETPOST('sessid', 'int'), GETPOST('stagerowid', 'int'));
+                foreach ($agfssh->lines as $heures) {
+                    $heures->delete($user);
+                }
+            }
+
 			$redirect = true;
 			$result = $agf->fetch(GETPOST('sessid', 'int'));
+
 			if ($result > 0) {
 
 				// TODO : si session inter => ajout des infos OPCA dans la table
@@ -141,6 +148,11 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 			} else {
 				setEventMessage($agf->error, 'errors');
 			}
+			if ($part) {
+                setEventMessage($langs->trans('AgfEditReelHours'), 'warnings');
+                Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&edithours=true");
+                exit;
+            }
 			if ($redirect) {
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 				exit();
@@ -226,8 +238,7 @@ if ($action == 'editrealhours'){
                     $stagiaires->status_in_session = 4;
                     $res = $stagiaires->update($user);
                 }
-                
-                
+
             } else {
                 // si les heures stagiaire sont égales à la durée de la session
                 // On supprime les lignes d'heures existantes
@@ -411,7 +422,15 @@ if (! empty($id)) {
 						});
 					});
 					</script> ';
-		} else {
+		} elseif ($edithours) {
+            print '<script type="text/javascript">
+					jQuery(document).ready(function () {
+						jQuery(function() {
+							$(\'html, body\').animate({scrollTop: $("#editrealhours").offset().top}, 500,\'easeInOutCubic\');
+						});
+					});
+					</script> ';
+        } else {
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
@@ -499,7 +518,7 @@ if (! empty($id)) {
 		 * Tableau d'édition des heures réelles
 		 */		
 		if (!empty($conf->global->AGF_USE_REAL_HOURS && $edithours)){
-		    print '<br><form name="editrealhours" action="' . $_SERVER['PHP_SELF'] . '?action=editrealhours&id=' . $id . '"  method="POST">' . "\n";
+		    print '<br><form id="editrealhours" name="editrealhours" action="' . $_SERVER['PHP_SELF'] . '?action=editrealhours&id=' . $id . '"  method="POST">' . "\n";
 		    print '<input type="hidden" name="action" value="editrealhours">';
 
 		    $calendrier = new Agefodd_sesscalendar($db);
@@ -526,7 +545,8 @@ if (! empty($id)) {
 		    $nbstag = count($stagiaires->lines);
 		    
 		    for($i = 0; $i < $nbstag; $i ++) {
-		        print '<tr><td>'.strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom).'</td>';
+		        print '<tr><td>'.strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom);
+		        print '<br>'. $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4) .'</td>';
 		        for ($j = 0; $j < $blocNumber; $j++){
 		            $agfssh = new Agefoddsessionstagiaireheures($db);
 		            $result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
@@ -545,6 +565,7 @@ if (! empty($id)) {
 		    print '<div class="tabsAction"><input type="submit" class="butAction" value="'.$langs->trans('Save').'">';
 		    print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">'.$langs->trans('Cancel').'</a></div>';
 		    print '</form>';
+            llxFooter();
 		    exit;
 		}
 		
