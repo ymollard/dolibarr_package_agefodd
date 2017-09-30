@@ -1238,3 +1238,7 @@ AgfTraineeDisplayGroupByStatus=Ordonnéer la liste les participants dans l'ongle
 AgfTrainerAvailabilityOnlyWarning=Ne Bloque pas l'inscription d'un formateur si il est déja attribué à une autre session (juste un message d'alerte)
 AgfUseRealHours=Utiliser le temps de présence réel des stagiaires
 AgfUseRealHoursHelp=Permet de saisir le temps de présence réel des stagiaires par créneau horaire du calendrier de session
+AgfTraineeHours=Heures Stagiaire
+AgfModifyTraineeHours=Modifier les heures de présence
+AgfSchedules=Créneaux horaires
+AgfSetReelHours=Veuillez saisir les temps de présence des participants partiellement présents
