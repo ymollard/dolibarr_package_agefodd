@@ -27,6 +27,8 @@
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 require_once 'agsession.class.php';
+require_once 'agefodd_session_stagiaire.class.php';
+require_once 'agefodd_session_calendrier.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
@@ -421,7 +423,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	public function heures_stagiaire($sessid, $traineeid)
 	{
 	    global $db;
-	    // SELECT SUM(heures) as total FROM `llx_agefodd_session_stagiaire_heures` WHERE fk_stagiaire = 3 AND fk_session = 1
+	    /*
 	    $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
 	    $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
 	    $sql .= ' AND fk_session = ' . $sessid;
@@ -442,7 +444,36 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	                return $agf->duree_session;
 	            } else return 0;
 	        }
-	    }
+	    }*/
+
+        $calendrier = new Agefodd_sesscalendar($db);
+        $calendrier->fetch_all($sessid);
+
+        $dureeCalendrier = 0;
+        foreach ($calendrier->lines as $horaire){
+            $dureeCalendrier += ($horaire->heuref - $horaire->heured)/3600;
+        }
+
+        $stagiaire = new Agefodd_session_stagiaire($db);
+        $stagiaire->fetch($traineeid);
+        if ($stagiaire->status_in_session == 3){
+            return $dureeCalendrier;
+        } elseif ($stagiaire->status_in_session == 4) {
+            $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
+            $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
+            $sql .= ' AND fk_session = ' . $sessid;
+
+            dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
+            $resql = $this->db->query($sql);
+            if ($resql) {
+                $obj = $this->db->fetch_object($resql);
+                if (!empty($obj->total)) {
+                    return $obj->total;
+                } else return $dureeCalendrier;
+            }
+        }
+        return 0;
+
 	}
 	
 	/**
