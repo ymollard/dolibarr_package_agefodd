@@ -149,8 +149,12 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 				setEventMessage($agf->error, 'errors');
 			}
 			if ($part) {
-                setEventMessage($langs->trans('AgfEditReelHours'), 'warnings');
-                Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&edithours=true");
+                require_once ('../class/agefodd_stagiaire.class.php');
+                $stag = new Agefodd_stagiaire($db);
+                $stag->fetch($agfsta->fk_stagiaire);
+
+                setEventMessage($langs->trans('AgfEditReelHours', $stag->nom . ' ' . $stag->prenom), 'warnings');
+                Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&edithours=true&editstag=" . $stag->id);
                 exit;
             }
 			if ($redirect) {
@@ -523,6 +527,7 @@ if (! empty($id)) {
 		if (!empty($conf->global->AGF_USE_REAL_HOURS && $edithours)){
 		    print '<br><form id="editrealhours" name="editrealhours" action="' . $_SERVER['PHP_SELF'] . '?action=editrealhours&id=' . $id . '"  method="POST">' . "\n";
 		    print '<input type="hidden" name="action" value="editrealhours">';
+            $editstag = (int)GETPOST('editstag');
 
 		    $calendrier = new Agefodd_sesscalendar($db);
 		    $calendrier->fetch_all($agf->id);
@@ -560,7 +565,8 @@ if (! empty($id)) {
 		            print '<td><input name="realhours['.$stagiaires->lines[$i]->id.']['.$calendrier->lines[$j]->id.']" type="text" size="5" value='.$val.'></td>';
 		        }
 		        $total = $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id);
-		        print '<td align="center">'.$total.'</td><td align="center"><input type="checkbox" name="edit['.$stagiaires->lines[$i]->id.']"></td>';
+                $checked = ($editstag == (int)$stagiaires->lines[$i]->id) ? 'checked' : '';
+		        print '<td align="center">'.$total.'</td><td align="center"><input type="checkbox" name="edit['.$stagiaires->lines[$i]->id.']" '.$checked.'></td>';
 		        print '</tr>';
 		    }
 		    
