@@ -545,14 +545,14 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
 					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
 				}
-				
 			}
 			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
 			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
 			    $sql .= "SUM(assh.heures)/24 as timeinsession";
 			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
 			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
-			    $sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
+                $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+                $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			    $sql .= " AND sess.status IN (5)";
 			    $sql .= " AND sess.fk_socpeople_presta IS NULL";
 			    $sql .= " AND sess.fk_soc_employer IS NULL";
@@ -626,6 +626,9 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
+        if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+            $sql .= " AND sesssta.status_in_session = 3";
+        }
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -636,6 +639,31 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
 				}
 			}
+            if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+                $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+                $sql .= "SUM(assh.heures)/24 as timeinsession";
+                $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+                $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+                $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+                $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+                $sql .= " AND sess.status IN (5)";
+                $sql .= " AND sess.fk_socpeople_presta IS NULL";
+                $sql .= " AND sess.fk_soc_employer IS NOT NULL";
+                $resql2 = $this->db->query($sql);
+                if ($resql2) {
+                    if (empty($this->db->num_rows($resql))) {
+                        $this->trainee_data_f2[$key]['nb'] = 0;
+                        $this->trainee_data_f2[$key]['time'] = 0;
+                    }
+                    if ($this->db->num_rows($resql2)){
+                        while($obj = $this->db->fetch_object($resql2)){
+                            $this->trainee_data_f2[$key]['nb'] += $obj->cnt;
+                            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
+                        }
+                    }
+
+                }
+            }
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
@@ -1023,7 +1051,8 @@ class ReportBPF extends AgefoddExportExcel
 				    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
 				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
 				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
-				    $sql .= " WHERE sess.dated >= '" . $this->db->idate($filter['search_date_start']) . "' AND sess.datef <= '" . $this->db->idate($filter['search_date_end']) . "'";
+                    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+                    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 				    $sql .= " AND sess.status IN (5)";
 				    $sql .= " AND sess.fk_socpeople_presta IS NULL";
 				    $sql .= " AND sess.fk_soc_employer IS NULL";
