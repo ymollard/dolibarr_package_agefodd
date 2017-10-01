@@ -193,7 +193,8 @@ if ($action == 'editrealhours'){
     
     $hours = GETPOST('realhours');
     $sessid = (int)GETPOST('id');
-    
+    $edit = GETPOST('edit');
+
     if(!empty($hours)){
         $calendrier = new Agefodd_sesscalendar($db);
         $calendrier->fetch_all($sessid);
@@ -206,54 +207,56 @@ if ($action == 'editrealhours'){
             $agf = new Agsession($db);
             $agf->fetch($id);
 
-            // on enregistre les heures uniquement si le total d'heures stagiaire est différent de la durée de la session
-            if ((float)$dureeCalendrier !== (float)array_sum($value)){
-                $update = false;
+            if(!empty($edit[$key])) {
+                // on enregistre les heures uniquement si le total d'heures stagiaire est différent de la durée de la session
+                if ((float)$dureeCalendrier !== (float)array_sum($value)) {
+                    $update = false;
 
-                foreach ($value as $creneaux => $heures){
-                    $agf = new Agefoddsessionstagiaireheures($db);
-                    $result = $agf->fetch_by_session($id, $key, $creneaux);
+                    foreach ($value as $creneaux => $heures) {
+                        $agf = new Agefoddsessionstagiaireheures($db);
+                        $result = $agf->fetch_by_session($id, $key, $creneaux);
 
-                    if($result){
-                        // édition d'heures existante
-                        if($agf->heures !== $heures) {
+                        if ($result) {
+                            // édition d'heures existante
+                            if ($agf->heures !== $heures) {
+                                $agf->heures = (float)$heures;
+                                $agf->update($user);
+                            }
+
+                        } else {
+                            // création d'heure
+                            $agf->fk_stagiaire = $key;
+                            $agf->fk_calendrier = $creneaux;
+                            $agf->fk_session = $id;
                             $agf->heures = (float)$heures;
-                            $agf->update($user);
+                            $res = $agf->create($user);
+                            $update = true;
                         }
-                        
-                    } else {
-                        // création d'heure
-                        $agf->fk_stagiaire = $key;
-                        $agf->fk_calendrier = $creneaux;
-                        $agf->fk_session = $id;
-                        $agf->heures = (float)$heures;
-                        $res=$agf->create($user);
-                        $update = true;
                     }
-                }
-                // stagiaire partiellement présent
-                if ($update){
+                    // stagiaire partiellement présent
+                    if ($update) {
+                        $stagiaires = new Agefodd_session_stagiaire($db);
+                        $stagiaires->fetch($key);
+                        $stagiaires->status_in_session = 4;
+                        $res = $stagiaires->update($user);
+                    }
+
+                } else {
+                    // si les heures stagiaire sont égales à la durée de la session
+                    // On supprime les lignes d'heures existantes
+                    foreach ($value as $creneaux => $heures) {
+                        $agf = new Agefoddsessionstagiaireheures($db);
+                        $result = $agf->fetch_by_session($id, $key, $creneaux);
+                        if ($result) {
+                            $agf->delete($user);
+                        }
+                    }
+                    // stagiaire entièrement présent
                     $stagiaires = new Agefodd_session_stagiaire($db);
                     $stagiaires->fetch($key);
-                    $stagiaires->status_in_session = 4;
-                    $res = $stagiaires->update($user);
+                    $stagiaires->status_in_session = 3;
+                    $stagiaires->update($user);
                 }
-
-            } else {
-                // si les heures stagiaire sont égales à la durée de la session
-                // On supprime les lignes d'heures existantes
-                foreach ($value as $creneaux => $heures){
-                    $agf = new Agefoddsessionstagiaireheures($db);
-                    $result = $agf->fetch_by_session($id, $key, $creneaux);
-                    if($result){
-                        $agf->delete($user);
-                    }
-                }
-                // stagiaire entièrement présent
-                $stagiaires = new Agefodd_session_stagiaire($db);
-                $stagiaires->fetch($key);
-                $stagiaires->status_in_session = 3;
-                $stagiaires->update($user);
             }
         }
     }
@@ -531,14 +534,14 @@ if (! empty($id)) {
 		        
 		    print '<table class="noborder" width="100%">';
 		    print '<tr class="liste_titre">';
-		    print '<th>'.$langs->trans('AgfParticipants').'</th><th colspan="'.$blocNumber.'" align="center">'.$langs->trans('AgfSchedules').'</th><th>'.$langs->trans('AgfTraineeHours').'</th>';
+		    print '<th>'.$langs->trans('AgfParticipants').'</th><th colspan="'.$blocNumber.'" align="center">'.$langs->trans('AgfSchedules').'</th><th>'.$langs->trans('AgfTraineeHours').'</th><th>'.$langs->trans('Modify').'</th>';
 		    print '</tr>';
 		    print '<tr class="liste_titre"><th></th>';
 		    
 		    for ($i = 0; $i < $blocNumber; $i++){
 		        print '<th>'.dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y').'<br>'.dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</th>';
 		    }
-		    print '<th></th></tr>';
+		    print '<th></th><th></th></tr>';
 		    
 		    $stagiaires = new Agefodd_session_stagiaire($db);
 		    $stagiaires->fetch_stagiaire_per_session($agf->id);
@@ -557,7 +560,7 @@ if (! empty($id)) {
 		            print '<td><input name="realhours['.$stagiaires->lines[$i]->id.']['.$calendrier->lines[$j]->id.']" type="text" size="5" value='.$val.'></td>';
 		        }
 		        $total = $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id);
-		        print '<td align="center">'.$total.'</td>';
+		        print '<td align="center">'.$total.'</td><td align="center"><input type="checkbox" name="edit['.$stagiaires->lines[$i]->id.']"></td>';
 		        print '</tr>';
 		    }
 		    
