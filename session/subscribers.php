@@ -539,12 +539,12 @@ if (! empty($id)) {
 		        
 		    print '<table class="noborder" width="100%">';
 		    print '<tr class="liste_titre">';
-		    print '<th>'.$langs->trans('AgfParticipants').'</th><th colspan="'.$blocNumber.'" align="center">'.$langs->trans('AgfSchedules').'</th><th>'.$langs->trans('AgfTraineeHours').'</th><th>'.$langs->trans('Modify').'</th>';
+		    print '<th>'.$langs->trans('AgfParticipants').'</th><th colspan="'.$blocNumber.'" align="center">'.$langs->trans('AgfSchedules').'</th><th align="center">'.$langs->trans('AgfTraineeHours').'</th><th align="center">'.$langs->trans('Modify').'</th>';
 		    print '</tr>';
 		    print '<tr class="liste_titre"><th></th>';
 		    
 		    for ($i = 0; $i < $blocNumber; $i++){
-		        print '<th>'.dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y').'<br>'.dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</th>';
+		        print '<th align="center">'.dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y').'<br>'.dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</th>';
 		    }
 		    print '<th></th><th></th></tr>';
 		    
@@ -562,7 +562,7 @@ if (! empty($id)) {
                     if ($result && !empty($agfssh->heures)) $val = $agfssh->heures;
                     else $val = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured)/3600;
 
-		            print '<td><input name="realhours['.$stagiaires->lines[$i]->id.']['.$calendrier->lines[$j]->id.']" type="text" size="5" value='.$val.'></td>';
+		            print '<td align="center"><input name="realhours['.$stagiaires->lines[$i]->id.']['.$calendrier->lines[$j]->id.']" type="text" size="5" value='.$val.'></td>';
 		        }
 		        $total = $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id);
                 $checked = ($editstag == (int)$stagiaires->lines[$i]->id) ? 'checked' : '';

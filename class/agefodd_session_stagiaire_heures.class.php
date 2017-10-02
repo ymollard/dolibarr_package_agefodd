@@ -423,28 +423,6 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	public function heures_stagiaire($sessid, $traineeid)
 	{
 	    global $db;
-	    /*
-	    $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
-	    $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
-	    $sql .= ' AND fk_session = ' . $sessid;
-	    
-	    dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
-	    $resql = $this->db->query($sql);
-	    if ($resql) {
-	        $obj = $this->db->fetch_object($resql);
-	        if (!empty($obj->total)){
-	            return $obj->total;
-	        } else {
-	            require_once 'agefodd_session_stagiaire.class.php';
-	            $stagiaire = new Agefodd_session_stagiaire($db);
-	            $stagiaire->fetch($traineeid);
-	            if ($stagiaire->status_in_session == 3){
-	                $agf = new Agsession($db);
-	                $agf->fetch($sessid);
-	                return $agf->duree_session;
-	            } else return 0;
-	        }
-	    }*/
 
         $calendrier = new Agefodd_sesscalendar($db);
         $calendrier->fetch_all($sessid);
