@@ -47,6 +47,22 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//agefodd_session_stagiaire
+$sql = 'SELECT fk_session_agefodd as fk_session FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire et non dans '.MAIN_DB_PREFIX.'agefodd_session<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
 //agefodd_session_formateur
 $sql = 'SELECT  fk_agefodd_formateur as  fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE  fk_agefodd_formateur NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur)';
 
@@ -148,8 +164,38 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+$sql = 'SELECT fk_cursus as fk_cursus FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_cursus WHERE fk_cursus NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_cursus)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Cursus '.$obj->fk_cursus.' dans '.MAIN_DB_PREFIX.'agefodd_formateur_category et non dans '.MAIN_DB_PREFIX.'agefodd_formateur_category_dict<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_cursus WHERE fk_cursus NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_cursus)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
 
 
+$sql = 'SELECT rowid,nom,prenom,civilite FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE civilite NOT IN (SELECT code FROM '.MAIN_DB_PREFIX.'c_civility)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Civité '.$obj->civilite.' du participant id:'.$obj->rowid.'- nom:'.$obj->nom.' prenom:'.$obj->prenom.' n existe pas dans le dictionnaire des civilité<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_cursus WHERE fk_cursus NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_cursus)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
 llxFooter();
 $db->close();
