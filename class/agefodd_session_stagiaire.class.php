@@ -91,7 +91,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 */
 	public function fetch($id) {
 		$sql = "SELECT";
-		$sql .= " fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec, status_in_session";
+		$sql .= " rowid, fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec, status_in_session";
 		$sql .= " ,fk_soc_link";
 		$sql .= " ,fk_soc_requester";
 		$sql .= " ,fk_socpeople_sign";
@@ -105,6 +105,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 
 			$obj = $this->db->fetch_object($resql);
 
+			$this->id = $obj->rowid;
 			$this->fk_session_agefodd = $obj->fk_session_agefodd;
 			$this->fk_stagiaire = $obj->fk_stagiaire;
 			$this->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
