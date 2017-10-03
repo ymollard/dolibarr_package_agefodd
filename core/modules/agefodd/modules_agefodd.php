@@ -232,8 +232,6 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
 
-		var_dump($path_external_model);
-		exit;
 		if(empty($path_external_model)) $res_writefile = $obj->write_file($id, $outputlangs, $file, $socid, $courrier);
 		else $res_writefile = $obj->write_file($id, $id_external_model, $outputlangs, $file, $obj_agefodd_convention, $socid);
 
