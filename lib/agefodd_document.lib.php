@@ -1011,24 +1011,19 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
 function getSelectAgefoddModels($mdle, $socid=0) {
 	
-	dol_include_once('referenceletters/class/referenceletters_tools.class.php');
-	require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
-	
-	$form = new Form($db);
-	
-	$type='';
-	if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
-	elseif($mdle === 'attestation' || $mdle === 'attestation_trainee') $type = 'rfltr_agefodd_attestation';
-	elseif($mdle === 'attestationendtraining' || $mdle === 'attestationendtraining_trainee') $type = 'rfltr_agefodd_attestation_fin_formation';
-	elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_presence';
-	elseif($mdle === 'contrat_trainer') $type = 'rfltr_agefodd_contrat_trainer';
-	
-	$TModels = RfltrTools::getAgefoddModelList();
-	if(!empty($type) && !empty($TModels[$type])) {
-		$params = 'style="display:none;" model="'.$mdle.'"';
-		if(!empty($socid)) $params.= ' socid="'.$socid.'"';
-		return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$mdle.$socid);
-	}
+    dol_include_once('referenceletters/class/referenceletters_tools.class.php');
+    require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
+    
+    $form = new Form($db);
+    
+    $type='rfltr_agefodd_'.$mdle;
+    
+    $TModels = RfltrTools::getAgefoddModelList();
+    if(!empty($type) && !empty($TModels[$type])) {
+        $params = 'style="display:none;" model="'.$mdle.'"';
+        if(!empty($socid)) $params.= ' socid="'.$socid.'"';
+        return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$mdle.$socid);
+    }
 	
 }
 
