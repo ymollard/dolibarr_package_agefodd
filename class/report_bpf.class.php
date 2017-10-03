@@ -533,6 +533,9 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+		    $sql .= " AND sesssta.status_in_session = 3";
+		}
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -542,6 +545,31 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f2[$key]['nb'] = $obj->cnt;
 					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
 				}
+			}
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+			    $sql .= "SUM(assh.heures)/24 as timeinsession";
+			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+                $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+                $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			    $sql .= " AND sess.status IN (5)";
+			    $sql .= " AND sess.fk_socpeople_presta IS NULL";
+			    $sql .= " AND sess.fk_soc_employer IS NULL";
+			    $resql2 = $this->db->query($sql);
+			    if ($resql2) {
+			        if (empty($this->db->num_rows($resql))) {
+			            $this->trainee_data_f2[$key]['nb'] = 0;
+			            $this->trainee_data_f2[$key]['time'] = 0;
+			        }
+			        if ($this->db->num_rows($resql2)){
+			            while($obj = $this->db->fetch_object($resql2)){
+    			            $this->trainee_data_f2[$key]['nb'] += $obj->cnt;
+    			            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
+    			        }
+			        }
+			        
+			    }
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -598,6 +626,9 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
+        if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+            $sql .= " AND sesssta.status_in_session = 3";
+        }
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -608,6 +639,31 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f2[$key]['time'] = $obj->timeinsession;
 				}
 			}
+            if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+                $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+                $sql .= "SUM(assh.heures)/24 as timeinsession";
+                $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+                $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+                $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+                $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+                $sql .= " AND sess.status IN (5)";
+                $sql .= " AND sess.fk_socpeople_presta IS NULL";
+                $sql .= " AND sess.fk_soc_employer IS NOT NULL";
+                $resql2 = $this->db->query($sql);
+                if ($resql2) {
+                    if (empty($this->db->num_rows($resql))) {
+                        $this->trainee_data_f2[$key]['nb'] = 0;
+                        $this->trainee_data_f2[$key]['time'] = 0;
+                    }
+                    if ($this->db->num_rows($resql2)){
+                        while($obj = $this->db->fetch_object($resql2)){
+                            $this->trainee_data_f2[$key]['nb'] += $obj->cnt;
+                            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
+                        }
+                    }
+
+                }
+            }
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
@@ -672,6 +728,9 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as catform ON catform.rowid=formation.fk_c_category_bpf ";
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+		    $sql .= " AND sesssta.status_in_session = 3";
+		}
 		$sql .= " GROUP BY catform.intitule";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -682,6 +741,32 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f3[$obj->intitule]['nb'] = $obj->cnt;
 					$this->trainee_data_f3[$obj->intitule]['time'] = $obj->timeinsession;
 				}
+			}
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , catform.intitule,";
+			    $sql .= "SUM(assh.heures)/24 as timeinsession";
+			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+			    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as formation ON formation.rowid=sess.fk_formation_catalogue ";
+			    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as catform ON catform.rowid=formation.fk_c_category_bpf ";
+			    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			    $sql .= " AND sess.status IN (5)";
+			    $sql .= " GROUP BY catform.intitule";
+			    $resql2 = $this->db->query($sql);
+			    if ($resql2) {
+			        if (empty($this->db->num_rows($resql))) {
+			            $this->trainee_data_f3[$obj->intitule]['nb'] = 0;
+			            $this->trainee_data_f3[$obj->intitule]['time'] = 0;
+			        }
+			        if ($this->db->num_rows($resql2)){
+			            while($obj = $this->db->fetch_object($resql2)){
+			                $this->trainee_data_f3[$obj->intitule]['nb'] += $obj->cnt;
+			                $this->trainee_data_f3[$obj->intitule]['time'] += $obj->timeinsession;
+			            }
+			        }
+			        
+			    }
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -749,6 +834,9 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as catform ON catform.rowid=formation.fk_c_category ";
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+		    $sql .= " AND sesssta.status_in_session = 3";
+		}
 		$sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -759,6 +847,32 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_f4[$obj->intitule]['nb'] = $obj->cnt;
 					$this->trainee_data_f4[$obj->intitule]['time'] = $obj->timeinsession;
 				}
+			}
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , CONCAT(catform.code , '-', catform.intitule) as intitule,";
+			    $sql .= "SUM(assh.heures)/24 as timeinsession";
+			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+			    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as formation ON formation.rowid=sess.fk_formation_catalogue ";
+			    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type as catform ON catform.rowid=formation.fk_c_category ";
+			    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			    $sql .= " AND sess.status IN (5)";
+			    $sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
+			    $resql2 = $this->db->query($sql);
+			    if ($resql2) {
+			        if (empty($this->db->num_rows($resql))) {
+			            $this->trainee_data_f4[$obj->intitule]['nb'] = 0;
+			            $this->trainee_data_f4[$obj->intitule]['time'] = 0;
+			        }
+			        if ($this->db->num_rows($resql2)){
+			            while($obj = $this->db->fetch_object($resql2)){
+			                $this->trainee_data_f4[$obj->intitule]['nb'] += $obj->cnt;
+			                $this->trainee_data_f4[$obj->intitule]['time'] += $obj->timeinsession;
+			            }
+			        }
+			        
+			    }
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -826,6 +940,9 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.status IN (5)";
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+		    $sql .= " AND sesssta.status_in_session = 3";
+		}
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -835,6 +952,31 @@ class ReportBPF extends AgefoddExportExcel
 					$this->trainee_data_g[$key]['nb'] = $obj->cnt;
 					$this->trainee_data_g[$key]['time'] = $obj->timeinsession;
 				}
+			}
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+			    $sql .= "SUM(assh.heures)/24 as timeinsession";
+			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+			    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+			    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+			    $sql .= " AND sess.status IN (5)";
+			    $sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
+			    $sql .= " AND sess.fk_soc_employer IS NULL";
+			    $resql2 = $this->db->query($sql);
+			    if ($resql2) {
+			        if (empty($this->db->num_rows($resql))) {
+			            $this->trainee_data_g[$key]['nb'] = 0;
+			            $this->trainee_data_g[$key]['time'] = 0;
+			        }
+			        if ($this->db->num_rows($resql2)){
+			            while($obj = $this->db->fetch_object($resql2)){
+			                $this->trainee_data_g[$key]['nb'] += $obj->cnt;
+			                $this->trainee_data_g[$key]['time'] += $obj->timeinsession;
+			            }
+			        }
+			        
+			    }
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -947,7 +1089,8 @@ class ReportBPF extends AgefoddExportExcel
 				),
 				array(
 						'label' => 'e-Autres stagiaires',
-						'idtype' => ''
+						//'idtype' => '6,8,9,10,11,12,13,14,16'
+				        'idtype' => ''
 				)
 		);
 
@@ -970,6 +1113,9 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			$sql .= " AND sess.status IN (5)";
 			$sql .= " AND sess.fk_socpeople_presta IS NULL";
+			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+			    $sql .= " AND sesssta.status_in_session = 3";
+			}
 
 			$total_cnt = 0;
 			$total_timeinsession = 0;
@@ -985,6 +1131,39 @@ class ReportBPF extends AgefoddExportExcel
 						$total_timeinsession += $obj->timeinsession;
 					}
 				}
+				if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+				    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+				    $sql .= "SUM(assh.heures)/24 as timeinsession";
+				    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
+				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
+				    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
+                    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statime ON statime.rowid=assh.fk_calendrier ";
+                    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
+				    $sql .= " AND sess.status IN (5)";
+				    $sql .= " AND sess.fk_socpeople_presta IS NULL";
+				    $sql .= " AND sess.fk_soc_employer IS NULL";
+				    $sql .= " AND sesssta.status_in_session = 4";
+				    if (! empty($data['idtype'])) {
+				        $sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (" . $data['idtype'] . ") ";
+				    }
+				    $resql2 = $this->db->query($sql);
+				    if ($resql2) {
+				        if (empty($this->db->num_rows($resql))) {
+				            $this->trainee_data[$data['label']]['nb'] = 0;
+				            $this->trainee_data[$data['label']]['time'] = 0;
+				        }
+				        if ($this->db->num_rows($resql2)){
+				            while($obj = $this->db->fetch_object($resql2)){
+				                $this->trainee_data[$data['label']]['nb'] += $obj->cnt;
+				                $this->trainee_data[$data['label']]['time'] += $obj->timeinsession;
+				                $total_cnt += $obj->cnt;
+				                $total_timeinsession += $obj->timeinsession;
+				            }
+				        }
+				        
+				    }
+				}
+				
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
 				dol_syslog(get_class($this) . "::" . __METHOD__ . " " . $data['label'] . " " . $this->error, LOG_ERR);
@@ -993,8 +1172,8 @@ class ReportBPF extends AgefoddExportExcel
 			$this->db->free($resql);
 
 			if (empty($data['idtype'])) {
-				$this->trainee_data[$data['label']]['nb'] = $obj->cnt - $total_cnt;
-				$this->trainee_data[$data['label']]['time'] = $obj->timeinsession - $total_timeinsession;
+				$this->trainee_data[$data['label']]['nb'] = (!empty($obj->cnt)) ? ($obj->cnt - $total_cnt) : 0;
+				$this->trainee_data[$data['label']]['time'] = (!empty($obj->timeinsession)) ? ($obj->timeinsession - $total_timeinsession) : 0;
 			}
 
 			// Add time from FOAD
