@@ -182,7 +182,17 @@ echo '<script type="text/javascript">
 									  this.href =this.href.replace(/file=/,
 								         "file=/report/bpf/")
 								   });
-                        });
+							});
+							jQuery(function() {
+							$(".documentdownload[href*=\'export\']")
+								.each(function()
+								   {
+								      this.href = this.href.replace(/export/,
+								         "agefodd");
+									  this.href =this.href.replace(/file=/,
+								         "file=/report/bpf/")
+								   });
+                        	});
                     });
 		</script>';
 
