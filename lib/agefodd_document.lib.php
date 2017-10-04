@@ -1016,7 +1016,7 @@ function getSelectAgefoddModels($mdle, $socid=0) {
     
     $form = new Form($db);
     
-    $type='rfltr_agefodd_'.$mdle;
+    if($mdle !== 'convention') $type='rfltr_agefodd_'.$mdle;
     
     $TModels = RfltrTools::getAgefoddModelList();
     if(!empty($type) && !empty($TModels[$type])) {
