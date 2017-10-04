@@ -48,6 +48,7 @@ $search_id = GETPOST('search_id', 'int');
 $search_lastname = GETPOST('search_lastname', 'alpha');
 $search_firstname = GETPOST('search_firstname', 'alpha');
 $search_mail = GETPOST('search_mail', 'alpha');
+$search_type_trainer = GETPOST('search_type_trainer', 'alpha');
 
 if (empty($sortorder))
 	$sortorder = "ASC";
@@ -66,6 +67,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_lastname = '';
 	$search_firstname = "";
 	$search_mail = '';
+	$search_type_trainer = '';
 }
 
 $filter = array ();
@@ -84,6 +86,10 @@ if (! empty($search_firstname)) {
 if (! empty($search_mail)) {
 	$filter ['mail'] = $search_mail;
 	$option .= '&search_mail=' . $search_mail;
+}
+if (! empty($search_type_trainer)) {
+    $filter ['type_trainer'] = $search_type_trainer;
+    $option .= '&search_type_trainer=' . $search_type_trainer;
 }
 
 $limit = $conf->liste_limit;
@@ -122,6 +128,7 @@ print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "s.
 print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("PhoneMobile"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.email", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans('AgfTrainerNature'), $_SERVER ['PHP_SELF'], "f.type_trainer", "", $option, '', $sortfield, $sortorder);
 print '<th width="5%">';
 print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 print '&nbsp; ';
@@ -149,6 +156,13 @@ print '</td>';
 print '<td class="liste_titre">';
 print '<input type="text" class="flat" name="search_mail" value="' . $search_mail . '" size="10">';
 print '</td>';
+print '<td class="liste_titre">';
+print '<select class="flat" name="search_type_trainer" >';
+print '<option value=""></option>';
+print '<option value="user" '.($search_type_trainer=='user'? 'selected="selected" ' : '').'>'.$langs->trans('AgfTrainerTypeUser').'</option>';
+print '<option value="socpeople" '.($search_type_trainer=='socpeople'? 'selected="selected" ' : '').'>'.$langs->trans('AgfTrainerTypeSocpeople').'</option>';
+print '</select>';
+print '</td>';
 print '<td></td>';
 print "</tr>\n";
 
@@ -174,6 +188,7 @@ if ($result > 0) {
 		else
 			print '<a href="mailto:' . $agf->lines [$i]->email . '"' . $style . '>' . $agf->lines [$i]->email . '</a>';
 		print '</td>';
+		print '<td>'.$langs->trans('AgfTrainerType'.ucfirst($agf->lines[$i]->type_trainer)).'</td>';
 		print '<td></td>';
 		print "</tr>\n";
 		

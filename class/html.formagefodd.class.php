@@ -1295,7 +1295,7 @@ class FormAgefodd extends Form
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action='') {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action='',$filter_session_status='') {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1428,6 +1428,27 @@ class FormAgefodd extends Form
 			print $langs->trans("AgfFormTypeSession");
 			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 			print $this->select_type_session('type_session', $filter_type_session, 1);
+			print '</td></tr>';
+
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans("AgfStatusSession");
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
+
+			//Find all posible status
+			$sql_status = "SELECT t.rowid, t.code ,t.intitule ";
+			$sql_status .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
+			$sql_status .= ' WHERE active=1';
+			$sql .= " ORDER BY t.sort";
+			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+			$data_status=array();
+			$result_status = $this->db->query($sql_status);
+			if ($result_status) {
+				while ($obj_status = $this->db->fetch_object($result)) {
+					$data_status[$obj_status->rowid]=$obj_status->intitule;
+				}
+			}
+			print $form->multiselectarray('search_session_status', $data_status, $filter_session_status, '', 0, '', 0, '100%');
 			print '</td></tr>';
 		}
 

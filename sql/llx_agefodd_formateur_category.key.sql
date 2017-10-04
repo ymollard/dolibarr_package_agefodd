@@ -19,5 +19,5 @@
 --
 -- ============================================================================
 
-ALTER TABLE llx_agefodd_formateur_category ADD CONSTRAINT llx_agefodd_formateur_category_category FOREIGN KEY (fk_category) REFERENCES llx_agefodd_formateur_category_dict (rowid);
+ALTER TABLE llx_agefodd_formateur_category ADD CONSTRAINT llx_agefodd_formateur_category FOREIGN KEY (fk_category) REFERENCES llx_agefodd_formateur_category_dict (rowid);
 ALTER TABLE llx_agefodd_formateur_category ADD CONSTRAINT llx_agefodd_formateur_category_trainer FOREIGN KEY (fk_trainer) REFERENCES llx_agefodd_formateur (rowid);
