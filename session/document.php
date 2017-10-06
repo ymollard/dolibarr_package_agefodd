@@ -162,7 +162,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$file = $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif (strpos($model, 'fiche_pedago') !== false) {
 		$file = $model . '_' . $idform . '.pdf';
-		$id_tmp = $idform;
+		$id_tmp = $id;
 		$cour = $id;
 	} elseif (strpos($model, 'mission_trainer') !== false) {
 		$file = $model . '_' . $sessiontrainerid . '.pdf';
