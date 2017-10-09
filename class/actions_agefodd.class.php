@@ -320,4 +320,20 @@ class ActionsAgefodd
 
 		return $pagecount;
 	}
+
+
+	/**
+	 *
+	 * @param string $parameters
+	 * @param Object $object
+	 * @param string $action
+	 * @param Hookmanager $hookmanager
+	 * @return number
+	 */
+	public function doUpgrade2($parameters, &$object, &$action, $hookmanager) {
+	//TODO : see why Dolibarr do not execute this
+	/*dol_include_once('/agefodd/core/modAgefodd.class.php');
+		$obj = new modAgefodd($db);
+		$obj->load_tables();*/
+	}
 }
