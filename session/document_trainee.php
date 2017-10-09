@@ -55,6 +55,7 @@ $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $session_trainee_id = GETPOST('sessiontraineeid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
+$id_external_model = GETPOST('id_external_model');
 
 if (GETPOST('modelselected')) {
 	$action = GETPOST('pre_action');
@@ -98,7 +99,13 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		}
 	}
 
-	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour);
+
+	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
+		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
+	}
+
+	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour, $path_external_model, $id_external_model);
 }
 
 if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $_POST ['cancel']) {
@@ -526,6 +533,13 @@ $extracss = array (
 );
 
 llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', $extrajs, $extracss);
+
+if(!empty($conf->referenceletters->enabled)) {
+	dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
+	if (class_exists('RfltrTools') && method_exists('RfltrTools','print_js_external_models')) {
+		RfltrTools::print_js_external_models('document_by_trainee');
+	}
+}
 
 print '<script type="text/javascript" language="javascript">
 	jQuery(document).ready(function() {

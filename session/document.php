@@ -54,6 +54,7 @@ if (! $user->rights->agefodd->lire) {
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
+$id_external_model = GETPOST('id_external_model');
 $socid = GETPOST('socid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $sessiontrainerid = GETPOST('sessiontrainerid', 'int');
@@ -152,6 +153,8 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$convention->fetch(0, 0, GETPOST('convid', 'int'));
 		$id_tmp = $convention->id;
 		$model = $convention->model_doc;
+		// Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
+		if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $id;
 		$model = str_replace('pdf_', '', $model);
 
 		$file = 'convention' . '_' . $id . '_' . $socid . '_' . $convention->id . '.pdf';
@@ -162,6 +165,10 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$id_tmp = $idform;
 		$cour = $id;
 	} elseif (strpos($model, 'mission_trainer') !== false) {
+		$file = $model . '_' . $sessiontrainerid . '.pdf';
+		$socid = $sessiontrainerid;
+		$id_tmp = $id;
+	} elseif (strpos($model, 'contrat_trainer') !== false) {
 		$file = $model . '_' . $sessiontrainerid . '.pdf';
 		$socid = $sessiontrainerid;
 		$id_tmp = $id;
@@ -185,7 +192,12 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		}
 	}
 
-	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour);
+	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
+		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
+	}
+
+	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
 }
 
 // Confirm create order
@@ -260,7 +272,7 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif ($model == 'fiche_pedago') {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
-	} elseif (strpos($model, 'mission_trainer') !== false) {
+	} elseif (strpos($model, 'mission_trainer') !== false || strpos($model, 'contrat_trainer') !== false) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $sessiontrainerid . '.pdf';
 	} else {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '.pdf';
@@ -279,6 +291,13 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 */
 
 llxHeader('', $langs->trans("AgfSessionDetail"));
+
+if(!empty($conf->referenceletters->enabled)) {
+	dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
+	if (class_exists('RfltrTools') && method_exists('RfltrTools','print_js_external_models')) {
+		RfltrTools::print_js_external_models();
+	}
+}
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
@@ -694,6 +713,8 @@ if (! empty($id)) {
 				print '</td>' . "\n";
 				print '</tr>' . "\n";
 				document_line($langs->trans("AgfTrainerMissionLetter"), "mission_trainer", $line->opsid);
+				$select_models = getSelectAgefoddModels("contrat_trainer", $socid); // Si la chaine est vide, aucun modèle de ce type n'existe
+				if(!empty($select_models)) document_line($langs->trans("AgfContratTrainer"), "contrat_trainer", $line->opsid);
 			}
 			print '</table>';
 		}
