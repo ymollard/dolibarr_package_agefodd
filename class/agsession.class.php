@@ -4607,6 +4607,7 @@ class Agsession extends CommonObject
 		global $db, $conf;
 		
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainer = $socid;
+		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
 		//elseif($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainee = $socid; TODO quand on aura créé le modèle par participant
 
 		// Chargement des participants
@@ -4722,6 +4723,14 @@ class Agsession extends CommonObject
 			$this->formateur_session = $agf_teacher;
 			$this->formateur_session_societe = $agf_teacher->thirdparty;
 			
+		}
+		
+		if(!empty($id_trainee)) {
+		    dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+		    
+		    $trainee = new Agefodd_stagiaire($db);
+		    $trainee->fetch($id_trainee);
+		    $this->stagiaire = $trainee;
 		}
 		
 		if(!empty($socid)) {
