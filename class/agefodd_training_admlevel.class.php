@@ -42,6 +42,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	public $indice;
 	public $intitule;
 	public $delais_alerte;
+	public $delais_alerte_end;
 	public $fk_user_author;
 	public $datec = '';
 	public $fk_user_mod;
@@ -85,6 +86,8 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->intitule = trim($this->intitule);
 		if (isset($this->delais_alerte))
 			$this->delais_alerte = trim($this->delais_alerte);
+		if (isset($this->delais_alerte_end))
+			$this->delais_alerte_end = trim($this->delais_alerte_end);
 		if (isset($this->fk_user_author))
 			$this->fk_user_author = trim($this->fk_user_author);
 		if (isset($this->fk_user_mod))
@@ -105,6 +108,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= "indice,";
 		$sql .= "intitule,";
 		$sql .= "delais_alerte,";
+		$sql .= "delais_alerte_end,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod,";
@@ -119,6 +123,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " " . (empty($this->indice) ? '0' : "'" . $this->indice . "'") . ",";
 		$sql .= " " . (! isset($this->intitule) ? 'NULL' : "'" . $this->db->escape($this->intitule) . "'") . ",";
 		$sql .= " " . (empty($this->delais_alerte) ? '0' : $this->delais_alerte) . ",";
+		$sql .= " " . (empty($this->delais_alerte_end) ? '0' : $this->delais_alerte_end) . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id . ",";
@@ -181,6 +186,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " t.indice,";
 		$sql .= " t.intitule,";
 		$sql .= " t.delais_alerte,";
+		$sql .= " t.delais_alerte_end,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
@@ -205,6 +211,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$this->indice = $obj->indice;
 				$this->intitule = $obj->intitule;
 				$this->delais_alerte = $obj->delais_alerte;
+				$this->delais_alerte_end = $obj->delais_alerte_end;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
@@ -239,6 +246,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " t.indice,";
 		$sql .= " t.intitule,";
 		$sql .= " t.delais_alerte,";
+		$sql .= " t.delais_alerte_end,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
@@ -269,6 +277,7 @@ class Agefodd_training_admlevel extends CommonObject {
 				$line->indice = $obj->indice;
 				$line->intitule = $obj->intitule;
 				$line->alerte = $obj->delais_alerte;
+				$line->alerte_end = $obj->delais_alerte_end;
 				$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
 				$line->trigger_name = $obj->trigger_name;
 
@@ -310,6 +319,8 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->intitule = trim($this->intitule);
 		if (isset($this->delais_alerte))
 			$this->delais_alerte = trim($this->delais_alerte);
+		if (isset($this->delais_alerte_end))
+			$this->delais_alerte_end = trim($this->delais_alerte_end);
 		if (isset($this->fk_user_mod))
 			$this->fk_user_mod = trim($this->fk_user_mod);
 		if (isset($this->trigger_name))
@@ -329,6 +340,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " intitule=" . (isset($this->intitule) ? "'" . $this->db->escape($this->intitule) . "'" : "null") . ",";
 		$sql .= " trigger_name=" . (isset($this->trigger_name) ? "'" . $this->db->escape($this->trigger_name) . "'" : "null") . ",";
 		$sql .= " delais_alerte=" . (isset($this->delais_alerte) ? $this->delais_alerte : "null") . ",";
+		$sql .= " delais_alerte_end=" . (isset($this->delais_alerte_end) ? $this->delais_alerte_end : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
 
 		$sql .= " WHERE rowid=" . $this->id;
