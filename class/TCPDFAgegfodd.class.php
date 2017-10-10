@@ -17,8 +17,8 @@
  */
 
 /**
- * \file class/referencelettersPdf.class.php
- * \ingroup referenceletters
+ * \file class/TCPDFAgefodd.class.php
+ * \ingroup agefodd
  * \brief This file is an example hook overload class file
  * Put some comments here
  */
@@ -26,7 +26,7 @@
 require_once TCPDF_PATH.'tcpdf.php';
 
 /**
- * Class ActionsReferenceLetters
+ * Class TCPDFAgefodd
  */
 class TCPDFAgefodd extends TCPDF
 {

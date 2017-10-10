@@ -30,10 +30,12 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/html.formagefodd.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 
-require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+
+require_once '../class/agefodd_formation_catalogue.class.php';
+require_once '../class/html.formagefodd.class.php';
 
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
@@ -101,6 +103,7 @@ llxHeader('', $langs->trans('AgfMenuCat'));
 $agf = new Agefodd($db);
 $form = new Form($db);
 $formagefodd = new FormAgefodd($db);
+$formfile = new FormFile($db);
 
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
@@ -222,7 +225,39 @@ if ($resql > 0) {
 		// Affichage tableau des formations
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		print '<td><a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		print '<td>';
+
+		print '<table class="nobordernopadding"><tr class="nocellnopadd">';
+
+		print '<td class="nobordernopadding nowrap">';
+		print '<a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a>';
+		print '</td>';
+
+		print '<td style="min-width: 20px" class="nobordernopadding nowrap">';
+		$legende = $langs->trans("AgfDocOpen");
+		if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $line->rowid . '.pdf')) {
+			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+			print img_picto('fiche_pedago_' . $line->rowid . '.pdf:fiche_pedago_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
+			if (function_exists('getAdvancedPreviewUrl')) {
+				$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_' . $line->rowid . '.pdf');
+				if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+			}
+		}
+		if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $line->rowid . '.pdf')) {
+			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+			print img_picto('fiche_pedago_modules_' . $line->rowid . '.pdf:fiche_pedago_modules_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
+			if (function_exists('getAdvancedPreviewUrl')) {
+				$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_modules_' . $line->rowid . '.pdf');
+				if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+			}
+		}
+		print '</td>';
+		print '</tr>';
+		print '</table>';
+
+
+
+		print '</td>';
 		print '<td>' . stripslashes($line->intitule) . '</td>';
 		print '<td>' . $line->ref . '</td>';
 		print '<td>' . $line->ref_interne . '</td>';

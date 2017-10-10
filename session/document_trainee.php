@@ -99,12 +99,12 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		}
 	}
 
-	
+
 	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
 	}
-	
+
 	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour, $path_external_model, $id_external_model);
 }
 
@@ -536,7 +536,9 @@ llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', $extrajs, $extr
 
 if(!empty($conf->referenceletters->enabled)) {
 	dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-	RfltrTools::print_js_external_models('document_by_trainee');
+	if (class_exists('RfltrTools') && method_exists('RfltrTools','print_js_external_models')) {
+		RfltrTools::print_js_external_models('document_by_trainee');
+	}
 }
 
 print '<script type="text/javascript" language="javascript">

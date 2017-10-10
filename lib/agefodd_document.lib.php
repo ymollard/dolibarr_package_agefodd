@@ -418,10 +418,10 @@ function show_trainer_mission($session_trainerid) {
 
 function show_trainer_contract($session_trainerid) {
 	global $langs, $conf, $id, $form, $idform;
-	
+
 	$model = 'contrat_trainer';
 	$file = $model . '_' . $session_trainerid . '.pdf';
-	
+
 	if (is_file($conf->agefodd->dir_output . '/' . $file)) {
 		// afficher
 		$legende = $langs->trans("AgfDocOpen");
@@ -431,12 +431,12 @@ function show_trainer_contract($session_trainerid) {
 			$urladvanced = getAdvancedPreviewUrl('agefodd', $file);
 			if ($urladvanced) $mess.= '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
 		}
-		
+
 		// Supprimer
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=del&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
-		
+
 	}
 	return $mess;
 }
@@ -794,39 +794,39 @@ function show_facopca($file, $socid, $mdle) {
 function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
 	global $conf, $langs;
-	
+
 	print '<tr style="height:14px">' . "\n";
-	
+
 	$select_model='';
 	if($conf->referenceletters->enabled) $select_model = getSelectAgefoddModels($mdle, $socid);
-	
+
 	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
 	if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
-		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle);
+		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle) . '</td>' . "\n";
 	} elseif ($mdle == 'convention') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier);
+		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier) . '</td>' . "\n";
 	} elseif ($mdle == 'facopca') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier);
+		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier) . '</td>' . "\n";
 	} elseif ($mdle == 'convocation_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid);
+		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid) . '</td>' . "\n";
 	} elseif ($mdle == 'attestation_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid);
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid) . '</td>' . "\n";
 	} elseif ($mdle == 'attestationendtraining_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid);
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid) . '</td>' . "\n";
 	} elseif ($mdle == 'mission_trainer') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid);
 	} elseif($mdle == 'contrat_trainer' && $conf->referenceletters->enabled && !empty($select_model)){
 		print '<td class="trainerid" trainerid="'.$socid.'" style="border-left:0px; width:250px" align="left">' . show_trainer_contract($socid);
 	} else {
-		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier);
+		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier) . '</td>' . "\n";
 	}
-	
+
 	if($conf->referenceletters->enabled && !empty($select_model)) {
 		print '&nbsp;<a href="#" class="btn_show_external_model_list" title="'.$langs->trans('AgfCustomEditions').'" class_to_show="custom_models_'.$mdle.$socid.'" onclick="return false;">+</a>&nbsp;';
 	}
-	
+
 	print $select_model.'</td>' . "\n";
-	
+
 	print '<td style="border-right:0px;">';
 
 	print $intitule;
@@ -1009,6 +1009,12 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	}
 }
 
+/**
+ *
+ * @param unknown $mdle
+ * @param number $socid
+ * @return string
+ */
 function getSelectAgefoddModels($mdle, $socid=0) {
 	
     dol_include_once('referenceletters/class/referenceletters_tools.class.php');

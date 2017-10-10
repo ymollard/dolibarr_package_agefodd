@@ -134,7 +134,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 	$cour = GETPOST('cour', 'alpha');
 	$model = GETPOST('model', 'alpha');
 	$idform = GETPOST('idform', 'alpha');
-	
+
 	// Define output language
 	$outputlangs = $langs;
 	$newlang = GETPOST('lang_id', 'alpha');
@@ -162,7 +162,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$file = $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif (strpos($model, 'fiche_pedago') !== false) {
 		$file = $model . '_' . $idform . '.pdf';
-		$id_tmp = $id;
+		$id_tmp = $idform;
 		$cour = $id;
 	} elseif (strpos($model, 'mission_trainer') !== false) {
 		$file = $model . '_' . $sessiontrainerid . '.pdf';
@@ -172,7 +172,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$file = $model . '_' . $sessiontrainerid . '.pdf';
 		$socid = $sessiontrainerid;
 		$id_tmp = $id;
-	}else {
+	} else {
 		$file = $model . '_' . $id . '.pdf';
 	}
 
@@ -191,12 +191,12 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 			}
 		}
 	}
-	
+
 	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
 	}
-	
+
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
 }
 
@@ -270,7 +270,7 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 		}
 	} elseif (! empty($socid)) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
-	} elseif ($model == 'fiche_pedago' || $model == 'fiche_pedago_modules') {
+	} elseif ($model == 'fiche_pedago') {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
 	} elseif (strpos($model, 'mission_trainer') !== false || strpos($model, 'contrat_trainer') !== false) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $sessiontrainerid . '.pdf';
@@ -294,7 +294,9 @@ llxHeader('', $langs->trans("AgfSessionDetail"));
 
 if(!empty($conf->referenceletters->enabled)) {
 	dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-	RfltrTools::print_js_external_models();
+	if (class_exists('RfltrTools') && method_exists('RfltrTools','print_js_external_models')) {
+		RfltrTools::print_js_external_models();
+	}
 }
 
 $form = new Form($db);

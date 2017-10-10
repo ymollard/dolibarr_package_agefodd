@@ -51,7 +51,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $fk_calendrier;
     public $fk_session;
     public $heures;
-    
+
 	/**
 	 * Constructor
 	 *
@@ -72,9 +72,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	public function create($user, $notrigger = 0) {
 	    global $conf, $langs;
 	    $error = 0;
-	    
+
 	    // Clean parameters
-	    
+
 	    if (isset($this->fk_stagiaire))
 	        $this->fk_stagiaire = trim($this->fk_stagiaire);
 	    if (isset($this->fk_calendrier))
@@ -85,7 +85,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
             $this->heures = (float)$this->heures;
         if (isset($this->fk_user_author))
             $this->fk_user_author = trim($this->fk_user_author);
-                   
+
         // Insert request
         $sql = "INSERT INTO " . MAIN_DB_PREFIX . $this->table_element ."(";
         $sql .= "entity,";
@@ -96,7 +96,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= "fk_user_author,";
         $sql .= "datec";
         $sql .= ") VALUES (";
-        
+
         $sql .= " '" . $conf->entity . "',";
         $sql .= " " . (! isset($this->fk_stagiaire) ? 'NULL' : "'" . $this->fk_stagiaire . "'") . ",";
         $sql .= " " . (! isset($this->fk_session) ? 'NULL' : "'" . $this->fk_session . "'") . ",";
@@ -104,24 +104,24 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " " . (! isset($this->heures) || dol_strlen($this->heures) == 0 ? 'NULL' : "'" . $this->db->escape($this->heures) . "'") . ",";
         $sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
         $sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "'";
-        
+
         $sql .= ")";
         $this->db->begin();
-        
+
         dol_syslog(get_class($this) . "::create", LOG_DEBUG);
         $resql = $this->db->query($sql);
         if (! $resql) {
             $error ++;
             $this->errors[] = "Error " . $this->db->lasterror();
         }
-        
+
         if (! $error) {
             $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier");
-            
+
             if (! $notrigger) {
                 // Uncomment this and change MYOBJECT to your own tag if you
                 // want this action calls a trigger.
-                
+
                 // // Call triggers
                 // include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
                 // $interface=new Interfaces($this->db);
@@ -130,7 +130,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
                 // // End call triggers
             }
         }
-        
+
         // Commit or rollback
         if ($error) {
             foreach ( $this->errors as $errmsg ) {
@@ -144,7 +144,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
             return $this->id;
         }
 	}
-	
+
 	/**
 	 * Delete object (trainne in session) in database
 	 *
@@ -154,22 +154,22 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 */
 	public function delete($user, $notrigger = 0) {
 	    $this->db->begin();
-	    
+
 	    $this->fetch($this->id);
-	    
+
 	    $sql = "DELETE FROM " . MAIN_DB_PREFIX . $this->table_element;
 	    $sql .= " WHERE rowid = " . $this->id;
-	    
+
 	    dol_syslog(get_class($this) . "::delete", LOG_DEBUG);
 	    $resql = $this->db->query($sql);
-	    
+
 	    if ($resql) {
 	        // ...
 	    } else {
 	        $error ++;
 	        $this->errors[] = "Error " . $this->db->lasterror();
 	    }
-	    
+
 	    // Commit or rollback
 	    if ($error) {
 	        foreach ( $this->errors as $errmsg ) {
@@ -183,7 +183,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return 1;
 	    }
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -194,9 +194,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	public function update($user = 0, $notrigger = 0) {
 	    global $conf, $langs;
 	    $error = 0;
-	    
+
 	    // Clean parameters
-	    
+
 	    if (isset($this->fk_stagiaire))
 	        $this->fk_stagiaire = trim($this->fk_stagiaire);
         if (isset($this->fk_calendrier))
@@ -207,34 +207,32 @@ class Agefoddsessionstagiaireheures extends CommonObject
             $this->heures = (float)$this->heures;
         if (isset($this->fk_user_author))
             $this->fk_user_author = trim($this->fk_user_author);
-                   
+
         // Update request
         $sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element ." SET";
-        
+
         $sql .= " fk_stagiaire=" . (isset($this->fk_stagiaire) ? $this->fk_stagiaire : "null") . ",";
         $sql .= " fk_session=" . (isset($this->fk_session) ? $this->fk_session : "null") . ",";
-        $sql .= " fk_calendrier=" . (isset($this->fk_calendrier) ? $this->fk_calendrier : "null") . ",";      
-        $sql .= " heures=" . (isset($this->fk_calendrier) ? "'" . $this->heures . "'" : 'null') . ",";      
-        $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
-        $sql .= " datec=" . (dol_strlen($this->datec) != 0 ? "'" . $this->db->idate($this->datec) . "'" : 'null') . ",";
-        $sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . "";
-        
+        $sql .= " fk_calendrier=" . (isset($this->fk_calendrier) ? $this->fk_calendrier : "null") . ",";
+        $sql .= " heures=" . (isset($this->heures) ? "'" . $this->heures . "'" : 'null') . ",";
+        $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null");
+
         $sql .= " WHERE rowid=" . $this->id;
-        
+
         $this->db->begin();
-        
+
         dol_syslog(get_class($this) . "::update", LOG_DEBUG);
         $resql = $this->db->query($sql);
         if (! $resql) {
             $error ++;
             $this->errors[] = "Error " . $this->db->lasterror();
         }
-        
+
         if (! $error) {
             if (! $notrigger) {
                 // Uncomment this and change MYOBJECT to your own tag if you
                 // want this action calls a trigger.
-                
+
                 // // Call triggers
                 // include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
                 // $interface=new Interfaces($this->db);
@@ -243,7 +241,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
                 // // End call triggers
             }
         }
-        
+
         // Commit or rollback
         if ($error) {
             foreach ( $this->errors as $errmsg ) {
@@ -257,7 +255,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
             return 1;
         }
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -279,25 +277,25 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as t";
 	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
 	    $sql .= " WHERE t.rowid = " . $id;
-	    
+
 	    dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 	    $resql = $this->db->query($sql);
 	    if ($resql) {
 	        if ($this->db->num_rows($resql)) {
 	            $obj = $this->db->fetch_object($resql);
-	            
+
 	            $this->id = $obj->rowid;
 	            $this->fk_stagiaire = $obj->fk_stagiaire;
 	            $this->nom_stagiaire = $obj->nom_stagiaire;
 	            $this->fk_session = $obj->fk_session;
 	            $this->fk_calendrier = $obj->fk_calendrier;
-	            $this->heures= $obj->heures;	            
+	            $this->heures= $obj->heures;
 	            $this->fk_user_author = $obj->fk_user_author;
 	            $this->datec = $this->db->jdate($obj->datec);
 	            $this->tms = $this->db->jdate($obj->tms);
 	        }
 	        $this->db->free($resql);
-	        
+
 	        return 1;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
@@ -305,10 +303,10 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return - 1;
 	    }
 	}
-	
+
 	/**
 	 * Retourne un créneaux horaire de la session indiquée
-	 * 
+	 *
 	 * @param int $id session
 	 * @param int $trainee
 	 * @param int $calendar
@@ -329,14 +327,14 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " WHERE t.fk_session = " . $id;
 	    $sql .= " AND t.fk_stagiaire = " . $trainee;
 	    $sql .= " AND t.fk_calendrier = " . $calendar;
-	    
+
 	    dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
 	    $resql = $this->db->query($sql);
-	    
+
 	    if ($resql) {
 	        if ($this->db->num_rows($resql)) {
 	            $obj = $this->db->fetch_object($resql);
-	            
+
 	            $this->id = $obj->rowid;
 	            $this->fk_stagiaire = $obj->fk_stagiaire;
 	            $this->nom_stagiaire = $obj->nom_stagiaire;
@@ -350,7 +348,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	            return 0;
 	        }
 	        $this->db->free($resql);
-	        
+
 	        return 1;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
@@ -358,7 +356,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return - 1;
 	    }
 	}
-	
+
 	/**
 	 * Retourne tous les créneaux horaire de la session indiquée d'un stagiaire
 	 *
@@ -381,10 +379,10 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
 	    $sql .= " WHERE t.fk_session = " . $id;
 	    $sql .= " AND t.fk_stagiaire = " . $trainee;
-	    
+
 	    dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
 	    $resql = $this->db->query($sql);
-	    
+
 	    if ($resql) {
 	        if ($this->db->num_rows($resql)) {
 	            while($obj = $this->db->fetch_object($resql)){
@@ -398,14 +396,14 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	                $line->fk_user_author = $obj->fk_user_author;
 	                $line->datec = $this->db->jdate($obj->datec);
 	                $line->tms = $this->db->jdate($obj->tms);
-	                
+
 	                $this->lines[] = $line;
-	            } 
+	            }
 	        } else {
 	            return 0;
 	        }
 	        $this->db->free($resql);
-	        
+
 	        return 1;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
@@ -413,9 +411,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return - 1;
 	    }
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param int $sessid
 	 * @param int $traineeid
 	 * @return float total hours spend by the trainee on the session
@@ -453,7 +451,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
         return 0;
 
 	}
-	
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -483,7 +481,7 @@ class Agefoddsessionstagiaireheuresline
     public $fk_calendrier;
     public $fk_session;
     public $heures;
-    
+
     /**
      * Delete object (trainne in session) in database
      *
@@ -493,22 +491,22 @@ class Agefoddsessionstagiaireheuresline
      */
     public function delete($user, $notrigger = 0) {
         global $db;
-        
+
         $db->begin();
-        
+
         $sql = "DELETE FROM " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire_heures';
         $sql .= " WHERE rowid = " . $this->id;
-        
+
         dol_syslog(get_class($this) . "::delete", LOG_DEBUG);
         $resql = $db->query($sql);
-        
+
         if ($resql) {
             // ...
         } else {
             $error ++;
             $this->errors[] = "Error " . $this->db->lasterror();
         }
-        
+
         // Commit or rollback
         if ($error) {
             foreach ( $this->errors as $errmsg ) {
