@@ -1153,7 +1153,8 @@ class ReportBPF extends AgefoddExportExcel
 				    }
 				    $resql2 = $this->db->query($sql);
 				    if ($resql2) {
-				        if (empty($this->db->num_rows($resql))) {
+				    	$num=$this->db->num_rows($resql);
+				    	if (empty($num)) {
 				            $this->trainee_data[$data['label']]['nb'] = 0;
 				            $this->trainee_data[$data['label']]['time'] = 0;
 				        }
