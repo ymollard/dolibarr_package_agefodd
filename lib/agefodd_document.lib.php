@@ -802,23 +802,23 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
 	// print '<td style="border:0px; width:10px">&nbsp;</td>'."\n";
 	if ($mdle == 'bc' || $mdle == 'fac' || $mdle == 'prop') {
-		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle) . '</td>' . "\n";
+		print '<td style="width=250px;border-left:0px;" align="left">' . show_fac($mdle, $socid, $mdle);
 	} elseif ($mdle == 'convention') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_conv($mdle, $socid, $nom_courrier);
 	} elseif ($mdle == 'facopca') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_facopca($mdle, $socid, $nom_courrier);
 	} elseif ($mdle == 'convocation_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_convo_trainee($mdle, $socid);
 	} elseif ($mdle == 'attestation_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestation_trainee($mdle, $socid);
 	} elseif ($mdle == 'attestationendtraining_trainee') {
-		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px" align="left">' . show_attestationendtraining_trainee($mdle, $socid);
 	} elseif ($mdle == 'mission_trainer') {
 		print '<td style="border-left:0px; width:250px" align="left">' . show_trainer_mission($socid);
 	} elseif($mdle == 'contrat_trainer' && $conf->referenceletters->enabled && !empty($select_model)){
 		print '<td class="trainerid" trainerid="'.$socid.'" style="border-left:0px; width:250px" align="left">' . show_trainer_contract($socid);
 	} else {
-		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier) . '</td>' . "\n";
+		print '<td style="border-left:0px; width:250px"  align="left">' . show_doc($mdle, $socid, $nom_courrier);
 	}
 
 	if($conf->referenceletters->enabled && !empty($select_model)) {
