@@ -529,90 +529,95 @@ if (! $res)
 											$totaltimetrainer = '';
 											$hourhtml = '';
 											if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
-												
-												$hourhtml .= '<td>'."\n";
-												$hourhtml .= '<table class="nobordernopadding">'."\n";
-												$hourhtml .= '<tr><td><table><tr>'."\n";
 												// Calculate time past in session
 												$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
 												$result = $trainer_calendar->fetch_all($formateurs->lines[$i]->opsid);
 												if ($result < 0) {
 													setEventMessage($trainer_calendar->error, 'errors');
 												}
-												$blocNumber = count($trainer_calendar->lines);
-												$old_date = 0;
-												$totaltime = 0;
-												for($i = 0; $i < $blocNumber; $i ++) {
-													
-													$totaltime += $trainer_calendar->lines[$i]->heuref - $trainer_calendar->lines[$i]->heured;
-													
-													if ($i > 6) {
-														$styledisplay = " style=\"display:none\" class=\"otherdatetrainer\" ";
-													} else {
-														$styledisplay = " ";
-													}
-													if ($trainer_calendar->lines[$i]->date_session != $old_date) {
-														if ($i > 0) {
-															$hourhtml .= '<tr ' . $styledisplay . '>'."\n";
+												
+												if(!empty($trainer_calendar->lines)) {
+												
+													$hourhtml .= '<td>'."\n";
+													$hourhtml .= '<table class="nobordernopadding">'."\n";
+													$hourhtml .= '<tr><td><table><tr>'."\n";
+													$blocNumber = count($trainer_calendar->lines);
+													$old_date = 0;
+													$totaltime = 0;
+													$tttt = $i;
+													for($i = 0; $i < $blocNumber; $i ++) {
+
+														$totaltime += $trainer_calendar->lines[$i]->heuref - $trainer_calendar->lines[$i]->heured;
+
+														if ($i > 6) {
+															$styledisplay = " style=\"display:none\" class=\"otherdatetrainer\" ";
+														} else {
+															$styledisplay = " ";
 														}
-														$hourhtml .= '<td width="100px">'."\n";
-														$hourhtml .= dol_print_date($trainer_calendar->lines[$i]->date_session, 'daytextshort') . '</td><td  width="300px">';
-													} else {
-														$hourhtml .= ', ';
+														if ($trainer_calendar->lines[$i]->date_session != $old_date) {
+															if ($i > 0) {
+																$hourhtml .= '<tr ' . $styledisplay . '>'."\n";
+															}
+															$hourhtml .= '<td width="100px">'."\n";
+															$hourhtml .= dol_print_date($trainer_calendar->lines[$i]->date_session, 'daytextshort') . '</td><td  width="300px">';
+														} else {
+															$hourhtml .= ', ';
+														}
+														$hourhtml .= dol_print_date($trainer_calendar->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$i]->heuref, 'hour');
+
+														if ($i == $blocNumber - 1) {
+															$hourhtml .= '</td></tr></table>'."\n";
+														}
+
+														$old_date = $trainer_calendar->lines[$i]->date_session;
 													}
-													$hourhtml .= dol_print_date($trainer_calendar->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$i]->heuref, 'hour');
-													
-													if ($i == $blocNumber - 1) {
-														$hourhtml .= '</td></tr></table>'."\n";
+													$i = $tttt;
+													/*foreach ( $trainer_calendar->lines as $line_trainer_calendar ) {
+													 $totaltime += $line_trainer_calendar->heuref - $line_trainer_calendar->heured;
+													 $hourhtml .= '<tr><td>';
+													 $hourhtml .= dol_print_date($line_trainer_calendar->heured, 'dayhourtext');
+													 $hourhtml .= '</td></tr>';
+													 if ($line_trainer_calendar->heured != $line_trainer_calendar->heuref) {
+													 $hourhtml .= '<tr><td>';
+													 $hourhtml .= dol_print_date($line_trainer_calendar->heuref, 'dayhourtext');
+													 $hourhtml .= '</td></tr>';
+													 }
+													 }*/
+
+
+													if ($blocNumber > 6) {
+														$hourhtml .= '<tr><td colapsn="2" style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtimetrainer">+</td></tr>';
+														$hourhtml .= '<script>' . "\n";
+														$hourhtml .= '$(document).ready(function () { ' . "\n";
+														$hourhtml .= '		$(\'#switchtimetrainer\').click(function(){' . "\n";
+														$hourhtml .= '			$(\'.otherdatetrainer\').toggle();' . "\n";
+														$hourhtml .= '			if ($(\'#switchtimetrainer\').text()==\'+\') { ' . "\n";
+														$hourhtml .= '				$(\'#switchtimetrainer\').text(\'-\'); ' . "\n";
+														$hourhtml .= '			}else { ' . "\n";
+														$hourhtml .= '				$(\'#switchtimetrainer\').text(\'+\'); ' . "\n";
+														$hourhtml .= '			} ' . "\n";
+														$hourhtml .= '			' . "\n";
+														$hourhtml .= '		});' . "\n";
+														$hourhtml .= '});' . "\n";
+														$hourhtml .= '</script>' . "\n";
 													}
+													$hourhtml .= '</table>'."\n";
+
+													$min = floor($totaltime / 60);
+													$rmin = sprintf("%02d", $min % 60);
+													$hour = floor($min / 60);
+
+													$totaltimetrainer = '<td>(' . $hour . ':' . $rmin . ')</td>';
+
+													//$hourhtml .= '</td>';
+
+													print $totaltimetrainer;
+													print $hourhtml;
 													
-													$old_date = $trainer_calendar->lines[$i]->date_session;
 												}
-												
-												/*foreach ( $trainer_calendar->lines as $line_trainer_calendar ) {
-												 $totaltime += $line_trainer_calendar->heuref - $line_trainer_calendar->heured;
-												 $hourhtml .= '<tr><td>';
-												 $hourhtml .= dol_print_date($line_trainer_calendar->heured, 'dayhourtext');
-												 $hourhtml .= '</td></tr>';
-												 if ($line_trainer_calendar->heured != $line_trainer_calendar->heuref) {
-												 $hourhtml .= '<tr><td>';
-												 $hourhtml .= dol_print_date($line_trainer_calendar->heuref, 'dayhourtext');
-												 $hourhtml .= '</td></tr>';
-												 }
-												 }*/
-												
-												
-												if ($blocNumber > 6) {
-													$hourhtml .= '<tr><td colapsn="2" style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtimetrainer">+</td></tr>';
-													$hourhtml .= '<script>' . "\n";
-													$hourhtml .= '$(document).ready(function () { ' . "\n";
-													$hourhtml .= '		$(\'#switchtimetrainer\').click(function(){' . "\n";
-													$hourhtml .= '			$(\'.otherdatetrainer\').toggle();' . "\n";
-													$hourhtml .= '			if ($(\'#switchtimetrainer\').text()==\'+\') { ' . "\n";
-													$hourhtml .= '				$(\'#switchtimetrainer\').text(\'-\'); ' . "\n";
-													$hourhtml .= '			}else { ' . "\n";
-													$hourhtml .= '				$(\'#switchtimetrainer\').text(\'+\'); ' . "\n";
-													$hourhtml .= '			} ' . "\n";
-													$hourhtml .= '			' . "\n";
-													$hourhtml .= '		});' . "\n";
-													$hourhtml .= '});' . "\n";
-													$hourhtml .= '</script>' . "\n";
-												}
-												$hourhtml .= '</table>'."\n";
-												
-												$min = floor($totaltime / 60);
-												$rmin = sprintf("%02d", $min % 60);
-												$hour = floor($min / 60);
-												
-												$totaltimetrainer = '<td>(' . $hour . ':' . $rmin . ')</td>';
-												
-												//$hourhtml .= '</td>';
-												
-												print $totaltimetrainer;
-												print $hourhtml;
+
+												print '<tr></table>';
 											}
-											
-											print '<tr></table>';
 										}
 										print '</td>';
 										print '<td>';
