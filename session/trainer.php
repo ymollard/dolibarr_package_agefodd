@@ -544,34 +544,34 @@ if (! $res)
 													$blocNumber = count($trainer_calendar->lines);
 													$old_date = 0;
 													$totaltime = 0;
-													$tttt = $i;
-													for($i = 0; $i < $blocNumber; $i ++) {
+													
+													for($j = 0; $j < $blocNumber; $j ++) {
 
-														$totaltime += $trainer_calendar->lines[$i]->heuref - $trainer_calendar->lines[$i]->heured;
+														$totaltime += $trainer_calendar->lines[$j]->heuref - $trainer_calendar->lines[$j]->heured;
 
-														if ($i > 6) {
+														if ($j > 6) {
 															$styledisplay = " style=\"display:none\" class=\"otherdatetrainer\" ";
 														} else {
 															$styledisplay = " ";
 														}
-														if ($trainer_calendar->lines[$i]->date_session != $old_date) {
-															if ($i > 0) {
+														if ($trainer_calendar->lines[$j]->date_session != $old_date) {
+															if ($j > 0) {
 																$hourhtml .= '<tr ' . $styledisplay . '>'."\n";
 															}
 															$hourhtml .= '<td width="100px">'."\n";
-															$hourhtml .= dol_print_date($trainer_calendar->lines[$i]->date_session, 'daytextshort') . '</td><td  width="300px">';
+															$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->date_session, 'daytextshort') . '</td><td  width="300px">';
 														} else {
 															$hourhtml .= ', ';
 														}
-														$hourhtml .= dol_print_date($trainer_calendar->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$i]->heuref, 'hour');
+														$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
 
-														if ($i == $blocNumber - 1) {
+														if ($j == $blocNumber - 1) {
 															$hourhtml .= '</td></tr></table>'."\n";
 														}
 
-														$old_date = $trainer_calendar->lines[$i]->date_session;
+														$old_date = $trainer_calendar->lines[$j]->date_session;
 													}
-													$i = $tttt;
+													
 													/*foreach ( $trainer_calendar->lines as $line_trainer_calendar ) {
 													 $totaltime += $line_trainer_calendar->heuref - $line_trainer_calendar->heured;
 													 $hourhtml .= '<tr><td>';

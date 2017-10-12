@@ -1291,35 +1291,35 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 								print '<table class="nobordernopadding">';
 
-									$temp=$i;
-									for($i = 0; $i < $blocNumber; $i ++) {
-										if (($trainer_calendar->lines[$i]->date_session < $agf->dated) || ($trainer_calendar->lines[$i]->date_session > $agf->datef)) {
+									
+									for($j = 0; $j < $blocNumber; $j ++) {
+										if (($trainer_calendar->lines[$j]->date_session < $agf->dated) || ($trainer_calendar->lines[$j]->date_session > $agf->datef)) {
 											$alertday = true;
 										}
 
-										if ($i > 6) {
+										if ($j > 6) {
 											$styledisplay = " style=\"display:none\" class=\"otherdatetrainer\" ";
 										} else {
 											$styledisplay = " ";
 										}
-										if ($trainer_calendar->lines[$i]->date_session != $old_date) {
-											if ($i > 0) {
+										if ($trainer_calendar->lines[$j]->date_session != $old_date) {
+											if ($j > 0) {
 												print '<tr ' . $styledisplay . '>';
 											}
 											print '<td>';
-											print dol_print_date($trainer_calendar->lines[$i]->date_session, 'daytext'). '&nbsp';
+											print dol_print_date($trainer_calendar->lines[$j]->date_session, 'daytext'). '&nbsp';
 										} else {
 											print ', ';
 										}
-										print dol_print_date($trainer_calendar->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$i]->heuref, 'hour');
+										print dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
 
-										if ($i == $blocNumber - 1) {
+										if ($j == $blocNumber - 1) {
 											print '</td></tr>';
 										}
 
-										$old_date = $trainer_calendar->lines[$i]->date_session;
+										$old_date = $trainer_calendar->lines[$j]->date_session;
 									}
-									$i=$temp;
+									
 									// Print warning message if trainer calendar date are not set within session date
 									if ($alertday) {
 										print img_warning($langs->trans("AgfCalendarDayOutOfScope"));
