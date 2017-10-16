@@ -378,7 +378,12 @@ class Agsession extends CommonObject
 			foreach ( $admlevel->lines as $line ) {
 				$actions = new Agefodd_sessadm($this->db);
 
-				$actions->datea = dol_time_plus_duree($this->dated, $line->alerte, 'd');
+				if (!empty($line->alerte)) {
+					$actions->datea = dol_time_plus_duree($this->dated, $line->alerte, 'd');
+				}
+				if (!empty($line->alerte_end)) {
+					$actions->datea = dol_time_plus_duree($this->datef, $line->alerte_end, 'd');
+				}
 				$actions->dated = dol_time_plus_duree($actions->datea, - 7, 'd');
 
 				if ($actions->datea > $this->datef) {
@@ -390,6 +395,7 @@ class Agsession extends CommonObject
 				$actions->fk_agefodd_session_admlevel = $line->rowid;
 				$actions->fk_agefodd_session = $this->id;
 				$actions->delais_alerte = $line->alerte;
+				$actions->delais_alerte_end = $line->alerte_end;
 				$actions->intitule = $line->intitule;
 				$actions->indice = $line->indice;
 				$actions->archive = 0;

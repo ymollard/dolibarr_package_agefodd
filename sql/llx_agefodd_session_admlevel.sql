@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_admlevel (
   indice integer NOT NULL,
   intitule varchar(150) NOT NULL,
   delais_alerte integer NOT NULL,
+  delais_alerte_end integer,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,

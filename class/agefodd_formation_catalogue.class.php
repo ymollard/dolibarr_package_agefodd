@@ -897,6 +897,7 @@ class Agefodd extends CommonObject {
 				$actions->fk_agefodd_training_admlevel = $line->rowid;
 				$actions->fk_training = $this->id;
 				$actions->delais_alerte = $line->alerte;
+				$actions->delais_alerte_end = $line->alerte_end;
 				$actions->intitule = $line->intitule;
 				$actions->indice = $line->indice;
 				$actions->archive = 0;

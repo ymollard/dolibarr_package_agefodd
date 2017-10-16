@@ -53,13 +53,13 @@ if (empty($trainingid)) {
 
 if ($action == 'sessionlevel_create') {
 	$agf = new Agefodd_training_admlevel($db);
-	
+
 	if (! empty($parent_level)) {
 		$agf->fk_parent_level = $parent_level;
-		
+
 		$agf_static = new Agefodd_training_admlevel($db);
 		$result_stat = $agf_static->fetch($agf->fk_parent_level);
-		
+
 		if ($result_stat > 0) {
 			if (! empty($agf_static->id)) {
 				$agf->level_rank = $agf_static->level_rank + 1;
@@ -77,16 +77,17 @@ if ($action == 'sessionlevel_create') {
 		$agf->indice = (ebi_get_adm_training_level_number() + 1) . '00';
 		$agf->level_rank = 0;
 	}
-	
+
 	$agf->fk_training = $trainingid;
 	$agf->intitule = GETPOST('intitule', 'alpha');
 	$agf->delais_alerte = GETPOST('delai', 'int');
-	
+	$agf->delais_alerte_end = GETPOST('delai_end', 'int');
+
 	if ($agf->level_rank > 3) {
 		setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
 	} else {
 		$result = $agf->create($user);
-		
+
 		if ($result1 != 1) {
 			setEventMessage($agf->error, 'errors');
 		}
@@ -100,7 +101,7 @@ if ($action == 'replicateconfadmin') {
 	if ($result < 0) {
 		setEventMessage($agf_adminlevel->error, 'errors');
 	}
-	
+
 	$agf = new Agefodd($db);
 	$result = $agf->fetch($trainingid);
 	$result = $agf->createAdmLevelForTraining($user);
@@ -111,11 +112,11 @@ if ($action == 'replicateconfadmin') {
 
 if ($action == 'sessionlevel_update') {
 	$agf = new Agefodd_training_admlevel($db);
-	
+
 	$result = $agf->fetch($id);
-	
+
 	if ($result > 0) {
-		
+
 		// Up level of action
 		if (GETPOST('sesslevel_up_x')) {
 			$result2 = $agf->shift_indice($user, 'less');
@@ -123,7 +124,7 @@ if ($action == 'sessionlevel_update') {
 				setEventMessage($agf->error, 'errors');
 			}
 		}
-		
+
 		// Down level of action
 		if (GETPOST('sesslevel_down_x')) {
 			$result1 = $agf->shift_indice($user, 'more');
@@ -131,19 +132,20 @@ if ($action == 'sessionlevel_update') {
 				setEventMessage($agf->error, 'errors');
 			}
 		}
-		
+
 		// Update action
 		if (GETPOST('sesslevel_update_x')) {
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->delais_alerte = GETPOST('delai', 'int');
-			
+			$agf->delais_alerte_end = GETPOST('delai_end', 'int');
+
 			if (! empty($parent_level)) {
 				if ($parent_level != $agf->fk_parent_level) {
 					$agf->fk_parent_level = $parent_level;
-					
+
 					$agf_static = new Agefodd_training_admlevel($db);
 					$result_stat = $agf_static->fetch($agf->fk_parent_level);
-					
+
 					if ($result_stat > 0) {
 						if (! empty($agf_static->id)) {
 							$agf->level_rank = $agf_static->level_rank + 1;
@@ -161,7 +163,7 @@ if ($action == 'sessionlevel_update') {
 				$agf->fk_parent_level = 0;
 				$agf->level_rank = 0;
 			}
-			
+
 			if ($agf->level_rank > 3) {
 				setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
 			} else {
@@ -171,10 +173,10 @@ if ($action == 'sessionlevel_update') {
 				}
 			}
 		}
-		
+
 		// Delete action
 		if (GETPOST('sesslevel_remove_x')) {
-			
+
 			$result = $agf->delete($user);
 			if ($result != 1) {
 				setEventMessage($agf_static->error, 'errors');
@@ -213,9 +215,10 @@ if ($result0 > 0) {
 	print '<td>' . $langs->trans("AgfIntitule") . '</td>';
 	print '<td>' . $langs->trans("AgfParentLevel") . '</td>';
 	print '<td>' . $langs->trans("AgfDelaiSessionLevel") . '</td>';
+	print '<td>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</td>';
 	print '<td></td>';
 	print "</tr>\n";
-	
+
 	$var = true;
 	foreach ( $admlevel->lines as $line ) {
 		$var = ! $var;
@@ -226,7 +229,7 @@ if ($result0 > 0) {
 		print '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
 		print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
 		print '<tr ' . $bc [$var] . '>';
-		
+
 		print '<td>';
 		if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MIN')) {
 			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1uparrow.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Save") . '">';
@@ -235,10 +238,11 @@ if ($result0 > 0) {
 			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1downarrow.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Save") . '">';
 		}
 		print '</td>';
-		
+
 		print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
 		print '<td>' . $formAgefodd->select_action_training_adm($line->fk_parent_level, 'parent_level', $line->rowid, $trainingid) . '</td>';
 		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
+		print '<td><input type="text" name="delai_end" value="' . $line->alerte_end . '"/></td>';
 		print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
 		print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
 		print '</tr>';

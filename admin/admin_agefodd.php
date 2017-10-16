@@ -463,6 +463,7 @@ if ($action == 'sessionlevel_create') {
 
 	$agf->intitule = GETPOST('intitule', 'alpha');
 	$agf->delais_alerte = GETPOST('delai', 'int');
+	$agf->delais_alerte_end = GETPOST('delai_end', 'int');
 
 	if ($agf->level_rank > 3) {
 		setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
@@ -505,6 +506,7 @@ if ($action == 'sessionlevel_update') {
 		if (GETPOST('sesslevel_update_x')) {
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->delais_alerte = GETPOST('delai', 'int');
+			$agf->delais_alerte_end = GETPOST('delai_end', 'int');
 
 			if (! empty($parent_level)) {
 				if ($parent_level != $agf->fk_parent_level) {
@@ -1852,6 +1854,7 @@ if ($result0 > 0) {
 	print '<td>' . $langs->trans("AgfIntitule") . '</td>';
 	print '<td>' . $langs->trans("AgfParentLevel") . '</td>';
 	print '<td>' . $langs->trans("AgfDelaiSessionLevel") . '</td>';
+	print '<td>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</td>';
 	print '<td></td>';
 	print "</tr>\n";
 
@@ -1876,7 +1879,8 @@ if ($result0 > 0) {
 
 		print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
 		print '<td>' . $formAgefodd->select_action_session_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
-		print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
+		print '<td><input type="text" name="delai" value="' . $line->alerte . '" size="2"/></td>';
+		print '<td><input type="text" name="delai_end" value="' . $line->alerte_end . '" size="2"/></td>';
 		print '<td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
 		print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete','',false,1).'" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
 		print '</tr>';
