@@ -332,6 +332,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 					$posY = $pdf->GetY();
 
 					$this->str ='';
+					$old_date='';
 					foreach ( $agf_calendrier->lines as $line ) {
 						if ($line->date_session != $old_date) {
 							$this->str .= "\n";
