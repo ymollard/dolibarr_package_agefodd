@@ -1729,7 +1729,7 @@ if (! empty($id)) {
 				$formmail->withtopic = $langs->trans('AgfSendAttestation', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendAttestationBody', '__FORMINTITULE__');
 				$formmail->param['models'] = 'attestationendtraining';
-				$formmail->param['pre_action'] = 'presend_attestationendtaining';
+				$formmail->param['pre_action'] = 'presend_attestationendtraining';
 
 				// Attestation peut être envoyé à l'opca ou au commanditaire if inter-entreprise
 				if ($agf->type_session && $socid) {
