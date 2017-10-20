@@ -4607,12 +4607,13 @@ class Agsession extends CommonObject
 			return 1;
 		}
 	}
-
+	
 	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {
-
+		
 		global $db, $conf;
-
+		
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainer = $socid;
+		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
 		//elseif($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainee = $socid; TODO quand on aura créé le modèle par participant
 
 		// Chargement des participants
@@ -4622,14 +4623,14 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
 		}
-
+			
 			// Chargement des spécifique participants
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
 				$stagiaires_session_conv = new Agefodd_session_stagiaire($this->db);
-
+				
 				foreach ($obj_agefodd_convention->line_trainee as $trainee_session_id) {
 					$result = $stagiaires_session_conv->fetch($trainee_session_id);
 					if ($result < 0) {
@@ -4644,14 +4645,14 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-
+		
 		if(empty($this->TStagiairesSessionSoc)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
-
+		
 		//Trainee link to the company convention
 		$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
 		$stagiaires = new Agefodd_session_stagiaire($db);
@@ -4661,7 +4662,7 @@ class Agsession extends CommonObject
 		} else {
 			$this->signataire_inter_array=array();
 			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
-
+				
 				foreach ($stagiaires->lines as $line) {
 					if (!empty($line->fk_socpeople_sign)) {
 						$socpsign=new Contact($db);
@@ -4669,21 +4670,21 @@ class Agsession extends CommonObject
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
 					}
 				}
-
+				
 			}
 			if (count($this->signataire_inter_array)>0) {
 				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
 				unset($this->signataire_inter_array);
 			}
 		}
-
+		
 		if(empty($this->TStagiairesSessionSocMore)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 			$this->TStagiairesSessionSocMore = $stagiaires->lines;
 		}
-
+		
 		// Chargement des horaires de la session
 		if(empty($this->THorairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
@@ -4697,54 +4698,69 @@ class Agsession extends CommonObject
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
 			}
 		}
-
+		
 		if(empty($this->TFormateursSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 			$formateurs = new Agefodd_session_formateur($db);
 			$nbform = $formateurs->fetch_formateur_per_session($this->id);
 			$this->TFormateursSession = $formateurs->lines;
 		}
-
+		
 		if(empty($this->lieu)) {
 			dol_include_once('/agefodd/class/agefodd_place.class.php');
 			$agf_place= new Agefodd_place($db);
 			$agf_place->fetch($this->placeid);
 			$this->lieu = $agf_place;
 		}
-
+		
+		if(empty($this->formation)){
+		    dol_include_once('agefodd/class/agefodd_formation_catalogue.class.php');
+		    $formation = new Agefodd($db);
+		    $formation->fetch($this->fk_formation_catalogue);
+		    $this->formation = $formation;
+		}
+		
 		if(!empty($id_trainer)) {
-
+			
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
-
+			
 			$agf_teacher = new Agefodd_teacher($db);
 			$agf_teacher->fetch($id_trainer);
 			$this->formateur_session = $agf_teacher;
 			$this->formateur_session_societe = $agf_teacher->thirdparty;
-
+			
 		}
-
+		
+		if(!empty($id_trainee)) {
+		    dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+		    
+		    $trainee = new Agefodd_stagiaire($db);
+		    $trainee->fetch($id_trainee);
+		    $this->stagiaire = $trainee;
+		}
+		
 		if(!empty($socid)) {
 			$document_thirdparty = new Societe($db);
 			$document_thirdparty->fetch($socid);
 			$this->document_societe= $document_thirdparty;
-
+			
 		}
-
+		
 		foreach($conf->global as $conf_name=>$osef) {
-
+			
 			if(strpos($conf_name, 'AGF_') !== false) {
 				$this->{$conf_name} = $conf->global->{$conf_name};
 			}
 		}
-
+		
 		if($print_r) {
 			echo '<pre>';
 			print_r($this);
 			echo '</pre>';
 			exit;
 		}
-
-	}
+		
+	}	
 }
 
 /**
