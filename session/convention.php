@@ -168,7 +168,6 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$art9 = GETPOST('art9');
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
-		$model_doc = GETPOST('model_doc', 'alpha');
 		$only_product_session = GETPOST('only_product_session', 'int');
 		$traine_list = GETPOST('trainee_id', 'array');
 
@@ -251,7 +250,6 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$art9 = GETPOST('art9');
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
-		$model_doc = GETPOST('model_doc', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');
 		$only_product_session = GETPOST('only_product_session', 'int');
 

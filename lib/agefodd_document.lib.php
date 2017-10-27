@@ -1022,13 +1022,20 @@ function getSelectAgefoddModels($mdle, $socid=0) {
     
     $form = new Form($db);
     
-    if($mdle !== 'convention') $type='rfltr_agefodd_'.$mdle;
+    $type='';
+    if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
+    elseif($mdle === 'attestation' || $mdle === 'attestation_trainee') $type = 'rfltr_agefodd_attestation';
+    elseif($mdle === 'attestationendtraining' || $mdle === 'attestationendtraining_trainee') $type = 'rfltr_agefodd_attestation_fin_formation';
+    elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_presence';
+    elseif($mdle === 'contrat_trainer') $type = 'rfltr_agefodd_contrat_trainer';
     
-    $TModels = RfltrTools::getAgefoddModelList();
-    if(!empty($type) && !empty($TModels[$type])) {
-        $params = 'style="display:none;" model="'.$mdle.'"';
-        if(!empty($socid)) $params.= ' socid="'.$socid.'"';
-        return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$mdle.$socid);
+    if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
+    	$TModels = RfltrTools::getAgefoddModelList();
+    	if(!empty($type) && !empty($TModels[$type])) {
+    		$params = 'style="display:none;" model="'.$mdle.'"';
+    		if(!empty($socid)) $params.= ' socid="'.$socid.'"';
+    		return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$mdle.$socid);
+    	}
     }
 	
 }
