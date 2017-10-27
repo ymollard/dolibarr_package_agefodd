@@ -278,6 +278,10 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 							$dir = $conf->agefodd->dir_output . '/images/';
 							$img_tampon = $dir . 'barcode_'.$agf_duree->id.'_QRCODE.png';
 							$pdf->Image($img_tampon, $this->marge_gauche + 60, $newY, 15 , 15);
+							// Signature MODIFIE PAR FXC
+							$dir = $conf->agefodd->dir_output . '/images/';
+							$img_tampon = $dir . 'signature_'.$trainer->lastname.'.jpg';
+						    $pdf->Image($img_tampon, $this->marge_gauche + 30, $newY +4, 20 , 10);
 						}
 
 
