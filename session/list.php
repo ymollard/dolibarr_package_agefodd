@@ -90,6 +90,32 @@ if (GETPOST("button_removefilter_x")) {
 	$search_session_status = '';
 }
 
+include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+$arrayfields=array(
+    's.rowid'			=>array('label'=>"Id", 'checked'=>1),
+    'so.nom'			=>array('label'=>"Company", 'checked'=>1),
+    'f.rowid'			=>array('label'=>"AgfFormateur", 'checked'=>1),
+    'c.intitule'		=>array('label'=>"AgfIntitule", 'checked'=>1),
+    'c.ref'				=>array('label'=>"Ref", 'checked'=>1),
+    'c.ref_interne'		=>array('label'=>"AgfRefInterne", 'checked'=>1),
+    's.type_session'	=>array('label'=>"AgfFormTypeSession", 'checked'=>1),
+    's.dated'			=>array('label'=>"AgfDateDebut", 'checked'=>1),
+    's.datef'			=>array('label'=>"AgfDateFin", 'checked'=>1),
+    'dicstatus.intitule'=>array('label'=>"AgfStatusSession", 'checked'=>1),
+	'p.ref_interne'		=>array('label'=>"AgfLieu", 'checked'=>1),
+    's.nb_stagiaire'	=>array('label'=>"AgfNbreParticipants", 'checked'=>1),
+	
+    's.sell_price'		=>array('label'=>"AgfAmountHTHF", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
+    's.cost_trainer'	=>array('label'=>"AgfCostTrainer", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
+	'AgfCostOther'		=>array('label'=>"AgfCostOther", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
+	'AgfFactAmount'		=>array('label'=>"AgfFactAmount", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
+	'AgfMargin'			=>array('label'=>"AgfMargin", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
+	
+	'AgfListParticipantsStatus'=>array('label'=>"AgfListParticipantsStatus", 'checked'=>1),
+);
+
+
 $filter = array ();
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
@@ -330,6 +356,8 @@ if ($resql != - 1) {
 		$option .= '&search_type_session=' . $search_type_session;
 
 	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 	if (! empty($status_view))
 		print '<input type="hidden" name="status" value="' . $status_view . '"/>';
 	if (! empty($site_view))
@@ -345,24 +373,37 @@ if ($resql != - 1) {
 
 	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
-		// If the user can view prospects other than his'
+	$morefilter='';
+	// If the user can view prospects other than his'
 	if ($user->rights->societe->client->voir || $socid) {
+		$moreforfilter.='<div class="divsearchfield">';
 		$moreforfilter .= $langs->trans('SalesRepresentatives') . ': ';
 		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user);
+		$moreforfilter.='</div>';
 	}
 
+	$moreforfilter.='<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
+	$moreforfilter.='</div>';
+	$moreforfilter.='<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
+	$moreforfilter.='</div>';
+	$moreforfilter.='<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
+	$moreforfilter.='</div>';
+	
 	if ($user->rights->agefodd->session->margin) {
+		$moreforfilter.='<div class="divsearchfield">';
 		$moreforfilter .= '<span id="showhidemargininfo" style="cursor:pointer">'.$langs->transnoentities('AgfDisplayMarginInfo').'</span>';
+		$moreforfilter.='</div>';
 	}
-	if ($moreforfilter) {
-		print '<div class="liste_titre">';
+	if ($moreforfilter)
+	{
+		print '<div class="liste_titre liste_titre_bydiv centpercent">';
 		print $moreforfilter;
 		print '</div>';
 	}
-
+	
 	print '<script type="text/javascript">'."\n";
 	print '$(document).ready(function () {'."\n";
 	print '	$(\'#showhidemargininfo\').click(function(){'."\n";
@@ -375,103 +416,141 @@ if ($resql != - 1) {
 	print '	});'."\n";
 	print '});'."\n";
 	print '</script>'."\n";
+	
+	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
+	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
+	//if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
 
 	$i = 0;
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVEUR ['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
-	if ($user->rights->agefodd->session->margin) {
-		print_liste_field_titre($langs->trans("AgfAmoutHTHF"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1" style="display:none" ', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfCostTrainer"), $_SERVER ['PHP_SELF'], "s.cost_trainer", "", $option, ' name="margininfo2" style="display:none" ', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfCostOther"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo3" style="display:none" ', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfFactAmount"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo4" style="display:none" ', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfMargin"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo5" style="display:none" ', $sortfield, $sortorder);
-	}
-	print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print "</tr>\n";
-
+	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
+	
 	print '<tr class="liste_titre">';
 
-	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+	if (! empty($arrayfields['s.rowid']['checked'])) print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="10">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $formAgefodd->select_type_session('search_type_session', $search_type_session, 1);
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form');
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $formAgefodd->select_session_status($search_session_status, 'search_session_status', 't.active=1', 1);
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
-	print '</td>';
-
-	if ($user->rights->agefodd->session->margin) {
-		print '<td class="liste_titre" name="margininfo6" style="display:none">';
-		print '</td>';
-
-		print '<td class="liste_titre" name="margininfo7"  style="display:none">';
-		print '</td>';
-
-		print '<td class="liste_titre" name="margininfo8"  style="display:none">';
-		print '</td>';
-
-		print '<td class="liste_titre" name="margininfo9"  style="display:none">';
-		print '</td>';
-
-		print '<td class="liste_titre" name="margininfo10"  style="display:none">';
+	if (! empty($arrayfields['so.nom']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
 		print '</td>';
 	}
 
-	print '<td class="liste_titre">';
-	print '</td>';
+	if (! empty($arrayfields['f.rowid']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['c.intitule']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['c.ref']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="10">';
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['c.ref_interne']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['s.type_session']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print $formAgefodd->select_type_session('search_type_session', $search_type_session, 1);
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['s.dated']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['s.datef']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form');
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['dicstatus.intitule']['checked'])) 
+	{
+		print '<td class="liste_titre">';
+		print $formAgefodd->select_session_status($search_session_status, 'search_session_status', 't.active=1', 1);
+		print '</td>';
+	}
+	
+	if (! empty($arrayfields['p.ref_interne']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
+		print '</td>';
+	}
 
-	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	if ($user->rights->agefodd->session->margin) {
+		if (! empty($arrayfields['s.sell_price']['checked'])) print '<td class="liste_titre" name="margininfo6" style="display:none"></td>';
+
+		if (! empty($arrayfields['s.cost_trainer']['checked'])) print '<td class="liste_titre" name="margininfo7"  style="display:none"></td>';
+
+		if (! empty($arrayfields['AgfCostOther']['checked'])) print '<td class="liste_titre" name="margininfo8"  style="display:none"></td>';
+
+		if (! empty($arrayfields['AgfFactAmount']['checked'])) print '<td class="liste_titre" name="margininfo9"  style="display:none"></td>';
+
+		if (! empty($arrayfields['AgfMargin']['checked'])) print '<td class="liste_titre" name="margininfo10"  style="display:none"></td>';
+	}
+
+	if (! empty($arrayfields['s.nb_stagiaire']['checked'])) print '<td class="liste_titre"></td>';
+	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print '<td class="liste_titre"></td>';
+
+	// Action column
+	print '<td class="liste_titre" align="right">';
+	$searchpicto=$form->showFilterButtons();
+	print $searchpicto;
 	print '</td>';
 
 	print "</tr>\n";
 	print '</form>';
+	
+	
+	print '<tr class="liste_titre">';
+	if (! empty($arrayfields['s.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['so.nom']['checked']))				print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['f.rowid']['checked']))			print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['c.ref']['checked']))				print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['c.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.type_session']['checked']))		print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.dated']['checked']))			print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.datef']['checked']))			print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['dicstatus.intitule']['checked'])) print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVEUR ['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['p.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.nb_stagiaire']['checked']))		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
+	if ($user->rights->agefodd->session->margin) {
+//		var_dump($langs->trans('AgfCostOther'));exit;
+		if (! empty($arrayfields['s.sell_price']['checked']))	print_liste_field_titre($langs->trans("AgfAmoutHTHF"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1" style="display:none" ', $sortfield, $sortorder);
+		if (! empty($arrayfields['s.cost_trainer']['checked']))	print_liste_field_titre($langs->trans("AgfCostTrainer"), $_SERVER ['PHP_SELF'], "s.cost_trainer", "", $option, ' name="margininfo2" style="display:none" ', $sortfield, $sortorder);
+		if (! empty($arrayfields['AgfCostOther']['checked']))	print_liste_field_titre($langs->trans("AgfCostOther"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo3" style="display:none" ', $sortfield, $sortorder);
+		if (! empty($arrayfields['AgfFactAmount']['checked']))	print_liste_field_titre($langs->trans("AgfFactAmount"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo4" style="display:none" ', $sortfield, $sortorder);
+		if (! empty($arrayfields['AgfMargin']['checked']))		print_liste_field_titre($langs->trans("AgfMargin"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo5" style="display:none" ', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	
+	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');	
+	
+	print "</tr>\n";
+
+	
 
 	$var = true;
 	$oldid=0;
@@ -491,81 +570,104 @@ if ($resql != - 1) {
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
 
-			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
-			print '<td>';
+			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+			
+			if (! empty($arrayfields['so.nom']['checked']))
+			{
+				print '<td>';
+				if (! empty($line->socid) && $line->socid != - 1) {
+					$soc = new Societe($db);
+					$soc->fetch($line->socid);
+					print $soc->getNomURL(1);
+				} else {
+					print '&nbsp;';
+				}
+				print '</td>';
+			}
+			
+			if (! empty($arrayfields['f.rowid']['checked']))
+			{
+				print '<td>';
+				$trainer = new Agefodd_teacher($db);
+				if (! empty($line->trainerrowid)) {
+					$trainer->fetch($line->trainerrowid);
+				}
+				if (! empty($trainer->id)) {
+					print $trainer->getNomUrl();
+				} else {
+					print '&nbsp;';
+				}
+				print '</td>';
+			}
+			
+			if (! empty($arrayfields['c.intitule']['checked']))
+			{
+				$couleur_rgb_training = agf_hex2rgb($line->trainingcolor);
+				$color_training = '';
+				if ($line->trainingcolor && ((($couleur_rgb_training [0] * 299) + ($couleur_rgb_training [1] * 587) + ($couleur_rgb_training [2] * 114)) / 1000) < 125) {
+					$color_training = ' style="color: #FFFFFF;background: #' . $line->trainingcolor . '"';
+				} else {
+					$color_training=' style="background: #' . $line->trainingcolor . '" ';
+				}
 
-			if (! empty($line->socid) && $line->socid != - 1) {
-				$soc = new Societe($db);
-				$soc->fetch($line->socid);
-				print $soc->getNomURL(1);
-			} else {
-				print '&nbsp;';
+				print '<td ' . $color_training . '>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 			}
-			print '</td>';
-			print '<td>';
-			$trainer = new Agefodd_teacher($db);
-			if (! empty($line->trainerrowid)) {
-				$trainer->fetch($line->trainerrowid);
+			
+			if (! empty($arrayfields['c.ref']['checked']))			print '<td>' . $line->ref . '</td>';
+			if (! empty($arrayfields['c.ref_interne']['checked']))	print '<td>' . $line->training_ref_interne . '</td>';
+			if (! empty($arrayfields['s.type_session']['checked']))	print '<td>' . ($line->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
+			if (! empty($arrayfields['s.dated']['checked']))		print '<td>' . dol_print_date($line->dated, 'daytextshort') . '</td>';
+			if (! empty($arrayfields['s.datef']['checked']))		print '<td>' . dol_print_date($line->datef, 'daytextshort') . '</td>';
+			
+			if (! empty($arrayfields['dicstatus.intitule']['checked'])) 
+			{
+				print '<td>';
+				print $line->status_lib;
+				print '</td>';
 			}
-			if (! empty($trainer->id)) {
-				print $trainer->getNomUrl();
-			} else {
-				print '&nbsp;';
-			}
-			print '</td>';
-			$couleur_rgb_training = agf_hex2rgb($line->trainingcolor);
-			$color_training = '';
-			if ($line->trainingcolor && ((($couleur_rgb_training [0] * 299) + ($couleur_rgb_training [1] * 587) + ($couleur_rgb_training [2] * 114)) / 1000) < 125) {
-				$color_training = ' style="color: #FFFFFF;background: #' . $line->trainingcolor . '"';
-			} else {
-				$color_training=' style="background: #' . $line->trainingcolor . '" ';
-			}
-
-			print '<td ' . $color_training . '>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
-			print '<td>' . $line->ref . '</td>';
-			print '<td>' . $line->training_ref_interne . '</td>';
-			print '<td>' . ($line->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
-			print '<td>' . dol_print_date($line->dated, 'daytextshort') . '</td>';
-			print '<td>' . dol_print_date($line->datef, 'daytextshort') . '</td>';
-			print '<td>';
-			print $line->status_lib;
-			print '</td>';
-			print '<td>' . stripslashes($line->ref_interne) . '</td>';
-			print '<td>' . $line->nb_stagiaire . '</td>';
+			
+			if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td>' . stripslashes($line->ref_interne) . '</td>';
+			if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td>' . $line->nb_stagiaire . '</td>';
 
 			if ($user->rights->agefodd->session->margin) {
-				print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" style="display:none">' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
-				print '<td  nowrap="nowrap"  name="margininfoline2'.$line->rowid.'" style="display:none">' . price($line->cost_trainer,0, $langs, 1, -1, -1, 'auto') . '</td>';
-				print '<td  nowrap="nowrap"  name="margininfoline3'.$line->rowid.'" style="display:none">' . price($line->cost_other,0, $langs, 1, -1, -1, 'auto') . '</td>';
-				print '<td  nowrap="nowrap"  name="margininfoline4'.$line->rowid.'" style="display:none">';
-				$amount_act_invoiced_less_charges=0;
-				// Remove charges of product of category 'frais'
-				if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
-					$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
-				} else {
-					$amount_act_invoiced_less_charges = $line->invoice_amount;
-				}
-				$totalfacththf += $amount_act_invoiced_less_charges;
+				if (! empty($arrayfields['s.sell_price']['checked']))	print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" style="display:none">' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				if (! empty($arrayfields['s.cost_trainer']['checked']))	print '<td  nowrap="nowrap"  name="margininfoline2'.$line->rowid.'" style="display:none">' . price($line->cost_trainer,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				if (! empty($arrayfields['AgfCostOther']['checked']))	print '<td  nowrap="nowrap"  name="margininfoline3'.$line->rowid.'" style="display:none">' . price($line->cost_other,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				
+				if (! empty($arrayfields['AgfFactAmount']['checked']))
+				{
+					print '<td  nowrap="nowrap"  name="margininfoline4'.$line->rowid.'" style="display:none">';
+					$amount_act_invoiced_less_charges=0;
+					// Remove charges of product of category 'frais'
+					if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
+						$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
+					} else {
+						$amount_act_invoiced_less_charges = $line->invoice_amount;
+					}
+					$totalfacththf += $amount_act_invoiced_less_charges;
 
-				if ($amount_act_invoiced_less_charges == 0 && $line->sell_price!=0) {
-					$bgfact = 'red';
-				} else {
-					$bgfact = '';
+					if ($amount_act_invoiced_less_charges == 0 && $line->sell_price!=0) {
+						$bgfact = 'red';
+					} else {
+						$bgfact = '';
+					}
+					print '<font style="color:' . $bgfact . '">' . price($amount_act_invoiced_less_charges,0, $langs, 1, -1, -1, 'auto'). '</font>';
+					print '</td>';
 				}
-				print '<font style="color:' . $bgfact . '">' . price($amount_act_invoiced_less_charges,0, $langs, 1, -1, -1, 'auto'). '</font>';
-				print '</td>';
 
-
-				print '<td nowrap="nowrap"  name="margininfoline5'.$line->rowid.'" style="display:none">';
-				if ($line->invoice_amount > 0) {
-					$margin = $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
-					$percentmargin = price((($margin * 100) / $line->invoice_amount), 0, $langs, 1, 0, 1) . '%';
-				} else {
-					$margin = 0;
-					$percentmargin = "n/a";
+				if (! empty($arrayfields['AgfMargin']['checked']))
+				{
+					print '<td nowrap="nowrap"  name="margininfoline5'.$line->rowid.'" style="display:none">';
+					if ($line->invoice_amount > 0) {
+						$margin = $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
+						$percentmargin = price((($margin * 100) / $line->invoice_amount), 0, $langs, 1, 0, 1) . '%';
+					} else {
+						$margin = 0;
+						$percentmargin = "n/a";
+					}
+					print price($margin,0, '', 1, -1, -1, 'auto') . '(' . $percentmargin . ')';
+					print '</td>';
 				}
-				print price($margin,0, '', 1, -1, -1, 'auto') . '(' . $percentmargin . ')';
-				print '</td>';
 			}
 
 			if (! empty($line->nb_subscribe_min)) {
@@ -578,40 +680,49 @@ if ($resql != - 1) {
 				$style = '';
 			}
 
-			print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))	print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			
+			//Action column
+			print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		} else {
 			print "<tr $bc[$var]>";
-			print '<td></td>';
-			print '<td></td>';
-			print '<td>';
-			$trainer = new Agefodd_teacher($db);
-			if (! empty($line->trainerrowid)) {
-				$trainer->fetch($line->trainerrowid);
+			if (! empty($arrayfields['s.rowid']['checked']))	print '<td></td>';
+			if (! empty($arrayfields['so.nom']['checked']))		print '<td></td>';
+			if (! empty($arrayfields['f.rowid']['checked']))
+			{
+				print '<td>';
+				$trainer = new Agefodd_teacher($db);
+				if (! empty($line->trainerrowid)) {
+					$trainer->fetch($line->trainerrowid);
+				}
+				if (! empty($trainer->id)) {
+					print $trainer->getNomUrl();
+				} else {
+					print '&nbsp;';
+				}
+				print '</td>';
 			}
-			if (! empty($trainer->id)) {
-				print $trainer->getNomUrl();
-			} else {
-				print '&nbsp;';
-			}
-			print '</td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
-			print '<td></td>';
+			
+			if (! empty($arrayfields['c.intitule']['checked']))					print '<td></td>';
+			if (! empty($arrayfields['c.ref']['checked']))						print '<td></td>';
+			if (! empty($arrayfields['c.ref_interne']['checked']))				print '<td></td>';
+			if (! empty($arrayfields['s.type_session']['checked']))				print '<td></td>';
+			if (! empty($arrayfields['s.dated']['checked']))					print '<td></td>';
+			if (! empty($arrayfields['s.datef']['checked']))					print '<td></td>';
+			if (! empty($arrayfields['dicstatus.intitule']['checked']))			print '<td></td>';
+			if (! empty($arrayfields['p.ref_interne']['checked']))				print '<td></td>';
+			if (! empty($arrayfields['s.nb_stagiaire']['checked']))				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
-				print '<td name="margininfolineb1'.$line->rowid.'" style="display:none"></td>';
-				print '<td name="margininfolineb2'.$line->rowid.'" style="display:none"></td>';
-				print '<td name="margininfolineb3'.$line->rowid.'" style="display:none"></td>';
-				print '<td name="margininfolineb4'.$line->rowid.'" style="display:none"></td>';
-				print '<td name="margininfolineb5'.$line->rowid.'" style="display:none"></td>';
+				if (! empty($arrayfields['s.sell_price']['checked']))			print '<td name="margininfolineb1'.$line->rowid.'" style="display:none"></td>';
+				if (! empty($arrayfields['s.cost_trainer']['checked']))			print '<td name="margininfolineb2'.$line->rowid.'" style="display:none"></td>';
+				if (! empty($arrayfields['AgfCostOther']['checked']))			print '<td name="margininfolineb3'.$line->rowid.'" style="display:none"></td>';
+				if (! empty($arrayfields['AgfFactAmount']['checked']))			print '<td name="margininfolineb4'.$line->rowid.'" style="display:none"></td>';
+				if (! empty($arrayfields['AgfMargin']['checked']))				print '<td name="margininfolineb5'.$line->rowid.'" style="display:none"></td>';
 			}
-			print '<td></td>';
+			if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))	print '<td></td>';
+			//Action column
+			print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		}
 
@@ -622,25 +733,27 @@ if ($resql != - 1) {
 	if ($user->rights->agefodd->session->margin) {
 		print '<tr class="liste_total" name="margininfototal" style="display:none">';
 		print '<td>'.$langs->trans('Total').'</td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
-		print '<td></td>';
+		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['so.nom']['checked']))					print '<td></td>';
+		if (! empty($arrayfields['f.rowid']['checked']))				print '<td></td>';
+		if (! empty($arrayfields['c.intitule']['checked']))				print '<td></td>';
+		if (! empty($arrayfields['c.ref']['checked']))					print '<td></td>';
+		if (! empty($arrayfields['c.ref_interne']['checked']))			print '<td></td>';
+		if (! empty($arrayfields['s.type_session']['checked']))			print '<td></td>';
+		if (! empty($arrayfields['s.dated']['checked']))				print '<td></td>';
+		if (! empty($arrayfields['s.datef']['checked']))				print '<td></td>';
+		if (! empty($arrayfields['dicstatus.intitule']['checked']))		print '<td></td>';
+		if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td></td>';
+		if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
-			print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
-			print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
-			print '<td nowrap="nowrap">'.price($total_costother,0, '', 1, -1, -1, 'auto').'</td>';
-			print '<td nowrap="nowrap">'.price($total_facththf,0, '', 1, -1, -1, 'auto').'</td>';
-			print '<td nowrap="nowrap">'.price($total_margin,0, '', 1, -1, -1, 'auto').'(' . $total_percentmargin . ')'.'</td>';
+			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
+			if (! empty($arrayfields['s.cost_trainer']['checked']))		print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
+			if (! empty($arrayfields['AgfCostOther']['checked']))		print '<td nowrap="nowrap">'.price($total_costother,0, '', 1, -1, -1, 'auto').'</td>';
+			if (! empty($arrayfields['AgfFactAmount']['checked']))		print '<td nowrap="nowrap">'.price($total_facththf,0, '', 1, -1, -1, 'auto').'</td>';
+			if (! empty($arrayfields['AgfMargin']['checked']))			print '<td nowrap="nowrap">'.price($total_margin,0, '', 1, -1, -1, 'auto').'(' . $total_percentmargin . ')'.'</td>';
 		}
-		print '<td></td>';
+		if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))	print '<td></td>';
+		//Action column
+		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 	}
 	print "</table>";
