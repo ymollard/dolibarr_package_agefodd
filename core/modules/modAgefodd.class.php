@@ -100,6 +100,8 @@ class modAgefodd extends DolibarrModules
 						'searchform',
 						'pdfgeneration',
 						'propalcard',
+						'ordercard',
+						'invoicecard',
 						'admin',
 						'emailtemplates',
 						'upgrade'

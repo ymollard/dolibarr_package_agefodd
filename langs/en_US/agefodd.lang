@@ -1108,3 +1108,5 @@ AgfManageBPFHelp=French legal document to provide to french admnistration one a 
 AgfAddProgramToConv=Add at the end of convention the training program
 ExtraFieldsTrainee=Extrafeilds Trainee
 AgfDefaultSessionType=Default type session
+AgefoddRefFormationSessionId=Ref. training (session)
+AgfPrintTrainingRefAndSessIdOnPDF=Show training ref. and the id of session on PDF documents (propal / order / invoice)
