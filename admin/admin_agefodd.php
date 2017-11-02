@@ -1837,6 +1837,27 @@ if (! $conf->use_javascript_ajax) {
 }
 
 
+print '<tr class="impair"><td>' . $langs->trans("AgfPrintTrainingRefAndSessIdOnPDF") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF", $arrval, $conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+if (! $conf->use_javascript_ajax) {
+	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
+	print '</tr>';
+}
+
 print '</table><br>';
 print '</form>';
 

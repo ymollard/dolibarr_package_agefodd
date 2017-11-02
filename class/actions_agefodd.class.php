@@ -336,4 +336,60 @@ class ActionsAgefodd
 		$obj = new modAgefodd($db);
 		$obj->load_tables();*/
 	}
+	
+	public function pdf_getLinkedObjects($parameters, &$object, &$action, $hookmanager)
+	{
+		global $conf;
+		
+		if (empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF)) return 0;
+		
+		$TContext = explode(':', $parameters['context']);
+		$intersec = array_intersect(array('propalcard', 'ordercard', 'invoicecard'), $TContext);
+		
+		if (!empty($intersec))
+		{
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			dol_include_once('/agefodd/class/agsession.class.php');
+			
+//			$linkedobjects = $parameters['linkedobjects'];
+
+			$outputlangs = $parameters['outputlangs'];
+			$outputlangs->load('agefodd@agefodd');
+			
+			$element_type = $object->element;
+			if ($element_type == 'commande') $element_type = 'order';
+			elseif ($element_type == 'facture') $element_type = 'invoice';
+			
+			$agfsess = new Agefodd_session_element($object->db);
+			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
+			if ($result > 0)
+			{
+				foreach ($agfsess->lines as $key => $session)
+				{
+					$sessiondetail = new Agsession($object->db);
+					$result = $sessiondetail->fetch($session->fk_session_agefodd);
+					if ($result > 0)
+					{
+						$this->results[get_class($sessiondetail).$sessiondetail->id] = array(
+							'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId")
+							,'ref_value' => $outputlangs->convToOutputCharset($sessiondetail->formref).' ('.$sessiondetail->id.')'
+							,'date_value' => ''
+						);
+					}
+					else
+					{
+						dol_print_error('', $agfsess->error);
+					}
+				}
+				
+//				if (is_array($linkedobjects)) $this->results = $linkedobjects + $this->results;
+			}
+			else
+			{
+				dol_print_error('', $agfsess->error);
+			}
+		}
+		
+		return 0;
+	}
 }
