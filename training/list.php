@@ -97,6 +97,26 @@ if (GETPOST("button_removefilter_x")) {
 	$search_id = '';
 	$search_categ = '';
 }
+include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+$arrayfields=array(
+    'c.rowid'			=>array('label'=>"Id", 'checked'=>1),
+   
+    'c.intitule'		=>array('label'=>"AgfIntitule", 'checked'=>1),
+    'c.ref'				=>array('label'=>"Ref", 'checked'=>1),
+    'c.ref_interne'		=>array('label'=>"AgfRefInterne", 'checked'=>1),
+   
+    'dictcat.code'=>array('label'=>"AgfTrainingCateg", 'checked'=>1),
+	'dictcatbpf.code'		=>array('label'=>"AgfTrainingCategBPF", 'checked'=>1),
+    'c.datec'	=>array('label'=>"AgfDateC", 'checked'=>1),
+	
+    'c.duree'		=>array('label'=>"AgfDuree", 'checked'=>1),
+    'a.dated'	=>array('label'=>"AgfDateLastAction", 'checked'=>1),
+	'AgfNbreAction'		=>array('label'=>"AgfNbreAction", 'checked'=>1),
+
+);
+
+
 
 llxHeader('', $langs->trans('AgfMenuCat'));
 
@@ -148,6 +168,8 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter
 $i = 0;
 
 print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="arch" value="' . $arch . '" >';
 if (! empty($sortfield))
 	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
@@ -159,64 +181,86 @@ if (! empty($page))
 	print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER ['PHP_SELF'], '&arch=' . $arch, $sortfield, $sortorder, '', $resql,$resql,'title_generic.png', 0, '', '', $limit);
 
 
-print '<table class="noborder" width="100%">';
-print "<tr class=\"liste_titre\">";
-print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVER ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVER ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfDateC"), $_SERVER ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVER ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVER ['PHP_SELF'], '', $option, '', $sortfield, $sortorder);
-print "</tr>\n";
+$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
+$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);
 
 
+
+print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 print '<tr class="liste_titre">';
+if (! empty($arrayfields['c.rowid']['checked']))print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
-print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+if (! empty($arrayfields['c.intitule']['checked'])){
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_intitule" value="' . $search_intitule . '" size="20">';
+	print '</td>';
+}
+if (! empty($arrayfields['c.ref']['checked'])){
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="20">';
+	print '</td>';
+}
+if (! empty($arrayfields['c.ref_interne']['checked'])){
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_ref_interne" value="' . $search_ref_interne . '" size="20">';
+	print '</td>';
+}
+if (! empty($arrayfields['dictcat.code']['checked'])){
+	print '<td class="liste_titre">';
+	print $formagefodd->select_training_categ($search_categ, 'search_categ', 't.active=1');
+	print '</td>';
+}
+if (! empty($arrayfields['dictcatbpf.code']['checked'])){
+	print '<td class="liste_titre">';
+	print $formagefodd->select_training_categ_bpf($search_categ_bpf, 'search_categ_bpf', 't.active=1');
+	print '</td>';
+}
+if (! empty($arrayfields['c.datec']['checked'])){
 
-print '<td class="liste_titre">';
-print '<input type="text" class="flat" name="search_intitule" value="' . $search_intitule . '" size="20">';
-print '</td>';
+	print '<td class="liste_titre">';
+	print $form->select_date($search_datec, 'search_datec', 0, 0, 1, 'search_form');
+	print '</td>';
+}
+if (! empty($arrayfields['c.duree']['checked'])){
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_duree" value="' . $search_duree . '" size="5">';
+	print '</td>';
+}
+if (! empty($arrayfields['a.dated']['checked'])){
+	print '<td class="liste_titre">';
+	// print $form->select_date ( $search_dated, 'search_dated', 0, 0, 1, 'search_form' );
+	print '</td>';
+}
+if (! empty($arrayfields['AgfNbreAction']['checked'])){
+	print '<td class="liste_titre">';
+	print '</td>';
+}
 
-print '<td class="liste_titre">';
-print '<input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="20">';
-print '</td>';
+print '<td class="liste_titre" align="right">';
+$searchpicto=$form->showFilterButtons();
 
-print '<td class="liste_titre">';
-print '<input type="text" class="flat" name="search_ref_interne" value="' . $search_ref_interne . '" size="20">';
-print '</td>';
-
-print '<td class="liste_titre">';
-print $formagefodd->select_training_categ($search_categ, 'search_categ', 't.active=1');
-print '</td>';
-
-print '<td class="liste_titre">';
-print $formagefodd->select_training_categ_bpf($search_categ_bpf, 'search_categ_bpf', 't.active=1');
-print '</td>';
-
-print '<td class="liste_titre">';
-print $form->select_date($search_datec, 'search_datec', 0, 0, 1, 'search_form');
-print '</td>';
-
-print '<td class="liste_titre">';
-print '<input type="text" class="flat" name="search_duree" value="' . $search_duree . '" size="5">';
-print '</td>';
-
-print '<td class="liste_titre">';
-// print $form->select_date ( $search_dated, 'search_dated', 0, 0, 1, 'search_form' );
-print '</td>';
-
-print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-print '&nbsp; ';
-print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+print $searchpicto;
 print '</td>';
 
 print "</tr>\n";
 print '</form>';
+print '<tr class="liste_titre">';
+
+if (! empty($arrayfields['c.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.ref']['checked']))				print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['dictcat.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVEUR ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['dictcatbpf.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVEUR ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs->trans("AgfDateC"), $_SERVEUR ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+
+print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');	
+
+print "</tr>\n";
+
 
 $var = true;
 if ($resql > 0) {
@@ -225,48 +269,47 @@ if ($resql > 0) {
 		// Affichage tableau des formations
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		print '<td>';
+		if (! empty($arrayfields['c.rowid']['checked']))	{
+			print '<td>';
+			print '<table class="nobordernopadding"><tr class="nocellnopadd">';
 
-		print '<table class="nobordernopadding"><tr class="nocellnopadd">';
+			print '<td class="nobordernopadding nowrap">';
+			print '<a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a>';
+			print '</td>';
 
-		print '<td class="nobordernopadding nowrap">';
-		print '<a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a>';
-		print '</td>';
-
-		print '<td style="min-width: 20px" class="nobordernopadding nowrap">';
-		$legende = $langs->trans("AgfDocOpen");
-		if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $line->rowid . '.pdf')) {
-			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-			print img_picto('fiche_pedago_' . $line->rowid . '.pdf:fiche_pedago_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
-			if (function_exists('getAdvancedPreviewUrl')) {
-				$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_' . $line->rowid . '.pdf');
-				if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+			print '<td style="min-width: 20px" class="nobordernopadding nowrap">';
+			$legende = $langs->trans("AgfDocOpen");
+			if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $line->rowid . '.pdf')) {
+				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+				print img_picto('fiche_pedago_' . $line->rowid . '.pdf:fiche_pedago_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
+				if (function_exists('getAdvancedPreviewUrl')) {
+					$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_' . $line->rowid . '.pdf');
+					if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+				}
 			}
-		}
-		if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $line->rowid . '.pdf')) {
-			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-			print img_picto('fiche_pedago_modules_' . $line->rowid . '.pdf:fiche_pedago_modules_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
-			if (function_exists('getAdvancedPreviewUrl')) {
-				$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_modules_' . $line->rowid . '.pdf');
-				if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+			if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $line->rowid . '.pdf')) {
+				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+				print img_picto('fiche_pedago_modules_' . $line->rowid . '.pdf:fiche_pedago_modules_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
+				if (function_exists('getAdvancedPreviewUrl')) {
+					$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_modules_' . $line->rowid . '.pdf');
+					if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+				}
 			}
+			print '</td>';
+			print '</tr>';
+			print '</table>';
+			print '</td>';
 		}
-		print '</td>';
-		print '</tr>';
-		print '</table>';
-
-
-
-		print '</td>';
-		print '<td>' . stripslashes($line->intitule) . '</td>';
-		print '<td>' . $line->ref . '</td>';
-		print '<td>' . $line->ref_interne . '</td>';
-		print '<td>' . dol_trunc($line->category_lib). '</td>';
-		print '<td>' . dol_trunc($line->category_lib_bpf). '</td>';
-		print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
-		print '<td>' . $line->duree . '</td>';
-		print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
-		print '<td>' . $line->nbsession . '</td>';
+		if (! empty($arrayfields['c.intitule']['checked']))print '<td>' . stripslashes($line->intitule) . '</td>';
+		if (! empty($arrayfields['c.ref']['checked']))	print '<td>' . $line->ref . '</td>';
+		if (! empty($arrayfields['c.ref_interne']['checked']))print '<td>' . $line->ref_interne . '</td>';
+		if (! empty($arrayfields['dictcat.code']['checked']))print '<td>' . dol_trunc($line->category_lib). '</td>';
+		if (! empty($arrayfields['dictcatbpf.code']['checked']))print '<td>' . dol_trunc($line->category_lib_bpf). '</td>';
+		if (! empty($arrayfields['c.datec']['checked']))print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
+		if (! empty($arrayfields['c.duree']['checked']))print '<td>' . $line->duree . '</td>';
+		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
+		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
+		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 
 		$i ++;
