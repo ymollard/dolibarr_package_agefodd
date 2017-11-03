@@ -347,7 +347,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		 * Header société
 		 */
 
-		$posY = $pdf->GetY() + 5;
+		$posY = $pdf->GetY();
 
 		$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
 		$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
@@ -810,6 +810,8 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 			$pdf->SetFont('','', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 			$posy=$pdf->GetY();
+			
+			printRefIntForma($this->db, $outputlangs, $object, $default_font_size - 1, $pdf, $posx, $posy, 'L');
 		}
 	}
 

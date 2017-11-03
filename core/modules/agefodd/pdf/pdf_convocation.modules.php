@@ -255,6 +255,8 @@ class pdf_convocation extends ModelePDFAgefodd {
 					$pdf->SetFont('', '', $default_font_size - 1);
 					$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 					$posy = $pdf->GetY();
+					
+					printRefIntForma($this->db, $outputlangs, $agf, $default_font_size - 1, $pdf, $posx, $posy, 'L');
 
 					$posY = $pdf->GetY() + 10;
 

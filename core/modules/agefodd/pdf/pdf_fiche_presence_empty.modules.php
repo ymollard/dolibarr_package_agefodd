@@ -263,6 +263,8 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetFont('', '', $this->default_font_size - 3);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posy = $pdf->GetY();
+		
+		printRefIntForma($this->db, $outputlangs, $agf, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 
 		// Affichage du logo commanditaire (optionnel)
 		if ($conf->global->AGF_USE_LOGO_CLIENT) {
@@ -277,6 +279,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		}
 
 		$posY = $pdf->GetY() + 10;
+		if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF) $posY -= 4;
 
 		$pdf->SetDrawColor($this->colorLine [0], $this->colorLine [1], $this->colorLine [2]);
 		$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);

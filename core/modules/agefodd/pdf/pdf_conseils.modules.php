@@ -250,11 +250,15 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$pdf->SetFont('','', $this->default_font_size - 3);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 				$posy=$pdf->GetY();
+				
+				printRefIntForma($this->db, $outputlangs, $agf, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 
 
 				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
 
 				$posY = $pdf->GetY() + 10;
+				if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF) $posY -= 5;
+				
 
 				$pdf->SetDrawColor($this->colorLine [0], $this->colorLine [1], $this->colorLine [2]);
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
