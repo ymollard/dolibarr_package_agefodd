@@ -1373,3 +1373,27 @@ function pdf_getInstance_agefodd($session, &$model, $format = '', $metric = 'mm'
 
 	return $pdf;
 }
+
+function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $y, $align) {
+	global $conf;
+	
+	if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF) {
+		
+		$forma_ref_int = null;
+		$className = get_class($object);
+		
+		if ($className == "Agefodd") $forma_ref_int = $object->ref_interne;
+		else if ($className == "Agsession") {	// $object est une session
+			$agf = new Agefodd($db);
+			$agf->fetch($object->fk_formation_catalogue);
+			$forma_ref_int = $agf->ref_interne;
+		}
+		else {}
+		
+		if ($forma_ref_int != null) {
+			$pdf->SetXY($x, $y);
+			$pdf->SetFont('', '', $font_size);
+			$pdf->MultiCell(70, 4, $outputlangs->transnoentities('AgfRefInterne').' : '.$outputlangs->convToOutputCharset($forma_ref_int), 0, $align);
+		}
+	}
+}

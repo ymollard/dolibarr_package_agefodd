@@ -233,6 +233,8 @@ class pdf_courrier extends ModelePDFAgefodd {
 				$pdf->SetFont('', '', $this->default_font_size - 3);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 				$posy = $pdf->GetY();
+				
+				printRefIntForma($this->db, $outputlangs, $agf, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 
 				// Affichage du logo commanditaire (optionnel)
 				if ($conf->global->AGF_USE_LOGO_CLIENT) {

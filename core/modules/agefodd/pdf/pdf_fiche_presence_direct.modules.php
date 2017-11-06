@@ -674,6 +674,8 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
+			
+			printRefIntForma($this->db, $outputlangs, $object, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 		}
 
 		/*

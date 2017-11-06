@@ -678,6 +678,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posy = $this->pdf->GetY();
+		
+		printRefIntForma($this->db, $outputlangs, $object, $this->default_font_size - 3, $this->pdf, $posx, $posy, 'L');
 
 		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 	}
