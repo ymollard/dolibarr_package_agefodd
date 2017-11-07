@@ -797,6 +797,39 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '</table>';
 	print '</form>';
+	
+	
+	
+	
+	?>
+<script>
+	$(document).ready(function () {
+		$("#select2-chosen-3").on('DOMSubtreeModified',function () {
+			var intitule = $(this).html();
+			data = {"action":"change_intitule","intitule":intitule};
+			ajax_set_duration(data);
+		});
+	});
+	
+	
+	function ajax_set_duration(data)
+    	{
+    		$.ajax({
+    		    url: "<?php echo dol_buildpath('/agefodd/session/ajax_create_session.php', 1) ; ?>",
+    		    type: "POST",
+    		    dataType: "json",
+    		    data: data,
+    		    success: function(result){
+    		      $("#duree_session").val(result.duree);
+    		    },
+    		    error: function(error){
+    		    	$.jnotify('AjaxError',"error");
+    		    }
+    		});
+    	}
+</script>
+
+<?php
 } else {
 	// Display session card
 	if ($id) {
