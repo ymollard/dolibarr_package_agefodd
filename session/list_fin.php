@@ -374,7 +374,7 @@ if (empty($search_fourninvoiceref)) {
 		}
 		
 		foreach ( $agf_session->lines as $line_session ) {
-			!empty($line_session->training_ref_interne)?$training_ref_interne= ' - ' .$line_session->training_ref_interne: $training_ref_interne='';
+			!empty($line_session->training_ref_interne)?$training_ref_interne= ' - (' .$line_session->training_ref_interne.')': $training_ref_interne='';
 			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
 		}
 	}
