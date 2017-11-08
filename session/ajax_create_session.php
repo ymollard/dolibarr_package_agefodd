@@ -23,7 +23,6 @@ $langs->load('clia2a@clia2a');
 $data = $_POST;
 $data['result'] = 0; // by default if no action result is false
 $data['errorMsg'] = ''; // default message for errors
-$data['msg'] = $langs->trans('JobDo'); // default message for errors
 
 
 
