@@ -820,7 +820,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
     		    dataType: "json",
     		    data: data,
     		    success: function(result){
-					if((result.duree)!== undefined){
+					if((result.duree)!= null){
 						$("#duree_session").val(result.duree);
 					}
 					if((result.fk_product)!= null ){
