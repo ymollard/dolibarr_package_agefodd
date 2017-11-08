@@ -258,6 +258,7 @@ print '<td></td>';
 print '<td><input type="text" name="intitule" value="" size="30"/></td>';
 print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level',0,$trainingid) . '</td>';
 print '<td><input type="text" name="delai" value=""/></td>';
+print '<td><input type="text" name="delai_end" value=""/></td>';
 print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
 print '</tr>';
 print '</form>';
