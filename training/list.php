@@ -101,15 +101,15 @@ include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 $arrayfields=array(
     'c.rowid'			=>array('label'=>"Id", 'checked'=>1),
-   
+
     'c.intitule'		=>array('label'=>"AgfIntitule", 'checked'=>1),
     'c.ref'				=>array('label'=>"Ref", 'checked'=>1),
     'c.ref_interne'		=>array('label'=>"AgfRefInterne", 'checked'=>1),
-   
+
     'dictcat.code'=>array('label'=>"AgfTrainingCateg", 'checked'=>1),
 	'dictcatbpf.code'		=>array('label'=>"AgfTrainingCategBPF", 'checked'=>1),
     'c.datec'	=>array('label'=>"AgfDateC", 'checked'=>1),
-	
+
     'c.duree'		=>array('label'=>"AgfDuree", 'checked'=>1),
     'a.dated'	=>array('label'=>"AgfDateLastAction", 'checked'=>1),
 	'AgfNbreAction'		=>array('label'=>"AgfNbreAction", 'checked'=>1),
@@ -237,9 +237,15 @@ if (! empty($arrayfields['AgfNbreAction']['checked'])){
 }
 
 print '<td class="liste_titre" align="right">';
-$searchpicto=$form->showFilterButtons();
+if(method_exists($form, 'showFilterButtons')) {
+	$searchpicto=$form->showFilterButtons();
 
-print $searchpicto;
+	print $searchpicto;
+} else {
+	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+	print '&nbsp; ';
+	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+}
 print '</td>';
 
 print "</tr>\n";
@@ -257,7 +263,7 @@ if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs
 if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 
-print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');	
+print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 
 print "</tr>\n";
 
