@@ -802,7 +802,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	
 	
 	?>
-<script>
+<script type="text/javascript">
 	$(document).ready(function () {
 		$("#formation").change(function () {
 			var fk_training = $(this).val();
