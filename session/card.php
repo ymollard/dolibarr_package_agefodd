@@ -57,7 +57,6 @@ $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
 $anchor = GETPOST('anchor');
-
 $agf = new Agsession($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
@@ -501,6 +500,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
 
 			$result = $agf->create($user);
+			
 			$new_session_id = $result;
 
 			if ($result > 0) {
@@ -804,7 +804,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	?>
 <script>
 	$(document).ready(function () {
-		$("#select2-chosen-3").on('DOMSubtreeModified',function () {
+		$("#s2id_formation .select2-chosen").on('DOMSubtreeModified',function () {
 			var intitule = $(this).html();
 			data = {"action":"change_intitule","intitule":intitule};
 			ajax_set_duration(data);
@@ -820,8 +820,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
     		    dataType: "json",
     		    data: data,
     		    success: function(result){
-    		      $("#duree_session").val(result.duree);
-    		    },
+					if((result.duree)!== undefined){
+						$("#duree_session").val(result.duree);
+					}
+					if((result.fk_product)!= null ){
+						
+						$("#s2id_productid .select2-chosen").html($("#productid option[value='"+result.fk_product+"']").html());
+					}
+				},
     		    error: function(error){
     		    	$.jnotify('AjaxError',"error");
     		    }
