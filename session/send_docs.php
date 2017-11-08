@@ -488,6 +488,7 @@ if (! empty($id)) {
 			// Init list of files
 			if (GETPOST("mode") == 'init') {
 				$formmail->clear_attached_files();
+
 				if ($action == 'presend_convention') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 
@@ -1842,9 +1843,19 @@ if (! empty($id)) {
 			// Tableau des substitutions
 			if (! empty($agf->intitule_custo)) {
 				$formmail->substit ['__FORMINTITULE__'] = $agf->intitule_custo;
+
 			} else {
 				$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;
 			}
+
+			if ($agf->dated == $agf->datef) {
+				$date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
+			} else {
+				$date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytext') . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
+			}
+
+			$formmail->substit ['__FORMDATESESSION__'] = $date_conv;
+
 			$formmail->substit['__SIGNATURE__'] = $user->signature;
 
 			if (is_array($withtocompanyname) && count($withtocompanyname)>0) {
