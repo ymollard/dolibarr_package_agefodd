@@ -822,10 +822,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
     		    success: function(result){
 					if((result.duree)!= null){
 						$("#duree_session").val(result.duree);
+					}else {
+						$("#duree_session").val("");
 					}
 					if((result.fk_product)!= null ){
 						
 						$("#s2id_productid .select2-chosen").html($("#productid option[value='"+result.fk_product+"']").html());
+					}else{
+						$("#s2id_productid .select2-chosen").html("");
 					}
 				},
     		    error: function(error){
