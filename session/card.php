@@ -57,7 +57,6 @@ $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
 $anchor = GETPOST('anchor');
-
 $agf = new Agsession($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
@@ -501,6 +500,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
 
 			$result = $agf->create($user);
+			
 			$new_session_id = $result;
 
 			if ($result > 0) {
@@ -797,6 +797,49 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '</table>';
 	print '</form>';
+	
+	
+	
+	
+	?>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#formation").change(function () {
+			var fk_training = $(this).val();
+			data = {"action":"get_duration_and_product","fk_training":fk_training};
+			ajax_set_duration_and_product(data);
+		});
+	});
+	
+	
+	function ajax_set_duration_and_product(data)
+    	{
+    		$.ajax({
+    		    url: "<?php echo dol_buildpath('/agefodd/scripts/interface.php', 1) ; ?>",
+    		    type: "POST",
+    		    dataType: "json",
+    		    data: data,
+    		    success: function(result){
+					if((result.duree)!= null){
+						$("#duree_session").val(result.duree);
+					}else {
+						$("#duree_session").val("");
+					}
+					if((result.fk_product)!= null ){
+						
+						$("#productid").val(result.fk_product).change();
+					}else{
+						$("#productid").val(0).change();
+					}
+				},
+    		    error: function(error){
+    		    	$.jnotify('AjaxError',"error");
+    		    }
+    		});
+    	}
+</script>
+
+<?php
 } else {
 	// Display session card
 	if ($id) {
