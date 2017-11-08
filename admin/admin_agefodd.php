@@ -1933,6 +1933,7 @@ print '<td></td>';
 print '<td><input type="text" name="intitule" value="" size="30"/></td>';
 print '<td>' . $formAgefodd->select_action_session_adm('', 'parent_level') . '</td>';
 print '<td><input type="text" name="delai" value=""/></td>';
+print '<td><input type="text" name="delai_end" value=""/></td>';
 print '<td><input type="image" src="' . img_picto($langs->trans("Save"), 'edit_add','',false,1).'" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
 print '</tr>';
 print '</form>';
