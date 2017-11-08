@@ -804,18 +804,18 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	?>
 <script>
 	$(document).ready(function () {
-		$("#s2id_formation .select2-chosen").on('DOMSubtreeModified',function () {
-			var intitule = $(this).html();
-			data = {"action":"change_intitule","intitule":intitule};
-			ajax_set_duration(data);
+		$("#formation").change(function () {
+			var fk_training = $(this).val();
+			data = {"action":"get_duration_and_product","fk_training":fk_training};
+			ajax_set_duration_and_product(data);
 		});
 	});
 	
 	
-	function ajax_set_duration(data)
+	function ajax_set_duration_and_product(data)
     	{
     		$.ajax({
-    		    url: "<?php echo dol_buildpath('/agefodd/session/ajax_create_session.php', 1) ; ?>",
+    		    url: "<?php echo dol_buildpath('/agefodd/scripts/interface.php', 1) ; ?>",
     		    type: "POST",
     		    dataType: "json",
     		    data: data,
@@ -827,9 +827,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					}
 					if((result.fk_product)!= null ){
 						
-						$("#s2id_productid .select2-chosen").html($("#productid option[value='"+result.fk_product+"']").html());
+						$("#productid").val(result.fk_product).change();
 					}else{
-						$("#s2id_productid .select2-chosen").html("");
+						$("#productid").val(0).change();
 					}
 				},
     		    error: function(error){
