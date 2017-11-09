@@ -82,7 +82,6 @@ if ($result < 0) {
  */
 
 include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
-
 //Copy file uploaded as a training program file
 if (!empty($asfichepedago)) {
 	if (is_array($_FILES['userfile']['name']) && count($_FILES['userfile']['name'])>0) {
@@ -97,7 +96,13 @@ if (!empty($asfichepedago)) {
 		setEventMessages($langs->trans('AgfErrorCopyFile'), null,'errors');
 	}
 }
+//Copy file linked as a training program file
+if(!empty($_REQUEST['label']) && !empty($_REQUEST['link']) && $_REQUEST['label']=="PRG"){
 
+	
+	file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.pdf', fopen($_REQUEST['link'], 'r'));
+	
+}
 /*
  * View
  */
@@ -159,6 +164,7 @@ if ($object->id) {
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
 	$param = '&id=' . $object->id;
+	
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 
 

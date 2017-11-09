@@ -1146,6 +1146,29 @@ class Agefodd extends CommonObject {
 			return - 1 * $error;
 		}
 	}
+	
+	
+	/*
+	 * Function to get program link
+	 */
+	function generatePDAByLink(){
+		global $conf;
+		require_once DOL_DOCUMENT_ROOT . '/core/class/link.class.php';
+        $link = new Link($this->db);
+        $links = array();
+		$link->fetchAll($links, $this->element, $this->id);
+		
+		if(!empty($links)){
+			foreach ($links as $link)
+			{
+				if($link->label=="PRG"){
+					file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$this->id.'.pdf', fopen($link->url, 'r'));
+					return 1;
+				}
+			}
+		}
+		return 0;
+	}
 }
 class AgfObjPedaLine {
 	public $id;
@@ -1185,4 +1208,6 @@ class AgfTrainingLine {
 			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->$label . '</a>';
 		}
 	}
+	
+	
 }
