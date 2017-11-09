@@ -99,8 +99,8 @@ if (!empty($asfichepedago)) {
 //Copy file linked as a training program file
 if(!empty($_REQUEST['label']) && !empty($_REQUEST['link']) && $_REQUEST['label']=="PRG"){
 
-	
-	file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.pdf', fopen($_REQUEST['link'], 'r'));
+	$fopen = fopen($_REQUEST['link'], 'r');
+	file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.pdf', $fopen);
 	
 }
 /*

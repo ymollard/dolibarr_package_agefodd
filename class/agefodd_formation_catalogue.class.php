@@ -1149,7 +1149,7 @@ class Agefodd extends CommonObject {
 	
 	
 	/*
-	 * Function to get program link
+	 * Function to generate pdf program by link
 	 */
 	function generatePDAByLink(){
 		global $conf;
@@ -1162,7 +1162,8 @@ class Agefodd extends CommonObject {
 			foreach ($links as $link)
 			{
 				if($link->label=="PRG"){
-					file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$this->id.'.pdf', fopen($link->url, 'r'));
+					$fopen = fopen($link->url, 'r');
+					file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$this->id.'.pdf', $fopen);
 					return 1;
 				}
 			}
