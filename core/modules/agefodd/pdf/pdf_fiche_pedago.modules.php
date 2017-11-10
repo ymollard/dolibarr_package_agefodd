@@ -569,6 +569,20 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
+				
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+			
+				
+				
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -703,7 +717,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 	 *
 	 * @param string $txt
 	 */
-	public function getRealHeightLine($txt) {
+	public function getRealHeightLine($txt = '') {
 		global $conf;
 		// Determine if jump pages is needed
 		$this->pdf->startTransaction();
