@@ -166,9 +166,9 @@ class Agefodd_sessadm extends CommonObject {
 			$this->archive = 0;
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_adminsitu SET";
 		$sql .= " delais_alerte='" . $this->delais_alerte . "',";
-		$sql .= " " . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
-		$sql .= " " . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
-		$sql .= " " . (! isset($this->datea) || dol_strlen($this->datea) == 0 ? 'NULL' : "'" . $this->db->idate($this->datea) . "'") . ",";
+		$sql .= " dated=" . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
+		$sql .= " datef=" . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
+		$sql .= " datea=" . (! isset($this->datea) || dol_strlen($this->datea) == 0 ? 'NULL' : "'" . $this->db->idate($this->datea) . "'") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " notes='" . $this->notes . "',";
 		$sql .= " archive=" . $this->archive . ",";
