@@ -34,6 +34,7 @@ require_once '../class/agefodd_opca.class.php';
 require_once '../class/agefodd_sessadm.class.php';
 require_once '../class/agefodd_session_element.class.php';
 require_once '../class/agefodd_session_formateur.class.php';
+require_once '../class/agefodd_formation_catalogue.class.php';
 require_once '../class/agefodd_convention.class.php';
 require_once '../core/modules/agefodd/modules_agefodd.php';
 require_once '../class/html.formagefodd.class.php';
@@ -196,7 +197,14 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
 	}
-
+	if (strpos($model, 'fiche_pedago') !== false){
+		$agf = new Agsession($db);
+		$agf->fetch($id);
+		$agfTraining = new Agefodd($db);
+		$agfTraining->fetch($agf->fk_formation_catalogue);
+		$PDALink = $agfTraining->generatePDAByLink();
+	}
+	if(empty($PDALink))
 	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
 }
 
