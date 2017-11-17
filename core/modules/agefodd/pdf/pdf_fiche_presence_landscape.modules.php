@@ -155,7 +155,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
-				
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -166,8 +166,8 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-			
-				
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -297,9 +297,9 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		$pdf->SetXY($posx,$posy);
 		$pdf->SetFont('','', $default_font_size - 1);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-		
+
 		printRefIntForma($this->db, $outputlangs, $agf, $default_font_size - 1, $pdf, $posx, $posy, 'L');
-		
+
 		$posY = $pdf->GetY() + 10;
 
 		$pdf->SetDrawColor($this->colorLine [0], $this->colorLine [1], $this->colorLine [2]);
@@ -394,13 +394,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		if ($agf->dated == $agf->datef) {
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
-		}
-		else {
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
-		}
-
+		$this->str = $agf->libSessionDate('daytext');
 		$this->str .= ' (' . $agf->duree_session . ' h)';
 
 		$pdf->SetXY($posX + $larg_col1, $posY);

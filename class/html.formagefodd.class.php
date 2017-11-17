@@ -66,7 +66,7 @@ class FormAgefodd extends Form
 		else
 			$order = 'c.intitule';
 
-		$sql = "SELECT c.rowid, c.intitule, c.ref";
+		$sql = "SELECT c.rowid, c.intitule, c.ref, c.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE archive = 0";
 		$sql .= " AND entity IN (" . getEntity('agsession') . ")";
@@ -93,7 +93,9 @@ class FormAgefodd extends Form
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 					$label = $obj->intitule;
-
+					if (!empty($obj->ref_interne)) {
+						$label .= ' ('.$obj->ref_interne.')';
+					}
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {

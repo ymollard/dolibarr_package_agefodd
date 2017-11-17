@@ -1191,11 +1191,9 @@ if (! empty($id)) {
 
 				$formmail->withtopic = $langs->trans('AgfSendConvention', '__FORMINTITULE__');
 				// $formmail->withbody = $langs->trans('AgfSendConventionBody', '__FORMINTITULE__');
-				if ($agf->dated == $agf->datef) {
-					$date_courier_conv .= $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
-				} else {
-					$date_courier_conv .= $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytext') . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
-				}
+
+				$date_courier_conv = $agf->libSessionDate();
+
 				$formmail->withbody = $langs->transnoentities('AgfPDFCourrierAcceuil4') . "\n\n\n";
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierConv1Email') . "\n";
 				$formmail->withbody .= '« ';
@@ -1848,13 +1846,8 @@ if (! empty($id)) {
 				$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;
 			}
 
-			if ($agf->dated == $agf->datef) {
-				$date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
-			} else {
-				$date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytext') . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
-			}
-
-			$formmail->substit ['__FORMDATESESSION__'] = $date_conv;
+			$date_conv =$agf->libSessionDate('daytext');
+			$formmail->substit ['__FORMDATESESSION__'] =$date_conv;
 
 			$formmail->substit['__SIGNATURE__'] = $user->signature;
 

@@ -4509,6 +4509,26 @@ class Agsession extends CommonObject
 	}
 
 	/**
+	 *
+	 * @return string
+	 */
+	public function libSessionDate($dateformat=''){
+		global $langs;
+
+		$langs->load('agefodd@agefodd');
+
+		$date_conv='';
+
+		if ($this->dated == $agf->datef) {
+			$date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, $dateformat);
+		} else {
+			$date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, $dateformat) . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, $dateformat);
+		}
+
+		return $date_conv;
+	}
+
+	/**
 	 */
 	public function fetchOtherSessionSameplacedate() {
 		$this->lines_place = array ();
