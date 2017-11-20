@@ -110,6 +110,7 @@ class Agsession extends CommonObject
 	public $fk_soc_presta;
 	public $fk_socpeople_presta;
 	public $fk_soc_employer;
+	public $formrefint;
 
 	/**
 	 * Constructor
@@ -451,6 +452,7 @@ class Agsession extends CommonObject
 		$sql .= " c.intitule as formintitule,";
 		$sql .= " c.rowid as formid,";
 		$sql .= " c.ref as formref,";
+		$sql .= " c.ref_interne as formrefint,";
 		$sql .= " c.duree,";
 		$sql .= " t.fk_session_place,";
 		$sql .= " t.nb_place,";
@@ -551,6 +553,7 @@ class Agsession extends CommonObject
 				$this->formintitule = $obj->formintitule;
 				$this->formid = $obj->formid;
 				$this->formref = $obj->formref;
+				$this->formrefint = $obj->formrefint;
 				$this->duree = $obj->duree;
 				$this->fk_product = $obj->fk_product;
 				$this->fk_session_place = $obj->fk_session_place;
