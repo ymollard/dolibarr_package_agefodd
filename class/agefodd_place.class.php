@@ -224,7 +224,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp ON p.fk_socpeople = socp.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as pays ON pays.rowid = p.fk_pays";
 		$sql .= " WHERE p.rowid = " . $id;
-		$sql .= " AND p.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND p.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -294,7 +294,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON p.fk_societe = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socp ON p.fk_socpeople = socp.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as pays ON pays.rowid = p.fk_pays";
-		$sql .= " WHERE p.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE p.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		// Manage filter
 		if (count($filter) > 0) {

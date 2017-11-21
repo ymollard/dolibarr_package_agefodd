@@ -113,7 +113,7 @@ class Agefodd_index {
 		$sql = "SELECT count(*) as num";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session";
 		$sql .= " WHERE status = 5";
-		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch_session_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -144,7 +144,7 @@ class Agefodd_index {
 		$sql = "SELECT count(*) as num";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch_formation_nb ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -177,7 +177,7 @@ class Agefodd_index {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue AS f";
 		$sql .= " ON s.fk_formation_catalogue = f.rowid";
 		$sql .= " WHERE s.status IN (4,5)";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		// $sql.= " GROUP BY f.duree";
 
 		dol_syslog(get_class($this) . "::fetch_heures_sessions_nb ", LOG_DEBUG);
@@ -216,7 +216,7 @@ class Agefodd_index {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue AS f";
 		$sql .= " ON s.fk_formation_catalogue = f.rowid";
 		$sql .= " WHERE s.status IN (4,5)";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		// $sql.= " GROUP BY f.duree";
 
 
@@ -260,7 +260,7 @@ class Agefodd_index {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
 		$sql .= " WHERE s.status IN (4,5)";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " ORDER BY s.dated DESC LIMIT " . $number;
 
 		dol_syslog(get_class($this) . "::fetch_last_formations", LOG_DEBUG);
@@ -308,7 +308,7 @@ class Agefodd_index {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
 		$sql .= " WHERE s.status IN (5,4)";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " GROUP BY c.intitule, c.duree,s.fk_formation_catalogue";
 		$sql .= " ORDER BY num DESC LIMIT " . $number;
 
@@ -358,7 +358,7 @@ class Agefodd_index {
 			$sql .= " WHERE status=4";
 		}
 
-		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -437,7 +437,7 @@ class Agefodd_index {
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as asa";
 		$sql .= " INNER JOIN ".MAIN_DB_PREFIX . "agefodd_session as ags ON asa.fk_agefodd_session = ags.rowid";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND ags.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND ags.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch_tache_en_cours", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -551,7 +551,7 @@ class Agefodd_index {
 		$sql .= " WHERE sa.archive = 1";
 		$sql .= " AND sa.level_rank=0";
 		$sql .= " AND s.status <> 4";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " GROUP BY sa.fk_agefodd_session";
 
 		dol_syslog(get_class($this) . "::fetch_session_to_archive", LOG_DEBUG);
@@ -596,9 +596,9 @@ class Agefodd_index {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as stasess ON sta.rowid = stasess.fk_stagiaire AND stasess.fk_session_agefodd=s.rowid AND certif.fk_session_stagiaire=stasess.rowid";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = sta.fk_soc";
 
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " AND sta.rowid NOT IN (SELECT stasessinner.fk_stagiaire FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as stasessinner INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sinner ON sinner.rowid=stasessinner.fk_session_agefodd ";
-		$sql .= " AND stasessinner.status_in_session IN (2,3) WHERE sinner.dated<certif.certif_dt_end AND sinner.fk_formation_catalogue=s.fk_formation_catalogue AND sinner.entity IN (" . getEntity('agefodd') . "))";
+		$sql .= " AND stasessinner.status_in_session IN (2,3) WHERE sinner.dated<certif.certif_dt_end AND sinner.fk_formation_catalogue=s.fk_formation_catalogue AND sinner.entity IN (" . getEntity('agefodd'/*agsession*/) . "))";
 		$sql .= ' GROUP BY c.intitule,c.ref,soc.rowid ';
 		if ($this->db->type == 'pgsql') {
 			$sql .= " HAVING MAX(certif.certif_dt_end) < ( NOW() + INTERVAL '" . $month_expiration . " MONTHS') ";

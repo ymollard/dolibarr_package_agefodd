@@ -292,7 +292,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as stasess ON sta.rowid = stasess.fk_stagiaire AND stasess.fk_session_agefodd=s.rowid  AND certif.fk_session_stagiaire=stasess.rowid";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = sta.fk_soc";
 
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		// Manage filter
 		if (count($filter) > 0) {
@@ -552,7 +552,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " t.mark";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 
-		$sql .= " WHERE t.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " AND t.fk_stagiaire='" . $idtrainee . "'";
 
 		$sql .= " ORDER BY t.datec desc";
@@ -633,7 +633,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " t.mark";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 
-		$sql .= " WHERE t.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
 
@@ -710,7 +710,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif SET";
 
-		$sql .= " entity=" . $this->entity . ",";
+		$sql .= " entity=" . $this->entity/*$conf->entity*/ . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " fk_stagiaire=" . (isset($this->fk_stagiaire) ? $this->fk_stagiaire : "null") . ",";
 		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";

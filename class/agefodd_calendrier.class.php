@@ -148,7 +148,7 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " t.heuref";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
 		$sql .= " WHERE t.rowid = " . $id;
-		$sql .= " AND t.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 		
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -185,7 +185,7 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " t.heured,";
 		$sql .= " t.heuref";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
-		$sql .= " WHERE t.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 		
 		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);

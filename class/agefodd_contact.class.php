@@ -127,7 +127,7 @@ class Agefodd_contact extends CommonObject {
 		} else {
 			$sql .= " WHERE c.rowid = " . $id;
 		}
-		$sql .= " AND c.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " AND c.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 		
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -174,7 +174,7 @@ class Agefodd_contact extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_contact as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON c.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = s.fk_soc";
-		$sql .= " WHERE c.entity IN (" . getEntity('agefodd') . ")";
+		$sql .= " WHERE c.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 		if ($arch == 0 || $arch == 1)
 			$sql .= " AND c.archive = " . $arch;
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
