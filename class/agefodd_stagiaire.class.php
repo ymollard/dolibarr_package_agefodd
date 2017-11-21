@@ -195,7 +195,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.rowid = " . $id;
-		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -285,7 +285,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " ON s.fk_soc = so.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
-		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		// Manage filter
 		if (! empty($filter)) {
@@ -594,7 +594,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as s";
 		$sql .= " WHERE s.fk_soc=" . $socid;
-		$sql .= " AND s.entity IN (" . getEntity('agsession') . ')';
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ')';
 		$sql .= " AND UPPER(s.lastname)='" . strtoupper($this->db->escape($lastname)) . "'";
 		$sql .= " AND UPPER(s.firstname)='" . strtoupper($this->db->escape($firstname)) . "'";
 

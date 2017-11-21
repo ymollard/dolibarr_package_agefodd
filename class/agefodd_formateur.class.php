@@ -168,7 +168,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
 		$sql .= " WHERE f.rowid = " . $id;
-		$sql .= " AND f.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND f.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -305,7 +305,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
-		$sql .= " WHERE f.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " WHERE f.entity IN (" . getEntity('agefodd') . ")";
 		if ($arch == 0 || $arch == 1) {
 			$sql .= " AND f.archive = " . $arch;
 		}

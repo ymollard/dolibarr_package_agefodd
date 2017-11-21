@@ -238,7 +238,7 @@ class Agefodd extends CommonObject {
 			$sql .= " WHERE c.rowid = " . $id;
 		if (! $id && $ref)
 			$sql .= " WHERE c.ref = '" . $ref . "'";
-		$sql .= " AND c.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND c.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -800,7 +800,7 @@ class Agefodd extends CommonObject {
 		}
 
 		$sql .= " WHERE c.archive = " . $arch;
-		$sql .= " AND c.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND c.entity IN (" . getEntity('agefodd') . ")";
 		// Manage filter
 		if (! empty($filter)) {
 			foreach ( $filter as $key => $value ) {
@@ -1122,7 +1122,7 @@ class Agefodd extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur_training as link';
 		$sql .= ' ON f.rowid=link.fk_trainer AND link.fk_training=' . $this->id;
-		$sql .= " WHERE f.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " WHERE f.entity IN (" . getEntity('agefodd') . ")";
 
 		// $line->fk_socpeople
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);

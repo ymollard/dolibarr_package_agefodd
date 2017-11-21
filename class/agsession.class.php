@@ -533,7 +533,7 @@ class Agsession extends CommonObject
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON t.status = dictstatus.rowid";
 		$sql .= " WHERE t.rowid = " . $id;
-		$sql .= " AND t.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND t.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -2240,7 +2240,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
 			// Saleman of session is current user
@@ -2466,7 +2466,7 @@ class Agsession extends CommonObject
 		}
 
 		$sql .= " WHERE s.status <> 4";
-		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
 
 		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
@@ -2613,7 +2613,7 @@ class Agsession extends CommonObject
 		$sql .= " ON s.status = dictstatus.rowid";
 		$sql .= " WHERE ";
 		$sql .= " s.type_session=1";
-		$sql .= " AND s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
 
 		// Manage filter
@@ -2921,7 +2921,7 @@ class Agsession extends CommonObject
 			$type_affect = $langs->trans('AgfTypeEmployee');
 		}
 
-		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		if ($filter['type_affect'] == 'opca') {
 			$sql .= ' AND (s.rowid IN (SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session WHERE is_OPCA=1 AND fk_soc_OPCA=' . $socid . ')';
@@ -3097,7 +3097,7 @@ class Agsession extends CommonObject
 			$sql .= " ON propal_dol.rowid = ord_inv.fk_element AND  ord_inv.element_type='propal'";
 			$sql .= ' AND propal_dol.rowid=' . $propalid;
 		}
-		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
 
