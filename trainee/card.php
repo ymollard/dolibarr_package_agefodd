@@ -381,7 +381,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				if($(this).val()=="contact") {
 					$("#fromcontact").show();
 					//hack to force select display again
-					$(\'#contact\').select2({dir: \'ltr\',width: \'resolve\',minimumInputLength: '.$conf->global->CONTACT_USE_SEARCH_TO_SELECT.'});
+					$(\'#contact\').select2({dir: \'ltr\',width: \'resolve\',minimumInputLength: '.(empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)?0:$conf->global->CONTACT_USE_SEARCH_TO_SELECT).'});
 					$("#fromblanck").hide();
 				}else {
 					$("#fromcontact").hide();

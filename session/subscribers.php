@@ -531,7 +531,7 @@ if (! empty($id)) {
 		/*
 		 * Tableau d'édition des heures réelles
 		 */
-		if (! empty($conf->global->AGF_USE_REAL_HOURS && $edithours)) {
+		if (! empty($conf->global->AGF_USE_REAL_HOURS)&& $edithours) {
 			print '<br><form id="editrealhours" name="editrealhours" action="' . $_SERVER['PHP_SELF'] . '?action=editrealhours&id=' . $id . '"  method="POST">' . "\n";
 			print '<input type="hidden" name="action" value="editrealhours">';
 			$editstag = ( int ) GETPOST('editstag');

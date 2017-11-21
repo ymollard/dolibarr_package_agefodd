@@ -558,7 +558,8 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " AND sess.fk_soc_employer IS NULL";
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
-			        if (empty($this->db->num_rows($resql))) {
+			    	$num=$this->db->num_rows($resql);
+			    	if (empty($num)) {
 			            $this->trainee_data_f2[$key]['nb'] = 0;
 			            $this->trainee_data_f2[$key]['time'] = 0;
 			        }
@@ -568,7 +569,7 @@ class ReportBPF extends AgefoddExportExcel
     			            $this->trainee_data_f2[$key]['time'] += $obj->timeinsession;
     			        }
 			        }
-			        
+
 			    }
 			}
 		} else {
@@ -651,7 +652,8 @@ class ReportBPF extends AgefoddExportExcel
                 $sql .= " AND sess.fk_soc_employer IS NOT NULL";
                 $resql2 = $this->db->query($sql);
                 if ($resql2) {
-                    if (empty($this->db->num_rows($resql))) {
+                	$num=$this->db->num_rows($resql);
+                	if (empty($num)) {
                         $this->trainee_data_f2[$key]['nb'] = 0;
                         $this->trainee_data_f2[$key]['time'] = 0;
                     }
@@ -755,7 +757,8 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " GROUP BY catform.intitule";
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
-			        if (empty($this->db->num_rows($resql))) {
+			    	$num=$this->db->num_rows($resql);
+			    	if (empty($num)) {
 			            $this->trainee_data_f3[$obj->intitule]['nb'] = 0;
 			            $this->trainee_data_f3[$obj->intitule]['time'] = 0;
 			        }
@@ -765,7 +768,7 @@ class ReportBPF extends AgefoddExportExcel
 			                $this->trainee_data_f3[$obj->intitule]['time'] += $obj->timeinsession;
 			            }
 			        }
-			        
+
 			    }
 			}
 		} else {
@@ -861,7 +864,8 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
-			        if (empty($this->db->num_rows($resql))) {
+			    	$num=$this->db->num_rows($resql);
+			    	if (empty($num)) {
 			            $this->trainee_data_f4[$obj->intitule]['nb'] = 0;
 			            $this->trainee_data_f4[$obj->intitule]['time'] = 0;
 			        }
@@ -871,7 +875,7 @@ class ReportBPF extends AgefoddExportExcel
 			                $this->trainee_data_f4[$obj->intitule]['time'] += $obj->timeinsession;
 			            }
 			        }
-			        
+
 			    }
 			}
 		} else {
@@ -965,7 +969,8 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " AND sess.fk_soc_employer IS NULL";
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
-			        if (empty($this->db->num_rows($resql))) {
+			    	$num=$this->db->num_rows($resql);
+			    	if (empty($num)) {
 			            $this->trainee_data_g[$key]['nb'] = 0;
 			            $this->trainee_data_g[$key]['time'] = 0;
 			        }
@@ -975,7 +980,7 @@ class ReportBPF extends AgefoddExportExcel
 			                $this->trainee_data_g[$key]['time'] += $obj->timeinsession;
 			            }
 			        }
-			        
+
 			    }
 			}
 		} else {
@@ -1148,7 +1153,8 @@ class ReportBPF extends AgefoddExportExcel
 				    }
 				    $resql2 = $this->db->query($sql);
 				    if ($resql2) {
-				        if (empty($this->db->num_rows($resql))) {
+				    	$num=$this->db->num_rows($resql);
+				    	if (empty($num)) {
 				            $this->trainee_data[$data['label']]['nb'] = 0;
 				            $this->trainee_data[$data['label']]['time'] = 0;
 				        }
@@ -1160,10 +1166,10 @@ class ReportBPF extends AgefoddExportExcel
 				                $total_timeinsession += $obj->timeinsession;
 				            }
 				        }
-				        
+
 				    }
 				}
-				
+
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
 				dol_syslog(get_class($this) . "::" . __METHOD__ . " " . $data['label'] . " " . $this->error, LOG_ERR);

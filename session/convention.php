@@ -128,14 +128,14 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$model = str_replace('pdf_', '', $model);
 
 	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '_' . $agf->id . '.pdf';
-	
+
 	$field='id';
 	if (strpos($agf->model_doc, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 		$id_model_rfltr = (int)strtr($agf->model_doc, array('rfltr_agefodd_'=>''));
 		$field='sessid'; // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
 	}
-	
+
 	$result = agf_pdf_create($db, $agf->{$field}, '', $model, $outputlangs, $file, $agf->socid, '', $path_external_model, $id_model_rfltr, $agf);
 
 	if ($result > 0) {
@@ -145,7 +145,6 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 		setEventMessage($agf->error, 'errors');
 	}
 }
-
 
 /*
  * Action update (convention de formation)
@@ -169,6 +168,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$art9 = GETPOST('art9');
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
+		$model_doc = GETPOST('model_doc', 'alpha');
 		$only_product_session = GETPOST('only_product_session', 'int');
 		$traine_list = GETPOST('trainee_id', 'array');
 
@@ -251,6 +251,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$art9 = GETPOST('art9');
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
+		$model_doc = GETPOST('model_doc', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');
 		$only_product_session = GETPOST('only_product_session', 'int');
 
@@ -489,13 +490,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 		$old_date = $calendrier->lines [$i]->date_session;
 	}
-	
+
 	// Formateur
 	$formateurs = new Agefodd_session_formateur($db);
 	$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 	foreach($formateurs->lines as $trainer) {
 		$TTrainer[] = $trainer->firstname . ' ' . $trainer->lastname;
-	} 
+	}
 	if ($nbform>0) {
 		$art1 .= "\n". $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
 	}
@@ -731,7 +732,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$agf = new Agefodd_convention($db);
 	if (! empty($id))
 		$result = $agf->fetch(0, 0, $id);
-		
+
 	// Modèles personnalisés referenceletters
 	if(!empty($conf->referenceletters->enabled) && strpos($agf->model_doc, 'rfltr_agefodd') !== false) {
 		$id_model_rfltr = (int)strtr($agf->model_doc, array('rfltr_agefodd_'=>''));
@@ -740,7 +741,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if ($result) {
 		$agf_session = new Agsession($db);
 		$agf_session->fetch($agf->sessid);
-		
+
 		$head = session_prepare_head($agf, 1);
 
 		$hselected = 'convention';
@@ -824,7 +825,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 			print $formAgefodd->agfmultiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected);
 			print '</td></tr>';
-			
+
 			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 			print '<td><textarea name="intro1" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->intro1 . '</textarea></td></tr>';
 
@@ -952,12 +953,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvModelDoc") . '</td>';
 			print '<td>';
 			if (! empty($agf->model_doc)) {
-				
+
 				if(!empty($id_model_rfltr)) {
 					dol_include_once('/referenceletters/class/referenceletters.class.php');
-					$model_rfltr = new ReferenceLetters($db);
-					$model_rfltr->fetch($id_model_rfltr);
-					print $model_rfltr->title;
+					if (class_exists('ReferenceLetters')) {
+						$model_rfltr = new ReferenceLetters($db);
+						$model_rfltr->fetch($id_model_rfltr);
+						print $model_rfltr->title;
+					}
 				} else {
 					$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
 					$file = $agf->model_doc . '.modules.php';
@@ -968,7 +971,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print $module->description;
 					}
 				}
-				
+
 			}
 			print print '</td></tr>';
 
@@ -993,54 +996,54 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			}
 
 			print '</td></tr>';
-			
+
 			if(empty($id_model_rfltr)) {
-			
-				print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
-				print '<td>' . nl2br($agf->intro1) . '</td></tr>';
-	
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
-				print '<td>' . nl2br($agf->intro2) . '</td></tr>';
-	
-				$chapter=1;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . ebi_liste_a_puce($agf->art1, true) . '</td></tr>';
-	
-				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
-					$chapter++;
-					print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-					print '<td>' . nl2br($agf->art2) . '</td></tr>';
-				}
-	
+
+			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
+			print '<td>' . nl2br($agf->intro1) . '</td></tr>';
+
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
+			print '<td>' . nl2br($agf->intro2) . '</td></tr>';
+
+			$chapter=1;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . ebi_liste_a_puce($agf->art1, true) . '</td></tr>';
+
+			if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
 				$chapter++;
 				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art3) . '</td></tr>';
-	
-				$chapter++;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art4) . '</td></tr>';
-	
-				$chapter++;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art5) . '</td></tr>';
-	
-				$chapter++;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art9) . '</td></tr>';
-	
-				$chapter++;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art6) . '</td></tr>';
-	
-				$chapter++;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art7) . '</td></tr>';
-	
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
-				print '<td>' . nl2br($agf->sig) . '</td></tr>';
+				print '<td>' . nl2br($agf->art2) . '</td></tr>';
+			}
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art3) . '</td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art4) . '</td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art5) . '</td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art9) . '</td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art6) . '</td></tr>';
+
+			$chapter++;
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			print '<td>' . nl2br($agf->art7) . '</td></tr>';
+
+			print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
+			print '<td>' . nl2br($agf->sig) . '</td></tr>';
 
 			}
-				
+
 			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '<br /><span style=" font-size:smaller; font-style:italic;">' . $langs->trans("AgfConvNotesExplic") . '</span></td>';
 			print '<td valign="top">' . nl2br($agf->notes) . '</td></tr>';
 
