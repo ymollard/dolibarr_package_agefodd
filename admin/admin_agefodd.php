@@ -1870,6 +1870,23 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
+print '<tr class="pair"><td>' . $langs->trans("AgfPrintFieldsWithCustomOrder") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER", $arrval, $conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfPrintFieldsWithCustomOrderHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
 if (! $conf->use_javascript_ajax) {
 	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
 	print '</tr>';
