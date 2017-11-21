@@ -158,7 +158,7 @@ class Agefodd_formation_cursus extends CommonObject {
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_cursus as t";
 		$sql .= " WHERE t.rowid = " . $id;
-		$sql .= " AND t.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -216,7 +216,7 @@ class Agefodd_formation_cursus extends CommonObject {
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_formation_cursus SET";
 
-		$sql .= " entity=" . $conf->entity . ",";
+		$sql .= " entity=" . $this->entity/*$conf->entity*/ . ",";
 		$sql .= " fk_formation_catalogue=" . (isset($this->fk_formation_catalogue) ? $this->fk_formation_catalogue : "null") . ",";
 		$sql .= " fk_cursus=" . (isset($this->fk_cursus) ? $this->fk_cursus : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
@@ -399,7 +399,7 @@ class Agefodd_formation_cursus extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_cursus as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_cursus as c ON t.fk_cursus=c.rowid";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as f ON t.fk_formation_catalogue=f.rowid";
-		$sql .= " WHERE f.entity IN (" . getEntity('agsession') . ") AND c.entity IN (" . getEntity('agcursus') . ")";
+		$sql .= " WHERE f.entity IN (" . getEntity('agefodd'/*agsession*/) . ") AND c.entity IN (" . getEntity('agefodd'/*agcursus*/) . ")";
 		$sql .= " AND fk_cursus=" . $this->fk_cursus;
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
 		if (! empty($limit)) {

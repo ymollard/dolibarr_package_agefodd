@@ -216,7 +216,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_stagiaire_cursus SET";
 
-		$sql .= " entity=" . $conf->entity . ",";
+		$sql .= " entity=" . $this->entity/*$conf->entity*/ . ",";
 		$sql .= " fk_stagiaire=" . (isset($this->fk_stagiaire) ? $this->fk_stagiaire : "null") . ",";
 		$sql .= " fk_cursus=" . (isset($this->fk_cursus) ? $this->fk_cursus : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
@@ -426,7 +426,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 				$sql .= ' WHERE ' . $sqlwhere;
 			}
 		} else {
-			$sql .= " WHERE c.entity IN (" . getEntity('agsession') . ")";
+			$sql .= " WHERE c.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		}
 
 		$sql .= " AND fk_cursus=" . $this->fk_cursus;

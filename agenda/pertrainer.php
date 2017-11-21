@@ -419,7 +419,7 @@ if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 }
 $sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 
-$sql .= ' WHERE a.entity IN (' . getEntity('session') . ')';
+$sql .= ' WHERE a.entity IN (' . getEntity('agefodd'/*'session'*/) . ')';
 $sql .= ' AND a.elementtype=\'agefodd_agsession\'';
 if ($action == 'show_day') {
 	$sql .= " AND (";

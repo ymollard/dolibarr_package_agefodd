@@ -194,7 +194,7 @@ class Agefodd_cursus extends CommonObject {
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as t";
 		$sql .= " WHERE t.rowid = " . $id;
-		$sql .= " AND t.entity IN (" . getEntity('agsession') . ")";
+		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -272,7 +272,7 @@ class Agefodd_cursus extends CommonObject {
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_cursus SET";
 
 			$sql .= " ref_interne=" . (isset($this->ref_interne) ? "'" . $this->db->escape($this->ref_interne) . "'" : "null") . ",";
-			$sql .= " entity=" . $conf->entity . ",";
+			$sql .= " entity=" . $this->entity/*$conf->entity*/ . ",";
 			$sql .= " intitule=" . (isset($this->intitule) ? "'" . $this->db->escape($this->intitule) . "'" : "null") . ",";
 			$sql .= " archive=" . (isset($this->archive) ? $this->archive : "0") . ",";
 			$sql .= " fk_user_mod=" . $user->id . ",";
@@ -512,7 +512,7 @@ class Agefodd_cursus extends CommonObject {
 		$sql .= " t.note_public,";
 		$sql .= " t.tms";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as t";
-		$sql .= " WHERE t.entity IN (" . getEntity('agcursus') . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agcursus*/) . ")";
 		if ($arch == 0 || $arch == 1)
 			$sql .= " AND t.archive = " . $arch;
 		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
