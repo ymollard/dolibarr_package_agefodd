@@ -3195,31 +3195,31 @@ class Agsession extends CommonObject
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
 
-		print '<table class="border" width="100%">';
+		print '<table id="session_card" class="border" width="100%">';
 
-		print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
+		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td>' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfFormIntitule") . '</td>';
+		print '<tr class="order_intitule"><td>' . $langs->trans("AgfFormIntitule") . '</td>';
 		print '<td><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->formintitule . '</a></td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
+		print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
 		print '<td><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->intitule_custo . '</a></td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfFormRef") . '</td>';
+		print '<tr class="order_formRef"><td>' . $langs->trans("AgfFormRef") . '</td>';
 		print '<td>' . $this->formref . '</td></tr>';
 
 		// Type de la session
-		print '<tr><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
+		print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 		print '<td>' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
+		print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 		print '<td><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfDuree") . '</td>';
+		print '<tr class="order_duration"><td>' . $langs->trans("AgfDuree") . '</td>';
 		print '<td>' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfProductServiceLinked") . '</td>';
+		print '<tr class="order_product"><td>' . $langs->trans("AgfProductServiceLinked") . '</td>';
 		print '<td>';
 		if (! empty($this->fk_product)) {
 			$product = new Product($this->db);
@@ -3232,13 +3232,13 @@ class Agsession extends CommonObject
 
 		print "</td></tr>";
 
-		print '<tr><td>' . $langs->trans("AgfDateDebut") . '</td>';
+		print '<tr class="order_dated"><td>' . $langs->trans("AgfDateDebut") . '</td>';
 		print '<td>' . dol_print_date($this->dated, 'daytext') . '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfDateFin") . '</td>';
+		print '<tr class="order_datef"><td>' . $langs->trans("AgfDateFin") . '</td>';
 		print '<td>' . dol_print_date($this->datef, 'daytext') . '</td></tr>';
 
-		print '<tr><td width="20%">' . $langs->trans("Customer") . '</td>';
+		print '<tr class="order_customer"><td width="20%">' . $langs->trans("Customer") . '</td>';
 		print '	<td>';
 		if ((! empty($this->fk_soc)) && ($this->fk_soc > 0)) {
 
@@ -3250,14 +3250,14 @@ class Agsession extends CommonObject
 		}
 		print '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfSessionContact") . '</td>';
+		print '<tr class="order_sessionContact"><td>' . $langs->trans("AgfSessionContact") . '</td>';
 		if (! empty($this->sourcecontactid) && ! empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
 			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $this->sourcecontactid . '">' . $this->contactname . '</a></td></tr>';
 		} else {
 			print '<td><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
 		}
 
-		print '<tr><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
+		print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
 		print '	<td>';
 		if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
 			$result = $socstatic->fetch($this->fk_soc_requester);
@@ -3268,7 +3268,7 @@ class Agsession extends CommonObject
 		}
 		print '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
+		print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
 		print '<td>';
 		if ((! empty($this->fk_socpeople_requester)) && ($this->fk_socpeople_requester > 0)) {
 			$result = $contactstatic->fetch($this->fk_socpeople_requester);
@@ -3279,7 +3279,7 @@ class Agsession extends CommonObject
 		}
 		print '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfTypePresta") . '</td>';
+		print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . '</td>';
 		print '<td>';
 		if ((! empty($this->fk_socpeople_presta)) && ($this->fk_socpeople_presta > 0)) {
 			$result = $contactstatic->fetch($this->fk_socpeople_presta);
@@ -3290,7 +3290,7 @@ class Agsession extends CommonObject
 		}
 		print '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
+		print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
 		print '<td>';
 		if ((! empty($this->fk_soc_employer)) && ($this->fk_soc_employer > 0)) {
 			$result = $socstatic->fetch($this->fk_soc_employer);
@@ -3301,41 +3301,41 @@ class Agsession extends CommonObject
 		}
 		print '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfLieu") . '</td>';
+		print '<tr class="order_place"><td>' . $langs->trans("AgfLieu") . '</td>';
 		print '<td><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
 
-		print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
+		print '<tr class="order_note"><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 		if (! empty($this->notes))
 			$notes = nl2br($this->notes);
 		else
 			$notes = $langs->trans("AgfUndefinedNote");
 		print '<td>' . stripslashes($notes) . '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfDateResTrainer") . '</td>';
+		print '<tr class="order_dateResTrainer"><td>' . $langs->trans("AgfDateResTrainer") . '</td>';
 		if ($this->is_date_res_trainer) {
 			print '<td>' . dol_print_date($this->date_res_trainer, 'daytext') . '</td></tr>';
 		} else {
 			print '<td>' . $langs->trans("AgfNoDefined") . '</td></tr>';
 		}
 
-		print '<tr><td>' . $langs->trans("AgfDateResSite") . '</td>';
+		print '<tr class="order_dateResSite"><td>' . $langs->trans("AgfDateResSite") . '</td>';
 		if ($this->is_date_res_site) {
 			print '<td>' . dol_print_date($this->date_res_site, 'daytext') . '</td></tr>';
 		} else {
 			print '<td>' . $langs->trans("AgfNoDefined") . '</td></tr>';
 		}
 
-		print '<tr><td>' . $langs->trans("AgfDateResConfirmSite") . '</td>';
+		print '<tr class="order_dateResConfirmSite"><td>' . $langs->trans("AgfDateResConfirmSite") . '</td>';
 		if ($this->is_date_res_confirm_site) {
 			print '<td>' . dol_print_date($this->date_res_confirm_site, 'daytext') . '</td></tr>';
 		} else {
 			print '<td>' . $langs->trans("AgfNoDefined") . '</td></tr>';
 		}
 
-		print '<tr><td>' . $langs->trans("AgfNbMintarget") . '</td><td>';
+		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td>';
 		print $this->nb_subscribe_min . '</td></tr>';
 
-		print '<tr><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
+		print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
 		print $this->statuslib . '</td></tr>';
 
 		if (! empty($extrafields->attribute_label)) {
@@ -3425,6 +3425,7 @@ class Agsession extends CommonObject
 			}
 		}
 		print "</table>";
+		printSessionFieldsWithCustomOrder();
 	}
 
 	/**
