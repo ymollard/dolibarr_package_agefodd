@@ -33,10 +33,8 @@ $posY = 110;
 // Recuperation des dates de formation
 $agf = new Agsession($this->db);
 $ret = $agf->fetch($id);
-if ($agf->dated == $agf->datef)
-	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
-else
-	$this->date .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
+
+$this->date .= $agf->libSessionDate('daytext');
 
 $pdf->SetXY($posX - 77, $posY);
 $pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 11);
@@ -101,7 +99,7 @@ if ($num > 6) {
 			$stagiaires .= ', ';
 		if ($i == (count($agf_stag->lines) - 1) && $i > 0)
 			$stagiaires .= ' ' . $outputlangs->transnoentities('AgfPDFCourrierCloture6') . ' ';
-		
+
 		$contact_static = new Contact($this->db);
 		$contact_static->civility_id = $agf_stag->lines[$i]->civilite;
 		$stagiaires .= ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf_stag->lines [$i]->prenom . ' ' . $agf_stag->lines [$i]->nom;

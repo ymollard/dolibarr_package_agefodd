@@ -189,6 +189,14 @@ class Agefodd extends CommonObject {
 			}
 		}
 
+		if (! $error && ! $notrigger)
+		{
+			// Call trigger
+			$result=$this->call_trigger('AGEFODD_FORMATION_CATALOGUE_CREATE',$user);
+			if ($result < 0) { $error++; }
+			// End call triggers
+		}
+		
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -416,18 +424,12 @@ class Agefodd extends CommonObject {
 			}
 		}
 
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
+		if (! $error && ! $notrigger)
+		{
+			// Call trigger
+			$result=$this->call_trigger('AGEFODD_FORMATION_CATALOGUE_UPDATE',$user);
+			if ($result < 0) { $error++; }
+			// End call triggers
 		}
 
 		// Commit or rollback
@@ -475,6 +477,14 @@ class Agefodd extends CommonObject {
 					dol_syslog(get_class($this) . "::delete erreur " . $error . " " . $this->error, LOG_ERR);
 				}
 			}
+		}
+		
+		if (! $error && ! $notrigger)
+		{
+			// Call trigger
+			$result=$this->call_trigger('AGEFODD_FORMATION_CATALOGUE_DELETE',$user);
+			if ($result < 0) { $error++; }
+			// End call triggers
 		}
 
 		if (! $error) {
@@ -1146,6 +1156,30 @@ class Agefodd extends CommonObject {
 			return - 1 * $error;
 		}
 	}
+	
+	
+	/*
+	 * Function to generate pdf program by link
+	 */
+	function generatePDAByLink(){
+		global $conf;
+		require_once DOL_DOCUMENT_ROOT . '/core/class/link.class.php';
+        $link = new Link($this->db);
+        $links = array();
+		$link->fetchAll($links, $this->element, $this->id);
+		
+		if(!empty($links)){
+			foreach ($links as $link)
+			{
+				if($link->label=="PRG"){
+					$fopen = fopen($link->url, 'r');
+					file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$this->id.'.pdf', $fopen);
+					return 1;
+				}
+			}
+		}
+		return 0;
+	}
 }
 class AgfObjPedaLine {
 	public $id;
@@ -1185,4 +1219,6 @@ class AgfTrainingLine {
 			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->$label . '</a>';
 		}
 	}
+	
+	
 }

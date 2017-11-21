@@ -1061,9 +1061,15 @@ class Agefodd_session_element extends CommonObject {
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session SET sell_price=\'' . price2num($sell_price) . '\' ';
 		$sql .= ' ,invoice_amount=\'' . price2num($invoiced_amount) . '\' ';
 		if (!empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
-			$sql .= ' ,cost_site=\'' . price2num($this->room_cost_amount) . '\' ';
-			$sql .= ' ,cost_trainer=\'' . price2num($this->trainer_cost_amount) . '\' ';
-			$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';
+			//if (!empty($this->room_cost_amount)) {
+				$sql .= ' ,cost_site=\'' . price2num($this->room_cost_amount) . '\' ';
+			//}
+			//if (!empty($this->trainer_cost_amount)) {
+				$sql .= ' ,cost_trainer=\'' . price2num($this->trainer_cost_amount) . '\' ';
+			//}
+			//if (!empty($this->trip_cost_amount)) {
+				$sql .= ' ,cost_trip=\'' . price2num($this->trip_cost_amount) . '\' ';
+			//}
 			$sql .= ' ,cost_buy_charges=\'' . price2num($total_buy_charges) . '\' ';
 		}
 		$sql .= ' ,cost_sell_charges=\'' . price2num($total_sell_charges) . '\' ';

@@ -30,7 +30,7 @@ class ActionsAgefodd
 	protected $db;
 	public $dao;
 	public $error;
-	public $errors = array ();
+	public $errors = array();
 	public $resprints = '';
 
 	/**
@@ -41,7 +41,7 @@ class ActionsAgefodd
 	public function __construct($db) {
 		$this->db = $db;
 		$this->error = 0;
-		$this->errors = array ();
+		$this->errors = array();
 	}
 
 	/**
@@ -54,16 +54,16 @@ class ActionsAgefodd
 	 * @return void
 	 */
 	/*public function printSearchForm($parameters, &$object, &$action, $hookmanager) {
-		global $conf, $langs;
-		$langs->load('agefodd@agefodd');
+	 global $conf, $langs;
+	 $langs->load('agefodd@agefodd');
 
-		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && DOL_VERSION <= 3.8) {
-			$out = printSearchForm(dol_buildpath('/agefodd/session/list.php', 1), dol_buildpath('/agefodd/session/list.php', 1), img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"), 'agefodd', 'search_id');
-			$out .= printSearchForm(dol_buildpath('/agefodd/trainee/list.php', 1), dol_buildpath('/agefodd/trainee/list.php', 1), img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"), 'agefodd', 'search_namefirstname');
-		}
+	 if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && DOL_VERSION <= 3.8) {
+	 $out = printSearchForm(dol_buildpath('/agefodd/session/list.php', 1), dol_buildpath('/agefodd/session/list.php', 1), img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"), 'agefodd', 'search_id');
+	 $out .= printSearchForm(dol_buildpath('/agefodd/trainee/list.php', 1), dol_buildpath('/agefodd/trainee/list.php', 1), img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"), 'agefodd', 'search_namefirstname');
+	 }
 
-		$this->resprints = $out;
-	}*/
+	 $this->resprints = $out;
+	 }*/
 
 	/**
 	 * addSearchEntry Method Hook Call
@@ -75,16 +75,16 @@ class ActionsAgefodd
 	 * @return void
 	 */
 	public function addSearchEntry($parameters, &$object, &$action, $hookmanager) {
-		global $conf, $langs,$user;
+		global $conf, $langs, $user;
 		$langs->load('agefodd@agefodd');
 
-		$arrayresult = array ();
+		$arrayresult = array();
 		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire && empty($user->societe_id)) {
-			$arrayresult['searchintoagefoddsession'] = array (
+			$arrayresult['searchintoagefoddsession'] = array(
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
 					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
 			);
-			$arrayresult['searchintoagefoddtrainee'] = array (
+			$arrayresult['searchintoagefoddtrainee'] = array(
 					'text' => img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"),
 					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_namefirstname=' . urlencode($parameters['search_boxvalue'])
 			);
@@ -135,25 +135,25 @@ class ActionsAgefodd
 	 * @return void
 	 */
 	public function emailElementlist($parameters, &$object, &$action, $hookmanager) {
-		global $langs,$conf,$user;
+		global $langs, $conf, $user;
 		$langs->load('agefodd@agefodd');
 
-		$this->results['fiche_pedago']=$langs->trans('AgfMailToSendFichePedago');
-		$this->results['fiche_presence']=$langs->trans('AgfMailToSendFichePresence');
-		$this->results['mission_trainer']=$langs->trans('AgfMailToSendMissionTrainer');
-		$this->results['trainer_doc']=$langs->trans('AgfMailToSendMissionTrainerDoc');
-		$this->results['fiche_presence_direct']=$langs->trans('AgfMailToSendFichePresenceDirect');
-		$this->results['fiche_presence_empty']=$langs->trans('AgfMailToSendFichePresenceEmpty');
-		$this->results['convention']=$langs->trans('AgfMailToSendConvention');
-		$this->results['attestation']=$langs->trans('AgfMailToSendAttestation');
-		$this->results['cloture']=$langs->trans('AgfMailToSendCloture');
-		$this->results['conseils']=$langs->trans('AgfMailToSendConseil');
-		$this->results['convocation']=$langs->trans('AgfMailToSendConvocation');
-		$this->results['courrier-accueil']=$langs->trans('AgfMailToSendCourrierAcceuil');
-		$this->results['attestationendtraining']=$langs->trans('AgfMailToSendAttestationEndTraining');
-		$this->results['attestation_trainee']=$langs->trans('AgfMailToSendAttestationParticipants');
-		$this->results['convocation_trainee']=$langs->trans('AgfMailToSendConventionParticipants');
-		$this->results['attestationendtraining_trainee']=$langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
+		$this->results['fiche_pedago'] = $langs->trans('AgfMailToSendFichePedago');
+		$this->results['fiche_presence'] = $langs->trans('AgfMailToSendFichePresence');
+		$this->results['mission_trainer'] = $langs->trans('AgfMailToSendMissionTrainer');
+		$this->results['trainer_doc'] = $langs->trans('AgfMailToSendMissionTrainerDoc');
+		$this->results['fiche_presence_direct'] = $langs->trans('AgfMailToSendFichePresenceDirect');
+		$this->results['fiche_presence_empty'] = $langs->trans('AgfMailToSendFichePresenceEmpty');
+		$this->results['convention'] = $langs->trans('AgfMailToSendConvention');
+		$this->results['attestation'] = $langs->trans('AgfMailToSendAttestation');
+		$this->results['cloture'] = $langs->trans('AgfMailToSendCloture');
+		$this->results['conseils'] = $langs->trans('AgfMailToSendConseil');
+		$this->results['convocation'] = $langs->trans('AgfMailToSendConvocation');
+		$this->results['courrier-accueil'] = $langs->trans('AgfMailToSendCourrierAcceuil');
+		$this->results['attestationendtraining'] = $langs->trans('AgfMailToSendAttestationEndTraining');
+		$this->results['attestation_trainee'] = $langs->trans('AgfMailToSendAttestationParticipants');
+		$this->results['convocation_trainee'] = $langs->trans('AgfMailToSendConventionParticipants');
+		$this->results['attestationendtraining_trainee'] = $langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
 
 		return 0;
 	}
@@ -251,7 +251,7 @@ class ActionsAgefodd
 
 		$ret = 0;
 		$pagecount = 0;
-		$files = array ();
+		$files = array();
 		dol_syslog(get_class($this) . '::executeHooks action=' . $action);
 
 		$object = $parameters['object'];
@@ -321,7 +321,6 @@ class ActionsAgefodd
 		return $pagecount;
 	}
 
-
 	/**
 	 *
 	 * @param string $parameters
@@ -331,65 +330,67 @@ class ActionsAgefodd
 	 * @return number
 	 */
 	public function doUpgrade2($parameters, &$object, &$action, $hookmanager) {
-	//TODO : see why Dolibarr do not execute this
-	/*dol_include_once('/agefodd/core/modAgefodd.class.php');
-		$obj = new modAgefodd($db);
-		$obj->load_tables();*/
+		// TODO : see why Dolibarr do not execute this
+		/*dol_include_once('/agefodd/core/modAgefodd.class.php');
+		 $obj = new modAgefodd($db);
+		 $obj->load_tables();*/
 	}
-	
-	public function pdf_getLinkedObjects($parameters, &$object, &$action, $hookmanager)
-	{
+	public function pdf_getLinkedObjects($parameters, &$object, &$action, $hookmanager) {
 		global $conf;
-		
-		if (empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF)) return 0;
-		
+
+		if (empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF))
+			return 0;
+
 		$TContext = explode(':', $parameters['context']);
-		$intersec = array_intersect(array('propalcard', 'ordercard', 'invoicecard'), $TContext);
-		
-		if (!empty($intersec))
-		{
+		$intersec = array_intersect(array(
+				'propalcard',
+				'ordercard',
+				'invoicecard'
+		), $TContext);
+
+		if (! empty($intersec)) {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
-			
-//			$linkedobjects = $parameters['linkedobjects'];
+
+			// $linkedobjects = $parameters['linkedobjects'];
 
 			$outputlangs = $parameters['outputlangs'];
 			$outputlangs->load('agefodd@agefodd');
-			
+
 			$element_type = $object->element;
-			if ($element_type == 'commande') $element_type = 'order';
-			elseif ($element_type == 'facture') $element_type = 'invoice';
-			
+			if ($element_type == 'commande')
+				$element_type = 'order';
+			elseif ($element_type == 'facture')
+				$element_type = 'invoice';
+
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
-			if ($result > 0)
-			{
-				foreach ($agfsess->lines as $key => $session)
-				{
+			if ($result > 0) {
+				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
 					$result = $sessiondetail->fetch($session->fk_session_agefodd);
-					if ($result > 0)
-					{
-						$this->results[get_class($sessiondetail).$sessiondetail->id] = array(
-							'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId")
-							,'ref_value' => $outputlangs->convToOutputCharset($sessiondetail->formref).' ('.$sessiondetail->id.')'
-							,'date_value' => ''
+					if ($result > 0) {
+						$ref_value = $outputlangs->convToOutputCharset($sessiondetail->formref);
+						if (! empty($sessiondetail->formrefint)) {
+							$ref_value .= '/'.$outputlangs->convToOutputCharset($sessiondetail->formrefint);
+						}
+						$ref_value .= ' (' . $sessiondetail->id . ')';
+						$this->results[get_class($sessiondetail) . $sessiondetail->id] = array(
+								'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId"),
+								'ref_value' => $ref_value,
+								'date_value' => ''
 						);
-					}
-					else
-					{
+					} else {
 						dol_print_error('', $agfsess->error);
 					}
 				}
-				
-//				if (is_array($linkedobjects)) $this->results = $linkedobjects + $this->results;
-			}
-			else
-			{
+
+				// if (is_array($linkedobjects)) $this->results = $linkedobjects + $this->results;
+			} else {
 				dol_print_error('', $agfsess->error);
 			}
 		}
-		
+
 		return 0;
 	}
 }

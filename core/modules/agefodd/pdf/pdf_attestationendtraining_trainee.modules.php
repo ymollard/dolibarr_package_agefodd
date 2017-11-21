@@ -269,10 +269,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$newY = $pdf->GetY();
 
 			$this->str = $outputlangs->transnoentities('AgfPDFAttestation4') . " ";
-			if ($agf->dated == $agf->datef)
-				$this->str .= $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef);
-			else
-				$this->str .= $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef);
+			$this->str .= $agf->libSessionDate();
 			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf->duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$newY = $newY + 10;
@@ -411,6 +408,19 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->Output($file, 'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
+
+
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+
 
 			return 1; // Pas d'erreur
 		} else {
@@ -565,7 +575,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 			$posy = $pdf->GetY();
-			
+
 			printRefIntForma($this->db, $outputlangs, $object, $default_font_size - 1, $pdf, $posx, $posy, 'L');
 		}
 	}

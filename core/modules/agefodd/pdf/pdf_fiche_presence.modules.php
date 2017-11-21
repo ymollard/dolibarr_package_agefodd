@@ -154,6 +154,19 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
+
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -261,7 +274,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		$pdf->SetFont('', '', $this->default_font_size - 3);
 		$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posy = $pdf->GetY();
-		
+
 		printRefIntForma($this->db, $outputlangs, $agf, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 
 		// Affichage du logo commanditaire (optionnel)
@@ -375,12 +388,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		if ($agf->dated == $agf->datef) {
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytext');
-		}
-		else {
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated) . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytext');
-		}
+		$this->str = $agf->libSessionDate('daytext');
 
 		$this->str .= ' (' . $agf->duree_session. ' h)';
 

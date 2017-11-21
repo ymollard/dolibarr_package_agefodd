@@ -286,6 +286,19 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
+
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -468,10 +481,9 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 
 		// Période
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
-		if ($agf->dated == $agf->datef)
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, 'daytextshort');
-		else
-			$this->str = $outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, 'daytextshort') . ' ' . $outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, 'daytextshort');
+
+		$this->str = $agf->libSessionDate('daytextshort');
+
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $tab_top+$tab_height*1/3+2);
 		$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
@@ -562,7 +574,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		// Fill header with background color
 		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
-		
+
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 
 		$pdf->SetTextColor($this->colorheaderText [0], $this->colorheaderText [1], $this->colorheaderText [2]);
@@ -674,7 +686,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetFont('','', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-			
+
 			printRefIntForma($this->db, $outputlangs, $object, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 		}
 

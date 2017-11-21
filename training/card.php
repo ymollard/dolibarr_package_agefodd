@@ -349,35 +349,41 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
  */
 if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	// Define output language
-	$outputlangs = $langs;
-	$newlang = GETPOST('lang_id', 'alpha');
-	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
-		$newlang = $object->thirdparty->default_lang;
-	if (! empty($newlang)) {
-		$outputlangs = new Translate("", $conf);
-		$outputlangs->setDefaultLang($newlang);
-	}
-	$model = 'fiche_pedago';
-	$file = $model . '_' . $id . '.pdf';
+	$agf->fetch($id);
+	
+	$result = $agf->generatePDAByLink();
+	
+	
+	if($result <= 0){
+		$outputlangs = $langs;
+		$newlang = GETPOST('lang_id', 'alpha');
+		if ($conf->global->MAIN_MULTILANGS && empty($newlang))
+			$newlang = $object->thirdparty->default_lang;
+		if (! empty($newlang)) {
+			$outputlangs = new Translate("", $conf);
+			$outputlangs->setDefaultLang($newlang);
+		}
+		$model = 'fiche_pedago';
+		$file = $model . '_' . $id . '.pdf';
 
-	// this configuration variable is designed like
-	// standard_model_name:new_model_name&standard_model_name:new_model_name&....
-	if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE)) {
-		$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
-		if (is_array($modelarray) && count($modelarray) > 0) {
-			foreach ( $modelarray as $modeloveride ) {
-				$modeloverridearray = explode(':', $modeloveride);
-				if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
-					if ($modeloverridearray[0] == $model) {
-						$model = $modeloverridearray[1];
+		// this configuration variable is designed like
+		// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+		if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE)) {
+			$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+			if (is_array($modelarray) && count($modelarray) > 0) {
+				foreach ( $modelarray as $modeloveride ) {
+					$modeloverridearray = explode(':', $modeloveride);
+					if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+						if ($modeloverridearray[0] == $model) {
+							$model = $modeloverridearray[1];
+						}
 					}
 				}
 			}
 		}
+	
+		$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
 	}
-
-	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
-
 	if ($result > 0) {
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 		exit();

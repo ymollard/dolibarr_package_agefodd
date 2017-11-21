@@ -46,7 +46,7 @@ class Agefodd_sessadm extends CommonObject {
 	public $tms = '';
 	public $lines = array ();
 	public $trigger_name;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -56,7 +56,7 @@ class Agefodd_sessadm extends CommonObject {
 		$this->db = $db;
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -67,7 +67,7 @@ class Agefodd_sessadm extends CommonObject {
 	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
 		$this->fk_agefodd_session_admlevel = trim($this->fk_agefodd_session_admlevel);
 		$this->fk_agefodd_session = trim($this->fk_agefodd_session);
@@ -78,7 +78,7 @@ class Agefodd_sessadm extends CommonObject {
 		$this->trigger_name = trim($this->trigger_name);
 		// Check parameters
 		// Put here code to add control on parameters value
-		
+
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_adminsitu (";
 		$sql .= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte, ";
@@ -92,9 +92,9 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= "'" . $this->indice . "', ";
 		$sql .= "'" . $this->level_rank . "', ";
 		$sql .= "'" . $this->fk_parent_level . "', ";
-		$sql .= "'" . $this->db->idate($this->dated) . "', ";
-		$sql .= "'" . $this->db->idate($this->datef) . "', ";
-		$sql .= "'" . $this->db->idate($this->datea) . "', ";
+		$sql .= " " . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
+		$sql .= " " . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
+		$sql .= " " . (! isset($this->datea) || dol_strlen($this->datea) == 0 ? 'NULL' : "'" . $this->db->idate($this->datea) . "'") . ",";
 		$sql .= "'" . $this->db->escape($this->notes) . "', ";
 		$sql .= $this->archive . ',';
 		$sql .= " " . $user->id . ", ";
@@ -102,9 +102,9 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
 		$sql .= " " . (! isset($this->trigger_name) ? 'NULL' : "'" . $this->trigger_name . "'");
 		$sql .= ")";
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -116,7 +116,7 @@ class Agefodd_sessadm extends CommonObject {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -125,7 +125,7 @@ class Agefodd_sessadm extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -139,7 +139,7 @@ class Agefodd_sessadm extends CommonObject {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -150,7 +150,7 @@ class Agefodd_sessadm extends CommonObject {
 	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
 		// $this->delais_alerte = trim($this->delais_alerte);
 		$this->dated = trim($this->dated);
@@ -160,15 +160,15 @@ class Agefodd_sessadm extends CommonObject {
 		$this->trigger_name = $this->db->escape(trim($this->trigger_name));
 		// Check parameters
 		// Put here code to add control on parameters values
-		
+
 		// Update request
 		if (! isset($this->archive))
 			$this->archive = 0;
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_adminsitu SET";
 		$sql .= " delais_alerte='" . $this->delais_alerte . "',";
-		$sql .= " dated='" . $this->db->idate($this->dated) . "',";
-		$sql .= " datef='" . $this->db->idate($this->datef) . "',";
-		$sql .= " datea='" . $this->db->idate($this->datea) . "',";
+		$sql .= " dated=" . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
+		$sql .= " datef=" . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
+		$sql .= " datea=" . (! isset($this->datea) || dol_strlen($this->datea) == 0 ? 'NULL' : "'" . $this->db->idate($this->datea) . "'") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " notes='" . $this->notes . "',";
 		$sql .= " archive=" . $this->archive . ",";
@@ -176,11 +176,11 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " trigger_name=" . (isset($this->trigger_name) ? "'" . $this->db->escape($this->trigger_name) . "'" : "null") . ",";
 		$sql .= " fk_parent_level=" . $this->fk_parent_level;
 		$sql .= " WHERE rowid = " . $this->id;
-		
+
 		// print $sql;
 		// exit;
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -191,7 +191,7 @@ class Agefodd_sessadm extends CommonObject {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -200,7 +200,7 @@ class Agefodd_sessadm extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -214,7 +214,7 @@ class Agefodd_sessadm extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
@@ -223,14 +223,14 @@ class Agefodd_sessadm extends CommonObject {
 	 */
 	public function fetch($id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
 		$sql .= ',s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.rowid = '" . $id . "'";
-		
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -259,7 +259,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load action into memory per session
 	 *
@@ -268,7 +268,7 @@ class Agefodd_sessadm extends CommonObject {
 	 */
 	public function fetch_all($sess_id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
@@ -276,19 +276,19 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
-		
+
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-			
+
 			while ( $i < $num ) {
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$line = new AgfSessAdm();
-				
+
 				$line->id = $obj->rowid;
 				$line->level = $obj->fk_agefodd_session_admlevel;
 				$line->sessid = $obj->fk_agefodd_session;
@@ -303,9 +303,9 @@ class Agefodd_sessadm extends CommonObject {
 				$line->notes = $obj->notes;
 				$line->archive = $obj->archive;
 				$line->trigger_name = $obj->trigger_name;
-				
+
 				$this->lines[$i] = $line;
-				
+
 				$i ++;
 			}
 			$this->db->free($resql);
@@ -316,7 +316,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Give information on the object
 	 *
@@ -325,12 +325,12 @@ class Agefodd_sessadm extends CommonObject {
 	 */
 	public function info($id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " WHERE s.rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -343,7 +343,7 @@ class Agefodd_sessadm extends CommonObject {
 				$this->user_modification = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -351,7 +351,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -361,10 +361,10 @@ class Agefodd_sessadm extends CommonObject {
 	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
+
 		if ($resql) {
 			return 1;
 		} else {
@@ -372,7 +372,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -382,10 +382,10 @@ class Agefodd_sessadm extends CommonObject {
 	public function remove_all($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
 		$sql .= " WHERE fk_agefodd_session = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
+
 		if ($resql) {
 			return 1;
 		} else {
@@ -393,7 +393,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load Date of session in memory
 	 *
@@ -402,12 +402,12 @@ class Agefodd_sessadm extends CommonObject {
 	 */
 	public function get_session_dated($sessid) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " s.dated, s.datef";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " WHERE s.rowid = " . $sessid;
-		
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -417,7 +417,7 @@ class Agefodd_sessadm extends CommonObject {
 				$this->datef = $this->db->jdate($obj->datef);
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -425,7 +425,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load Date of session in memory
 	 *
@@ -434,12 +434,12 @@ class Agefodd_sessadm extends CommonObject {
 	 */
 	public function has_child($id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.fk_parent_level = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::has_child", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -448,9 +448,9 @@ class Agefodd_sessadm extends CommonObject {
 			} else {
 				$retrun = 0;
 			}
-			
+
 			$this->db->free($resql);
-			
+
 			return $retrun;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -458,7 +458,7 @@ class Agefodd_sessadm extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * After a creation set the good parent id for action session
 	 *
@@ -470,7 +470,7 @@ class Agefodd_sessadm extends CommonObject {
 	public function setParentActionId($user, $session_id) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Update request
 		if ($this->db->type == 'pgsql') {
 			$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session_adminsitu as upd';
@@ -484,18 +484,18 @@ class Agefodd_sessadm extends CommonObject {
 			$sql .= ' WHERE upd.fk_parent_level=ori.fk_agefodd_session_admlevel AND upd.level_rank<>0 AND upd.fk_agefodd_session=ori.fk_agefodd_session';
 			$sql .= ' AND upd.fk_agefodd_session=' . $session_id;
 		}
-		
+
 		// print $sql;
 		// exit;
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::setParentActionId", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -509,7 +509,7 @@ class Agefodd_sessadm extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Update by trigger name
 	 *
@@ -522,24 +522,24 @@ class Agefodd_sessadm extends CommonObject {
 	public function updateByTriggerName($user, $session_id, $trigger_name, $status = 1) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Update request
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session_adminsitu';
 		$sql .= " SET archive=" . $status . ",  fk_user_mod=" . $user->id;
 		$sql .= ' WHERE fk_agefodd_session=' . $session_id;
 		$sql .= " AND trigger_name='" . $trigger_name . "'";
-		
+
 		// print $sql;
 		// exit;
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::updateByTriggerName", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
