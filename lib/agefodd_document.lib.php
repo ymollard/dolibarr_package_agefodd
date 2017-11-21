@@ -1026,7 +1026,7 @@ function getSelectAgefoddModels($mdle, $socid=0) {
     if($mdle === 'fiche_evaluation') $type = 'rfltr_agefodd_evaluation'; // TODO gérer tous les cas
     elseif($mdle === 'attestation' || $mdle === 'attestation_trainee') $type = 'rfltr_agefodd_attestation';
     elseif($mdle === 'attestationendtraining' || $mdle === 'attestationendtraining_trainee') $type = 'rfltr_agefodd_attestation_fin_formation';
-    elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_presence';
+    elseif($mdle === 'fiche_presence') $type = 'rfltr_agefodd_fiche_presence';
     elseif($mdle === 'contrat_trainer') $type = 'rfltr_agefodd_contrat_trainer';
     
     if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
