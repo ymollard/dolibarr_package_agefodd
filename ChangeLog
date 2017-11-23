@@ -1,5 +1,8 @@
 English Dolibarr ChangeLog
 
+***** ChangeLog for 3.0.18 compared to 3.0.17 *****
+NEW : Can add image on location
+
 ***** ChangeLog for 3.0.17 compared to 3.0.16 *****
 NEW : Display trainer type on trainer list
 NEW : Option to Group session per day on session calendar

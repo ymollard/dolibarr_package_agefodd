@@ -362,13 +362,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 	print '<tr>';
 	print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
-	$doleditor = new DolEditor('acces_site', GETPOST('acces_site'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor = new DolEditor('acces_site', GETPOST('acces_site'), '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr>';
 	print '<td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td><td>';
-	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
@@ -464,13 +464,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 				print '<tr>';
 				print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
-				$doleditor = new DolEditor('acces_site', $agf->acces_site, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+				$doleditor = new DolEditor('acces_site', $agf->acces_site, '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print "</td></tr>";
 
 				print '<tr>';
 				print '<td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td><td>';
-				$doleditor = new DolEditor('note1', $agf->note1, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+				$doleditor = new DolEditor('note1', $agf->note1, '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 				$doleditor->Create();
 				print "</td></tr>";
 

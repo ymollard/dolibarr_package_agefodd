@@ -250,7 +250,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$pdf->SetFont('','', $this->default_font_size - 3);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 				$posy=$pdf->GetY();
-				
+
 				printRefIntForma($this->db, $outputlangs, $agf, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 
 
@@ -258,7 +258,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 
 				$posY = $pdf->GetY() + 10;
 				if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF) $posY -= 5;
-				
+
 
 				$pdf->SetDrawColor($this->colorLine [0], $this->colorLine [1], $this->colorLine [2]);
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
@@ -378,7 +378,8 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$posY += 5;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf_place->acces_site);
+
+				$this->str = strtr($agf_place->acces_site, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
@@ -395,7 +396,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$posY += 5;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf_place->note1);
+				$this->str = $this->str = strtr($agf_place->note1, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));;
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
@@ -415,8 +416,8 @@ class pdf_conseils extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
-				
-				
+
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -427,10 +428,10 @@ class pdf_conseils extends ModelePDFAgefodd {
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-			
-			
-				
-				
+
+
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -451,7 +452,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
-		
+
 		// Fill header with background color
 		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
