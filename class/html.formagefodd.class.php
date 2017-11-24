@@ -701,6 +701,7 @@ class FormAgefodd extends Form
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u";
 		$sql .= " ON u.rowid = s.fk_user";
 		$sql .= " WHERE s.archive = 0";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		if (! empty($filter)) {
 			$sql .= ' AND ' . $filter;
 		}
