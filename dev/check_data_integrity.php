@@ -189,7 +189,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Civité '.$obj->civilite.' du participant id:'.$obj->rowid.'- nom:'.$obj->nom.' prenom:'.$obj->prenom.' n existe pas dans le dictionnaire des civilité<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire_cursus WHERE fk_cursus NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_cursus)<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction : UPDATE '.MAIN_DB_PREFIX.'agefodd_stagiaire SET civilite=(SELECT code FROM '.MAIN_DB_PREFIX.'c_civility LIMIT 1) WHERE civilite NOT IN (SELECT code FROM '.MAIN_DB_PREFIX.'c_civility)<BR><BR><BR>';
 	}
 }else {
 	dol_print_error($db);
@@ -306,6 +306,65 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+$sql = 'SELECT fk_cursus FROM '.MAIN_DB_PREFIX.'agefodd_formation_cursus WHERE fk_cursus NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_cursus)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'cursus id:'.$obj->fk_cursus.' n existe pas dans la table agefodd_cursus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formation_cursus WHERE fk_cursus NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_cursus)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+$sql = 'SELECT fk_agefodd_session_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier WHERE fk_agefodd_session_formateur NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'fk_agefodd_session_formateur id:'.$obj->fk_agefodd_session_formateur.' n existe pas dans la table agefodd_session_formateur<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier WHERE fk_agefodd_session_formateur NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+$sql = 'SELECT fk_session_place FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_session_place NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_place)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'fk_session_place id:'.$obj->fk_session_place.' n existe pas dans la table agefodd_place<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_session_place NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_place)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+$sql = 'SELECT fk_socpeople FROM '.MAIN_DB_PREFIX.'agefodd_contact WHERE fk_socpeople NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'socpeople)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'fk_socpeople id:'.$obj->fk_socpeople.' n existe pas dans la table socpeople<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_contact WHERE fk_socpeople NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'socpeople)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
 
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
