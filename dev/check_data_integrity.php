@@ -367,6 +367,38 @@ if ($resql) {
 }
 
 
+$sql = 'SELECT fk_agefodd_convention FROM '.MAIN_DB_PREFIX.'agefodd_convention_stagiaire WHERE fk_agefodd_convention NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_convention)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'fk_agefodd_convention id:'.$obj->fk_agefodd_convention.' n existe pas dans la table agefodd_convention<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_convention_stagiaire WHERE fk_agefodd_convention NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_convention)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+$sql = 'SELECT fk_agefodd_session_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_convention_stagiaire WHERE fk_agefodd_session_stagiaire NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'fk_agefodd_session_stagiaire id:'.$obj->fk_agefodd_session_stagiaire.' n existe pas dans la table agefodd_session_stagiaire<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_convention_stagiaire WHERE fk_agefodd_session_stagiaire NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+
+
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
 llxFooter();
