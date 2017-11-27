@@ -1,4 +1,4 @@
-<?php //
+<?php
 /* Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
  * Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
  * Copyright (C) 2012-2017	Florian Henry	<florian.henry@open-concept.pro>
@@ -1884,12 +1884,8 @@ if ($conf->use_javascript_ajax) {
 
 $fieldsOrder = GETPOST('fieldsOrder');
 
-if(! empty($conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER)) {
-	dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
-}
-else {
-	dolibarr_del_const($db, 'AGF_CUSTOM_ORDER', $conf->entity);
-}
+dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+
 
 print '<form action="admin_agefodd.php" method="POST">';
 print '<input type="text" id="fieldsOrder" name="fieldsOrder" size="75%" value="'.$conf->global->AGF_CUSTOM_ORDER.'"/>';
