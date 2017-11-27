@@ -1403,12 +1403,23 @@ function printSessionFieldsWithCustomOrder() {
 	global $conf;
 
 	if(! empty($conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER)) {
+		$order = "";
+		if(! empty($conf->global->AGF_CUSTOM_ORDER)) {
+			$customOrder = $conf->global->AGF_CUSTOM_ORDER;
+		
+			$TClassName = explode(',', $customOrder);
 
+			foreach($TClassName as $className) {
+				$order .= '"'.trim($className).'",';
+			}
+			$order = substr($order, 0, -1);
+		}
+		
 		?>
 		<script type="text/javascript">
 			
 			// Correspond aux premières lignes à afficher sur la fiche d'une session de formation
-			var agf_TClass = new Array("order_intitule", "order_ref", "order_intituleCusto", "order_formRef", "order_place", "order_type", "order_sessionCommercial", "order_duration", "order_product");
+			var agf_TClass = new Array(<?php print $order ?>); // "agefodd_agsession_extras_"+codeExtrafield, "order_intitule", "order_ref", "order_intituleCusto"
 			var agf_tab_tr = $('#session_card > tbody > tr').clone(true);
 			var TAgf_found = new Array();
 			
@@ -1430,7 +1441,7 @@ function printSessionFieldsWithCustomOrder() {
 			// Ajoute le reste des TR non ordonnés à la suite
 			for (let i in agf_tab_tr) {
 				if($.isNumeric(i) === false) break;
-				if (TAgf_found[i] === true) continue;	
+				if (TAgf_found[i] === true) continue;
 				$('#session_card > tbody').append(agf_tab_tr[i]);
 			}
 
