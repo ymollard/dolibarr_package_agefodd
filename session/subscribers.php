@@ -217,6 +217,7 @@ if ($action == 'editrealhours') {
 					$update = false;
 
 					foreach ( $value as $creneaux => $heures ) {
+					    $heures = preg_replace('/,/', '.', $heures);
 						$agf = new Agefoddsessionstagiaireheures($db);
 						$result = $agf->fetch_by_session($id, $key, $creneaux);
 						if ($result < 0) {
@@ -565,11 +566,14 @@ if (! empty($id)) {
 				for($j = 0; $j < $blocNumber; $j ++) {
 					$agfssh = new Agefoddsessionstagiaireheures($db);
 					$result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
-
-					if ($result && $agfssh->heures!==0) {
-						$val = $agfssh->heures;
+					if($calendrier->lines[$j]->date_session < dol_now()){
+    					if ($result > 0 && $agfssh->heures!==0) {
+    						$val = $agfssh->heures;
+    					} else {
+    						$val = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
+    					}
 					} else {
-						$val = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
+					    $val = 0;
 					}
 
 					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value=' . $val . '></td>';
