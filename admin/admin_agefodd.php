@@ -1881,9 +1881,19 @@ if ($conf->use_javascript_ajax) {
 	);
 	print $form->selectarray("AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER", $arrval, $conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER);
 }
+
+$fieldsOrder = GETPOST('fieldsOrder');
+
+dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+
+
+print '<form action="admin_agefodd.php" method="POST">';
+print '<input type="text" id="fieldsOrder" name="fieldsOrder" size="75%" value="'.$conf->global->AGF_CUSTOM_ORDER.'"/>';
+print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
+print '</form>';
 print '</td>';
-print '<td align="center">';
-print $form->textwithpicto('', $langs->trans("AgfPrintFieldsWithCustomOrderHelp"), 1, 'help');
+print '<td>';
+print $form->textwithpicto('', $langs->trans('AgfPrintFieldsWithCustomOrderHelp'), 1, 0);
 print '</td>';
 print '</tr>';
 
