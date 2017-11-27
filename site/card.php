@@ -255,6 +255,9 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=create");
 			exit();
 		}
+	} else {
+	    Header("Location: list.php");
+	    exit();
 	}
 }
 
