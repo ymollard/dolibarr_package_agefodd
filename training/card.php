@@ -1034,7 +1034,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
-
+				
+				$agf_peda->generatePDAByLink();
 				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $id . '.pdf')) {
 
 					// afficher
