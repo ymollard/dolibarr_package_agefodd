@@ -105,13 +105,16 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 	if (! $_POST["cancel"] && ! $_POST["importadress"]) {
 		$agf = new Agefodd_place($db);
 
-		if (empty($societe)) {
-			setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
-		}
+		// thirdparty is not required (uncomment if needed)
+		/*
+		if ($societe < 1) {
+			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
+			$error ++;
+		}*/
 
 		$label = GETPOST('ref_interne', 'alpha');
-		if (empty($societe)) {
-			setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('AgfSessPlaceCode')), 'errors');
+		if (empty($label)) {
+		    setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('AgfSessPlaceCode')), 'errors');
 			$error ++;
 		}
 
@@ -149,6 +152,9 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 				setEventMessage($agf->error, 'errors');
 				$action = 'edit';
 			}
+		} else {
+		    Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		    exit();
 		}
 	} elseif (! $_POST["cancel"] && $_POST["importadress"]) {
 
@@ -179,15 +185,16 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_place($db);
-
-		if (empty($societe)) {
-			setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('Company')), 'errors');
+		// thirdparty is not required (uncomment if needed)
+		/*
+		if ($societe < 1) {
+			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
-		}
+		}*/
 
 		$label = GETPOST('ref_interne', 'alpha');
-		if (empty($societe)) {
-			setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('AgfSessPlaceCode')), 'errors');
+		if (empty($label)) {
+			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('AgfSessPlaceCode')), 'errors');
 			$error ++;
 		}
 
@@ -245,7 +252,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 				$action='create';
 			}
 		} else {
-			Header("Location: list.php");
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=create");
 			exit();
 		}
 	}
@@ -297,7 +304,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfSessPlaceCode") . '</span></td>';
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td><span class="fieldrequired">' . $langs->trans("Company") . '</span></td>';
+	print '<tr><td>' . $langs->trans("Company") . '</td>';
 	$events = array ();
 	$events[] = array (
 			'method' => 'getContacts',
@@ -407,10 +414,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
 				print '<td>' . $agf->id . '</td></tr>';
 
-				print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
+				print '<tr><td class="fieldrequired">' . $langs->trans("AgfSessPlaceCode") . '</td>';
 				print '<td><input name="ref_interne" class="flat" size="50" value="' . $agf->ref_interne . '"></td></tr>';
 
-				print '<tr><td class="fieldrequired">' . $langs->trans("Company") . '</td>';
+				print '<tr><td>' . $langs->trans("Company") . '</td>';
 				$events = array ();
 				$events[] = array (
 						'method' => 'getContacts',

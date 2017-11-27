@@ -159,7 +159,7 @@ if ($result > 0) {
 		print '<td><span style="background-color:' . $bgcolor . ';"><a href="card.php?id=' . $agf->lines [$i]->id . '"' . $style . '>' . $agf->lines [$i]->id . '</a></span></td>' . "\n";
 		print '<td' . $style . '>' . $agf->lines [$i]->ref_interne . '</td>' . "\n";
 		print '<td>';
-		print $soc->getNomUrl(1);
+		if (!empty($agf->lines [$i]->socid)) print $soc->getNomUrl(1);
 		print '</td>' . "\n";
 		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->tel) . '</td>' . "\n";
 		print '</tr>' . "\n";
