@@ -101,10 +101,10 @@ class pdf_convention extends ModelePDFAgefodd {
 	 * \param agf		Objet document a generer (ou id si ancienne methode)
 	 * outputlangs	Lang object for output language
 	 * file		Name of file to generate
-	 * \return int 1=ok, 0=ko
+	 * \return int 1=ok, 0=k
 	 */
 	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
-		global $user, $langs, $conf, $mysoc;
+		global $user, $langs, $conf, $mysoc, $db;
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 
@@ -344,6 +344,9 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->MultiCell(0, 5, $outputlangs->trans('AgfConvention').' N°:'.str_replace('.pdf','',str_replace('convention_',' ',$fileori)), 0, 'C');
 
 				// Determine the total number of page
+				$agfTraining = new Agefodd($db);
+				$agfTraining->fetch($agf->fk_formation_catalogue);
+				$agfTraining->generatePDAByLink();
 				$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 				if (is_file($infile)) {
 					$this->count_page_anexe = $pdf->setSourceFile($infile);
@@ -767,6 +770,9 @@ class pdf_convention extends ModelePDFAgefodd {
 				 * Page 4 (Annexe 1)
 				*/
 				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+					$agfTraining = new Agefodd($db);
+					$agfTraining->fetch($agf->fk_formation_catalogue);
+					$agfTraining->generatePDAByLink();
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 					if (is_file($infile)) {
 						$count = $pdf->setSourceFile($infile);

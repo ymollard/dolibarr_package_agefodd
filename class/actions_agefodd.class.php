@@ -244,7 +244,7 @@ class ActionsAgefodd
 	 *         >0 if OK and we want to replace standard actions.
 	 */
 	function afterPDFCreation($parameters, &$pdfhandler, &$action) {
-		global $langs, $conf;
+		global $langs, $conf, $db;
 		global $hookmanager;
 
 		$outputlangs = $parameters['outputlangs'];
@@ -272,7 +272,12 @@ class ActionsAgefodd
 			$mergeprogrammod = GETPOST('progsessionmod', 'array');
 
 			if (is_array($mergeprogram) && count($mergeprogram) > 0) {
+				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+				$agf = new Agefodd($db);
+				
 				foreach ( $mergeprogram as $training_id ) {
+					$agf->fetch($training_id);
+					$agf->generatePDAByLink();
 					$file = $conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $training_id . '.pdf';
 					if (is_file($file) && is_readable($file)) {
 						$files[] = $file;

@@ -31,6 +31,7 @@ if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
 	die("Include of main fails");
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_opca.class.php');
@@ -460,6 +461,10 @@ if (! empty($id)) {
 			} elseif ($action == 'presend_presence_empty') {
 				$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 			}elseif ($action == 'presend_pedago') {
+				
+				$agfTraining = new Agefodd($db);
+				$agfTraining->fetch($agf->fk_formation_catalogue);
+				$agfTraining->generatePDAByLink();
 				$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 			} elseif ($action == 'presend_convention') {
 				$conv_id = GETPOST('convid', 'int');
@@ -494,6 +499,9 @@ if (! empty($id)) {
 
 					if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONVMAIL)) {
 						// Ajout fiche péda
+						$agfTraining = new Agefodd($db);
+						$agfTraining->fetch($agf->fk_formation_catalogue);
+						$agfTraining->generatePDAByLink();
 						$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 						$file = $conf->agefodd->dir_output . '/' . $filename;
 						if (file_exists($file)) {
@@ -657,6 +665,9 @@ if (! empty($id)) {
 					else
 						print '<div class="error">' . $langs->trans('AgfConseilNotExists') . '</div>';
 						// Ajout fiche péda
+					$agfTraining = new Agefodd($db);
+					$agfTraining->fetch($agf->fk_formation_catalogue);
+					$agfTraining->generatePDAByLink();
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file))
@@ -734,6 +745,9 @@ if (! empty($id)) {
 					}
 
 					// Ajout fiche pédago
+					$agfTraining = new Agefodd($db);
+					$agfTraining->fetch($agf->fk_formation_catalogue);
+					$agfTraining->generatePDAByLink();
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
@@ -748,6 +762,9 @@ if (! empty($id)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					}
 					// Ajout fiche péda
+					$agfTraining = new Agefodd($db);
+					$agfTraining->fetch($agf->fk_formation_catalogue);
+					$agfTraining->generatePDAByLink();
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {

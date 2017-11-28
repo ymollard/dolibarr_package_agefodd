@@ -969,6 +969,10 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 	} elseif ($mdle == 'fiche_pedago') {
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
+		dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+		$agfTraining = new Agefodd($db);
+		$agfTraining->fetch($idform);
+		$agfTraining->generatePDAByLink();
 		$filename = 'fiche_pedago_' . $idform . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
