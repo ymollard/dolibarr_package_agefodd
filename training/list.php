@@ -285,6 +285,9 @@ if ($resql > 0) {
 
 			print '<td style="min-width: 20px" class="nobordernopadding nowrap">';
 			$legende = $langs->trans("AgfDocOpen");
+			$agfTraining = new Agefodd($db);
+			$agfTraining->fetch($line->rowid);
+			$agfTraining->generatePDAByLink();
 			if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $line->rowid . '.pdf')) {
 				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $line->rowid . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 				print img_picto('fiche_pedago_' . $line->rowid . '.pdf:fiche_pedago_' . $line->rowid . '.pdf', 'pdf2') . '</a>';
