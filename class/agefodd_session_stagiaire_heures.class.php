@@ -411,12 +411,32 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return - 1;
 	    }
 	}
+	
+	/**
+	 * @param int $traineeid
+	 * @return float total hours spent in all session by the trainee
+	 */
+	public function heures_stagiaire_totales($traineeid){
+	    $trainee = (int) $traineeid;
+	    $sql = 'SELECT fk_session_agefodd as sessid FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire';
+	    $sql.= ' WHERE fk_stagiaire = ' . $trainee;
+	    
+	    $resql = $this->db->query($sql);
+	    $result = 0;
+	    if ($resql) {
+	        while($obj = $this->db->fetch_object($resql)) {
+	            $result += $this->heures_stagiaire($obj->sessid, $trainee);
+	        }
+	    }
+
+	    return $result;
+	}
 
 	/**
 	 *
 	 * @param int $sessid
 	 * @param int $traineeid
-	 * @return float total hours spend by the trainee on the session
+	 * @return float total hours spent by the trainee on the session
 	 */
 	public function heures_stagiaire($sessid, $traineeid)
 	{
@@ -444,7 +464,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
             if ($resql) {
                 $obj = $this->db->fetch_object($resql);
                 if (!empty($obj->total)) {
-                    return $obj->total;
+                    return (float)$obj->total;
                 } else return $dureeCalendrier;
             }
         }

@@ -826,6 +826,13 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				else
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td>' . stripslashes($notes) . '</td></tr>';
+				
+				if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
+				    require_once ('../class/agefodd_session_stagiaire_heures.class.php');
+				    $agfssh = new Agefoddsessionstagiaireheures($db);
+				    print '<tr><td>' . $langs->trans('AgfTraineeHours') . '</td>';
+				    print '<td>' . $agfssh->heures_stagiaire_totales($agf->id) . ' h</td></tr>';
+				}
 
 				if (! empty($extrafields->attribute_label)) {
 					print $agf->showOptionals($extrafields);
