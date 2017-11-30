@@ -125,6 +125,44 @@ class Agefodd_session_stagiaire extends CommonObject {
 			return - 1;
 		}
 	}
+	
+	public function fetch_by_trainee($sessid, $traineeid) {
+	    $sql = "SELECT";
+	    $sql .= " rowid, fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec, status_in_session";
+	    $sql .= " ,fk_soc_link";
+	    $sql .= " ,fk_soc_requester";
+	    $sql .= " ,fk_socpeople_sign";
+	    $sql .= " ,hour_foad";
+	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire";
+	    $sql .= " WHERE fk_session_agefodd = " . $sessid;
+	    $sql .= " AND fk_stagiaire = " . $traineeid;
+	    
+	    dol_syslog(get_class($this) . "::fetch_stagiaire_per_session", LOG_DEBUG);
+	    $resql = $this->db->query($sql);
+	    if ($resql) {
+	        
+	        $obj = $this->db->fetch_object($resql);
+	        
+	        $this->id = $obj->rowid;
+	        $this->fk_session_agefodd = $obj->fk_session_agefodd;
+	        $this->fk_stagiaire = $obj->fk_stagiaire;
+	        $this->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
+	        $this->fk_soc_link = $obj->fk_soc_link;
+	        $this->fk_soc_requester = $obj->fk_soc_requester;
+	        $this->fk_socpeople_sign = $obj->fk_socpeople_sign;
+	        $this->fk_user_author = $obj->fk_user_author;
+	        $this->fk_user_mod = $obj->fk_user_mod;
+	        $this->datec = $this->db->jdate($obj->datec);
+	        $this->status_in_session = $obj->status_in_session;
+	        $this->hour_foad= $obj->hour_foad;
+	        
+	        $this->db->free($resql);
+	    } else {
+	        $this->error = "Error " . $this->db->lasterror();
+	        dol_syslog(get_class($this) . "::fetch_stagiaire_per_session " . $this->error, LOG_ERR);
+	        return - 1;
+	    }
+	}
 
 	/**
 	 * Load object (all trainee for one session) in memory from database
