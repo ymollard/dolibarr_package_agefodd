@@ -525,10 +525,13 @@ if (! empty($id)) {
 			print '<th>' . $langs->trans('AgfParticipants') . '</th><th colspan="' . $blocNumber . '" align="center">' . $langs->trans('AgfSchedules') . '</th><th align="center">' . $langs->trans('AgfTraineeHours') . '</th>';
 			print '</tr>';
 			print '<tr class="liste_titre"><th></th>';
-
-			for($i = 0; $i < $blocNumber; $i ++) {
-				print '<th align="center">' . dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y') . '<br>' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour') . '</th>';
-			}
+            if ($blocNumber > 0){
+    			for($i = 0; $i < $blocNumber; $i ++) {
+    				print '<th align="center">' . dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y') . '<br>' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour') . '</th>';
+    			}
+            } else {
+                print '<th align="center">'.$langs->trans("AgfNoCalendar").'</th>';
+            }
 			print '<th></th></tr>';
 
 			$stagiaires = new Agefodd_session_stagiaire($db);

@@ -227,7 +227,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
-		$sql .= ',s.trigger_name';
+		$sql .= ',s.fk_user_mod,s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.rowid = '" . $id . "'";
 
@@ -250,6 +250,7 @@ class Agefodd_sessadm extends CommonObject {
 				$this->notes = $obj->notes;
 				$this->archive = $obj->archive;
 				$this->trigger_name = $obj->trigger_name;
+				$this->fk_user_mod = $obj->fk_user_mod;
 			}
 			$this->db->free($resql);
 			return 1;
@@ -272,7 +273,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
-		$sql .= ',s.trigger_name';
+		$sql .= ',s.fk_user_mod,s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
@@ -303,6 +304,7 @@ class Agefodd_sessadm extends CommonObject {
 				$line->notes = $obj->notes;
 				$line->archive = $obj->archive;
 				$line->trigger_name = $obj->trigger_name;
+				$line->fk_user_mod = $obj->fk_user_mod;
 
 				$this->lines[$i] = $line;
 
@@ -573,6 +575,7 @@ class AgfSessAdm {
 	public $notes;
 	public $archive;
 	public $trigger_name;
+	public $fk_user_mod;
 	public function __construct() {
 		return 1;
 	}
