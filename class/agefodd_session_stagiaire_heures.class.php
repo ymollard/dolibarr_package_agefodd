@@ -463,9 +463,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
             $resql = $this->db->query($sql);
             if ($resql) {
                 $obj = $this->db->fetch_object($resql);
-                if (!empty($obj->total)) {
-                    return (float)$obj->total;
-                } else return $dureeCalendrier;
+                return (float)$obj->total;
             }
         }
         return 0;
