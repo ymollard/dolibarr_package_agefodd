@@ -87,6 +87,14 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 	$result = $agf->remove($modperiod);
 
 	if ($result > 0) {
+	    if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+	        // nettoyage des heures réelles
+	        $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
+	        $sql.= " WHERE fk_calendrier = " . $modperiod;
+	        
+	        $db->query($sql);
+	    }
+	    
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
 		exit();
 	} else {
@@ -111,6 +119,13 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && $user->rights
 	}
 
 	if ($result > 0) {
+	    if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+	        // nettoyage des heures réelles
+	        $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
+	        $sql.= " WHERE fk_session = " . $id;
+	        
+	        $db->query($sql);
+	    }
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
 		exit();
 	} else {
