@@ -562,7 +562,7 @@ if (! empty($id)) {
     					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
     				}
 				} else {
-				    print '<td align="center">'. $langs->trans("AgfNoCalendar") .'</td>';
+				    print '<td align="center">'. (($i == 0) ? $langs->trans("AgfNoCalendar") : '') .'</td>';
 				}
 				
 				$total = $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id);
