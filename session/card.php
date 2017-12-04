@@ -789,6 +789,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '</table>';
 	print '</div>';
 
+	
+	
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
@@ -1191,17 +1193,20 @@ printSessionFieldsWithCustomOrder();
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					print '</div>';
-
+					
+printSessionFieldsWithCustomOrder();		
+print '<table id="session_card" class="border" width="100%">';
 					// Print session card
-					$agf->printSessionInfo();
+					$agf->printSessionInfo(false);
 
-					print '&nbsp';
+					
 
 					/*
 					 * Manage founding ressources depend type inter-enterprise or extra-enterprise
 					 */
 					if (! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-						print '&nbsp;';
+						print '<tr class="tr_order_OPCA"><td colspan="2">';
+						
 						print '<table class="border order_OPCA" width="100%">';
 						print '<tr><td>' . $langs->trans("AgfSubrocation") . '</td>';
 						if ($agf->is_OPCA == 1) {
@@ -1251,6 +1256,8 @@ printSessionFieldsWithCustomOrder();
 						print '</td></tr>';
 
 						print '</table>';
+						
+						print '</td></tr>';
 					}
 
 					/*
@@ -1259,7 +1266,7 @@ printSessionFieldsWithCustomOrder();
 					$spend_cost = 0;
 					$cashed_cost = 0;
 
-					print '&nbsp;';
+					print '<tr class="tr_order_cost"><td colspan="2">';
 					print '<table class="border order_cost" width="100%">';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
 					print '<td>' . price($agf->cost_trainer) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
@@ -1290,11 +1297,13 @@ printSessionFieldsWithCustomOrder();
 					print '<td><strong>' . price($cashed_cost - $spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong> (' . $percentmargin . ')</td></tr>';
 
 					print '</table>';
-
+					
+					print '</td></tr>';
 					/*
 					 * Manage trainers
 					 */
-					print '&nbsp;';
+					print '<tr class="tr_order_trainer"><td colspan="2">';
+					
 					print '<table class="border order_trainer" width="100%">';
 
 					$formateurs = new Agefodd_session_formateur($db);
@@ -1402,12 +1411,14 @@ printSessionFieldsWithCustomOrder();
 						print "</tr>\n";
 					}
 					print "</table>";
-
+					
+					print '<td></tr>';
 					/*
 					 * Display trainees
 					 */
 
-					print '&nbsp;';
+					print '<tr class="tr_order_trainee"><td colspan="2">';
+					
 					print '<table class="border order_trainee" width="100%">';
 
 					$stagiaires = new Agefodd_session_stagiaire($db);
@@ -1525,6 +1536,10 @@ printSessionFieldsWithCustomOrder();
 						}
 					}
 					print "</table>";
+					
+					print '</td></tr>';
+					print '</table>';
+					
 					print '</div>';
 				}
 			} else {
