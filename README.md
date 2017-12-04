@@ -57,4 +57,4 @@ CONTACT
 Web site Agefodd project : 
 	https://git.framasoft.org/atm-consulting/dolibarr_agefodd
 	
-Florian HENRY <contact@atm-consulting.fr>
+ATM Consulting <contact@atm-consulting.fr>

@@ -3335,7 +3335,7 @@ class Agsession extends CommonObject
 		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td>';
 		print $this->nb_subscribe_min . '</td></tr>';
 
-		print '<tr><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
+		print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
 		print '<td>' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
 
 		print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';

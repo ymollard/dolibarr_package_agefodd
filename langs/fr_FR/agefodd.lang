@@ -1252,3 +1252,4 @@ AgfDureeCard=Durée présentielle (heures)
 AgfDelaiSessionLevelEnd=Délai d'alerte (jours) par rapport à la fin de la session
 AgefoddRefFormationSessionId=Réf. formation (session)
 AgfPrintTrainingRefAndSessIdOnPDF=Afficher la référence de formation ainsi que l'id de session sur les documents PDF (propal / commande / facture)
+AgfTools=Outils

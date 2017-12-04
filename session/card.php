@@ -500,7 +500,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
 
 			$result = $agf->create($user);
-			
+
 			$new_session_id = $result;
 
 			if ($result > 0) {
@@ -766,7 +766,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr class="order_duration"><td>' . $langs->trans("AgfDuree") . '</td>';
 	print '<td><input size="4" type="text" class="flat" id="duree_session" name="duree_session" value="' . $agf->duree_session . '" /></td></tr>';
 
-	print '<tr><td>' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
+	print '<tr class="order_nbplaceavailable"><td>' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
 	print '<td>';
 	print '<input type="text" class="flat" name="nb_place" size="4" value="' . GETPOST('nb_place', 'int') . '"/>';
 	print '</td></tr>';
@@ -797,10 +797,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '</table>';
 	print '</form>';
-	
-	
-	
-	
+
+
+
+
 	?>
 <script type="text/javascript">
 	$(document).ready(function () {
@@ -810,8 +810,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			ajax_set_duration_and_product(data);
 		});
 	});
-	
-	
+
+
 	function ajax_set_duration_and_product(data)
     	{
     		$.ajax({
@@ -826,7 +826,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						$("#duree_session").val("");
 					}
 					if((result.fk_product)!= null ){
-						
+
 						$("#productid").val(result.fk_product).change();
 					}else{
 						$("#productid").val(0).change();
@@ -908,7 +908,7 @@ printSessionFieldsWithCustomOrder();
 					print '<tr class="order_formRef"><td>' . $langs->trans("AgfFormRef") . '</td>';
 					print '<td>' . $agf->formref . '</td></tr>';
 
-					print '<tr><td>' . $langs->trans("Color") . '</td>';
+					print '<tr  class="order_sessionColor"><td>' . $langs->trans("Color") . '</td>';
 					print '<td>';
 					print $formother->selectColor($agf->color,'color');
 					print '</td></tr>';
@@ -1042,7 +1042,7 @@ printSessionFieldsWithCustomOrder();
 					print $formAgefodd->select_site_forma($agf->placeid, 'place');
 					print '</td></tr>';
 
-					print '<tr><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
+					print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
 					print '<td><input size="4" type="text" class="flat" name="nb_place" value="' . $agf->nb_place . '" />' . '</td></tr>';
 
 					if ($agf->force_nb_stagiaire == 0 || empty($agf->force_nb_stagiaire)) {
@@ -1053,7 +1053,7 @@ printSessionFieldsWithCustomOrder();
 						$checked = 'checked="checked"';
 					}
 					// if not force we must input values
-					print '<tr><td width="20%">' . $langs->trans("AgfNbreParticipants") . '</td>';
+					print '<tr class="order_nbplaceparticipants"><td width="20%">' . $langs->trans("AgfNbreParticipants") . '</td>';
 					print '<td><input size="4" type="text" class="flat" id="nb_stagiaire" name="nb_stagiaire" ' . $disabled . ' value="' . ($agf->nb_stagiaire > 0 ? $agf->nb_stagiaire : '0') . '" /></td></tr>';
 
 					print '<tr><td width="20%">' . $langs->trans("AgfForceNbreParticipants") . '</td>';
@@ -1202,7 +1202,7 @@ printSessionFieldsWithCustomOrder();
 					 */
 					if (! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 						print '&nbsp;';
-						print '<table class="border" width="100%">';
+						print '<table class="border order_OPCA" width="100%">';
 						print '<tr><td>' . $langs->trans("AgfSubrocation") . '</td>';
 						if ($agf->is_OPCA == 1) {
 							$isOPCA = ' checked="checked" ';
@@ -1260,7 +1260,7 @@ printSessionFieldsWithCustomOrder();
 					$cashed_cost = 0;
 
 					print '&nbsp;';
-					print '<table class="border" width="100%">';
+					print '<table class="border order_cost" width="100%">';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
 					print '<td>' . price($agf->cost_trainer) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
 					$spend_cost += $agf->cost_trainer;
@@ -1295,7 +1295,7 @@ printSessionFieldsWithCustomOrder();
 					 * Manage trainers
 					 */
 					print '&nbsp;';
-					print '<table class="border" width="100%">';
+					print '<table class="border order_trainer" width="100%">';
 
 					$formateurs = new Agefodd_session_formateur($db);
 					$nbform = $formateurs->fetch_formateur_per_session($agf->id);
@@ -1322,7 +1322,7 @@ printSessionFieldsWithCustomOrder();
 							// Print trainer calendar
 							if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
 
-								
+
 								$alertday = false;
 								require_once ('../class/agefodd_session_formateur_calendrier.class.php');
 								$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
@@ -1337,7 +1337,7 @@ printSessionFieldsWithCustomOrder();
 
 								print '<table class="nobordernopadding">';
 
-									
+
 									for($j = 0; $j < $blocNumber; $j ++) {
 										if (($trainer_calendar->lines[$j]->date_session < $agf->dated) || ($trainer_calendar->lines[$j]->date_session > $agf->datef)) {
 											$alertday = true;
@@ -1365,7 +1365,7 @@ printSessionFieldsWithCustomOrder();
 
 										$old_date = $trainer_calendar->lines[$j]->date_session;
 									}
-									
+
 									// Print warning message if trainer calendar date are not set within session date
 									if ($alertday) {
 										print img_warning($langs->trans("AgfCalendarDayOutOfScope"));
@@ -1408,7 +1408,7 @@ printSessionFieldsWithCustomOrder();
 					 */
 
 					print '&nbsp;';
-					print '<table class="border" width="100%">';
+					print '<table class="border order_trainee" width="100%">';
 
 					$stagiaires = new Agefodd_session_stagiaire($db);
 					if (!empty($conf->global->AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS)) {

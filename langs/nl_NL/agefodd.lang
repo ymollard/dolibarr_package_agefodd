@@ -964,3 +964,4 @@ AgfManageBPFHelp=French legal document to provide to french admnistration one a 
 AgfAddProgramToConv=Add at the end of convention the training program
 AgfAddSignImageToConvoc=Ajouter le tampon (défini plus haut dans Image à ajouter sur les documents) sur les convocations
 AgfDefaultSessionType=Default type session
+AgfTools=Tools
