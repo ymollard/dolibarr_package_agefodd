@@ -451,7 +451,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
         }
 
         $stagiaire = new Agefodd_session_stagiaire($db);
-        $stagiaire->fetch($traineeid);
+        $stagiaire->fetch_by_trainee($sessid, $traineeid);
         if ($stagiaire->status_in_session == 3){
             return $dureeCalendrier;
         } elseif ($stagiaire->status_in_session == 4) {
@@ -463,9 +463,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
             $resql = $this->db->query($sql);
             if ($resql) {
                 $obj = $this->db->fetch_object($resql);
-                if (!empty($obj->total)) {
-                    return (float)$obj->total;
-                } else return $dureeCalendrier;
+                return (float)$obj->total;
             }
         }
         return 0;

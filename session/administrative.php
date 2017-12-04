@@ -321,6 +321,7 @@ if ($user->rights->agefodd->creer) {
 
 						print '<tr align="center" style="border-style:none">';
 						print '<td colspan="3" style="border-style:none">&nbsp;</td>';
+						print '<td width="150px" style="border-style:none">' . $langs->trans("User") . '</td>';
 						print '<td width="150px" style="border-style:none">' . $langs->trans("AgfLimitDate") . '</td>';
 						print '<td width="150px" style="border-style:none">' . $langs->trans("AgfDateDebut") . '</td>';
 						print '<td width="150px" style="border-style:none">' . $langs->trans("AgfDateFin") . '</td>';
@@ -366,6 +367,15 @@ if ($user->rights->agefodd->creer) {
 					} else
 						print '<td style="border-left: 0px; width:auto;">&nbsp;</td>';
 
+				    // Utilisateur qui a validé l'action administrative
+					if ($line->archive) {
+					    $u = new User($db);
+					    $u->fetch($line->fk_user_mod);
+					    print '<td width="150px" align="center" valign="top">'.$u->getNomUrl(1).'</td>';
+					} else {
+					    print '<td></td>';
+					}
+						
 					if (! $sess_adm->has_child($line->id)) {
 						// Affichage des différentes dates
 						print '<td width="150px" align="center" valign="top">';

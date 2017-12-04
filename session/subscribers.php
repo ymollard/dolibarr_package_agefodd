@@ -83,9 +83,10 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 
 		if (! empty($conf->global->AGF_USE_REAL_HOURS) && $agfsta->status_in_session !== GETPOST('stagiaire_session_status', 'int') && GETPOST('stagiaire_session_status', 'int') == 4) {
 			$part = true;
-		} else {
-			$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
 		}
+		
+		$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
+		
 		$agfsta->hour_foad = GETPOST('hour_foad', 'int');
 
 		if ($agfsta->update($user) > 0) {
@@ -209,17 +210,6 @@ if ($action == 'editrealhours') {
 
 		foreach ( $hours as $key => $value ) {
 
-		    /**
-		     * Nouvel Algo
-		     * ----------------------
-		     * 
-		     * pour chaque champ hour, on crée ou met à jour dans la bdd
-		     * 
-		     * si le total des heures saisies est égal au temps total du calendrier de session, le stagiaire passe en statut présent.
-		     * autrement, il est en présence partielle
-		     * 
-		     */
-		    
 		    foreach ( $value as $creneaux => $heures ) {
 		        $heures = preg_replace('/,/', '.', $heures);
 		        $agf = new Agefoddsessionstagiaireheures($db);
@@ -243,18 +233,24 @@ if ($action == 'editrealhours') {
 	            }
 		    }
 		    
-		    if (( float ) $dureeCalendrier == ( float ) array_sum($value)) {
+		    $totalheures = array_sum($value);
+		    if (( float ) $dureeCalendrier == ( float ) $totalheures) {
 		        // stagiaire entièrement présent
-		        $stagiaires = new Agefodd_session_stagiaire($db);
-		        $stagiaires->fetch($key);
-		        $stagiaires->status_in_session = 3;
-		        $stagiaires->update($user);
-		    } else {
+		        $stagiaire = new Agefodd_session_stagiaire($db);
+		        $stagiaire->fetch_by_trainee($sessid, $key);
+		        $stagiaire->status_in_session = 3;
+		        $stagiaire->update($user);
+		    } elseif (!empty($totalheures)) {
 		        // stagiaire partiellement présent
-	            $stagiaires = new Agefodd_session_stagiaire($db);
-	            $stagiaires->fetch($key);
-	            $stagiaires->status_in_session = 4;
-	            $stagiaires->update($user);
+		        $stagiaire = new Agefodd_session_stagiaire($db);
+		        $stagiaire->fetch_by_trainee($sessid, $key);
+		        $stagiaire->status_in_session = 4;
+		        $stagiaire->update($user);
+		    } elseif (empty($totalheures)) {
+		        $stagiaire = new Agefodd_session_stagiaire($db);
+		        $stagiaire->fetch_by_trainee($sessid, $key);
+		        $stagiaire->status_in_session = 5;
+		        $stagiaire->update($user);
 		    }
 		    
 		}
@@ -362,20 +358,13 @@ if ($action == 'updatetraineestatus') {
 			setEventMessage($stagiaires->error, 'errors');
 		} else {
 			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
-				$statusinsession = GETPOST('statusinsession', 'int');
-				// supprime les heures réelles des stagiaires en dessous du status présent
-				if ($statusinsession !== 4) {
-					$stagiaires->fetch_stagiaire_per_session($agf->id);
-					foreach ( $stagiaires->lines as $trainee ) {
-						$heures = new Agefoddsessionstagiaireheures($db);
-						$heures->fetch_all_by_session($agf->id, $trainee->id);
-						foreach ( $heures->lines as $creneaux ) {
-							$creneaux->delete($user);
-						}
+				$stagiaires->fetch_stagiaire_per_session($agf->id);
+				foreach ( $stagiaires->lines as $trainee ) {
+					$heures = new Agefoddsessionstagiaireheures($db);
+					$heures->fetch_all_by_session($agf->id, $trainee->id);
+					foreach ( $heures->lines as $creneaux ) {
+						$creneaux->delete($user);
 					}
-				} else {
-					setEventMessage($langs->trans('AgfSetReelHours'), 'warnings');
-					Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&edithours=true");
 				}
 			}
 
@@ -536,10 +525,13 @@ if (! empty($id)) {
 			print '<th>' . $langs->trans('AgfParticipants') . '</th><th colspan="' . $blocNumber . '" align="center">' . $langs->trans('AgfSchedules') . '</th><th align="center">' . $langs->trans('AgfTraineeHours') . '</th>';
 			print '</tr>';
 			print '<tr class="liste_titre"><th></th>';
-
-			for($i = 0; $i < $blocNumber; $i ++) {
-				print '<th align="center">' . dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y') . '<br>' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour') . '</th>';
-			}
+            if ($blocNumber > 0){
+    			for($i = 0; $i < $blocNumber; $i ++) {
+    				print '<th align="center">' . dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y') . '<br>' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour') . '</th>';
+    			}
+            } else {
+                print '<th align="center">'.$langs->trans("AgfNoCalendar").'</th>';
+            }
 			print '<th></th></tr>';
 
 			$stagiaires = new Agefodd_session_stagiaire($db);
@@ -548,22 +540,34 @@ if (! empty($id)) {
 
 			for($i = 0; $i < $nbstag; $i ++) {
 				print '<tr><td>' . strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom);
-				print '<br>' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4) . '</td>';
-				for($j = 0; $j < $blocNumber; $j ++) {
-					$agfssh = new Agefoddsessionstagiaireheures($db);
-					$result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
-					if($calendrier->lines[$j]->date_session < dol_now()){
-    					if ($result > 0 && $agfssh->heures!==0) {
-    						$val = $agfssh->heures;
+				print '<br>' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
+				print '<br><a class="button fillin" href="#">Remplir</a>&nbsp;<a class="button fillout" href="#">Vider</a>';
+				print '</td>';
+				$agfssh = new Agefoddsessionstagiaireheures($db);
+				if ($blocNumber > 0){
+				    for($j = 0; $j < $blocNumber; $j ++) {
+				        $defaultvalue = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
+				        if (in_array($stagiaires->lines[$i]->status_in_session, array(3, 4))){
+        					$result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
+        					if($calendrier->lines[$j]->date_session < dol_now()){
+            					if ($result > 0) {
+            						$val = $agfssh->heures;
+            					} else {
+            					    $val = $defaultvalue;
+            					}
+        					} else {
+        					    $val = 0;
+        					}
     					} else {
-    						$val = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
+    					    $val = 0;
     					}
-					} else {
-					    $val = 0;
-					}
-
-					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
+    
+    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
+    				}
+				} else {
+				    print '<td align="center">'. (($i == 0) ? $langs->trans("AgfNoCalendar") : '') .'</td>';
 				}
+				
 				$total = $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id);
 				print '<td align="center">' . $total . '</td>';
 				print '</tr>';
@@ -573,6 +577,25 @@ if (! empty($id)) {
 			print '<div class="tabsAction"><input type="submit" class="butAction" value="' . $langs->trans('Save') . '">';
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Cancel') . '</a></div>';
 			print '</form>';
+			print "<script type=\"text/javascript\">
+					$(document).ready(function () {
+						$('.fillin').click(function(e){
+                            e.preventDefault();
+                            console.log($(this).parent().parent().find('input'));
+                            $(this).parent().parent().find('input').each(function(){
+                                $(this).val($(this).attr('data-default'));
+                            });
+                        });
+
+                        $('.fillout').click(function(e){
+                            e.preventDefault();
+                            console.log($(this).parent().parent().find('input'));
+                            $(this).parent().parent().find('input').each(function(){
+                                $(this).val(0);
+                            });
+                        });
+					});
+					</script> ";
 			llxFooter();
 			exit();
 		}
