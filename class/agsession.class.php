@@ -3334,7 +3334,7 @@ class Agsession extends CommonObject
 
 		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td>';
 		print $this->nb_subscribe_min . '</td></tr>';
-		
+
 		print '<tr><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
 		print '<td>' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
 
@@ -4526,10 +4526,10 @@ class Agsession extends CommonObject
 
 		$date_conv='';
 
-		if ($this->dated == $agf->datef) {
-			$date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf->datef, $dateformat);
+		if ($this->dated == $this->datef) {
+			$date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($this->datef, $dateformat);
 		} else {
-			$date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf->dated, $dateformat) . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf->datef, $dateformat);
+			$date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($this->dated, $dateformat) . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($this->datef, $dateformat);
 		}
 
 		return $date_conv;
