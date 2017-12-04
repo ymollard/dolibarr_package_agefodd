@@ -965,3 +965,6 @@ AgfAddProgramToConv=Add at the end of convention the training program
 AgfAddSignImageToConvoc=Ajouter le tampon (défini plus haut dans Image à ajouter sur les documents) sur les convocations
 AgfDefaultSessionType=Default type session
 AgfTools=Tools
+AgfMenuSiteCreate=New place
+AgfMenuFormateurCreate=New trainer
+AgfMenuContactCreate=New trainning contact

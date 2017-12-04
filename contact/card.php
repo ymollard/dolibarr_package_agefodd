@@ -137,7 +137,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$nbcontact = $agf_static->fetch_all('ASC', 'rowid', '', 0);
 	$exclude_array = array ();
 	if ($nbcontact > 0) {
-		foreach ( $agf_static->line as $line ) {
+		foreach ( $agf_static->lines as $line ) {
 			$exclude_array [] = $line->fk_socpeople;
 		}
 	}
