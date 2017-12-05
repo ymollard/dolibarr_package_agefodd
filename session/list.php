@@ -29,6 +29,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_session_element.class.php');
@@ -113,6 +114,7 @@ $arrayfields=array(
 	'AgfMargin'			=>array('label'=>"AgfMargin", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
 
 	'AgfListParticipantsStatus'=>array('label'=>"AgfListParticipantsStatus", 'checked'=>1),
+	'AgfProductServiceLinked'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>0),
 );
 
 
@@ -512,6 +514,7 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['s.nb_stagiaire']['checked'])) print '<td class="liste_titre"></td>';
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print '<td class="liste_titre"></td>';
+	if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
 
 	// Action column
 	print '<td class="liste_titre" align="right">';
@@ -552,6 +555,7 @@ if ($resql != - 1) {
 		if (! empty($arrayfields['AgfMargin']['checked']))		print_liste_field_titre($langs->trans("AgfMargin"), $_SERVER ['PHP_SELF'], "", "", $option, ' name="margininfo5" style="display:none" ', $sortfield, $sortorder);
 	}
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 
@@ -688,6 +692,11 @@ if ($resql != - 1) {
 			}
 
 			if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))	print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) {
+				$product = new Product($db);
+				$product->fetch($line->fk_product);
+				print '<td>'.$product->getNomUrl(1).'</td>';
+			}
 
 			//Action column
 			print '<td>&nbsp;</td>';

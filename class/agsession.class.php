@@ -2181,6 +2181,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.cost_trip";
 		$sql .= " ,s.cost_sell_charges";
 		$sql .= " ,s.cost_buy_charges";
+		$sql .= " ,s.fk_product";
 		$sql .= " ,s.fk_soc_requester";
 		$sql .= " ,s.fk_socpeople_requester";
 		$sql .= " ,s.fk_socpeople_presta";
@@ -2368,6 +2369,7 @@ class Agsession extends CommonObject
 					$line->cost_other = $obj->cost_trip + $obj->cost_site;
 					$line->admin_task_close_session = $obj->closesessionstatus;
 					$line->trainingcolor = $obj->trainingcolor;
+					$line->fk_product = $obj->fk_product;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
