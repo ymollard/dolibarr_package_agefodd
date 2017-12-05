@@ -2159,7 +2159,7 @@ class Agsession extends CommonObject
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0, $array_options_keys=array()) {
 		global $langs, $conf;
 
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2198,6 +2198,12 @@ class Agsession extends CommonObject
 			$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1 OR status_in_session=3) AND fk_session_agefodd=s.rowid) as nb_confirm,";
 			$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE status_in_session=6 AND fk_session_agefodd=s.rowid) as nb_cancelled";
 		}
+		
+		foreach ($array_options_keys as $key)
+		{
+			$sql.= ',extra.'.$key;
+		}
+		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
@@ -2226,9 +2232,11 @@ class Agsession extends CommonObject
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socppresta";
 		$sql .= " ON socppresta.rowid = s.fk_socpeople_presta";
 
+		$add_extrafield_link = true;
 		if (is_array($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if (strpos($key, 'extra.') !== false) {
+					$add_extrafield_link = false;
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
 					$sql .= " ON s.rowid = extra.fk_object";
 					break;
@@ -2241,6 +2249,11 @@ class Agsession extends CommonObject
 			}
 		}
 
+		if ($add_extrafield_link)
+		{
+			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_extrafields as extra ON (s.rowid = extra.fk_object)';
+		}
+		
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
@@ -2306,6 +2319,10 @@ class Agsession extends CommonObject
 		}
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color";
+		foreach ($array_options_keys as $key)
+		{
+			$sql.= ',extra.'.$key;
+		}
 		if (! empty($sortfield)) {
 			$sql .= $this->db->order($sortfield, $sortorder);
 		}
@@ -2378,6 +2395,13 @@ class Agsession extends CommonObject
 					}
 					$line->status_lib = $label;
 
+					// Formatage comme du Dolibarr standard pour ne pas être perdu
+					$line->array_options = array();
+					foreach ($array_options_keys as $key)
+					{
+						$line->array_options['options_'.$key] = $obj->{$key};
+					}
+					
 					$this->lines[$i] = $line;
 					$i ++;
 				}
