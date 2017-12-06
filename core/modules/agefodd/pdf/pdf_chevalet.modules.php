@@ -192,7 +192,7 @@ class pdf_chevalet extends ModelePDFAgefodd
 		// New page
 		$pdf->AddPage();
 		$this->_pagehead($pdf, $agf, 1, $outputlangs);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 30);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 30);
 
 		$pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 4, 'color' => array(109, 109, 109)));
 
