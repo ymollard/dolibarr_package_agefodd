@@ -86,6 +86,11 @@ if ($search_categ_bpf == - 1) {
 	$search_categ_bpf = '';
 }
 
+$search_fk_product = GETPOST('search_fk_product','int');
+if ($search_fk_product == - 1) {
+	$search_fk_product = '';
+}
+
 	// Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_intitule = '';
@@ -96,6 +101,7 @@ if (GETPOST("button_removefilter_x")) {
 	// $search_dated = "";
 	$search_id = '';
 	$search_categ = '';
+	$search_fk_product='';
 }
 include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
@@ -113,7 +119,7 @@ $arrayfields=array(
     'c.duree'		=>array('label'=>"AgfDuree", 'checked'=>1),
     'a.dated'	=>array('label'=>"AgfDateLastAction", 'checked'=>1),
 	'AgfNbreAction'		=>array('label'=>"AgfNbreAction", 'checked'=>1),
-	'AgfProductServiceLinked'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>1),
+	'c.fk_product'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>1),
 
 );
 
@@ -129,12 +135,14 @@ $formfile = new FormFile($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
 
+$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
    foreach($extrafields->attribute_label as $key => $val)
    {
-       $arrayfields["extra.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
+       $arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
    }
 }
 
@@ -171,8 +179,27 @@ if (! empty($search_categ_bpf)) {
 	$filter ['c.fk_c_category_bpf'] = $search_categ_bpf;
 	$option .= '&search_categ_bpf=' . $search_categ_bpf;
 }
-$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter, array_keys($extrafields->attribute_label));
+if (! empty($search_fk_product)) {
+	$filter ['c.fk_product'] = $search_fk_product;
+	$option .= '&search_fk_product=' . $search_fk_product;
+}
 
+foreach ($search_array_options as $key => $val)
+{
+	$crit=$val;
+	$tmpkey=preg_replace('/search_options_/','',$key);
+	$typ=$extrafields->attribute_type[$tmpkey];
+	$mode_search=0;
+	if (in_array($typ, array('int','double','real'))) $mode_search=1;								// Search on a numeric
+	if (in_array($typ, array('sellist','link','chkbxlst','checkbox')) && $crit != '0' && $crit != '-1') $mode_search=2;	// Search on a foreign key int
+	if ($crit != '' && (! in_array($typ, array('select','sellist')) || $crit != '0') && (! in_array($typ, array('link')) || $crit != '-1'))
+	{
+		$filter['ef.'.$tmpkey]= natural_search('ef.'.$tmpkey, $crit, $mode_search);
+		$option .= '&search_options_'.$tmpkey.'=' . $crit;
+	}
+}
+
+$resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter, array_keys($extrafields->attribute_label));
 
 
 $i = 0;
@@ -246,15 +273,45 @@ if (! empty($arrayfields['AgfNbreAction']['checked'])){
 	print '</td>';
 }
 
-if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
+if (! empty($arrayfields['c.fk_product']['checked'])) {
+	print '<td class="liste_titre">';
+	print $form->select_produits($search_fk_product, 'search_fk_product', '', 10000);
+	print '</td>';
+}
+
+
 
 // Extra fields
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
-{
-   foreach($extrafields->attribute_label as $key => $val)
-   {
-		if (! empty($arrayfields["extra.".$key]['checked'])) print '<td class="liste_titre"></td>';
-   }
+if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
+	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
+} else {
+
+	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+	{
+		foreach($extrafields->attribute_label as $key => $val)
+		{
+			if (! empty($arrayfields["ef.".$key]['checked'])) {
+				$align=$extrafields->getAlignFlag($key);
+				$typeofextrafield=$extrafields->attribute_type[$key];
+				print '<td class="liste_titre'.($align?' '.$align:'').'">';
+				if (in_array($typeofextrafield, array('varchar', 'int', 'double', 'select')) && empty($extrafields->attribute_computed[$key]))
+				{
+					$crit=$val;
+					$tmpkey=preg_replace('/search_options_/','',$key);
+					$searchclass='';
+					if (in_array($typeofextrafield, array('varchar', 'select'))) $searchclass='searchstring';
+					if (in_array($typeofextrafield, array('int', 'double'))) $searchclass='searchnum';
+					print '<input class="flat'.($searchclass?' '.$searchclass:'').'" size="4" type="text" name="search_options_'.$tmpkey.'" value="'.dol_escape_htmltag($search_array_options['search_options_'.$tmpkey]).'">';
+				}
+				else
+				{
+					// for the type as 'checkbox', 'chkbxlst', 'sellist' we should use code instead of id (example: I declare a 'chkbxlst' to have a link with dictionnairy, I have to extend it with the 'code' instead 'rowid')
+					echo $extrafields->showInputField($key, $search_array_options['search_options_'.$key], '', '', 'search_');
+				}
+				print '</td>';
+			}
+		}
+	}
 }
 
 print '<td class="liste_titre" align="right">';
@@ -283,17 +340,18 @@ if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs
 if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.fk_product']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], 'c.fk_product', '', $option, '', $sortfield, $sortorder);
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
 	foreach($extrafields->attribute_label as $key => $val)
 	{
-		if (! empty($arrayfields["extra.".$key]['checked']))
+		if (! empty($arrayfields["ef.".$key]['checked']))
 		{
 			$align=$extrafields->getAlignFlag($key);
-			$sortonfield = "extra.".$key;
-			print_liste_field_titre($extralabels[$key],$_SERVER["PHP_SELF"],'','',$option,($align?'align="'.$align.'"':''),$sortfield,$sortorder);
+			$sortonfield = "ef.".$key;
+			if (! empty($extrafields->attribute_computed[$key])) $sortonfield='';
+			print getTitleFieldOfList($langs->trans($extralabels[$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align?'align="'.$align.'"':''), $sortfield, $sortorder)."\n";
 		}
 	}
 }
@@ -353,7 +411,7 @@ if ($resql > 0) {
 		if (! empty($arrayfields['c.duree']['checked']))print '<td>' . $line->duree . '</td>';
 		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
-		if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) {
+		if (! empty($arrayfields['c.fk_product']['checked'])) {
 				if(! empty($line->fk_product)) {
 					$product = new Product($db);
 					$product->fetch($line->fk_product);
@@ -364,20 +422,25 @@ if ($resql > 0) {
 		// Extra fields
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 		{
-		   foreach($extrafields->attribute_label as $key => $val)
-		   {
-				if (! empty($arrayfields["extra.".$key]['checked']))
+			foreach($extrafields->attribute_label as $key => $val)
+			{
+				if (! empty($arrayfields["ef.".$key]['checked']))
 				{
-					print '<td';
 					$align=$extrafields->getAlignFlag($key);
+					print '<td';
 					if ($align) print ' align="'.$align.'"';
 					print '>';
 					$tmpkey='options_'.$key;
-					print $extrafields->showOutputField($key, $line->array_options[$tmpkey], '', 1);
+					print $extrafields->showOutputField($key, $line->array_options[$tmpkey], '');
 					print '</td>';
 					if (! $i) $totalarray['nbfield']++;
+					if (! empty($val['isameasure']))
+					{
+						if (! $i) $totalarray['pos'][$totalarray['nbfield']]='ef.'.$tmpkey;
+						$totalarray['val']['ef.'.$tmpkey] += $line->array_options[$tmpkey];
+					}
 				}
-		   }
+			}
 		}
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";

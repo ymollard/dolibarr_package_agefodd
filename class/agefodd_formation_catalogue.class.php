@@ -196,7 +196,7 @@ class Agefodd extends CommonObject {
 			if ($result < 0) { $error++; }
 			// End call triggers
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -478,7 +478,7 @@ class Agefodd extends CommonObject {
 				}
 			}
 		}
-		
+
 		if (! $error && ! $notrigger)
 		{
 			// Call trigger
@@ -785,7 +785,7 @@ class Agefodd extends CommonObject {
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.status IN (4,5)) as nbsession";
 		foreach ($array_options_keys as $key)
 		{
-			$sql.= ', extra.'.$key;
+			$sql.= ', ef.'.$key;
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as a";
@@ -794,22 +794,22 @@ class Agefodd extends CommonObject {
 		$sql .= " ON dictcat.rowid = c.fk_c_category";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as dictcatbpf";
 		$sql .= " ON dictcatbpf.rowid = c.fk_c_category_bpf";
-		
+
 		$add_extrafield_link = true;
 		foreach ( $filter as $key => $value ) {
-			if (strpos($key, 'extra.') !== false) {
+			if (strpos($key, 'ef.') !== false) {
 				$add_extrafield_link = false;
-				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_extrafields as extra";
-				$sql .= " ON c.rowid = extra.fk_object";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_extrafields as ef";
+				$sql .= " ON c.rowid = ef.fk_object";
 				break;
 			}
 		}
 
 		if ($add_extrafield_link)
 		{
-			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue_extrafields as extra ON (c.rowid = extra.fk_object)';
+			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue_extrafields as ef ON (c.rowid = ef.fk_object)';
 		}
-		
+
 		$sql .= " WHERE c.archive = " . $arch;
 		$sql .= " AND c.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		// Manage filter
@@ -820,7 +820,10 @@ class Agefodd extends CommonObject {
 					$sql .= ' AND DATE_FORMAT(' . $key . ',\'%Y-%m-%d\') = \'' . dol_print_date($value, '%Y-%m-%d') . '\'';
 				} elseif ($key == 'c.duree' || $key == 'c.fk_c_category' || $key == 'c.fk_c_category_bpf') {
 					$sql .= ' AND ' . $key . ' = ' . $value;
-				} else {
+				} elseif (strpos($key,'ef.')!==false){
+					$sql.= $value;
+				}
+				else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
 				}
 			}
@@ -829,7 +832,7 @@ class Agefodd extends CommonObject {
 		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule, dictcatbpf.code, dictcatbpf.intitule";
 		foreach ($array_options_keys as $key)
 		{
-			$sql.= ',extra.'.$key;
+			$sql.= ',ef.'.$key;
 		}
 		if (! empty($sortfield)) {
 			$sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder;
@@ -870,7 +873,7 @@ class Agefodd extends CommonObject {
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
-					
+
 					$this->lines[$i] = $line;
 
 					$i ++;
@@ -1178,8 +1181,8 @@ class Agefodd extends CommonObject {
 			return - 1 * $error;
 		}
 	}
-	
-	
+
+
 	/*
 	 * Function to generate pdf program by link
 	 */
@@ -1189,7 +1192,7 @@ class Agefodd extends CommonObject {
         $link = new Link($this->db);
         $links = array();
 		$link->fetchAll($links, $this->element, $this->id);
-		
+
 		if(!empty($links)){
 			foreach ($links as $link)
 			{
@@ -1241,6 +1244,6 @@ class AgfTrainingLine {
 			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->$label . '</a>';
 		}
 	}
-	
-	
+
+
 }
