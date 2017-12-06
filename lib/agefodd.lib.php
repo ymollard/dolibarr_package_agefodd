@@ -1439,7 +1439,7 @@ function printSessionFieldsWithCustomOrder() {
 						}
 					}
 				}
-			}
+			
 
 				// Ajoute le reste des TR non ordonnés à la suite
 				for (let i in agf_tab_tr) {
