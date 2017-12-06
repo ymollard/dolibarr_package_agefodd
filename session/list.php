@@ -118,7 +118,7 @@ $arrayfields=array(
 	'AgfMargin'			=>array('label'=>"AgfMargin", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
 
 	'AgfListParticipantsStatus'=>array('label'=>"AgfListParticipantsStatus", 'checked'=>1),
-	'AgfProductServiceLinked'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>0),
+	//'AgfProductServiceLinked'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>0),
 );
 
 // Extra fields
