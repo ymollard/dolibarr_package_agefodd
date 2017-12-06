@@ -31,7 +31,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
-
+require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
 require_once '../class/agefodd_formation_catalogue.class.php';
@@ -99,10 +99,6 @@ if (GETPOST("button_removefilter_x")) {
 }
 include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
-$agf = new Agefodd($db);
-$extrafields = new ExtraFields($db);
-$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
-
 $arrayfields=array(
     'c.rowid'			=>array('label'=>"Id", 'checked'=>1),
 
@@ -117,8 +113,21 @@ $arrayfields=array(
     'c.duree'		=>array('label'=>"AgfDuree", 'checked'=>1),
     'a.dated'	=>array('label'=>"AgfDateLastAction", 'checked'=>1),
 	'AgfNbreAction'		=>array('label'=>"AgfNbreAction", 'checked'=>1),
+	'AgfProductServiceLinked'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>1),
 
 );
+
+
+
+llxHeader('', $langs->trans('AgfMenuCat'));
+
+$agf = new Agefodd($db);
+$form = new Form($db);
+$formagefodd = new FormAgefodd($db);
+$formfile = new FormFile($db);
+
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
 
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
@@ -128,13 +137,6 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
        $arrayfields["extra.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
    }
 }
-
-llxHeader('', $langs->trans('AgfMenuCat'));
-
-$form = new Form($db);
-$formagefodd = new FormAgefodd($db);
-$formfile = new FormFile($db);
-
 
 $filter = array ();
 if (! empty($search_intitule)) {
@@ -244,6 +246,8 @@ if (! empty($arrayfields['AgfNbreAction']['checked'])){
 	print '</td>';
 }
 
+if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
+
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
@@ -279,6 +283,7 @@ if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs
 if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
@@ -292,6 +297,7 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 		}
 	}
 }
+
 print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 
 print "</tr>\n";
@@ -347,7 +353,11 @@ if ($resql > 0) {
 		if (! empty($arrayfields['c.duree']['checked']))print '<td>' . $line->duree . '</td>';
 		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
-		
+		if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) {
+				$product = new Product($db);
+				$product->fetch($line->fk_product);
+				print '<td>'.$product->getNomUrl(1).'</td>';
+			}
 		// Extra fields
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 		{
@@ -366,7 +376,6 @@ if ($resql > 0) {
 				}
 		   }
 		}
-		
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 
