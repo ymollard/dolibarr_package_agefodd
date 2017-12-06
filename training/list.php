@@ -354,9 +354,12 @@ if ($resql > 0) {
 		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
 		if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) {
-				$product = new Product($db);
-				$product->fetch($line->fk_product);
-				print '<td>'.$product->getNomUrl(1).'</td>';
+				if(! empty($line->fk_product)) {
+					$product = new Product($db);
+					$product->fetch($line->fk_product);
+					print '<td>'.$product->getNomUrl(1).'</td>';
+				}
+				else print '<td>&nbsp;</td>';
 			}
 		// Extra fields
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
