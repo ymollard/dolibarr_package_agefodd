@@ -209,7 +209,7 @@ class pdf_chevalet extends ModelePDFAgefodd
 			$this->str .= "\n".' (' . $line->poste . ')';
 		}
 		$pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0,0,0)));
-		$pdf->MultiCell(0, 50, $outputlangs->convToOutputCharset($this->str), 1, "C",false, 1, '', '', true, 0, false, true, 50, 'C', false);
+		$pdf->MultiCell(0, 50, $outputlangs->convToOutputCharset($this->str), 1, "C",false, 1, '', '', true, 0, false, true, 50, 'M', false);
 
 	}
 
