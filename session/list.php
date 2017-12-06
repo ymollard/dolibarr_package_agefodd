@@ -97,6 +97,8 @@ $agf_session = new Agsession($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf_session->table_element, true);
 
+$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+
 $arrayfields=array(
     's.rowid'			=>array('label'=>"Id", 'checked'=>1),
     'so.nom'			=>array('label'=>"Company", 'checked'=>1),
@@ -118,7 +120,6 @@ $arrayfields=array(
 	'AgfMargin'			=>array('label'=>"AgfMargin", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
 
 	'AgfListParticipantsStatus'=>array('label'=>"AgfListParticipantsStatus", 'checked'=>1),
-	//'AgfProductServiceLinked'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>0),
 );
 
 // Extra fields
@@ -126,7 +127,7 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 {
    foreach($extrafields->attribute_label as $key => $val)
    {
-       $arrayfields["extra.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
+       $arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
    }
 }
 
@@ -185,6 +186,21 @@ if (! empty($search_year)) {
 }
 if (! empty($search_session_status)) {
 	$filter ['s.status'] = $search_session_status;
+}
+
+foreach ($search_array_options as $key => $val)
+{
+	$crit=$val;
+	$tmpkey=preg_replace('/search_options_/','',$key);
+	$typ=$extrafields->attribute_type[$tmpkey];
+	$mode_search=0;
+	if (in_array($typ, array('int','double','real'))) $mode_search=1;								// Search on a numeric
+	if (in_array($typ, array('sellist','link','chkbxlst','checkbox')) && $crit != '0' && $crit != '-1') $mode_search=2;	// Search on a foreign key int
+	if ($crit != '' && (! in_array($typ, array('select','sellist')) || $crit != '0') && (! in_array($typ, array('link')) || $crit != '-1'))
+	{
+		$filter['ef.'.$tmpkey]= natural_search('ef.'.$tmpkey, $crit, $mode_search);
+		$option .= '&search_options_'.$tmpkey.'=' . $crit;
+	}
 }
 
 if (empty($sortorder)) {
@@ -529,12 +545,36 @@ if ($resql != - 1) {
 	if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
 
 	// Extra fields
-	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
-	{
-	   foreach($extrafields->attribute_label as $key => $val)
-	   {
-			if (! empty($arrayfields["extra.".$key]['checked'])) print '<td class="liste_titre"></td>';
-	   }
+	if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
+		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
+	} else {
+
+		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+		{
+			foreach($extrafields->attribute_label as $key => $val)
+			{
+				if (! empty($arrayfields["ef.".$key]['checked'])) {
+					$align=$extrafields->getAlignFlag($key);
+					$typeofextrafield=$extrafields->attribute_type[$key];
+					print '<td class="liste_titre'.($align?' '.$align:'').'">';
+					if (in_array($typeofextrafield, array('varchar', 'int', 'double', 'select')) && empty($extrafields->attribute_computed[$key]))
+					{
+						$crit=$val;
+						$tmpkey=preg_replace('/search_options_/','',$key);
+						$searchclass='';
+						if (in_array($typeofextrafield, array('varchar', 'select'))) $searchclass='searchstring';
+						if (in_array($typeofextrafield, array('int', 'double'))) $searchclass='searchnum';
+						print '<input class="flat'.($searchclass?' '.$searchclass:'').'" size="4" type="text" name="search_options_'.$tmpkey.'" value="'.dol_escape_htmltag($search_array_options['search_options_'.$tmpkey]).'">';
+					}
+					else
+					{
+						// for the type as 'checkbox', 'chkbxlst', 'sellist' we should use code instead of id (example: I declare a 'chkbxlst' to have a link with dictionnairy, I have to extend it with the 'code' instead 'rowid')
+						echo $extrafields->showInputField($key, $search_array_options['search_options_'.$key], '', '', 'search_');
+					}
+					print '</td>';
+				}
+			}
+		}
 	}
 
 	// Action column
@@ -583,15 +623,16 @@ if ($resql != - 1) {
 	{
 		foreach($extrafields->attribute_label as $key => $val)
 		{
-			if (! empty($arrayfields["extra.".$key]['checked']))
+			if (! empty($arrayfields["ef.".$key]['checked']))
 			{
 				$align=$extrafields->getAlignFlag($key);
-				$sortonfield = "extra.".$key;
-				print_liste_field_titre($extralabels[$key],$_SERVER["PHP_SELF"],'','',$option,($align?'align="'.$align.'"':''),$sortfield,$sortorder);
+				$sortonfield = "ef.".$key;
+				if (! empty($extrafields->attribute_computed[$key])) $sortonfield='';
+				print getTitleFieldOfList($langs->trans($extralabels[$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align?'align="'.$align.'"':''), $sortfield, $sortorder)."\n";
 			}
 		}
 	}
-	
+
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 
 	print "</tr>\n";
@@ -736,22 +777,27 @@ if ($resql != - 1) {
 			// Extra fields
 			if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 			{
-			   foreach($extrafields->attribute_label as $key => $val)
-			   {
-					if (! empty($arrayfields["extra.".$key]['checked']))
+				foreach($extrafields->attribute_label as $key => $val)
+				{
+					if (! empty($arrayfields["ef.".$key]['checked']))
 					{
-						print '<td';
 						$align=$extrafields->getAlignFlag($key);
+						print '<td';
 						if ($align) print ' align="'.$align.'"';
 						print '>';
 						$tmpkey='options_'.$key;
-						print $extrafields->showOutputField($key, $line->array_options[$tmpkey], '', 1);
+						print $extrafields->showOutputField($key, $line->array_options[$tmpkey], '');
 						print '</td>';
 						if (! $i) $totalarray['nbfield']++;
+						if (! empty($val['isameasure']))
+						{
+							if (! $i) $totalarray['pos'][$totalarray['nbfield']]='ef.'.$tmpkey;
+							$totalarray['val']['ef.'.$tmpkey] += $line->array_options[$tmpkey];
+						}
 					}
-			   }
+				}
 			}
-			
+
 			//Action column
 			print '<td>&nbsp;</td>';
 			print "</tr>\n";
@@ -791,19 +837,19 @@ if ($resql != - 1) {
 				if (! empty($arrayfields['AgfMargin']['checked']))				print '<td name="margininfolineb5'.$line->rowid.'" style="display:none"></td>';
 			}
 			if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))	print '<td></td>';
-			
+
 			// Extra fields
 			if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 			{
 			   foreach($extrafields->attribute_label as $key => $val)
 			   {
-					if (! empty($arrayfields["extra.".$key]['checked']))
+					if (! empty($arrayfields["ef.".$key]['checked']))
 					{
 						print '<td></td>';
 					}
 			   }
 			}
-			
+
 			//Action column
 			print '<td>&nbsp;</td>';
 			print "</tr>\n";

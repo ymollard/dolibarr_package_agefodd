@@ -822,8 +822,7 @@ class Agefodd extends CommonObject {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} elseif (strpos($key,'ef.')!==false){
 					$sql.= $value;
-				}
-				else {
+				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $value . '%\'';
 				}
 			}

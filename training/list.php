@@ -279,8 +279,6 @@ if (! empty($arrayfields['c.fk_product']['checked'])) {
 	print '</td>';
 }
 
-
-
 // Extra fields
 if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -412,13 +410,13 @@ if ($resql > 0) {
 		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
 		if (! empty($arrayfields['c.fk_product']['checked'])) {
-				if(! empty($line->fk_product)) {
-					$product = new Product($db);
-					$product->fetch($line->fk_product);
-					print '<td>'.$product->getNomUrl(1).'</td>';
-				}
-				else print '<td>&nbsp;</td>';
+			if(! empty($line->fk_product)) {
+				$product = new Product($db);
+				$product->fetch($line->fk_product);
+				print '<td>'.$product->getNomUrl(1).'</td>';
 			}
+			else print '<td>&nbsp;</td>';
+		}
 		// Extra fields
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 		{

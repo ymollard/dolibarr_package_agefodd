@@ -2201,7 +2201,7 @@ class Agsession extends CommonObject
 
 		foreach ($array_options_keys as $key)
 		{
-			$sql.= ',extra.'.$key;
+			$sql.= ',ef.'.$key;
 		}
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -2235,10 +2235,10 @@ class Agsession extends CommonObject
 		$add_extrafield_link = true;
 		if (is_array($filter)) {
 			foreach ( $filter as $key => $value ) {
-				if (strpos($key, 'extra.') !== false) {
+				if (strpos($key, 'ef.') !== false) {
 					$add_extrafield_link = false;
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as extra";
-					$sql .= " ON s.rowid = extra.fk_object";
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as ef";
+					$sql .= " ON s.rowid = ef.fk_object";
 					break;
 				}
 			}
@@ -2251,7 +2251,7 @@ class Agsession extends CommonObject
 
 		if ($add_extrafield_link)
 		{
-			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_extrafields as extra ON (s.rowid = extra.fk_object)';
+			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_extrafields as ef ON (s.rowid = ef.fk_object)';
 		}
 
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
@@ -2312,6 +2312,8 @@ class Agsession extends CommonObject
 					$sql .= ' AND ' . $key . '=' . $value;
 				} elseif ($key == '!s.rowid') {
 					$sql .= ' AND s.rowid NOT IN (' . $value . ')';
+				}  elseif (strpos($key,'ef.')!==false){
+					$sql.= $value;
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
@@ -2321,7 +2323,7 @@ class Agsession extends CommonObject
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color";
 		foreach ($array_options_keys as $key)
 		{
-			$sql.= ',extra.'.$key;
+			$sql.= ',ef.'.$key;
 		}
 		if (! empty($sortfield)) {
 			$sql .= $this->db->order($sortfield, $sortorder);
