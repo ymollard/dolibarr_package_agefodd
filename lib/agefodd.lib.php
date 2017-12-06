@@ -1387,9 +1387,10 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf = new Agefodd($db);
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
+			$forma_ref_int .= '('.$object->libSessionDate().')';
 		}
 
-		$forma_ref_int .= '('.$object->libSessionDate().')';
+
 
 		if ($forma_ref_int != null) {
 			$pdf->SetXY($x, $y);
@@ -1406,7 +1407,7 @@ function printSessionFieldsWithCustomOrder() {
 		$order = "";
 		if(! empty($conf->global->AGF_CUSTOM_ORDER)) {
 			$customOrder = $conf->global->AGF_CUSTOM_ORDER;
-		
+
 			$TClassName = explode(',', $customOrder);
 
 			foreach($TClassName as $className) {
@@ -1414,7 +1415,7 @@ function printSessionFieldsWithCustomOrder() {
 			}
 			$order = substr($order, 0, -1);
 		}
-		
+
 		?>
 		<script type="text/javascript">
 			
@@ -1438,6 +1439,7 @@ function printSessionFieldsWithCustomOrder() {
 						}
 					}
 				}
+			}
 
 				// Ajoute le reste des TR non ordonnés à la suite
 				for (let i in agf_tab_tr) {

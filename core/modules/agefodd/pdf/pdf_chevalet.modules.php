@@ -141,7 +141,15 @@ class pdf_chevalet extends ModelePDFAgefodd
 			$result = $agf_soc->fetch($socid);
 
 			if ($result) {
-				$this->_pagebody($pdf, $agf, 1, $outputlangs);
+				$agfsta = new Agefodd_session_stagiaire($this->db);
+				$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 25);
+
+				$i = 0;
+				foreach ( $agfsta->lines as $line ) {
+					$this->_pagebody($pdf, $line, 1, $outputlangs);
+				}
 			}
 
 			$pdf->Close();
@@ -149,7 +157,7 @@ class pdf_chevalet extends ModelePDFAgefodd
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
-			
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -160,8 +168,8 @@ class pdf_chevalet extends ModelePDFAgefodd
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-			
-			
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -178,54 +186,31 @@ class pdf_chevalet extends ModelePDFAgefodd
 	 * \param showaddress 0=no, 1=yes
 	 * \param outputlangs Object lang for output
 	 */
-	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs) {
+	function _pagebody(&$pdf, $line, $showaddress = 1, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
 		// New page
 		$pdf->AddPage();
 		$this->_pagehead($pdf, $agf, 1, $outputlangs);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 30);
 
-		$posY = $this->marge_haute;
-		$posX = $this->page_largeur - $this->marge_droite - 55;
+		$pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 4, 'color' => array(109, 109, 109)));
 
-		/**
-		 * *** Bloc stagiaire ****
-		 */
-		$agfsta = new Agefodd_session_stagiaire($this->db);
-		$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
+		$pdf->Line(0, 74, $this->page_largeur, 74);
 
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 25);
+		$pdf->Line(0, 148, $this->page_largeur, 148);
 
-		$i = 0;
-		foreach ( $agfsta->lines as $line ) {
-			$i ++;
+		$pdf->Line(0, 223, $this->page_largeur, 223);
 
-			// Nom
-			$pdf->SetXY($this->marge_droite, $pdf->getY());
-			$this->str = $line->nom . ' ' . $line->prenom . "\n" . dol_trunc($line->socname, 27);
-			if (! empty($line->poste)) {
-				$this->str .= ' (' . $line->poste . ')';
-			}
-			$pdf->MultiCell(0, 30, '', 1, "C");
-			$pdf->MultiCell(0, 30, $outputlangs->convToOutputCharset($this->str), 1, "C");
-
-			if ($i % 4 == 0) {
-				$pdf->AddPage();
-				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				$posY = $this->marge_haute;
-				$posX = $this->page_largeur - $this->marge_droite - 55;
-			} else {
-				$pdf->MultiCell(0, 5, '', 0, "C");
-			}
+		// Nom
+		$pdf->SetXY($this->marge_droite, 160);
+		$this->str = $line->nom . ' ' . $line->prenom . "\n" . dol_trunc($line->socname, 27);
+		if (! empty($line->poste)) {
+			$this->str .= "\n".' (' . $line->poste . ')';
 		}
+		$pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0,0,0)));
+		$pdf->MultiCell(0, 50, $outputlangs->convToOutputCharset($this->str), 1, "C",false, 1, '', '', true, 0, false, true, 50, 'M', false);
 
-		// Pied de page
-		// $this->_pagefoot($pdf, $agf, $outputlangs);
-		// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
-		if (method_exists($pdf, 'AliasNbPages')) {
-			$pdf->AliasNbPages();
-		}
 	}
 
 	/**

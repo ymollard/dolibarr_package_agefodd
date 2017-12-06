@@ -776,13 +776,17 @@ class Agefodd extends CommonObject {
 	 * @param array $filter array of filter where clause
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array()) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array(), $array_options_keys=array()) {
 		global $langs;
 
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
 		$sql .= "dictcatbpf.code as catcodebpf ,dictcatbpf.intitule as catlibbpf,";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.status IN (4,5)) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.status IN (4,5)) as nbsession";
+		foreach ($array_options_keys as $key)
+		{
+			$sql.= ', extra.'.$key;
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as a";
 		$sql .= " ON c.rowid = a.fk_formation_catalogue";
@@ -790,15 +794,22 @@ class Agefodd extends CommonObject {
 		$sql .= " ON dictcat.rowid = c.fk_c_category";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf as dictcatbpf";
 		$sql .= " ON dictcatbpf.rowid = c.fk_c_category_bpf";
-
+		
+		$add_extrafield_link = true;
 		foreach ( $filter as $key => $value ) {
 			if (strpos($key, 'extra.') !== false) {
+				$add_extrafield_link = false;
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_extrafields as extra";
 				$sql .= " ON c.rowid = extra.fk_object";
 				break;
 			}
 		}
 
+		if ($add_extrafield_link)
+		{
+			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue_extrafields as extra ON (c.rowid = extra.fk_object)';
+		}
+		
 		$sql .= " WHERE c.archive = " . $arch;
 		$sql .= " AND c.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		// Manage filter
@@ -816,6 +827,10 @@ class Agefodd extends CommonObject {
 		}
 
 		$sql .= " GROUP BY c.ref,c.ref_interne,c.rowid, dictcat.code, dictcat.intitule, dictcatbpf.code, dictcatbpf.intitule";
+		foreach ($array_options_keys as $key)
+		{
+			$sql.= ',extra.'.$key;
+		}
 		if (! empty($sortfield)) {
 			$sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder;
 		}
@@ -849,6 +864,13 @@ class Agefodd extends CommonObject {
 					$line->category_lib = $obj->catcode . ' - ' . $obj->catlib;
 					$line->category_lib_bpf = $obj->catcodebpf . ' - ' . $obj->catlibbpf;
 
+					// Formatage comme du Dolibarr standard pour ne pas être perdu
+					$line->array_options = array();
+					foreach ($array_options_keys as $key)
+					{
+						$line->array_options['options_'.$key] = $obj->{$key};
+					}
+					
 					$this->lines[$i] = $line;
 
 					$i ++;
