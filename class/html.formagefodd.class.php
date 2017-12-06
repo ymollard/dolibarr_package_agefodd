@@ -874,9 +874,10 @@ class FormAgefodd extends Form
 	 * @param int $showempty empty field
 	 * @param int $forcecombo use combo box
 	 * @param array $event
+	 * @param string $returntype typereturn
 	 * @return string The HTML control
 	 */
-	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $returntype='') {
 		global $conf, $langs;
 
 		$sql = "SELECT t.rowid, t.code ,t.intitule ";
@@ -886,13 +887,24 @@ class FormAgefodd extends Form
 		}
 		$sql .= " ORDER BY t.sort";
 
+		$out='';
+
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if (empty($returntype)) {
+				$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			} else {
+				$out .= 'select';
+			}
+
 			if ($showempty) {
-				$out .= '<option value=""></option>';
+				if (empty($returntype)) {
+					$out .= '<option value=""></option>';
+				}else {
+
+				}
 			}
 			$num = $this->db->num_rows($result);
 			$i = 0;
@@ -906,14 +918,20 @@ class FormAgefodd extends Form
 					}
 
 					if ($selectid > 0 && $selectid == $obj->rowid) {
-						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+						if (empty($returntype)) {
+							$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+						}
 					} else {
-						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+						if (empty($returntype)) {
+							$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+						}
 					}
 					$i ++;
 				}
 			}
-			$out .= '</select>';
+			if (empty($returntype)) {
+				$out .= '</select>';
+			}
 			$this->db->free($result);
 			return $out;
 		} else {

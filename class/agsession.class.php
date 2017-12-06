@@ -2198,12 +2198,12 @@ class Agsession extends CommonObject
 			$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1 OR status_in_session=3) AND fk_session_agefodd=s.rowid) as nb_confirm,";
 			$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE status_in_session=6 AND fk_session_agefodd=s.rowid) as nb_cancelled";
 		}
-		
+
 		foreach ($array_options_keys as $key)
 		{
 			$sql.= ',extra.'.$key;
 		}
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
@@ -2253,7 +2253,7 @@ class Agsession extends CommonObject
 		{
 			$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_extrafields as extra ON (s.rowid = extra.fk_object)';
 		}
-		
+
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
 		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
@@ -2401,7 +2401,7 @@ class Agsession extends CommonObject
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
-					
+
 					$this->lines[$i] = $line;
 					$i ++;
 				}
@@ -3215,6 +3215,20 @@ class Agsession extends CommonObject
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 
+
+		$action=GETPOST('action','alpha');
+
+		if ($action=='setsession_status') {
+			$this->status=GETPOST('session_status');
+			$result=$this->update($user);
+			if ($result<0) {
+				setEventMessage($this->error,'errors');
+			} else {
+				$this->fetch($this->id);
+			}
+
+		}
+
 		$socstatic = new Societe($this->db);
 		$contactstatic = new Contact($this->db);
 
@@ -3364,8 +3378,36 @@ class Agsession extends CommonObject
 		print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
 		print '<td>' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
 
-		print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
-		print $this->statuslib . '</td></tr>';
+
+		print '<tr class="order_status">';
+		print '<td>';
+		print $form->editfieldkey("AgfStatusSession",'session_status',$this->status,$this,$user->rights->agefodd->modifier);
+		print '</td>';
+		print '<td>';
+		if ($action=='editsession_status') {
+			print '<script type="text/javascript">
+						jQuery(document).ready(function () {
+							jQuery(function() {' . "\n";
+			print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');';
+			print '			});
+					});
+					</script> ';
+			require_once ('../class/html.formagefodd.class.php');
+			$formAgefodd = new FormAgefodd($this->db);
+			print '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$this->id.'">';
+			print '<input type="hidden" name="action" value="setsession_status">';
+			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+			print $formAgefodd->select_session_status($this->status, "session_status", 't.active=1');
+			print '<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
+			print '</form>';
+		} else {
+			print $this->statuslib;
+		}
+		print '</td>';
+		print '</tr>';
+
+		/*print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
+		print $this->statuslib . '</td></tr>';*/
 
 		if (! empty($extrafields->attribute_label)) {
 			print $this->showOptionals($extrafields);
