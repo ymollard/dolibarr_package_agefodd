@@ -1418,34 +1418,37 @@ function printSessionFieldsWithCustomOrder() {
 
 		?>
 		<script type="text/javascript">
+			
+			$(function() {
+				// Correspond aux premières lignes à afficher sur la fiche d'une session de formation
+				var agf_TClass = new Array(<?php print $order ?>); // "agefodd_agsession_extras_"+codeExtrafield, "order_intitule", "order_ref", "order_intituleCusto"
+				var agf_tab_tr = $('#session_card > tbody > tr').clone(true);
+				var TAgf_found = new Array();
 
-			// Correspond aux premières lignes à afficher sur la fiche d'une session de formation
-			var agf_TClass = new Array(<?php print $order ?>); // "agefodd_agsession_extras_"+codeExtrafield, "order_intitule", "order_ref", "order_intituleCusto"
-			var agf_tab_tr = $('#session_card > tbody > tr').clone(true);
-			var TAgf_found = new Array();
+				$('#session_card > tbody > tr').remove();
 
-			$('#session_card > tbody > tr').remove();
+				for(let i in agf_TClass) {
+					if($.isNumeric(i) === false) break;
 
-			for(let i in agf_TClass) {
-				if($.isNumeric(i) === false) break;
+					for(let j in agf_tab_tr) {
+						if($.isNumeric(j) === false) break;
 
-				for(let j in agf_tab_tr) {
-					if($.isNumeric(j) === false) break;
-
-					if(agf_TClass[i] === agf_tab_tr[j].className) {
-						$('#session_card > tbody').append(agf_tab_tr[j]);
-						TAgf_found[j] = true;
+						if(agf_TClass[i] === agf_tab_tr[j].className) {
+							$('#session_card > tbody').append(agf_tab_tr[j]);
+							TAgf_found[j] = true;
+						}
 					}
 				}
-			}
+			
 
-			// Ajoute le reste des TR non ordonnés à la suite
-			for (let i in agf_tab_tr) {
-				if($.isNumeric(i) === false) break;
-				if (TAgf_found[i] === true) continue;
-				$('#session_card > tbody').append(agf_tab_tr[i]);
-			}
-
+				// Ajoute le reste des TR non ordonnés à la suite
+				for (let i in agf_tab_tr) {
+					if($.isNumeric(i) === false) break;
+					if (TAgf_found[i] === true) continue;
+					$('#session_card > tbody').append(agf_tab_tr[i]);
+				}
+			});
+			
 		</script>
 		<?php
 	}
