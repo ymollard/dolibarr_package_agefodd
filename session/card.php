@@ -1058,7 +1058,7 @@ printSessionFieldsWithCustomOrder();
 					print '<tr class="order_nbplaceparticipants"><td width="20%">' . $langs->trans("AgfNbreParticipants") . '</td>';
 					print '<td><input size="4" type="text" class="flat" id="nb_stagiaire" name="nb_stagiaire" ' . $disabled . ' value="' . ($agf->nb_stagiaire > 0 ? $agf->nb_stagiaire : '0') . '" /></td></tr>';
 
-					print '<tr><td width="20%">' . $langs->trans("AgfForceNbreParticipants") . '</td>';
+					print '<tr class="order_force_nb_stagiaire"><td width="20%">' . $langs->trans("AgfForceNbreParticipants") . '</td>';
 					print '<td>';
 					print '<input size="4" type="checkbox" ' . $checked . ' name="force_nb_stagiaire" value="1" onclick="fnForceUpdate(this);" />' . '</td></tr>';
 
