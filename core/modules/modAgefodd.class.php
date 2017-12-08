@@ -416,7 +416,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_ADD_AVGPRICE_DOCPROPODR";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '1';
+		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'Add average price on create order/proposal';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -616,7 +616,7 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->const[$r][0] = "AGF_ADD_PROGRAM_TO_CONV";
 		$this->const[$r][1] = "yesno";
-		$this->const[$r][2] = '1';
+		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'Add program to convention';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
@@ -1998,7 +1998,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/contact/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 600+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && !empty($conf->global->AGF_CONTACT_DOL_SESSION)',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($conf->global->AGF_CONTACT_DOL_SESSION)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2012,7 +2012,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/contact/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 600+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && !empty($conf->global->AGF_CONTACT_DOL_SESSION)',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($conf->global->AGF_CONTACT_DOL_SESSION)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2026,7 +2026,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/contact/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 600+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && !empty($conf->global->AGF_CONTACT_DOL_SESSION)',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($conf->global->AGF_CONTACT_DOL_SESSION)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
