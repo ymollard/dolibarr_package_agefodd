@@ -3209,7 +3209,7 @@ class Agsession extends CommonObject
 	/**
 	 * Print table of session information
 	 */
-	public function printSessionInfo() {
+	public function printSessionInfo($width_table=true) {
 		global $form, $langs, $conf, $user;
 
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
@@ -3237,7 +3237,7 @@ class Agsession extends CommonObject
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
 
-		print '<table id="session_card" class="border" width="100%">';
+		if ($width_table) print '<table id="session_card" class="border" width="100%">';
 
 		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td>' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
@@ -3415,11 +3415,11 @@ class Agsession extends CommonObject
 			print $this->showOptionals($extrafields);
 		}
 
-		print '</table>';
+		if ($width_table) print '</table>';
 
 		print '<BR/>';
-		print '<table class="border" width="100%">';
-		print '<tr>';
+		if ($width_table) print '<table class="border" width="100%">';
+		print '<tr class="order_calendrier">';
 
 		require_once 'agefodd_session_calendrier.class.php';
 		$calendrier = new Agefodd_sesscalendar($this->db);
@@ -3497,8 +3497,7 @@ class Agsession extends CommonObject
 				print '</script>' . "\n";
 			}
 		}
-		print "</table>";
-		printSessionFieldsWithCustomOrder();
+		if ($width_table) print "</table>";
 	}
 
 	/**
