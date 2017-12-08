@@ -533,7 +533,7 @@ if (! empty($id)) {
 
 		print '&nbsp';
 
-		print '<table class="border" width="100%">' . "\n";
+		print '<div class="fichecenter"><table class="border" width="100%">' . "\n";
 
 		print '<tr class="liste_titre">' . "\n";
 		print '<td colspan=3>';
@@ -726,7 +726,7 @@ if (! empty($id)) {
 			}
 			print '</table>';
 		}
-		print '</div>' . "\n";
+		print '</div></div>' . "\n";
 	} elseif ($result==0) {
 		setEventMessages($langs->trans('AgfThirdparyMandatory'), null, 'errors');
 	} else {

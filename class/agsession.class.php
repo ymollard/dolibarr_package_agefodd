@@ -3237,7 +3237,7 @@ class Agsession extends CommonObject
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
 
-		print '<table id="session_card" class="border" width="100%">';
+		print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
 
 		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td>' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
@@ -3415,7 +3415,7 @@ class Agsession extends CommonObject
 			print $this->showOptionals($extrafields);
 		}
 
-		print '</table>';
+		print '</table></div>';
 
 		print '<BR/>';
 		print '<table class="border" width="100%">';

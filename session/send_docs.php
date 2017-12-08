@@ -461,7 +461,7 @@ if (! empty($id)) {
 			} elseif ($action == 'presend_presence_empty') {
 				$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 			}elseif ($action == 'presend_pedago') {
-				
+
 				$agfTraining = new Agefodd($db);
 				$agfTraining->fetch($agf->fk_formation_catalogue);
 				$agfTraining->generatePDAByLink();

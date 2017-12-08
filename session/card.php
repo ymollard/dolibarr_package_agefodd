@@ -647,7 +647,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="add_confirm">';
 
-	print '<table id="session_card" class="border" width="100%">';
+	print '<table id="session_card" class="border tableforfield" width="100%">';
 
 	print '<tr class="order_place"><td><span class="fieldrequired">' . $langs->trans("AgfLieu") . '</span></td>';
 	print '<td><table class="nobordernopadding"><tr><td>';
@@ -891,7 +891,7 @@ printSessionFieldsWithCustomOrder();
 					print '<input type="hidden" name="id" value="' . $id . '">';
 					print '<input type="hidden" name="action" value="update">';
 
-					print '<table id="session_card" class="border" width="100%">';
+					print '<table id="session_card" class="border tableforfield" width="100%">';
 					print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
 					print '<td>' . $agf->id . '</td></tr>';
 
