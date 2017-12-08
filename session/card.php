@@ -1194,18 +1194,19 @@ printSessionFieldsWithCustomOrder();
 					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					print '</div>';
 					
-printSessionFieldsWithCustomOrder();		
-print '<table id="session_card" class="border" width="100%">';
+					printSessionFieldsWithCustomOrder();
+					print '<div class="fichecenter">';
+					print '<table id="session_card" class="border" width="100%">';
 					// Print session card
 					$agf->printSessionInfo(false);
-
+					
 					
 
 					/*
 					 * Manage founding ressources depend type inter-enterprise or extra-enterprise
 					 */
 					if (! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-						print '<tr class="tr_order_OPCA"><td colspan="2">';
+						print '<tr class="tr_order_OPCA"><td colspan="4">';
 						
 						print '<table class="border order_OPCA" width="100%">';
 						print '<tr><td>' . $langs->trans("AgfSubrocation") . '</td>';
@@ -1266,7 +1267,7 @@ print '<table id="session_card" class="border" width="100%">';
 					$spend_cost = 0;
 					$cashed_cost = 0;
 
-					print '<tr class="tr_order_cost"><td colspan="2">';
+					print '<tr class="tr_order_cost"><td colspan="4">';
 					print '<table class="border order_cost" width="100%">';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
 					print '<td>' . price($agf->cost_trainer) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
@@ -1302,7 +1303,7 @@ print '<table id="session_card" class="border" width="100%">';
 					/*
 					 * Manage trainers
 					 */
-					print '<tr class="tr_order_trainer"><td colspan="2">';
+					print '<tr class="tr_order_trainer"><td colspan="4">';
 					
 					print '<table class="border order_trainer" width="100%">';
 
@@ -1417,7 +1418,7 @@ print '<table id="session_card" class="border" width="100%">';
 					 * Display trainees
 					 */
 
-					print '<tr class="tr_order_trainee"><td colspan="2">';
+					print '<tr class="tr_order_trainee"><td colspan="4">';
 					
 					print '<table class="border order_trainee" width="100%">';
 
@@ -1539,7 +1540,7 @@ print '<table id="session_card" class="border" width="100%">';
 					
 					print '</td></tr>';
 					print '</table>';
-					
+			print '</div>';		
 					print '</div>';
 				}
 			} else {

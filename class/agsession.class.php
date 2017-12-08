@@ -3218,6 +3218,9 @@ class Agsession extends CommonObject
 		require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 
 
+		$colspan=1;
+		if (!$width_table) $colspan = 3;
+		
 		$action=GETPOST('action','alpha');
 
 		if ($action=='setsession_status') {
@@ -3240,29 +3243,29 @@ class Agsession extends CommonObject
 		print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
 
 		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
-		print '<td>' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
 
 		print '<tr class="order_intitule"><td>' . $langs->trans("AgfFormIntitule") . '</td>';
-		print '<td><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->formintitule . '</a></td></tr>';
+		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->formintitule . '</a></td></tr>';
 
 		print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
-		print '<td><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->intitule_custo . '</a></td></tr>';
+		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->intitule_custo . '</a></td></tr>';
 
 		print '<tr class="order_formRef"><td>' . $langs->trans("AgfFormRef") . '</td>';
-		print '<td>' . $this->formref . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . $this->formref . '</td></tr>';
 
 		// Type de la session
 		print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
-		print '<td>' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
 
 		print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
-		print '<td><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
+		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
 
 		print '<tr class="order_duration"><td>' . $langs->trans("AgfDuree") . '</td>';
-		print '<td>' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)</td></tr>';
+		print '<td colspan="'.$colspan.'">' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)</td></tr>';
 
 		print '<tr class="order_product"><td>' . $langs->trans("AgfProductServiceLinked") . '</td>';
-		print '<td>';
+		print '<td colspan="'.$colspan.'">';
 		if (! empty($this->fk_product)) {
 			$product = new Product($this->db);
 			$result = $product->fetch($this->fk_product);
@@ -3275,13 +3278,13 @@ class Agsession extends CommonObject
 		print "</td></tr>";
 
 		print '<tr class="order_dated"><td>' . $langs->trans("AgfDateDebut") . '</td>';
-		print '<td>' . dol_print_date($this->dated, 'daytext') . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . dol_print_date($this->dated, 'daytext') . '</td></tr>';
 
 		print '<tr class="order_datef"><td>' . $langs->trans("AgfDateFin") . '</td>';
-		print '<td>' . dol_print_date($this->datef, 'daytext') . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . dol_print_date($this->datef, 'daytext') . '</td></tr>';
 
 		print '<tr class="order_customer"><td width="20%">' . $langs->trans("Customer") . '</td>';
-		print '	<td>';
+		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc)) && ($this->fk_soc > 0)) {
 
 			$result = $socstatic->fetch($this->fk_soc);
@@ -3294,13 +3297,13 @@ class Agsession extends CommonObject
 
 		print '<tr class="order_sessionContact"><td>' . $langs->trans("AgfSessionContact") . '</td>';
 		if (! empty($this->sourcecontactid) && ! empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
-			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $this->sourcecontactid . '">' . $this->contactname . '</a></td></tr>';
+			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $this->sourcecontactid . '">' . $this->contactname . '</a></td></tr>';
 		} else {
-			print '<td><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
+			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
 		}
 
 		print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
-		print '	<td>';
+		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
 			$result = $socstatic->fetch($this->fk_soc_requester);
 			if ($result < 0) {
@@ -3311,7 +3314,7 @@ class Agsession extends CommonObject
 		print '</td></tr>';
 
 		print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
-		print '<td>';
+		print '<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_socpeople_requester)) && ($this->fk_socpeople_requester > 0)) {
 			$result = $contactstatic->fetch($this->fk_socpeople_requester);
 			if ($result < 0) {
@@ -3322,7 +3325,7 @@ class Agsession extends CommonObject
 		print '</td></tr>';
 
 		print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . '</td>';
-		print '<td>';
+		print '<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_socpeople_presta)) && ($this->fk_socpeople_presta > 0)) {
 			$result = $contactstatic->fetch($this->fk_socpeople_presta);
 			if ($result < 0) {
@@ -3333,7 +3336,7 @@ class Agsession extends CommonObject
 		print '</td></tr>';
 
 		print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
-		print '<td>';
+		print '<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc_employer)) && ($this->fk_soc_employer > 0)) {
 			$result = $socstatic->fetch($this->fk_soc_employer);
 			if ($result < 0) {
@@ -3344,48 +3347,48 @@ class Agsession extends CommonObject
 		print '</td></tr>';
 
 		print '<tr class="order_place"><td>' . $langs->trans("AgfLieu") . '</td>';
-		print '<td><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
+		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
 
 		print '<tr class="order_note"><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 		if (! empty($this->notes))
 			$notes = nl2br($this->notes);
 		else
 			$notes = $langs->trans("AgfUndefinedNote");
-		print '<td>' . stripslashes($notes) . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . stripslashes($notes) . '</td></tr>';
 
 		print '<tr class="order_dateResTrainer"><td>' . $langs->trans("AgfDateResTrainer") . '</td>';
 		if ($this->is_date_res_trainer) {
-			print '<td>' . dol_print_date($this->date_res_trainer, 'daytext') . '</td></tr>';
+			print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_trainer, 'daytext') . '</td></tr>';
 		} else {
-			print '<td>' . $langs->trans("AgfNoDefined") . '</td></tr>';
+			print '<td colspan="'.$colspan.'">' . $langs->trans("AgfNoDefined") . '</td></tr>';
 		}
 
 		print '<tr class="order_dateResSite"><td>' . $langs->trans("AgfDateResSite") . '</td>';
 		if ($this->is_date_res_site) {
-			print '<td>' . dol_print_date($this->date_res_site, 'daytext') . '</td></tr>';
+			print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_site, 'daytext') . '</td></tr>';
 		} else {
-			print '<td>' . $langs->trans("AgfNoDefined") . '</td></tr>';
+			print '<td colspan="'.$colspan.'">' . $langs->trans("AgfNoDefined") . '</td></tr>';
 		}
 
 		print '<tr class="order_dateResConfirmSite"><td>' . $langs->trans("AgfDateResConfirmSite") . '</td>';
 		if ($this->is_date_res_confirm_site) {
-			print '<td>' . dol_print_date($this->date_res_confirm_site, 'daytext') . '</td></tr>';
+			print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_confirm_site, 'daytext') . '</td></tr>';
 		} else {
-			print '<td>' . $langs->trans("AgfNoDefined") . '</td></tr>';
+			print '<td colspan="'.$colspan.'">' . $langs->trans("AgfNoDefined") . '</td></tr>';
 		}
 
-		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td>';
+		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td colspan="'.$colspan.'">';
 		print $this->nb_subscribe_min . '</td></tr>';
 
 		print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
-		print '<td>' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
+		print '<td colspan="'.$colspan.'">' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
 
 
 		print '<tr class="order_status">';
 		print '<td>';
 		print $form->editfieldkey("AgfStatusSession",'session_status',$this->status,$this,$user->rights->agefodd->modifier);
 		print '</td>';
-		print '<td>';
+		print '<td colspan="'.$colspan.'">';
 		if ($action=='editsession_status') {
 			print '<script type="text/javascript">
 						jQuery(document).ready(function () {
@@ -3430,7 +3433,7 @@ class Agsession extends CommonObject
 		$alertday = false;
 		if ($blocNumber < 1) {
 			print '<td  width="20%" valign="top" >' . $langs->trans("AgfCalendrier") . '</td>';
-			print '<td style="color:red; text-decoration: blink;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
+			print '<td colspan="'.$colspan.'" style="color:red; text-decoration: blink;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
 		} else {
 			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
