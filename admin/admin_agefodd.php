@@ -1883,8 +1883,9 @@ if ($conf->use_javascript_ajax) {
 }
 
 $fieldsOrder = GETPOST('fieldsOrder');
-
-dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+if(! empty($fieldsOrder)) {
+	dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+}
 
 
 print '<form action="admin_agefodd.php" method="POST">';
