@@ -1416,10 +1416,17 @@ function printSessionFieldsWithCustomOrder() {
 			$order = substr($order, 0, -1);
 		}
 
+		if (!empty($TClassName)) {
 		?>
 		<script type="text/javascript">
 			
 			$(function() {
+				$('#session_card > tbody > tr div.select2-container').each(function(i, item) {
+					let id = item.id.slice(5);	
+					$('#'+id).select2('destroy');
+					$('#'+id).addClass('toSelect2');
+				});
+
 				// Correspond aux premières lignes à afficher sur la fiche d'une session de formation
 				var agf_TClass = new Array(<?php print $order ?>); // "agefodd_agsession_extras_"+codeExtrafield, "order_intitule", "order_ref", "order_intituleCusto"
 				var agf_tab_tr = $('#session_card > tbody > tr').clone(true);
@@ -1438,8 +1445,7 @@ function printSessionFieldsWithCustomOrder() {
 							TAgf_found[j] = true;
 						}
 					}
-				}
-			
+				}			
 
 				// Ajoute le reste des TR non ordonnés à la suite
 				for (let i in agf_tab_tr) {
@@ -1447,9 +1453,12 @@ function printSessionFieldsWithCustomOrder() {
 					if (TAgf_found[i] === true) continue;
 					$('#session_card > tbody').append(agf_tab_tr[i]);
 				}
+				
+				$('.toSelect2').select2();
 			});
 			
 		</script>
 		<?php
+		}
 	}
 }
