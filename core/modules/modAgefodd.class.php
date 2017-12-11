@@ -1950,7 +1950,7 @@ class modAgefodd extends DolibarrModules
 				'type' => 'left',
 				'titre' => 'AgfMenuFormateur',
 				'leftmenu' => 'AgfMenuFormateur',
-				'url' => '/agefodd/site/list.php',
+				'url' => '/agefodd/trainer/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 500+$r,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
