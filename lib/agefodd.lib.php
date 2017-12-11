@@ -1402,19 +1402,16 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 
 function printSessionFieldsWithCustomOrder() {
 	global $conf;
+	
+	$customOrder = $conf->global->AGF_CUSTOM_ORDER;
+	
+	if(! empty($customOrder)) {
+		$TClassName = explode(',', $customOrder);
 
-	if(! empty($conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER)) {
-		$order = "";
-		if(! empty($conf->global->AGF_CUSTOM_ORDER)) {
-			$customOrder = $conf->global->AGF_CUSTOM_ORDER;
-
-			$TClassName = explode(',', $customOrder);
-
-			foreach($TClassName as $className) {
-				$order .= '"'.trim($className).'",';
-			}
-			$order = substr($order, 0, -1);
+		foreach($TClassName as $className) {
+			$order .= '"'.trim($className).'",';
 		}
+		$order = substr($order, 0, -1);
 
 		if (!empty($TClassName)) {
 		?>
