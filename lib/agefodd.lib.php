@@ -1402,24 +1402,28 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 
 function printSessionFieldsWithCustomOrder() {
 	global $conf;
+	
+	$customOrder = $conf->global->AGF_CUSTOM_ORDER;
+	
+	if(! empty($customOrder)) {
+		$TClassName = explode(',', $customOrder);
 
-	if(! empty($conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER)) {
-		$order = "";
-		if(! empty($conf->global->AGF_CUSTOM_ORDER)) {
-			$customOrder = $conf->global->AGF_CUSTOM_ORDER;
-
-			$TClassName = explode(',', $customOrder);
-
-			foreach($TClassName as $className) {
-				$order .= '"'.trim($className).'",';
-			}
-			$order = substr($order, 0, -1);
+		foreach($TClassName as $className) {
+			$order .= '"'.trim($className).'",';
 		}
+		$order = substr($order, 0, -1);
 
+		if (!empty($TClassName)) {
 		?>
 		<script type="text/javascript">
 			
 			$(function() {
+				$('#session_card > tbody > tr div.select2-container').each(function(i, item) {
+					let id = item.id.slice(5);	
+					$('#'+id).select2('destroy');
+					$('#'+id).addClass('toSelect2');
+				});
+
 				// Correspond aux premières lignes à afficher sur la fiche d'une session de formation
 				var agf_TClass = new Array(<?php print $order ?>); // "agefodd_agsession_extras_"+codeExtrafield, "order_intitule", "order_ref", "order_intituleCusto"
 				var agf_tab_tr = $('#session_card > tbody > tr').clone(true);
@@ -1438,8 +1442,7 @@ function printSessionFieldsWithCustomOrder() {
 							TAgf_found[j] = true;
 						}
 					}
-				}
-			
+				}			
 
 				// Ajoute le reste des TR non ordonnés à la suite
 				for (let i in agf_tab_tr) {
@@ -1447,9 +1450,12 @@ function printSessionFieldsWithCustomOrder() {
 					if (TAgf_found[i] === true) continue;
 					$('#session_card > tbody').append(agf_tab_tr[i]);
 				}
+				
+				$('.toSelect2').select2();
 			});
 			
 		</script>
 		<?php
+		}
 	}
 }

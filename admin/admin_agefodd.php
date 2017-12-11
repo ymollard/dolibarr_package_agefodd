@@ -417,6 +417,11 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
+	$fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
+	$res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+	
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
@@ -1053,14 +1058,15 @@ print '</tr>';
 print '</table><br>';
 print '</form>';
 
-print '<table class="noborder" width="100%">';
 
-if (! $conf->use_javascript_ajax) {
+//if (! $conf->use_javascript_ajax) {
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="setvarother">';
-}
+//}
 
+print '<table class="noborder" width="100%">';
+	
 // Affichage du logo commanditaire
 print '<tr class="pair"><td>' . $langs->trans("AgfUseCustomerLogo") . '</td>';
 print '<td align="left">';
@@ -1853,8 +1859,8 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-
-print '<tr class="pair"><td>' . $langs->trans("AgfPrintInternalRefOnPDF") . '</td>';
+$var = true;
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfPrintInternalRefOnPDF") . '</td>';
 print '<td align="left">';
 if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff('AGF_PRINT_INTERNAL_REF_ON_PDF');
@@ -1869,38 +1875,20 @@ print '</td>';
 print '<td align="center">';
 print '</td>';
 print '</tr>';
+$var=!$var;
 
-print '<tr class="pair"><td>' . $langs->trans("AgfPrintFieldsWithCustomOrder") . '</td>';
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfPrintFieldsWithCustomOrder") . '</td>';
 print '<td align="left">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER');
-} else {
-	$arrval = array (
-			'0' => $langs->trans("No"),
-			'1' => $langs->trans("Yes")
-	);
-	print $form->selectarray("AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER", $arrval, $conf->global->AGF_PRINT_FIELDS_WITH_CUSTOM_ORDER);
-}
-
-$fieldsOrder = GETPOST('fieldsOrder');
-
-dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
-
-
-print '<form action="admin_agefodd.php" method="POST">';
-print '<input type="text" id="fieldsOrder" name="fieldsOrder" size="75%" value="'.$conf->global->AGF_CUSTOM_ORDER.'"/>';
-print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
-print '</form>';
+print '<input type="text" id="AGF_CUSTOM_ORDER" name="AGF_CUSTOM_ORDER" size="75%" value="'.$conf->global->AGF_CUSTOM_ORDER.'"/>';
 print '</td>';
 print '<td>';
 print $form->textwithpicto('', $langs->trans('AgfPrintFieldsWithCustomOrderHelp'), 1, 0);
 print '</td>';
 print '</tr>';
+$var=!$var;
 
-if (! $conf->use_javascript_ajax) {
-	print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
-	print '</tr>';
-}
+print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
+$var=!$var;
 
 print '</table><br>';
 print '</form>';
