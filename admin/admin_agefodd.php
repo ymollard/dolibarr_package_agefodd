@@ -469,6 +469,10 @@ if ($action == 'sessionlevel_create') {
 	$agf->intitule = GETPOST('intitule', 'alpha');
 	$agf->delais_alerte = GETPOST('delai', 'int');
 	$agf->delais_alerte_end = GETPOST('delai_end', 'int');
+	
+	// prevent mysql error
+	if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
+	if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
 
 	if ($agf->level_rank > 3) {
 		setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
@@ -512,7 +516,11 @@ if ($action == 'sessionlevel_update') {
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->delais_alerte = GETPOST('delai', 'int');
 			$agf->delais_alerte_end = GETPOST('delai_end', 'int');
-
+			
+			// prevent mysql error
+			if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
+			if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
+			
 			if (! empty($parent_level)) {
 				if ($parent_level != $agf->fk_parent_level) {
 					$agf->fk_parent_level = $parent_level;
