@@ -271,152 +271,156 @@ if ($action == 'setvar') {
 }
 
 if ($action == 'setvarother') {
-	$usedolibarr_agenda = GETPOST('AGF_DOL_AGENDA', 'alpha');
-	if ($usedolibarr_agenda && ! $conf->global->MAIN_MODULE_AGENDA) {
-		setEventMessage($langs->trans("AgfAgendaModuleNedeed"), 'errors');
-		$error ++;
-	} else {
-		$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda, 'chaine', 0, '', $conf->entity);
-	}
-	if (! $res > 0)
-		$error ++;
+	
+	if (empty($conf->use_javascript_ajax))
+	{
+		$usedolibarr_agenda = GETPOST('AGF_DOL_AGENDA', 'alpha');
+		if ($usedolibarr_agenda && ! $conf->global->MAIN_MODULE_AGENDA) {
+			setEventMessage($langs->trans("AgfAgendaModuleNedeed"), 'errors');
+			$error ++;
+		} else {
+			$res = dolibarr_set_const($db, 'AGF_DOL_AGENDA', $usedolibarr_agenda, 'chaine', 0, '', $conf->entity);
+		}
+		if (! $res > 0)
+			$error ++;
 
-	$use_trainer_agenda = GETPOST('AGF_DOL_TRAINER_AGENDA', 'alpha');
-	if ($use_trainer_agenda && ! $conf->global->MAIN_MODULE_AGENDA) {
-		setEventMessage($langs->trans("AgfAgendaModuleNedeed"), 'errors');
-		$error ++;
-	} else {
-		$res = dolibarr_set_const($db, 'AGF_DOL_TRAINER_AGENDA', $use_trainer_agenda, 'chaine', 0, '', $conf->entity);
-	}
-	if (! $res > 0)
-		$error ++;
+		$use_trainer_agenda = GETPOST('AGF_DOL_TRAINER_AGENDA', 'alpha');
+		if ($use_trainer_agenda && ! $conf->global->MAIN_MODULE_AGENDA) {
+			setEventMessage($langs->trans("AgfAgendaModuleNedeed"), 'errors');
+			$error ++;
+		} else {
+			$res = dolibarr_set_const($db, 'AGF_DOL_TRAINER_AGENDA', $use_trainer_agenda, 'chaine', 0, '', $conf->entity);
+		}
+		if (! $res > 0)
+			$error ++;
 
-	$logo_client = GETPOST('AGF_USE_LOGO_CLIENT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$logo_client = GETPOST('AGF_USE_LOGO_CLIENT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$use_dol_contact = GETPOST('AGF_CONTACT_DOL_SESSION', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$use_dol_contact = GETPOST('AGF_CONTACT_DOL_SESSION', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_CONTACT_DOL_SESSION', $use_dol_contact, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$use_managecertif = GETPOST('AGF_MANAGE_CERTIF', 'int');
-	$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif, 'yesno', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$use_managecertif = GETPOST('AGF_MANAGE_CERTIF', 'int');
+		$res = dolibarr_set_const($db, 'AGF_MANAGE_CERTIF', $use_managecertif, 'yesno', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$use_manageopca = GETPOST('AGF_MANAGE_OPCA', 'int');
-	$res = dolibarr_set_const($db, 'AGF_MANAGE_OPCA', $use_manageopca, 'yesno', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$use_manageopca = GETPOST('AGF_MANAGE_OPCA', 'int');
+		$res = dolibarr_set_const($db, 'AGF_MANAGE_OPCA', $use_manageopca, 'yesno', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$use_fac_without_order = GETPOST('AGF_USE_FAC_WITHOUT_ORDER', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$use_fac_without_order = GETPOST('AGF_USE_FAC_WITHOUT_ORDER', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_USE_FAC_WITHOUT_ORDER', $use_fac_without_order, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usesearch_trainer = GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usesearch_trainer = GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usesearch_trainee = GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usesearch_trainee = GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usesearch_site = GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usesearch_site = GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usesearch_contact = GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usesearch_contact = GETPOST('AGF_CONTACT_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$use_dol_company_name = GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT', 'alpha');
-	$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name, 'chaine', 1, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$use_dol_company_name = GETPOST('MAIN_USE_COMPANY_NAME_OF_CONTACT', 'alpha');
+		$res = dolibarr_set_const($db, 'MAIN_USE_COMPANY_NAME_OF_CONTACT', $use_dol_company_name, 'chaine', 1, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$add_OPCA_link_contact = GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$add_OPCA_link_contact = GETPOST('AGF_LINK_OPCA_ADRR_TO_CONTACT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_LINK_OPCA_ADRR_TO_CONTACT', $add_OPCA_link_contact, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$useWISIYGtraining = GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$useWISIYGtraining = GETPOST('AGF_FCKEDITOR_ENABLE_TRAINING', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_FCKEDITOR_ENABLE_TRAINING', $useWISIYGtraining, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	$usecostmanamgemnt = GETPOST('AGF_ADVANCE_COST_MANAGEMENT', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_ADVANCE_COST_MANAGEMENT', $usecostmanamgemnt, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+		$usecostmanamgemnt = GETPOST('AGF_ADVANCE_COST_MANAGEMENT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_ADVANCE_COST_MANAGEMENT', $usecostmanamgemnt, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 
-	if (! empty($usecostmanamgemnt)) {
-		$res = dolibarr_set_const($db, 'AGF_DOL_TRAINER_AGENDA', $usecostmanamgemnt, 'chaine', 0, '', $conf->entity);
+		if (! empty($usecostmanamgemnt)) {
+			$res = dolibarr_set_const($db, 'AGF_DOL_TRAINER_AGENDA', $usecostmanamgemnt, 'chaine', 0, '', $conf->entity);
+			if (! $res > 0)
+				$error ++;
+		}
+
+		$usesessiontraineeauto = GETPOST('AGF_SESSION_TRAINEE_STATUS_AUTO', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_SESSION_TRAINEE_STATUS_AUTO', $usesessiontraineeauto, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$useavgcost = GETPOST('AGF_ADD_AVGPRICE_DOCPROPODR', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_ADD_AVGPRICE_DOCPROPODR', $useavgcost, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$contactsessionmandatory = GETPOST('AGF_CONTACT_NOT_MANDATORY_ON_SESSION', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $contactsessionmandatory, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$filtertraining = GETPOST('AGF_FILTER_TRAINER_TRAINING', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_FILTER_TRAINER_TRAINING', $filtertraining, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$refpropalauto = GETPOST('AGF_REF_PROPAL_AUTO', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_REF_PROPAL_AUTO', $refpropalauto, 'chaine', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$use_managebpf = GETPOST('AGF_MANAGE_BPF', 'int');
+		$res = dolibarr_set_const($db, 'AGF_MANAGE_BPF', $use_managebpf, 'yesno', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$add_progrm_to_conv = GETPOST('AGF_ADD_PROGRAM_TO_CONV', 'int');
+		$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONV', $add_progrm_to_conv, 'yesno', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$add_img_to_conv = GETPOST('AGF_ADD_SIGN_TO_CONVOC', 'int');
+		$res = dolibarr_set_const($db, 'AGF_ADD_SIGN_TO_CONVOC', $add_img_to_conv, 'yesno', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
+
+		$add_progrm_to_convmail = GETPOST('AGF_ADD_PROGRAM_TO_CONVMAIL', 'int');
+		$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONVMAIL', $add_progrm_to_convmail, 'yesno', 0, '', $conf->entity);
 		if (! $res > 0)
 			$error ++;
 	}
-
-	$usesessiontraineeauto = GETPOST('AGF_SESSION_TRAINEE_STATUS_AUTO', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_SESSION_TRAINEE_STATUS_AUTO', $usesessiontraineeauto, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$useavgcost = GETPOST('AGF_ADD_AVGPRICE_DOCPROPODR', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_ADD_AVGPRICE_DOCPROPODR', $useavgcost, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$contactsessionmandatory = GETPOST('AGF_CONTACT_NOT_MANDATORY_ON_SESSION', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $contactsessionmandatory, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$filtertraining = GETPOST('AGF_FILTER_TRAINER_TRAINING', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_FILTER_TRAINER_TRAINING', $filtertraining, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$refpropalauto = GETPOST('AGF_REF_PROPAL_AUTO', 'alpha');
-	$res = dolibarr_set_const($db, 'AGF_REF_PROPAL_AUTO', $refpropalauto, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$use_managebpf = GETPOST('AGF_MANAGE_BPF', 'int');
-	$res = dolibarr_set_const($db, 'AGF_MANAGE_BPF', $use_managebpf, 'yesno', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$add_progrm_to_conv = GETPOST('AGF_ADD_PROGRAM_TO_CONV', 'int');
-	$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONV', $add_progrm_to_conv, 'yesno', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$add_img_to_conv = GETPOST('AGF_ADD_SIGN_TO_CONVOC', 'int');
-	$res = dolibarr_set_const($db, 'AGF_ADD_SIGN_TO_CONVOC', $add_img_to_conv, 'yesno', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
-	$add_progrm_to_convmail = GETPOST('AGF_ADD_PROGRAM_TO_CONVMAIL', 'int');
-	$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONVMAIL', $add_progrm_to_convmail, 'yesno', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
-
+	
 	$fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
 	$res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
