@@ -1256,3 +1256,4 @@ AgfTools=Outils
 AgfMenuSiteCreate=Nouveau lieu
 AgfMenuFormateurCreate=Nouveau formateur
 AgfMenuContactCreate=Nouveau contact formation
+AgfNobodyTrainer=Aucun formateur inscrit

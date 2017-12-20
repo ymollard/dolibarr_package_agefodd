@@ -346,7 +346,7 @@ if ($action=='show_week')
 }
 if ($action=='show_day')
 {
-	
+
 	if (DOL_VERSION < 6.0) {
    		$nav ="<a href=\"?year=".$prev_year."&amp;month=".$prev_month."&amp;day=".$prev_day.$param."\">".img_previous($langs->trans("Previous"))."</a>\n";
 	} else {
@@ -855,7 +855,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
     	print "\n".'<div id="dayevent_'.sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day).'" class="dayevent">';
     } else {
     	$dateint = sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day);
-    	
+
     	print "\n";
     }
 
@@ -1068,7 +1068,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                     }
                     //if (! empty($event->transparency)) print 'background: #'.$color.'; background: -webkit-gradient(linear, left top, left bottom, from(#'.$color.'), to(#'.dol_color_minus($color,1).'));';
                     //else print 'background-color: transparent !important; background: none; border: 1px solid #bbb;';
-                    
+
                     if (DOL_VERSION < 6.0) {
                     	print ' -moz-border-radius:4px;" width="100%"><tr>';
                     	print '<td class="'.($nowrapontd?'nowrap ':'').'cal_event'.($event->type_code == 'BIRTHDAY'?' cal_event_birthday':'').'">';
@@ -1078,7 +1078,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
                     	print '">';
                     	print '<tr>';
                     	print '<td class="tdoverflow nobottom centpercent '.($nowrapontd?'nowrap ':'').'cal_event'.($event->type_code == 'BIRTHDAY'?' cal_event_birthday':'').'">';
-                    	
+
                     	$daterange='';
                     }
 					if ($event->type_code == 'BIRTHDAY') 					// It's a birthday
@@ -1158,7 +1158,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 											$event->libelle .= strtoupper($line->lastname) . ' ' . ucfirst($line->firstname) . ',';
 										}
 									} else {
-										$event->libelle .= $langs->trans('AgfNobody');
+										$event->libelle .= $langs->trans('AgfNobodyTrainer');
 									}
 								}
 
