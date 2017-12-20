@@ -113,7 +113,7 @@ $arrayfields=array(
 	'p.ref_interne'		=>array('label'=>"AgfLieu", 'checked'=>1),
     's.nb_stagiaire'	=>array('label'=>"AgfNbreParticipants", 'checked'=>1),
 
-    's.sell_price'		=>array('label'=>"AgfAmountHTHF", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
+    's.sell_price'		=>array('label'=>"AgfAmoutHTHF", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
     's.cost_trainer'	=>array('label'=>"AgfCostTrainer", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
 	'AgfCostOther'		=>array('label'=>"AgfCostOther", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
 	'AgfFactAmount'		=>array('label'=>"AgfFactAmount", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
