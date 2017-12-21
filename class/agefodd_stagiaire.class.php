@@ -254,6 +254,8 @@ class Agefodd_stagiaire extends CommonObject {
 
 			$this->db->free($resql);
 
+			$this->fetch_thirdparty();
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
