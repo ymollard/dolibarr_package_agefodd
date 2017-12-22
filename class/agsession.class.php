@@ -4716,10 +4716,10 @@ class Agsession extends CommonObject
 
 		global $db, $conf;
 
-		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainer = $socid;
+		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer' || $object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid;
 		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
-		//elseif($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer') $id_trainee = $socid; TODO quand on aura créé le modèle par participant
-
+		//elseif($object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid; TODO quand on aura créé le modèle par participant
+		
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
@@ -4825,13 +4825,13 @@ class Agsession extends CommonObject
 		}
 
 		if(!empty($id_trainer)) {
+		    dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+			
+			$agf_session_trainer = new Agefodd_session_formateur($this->db);
+			$agf_session_trainer->fetch($id_trainer);
 
-			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
-
-			$agf_teacher = new Agefodd_teacher($db);
-			$agf_teacher->fetch($id_trainer);
-			$this->formateur_session = $agf_teacher;
-			$this->formateur_session_societe = $agf_teacher->thirdparty;
+			$this->formateur_session = $agf_session_trainer;
+			$this->formateur_session_societe = $agf_session_trainer->thirdparty;
 
 		}
 
@@ -4856,7 +4856,7 @@ class Agsession extends CommonObject
 				$this->{$conf_name} = $conf->global->{$conf_name};
 			}
 		}
-
+		
 		if($print_r) {
 			echo '<pre>';
 			print_r($this);
