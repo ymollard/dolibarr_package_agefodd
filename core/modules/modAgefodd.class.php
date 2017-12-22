@@ -1618,7 +1618,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/training/list.php?arch=1',
 				'langs' => 'agefodd@agefodd',
 				'position' => 100+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && $leftmenu==\'AgfMenuCatList\'',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1707,7 +1707,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/list.php?search_session_status=3',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && $leftmenu==\'AgfMenuSessList\'',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1721,7 +1721,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/list.php?search_session_status=5&leftmenu=AgfMenuSessList',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && $leftmenu==\'AgfMenuSessList\'',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1735,7 +1735,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/list.php?search_session_status=4&leftmenu=AgfMenuSessList',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && $leftmenu==\'AgfMenuSessList\'',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1778,7 +1778,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/archive_year.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200+$r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && $leftmenu==\'AgfMenuSessTools\'',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
