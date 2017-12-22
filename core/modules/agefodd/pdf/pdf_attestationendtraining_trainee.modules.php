@@ -270,7 +270,16 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 
 			$this->str = $outputlangs->transnoentities('AgfPDFAttestation4') . " ";
 			$this->str .= $agf->libSessionDate();
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf->duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
+
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
+				require_once ('../class/agefodd_session_stagiaire_heures.class.php');
+				$agfssh = new Agefoddsessionstagiaireheures($this->db);
+				$duree_session=$agfssh->heures_stagiaire($agf->id, $agf_session_trainee->id);
+			} else {
+				$duree_session=$agf->duree_session;
+			}
+
+			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$newY = $newY + 10;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);

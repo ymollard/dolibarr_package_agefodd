@@ -271,7 +271,7 @@ if ($action == 'setvar') {
 }
 
 if ($action == 'setvarother') {
-	
+
 	if (empty($conf->use_javascript_ajax))
 	{
 		$usedolibarr_agenda = GETPOST('AGF_DOL_AGENDA', 'alpha');
@@ -420,12 +420,12 @@ if ($action == 'setvarother') {
 		if (! $res > 0)
 			$error ++;
 	}
-	
+
 	$fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
 	$res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
-	
+
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
 	} else {
@@ -473,7 +473,7 @@ if ($action == 'sessionlevel_create') {
 	$agf->intitule = GETPOST('intitule', 'alpha');
 	$agf->delais_alerte = GETPOST('delai', 'int');
 	$agf->delais_alerte_end = GETPOST('delai_end', 'int');
-	
+
 	// prevent mysql error
 	if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
 	if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
@@ -520,11 +520,11 @@ if ($action == 'sessionlevel_update') {
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->delais_alerte = GETPOST('delai', 'int');
 			$agf->delais_alerte_end = GETPOST('delai_end', 'int');
-			
+
 			// prevent mysql error
 			if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
 			if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
-			
+
 			if (! empty($parent_level)) {
 				if ($parent_level != $agf->fk_parent_level) {
 					$agf->fk_parent_level = $parent_level;
@@ -615,8 +615,6 @@ if ($action == 'updatedaytodate') {
 		if (! $res > 0)
 			$error ++;
 	}
-
-
 
 	if (! $error) {
 		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
@@ -1078,7 +1076,7 @@ print '</form>';
 //}
 
 print '<table class="noborder" width="100%">';
-	
+
 // Affichage du logo commanditaire
 print '<tr class="pair"><td>' . $langs->trans("AgfUseCustomerLogo") . '</td>';
 print '<td align="left">';
