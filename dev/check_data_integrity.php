@@ -397,6 +397,20 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+$sql = 'SELECT rowid,civilite FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (civilite NOT IN (SELECT code FROM '.MAIN_DB_PREFIX.'c_civility) OR civilite IS NULL)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'agefodd_stagiaire id:'.$obj->rowid.',civilite: '.$obj->civilite.' n existe pas dans la table c_civility<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (civilite NOT IN (SELECT code FROM '.MAIN_DB_PREFIX.'c_civility) OR civilite IS NULL))<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
 
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
