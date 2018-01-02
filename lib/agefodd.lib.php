@@ -1451,7 +1451,9 @@ function printSessionFieldsWithCustomOrder() {
 					$('#session_card > tbody').append(agf_tab_tr[i]);
 				}
 				
-				$('.toSelect2').select2();
+				$('.toSelect2').select2({
+					width: 'element'
+				});
 			});
 			
 		</script>
