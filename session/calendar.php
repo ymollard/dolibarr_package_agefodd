@@ -322,7 +322,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 	}
 }
 
-if ($action == 'delete_calsel') {
+if ($action == 'delete_calsel' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
 	$deleteselcal = GETPOST('deleteselcal', 'array');
 	if (count($deleteselcal) > 0) {
 		foreach ( $deleteselcal as $lineid ) {
@@ -338,6 +338,27 @@ if ($action == 'delete_calsel') {
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
 		exit();
 	}
+}
+
+if ($action=='setdates' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && !empty($id)) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+
+	$agf->dated = dol_mktime(0, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
+	$agf->datef = dol_mktime(0, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
+
+	if ($agf->dated > $agf->datef) {
+		$error ++;
+		setEventMessage($langs->trans('AgfSessionDateErrors'), 'errors');
+	}
+	if (empty($error)) {
+		$result = $agf->update($user);
+		if ($result < 0) {
+			setEventMessage($agf->error, 'errors');
+		}
+	}
+	$anchor='period';
 }
 
 /*
@@ -375,15 +396,6 @@ if ($id) {
 
 			dol_fiche_head($head, 'calendar', $langs->trans("AgfCalendrier"), 0, 'calendarday');
 
-			$agf_fact = new Agefodd_session_element($db);
-			$agf_fact->fetch_by_session($agf->id);
-			$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
-			if (! empty($conf->commande->enabled)) {
-				$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
-			}
-			$other_amount .= '/' . $langs->trans('AgfInvoiceAmountWaiting') . ' ' . $agf_fact->invoice_ongoing_amount . ' ' . $langs->trans('Currency' . $conf->currency);
-			$other_amount .= '/' . $langs->trans('AgfInvoiceAmountPayed') . ' ' . $agf_fact->invoice_payed_amount . ' ' . $langs->trans('Currency' . $conf->currency) . ')';
-
 			print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 			print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 			print '</div>';
@@ -398,6 +410,24 @@ if ($id) {
 			 */
 			print_barre_liste($langs->trans("AgfCalendrier"), "", "", "", "", "", '', 0);
 			print '<span id="period"></span>';
+
+			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '"  method="POST">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="action" value="setdates">' . "\n";
+			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
+			print '<strong>' . $langs->trans('AgfUpdatesCalendarDates') . '</strong>';
+			print '<table class="border">';
+			print '<tr><td>' . $langs->trans("AgfDateDebut") . '</td><td>';
+			$form->select_date($agf->dated, 'dad', '', '', '', 'update');
+			print '</td>';
+			print '<td rowspan="2"><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="setdates" alt="' . $langs->trans("AgfModSave") . '"></td></tr>';
+
+			print '<tr><td>' . $langs->trans("AgfDateFin") . '</td><td>';
+			$form->select_date($agf->datef, 'daf', '', '', '', 'update');
+			print '</td></tr>';
+			print '</table>';
+			print '</form>';
+
 			/*
 			 * Confirm delete calendar
 			 */
@@ -414,7 +444,7 @@ if ($id) {
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="action" value="edit">' . "\n";
 			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
-
+			print '<strong>' . $langs->trans('AgfCalendarDates') . '</strong>';
 			print '<table class="border" width="100%" id="period">';
 
 			$calendrier = new Agefodd_sesscalendar($db);
