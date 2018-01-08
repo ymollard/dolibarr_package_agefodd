@@ -1246,6 +1246,7 @@ AgfSessionCostPerTrainee=Coût par participant
 AgfParticipantsWithTotal=Participants / Participants total
 AgfPrintFieldsWithCustomOrder=Ajuster l'ordre des champs sur la fiche d'une session de formation
 AgfPrintFieldsWithCustomOrderHelp=Cette option change l'ordre d'affichage des champs d'une session.<br>Spécifier dans le champ texte, les classes des lignes du tableau à trier, séparés par des virgules.<br>Exemple :<br>order_intitule,order_ref,agefodd_agsession_extras_codeattr<br>Pour les attributs complémentaires, les classes suivent le schéma suivant "agefodd_agsession_extras_"+codeAttributComplémentaire
+AgfViewTripAnsMissionCostPerParticipant=Afficher les coûts de déplacement et de mission par participant sur la fiche d'une session
 AgfUseRealHours=Utiliser le temps de présence réel des stagiaires
 AgfUseRealHoursHelp=Permet de saisir le temps de présence réel des stagiaires par créneau horaire du calendrier de session
 AgfTraineeHours=Heures Stagiaire

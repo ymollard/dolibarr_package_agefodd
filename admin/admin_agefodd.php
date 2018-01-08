@@ -1901,9 +1901,15 @@ print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfAddCustomColumnsOnFilter") . 
 print '<td align="left">';
 print ajax_constantonoff('AGF_ADD_CUSTOM_COLUMNS_ON_FILTER');
 print '</td>';
-print '<td>';
-//print $form->textwithpicto('', $langs->trans('AgfPrintFieldsWithCustomOrderHelp'), 1, 0);
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfViewTripAnsMissionCostPerParticipant") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT');
 print '</td>';
+print '<td></td>';
 print '</tr>';
 $var=!$var;
 
