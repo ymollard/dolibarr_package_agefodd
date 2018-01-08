@@ -63,10 +63,7 @@ $site_view = GETPOST('site_view', 'int');
 $status_view = GETPOST('status');
 $search_type_affect = GETPOST('search_type_affect', 'alpha');
 
-if (empty($search_type_affect))
-	$search_type_affect = 'thirdparty';
-
-	// Do we click on purge search criteria ?
+// Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_trainning_name = '';
 	$search_teacher_id = "";
@@ -77,7 +74,11 @@ if (GETPOST("button_removefilter_x")) {
 	$search_training_ref_interne = "";
 	$search_type_session = "";
 	$status_view = "";
+	$search_type_affect = "";
 }
+
+if (empty($search_type_affect))
+	$search_type_affect = 'thirdparty';
 
 $filter = array ();
 if (! empty($search_trainning_name)) {
