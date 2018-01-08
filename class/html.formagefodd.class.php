@@ -877,8 +877,18 @@ class FormAgefodd extends Form
 	 * @param string $returntype typereturn
 	 * @return string The HTML control
 	 */
-	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $returntype='') {
+	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $returntype='', $multiselect = false) {
 		global $conf, $langs;
+
+		if($multiselect) {
+			$TSelectid = array();
+			if(is_array($selectid)) {
+				$TSelectid = $selectid;
+			}
+			else {
+				$TSelectid[] = $selectid;
+			}
+		}
 
 		$sql = "SELECT t.rowid, t.code ,t.intitule ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
@@ -894,7 +904,12 @@ class FormAgefodd extends Form
 		if ($result) {
 
 			if (empty($returntype)) {
-				$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+				$out .= '<select id="' . $htmlname . '" class="flat minwidth100" name="' . $htmlname;
+				if($multiselect) {
+					$out .= '[]" ';
+					$out .= 'multiple="multiple"';
+				}
+				$out .= '">';
 			} else {
 				$out .= 'select';
 			}
@@ -917,15 +932,15 @@ class FormAgefodd extends Form
 						$label = $langs->trans('AgfStatusSession_' . $obj->code);
 					}
 
-					if ($selectid > 0 && $selectid == $obj->rowid) {
-						if (empty($returntype)) {
-							$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					if (! empty($TSelectid) && in_array($obj->rowid, $TSelectid)) {
+							if (empty($returntype)) {
+								$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+							}
+						} else {
+							if (empty($returntype)) {
+								$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+							}
 						}
-					} else {
-						if (empty($returntype)) {
-							$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
-						}
-					}
 					$i ++;
 				}
 			}
@@ -933,6 +948,15 @@ class FormAgefodd extends Form
 				$out .= '</select>';
 			}
 			$this->db->free($result);
+			
+			if($conf->global->MAIN_USE_JQUERY_MULTISELECT) {
+				$out .= '<script type="text/javascript">';
+				$out .= '$(document).ready(function () {'
+					  . '	$("select[multiple]").select2();'
+					  . '});';
+				$out .= '</script>';
+			}
+			
 			return $out;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();

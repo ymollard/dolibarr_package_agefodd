@@ -43,6 +43,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
@@ -59,7 +60,7 @@ $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
-$status_view = GETPOST('status', 'int');
+$status_view = GETPOST('status');
 $search_type_affect = GETPOST('search_type_affect', 'alpha');
 
 if (empty($search_type_affect))
@@ -119,7 +120,7 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -223,13 +224,17 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, 0, 0, $filter);
 }
-$result = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+$result = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result >= 0) {
 	$num = $result;
 
-	$option = '&socid=' . $socid . '&search_type_affect=' . $search_type_affect . '&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
+	$option = '&socid=' . $socid . '&limit=' . $limit . '&search_type_affect=' . $search_type_affect . '&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+
+	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="socid" value="' . $socid . '" >';
+
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_session', 0, '', '', $limit);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';
@@ -282,8 +287,6 @@ if ($result >= 0) {
 		$addcriteria = true;
 	}*/
 
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-	print '<input type="hidden" name="socid" value="' . $socid . '" >';
 	print '<tr class="liste_titre">';
 
 	print '<td class="liste_titre">';
@@ -325,9 +328,15 @@ if ($result >= 0) {
 	print '</td>';
 
 	print '<td class="liste_titre">';
-	print $formAgefodd->select_session_status($status_view, 'status', '', 1);
+	print $formAgefodd->select_session_status($status_view, 'status', '', 1, 0, array(), '', true);
 	print '</td>';
-
+	
+	if($conf->global->MAIN_USE_JQUERY_MULTISELECT) {
+		print '<script>';
+		print '$("select[multiple]").select2();';
+		print '</script>';
+	}
+	
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
 	print '</td>';
@@ -342,7 +351,8 @@ if ($result >= 0) {
 
 	$var = true;
 	foreach ( $agf->lines as $line ) {
-
+		if($i >= $limit) break;
+		
 		if ($line->rowid != $oldid) {
 
 			// Affichage tableau des sessions
