@@ -32,6 +32,7 @@ require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_place.class.php');
+require_once ('../class/agefodd_session_stagiaire.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
@@ -79,7 +80,7 @@ if (GETPOST("button_removefilter_x")) {
 
 if (empty($search_type_affect))
 	$search_type_affect = 'thirdparty';
-
+//var_dump($search_type_affect);exit;
 $filter = array ();
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
@@ -253,6 +254,10 @@ if ($result >= 0) {
 	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], 's.status', '', $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print_liste_field_titre($langs->trans("AgfParticipantsWithTotal"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfSessionCostPerTrainee"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+	}
 	print '<td></td>';
 	print "</tr>\n";
 
@@ -342,18 +347,35 @@ if ($result >= 0) {
 	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
 	print '</td>';
 
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print '<td></td>';
+	}
+
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
 
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print '<td></td>';
+	}
+
 	print "</tr>\n";
 	print '</form>';
 
 	$var = true;
+	$total = 0;
 	foreach ( $agf->lines as $line ) {
 		if($i >= $limit) break;
 		
+		$agf->fetch($line->rowid);
+		$coutTotalLigne = $agf->cost_trainer + $agf->cost_site + $agf->cost_trip;
+
+		// Retrouve tous les stagiaires d'une même société présents à une session de formation
+		$agfS = new Agefodd_session_stagiaire($db);
+		$agfS->fetch_stagiaire_per_session($line->rowid, $line->socid);
+		$nbSocParticipant = count($agfS->lines);
+
 		if ($line->rowid != $oldid) {
 
 			// Affichage tableau des sessions
@@ -417,6 +439,13 @@ if ($result >= 0) {
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
 			print '<td>' . stripslashes($line->status_lib) . '</td>';
 			print '<td>' . stripslashes($line->type_affect) . '</td>';
+			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+				$coutTotalLigne /= $nbSocParticipant;
+				$total += $coutTotalLigne;
+
+				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
+				print '<td>' . price($coutTotalLigne) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+			}
 			print '<td></td>';
 			print "</tr>\n";
 		} else {
@@ -442,6 +471,10 @@ if ($result >= 0) {
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
+			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+				print '<td></td>';
+				print '<td></td>';
+			}
 			print "</tr>\n";
 		}
 
@@ -450,6 +483,14 @@ if ($result >= 0) {
 		$i ++;
 	}
 
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print '<tr>';
+
+		print '<td align="right" colspan="13"><strong>Total :</strong></td>';
+		print '<td><strong>' . price($total) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+
+		print '</tr>';
+	}
 	print "</table>";
 } elseif ($result == 0) {
 	print $langs->trans('AgfNoSession');
