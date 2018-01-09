@@ -949,7 +949,7 @@ class FormAgefodd extends Form
 			}
 			$this->db->free($result);
 			
-			if($conf->global->MAIN_USE_JQUERY_MULTISELECT) {
+			if(! empty($conf->global->MAIN_USE_JQUERY_MULTISELECT)) {
 				$out .= '<script type="text/javascript">';
 				$out .= '$(document).ready(function () {'
 					  . '	$("select[multiple]").select2();'

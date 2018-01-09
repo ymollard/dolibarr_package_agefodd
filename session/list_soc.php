@@ -80,7 +80,7 @@ if (GETPOST("button_removefilter_x")) {
 
 if (empty($search_type_affect))
 	$search_type_affect = 'thirdparty';
-//var_dump($search_type_affect);exit;
+
 $filter = array ();
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
