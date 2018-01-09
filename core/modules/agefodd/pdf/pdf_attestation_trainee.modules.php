@@ -153,6 +153,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 
 			// New page
 			$pdf->AddPage();
+
 			$pagenb ++;
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);

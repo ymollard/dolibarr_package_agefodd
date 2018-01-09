@@ -186,6 +186,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
+		// Set path to the background PDF File
+		if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND))
+		{
+			$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND);
+			$tplidx = $pdf->importPage(1);
+		}
+
 		$session_hours=array();
 		$tmp_array=array();
 		$agf_date = new Agefodd_sesscalendar($this->db);
@@ -205,6 +212,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		foreach($session_hours as $key=>$lines_array) {
 			// New page
 			$pdf->AddPage();
+			if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 			$pagenb ++;
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
@@ -534,6 +542,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				if ($posY > $this->page_hauteur - 20) {
 
 					$pdf->AddPage();
+					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 					$pagenb ++;
 					$posY = $this->marge_haute;
 				}
@@ -660,6 +669,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				$posY = $pdf->GetY();
 				if ($posY > $this->page_hauteur - 20) {
 					$pdf->AddPage();
+					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 					$pagenb ++;
 					$posY = $this->marge_haute;
 				}

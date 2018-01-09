@@ -139,6 +139,13 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND);
+				$tplidx = $pdf->importPage(1);
+			}
+
 			// Récupération des objectifs pédagogiques de la formation
 			$agf_op = new Agefodd($this->db);
 			$result2 = $agf_op->fetch_objpeda_per_formation($agf->fk_formation_catalogue);
@@ -167,6 +174,8 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$trainee_output++;
 						// New page
 						$pdf->AddPage();
+						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
 						$pagenb ++;
 						$this->_pagehead($pdf, $agf, 1, $outputlangs);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);

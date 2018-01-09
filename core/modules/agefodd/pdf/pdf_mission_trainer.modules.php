@@ -170,8 +170,16 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND);
+				$tplidx = $pdf->importPage(1);
+			}
+
 			// New page
 			$pdf->AddPage();
+			if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 			$pagenb ++;
 			$this->_pagehead($pdf, $agf, 1, $outputlangs);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
@@ -461,7 +469,7 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
-			
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -472,9 +480,9 @@ class pdf_mission_trainer extends ModelePDFAgefodd {
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-			
-				
-				
+
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");

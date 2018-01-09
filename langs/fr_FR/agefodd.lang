@@ -1263,3 +1263,5 @@ AgfMenuSiteCreate=Nouveau lieu
 AgfMenuFormateurCreate=Nouveau formateur
 AgfMenuContactCreate=Nouveau contact formation
 AgfNobodyTrainer=Aucun formateur inscrit
+AgfPDFBackground=PDF de fond de page utilisé sur certains document agefodd (ceux au format portait)
+ErrorOnlyPDFSupported=Seul de PDF son accepter pour les fonds de page
