@@ -1897,6 +1897,22 @@ print '</td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfAddCustomColumnsOnFilter") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_ADD_CUSTOM_COLUMNS_ON_FILTER');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfViewTripAnsMissionCostPerParticipant") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 $var=!$var;
 

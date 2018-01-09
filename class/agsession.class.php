@@ -2984,7 +2984,7 @@ class Agsession extends CommonObject
 						// To allow $filter['YEAR(s.dated)']=>$year
 						$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
-						$sql .= ' AND ' . $key . ' = ' . $value;
+						$sql .= ' AND ' . $key . ' IN (' . implode(',', $value) . ')';
 					} elseif ($key == '!s.rowid') {
 						$sql .= ' AND s.rowid NOT IN (' . $value . ')';
 					} else {
@@ -2997,7 +2997,7 @@ class Agsession extends CommonObject
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
-
+		
 		dol_syslog(get_class($this) . "::fetch_all_by_soc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
