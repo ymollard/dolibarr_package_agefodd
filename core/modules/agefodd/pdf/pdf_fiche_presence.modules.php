@@ -649,7 +649,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 
 				// Société
 				$pdf->SetXY($posX + $larg_col1, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
 				$this->str = dol_trunc($line->socname, 27);
 				$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "C", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
