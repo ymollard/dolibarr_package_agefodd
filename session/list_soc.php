@@ -61,7 +61,7 @@ $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
-$status_view = GETPOST('status');
+$status_view = GETPOST('status', 'array');
 $search_type_affect = GETPOST('search_type_affect', 'alpha');
 
 // Do we click on purge search criteria ?
@@ -336,12 +336,6 @@ if ($result >= 0) {
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_session_status($status_view, 'status', '', 1, 0, array(), '', true);
 	print '</td>';
-	
-	if($conf->global->MAIN_USE_JQUERY_MULTISELECT) {
-		print '<script>';
-		print '$("select[multiple]").select2();';
-		print '</script>';
-	}
 	
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
