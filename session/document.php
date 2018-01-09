@@ -204,8 +204,9 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$agfTraining->fetch($agf->fk_formation_catalogue);
 		$PDALink = $agfTraining->generatePDAByLink();
 	}
-	if(empty($PDALink))
-	$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
+	if(empty($PDALink)) {
+		$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
+	}
 }
 
 // Confirm create order
