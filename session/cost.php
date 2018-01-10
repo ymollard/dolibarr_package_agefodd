@@ -102,9 +102,10 @@ if (!empty($product_fourn)) {
 if ($action == 'invoice_addline') {
 
 	$error = 0;
-
+	
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->fetch($idelement);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
@@ -120,15 +121,24 @@ if ($action == 'invoice_addline') {
 		$total_ht = 0;
 		$session_invoice = new Agefodd_session_element($db);
 		// Update trainer cost
-		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_trainer');
+		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'','\'invoice_supplierline_trainer\''));
+		
 		if ($result < 0) {
 			setEventMessage($session_invoice->error, 'errors');
 		}
 		if (count($session_invoice->lines) > 0) {
 			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch($line->fk_element);
+				
+				if($line->element_type  == 'invoice_supplier_trainer'){
+					$suplier_invoice->fetch($line->fk_element);
 
-				$total_ht += $suplier_invoice->total_ht;
+					$total_ht += $suplier_invoice->total_ht;
+				}else{
+					$suplier_invoiceline->fetch($line->fk_element);
+
+					$total_ht += $suplier_invoiceline->total_ht;
+				}
+				
 			}
 		}
 		$agf->cost_trainer = $total_ht;
@@ -139,15 +149,23 @@ if ($action == 'invoice_addline') {
 
 		// Update trip cost
 		$total_ht = 0;
-		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_missions');
+		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0,array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
+	
 		if ($result < 0) {
 			setEventMessage($session_invoice->error, 'errors');
 		}
 		if (count($session_invoice->lines) > 0) {
 			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch($line->fk_element);
+			
+				if($line->element_type  == 'invoice_supplier_missions'){
+					$suplier_invoice->fetch($line->fk_element);
 
-				$total_ht += $suplier_invoice->total_ht;
+					$total_ht += $suplier_invoice->total_ht;
+				}else{
+					$suplier_invoiceline->fetch($line->fk_element);
+
+					$total_ht += $suplier_invoiceline->total_ht;
+				}
 			}
 		}
 		$agf->cost_trip = $total_ht;
@@ -158,18 +176,26 @@ if ($action == 'invoice_addline') {
 
 		// Update training cost
 		$total_ht = 0;
-		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_room');
+		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
 		if ($result < 0) {
 			setEventMessage($session_invoice->error, 'errors');
 		}
 		if (count($session_invoice->lines) > 0) {
 			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch($line->fk_element);
+				
+				if($line->element_type  == 'invoice_supplier_room'){
+					$suplier_invoice->fetch($line->fk_element);
 
-				$totalht += $suplier_invoice->total_ht;
+					$total_ht += $suplier_invoice->total_ht;
+				}else{
+					$suplier_invoiceline->fetch($line->fk_element);
+
+					$total_ht += $suplier_invoiceline->total_ht;
+				}
 			}
 		}
-		$agf->cost_site = $totalht;
+		
+		$agf->cost_site = $total_ht;
 		$result = $agf->update($user, 1);
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
@@ -184,6 +210,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 	$error = 0;
 
 	$suplier_invoice = new FactureFournisseur($db);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->id . '-' . dol_print_date(dol_now(), 'standard');
 
@@ -218,9 +245,12 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 		$suplier_invoice->lines[0]->product_type = $prod->type;
 
 		$result = $suplier_invoice->create($user);
-		if ($result < 0) {
+		if ($result < 0)
+		{
 			setEventMessage($suplier_invoice->error, 'errors');
-		} else {
+		}
+		else
+		{
 
 			// Create link with the session/customer
 			$session_invoice = new Agefodd_session_element($db);
@@ -230,30 +260,44 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 			$session_invoice->element_type = 'invoice_supplier_trainer';
 			$session_invoice->fk_sub_element = $opsid;
 			$result = $session_invoice->create($user);
-			if ($result < 0) {
+			if ($result < 0)
+			{
 				setEventMessage($session_invoice->error, 'errors');
 			}
 
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_trainer');
-			if ($result < 0) {
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+			if ($result < 0)
+			{
 				setEventMessage($session_invoice->error, 'errors');
 			}
-			if (count($session_invoice->lines) > 0) {
+			if (count($session_invoice->lines) > 0)
+			{
 				$total_ht = 0;
-				foreach ( $session_invoice->lines as $line ) {
-					$suplier_invoice->fetch($line->fk_element);
+				foreach ($session_invoice->lines as $line)
+				{
+					if ($line->element_type == 'invoice_supplier_trainer')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-					$total_ht += $suplier_invoice->total_ht;
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
+
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
 				}
 			}
 			$agf->cost_trainer = $total_ht;
 			$result = $agf->update($user, 1);
-			if ($result < 0) {
+			if ($result < 0)
+			{
 				setEventMessage($agf->error, 'errors');
 			}
 
-			header('Location:' . $_SERVER['SELF'] . '?id=' . $id);
+			header('Location:'.$_SERVER['SELF'].'?id='.$id);
 		}
 	}
 } // Creation with soc and product
@@ -262,6 +306,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$error = 0;
 
 	$suplier_invoice = new FactureFournisseur($db);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->id . '-' . dol_print_date(dol_now(), 'standard');
 
@@ -301,16 +346,25 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 			}
 
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_missions');
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
 			if ($result < 0) {
 				setEventMessage($session_invoice->error, 'errors');
 			}
 			if (count($session_invoice->lines) > 0) {
 				$total_ht = 0;
 				foreach ( $session_invoice->lines as $line ) {
-					$suplier_invoice->fetch($line->fk_element);
+					if ($line->element_type == 'invoice_supplier_missions')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-					$total_ht += $suplier_invoice->total_ht;
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
+
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
 				}
 			}
 			$agf->cost_trip = $total_ht;
@@ -336,6 +390,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$error = 0;
 
 	$suplier_invoice = new FactureFournisseur($db);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->id . '-' . dol_print_date(dol_now(), 'standard');
 
@@ -375,19 +430,28 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 			}
 
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_room');
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
 			if ($result < 0) {
 				setEventMessage($session_invoice->error, 'errors');
 			}
 			if (count($session_invoice->lines) > 0) {
 				$totalht = 0;
 				foreach ( $session_invoice->lines as $line ) {
-					$suplier_invoice->fetch($line->fk_element);
+					if ($line->element_type == 'invoice_supplier_room')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-					$totalht += $suplier_invoice->total_ht;
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
+
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
 				}
 			}
-			$agf->cost_site = $totalht;
+			$agf->cost_site = $total_ht;
 			$result = $agf->update($user, 1);
 			if ($result < 0) {
 				setEventMessage($agf->error, 'errors');
@@ -396,50 +460,89 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 			header('Location:' . $_SERVER['SELF'] . '?id=' . $id);
 		}
 	}
-} elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer) {
+}
+elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer)
+{
 	$agf_fin = new Agefodd_session_element($db);
 	$result = $agf_fin->fetch($idelement);
-	if ($result < 0) {
+	if ($result < 0)
+	{
 		setEventMessage($agf_fin->error, 'errors');
 	}
 
 	$deleteobject = GETPOST('deleteobject', 'int');
-	if (! empty($deleteobject)) {
-		$obj_link = new FactureFournisseur($db);
-		$obj_link->fetch($agf_fin->fk_element);
-		$resultdel = $obj_link->delete($agf_fin->fk_element);
+	if (!empty($deleteobject))
+	{
+		$isLine = strstr($agf_fin->element_type, 'line');
 
-		if ($resultdel < O) {
+		if (!empty($isLine))
+		{
+			$obj_linkline = new SupplierInvoiceLine($db);
+			$obj_linkline->fetch($agf_fin->fk_element);
+			$obj_link = new FactureFournisseur($db);
+			$obj_link->fetch($obj_linkline->fk_facture_fourn);
+			$resultdel = $obj_link->deleteline($obj_linkline->id);
+		}
+		else
+		{
+			$obj_link = new FactureFournisseur($db);
+			$obj_link->fetch($agf_fin->fk_element);
+			$resultdel = $obj_link->delete($user,$obj_link->id);
+		}
+	
+		
+
+		if ($resultdel < O)
+		{
 			setEventMessage($obj_link->error, 'errors');
 		}
 	}
 
 	// If exists we update
-	if ($agf_fin->id) {
+	if ($agf_fin->id)
+	{
 		$result2 = $agf_fin->delete($user);
 	}
-	if ($result2 > 0) {
+	if ($result2 > 0)
+	{
 
 		// Update training cost
 		$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0);
-		if ($result < 0) {
+		if ($result < 0)
+		{
 			setEventMessage($agf_fin->error, 'errors');
 		}
 
-		if (count($agf_fin->lines) > 0) {
-			$suplier_invoice = new FactureFournisseur($db);
+		if (count($agf_fin->lines) > 0)
+		{
+			
 			$totalhttrainer = 0;
 			$totalhtroom = 0;
 			$totalhtmission = 0;
-			foreach ( $agf_fin->lines as $line ) {
+			foreach ($agf_fin->lines as $line)
+			{
+				$isLine = strstr($line->element_type, 'line');
+
+				if (!empty($isLine))
+				{
+					$suplier_invoice = new SupplierInvoiceLine($db);
+				}
+				else
+				{
+					$suplier_invoice = new FactureFournisseur($db);
+				}
+				
 				$suplier_invoice->fetch($line->fk_element);
-				if ($line->element_type == 'invoice_supplier_trainer') {
+				if ($line->element_type == 'invoice_supplier_trainer' || $line->element_type == 'invoice_supplierline_trainer')
+				{
 					$totalhttrainer += $suplier_invoice->total_ht;
 				}
-				if ($line->element_type == 'invoice_supplier_room') {
+				if ($line->element_type == 'invoice_supplier_room' || $line->element_type == 'invoice_supplierline_room')
+				{
 					$totalhtroom += $suplier_invoice->total_ht;
 				}
-				if ($line->element_type == 'invoice_supplier_missions') {
+				if ($line->element_type == 'invoice_supplier_missions' || $line->element_type == 'invoice_supplierline_missions')
+				{
 					$totalhtmission += $suplier_invoice->total_ht;
 				}
 			}
@@ -448,62 +551,113 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 		$agf->cost_site = $totalhtroom;
 		$agf->cost_trip = $totalhtmission;
 		$result = $agf->update($user, 1);
-		if ($result < 0) {
+		if ($result < 0)
+		{
 			setEventMessage($agf->error, 'errors');
 		}
 
-		Header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $id);
+		Header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
 		exit();
-	} else {
+	}
+	else
+	{
 		setEventMessage($agf->error, 'errors');
 	}
-} elseif ($action == 'link_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer) {
+}
+elseif ($action == 'link_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer)
+{
 
-	$invoiceselected = GETPOST('invoiceselected', 'int');
-	if (! empty($invoiceselected)) {
+	$invoicelineselected = GETPOST('invoicelineselected', 'int');
+	$isSelected = false;
+	if (!empty($invoicelineselected) && $invoicelineselected != -1)
+	{
 		$session_invoice = new Agefodd_session_element($db);
 		$session_invoice->fk_soc = $socid;
 		$session_invoice->fk_session_agefodd = $id;
-		$session_invoice->fk_element = $invoiceselected;
-		$session_invoice->element_type = $type;
-		if ($type == 'invoice_supplier_trainer') {
+		$session_invoice->fk_element = $invoicelineselected;
+
+		$session_invoice->element_type = str_replace('_supplier_', '_supplierline_', $type);
+
+		if ($type == 'invoice_supplier_trainer')
+		{
 			$session_invoice->fk_sub_element = $opsid;
 		}
+		$isSelected = true;
+	}
+	else
+	{
 
+		$invoiceselected = GETPOST('invoiceselected', 'int');
+		if (!empty($invoiceselected))
+		{
+			$session_invoice = new Agefodd_session_element($db);
+			$session_invoice->fk_soc = $socid;
+			$session_invoice->fk_session_agefodd = $id;
+			$session_invoice->fk_element = $invoiceselected;
+			$session_invoice->element_type = $type;
+			if ($type == 'invoice_supplier_trainer')
+			{
+				$session_invoice->fk_sub_element = $opsid;
+			}
+			$isSelected = true;
+		}
+	}
+	if ($isSelected)
+	{
 		$result = $session_invoice->create($user);
 
-		if ($result < O) {
+		if ($result < O)
+		{
 			setEventMessage($obj_link->error, 'errors');
-		} else {
+		}
+		else
+		{
 			// Update training cost
 			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0);
-			if ($result < 0) {
+			if ($result < 0)
+			{
 				setEventMessage($session_invoice->error, 'errors');
 			}
 
-			if (count($session_invoice->lines) > 0) {
-				$suplier_invoice = new FactureFournisseur($db);
+			if (count($session_invoice->lines) > 0)
+			{
+				
+				
 				$totalhttrainer = 0;
 				$totalhtroom = 0;
 				$totalhtmission = 0;
-				foreach ( $session_invoice->lines as $line ) {
+
+				foreach ($session_invoice->lines as $line)
+				{
+					$isLine = strstr($line->element_type,'line');
+					
+					if(!empty($isLine)){
+						$suplier_invoice = new SupplierInvoiceLine($db);
+					}else {
+						$suplier_invoice = new FactureFournisseur($db);
+					}
 					$suplier_invoice->fetch($line->fk_element);
-					if ($line->element_type == 'invoice_supplier_trainer') {
+					if ($line->element_type == 'invoice_supplier_trainer'||$line->element_type == 'invoice_supplierline_trainer')
+					{
 						$totalhttrainer += $suplier_invoice->total_ht;
 					}
-					if ($line->element_type == 'invoice_supplier_room') {
+					if ($line->element_type == 'invoice_supplier_room'||$line->element_type == 'invoice_supplierline_room')
+					{
 						$totalhtroom += $suplier_invoice->total_ht;
 					}
-					if ($line->element_type == 'invoice_supplier_missions') {
+					if ($line->element_type == 'invoice_supplier_missions'||$line->element_type == 'invoice_supplierline_missions')
+					{
 						$totalhtmission += $suplier_invoice->total_ht;
 					}
 				}
 			}
+
 			$agf->cost_trainer = $totalhttrainer;
 			$agf->cost_site = $totalhtroom;
 			$agf->cost_trip = $totalhtmission;
 			$result = $agf->update($user, 1);
-			if ($result < 0) {
+			if ($result < 0)
+			{
 				setEventMessage($agf->error, 'errors');
 			}
 		}
@@ -571,8 +725,17 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 	}
 
 	$invoice_array = array ();
+	$lines_invoice_array = array();
 	foreach ( $agf_liste->lines as $line ) {
 		$invoice_array[$line->id] = $line->ref . ' ' . $line->ref_supplier;
+		$facfourn = new FactureFournisseur($db);
+		$facfourn->fetch($line->id);
+		$facfourn->fetch_lines();
+		foreach($facfourn->lines as $facline){
+			 if(!empty($facline->label))$label =  $facline->label;
+			 else $label =  $facline->description;
+			$lines_invoice_array[$facline->id] = $line->ref . ' ' . $line->ref_supplier.' => '.$label.' x'.$facline->qty.' -- '.price($facline->subprice).'€';
+		}
 	}
 
 	$form_question = array ();
@@ -582,6 +745,12 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 			'values' => $invoice_array,
 			'name' => 'invoiceselected'
 	);
+	$form_question[] = array (
+			'label' => $langs->trans("ORAgfFactureSelectInvoiceLine"),
+			'type' => 'select',
+			'values' => $lines_invoice_array,
+			'name' => 'invoicelineselected'
+	);
 
 	if ($type == 'invoice_supplier_trainer') {
 		$opsid_param = '&opsid=' . $opsid;
@@ -589,7 +758,7 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 		$opsid_param = '';
 	}
 
-	print $form->formconfirm($_SERVER['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&type=' . $type . $opsid_param, $langs->trans("AgfFactureSelectInvoice"), '', "link_confirm", $form_question, '', 1);
+	print $form->formconfirm($_SERVER['PHP_SELF'] . '?socid=' . $socid . '&id=' . $id . '&type=' . $type . $opsid_param, $langs->trans("AgfFactureSelectInvoice"), '', "link_confirm", $form_question, '', 1,300,700);
 	if ($ret == 'html')
 		print '<br>';
 }
@@ -608,7 +777,6 @@ print_fiche_titre($langs->trans('AgfFormateur'));
 
 $agf_formateurs = new Agefodd_session_formateur($db);
 $agf_fin = new Agefodd_session_element($db);
-
 $nbform = $agf_formateurs->fetch_formateur_per_session($agf->id);
 if ($result < 0) {
 	setEventMessage($agf_formateurs->error, 'errors');
@@ -649,6 +817,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 	print '</td>';
 
 	// If contact is a contact of a supllier
+	
 	if (! empty($line->socpeopleid)) {
 
 		$contact_static = new Contact($db);
@@ -659,11 +828,13 @@ foreach ( $agf_formateurs->lines as $line ) {
 		if ($contact_static->thirdparty->fournisseur == 1) {
 
 			// Get all document lines
-			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, 'invoice_supplier_trainer');
-
+			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+			
+			
+			
 			// TODO : cheack if this feautre work without huge data update
 			// $agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, 'invoice_supplier_trainer',$line->opsid);
-
+			
 			if (count($agf_fin->lines) > 0) {
 
 				print '<td>';
@@ -671,7 +842,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 				foreach ( $agf_fin->lines as $line_fin ) {
 
 					if ($action == 'addline' && $idelement == $line_fin->id) {
-
+						
 						$suplier_invoice = new FactureFournisseur($db);
 						$suplier_invoice->fetch($line_fin->fk_element);
 
@@ -691,6 +862,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '</td>';
 
 						print '<td  align="left" style="padding-left:10px">';
+						
 						print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
 						print '</td>';
 
@@ -702,27 +874,54 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '<input type="submit" class="butAction" name="invoice_supplier_trainer_add" value="' . $langs->trans("AgfFactureAddLineSuplierInvoice") . '">';
 						print '</td></tr></table>';
 					} else {
-						$suplier_invoice = new FactureFournisseur($db);
-						$suplier_invoice->fetch($line_fin->fk_element);
-						print '<table class="nobordernopadding">';
-						print '<tr>';
-						// Supplier Invoice inforamtion
-						print '<td nowrap="nowrap">';
-						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
-						print '</td>';
-						print '<td>';
-						// Ad invoice line
-						$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
-						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-						print img_picto($legende, 'edit_add', 'align="absmiddle"') . '</a>';
-						// Unlink order
-						$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
-						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-						print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+						
+						if($line_fin->element_type == "invoice_supplier_trainer"){
+							$suplier_invoice = new FactureFournisseur($db);
+							$suplier_invoice->fetch($line_fin->fk_element);
+							print '<table class="nobordernopadding">';
+							print '<tr>';
+							// Supplier Invoice inforamtion
+							print '<td nowrap="nowrap">';
+							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+							print '</td>';
+							print '<td>';
+							// Ad invoice line
+							$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+							print img_picto($legende, 'edit_add', 'align="absmiddle"') . '</a>';
+							// Unlink order
+							$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+							print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
 
-						print '</td>';
-						print '</tr>';
-						print '</table>';
+							print '</td>';
+							print '</tr>';
+							print '</table>';
+						}else {
+							$supplier_invoiceline = new SupplierInvoiceLine($db);
+							$supplier_invoiceline->fetch($line_fin->fk_element);
+							$suplier_invoice = new FactureFournisseur($db);
+							$suplier_invoice->fetch($supplier_invoiceline->fk_facture_fourn);
+							if (!empty($supplier_invoiceline->label))$label = $supplier_invoiceline->label;
+							else $label = $supplier_invoiceline->product_desc;
+							print '<table class="nobordernopadding">';
+							print '<tr>';
+							// Supplier Invoice inforamtion
+							print '<td nowrap="nowrap">';
+							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' - '.$label.' (' . price($supplier_invoiceline->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+							print '</td>';
+							print '<td>';
+						
+							// Unlink order
+							$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+							print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+
+							print '</td>';
+							print '</tr>';
+							print '</table>';
+						}
+						
 					}
 				}
 				print '</td>';
@@ -747,7 +946,6 @@ foreach ( $agf_formateurs->lines as $line ) {
 				print '<td align="left" style="padding-left:10px">';
 				print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="pricetrainer" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
 				print '</td>';
-
 				print '<td  align="left" style="padding-left:10px">';
 				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
 				print '</td>';
@@ -789,7 +987,8 @@ print_fiche_titre($langs->trans('AgfTripAndMissions'));
 
 $agf_fin = new Agefodd_session_element($db);
 // Get all document lines
-$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_missions');
+$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
+
 if ($result < 0) {
 	setEventMessage($agf_fin->error, 'errors');
 }
@@ -822,7 +1021,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 
 				$suplier_invoice = new FactureFournisseur($db);
 				$suplier_invoice->fetch($line_fin->fk_element);
-
+				$suplier_invoice->fetch_thirdparty();
 				print '<input type="hidden" name="action" value="invoice_addline">';
 				print '<input type="hidden" name="id" value="' . $id . '">';
 				print '<input type="hidden" name="idelement" value="' . $line_fin->fk_element . '">';
@@ -838,6 +1037,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 				print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
 				print '</td>';
 
+				
 				print '<td  align="left" style="padding-left:10px">';
 				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
 				print '</td>';
@@ -850,25 +1050,54 @@ foreach ( $agf_fin->lines as $line_fin ) {
 				print '<input type="submit" class="butAction" name="invoice_supplier_trainer_add" value="' . $langs->trans("AgfFactureAddLineSuplierInvoice") . '">';
 				print '</td></tr></table>';
 			} else {
-				$suplier_invoice = new FactureFournisseur($db);
-				$suplier_invoice->fetch($line_fin->fk_element);
-				print '<table class="nobordernopadding">';
-				print '<tr>';
-				// Supplier Invoice inforamtion
-				print '<td nowrap="nowrap">';
-				print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
-				print '</td>';
-				print '<td>';
-				$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
-				print '<a href="' . $_SERVER['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-				print img_picto($legende, 'edit_add', 'align="absmiddle"') . '</a>';
-				// Unlink order
-				$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
-				print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-				print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
-				print '</td>';
-				print '</tr>';
-				print '</table>';
+				if($line_fin->element_type == 'invoice_supplier_missions'){
+					$suplier_invoice = new FactureFournisseur($db);
+					$suplier_invoice->fetch($line_fin->fk_element);
+					print '<table class="nobordernopadding">';
+					print '<tr>';
+					// Supplier Invoice inforamtion
+					print '<td nowrap="nowrap">';
+					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+					print '</td>';
+					print '<td>';
+					$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
+					print '<a href="' . $_SERVER['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+					print img_picto($legende, 'edit_add', 'align="absmiddle"') . '</a>';
+					// Unlink order
+					$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
+					print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+					print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+					print '</td>';
+					print '</tr>';
+					print '</table>';
+				}else
+					{
+						$supplier_invoiceline = new SupplierInvoiceLine($db);
+						$supplier_invoiceline->fetch($line_fin->fk_element);
+						$suplier_invoice = new FactureFournisseur($db);
+						$suplier_invoice->fetch($supplier_invoiceline->fk_facture_fourn);
+						if (!empty($supplier_invoiceline->label))
+							$label = $supplier_invoiceline->label;
+						else
+							$label = $supplier_invoiceline->description;
+						
+						print '<table class="nobordernopadding">';
+						print '<tr>';
+						// Supplier Invoice inforamtion
+						print '<td nowrap="nowrap">';
+						print $suplier_invoice->getLibStatut(2).' '.$suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK).' - '.$label.' ('.price($supplier_invoiceline->total_ht).$langs->getCurrencySymbol($conf->currency).')';
+						print '</td>';
+						print '<td>';
+
+						// Unlink order
+						$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
+						print '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&idelement='.$line_fin->id.'&id='.$id.'&socid='.$contact_static->thirdparty->id.'" alt="'.$legende.'" title="'.$legende.'">';
+						print '<img src="'.dol_buildpath('/agefodd/img/unlink.png', 1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+
+						print '</td>';
+						print '</tr>';
+						print '</table>';
+					}
 			}
 		}
 		print '</td>';
@@ -982,20 +1211,19 @@ if (! empty($place->id)) {
 
 	// If contact is a contact of a supllier
 	if ($place->thirdparty->fournisseur == 1) {
-
+		
 		// Get all document lines
-		$agf_fin->fetch_by_session_by_thirdparty($id, $place->thirdparty->id, 'invoice_supplier_room');
+		$agf_fin->fetch_by_session_by_thirdparty($id, $place->thirdparty->id,array( '\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
 
 		if (count($agf_fin->lines) > 0) {
-
+			
 			print '<td>';
-
 			foreach ( $agf_fin->lines as $line_fin ) {
 				if ($action == 'addline' && $idelement == $line_fin->id) {
 
 					$suplier_invoice = new FactureFournisseur($db);
 					$suplier_invoice->fetch($line_fin->fk_element);
-
+					$suplier_invoice->fetch_thirdparty();
 					print '<input type="hidden" name="action" value="invoice_addline">';
 					print '<input type="hidden" name="id" value="' . $id . '">';
 					print '<input type="hidden" name="idelement" value="' . $line_fin->fk_element . '">';
@@ -1022,25 +1250,55 @@ if (! empty($place->id)) {
 					print '<input type="submit" class="butAction" name="invoice_supplier_trainer_add" value="' . $langs->trans("AgfFactureAddLineSuplierInvoice") . '">';
 					print '</td></tr></table>';
 				} else {
-					$suplier_invoice = new FactureFournisseur($db);
-					$suplier_invoice->fetch($line_fin->fk_element);
-					print '<table class="nobordernopadding">';
-					print '<tr>';
-					// Supplier Invoice inforamtion
-					print '<td nowrap="nowrap">';
-					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
-					print '</td>';
-					print '<td>';
-					$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
-					print '<a href="' . $_SERVER['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-					print img_picto($legende, 'edit_add', 'align="absmiddle"') . '</a>';
-					// Unlink order
-					$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
-					print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $place->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
-					print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
-					print '</td>';
-					print '</tr>';
-					print '</table>';
+					if($line_fin->element_type == 'invoice_supplier_room'){
+						$suplier_invoice = new FactureFournisseur($db);
+						$suplier_invoice->fetch($line_fin->fk_element);
+						print '<table class="nobordernopadding">';
+						print '<tr>';
+						// Supplier Invoice inforamtion
+						print '<td nowrap="nowrap">';
+						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+						print '</td>';
+						print '<td>';
+						$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=addline&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $contact_static->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+						print img_picto($legende, 'edit_add', 'align="absmiddle"') . '</a>';
+						// Unlink order
+						$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
+						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $place->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
+						print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+						print '</td>';
+						print '</tr>';
+						print '</table>';
+					}
+					else
+					{
+						$supplier_invoiceline = new SupplierInvoiceLine($db);
+						$supplier_invoiceline->fetch($line_fin->fk_element);
+						$suplier_invoice = new FactureFournisseur($db);
+						$suplier_invoice->fetch($supplier_invoiceline->fk_facture_fourn);
+						if (!empty($supplier_invoiceline->label))
+							$label = $supplier_invoiceline->label;
+						else
+							$label = $supplier_invoiceline->description;
+						
+						print '<table class="nobordernopadding">';
+						print '<tr>';
+						// Supplier Invoice inforamtion
+						print '<td nowrap="nowrap">';
+						print $suplier_invoice->getLibStatut(2).' '.$suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK).' - '.$label.' ('.price($supplier_invoiceline->total_ht).$langs->getCurrencySymbol($conf->currency).')';
+						print '</td>';
+						print '<td>';
+
+						// Unlink order
+						$legende = $langs->trans("AgfFactureUnselectSuplierInvoice");
+						print '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&idelement='.$line_fin->id.'&id='.$id.'&socid='.$contact_static->thirdparty->id.'" alt="'.$legende.'" title="'.$legende.'">';
+						print '<img src="'.dol_buildpath('/agefodd/img/unlink.png', 1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+
+						print '</td>';
+						print '</tr>';
+						print '</table>';
+					}
 				}
 			}
 			print '</td>';

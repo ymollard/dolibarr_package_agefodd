@@ -1653,6 +1653,7 @@ class Agsession extends CommonObject
 			$sql .= " datef=" . (dol_strlen($this->datef) != 0 ? "'" . $this->db->idate($this->datef) . "'" : 'null') . ",";
 			$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
 			$sql .= " color=" . (isset($this->color) ? "'" . $this->db->escape($this->color) . "'" : "null") . ",";
+			
 			$sql .= " cost_trainer=" . (isset($this->cost_trainer) ? $this->cost_trainer : "null") . ",";
 			$sql .= " cost_site=" . (isset($this->cost_site) ? $this->cost_site : "null") . ",";
 			$sql .= " cost_trip=" . (isset($this->cost_trip) ? $this->cost_trip : "null") . ",";
