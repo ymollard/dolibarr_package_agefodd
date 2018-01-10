@@ -460,7 +460,11 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " AND t.fk_soc = " . $idsoc;
 		}
 		if (! empty($type)) {
-			$sql .= ' AND t.element_type=\'' . $type . '\'';
+			if(is_array($type)){
+				$sql .= ' AND t.element_type IN (' . implode(',',$type) . ')';
+			}else {
+				$sql .= ' AND t.element_type=\'' . $type . '\'';
+			}
 		}
 
 		dol_syslog(get_class($this) . "::fetch_by_session_by_thirdparty", LOG_DEBUG);

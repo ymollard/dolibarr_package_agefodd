@@ -102,9 +102,10 @@ if (!empty($product_fourn)) {
 if ($action == 'invoice_addline') {
 
 	$error = 0;
-
+	
 	$suplier_invoice = new FactureFournisseur($db);
 	$suplier_invoice->fetch($idelement);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 
 	if (empty($prod->id)) {
 		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("Product")), 'errors');
@@ -120,15 +121,24 @@ if ($action == 'invoice_addline') {
 		$total_ht = 0;
 		$session_invoice = new Agefodd_session_element($db);
 		// Update trainer cost
-		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_trainer');
+		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'','\'invoice_supplierline_trainer\''));
+		
 		if ($result < 0) {
 			setEventMessage($session_invoice->error, 'errors');
 		}
 		if (count($session_invoice->lines) > 0) {
 			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch($line->fk_element);
+				
+				if($line->element_type  == 'invoice_supplier_trainer'){
+					$suplier_invoice->fetch($line->fk_element);
 
-				$total_ht += $suplier_invoice->total_ht;
+					$total_ht += $suplier_invoice->total_ht;
+				}else{
+					$suplier_invoiceline->fetch($line->fk_element);
+
+					$total_ht += $suplier_invoiceline->total_ht;
+				}
+				
 			}
 		}
 		$agf->cost_trainer = $total_ht;
@@ -139,15 +149,23 @@ if ($action == 'invoice_addline') {
 
 		// Update trip cost
 		$total_ht = 0;
-		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_missions');
+		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0,array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
+	
 		if ($result < 0) {
 			setEventMessage($session_invoice->error, 'errors');
 		}
 		if (count($session_invoice->lines) > 0) {
 			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch($line->fk_element);
+			
+				if($line->element_type  == 'invoice_supplier_missions'){
+					$suplier_invoice->fetch($line->fk_element);
 
-				$total_ht += $suplier_invoice->total_ht;
+					$total_ht += $suplier_invoice->total_ht;
+				}else{
+					$suplier_invoiceline->fetch($line->fk_element);
+
+					$total_ht += $suplier_invoiceline->total_ht;
+				}
 			}
 		}
 		$agf->cost_trip = $total_ht;
@@ -158,18 +176,26 @@ if ($action == 'invoice_addline') {
 
 		// Update training cost
 		$total_ht = 0;
-		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_room');
+		$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
 		if ($result < 0) {
 			setEventMessage($session_invoice->error, 'errors');
 		}
 		if (count($session_invoice->lines) > 0) {
 			foreach ( $session_invoice->lines as $line ) {
-				$suplier_invoice->fetch($line->fk_element);
+				
+				if($line->element_type  == 'invoice_supplier_room'){
+					$suplier_invoice->fetch($line->fk_element);
 
-				$totalht += $suplier_invoice->total_ht;
+					$total_ht += $suplier_invoice->total_ht;
+				}else{
+					$suplier_invoiceline->fetch($line->fk_element);
+
+					$total_ht += $suplier_invoiceline->total_ht;
+				}
 			}
 		}
-		$agf->cost_site = $totalht;
+		
+		$agf->cost_site = $total_ht;
 		$result = $agf->update($user, 1);
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
@@ -184,6 +210,7 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 	$error = 0;
 
 	$suplier_invoice = new FactureFournisseur($db);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->id . '-' . dol_print_date(dol_now(), 'standard');
 
@@ -218,9 +245,12 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 		$suplier_invoice->lines[0]->product_type = $prod->type;
 
 		$result = $suplier_invoice->create($user);
-		if ($result < 0) {
+		if ($result < 0)
+		{
 			setEventMessage($suplier_invoice->error, 'errors');
-		} else {
+		}
+		else
+		{
 
 			// Create link with the session/customer
 			$session_invoice = new Agefodd_session_element($db);
@@ -230,30 +260,44 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 			$session_invoice->element_type = 'invoice_supplier_trainer';
 			$session_invoice->fk_sub_element = $opsid;
 			$result = $session_invoice->create($user);
-			if ($result < 0) {
+			if ($result < 0)
+			{
 				setEventMessage($session_invoice->error, 'errors');
 			}
 
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_trainer');
-			if ($result < 0) {
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+			if ($result < 0)
+			{
 				setEventMessage($session_invoice->error, 'errors');
 			}
-			if (count($session_invoice->lines) > 0) {
+			if (count($session_invoice->lines) > 0)
+			{
 				$total_ht = 0;
-				foreach ( $session_invoice->lines as $line ) {
-					$suplier_invoice->fetch($line->fk_element);
+				foreach ($session_invoice->lines as $line)
+				{
+					if ($line->element_type == 'invoice_supplier_trainer')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-					$total_ht += $suplier_invoice->total_ht;
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
+
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
 				}
 			}
 			$agf->cost_trainer = $total_ht;
 			$result = $agf->update($user, 1);
-			if ($result < 0) {
+			if ($result < 0)
+			{
 				setEventMessage($agf->error, 'errors');
 			}
 
-			header('Location:' . $_SERVER['SELF'] . '?id=' . $id);
+			header('Location:'.$_SERVER['SELF'].'?id='.$id);
 		}
 	}
 } // Creation with soc and product
@@ -262,6 +306,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$error = 0;
 
 	$suplier_invoice = new FactureFournisseur($db);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->id . '-' . dol_print_date(dol_now(), 'standard');
 
@@ -301,16 +346,25 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 			}
 
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_missions');
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
 			if ($result < 0) {
 				setEventMessage($session_invoice->error, 'errors');
 			}
 			if (count($session_invoice->lines) > 0) {
 				$total_ht = 0;
 				foreach ( $session_invoice->lines as $line ) {
-					$suplier_invoice->fetch($line->fk_element);
+					if ($line->element_type == 'invoice_supplier_missions')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-					$total_ht += $suplier_invoice->total_ht;
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
+
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
 				}
 			}
 			$agf->cost_trip = $total_ht;
@@ -336,6 +390,7 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 	$error = 0;
 
 	$suplier_invoice = new FactureFournisseur($db);
+	$suplier_invoiceline = new SupplierInvoiceLine($db);
 	$suplier_invoice->socid = $socid;
 	$suplier_invoice->ref_supplier = $agf->id . '-' . dol_print_date(dol_now(), 'standard');
 
@@ -375,19 +430,28 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 			}
 
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_room');
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
 			if ($result < 0) {
 				setEventMessage($session_invoice->error, 'errors');
 			}
 			if (count($session_invoice->lines) > 0) {
 				$totalht = 0;
 				foreach ( $session_invoice->lines as $line ) {
-					$suplier_invoice->fetch($line->fk_element);
+					if ($line->element_type == 'invoice_supplier_room')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-					$totalht += $suplier_invoice->total_ht;
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
+
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
 				}
 			}
-			$agf->cost_site = $totalht;
+			$agf->cost_site = $total_ht;
 			$result = $agf->update($user, 1);
 			if ($result < 0) {
 				setEventMessage($agf->error, 'errors');
@@ -409,9 +473,24 @@ elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefo
 	$deleteobject = GETPOST('deleteobject', 'int');
 	if (!empty($deleteobject))
 	{
-		$obj_link = new FactureFournisseur($db);
-		$obj_link->fetch($agf_fin->fk_element);
-		$resultdel = $obj_link->delete($agf_fin->fk_element);
+		$isLine = strstr($agf_fin->element_type, 'line');
+
+		if (!empty($isLine))
+		{
+			$obj_linkline = new SupplierInvoiceLine($db);
+			$obj_linkline->fetch($agf_fin->fk_element);
+			$obj_link = new FactureFournisseur($db);
+			$obj_link->fetch($obj_linkline->fk_facture_fourn);
+			$resultdel = $obj_link->deleteline($obj_linkline->id);
+		}
+		else
+		{
+			$obj_link = new FactureFournisseur($db);
+			$obj_link->fetch($agf_fin->fk_element);
+			$resultdel = $obj_link->delete($user,$obj_link->id);
+		}
+	
+		
 
 		if ($resultdel < O)
 		{
@@ -698,7 +777,6 @@ print_fiche_titre($langs->trans('AgfFormateur'));
 
 $agf_formateurs = new Agefodd_session_formateur($db);
 $agf_fin = new Agefodd_session_element($db);
-$agf_finline =  new Agefodd_session_element($db);
 $nbform = $agf_formateurs->fetch_formateur_per_session($agf->id);
 if ($result < 0) {
 	setEventMessage($agf_formateurs->error, 'errors');
@@ -750,10 +828,10 @@ foreach ( $agf_formateurs->lines as $line ) {
 		if ($contact_static->thirdparty->fournisseur == 1) {
 
 			// Get all document lines
-			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, 'invoice_supplier_trainer');
-			$agf_finline->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, 'invoice_supplierline_trainer');
+			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
 			
-			$agf_fin->lines = array_merge($agf_fin->lines,$agf_finline->lines);
+			
+			
 			// TODO : cheack if this feautre work without huge data update
 			// $agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, 'invoice_supplier_trainer',$line->opsid);
 			
@@ -909,9 +987,8 @@ print_fiche_titre($langs->trans('AgfTripAndMissions'));
 
 $agf_fin = new Agefodd_session_element($db);
 // Get all document lines
-$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0, 'invoice_supplier_missions');
-$agf_finline->fetch_by_session_by_thirdparty($id, $place->thirdparty->id, 'invoice_supplierline_missions');
-$agf_fin->lines = array_merge($agf_fin->lines,$agf_finline->lines);
+$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
+
 if ($result < 0) {
 	setEventMessage($agf_fin->error, 'errors');
 }
@@ -1136,11 +1213,8 @@ if (! empty($place->id)) {
 	if ($place->thirdparty->fournisseur == 1) {
 		
 		// Get all document lines
-		$agf_fin->fetch_by_session_by_thirdparty($id, $place->thirdparty->id, 'invoice_supplier_room');
-		$agf_finline->fetch_by_session_by_thirdparty($id, $place->thirdparty->id, 'invoice_supplierline_room');
-		
-		
-		$agf_fin->lines = array_merge($agf_fin->lines,$agf_finline->lines);
+		$agf_fin->fetch_by_session_by_thirdparty($id, $place->thirdparty->id,array( '\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
+
 		if (count($agf_fin->lines) > 0) {
 			
 			print '<td>';
