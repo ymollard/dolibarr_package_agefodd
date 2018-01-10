@@ -139,9 +139,9 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 			$pdf->SetAutoPageBreak(1, 0);
 
 			// Set path to the background PDF File
-			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_P))
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_L))
 			{
-				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P);
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_L);
 				$tplidx = $pdf->importPage(1);
 			}
 
@@ -159,7 +159,7 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 
 			// get trainer
 			$agf_trainer = new Agefodd_session_formateur($this->db);
-			$result = $agf_trainer->fetch_formateur_per_session($id);
+			$agf_trainer->fetch_formateur_per_session($id);
 
 
 			if ($result) {
@@ -174,31 +174,31 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$this->_pagehead($pdf, $agf, 1, $outputlangs);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 						$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
+						if (empty($tplidx)) {
+							// On met en place le cadre
+							$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+							$ep_line1 = 1;
+							$pdf->SetLineWidth($ep_line1);
+							// Haut
+							$pdf->Line($this->marge_gauche, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->marge_haute);
+							// Droite
+							$pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse);
+							// Bas
+							$pdf->Line($this->marge_gauche, $this->page_hauteur - $this->marge_basse, $this->page_largeur - $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
+							// Gauche
+							$pdf->Line($this->marge_gauche, $this->marge_haute, $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
 
-						// On met en place le cadre
-						$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
-						$ep_line1 = 1;
-						$pdf->SetLineWidth($ep_line1);
-						// Haut
-						$pdf->Line($this->marge_gauche, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->marge_haute);
-						// Droite
-						$pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse);
-						// Bas
-						$pdf->Line($this->marge_gauche, $this->page_hauteur - $this->marge_basse, $this->page_largeur - $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
-						// Gauche
-						$pdf->Line($this->marge_gauche, $this->marge_haute, $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
-
-						$pdf->SetLineWidth(0.3);
-						$decallage = 1.2;
-						// Haut
-						$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage);
-						// Droite
-						$pdf->Line($this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-						// Bas
-						$pdf->Line($this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage, $this->page_largeur - $this->marge_gauche - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-						// Gauche
-						$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-
+							$pdf->SetLineWidth(0.3);
+							$decallage = 1.2;
+							// Haut
+							$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage);
+							// Droite
+							$pdf->Line($this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							// Bas
+							$pdf->Line($this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage, $this->page_largeur - $this->marge_gauche - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							// Gauche
+							$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+						}
 						// Logo en haut à gauche
 						$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
 						// Logo en haut à gauche
@@ -295,8 +295,9 @@ class pdf_certificateA4 extends ModelePDFAgefodd {
 						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 
 
-						$text = $outputlangs->transnoentities('AgfPDFCertificate17');
+
 						if (is_array($agf_trainer->lines) && count($agf_trainer->lines)>0) {
+							$text = $outputlangs->transnoentities('AgfPDFCertificate17');
 							foreach($agf_trainer->lines as $trainer) {
 								$text .= ' '.$trainer->lastname.' '.$trainer->firstname;
 							}
