@@ -1653,7 +1653,7 @@ class Agsession extends CommonObject
 			$sql .= " datef=" . (dol_strlen($this->datef) != 0 ? "'" . $this->db->idate($this->datef) . "'" : 'null') . ",";
 			$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
 			$sql .= " color=" . (isset($this->color) ? "'" . $this->db->escape($this->color) . "'" : "null") . ",";
-			
+
 			$sql .= " cost_trainer=" . (isset($this->cost_trainer) ? $this->cost_trainer : "null") . ",";
 			$sql .= " cost_site=" . (isset($this->cost_site) ? $this->cost_site : "null") . ",";
 			$sql .= " cost_trip=" . (isset($this->cost_trip) ? $this->cost_trip : "null") . ",";
@@ -2864,8 +2864,10 @@ class Agsession extends CommonObject
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
 			$sql .= " ON s.rowid = sa.fk_agefodd_session";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "socpeople as socpp";
+			$sql .= " ON socpp.rowid = s.fk_socpeople_presta";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
-			$sql .= " ON so.rowid = s.fk_soc_presta AND so.rowid=" . $socid;
+			$sql .= " ON so.rowid = socpp.fk_soc AND so.rowid=" . $socid;
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 			$sql .= " ON sf.fk_session = s.rowid";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
@@ -2998,7 +3000,7 @@ class Agsession extends CommonObject
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
-		
+
 		dol_syslog(get_class($this) . "::fetch_all_by_soc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
@@ -3221,7 +3223,7 @@ class Agsession extends CommonObject
 
 		$colspan=1;
 		if (!$width_table) $colspan = 3;
-		
+
 		$action=GETPOST('action','alpha');
 
 		if ($action=='setsession_status') {
@@ -4720,7 +4722,7 @@ class Agsession extends CommonObject
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer' || $object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid;
 		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
 		//elseif($object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid; TODO quand on aura créé le modèle par participant
-		
+
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
@@ -4827,7 +4829,7 @@ class Agsession extends CommonObject
 
 		if(!empty($id_trainer)) {
 		    dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
-			
+
 			$agf_session_trainer = new Agefodd_session_formateur($this->db);
 			$agf_session_trainer->fetch($id_trainer);
 
@@ -4857,7 +4859,7 @@ class Agsession extends CommonObject
 				$this->{$conf_name} = $conf->global->{$conf_name};
 			}
 		}
-		
+
 		if($print_r) {
 			echo '<pre>';
 			print_r($this);

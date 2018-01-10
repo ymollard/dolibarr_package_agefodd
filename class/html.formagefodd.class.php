@@ -948,7 +948,7 @@ class FormAgefodd extends Form
 				$out .= '</select>';
 			}
 			$this->db->free($result);
-			
+
 			if(! empty($conf->global->MAIN_USE_JQUERY_MULTISELECT)) {
 				$out .= '<script type="text/javascript">';
 				$out .= '$(document).ready(function () {'
@@ -956,7 +956,7 @@ class FormAgefodd extends Form
 					  . '});';
 				$out .= '</script>';
 			}
-			
+
 			return $out;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -980,7 +980,8 @@ class FormAgefodd extends Form
 				'trainee' => $langs->trans('AgfParticipant'),
 				'requester' => $langs->trans('AgfTypeRequester'),
 				'trainee_requester' => $langs->trans('AgfTypeTraineeRequester'),
-				'employer' => $langs->trans('AgfTypeEmployee')
+				'employer' => $langs->trans('AgfTypeEmployee'),
+				'presta' => $langs->trans('AgfTypePresta')
 		);
 
 		if ($conf->global->AGF_ADVANCE_COST_MANAGEMENT) {
