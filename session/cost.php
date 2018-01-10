@@ -452,6 +452,7 @@ elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefo
 				{
 					$suplier_invoice = new FactureFournisseur($db);
 				}
+				
 				$suplier_invoice->fetch($line->fk_element);
 				if ($line->element_type == 'invoice_supplier_trainer' || $line->element_type == 'invoice_supplierline_trainer')
 				{

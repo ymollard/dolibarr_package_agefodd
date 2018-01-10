@@ -364,10 +364,10 @@ if ($result >= 0) {
 		
 		$agf->fetch($line->rowid);
 		$coutTotalLigne = $agf->cost_trainer + $agf->cost_site + $agf->cost_trip;
-
+		
 		// Retrouve tous les stagiaires d'une même société présents à une session de formation
 		$agfS = new Agefodd_session_stagiaire($db);
-		$agfS->fetch_stagiaire_per_session($line->rowid, $line->socid);
+		$agfS->fetch_stagiaire_per_session($line->rowid, $socid);
 		$nbSocParticipant = count($agfS->lines);
 
 		if ($line->rowid != $oldid) {
@@ -434,11 +434,12 @@ if ($result >= 0) {
 			print '<td>' . stripslashes($line->status_lib) . '</td>';
 			print '<td>' . stripslashes($line->type_affect) . '</td>';
 			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-				$coutTotalLigne /= $nbSocParticipant;
+				$coutTotalLigne /= $line->nb_stagiaire;
+				$coutTotalLigne *= $nbSocParticipant;
 				$total += $coutTotalLigne;
 
 				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
-				print '<td>' . price($coutTotalLigne) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+				print '<td>' . price(round($coutTotalLigne,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
 			}
 			print '<td></td>';
 			print "</tr>\n";
@@ -481,7 +482,7 @@ if ($result >= 0) {
 		print '<tr>';
 
 		print '<td align="right" colspan="13"><strong>Total :</strong></td>';
-		print '<td><strong>' . price($total) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+		print '<td><strong>' . price(round($total,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
 
 		print '</tr>';
 	}
