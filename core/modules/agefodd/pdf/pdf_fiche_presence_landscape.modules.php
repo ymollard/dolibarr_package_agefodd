@@ -142,12 +142,19 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_L))
+			{
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_L);
+				$tplidx = $pdf->importPage(1);
+			}
+
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
 
 			if ($result) {
-				$this->_pagebody($pdf, $agf, 1, $outputlangs);
+				$this->_pagebody($pdf, $agf, 1, $outputlangs, $tplidx);
 			}
 
 			$pdf->Close();
@@ -184,11 +191,13 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 	 * \param showaddress 0=no, 1=yes
 	 * \param outputlangs		Object lang for output
 	 */
-	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs) {
+	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs, $tplidx) {
 		global $user, $langs, $conf, $mysoc;
 
 		// New page
 		$pdf->AddPage();
+		if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
 		$pagenb ++;
 		$this->_pagehead($pdf, $agf, 1, $outputlangs);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);

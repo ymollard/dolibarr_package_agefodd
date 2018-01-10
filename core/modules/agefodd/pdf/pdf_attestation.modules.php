@@ -138,6 +138,13 @@ class pdf_attestation extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_L))
+			{
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_L);
+				$tplidx = $pdf->importPage(1);
+			}
+
 			// Récuperation des objectifs pedagogique de la formation
 			$agf_op = new Agefodd($this->db);
 			$result2 = $agf_op->fetch_objpeda_per_formation($agf->fk_formation_catalogue);
@@ -166,34 +173,38 @@ class pdf_attestation extends ModelePDFAgefodd {
 						$trainee_output++;
 						// New page
 						$pdf->AddPage();
+						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
 						$pagenb ++;
 						$this->_pagehead($pdf, $agf, 1, $outputlangs);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 						$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 
-						// On met en place le cadre
-						$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
-						$ep_line1 = 1;
-						$pdf->SetLineWidth($ep_line1);
-						// Haut
-						$pdf->Line($this->marge_gauche, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->marge_haute);
-						// Droite
-						$pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse);
-						// Bas
-						$pdf->Line($this->marge_gauche, $this->page_hauteur - $this->marge_basse, $this->page_largeur - $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
-						// Gauche
-						$pdf->Line($this->marge_gauche, $this->marge_haute, $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
+						if (empty($tplidx)) {
+							// On met en place le cadre
+							$pdf->SetDrawColor($this->colorhead [0], $this->colorhead [1], $this->colorhead [2]);
+							$ep_line1 = 1;
+							$pdf->SetLineWidth($ep_line1);
+							// Haut
+							$pdf->Line($this->marge_gauche, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->marge_haute);
+							// Droite
+							$pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse);
+							// Bas
+							$pdf->Line($this->marge_gauche, $this->page_hauteur - $this->marge_basse, $this->page_largeur - $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
+							// Gauche
+							$pdf->Line($this->marge_gauche, $this->marge_haute, $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
 
-						$pdf->SetLineWidth(0.3);
-						$decallage = 1.2;
-						// Haut
-						$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage);
-						// Droite
-						$pdf->Line($this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-						// Bas
-						$pdf->Line($this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage, $this->page_largeur - $this->marge_gauche - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-						// Gauche
-						$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							$pdf->SetLineWidth(0.3);
+							$decallage = 1.2;
+							// Haut
+							$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage);
+							// Droite
+							$pdf->Line($this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							// Bas
+							$pdf->Line($this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage, $this->page_largeur - $this->marge_gauche - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							// Gauche
+							$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+						}
 
 						// Logo en haut à gauche
 						$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
@@ -433,18 +444,20 @@ class pdf_attestation extends ModelePDFAgefodd {
 	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
 
-		$this->str = $mysoc->name;
-		$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot12') . ' ';
-		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot10') . ' ' . $conf->global->AGF_ORGANISME_PREF;
-		}
-		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
-			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot11',$conf->global->AGF_ORGANISME_NUM);
-		}
+		if (empty($conf->global->AGF_HIDE_DOC_FOOTER)) {
+			$this->str = $mysoc->name;
+			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot12') . ' ';
+			if (! empty($conf->global->AGF_ORGANISME_PREF)) {
+				$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot10') . ' ' . $conf->global->AGF_ORGANISME_PREF;
+			}
+			if (! empty($conf->global->AGF_ORGANISME_NUM)) {
+				$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFFoot11',$conf->global->AGF_ORGANISME_NUM);
+			}
 
-		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 8);
-		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		$pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
+			$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 8);
+			$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+			$pdf->Cell(0, 6, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
+		}
 	}
 }

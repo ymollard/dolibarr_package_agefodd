@@ -263,19 +263,49 @@ if ($action == 'setvar') {
 		}
 	}
 
-	if ($_FILES["pdfbackground"]["tmp_name"]) {
-		if (preg_match('/([^\\/:]+)$/i', $_FILES["pdfbackground"]["name"], $reg)) {
+	if ($_FILES["pdfbackgroundportrait"]["tmp_name"]) {
+		if (preg_match('/([^\\/:]+)$/i', $_FILES["pdfbackgroundportrait"]["name"], $reg)) {
 			$original_file = $reg[1];
 
 			if (strpos($original_file,'.pdf')!==false) {
 
-				dol_syslog("Move file " . $_FILES["pdfbackground"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/background/' . $original_file);
+				dol_syslog("Move file " . $_FILES["pdfbackgroundportrait"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/background/' . $original_file);
 				if (! is_dir($conf->agefodd->dir_output . '/background/')) {
 					dol_mkdir($conf->agefodd->dir_output . '/background/');
 				}
-				$result = dol_move_uploaded_file($_FILES["pdfbackground"]["tmp_name"], $conf->agefodd->dir_output . '/background/' . $original_file, 1, 0, $_FILES['pdfbackground']['error']);
+				$result = dol_move_uploaded_file($_FILES["pdfbackgroundportrait"]["tmp_name"], $conf->agefodd->dir_output . '/background/' . $original_file, 1, 0, $_FILES['pdfbackgroundportrait']['error']);
 				if ($result > 0) {
-					dolibarr_set_const($db, "AGF_ADD_PDF_BACKGROUND", $original_file, 'chaine', 0, '', $conf->entity);
+
+					dolibarr_set_const($db, "AGF_ADD_PDF_BACKGROUND_P", $original_file, 'chaine', 0, '', $conf->entity);
+				} else if (preg_match('/^ErrorFileIsInfectedWithAVirus/', $result)) {
+					$langs->load("errors");
+					$tmparray = explode(':', $result);
+					setEventMessage($langs->trans('ErrorFileIsInfectedWithAVirus', $tmparray[1]), 'errors');
+					$error ++;
+				} else {
+					setEventMessage($langs->trans("ErrorFailedToSaveFile"), 'errors');
+					$error ++;
+				}
+			} else {
+				setEventMessage($langs->trans("ErrorOnlyPDFSupported"), 'errors');
+				$error ++;
+			}
+		}
+	}
+
+	if ($_FILES["pdfbackgroundlandscape"]["tmp_name"]) {
+		if (preg_match('/([^\\/:]+)$/i', $_FILES["pdfbackgroundlandscape"]["name"], $reg)) {
+			$original_file = $reg[1];
+
+			if (strpos($original_file,'.pdf')!==false) {
+
+				dol_syslog("Move file " . $_FILES["pdfbackgroundlandscape"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/background/' . $original_file);
+				if (! is_dir($conf->agefodd->dir_output . '/background/')) {
+					dol_mkdir($conf->agefodd->dir_output . '/background/');
+				}
+				$result = dol_move_uploaded_file($_FILES["pdfbackgroundlandscape"]["tmp_name"], $conf->agefodd->dir_output . '/background/' . $original_file, 1, 0, $_FILES['pdfbackgroundlandscape']['error']);
+				if ($result > 0) {
+					dolibarr_set_const($db, "AGF_ADD_PDF_BACKGROUND_L", $original_file, 'chaine', 0, '', $conf->entity);
 				} else if (preg_match('/^ErrorFileIsInfectedWithAVirus/', $result)) {
 					$langs->load("errors");
 					$tmparray = explode(':', $result);
@@ -470,12 +500,20 @@ if ($action == 'removeimagesup') {
 	dolibarr_del_const($db, "AGF_INFO_TAMPON", $conf->entity);
 }
 
-if ($action == 'removepdfbackground') {
+if ($action == 'removepdfbackgroundportrait') {
 	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
 
-	$logofile = $conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND;
+	$logofile = $conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P;
 	dol_delete_file($logofile);
-	dolibarr_del_const($db, "AGF_ADD_PDF_BACKGROUND", $conf->entity);
+	dolibarr_del_const($db, "AGF_ADD_PDF_BACKGROUND_P", $conf->entity);
+}
+
+if ($action == 'removepdfbackgroundlandscape') {
+	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
+
+	$logofile = $conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_L;
+	dol_delete_file($logofile);
+	dolibarr_del_const($db, "AGF_ADD_PDF_BACKGROUND_L", $conf->entity);
 }
 
 if ($action == 'sessionlevel_create') {
@@ -1056,27 +1094,50 @@ print $form->textwithpicto('', $langs->trans("AgfInfoTamponHelp"), 1, 'help');
 
 print '</td></tr>';
 
-// PDF de background
-print '<tr class="pair"><td>' . $langs->trans("AgfPDFBackground") . ' (pdf)</td><td>';
+// PDF de background portrait
+print '<tr class="impair"><td>' . $langs->trans("AgfPDFBackgroundPortrait") . ' (pdf)</td><td>';
 print '<table width="100%" class="nocellnopadd"><tr class="nocellnopadd"><td valign="middle" class="nocellnopadd">';
-print '<input type="file" class="flat" name="pdfbackground" size="40">';
+print '<input type="file" class="flat" name="pdfbackgroundportrait" size="40">';
 print '</td><td valign="middle" align="right">';
-if ($conf->global->AGF_ADD_PDF_BACKGROUND) {
-	if (file_exists($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND)) {
+if ($conf->global->AGF_ADD_PDF_BACKGROUND_P) {
+	if (file_exists($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P)) {
 		$documenturl = DOL_URL_ROOT.'/document.php';
 		if (isset($conf->global->DOL_URL_ROOT_DOCUMENT_PHP)) $documenturl=$conf->global->DOL_URL_ROOT_DOCUMENT_PHP;    // To use another wrapper
 		print ' &nbsp;';
-		print '<a class="documentdownload" href="'.$documenturl.'?modulepart='.'agefodd'.'&amp;file='.urlencode('/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND).'"';
+		print '<a class="documentdownload" href="'.$documenturl.'?modulepart='.'agefodd'.'&amp;file='.urlencode('/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P).'"';
 		print ' target="_blank">';
-		print img_mime($conf->global->AGF_ADD_PDF_BACKGROUND,$langs->trans("File").': '.$conf->global->AGF_ADD_PDF_BACKGROUND).' '.$conf->global->AGF_ADD_PDF_BACKGROUND;
+		print img_mime($conf->global->AGF_ADD_PDF_BACKGROUND_P,$langs->trans("File").': '.$conf->global->AGF_ADD_PDF_BACKGROUND_P).' '.$conf->global->AGF_ADD_PDF_BACKGROUND_P;
 		print '</a>'."\n";
 
-		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removepdfbackground">' . img_delete($langs->trans("Delete")) . '</a>';
+		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removepdfbackgroundportrait">' . img_delete($langs->trans("Delete")) . '</a>';
 	}
 }
 print '</td></tr></table>';
 print '<td align="center">';
-print $form->textwithpicto('', $langs->trans("AgfPDFBackground"), 1, 'help');
+print $form->textwithpicto('', $langs->trans("AgfPDFBackgroundPortrait"). ' '. $langs->trans("ErrorOnlyPDFSupported"), 1, 'help');
+print '</td></tr>';
+
+// PDF de background landscape
+print '<tr class="pair"><td>' . $langs->trans("AgfPDFBackgroundLandscape") . ' (pdf)</td><td>';
+print '<table width="100%" class="nocellnopadd"><tr class="nocellnopadd"><td valign="middle" class="nocellnopadd">';
+print '<input type="file" class="flat" name="pdfbackgroundlandscape" size="40">';
+print '</td><td valign="middle" align="right">';
+if ($conf->global->AGF_ADD_PDF_BACKGROUND_L) {
+	if (file_exists($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_L)) {
+		$documenturl = DOL_URL_ROOT.'/document.php';
+		if (isset($conf->global->DOL_URL_ROOT_DOCUMENT_PHP)) $documenturl=$conf->global->DOL_URL_ROOT_DOCUMENT_PHP;    // To use another wrapper
+		print ' &nbsp;';
+		print '<a class="documentdownload" href="'.$documenturl.'?modulepart='.'agefodd'.'&amp;file='.urlencode('/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_L).'"';
+		print ' target="_blank">';
+		print img_mime($conf->global->AGF_ADD_PDF_BACKGROUND_L,$langs->trans("File").': '.$conf->global->AGF_ADD_PDF_BACKGROUND_L).' '.$conf->global->AGF_ADD_PDF_BACKGROUND_L;
+		print '</a>'."\n";
+
+		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removepdfbackgroundlandscape">' . img_delete($langs->trans("Delete")) . '</a>';
+	}
+}
+print '</td></tr></table>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfPDFBackgroundLandscape"). ' '. $langs->trans("ErrorOnlyPDFSupported"), 1, 'help');
 print '</td></tr>';
 
 // Default session status

@@ -187,9 +187,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		global $user, $langs, $conf, $mysoc;
 
 		// Set path to the background PDF File
-		if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND))
+		if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_P))
 		{
-			$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND);
+			$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P);
 			$tplidx = $pdf->importPage(1);
 		}
 

@@ -1391,7 +1391,7 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf = new Agefodd($db);
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
-			$forma_ref_int .= '('.$object->libSessionDate().')';
+			$forma_ref_int .= '('.$object->libSessionDate().') - '.$object->id;
 		}
 
 

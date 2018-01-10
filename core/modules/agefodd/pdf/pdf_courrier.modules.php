@@ -139,6 +139,13 @@ class pdf_courrier extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_P))
+			{
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P);
+				$tplidx = $pdf->importPage(1);
+			}
+
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
@@ -146,12 +153,14 @@ class pdf_courrier extends ModelePDFAgefodd {
 			if ($result) {
 				// New page
 				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
 				$pagenb ++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 				$pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
-				
+
 				$posY = $this->marge_haute;
 				$posX = $this->page_largeur - $this->marge_droite - 55;
 
@@ -233,7 +242,7 @@ class pdf_courrier extends ModelePDFAgefodd {
 				$pdf->SetFont('', '', $this->default_font_size - 3);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 				$posy = $pdf->GetY();
-				
+
 				printRefIntForma($this->db, $outputlangs, $agf, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
 
 				// Affichage du logo commanditaire (optionnel)
@@ -249,9 +258,6 @@ class pdf_courrier extends ModelePDFAgefodd {
 				}
 
 				$posY = $pdf->GetY() + 10;
-
-				$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
-				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 				// Mise en page de la baseline
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
@@ -337,7 +343,7 @@ class pdf_courrier extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
-				
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -348,8 +354,8 @@ class pdf_courrier extends ModelePDFAgefodd {
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-			
-				
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -386,7 +392,7 @@ class pdf_courrier extends ModelePDFAgefodd {
 		global $conf, $langs;
 
 		$outputlangs->load("main");
-		
+
 		// Fill header with background color
 		$pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
