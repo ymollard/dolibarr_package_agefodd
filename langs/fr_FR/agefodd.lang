@@ -850,6 +850,7 @@ AgfMenuSessConfList=Sessions confirmées
 AgfMenuSessNotDoneList=Sessions non réalisées
 AgfTrainerlAreadybookAtThisTime=Le/la formateur/trice est déja réservé(e) pour ces horaires sur une autre formation
 AgfCalendarDayOutOfScope=Les dates du calendrier semblent incohérentes avec les dates de la session
+AgfCalendarDayOutOfScopeTrainer=Les dates du calendrier du formateur semblent incohérentes avec les dates de la session
 AgfSessionDateErrors=La date de début de la session doit être avant sa date de fin
 AgfFactureFacNoPropalSignedHelp=La proposition commerciale doit être signée avant de créer la facture
 AgfFactureAddLineSuplierInvoice=Ajouter une ligne sur cette facture fournisseur

@@ -789,8 +789,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '</table>';
 	print '</div>';
 
-	
-	
+
+
 	print '<table style=noborder align="right">';
 	print '<tr><td align="center" colspan=2>';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
@@ -1193,21 +1193,21 @@ printSessionFieldsWithCustomOrder();
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					print '</div>';
-					
+
 					printSessionFieldsWithCustomOrder();
 					print '<div class="fichecenter">';
 					print '<table id="session_card" class="border" width="100%">';
 					// Print session card
 					$agf->printSessionInfo(false);
-					
-					
+
+
 
 					/*
 					 * Manage founding ressources depend type inter-enterprise or extra-enterprise
 					 */
 					if (! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 						print '<tr class="tr_order_OPCA"><td colspan="4">';
-						
+
 						print '<table class="border order_OPCA" width="100%">';
 						print '<tr><td>' . $langs->trans("AgfSubrocation") . '</td>';
 						if ($agf->is_OPCA == 1) {
@@ -1257,7 +1257,7 @@ printSessionFieldsWithCustomOrder();
 						print '</td></tr>';
 
 						print '</table>';
-						
+
 						print '</td></tr>';
 					}
 
@@ -1279,7 +1279,7 @@ printSessionFieldsWithCustomOrder();
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
 					if(! empty($conf->global->AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT)) {
-						print '<td>' . price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT') . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';						
+						print '<td>' . price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT') . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
 						$spend_cost += price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT');
 					}
 					else {
@@ -1304,13 +1304,13 @@ printSessionFieldsWithCustomOrder();
 					print '<td><strong>' . price($cashed_cost - $spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong> (' . $percentmargin . ')</td></tr>';
 
 					print '</table>';
-					
+
 					print '</td></tr>';
 					/*
 					 * Manage trainers
 					 */
 					print '<tr class="tr_order_trainer"><td colspan="4">';
-					
+
 					print '<table class="border order_trainer" width="100%">';
 
 					$formateurs = new Agefodd_session_formateur($db);
@@ -1384,9 +1384,9 @@ printSessionFieldsWithCustomOrder();
 
 									// Print warning message if trainer calendar date are not set within session date
 									if ($alertday) {
-										print img_warning($langs->trans("AgfCalendarDayOutOfScope"));
-										print $langs->trans("AgfCalendarDayOutOfScope");
-										setEventMessage($langs->trans("AgfCalendarDayOutOfScope"), 'warnings');
+										print img_warning($langs->trans("AgfCalendarDayOutOfScopeTrainer"));
+										print $langs->trans("AgfCalendarDayOutOfScopeTrainer");
+										setEventMessage($langs->trans("AgfCalendarDayOutOfScopeTrainer"), 'warnings');
 									}
 									if ($blocNumber > 6) {
 										print '<tr><td style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtimetrainer">+</td></tr>';
@@ -1418,14 +1418,14 @@ printSessionFieldsWithCustomOrder();
 						print "</tr>\n";
 					}
 					print "</table>";
-					
+
 					print '<td></tr>';
 					/*
 					 * Display trainees
 					 */
 
 					print '<tr class="tr_order_trainee"><td colspan="4">';
-					
+
 					print '<table class="border order_trainee" width="100%">';
 
 					$stagiaires = new Agefodd_session_stagiaire($db);
@@ -1543,10 +1543,10 @@ printSessionFieldsWithCustomOrder();
 						}
 					}
 					print "</table>";
-					
+
 					print '</td></tr>';
 					print '</table>';
-			print '</div>';		
+			print '</div>';
 					print '</div>';
 				}
 			} else {

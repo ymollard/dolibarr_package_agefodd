@@ -3469,18 +3469,20 @@ class Agsession extends CommonObject
 				// reminders: mktime(hours, minutes, secondes, month, day, year);
 				$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
 			}
-			if ((($agf->duree * 3600) != $duree) && (! empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
+			if ((($this->duree_session * 3600) != $duree) && (empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
 				print '<tr><td colspan=2>';
-				if (($agf->duree * 3600) < $duree)
-					$text_timealert = $langs->trans("AgfCalendarSup");
-				if (($agf->duree * 3600) > $duree)
-					$text_timealert = $langs->trans("AgfCalendarInf");
+				if (($this->duree_session * 3600) < $duree)
+					$textdurationwarning = $langs->trans("AgfCalendarSup");
+					if (($this->duree_session * 3600) > $duree)
+					$textdurationwarning = $langs->trans("AgfCalendarInf");
 				$min = floor($duree / 60);
 				$rmin = sprintf("%02d", $min % 60);
 				$hour = floor($min / 60);
-				print img_warning($text_timealert);
-				print ' (' . $langs->trans("AgfCalendarDureeProgrammee") . ': ' . $hour . ':' . $rmin . ', ';
-				print $langs->trans("AgfCalendarDureeThéorique") . ' : ' . ($agf->duree) . ':00).</td></tr>';
+				$textdurationwarning.=' (' . $langs->trans("AgfCalendarDureeProgrammee") . ': ' . $hour . ':' . $rmin . ', ';
+				$textdurationwarning.= $langs->trans("AgfCalendarDureeThéorique") . ' : ' . ($this->duree_session) . ':00)';
+				print img_warning();
+				print $textdurationwarning.'</td></tr>';
+				setEventMessage($textdurationwarning, 'warnings');
 			}
 			if ($alertday) {
 				print '<tr><td>&nbsp;</td><td colspan=2>';

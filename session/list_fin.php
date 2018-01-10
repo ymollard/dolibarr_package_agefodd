@@ -204,11 +204,11 @@ $session_array_id = array ();
 
 if ($resql != - 1) {
 	$num = $resql;
-	
+
 	$menu = $langs->trans("AgfMenuSessAct");
-	
+
 	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
-	
+
 	$i = 0;
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 	print '<table class="noborder" width="100%">';
@@ -234,7 +234,7 @@ if ($resql != - 1) {
 	}
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";
-	
+
 	// Search bar
 	$url_form = $_SERVER["PHP_SELF"];
 	$addcriteria = false;
@@ -258,19 +258,19 @@ if ($resql != - 1) {
 		}
 		$addcriteria = true;
 	}
-	
+
 	print '<tr class="liste_titre">';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
-	
+
 	print '<td>&nbsp;</td>';
 	if (! (empty($search_orderref))) {
 		print '<td class="liste_titre">';
@@ -296,11 +296,11 @@ if ($resql != - 1) {
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
-	
+
 	print "</tr>\n";
-	
+
 	$var = true;
-	
+
 	foreach ( $agf->lines as $line ) {
 		$session_array_id[$line->rowid] = $line->rowid;
 		// Affichage tableau des sessions
@@ -313,7 +313,7 @@ if ($resql != - 1) {
 		$color_a = '';
 		if ($line->color && ((($couleur_rgb[0] * 299) + ($couleur_rgb[1] * 587) + ($couleur_rgb[2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
-		
+
 		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
@@ -334,10 +334,10 @@ if ($resql != - 1) {
 		}
 		print '<td></td>';
 		print "</tr>\n";
-		
+
 		$i ++;
 	}
-	
+
 	print "</table>";
 } else {
 	setEventMessage($agf->error, 'errors');
@@ -363,7 +363,7 @@ if (empty($search_fourninvoiceref)) {
 				'trainee_requester' => $langs->trans('AgfTypeTraineeRequester'),
 				'opca' => $langs->trans('AgfMailTypeContactOPCA'),
 		);
-	
+
 	$sessions = array ();
 	foreach($select_array as $key=>$val) {
 		$filter['type_affect']=$key;
@@ -372,7 +372,7 @@ if (empty($search_fourninvoiceref)) {
 		if ($result<0) {
 			setEventMessage($soc->error, 'errors');
 		}
-		
+
 		foreach ( $agf_session->lines as $line_session ) {
 			!empty($line_session->training_ref_interne)?$training_ref_interne= ' - (' .$line_session->training_ref_interne.')': $training_ref_interne='';
 			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
@@ -381,7 +381,7 @@ if (empty($search_fourninvoiceref)) {
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
 	print '<td align="right">';
-	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1);
+	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1,0,0,'',0,0,0,'','',1);
 	print '</td>';
 	print '<td align="left">';
 	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_element"/>';

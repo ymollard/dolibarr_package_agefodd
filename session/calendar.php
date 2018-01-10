@@ -521,7 +521,7 @@ if ($id) {
 					print '</tr>' . "\n";
 				}
 				if ((($agf->duree_session * 3600) != $duree) && (empty($conf->global->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-					print '<tr><td colspan="4" align="center"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/recent.png" border="0" align="absmiddle" hspace="6px" >';
+					print '<tr><td colspan="4" align="center">'.img_warning();
 					if (($agf->duree_session * 3600) < $duree)
 						print $langs->trans("AgfCalendarSup");
 					if (($agf->duree_session * 3600) > $duree)
