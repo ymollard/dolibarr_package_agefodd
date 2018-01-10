@@ -240,7 +240,7 @@ if ($action == 'setvar') {
 
 			$isimage = image_format_supported($original_file);
 			if ($isimage >= 0) {
-				dol_syslog("Move file " . $_FILES["imagesup"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/logos/' . $original_file);
+				dol_syslog("Move file " . $_FILES["imagesup"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/images/' . $original_file);
 				if (! is_dir($conf->agefodd->dir_output . '/images/')) {
 					dol_mkdir($conf->agefodd->dir_output . '/images/');
 				}
@@ -258,6 +258,35 @@ if ($action == 'setvar') {
 				}
 			} else {
 				setEventMessage($langs->trans("ErrorOnlyPngJpgSupported"), 'errors');
+				$error ++;
+			}
+		}
+	}
+
+	if ($_FILES["pdfbackground"]["tmp_name"]) {
+		if (preg_match('/([^\\/:]+)$/i', $_FILES["pdfbackground"]["name"], $reg)) {
+			$original_file = $reg[1];
+
+			if (strpos($original_file,'.pdf')!==false) {
+
+				dol_syslog("Move file " . $_FILES["pdfbackground"]["tmp_name"] . " to " . $conf->agefodd->dir_output . '/background/' . $original_file);
+				if (! is_dir($conf->agefodd->dir_output . '/background/')) {
+					dol_mkdir($conf->agefodd->dir_output . '/background/');
+				}
+				$result = dol_move_uploaded_file($_FILES["pdfbackground"]["tmp_name"], $conf->agefodd->dir_output . '/background/' . $original_file, 1, 0, $_FILES['pdfbackground']['error']);
+				if ($result > 0) {
+					dolibarr_set_const($db, "AGF_ADD_PDF_BACKGROUND", $original_file, 'chaine', 0, '', $conf->entity);
+				} else if (preg_match('/^ErrorFileIsInfectedWithAVirus/', $result)) {
+					$langs->load("errors");
+					$tmparray = explode(':', $result);
+					setEventMessage($langs->trans('ErrorFileIsInfectedWithAVirus', $tmparray[1]), 'errors');
+					$error ++;
+				} else {
+					setEventMessage($langs->trans("ErrorFailedToSaveFile"), 'errors');
+					$error ++;
+				}
+			} else {
+				setEventMessage($langs->trans("ErrorOnlyPDFSupported"), 'errors');
 				$error ++;
 			}
 		}
@@ -439,6 +468,14 @@ if ($action == 'removeimagesup') {
 	$logofile = $conf->agefodd->dir_output . '/images/' . $conf->global->AGF_INFO_TAMPON;
 	dol_delete_file($logofile);
 	dolibarr_del_const($db, "AGF_INFO_TAMPON", $conf->entity);
+}
+
+if ($action == 'removepdfbackground') {
+	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
+
+	$logofile = $conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND;
+	dol_delete_file($logofile);
+	dolibarr_del_const($db, "AGF_ADD_PDF_BACKGROUND", $conf->entity);
 }
 
 if ($action == 'sessionlevel_create') {
@@ -1017,6 +1054,29 @@ print '</td></tr></table>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfInfoTamponHelp"), 1, 'help');
 
+print '</td></tr>';
+
+// PDF de background
+print '<tr class="pair"><td>' . $langs->trans("AgfPDFBackground") . ' (pdf)</td><td>';
+print '<table width="100%" class="nocellnopadd"><tr class="nocellnopadd"><td valign="middle" class="nocellnopadd">';
+print '<input type="file" class="flat" name="pdfbackground" size="40">';
+print '</td><td valign="middle" align="right">';
+if ($conf->global->AGF_ADD_PDF_BACKGROUND) {
+	if (file_exists($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND)) {
+		$documenturl = DOL_URL_ROOT.'/document.php';
+		if (isset($conf->global->DOL_URL_ROOT_DOCUMENT_PHP)) $documenturl=$conf->global->DOL_URL_ROOT_DOCUMENT_PHP;    // To use another wrapper
+		print ' &nbsp;';
+		print '<a class="documentdownload" href="'.$documenturl.'?modulepart='.'agefodd'.'&amp;file='.urlencode('/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND).'"';
+		print ' target="_blank">';
+		print img_mime($conf->global->AGF_ADD_PDF_BACKGROUND,$langs->trans("File").': '.$conf->global->AGF_ADD_PDF_BACKGROUND).' '.$conf->global->AGF_ADD_PDF_BACKGROUND;
+		print '</a>'."\n";
+
+		print '<a href="' . $_SERVER["PHP_SELF"] . '?action=removepdfbackground">' . img_delete($langs->trans("Delete")) . '</a>';
+	}
+}
+print '</td></tr></table>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfPDFBackground"), 1, 'help');
 print '</td></tr>';
 
 // Default session status
@@ -1894,6 +1954,22 @@ print '</td>';
 print '<td>';
 print $form->textwithpicto('', $langs->trans('AgfPrintFieldsWithCustomOrderHelp'), 1, 0);
 print '</td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfAddCustomColumnsOnFilter") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_ADD_CUSTOM_COLUMNS_ON_FILTER');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfViewTripAnsMissionCostPerParticipant") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT');
+print '</td>';
+print '<td></td>';
 print '</tr>';
 $var=!$var;
 

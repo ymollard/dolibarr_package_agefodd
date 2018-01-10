@@ -1056,6 +1056,10 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 
 	$dims=$pdf->getPageDimensions();
 
+	if (!empty($conf->global->AGF_HIDE_DOC_FOOTER)) {
+		return 0;
+	}
+
 	// Line of free text
 	if (empty($hidefreetext) && ! empty($conf->global->$paramfreetext))
 	{
@@ -1402,9 +1406,9 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 
 function printSessionFieldsWithCustomOrder() {
 	global $conf;
-	
+
 	$customOrder = $conf->global->AGF_CUSTOM_ORDER;
-	
+
 	if(! empty($customOrder)) {
 		$TClassName = explode(',', $customOrder);
 
@@ -1416,10 +1420,10 @@ function printSessionFieldsWithCustomOrder() {
 		if (!empty($TClassName)) {
 		?>
 		<script type="text/javascript">
-			
+
 			$(function() {
 				$('#session_card > tbody > tr div.select2-container').each(function(i, item) {
-					let id = item.id.slice(5);	
+					let id = item.id.slice(5);
 					$('#'+id).select2('destroy');
 					$('#'+id).addClass('toSelect2');
 				});
@@ -1442,7 +1446,7 @@ function printSessionFieldsWithCustomOrder() {
 							TAgf_found[j] = true;
 						}
 					}
-				}			
+				}
 
 				// Ajoute le reste des TR non ordonnés à la suite
 				for (let i in agf_tab_tr) {
@@ -1450,12 +1454,12 @@ function printSessionFieldsWithCustomOrder() {
 					if (TAgf_found[i] === true) continue;
 					$('#session_card > tbody').append(agf_tab_tr[i]);
 				}
-				
+
 				$('.toSelect2').select2({
 					width: 'element'
 				});
 			});
-			
+
 		</script>
 		<?php
 		}

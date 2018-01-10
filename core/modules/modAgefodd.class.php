@@ -81,7 +81,8 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/place",
 				"/agefodd/trainee",
 				"/agefodd/report",
-				"/agefodd/report/bpf"
+				"/agefodd/report/bpf",
+				"/agefodd/background"
 		);
 		$r = 0;
 

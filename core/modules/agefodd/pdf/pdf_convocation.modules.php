@@ -150,6 +150,13 @@ class pdf_convocation extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND);
+				$tplidx = $pdf->importPage(1);
+			}
+
 			// Recuperation des stagiaires participant à la formation
 			$agf2 = new Agefodd_session_stagiaire($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
@@ -158,8 +165,9 @@ class pdf_convocation extends ModelePDFAgefodd {
 				for($i = 0; $i < count($agf2->lines); $i ++) {
 					// New page
 					$pdf->AddPage();
-					$pagenb ++;
+					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
+					$pagenb ++;
 					$this->_pagehead($pdf, $agf, 1, $outputlangs);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 					$pdf->MultiCell(0, 3, '', 0, 'J');
@@ -255,7 +263,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 					$pdf->SetFont('', '', $default_font_size - 1);
 					$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 					$posy = $pdf->GetY();
-					
+
 					printRefIntForma($this->db, $outputlangs, $agf, $default_font_size - 1, $pdf, $posx, $posy, 'L');
 
 					$posY = $pdf->GetY() + 10;
@@ -418,7 +426,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
-				
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -429,8 +437,8 @@ class pdf_convocation extends ModelePDFAgefodd {
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-			
-				
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");

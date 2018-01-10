@@ -32,6 +32,7 @@ require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_formation_catalogue.class.php');
 require_once ('../class/agefodd_place.class.php');
+require_once ('../class/agefodd_session_stagiaire.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
@@ -43,6 +44,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
@@ -59,13 +61,10 @@ $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
-$status_view = GETPOST('status', 'int');
+$status_view = GETPOST('status', 'array');
 $search_type_affect = GETPOST('search_type_affect', 'alpha');
 
-if (empty($search_type_affect))
-	$search_type_affect = 'thirdparty';
-
-	// Do we click on purge search criteria ?
+// Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_trainning_name = '';
 	$search_teacher_id = "";
@@ -76,7 +75,11 @@ if (GETPOST("button_removefilter_x")) {
 	$search_training_ref_interne = "";
 	$search_type_session = "";
 	$status_view = "";
+	$search_type_affect = "";
 }
+
+if (empty($search_type_affect))
+	$search_type_affect = 'thirdparty';
 
 $filter = array ();
 if (! empty($search_trainning_name)) {
@@ -119,7 +122,7 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -223,13 +226,17 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, 0, 0, $filter);
 }
-$result = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+$result = $agf->fetch_all_by_soc($object->id, $sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result >= 0) {
 	$num = $result;
 
-	$option = '&socid=' . $socid . '&search_type_affect=' . $search_type_affect . '&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
+	$option = '&socid=' . $socid . '&limit=' . $limit . '&search_type_affect=' . $search_type_affect . '&search_trainning_name=' . $search_trainning_name . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+
+	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="socid" value="' . $socid . '" >';
+
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_session', 0, '', '', $limit);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';
@@ -247,6 +254,10 @@ if ($result >= 0) {
 	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], 's.status', '', $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print_liste_field_titre($langs->trans("AgfParticipantsWithTotal"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfSessionCostPerTrainee"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+	}
 	print '<td></td>';
 	print "</tr>\n";
 
@@ -282,8 +293,6 @@ if ($result >= 0) {
 		$addcriteria = true;
 	}*/
 
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
-	print '<input type="hidden" name="socid" value="' . $socid . '" >';
 	print '<tr class="liste_titre">';
 
 	print '<td class="liste_titre">';
@@ -325,23 +334,41 @@ if ($result >= 0) {
 	print '</td>';
 
 	print '<td class="liste_titre">';
-	print $formAgefodd->select_session_status($status_view, 'status', '', 1);
+	print $formAgefodd->select_session_status($status_view, 'status', '', 1, 0, array(), '', true);
 	print '</td>';
-
+	
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
 	print '</td>';
+
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print '<td></td>';
+	}
 
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
 
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print '<td></td>';
+	}
+
 	print "</tr>\n";
 	print '</form>';
 
 	$var = true;
+	$total = 0;
 	foreach ( $agf->lines as $line ) {
+		if($i >= $limit) break;
+		
+		$agf->fetch($line->rowid);
+		$coutTotalLigne = $agf->cost_trainer + $agf->cost_site + $agf->cost_trip;
+
+		// Retrouve tous les stagiaires d'une même société présents à une session de formation
+		$agfS = new Agefodd_session_stagiaire($db);
+		$agfS->fetch_stagiaire_per_session($line->rowid, $line->socid);
+		$nbSocParticipant = count($agfS->lines);
 
 		if ($line->rowid != $oldid) {
 
@@ -406,6 +433,13 @@ if ($result >= 0) {
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
 			print '<td>' . stripslashes($line->status_lib) . '</td>';
 			print '<td>' . stripslashes($line->type_affect) . '</td>';
+			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+				$coutTotalLigne /= $nbSocParticipant;
+				$total += $coutTotalLigne;
+
+				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
+				print '<td>' . price($coutTotalLigne) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+			}
 			print '<td></td>';
 			print "</tr>\n";
 		} else {
@@ -431,6 +465,10 @@ if ($result >= 0) {
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
+			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+				print '<td></td>';
+				print '<td></td>';
+			}
 			print "</tr>\n";
 		}
 
@@ -439,6 +477,14 @@ if ($result >= 0) {
 		$i ++;
 	}
 
+	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
+		print '<tr>';
+
+		print '<td align="right" colspan="13"><strong>Total :</strong></td>';
+		print '<td><strong>' . price($total) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+
+		print '</tr>';
+	}
 	print "</table>";
 } elseif ($result == 0) {
 	print $langs->trans('AgfNoSession');

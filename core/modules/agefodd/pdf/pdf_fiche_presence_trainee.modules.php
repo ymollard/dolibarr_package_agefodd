@@ -199,8 +199,8 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 				$this->pdf->Output($file, 'F');
 				if (! empty($conf->global->MAIN_UMASK))
 					@chmod($file, octdec($conf->global->MAIN_UMASK));
-		
-					
+
+
 				// Add pdfgeneration hook
 				if (! is_object($hookmanager))
 				{
@@ -211,7 +211,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 				$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 				global $action;
 				$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-				
+
 					return 1; // Pas d'erreur
 			} else {
 				$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -432,7 +432,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$this->posY = $this->pdf->GetY();
-		
+
 		printRefIntForma($this->db, $this->outputlangs, $this->ref_object, $this->default_font_size - 3, $this->pdf, $this->posX, $this->posY, 'L');
 
 		// Affichage du logo commanditaire (optionnel)

@@ -160,6 +160,13 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 			$this->pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$this->pdf->SetAutoPageBreak(true, 0);
 
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $this->pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND);
+				$tplidx = $this->pdf->importPage(1);
+			}
+
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
@@ -168,6 +175,8 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				// New page
 				$outputlangs->load("main");
 				$this->pdf->AddPage();
+				if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
+
 				$this->_pagehead($agf, $outputlangs);
 				/*
 				 * Corps de page
@@ -366,6 +375,8 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 					if ($height > $height_left) {
 						$this->_pagefoot($agf, $outputlangs);
 						$this->pdf->AddPage();
+						if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
+
 						$this->_pagehead($agf, $outputlangs);
 						$posY = $this->pdf->GetY() + 5;
 					} else {
@@ -492,6 +503,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 
 					$this->_pagefoot($agf, $outputlangs);
 					$this->pdf->AddPage();
+					if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
 					$this->_pagehead($agf, $outputlangs);
 					$posY = $this->pdf->GetY() + 5;
 				} else {
@@ -523,6 +535,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 				$this->_pagefoot($agf, $outputlangs);
 
 				$this->pdf->AddPage();
+				if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
 				$this->_pagehead($agf, $outputlangs);
 				$posY = $this->pdf->GetY() + 5;
 				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
@@ -589,7 +602,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 			$this->pdf->Output($file, 'F');
 			if (! empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
-				
+
 			// Add pdfgeneration hook
 			if (! is_object($hookmanager))
 			{
@@ -600,8 +613,8 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-				
-				
+
+
 			return 1; // Pas d'erreur
 		} else {
 			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
@@ -712,7 +725,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 		$this->pdf->SetFont('', '', $this->default_font_size - 3);
 		$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posy = $this->pdf->GetY();
-		
+
 		printRefIntForma($this->db, $outputlangs, $object, $this->default_font_size - 3, $this->pdf, $posx, $posy, 'L');
 
 		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
