@@ -1268,3 +1268,5 @@ AgfNobodyTrainer=Aucun formateur inscrit
 AgfPDFBackgroundPortrait=PDF de fond de page utilisé les documents agefodd (portait)
 AgfPDFBackgroundLandscape=PDF de fond de page utilisé les documents agefodd (paysage)
 ErrorOnlyPDFSupported=Seul de PDF son accepter pour les fonds de page
+AgfTraineeCost=Coût par participants
+AgfEffectiveDuration=Durée effective

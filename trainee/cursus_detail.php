@@ -231,6 +231,9 @@ if (! empty($id) && ! empty($cursus_id)) {
 			print_liste_field_titre($langs->trans("AgfDebutSession"), $_SERVER ['PHP_SELF'], "s.dated", '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
 			print_liste_field_titre($langs->trans("AgfFinSession"), $_SERVER ['PHP_SELF'], "s.datef", '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
 			print_liste_field_titre($langs->trans("AgfPDFFichePeda1"), $_SERVER ['PHP_SELF'], '', '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
+				print_liste_field_titre($langs->trans("AgfEffectiveDuration"), $_SERVER ['PHP_SELF'], '', '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
+			}
 			print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "ss.status_in_session", '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
 			print "</tr>\n";
 			print '</tr>';
@@ -268,6 +271,13 @@ if (! empty($id) && ! empty($cursus_id)) {
 
 				// print '<td>'.dol_print_date($line->realdurationsession,'hour').'</td>';
 				print '<td>' . $hour . ':' . $rmin . '</td>';
+				if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+					$obj_time_effective=new Agefoddsessionstagiaireheures($db);
+					$timeinsession = $obj_time_effective->heures_stagiaire($line->rowid,$agf_cursus->fk_stagiaire);
+					print '<td>' . $timeinsession . '</td>';
+					$totaltimesession+=$timeinsession;
+				}
 				print '<td>' . $stagiaires->LibStatut($line->status_in_session, 4) . '</td>';
 				print '</tr>';
 			}
@@ -282,6 +292,9 @@ if (! empty($id) && ! empty($cursus_id)) {
 			$rmin = sprintf("%02d", $min % 60);
 			$hour = floor($min / 60);
 			print '<td>' . $hour . ':' . $rmin . '</td>';
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+				print '<td>' . $totaltimesession . '</td>';
+			}
 			print '<td></td>';
 			print '</tr>';
 			print '</table>';

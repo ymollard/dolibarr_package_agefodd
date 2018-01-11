@@ -53,27 +53,27 @@ llxHeader('', $langs->trans("AgfStagiaireDetail"));
 if ($id) {
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->fetch($id);
-	
+
 	if ($result > 0) {
 		$stagiaires = new Agefodd_session_stagiaire($db);
-		
+
 		$agf_session = new Agsession($db);
 		$result = $agf_session->fetch_session_per_trainee($id);
 		if ($result < 0) {
 			setEventMessage($agf_session->error, 'errors');
 		}
-		
+
 		$form = new Form($db);
-		
+
 		$head = trainee_prepare_head($agf);
-		
+
 		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-		
+
 		print '<table class="border" width="100%">';
-		
+
 		print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td>' . $form->showrefnav($agf, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-		
+
 		if (! empty($agf->fk_socpeople)) {
 			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
 			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . strtoupper($agf->nom) . '</a></td></tr>';
@@ -81,17 +81,17 @@ if ($id) {
 			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
 			print '<td>' . strtoupper($agf->nom) . '</td></tr>';
 		}
-		
+
 		print '<tr><td>' . $langs->trans("Firstname") . '</td>';
 		print '<td>' . ucfirst($agf->prenom) . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
-		
+
 		$contact_static = new Contact($db);
 		$contact_static->civility_id = $agf->civilite;
-		
+
 		print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-		
+
 		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 		if ($agf->socid) {
 			print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $agf->socid . '">';
@@ -100,31 +100,31 @@ if ($id) {
 			print '&nbsp;';
 		}
 		print '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("AgfFonction") . '</td>';
 		print '<td>' . $agf->fonction . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("Phone") . '</td>';
 		print '<td>' . dol_print_phone($agf->tel1) . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("Mobile") . '</td>';
 		print '<td>' . dol_print_phone($agf->tel2) . '</td></tr>';
-		
+
 		print '<tr><td>' . $langs->trans("Mail") . '</td>';
 		print '<td>' . dol_print_email($agf->mail, $agf->id, $agf->socid, 'AC_EMAIL', 25) . '</td></tr>';
-		
+
 		print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 		if (! empty($agf->note))
 			$notes = nl2br($agf->note);
 		else
 			$notes = $langs->trans("AgfUndefinedNote");
 		print '<td>' . stripslashes($notes) . '</td></tr>';
-		
+
 		print "</table>";
 		print '</div>';
-		
+
 		print_fiche_titre($langs->trans("AgfSessionDetail"));
-		
+
 		if (count($agf_session->lines) > 0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
@@ -133,33 +133,36 @@ if ($id) {
 			print '<th class="liste_titre" width="20%">' . $langs->trans('AgfDebutSession') . '</th>';
 			print '<th class="liste_titre" width="20%">' . $langs->trans('AgfFinSession') . '</th>';
 			print '<th class="liste_titre" width="20%">' . $langs->trans('AgfPDFFichePeda1') . '</th>';
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
+				print '<th class="liste_titre" width="20%">' . $langs->trans('AgfEffectiveDuration') . '</th>';
+			}
 			print '<th class="liste_titre" width="20%">' . $langs->trans('Status') . '</th>';
-			
+
 			print '</tr>';
-			
+
 			$style = 'pair';
-			
+
 			$dureetotal = 0;
 			foreach ( $agf_session->lines as $line ) {
 				$duree = 0;
-				
+
 				if ($style == 'pair') {
 					$style = 'class="impair"';
 				} else {
 					$style = 'class="pair"';
 				}
-				
+
 				if ($line->status == 4) {
 					$style = ' style="background: gray"';
 				}
-				
+
 				print '<tr ' . $style . '>';
-				
+
 				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->rowid . '</a></td>';
 				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->intitule . '</a></td>';
 				print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 				print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
-				
+
 				// Calculate time of session according calendar
 				$calendrier = new Agefodd_sesscalendar($db);
 				$calendrier->fetch_all($line->rowid);
@@ -172,23 +175,32 @@ if ($id) {
 				$min = floor($duree / 60);
 				$rmin = sprintf("%02d", $min % 60);
 				$hour = floor($min / 60);
-				
+
 				// print '<td>'.dol_print_date($line->realdurationsession,'hour').'</td>';
 				print '<td>' . $hour . ':' . $rmin . '</td>';
+				if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+					$obj_time_effective=new Agefoddsessionstagiaireheures($db);
+					$timeinsession = $obj_time_effective->heures_stagiaire($line->rowid,$agf->id);
+					print '<td>' . $timeinsession . '</td>';
+				}
 				print '<td>' . $stagiaires->LibStatut($line->status_in_session, 4) . '</td>';
 				print '</tr>';
 			}
-			
+
 			print '<tr class="liste_total">';
 			print '<td>' . $langs->trans('Total') . '</td>';
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
-			
+
 			$min = floor($dureetotal / 60);
 			$rmin = sprintf("%02d", $min % 60);
 			$hour = floor($min / 60);
 			print '<td>' . $hour . ':' . $rmin . '</td>';
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+				print '<td>' . $obj_time_effective->heures_stagiaire_totales($agf->id) . '</td>';
+			}
 			print '<td></td>';
 			print '</tr>';
 			print '</table>';

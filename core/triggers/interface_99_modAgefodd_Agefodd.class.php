@@ -372,7 +372,7 @@ class InterfaceAgefodd {
 
 			$actioncomm = new ActionComm($this->db);
 			$actioncomm->type_code = $object->actiontypecode;
-			$actioncomm->label = $object->actionmsg2;
+			$actioncomm->label = $object->actionmsg2.'('.$object->id.')';
 			$actioncomm->note = $object->actionmsg;
 			$actioncomm->datep = $now;
 			$actioncomm->datef = $now;

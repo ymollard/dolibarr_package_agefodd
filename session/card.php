@@ -1288,7 +1288,11 @@ printSessionFieldsWithCustomOrder();
 					}
 
 					print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
-					print '<td><strong>' . price($spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td></tr>';
+					if ($agf->nb_stagiaire>0) {
+						$traineeCost = ' ('.$langs->trans('AgfTraineeCost') . ':'.price($spend_cost/$agf->nb_stagiaire).' ' . $langs->trans('Currency' . $conf->currency).')';
+					}
+
+					print '<td><strong>' . price($spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong>'.$traineeCost.'</td></tr>';
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
 					print '<td>' . price($agf->sell_price) . ' ' . $langs->trans('Currency' . $conf->currency) . ' ' . $other_amount . '</td></tr>';
