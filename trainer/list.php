@@ -99,6 +99,8 @@ $pagenext = $page + 1;
 
 $agf = new Agefodd_teacher($db);
 
+$hookmanager->initHooks(array('trainerlist'));
+
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
@@ -117,27 +119,13 @@ if ($arch == 2) {
 	print '<a href="' . $_SERVER ['PHP_SELF'] . '?' . $option . '&arch=2">' . $langs->trans("AgfAfficherFormateursArchives") . '</a>' . "\n";
 }
 
-print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Name"), $_SERVER ['PHP_SELF'], "s.lastname", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Firstname"), $_SERVER ['PHP_SELF'], "s.firstname", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "s.civility", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("PhoneMobile"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.email", "", $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans('AgfTrainerNature'), $_SERVER ['PHP_SELF'], "f.type_trainer", "", $option, '', $sortfield, $sortorder);
-print '<th width="5%">';
-print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-print '&nbsp; ';
-print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
-print '</th>';
-print "</tr>\n";
+print '<table class="noborder  tagtable liste listwithfilterbefore" width="100%">';
+
 
 // Filter
-print '<tr class="liste_titre">';
+print '<tr class="liste_titre_filter">';
 print '<td class="liste_titre">';
 print '<input type="text" class="flat" name="search_id" value="' . $search_id . '" size="4">';
 print '</td>';
@@ -166,6 +154,24 @@ print '</td>';
 print '<td></td>';
 print "</tr>\n";
 
+print '<tr class="liste_titre">';
+print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Name"), $_SERVER ['PHP_SELF'], "s.lastname", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Firstname"), $_SERVER ['PHP_SELF'], "s.firstname", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "s.civility", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("PhoneMobile"), $_SERVER ['PHP_SELF'], "s.phone", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.email", "", $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans('AgfTrainerNature'), $_SERVER ['PHP_SELF'], "f.type_trainer", "", $option, '', $sortfield, $sortorder);
+print '<th width="5%">';
+print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+print '&nbsp; ';
+print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+print '</th>';
+print "</tr>\n";
+
+
+
 if ($result > 0) {
 	$var = true;
 	$i = 0;
@@ -191,7 +197,7 @@ if ($result > 0) {
 		print '<td>'.$langs->trans('AgfTrainerType'.ucfirst($agf->lines[$i]->type_trainer)).'</td>';
 		print '<td></td>';
 		print "</tr>\n";
-		
+
 		$i ++;
 	}
 } else {

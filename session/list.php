@@ -91,6 +91,8 @@ if (GETPOST("button_removefilter_x")) {
 	$search_session_status = '';
 }
 
+$hookmanager->initHooks(array('sessionlist'));
+
 include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 $agf_session = new Agsession($db);
