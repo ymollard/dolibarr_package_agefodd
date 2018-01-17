@@ -80,7 +80,7 @@ $this->str .= $outputlangs->transnoentities('AgfPDFCourrierConv3') . "\n\n";
 
 $this->str .= $outputlangs->transnoentities('AgfPDFCourrierAcceuil11') . "\n\n";
 $this->str .= $outputlangs->transnoentities('AgfPDFCourrierAcceuil13');
-$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str));
+$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 $hauteur = dol_nboflines_bis($this->str, 50) * 4;
 
