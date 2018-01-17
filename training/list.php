@@ -123,9 +123,11 @@ $arrayfields=array(
 
 );
 
-
+$hookmanager->initHooks(array('traininglist'));
 
 llxHeader('', $langs->trans('AgfMenuCat'));
+
+
 
 $agf = new Agefodd($db);
 $form = new Form($db);
@@ -209,7 +211,7 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter
 
 $i = 0;
 
-print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+print '<form method="get" action="' . $url_form . '" name="searchFormList" id="searchFormList">' . "\n";
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="arch" value="' . $arch . '" >';
@@ -229,7 +231,7 @@ $selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfiel
 
 
 print '<table class="tagtable liste listwithfilterbefore" width="100%">';
-print '<tr class="liste_titre">';
+print '<tr class="liste_titre_filter">';
 if (! empty($arrayfields['c.rowid']['checked']))print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
 if (! empty($arrayfields['c.intitule']['checked'])){
@@ -296,7 +298,7 @@ if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.p
 			if (! empty($arrayfields["ef.".$key]['checked'])) {
 				$align=$extrafields->getAlignFlag($key);
 				$typeofextrafield=$extrafields->attribute_type[$key];
-				print '<td class="liste_titre'.($align?' '.$align:'').'">';
+				print '<td class="liste_titre '.($align?' '.$align:'').'">';
 				if (in_array($typeofextrafield, array('varchar', 'int', 'double', 'select')) && empty($extrafields->attribute_computed[$key]))
 				{
 					$crit=$val;
@@ -330,7 +332,7 @@ if(method_exists($form, 'showFilterButtons')) {
 print '</td>';
 
 print "</tr>\n";
-print '</form>';
+
 print '<tr class="liste_titre">';
 
 if (! empty($arrayfields['c.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
@@ -455,6 +457,7 @@ if ($resql > 0) {
 }
 
 print "</table>";
+print '</form>';
 
 llxFooter();
 $db->close();

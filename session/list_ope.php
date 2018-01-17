@@ -139,6 +139,8 @@ $offset = $conf->liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
+//$hookmanager->initHooks(array('sessionopelist'));
+
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 $formother = new FormOther($db);
@@ -195,7 +197,7 @@ if ($resql != - 1) {
 		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user);
 	}
 	if ($moreforfilter) {
-		print '<div class="liste_titre">';
+		print '<div class="liste_titre liste_titre_bydiv centpercent">';
 		print $moreforfilter;
 		print '</div>';
 	}

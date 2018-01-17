@@ -86,6 +86,8 @@ $pagenext = $page + 1;
 $agf = new Agefodd_place($db);
 $soc=new Societe($db);
 
+$hookmanager->initHooks(array('sitelist'));
+
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 $linenum = count($agf->lines);
@@ -102,7 +104,7 @@ if ($arch == 2) {
 print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=' . $arch . '">' . $txt . '</a>' . "\n";
 
 
-print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 if (! empty($sortfield))
 	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
 if (! empty($sortorder))
@@ -113,17 +115,11 @@ if (! empty($page))
 
 print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum, $linenum,'title_generic.png', 0, '', '', $limit);
 
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "p.rowid", '',  $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "p.ref_interne", '',  $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "s.nom", '',  $option, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "p.tel", "",  $option, '', $sortfield, $sortorder);
-print "</tr>\n";
+print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
 
 
 //Filter
-print '<tr class="liste_titre">';
+print '<tr class="liste_titre_filter">';
 
 print '<td>&nbsp;</td>';
 
@@ -140,6 +136,14 @@ print '&nbsp; ';
 print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 print '</td>';
 
+print "</tr>\n";
+
+
+print '<tr class="liste_titre">';
+print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "p.rowid", '',  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "p.ref_interne", '',  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "s.nom", '',  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "p.tel", "",  $option, '', $sortfield, $sortorder);
 print "</tr>\n";
 
 

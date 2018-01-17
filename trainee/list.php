@@ -104,6 +104,8 @@ $pagenext = $page + 1;
 
 $formcompagny = new FormCompany($db);
 
+$hookmanager->initHooks(array('traineelist'));
+
 $agf = new Agefodd_stagiaire($db);
 
 // Count total nb of records
@@ -132,7 +134,7 @@ if ($result >= 0) {
 
 	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result, $nbtotalofrecords);
 
-	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
 	if (! empty($sortorder))
@@ -140,19 +142,11 @@ if ($result >= 0) {
 	if (! empty($page))
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
 
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfNomPrenom"), $_SERVER ['PHP_SELF'], "s.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "civ.code", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel1", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
-	print '<td>&nbsp;</td>';
-	print "</tr>\n";
+
+	print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
 
 
-	print '<tr class="liste_titre">';
+	print '<tr class="liste_titre_filter">';
 
 	print '<td>&nbsp;</td>';
 
@@ -182,6 +176,17 @@ if ($result >= 0) {
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
 
+	print "</tr>\n";
+
+
+	print '<tr class="liste_titre">';
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfNomPrenom"), $_SERVER ['PHP_SELF'], "s.nom", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "civ.code", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel1", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
+	print '<td>&nbsp;</td>';
 	print "</tr>\n";
 
 	$var = true;
