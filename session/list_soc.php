@@ -435,7 +435,7 @@ if ($result >= 0) {
 			print '<td>' . stripslashes($line->type_affect) . '</td>';
 			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
 				$coutTotalLigne /= $line->nb_stagiaire;
-				$coutTotalLigne *= $nbSocParticipant;
+			//	$coutTotalLigne *= $nbSocParticipant;
 				$total += $coutTotalLigne;
 
 				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
