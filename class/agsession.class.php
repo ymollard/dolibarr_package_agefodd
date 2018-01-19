@@ -4808,11 +4808,19 @@ class Agsession extends CommonObject
 			}
 		}
 
+		$this->trainer_text='';
+		$trainerarray=array();
 		if(empty($this->TFormateursSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 			$formateurs = new Agefodd_session_formateur($db);
 			$nbform = $formateurs->fetch_formateur_per_session($this->id);
 			$this->TFormateursSession = $formateurs->lines;
+			if (is_array($formateurs->lines) && count($formateurs->lines)>0) {
+				foreach($formateurs->lines as $linetrainer) {
+					 $trainerarray[]= $linetrainer->lastname. ' '.$linetrainer->firstname;
+				}
+				$this->trainer_text = implode(', ',$trainerarray);
+			}
 		}
 
 		if(empty($this->lieu)) {
