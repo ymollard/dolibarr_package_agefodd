@@ -1246,6 +1246,30 @@ class FormAgefodd extends Form
 		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
 
 		$action_arr = ActionComm::getActions($this->db, $socid, $object->id, $typeelement);
+		
+		// On récupère les événements liés aux factures elles mêmes liées à la session de formation
+		$agf = new Agefodd_session_element($this->db);
+		$result = $agf->fetch_by_session_by_thirdparty($object->id, $socid, 'invoice');
+		if(!empty($agf->lines)) {
+			foreach ( $agf->lines as $line ) {
+				if ($line->element_type == 'invoice' && ! empty($line->facnumber)) {
+					$action_arr_fac = ActionComm::getActions($this->db, $socid, $line->fk_element, 'invoice');
+					if(!empty($action_arr_fac)) $action_arr=array_merge($action_arr, $action_arr_fac);
+				}
+			}
+		}
+		
+		// On récupère les événements liés aux propales elles mêmes liées à la session de formation
+		$result = $agf->fetch_by_session_by_thirdparty($object->id, $socid, 'propal');
+		if(!empty($agf->lines)) {
+			foreach ( $agf->lines as $line ) {
+				if ($line->element_type == 'propal' && ! empty($line->propalref)) {
+					$action_arr_prop = ActionComm::getActions($this->db, $socid, $line->fk_element, 'propal');
+					if(!empty($action_arr_fac)) $action_arr=array_merge($action_arr, $action_arr_prop);
+				}
+			}
+		}
+		
 		$num = count($action_arr);
 		if ($num) {
 			if ($typeelement == 'agefodd_agsession')
