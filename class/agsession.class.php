@@ -378,14 +378,13 @@ class Agsession extends CommonObject
 		if ($result2 > 0 && ! empty($this->dated)) {
 			foreach ( $admlevel->lines as $line ) {
 				$actions = new Agefodd_sessadm($this->db);
-
 				if (!empty($line->alerte)) {
 					$actions->datea = dol_time_plus_duree($this->dated, $line->alerte, 'd');
 				}
 				if (!empty($line->alerte_end)) {
 					$actions->datea = dol_time_plus_duree($this->datef, $line->alerte_end, 'd');
 				}
-				if (dol_strlen($actions->dated) == 0) {
+				if (dol_strlen($actions->datea) == 0) {
 					$actions->datea=$this->dated;
 				}
 				$actions->dated = dol_time_plus_duree($actions->datea, - 7, 'd');
@@ -395,7 +394,6 @@ class Agsession extends CommonObject
 				} else {
 					$actions->datef = $this->datef;
 				}
-
 				$actions->fk_agefodd_session_admlevel = $line->rowid;
 				$actions->fk_agefodd_session = $this->id;
 				$actions->delais_alerte = $line->alerte;
@@ -414,7 +412,6 @@ class Agsession extends CommonObject
 					$error ++;
 				}
 			}
-
 			// Caculate the new parent level
 			$action_static = new Agefodd_sessadm($this->db);
 			$result4 = $action_static->setParentActionId($user, $this->id);
