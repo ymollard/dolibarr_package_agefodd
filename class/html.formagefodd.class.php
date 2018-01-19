@@ -1265,7 +1265,7 @@ class FormAgefodd extends Form
 			foreach ( $agf->lines as $line ) {
 				if ($line->element_type == 'propal' && ! empty($line->propalref)) {
 					$action_arr_prop = ActionComm::getActions($this->db, $socid, $line->fk_element, 'propal');
-					if(!empty($action_arr_fac)) $action_arr=array_merge($action_arr, $action_arr_prop);
+					if(!empty($action_arr_prop)) $action_arr=array_merge($action_arr, $action_arr_prop);
 				}
 			}
 		}
