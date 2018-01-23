@@ -33,24 +33,24 @@ if (! $res)
 	die("Include of main fails");
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_opca.class.php');
-require_once ('../class/agefodd_sessadm.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once ('../class/agefodd_convention.class.php');
-require_once ('../core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/html.formagefodd.class.php');
-require_once ('../lib/agefodd.lib.php');
-require_once ('../class/html.formagefodd.class.php');
-require_once ('../class/html.formagefoddsenddocs.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-require_once ('../lib/agefodd_document.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php');
-require_once ('../class/agefodd_session_formateur.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_formateur.class.php');
+require_once '../class/agsession.class.php';
+require_once '../class/agefodd_opca.class.php';
+require_once '../class/agefodd_sessadm.class.php';
+require_once '../class/agefodd_session_element.class.php';
+require_once '../class/agefodd_convention.class.php';
+require_once '../core/modules/agefodd/modules_agefodd.php';
+require_once '../class/html.formagefodd.class.php';
+require_once '../lib/agefodd.lib.php';
+require_once '../class/html.formagefodd.class.php';
+require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
+require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+require_once '../lib/agefodd_document.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php';
+require_once '../class/agefodd_session_formateur.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+require_once '../class/agefodd_session_stagiaire.class.php';
+require_once '../class/agefodd_formateur.class.php';
+require_once DOL_DOCUMENT_ROOT . "/core/class/html.formmail.class.php";
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -66,7 +66,7 @@ $addfile = GETPOST('addfile');
 $cancel = GETPOST('cancel');
 
 $form = new Form($db);
-$formmail = new FormAgefoddsenddocs($db);
+$formmail = new FormMail($db);
 $formAgefodd = new FormAgefodd($db);
 
 if (GETPOST('modelselected')) {
@@ -394,29 +394,7 @@ if (! empty($addfile)) {
 	$action = $pre_action;
 }
 
-$extrajs = array(
-		'/agefodd/includes/multiselect/js/ui.multiselect.js'
-);
-$extracss = array(
-		'/agefodd/includes/multiselect/css/ui.multiselect.css',
-		'/agefodd/css/agefodd.css'
-);
-
-llxHeader('', $langs->trans("AgfSendCommonDocs"), '', '', '', '', $extrajs, $extracss);
-
-print '<script type="text/javascript" language="javascript">
-	jQuery(document).ready(function() {
-	jQuery.extend($.ui.multiselect.locale, {
-	addAll:\'' . $langs->transnoentities("AddAll") . '\',
-		removeAll:\'' . $langs->transnoentities("RemoveAll") . '\',
-			itemsCount:\'' . $langs->transnoentities("ItemsCount") . '\'
-});
-				jQuery(function(){
-				jQuery("#receiver").addClass("multiselect").attr("multiple","multiple").attr("name","receiver[]");
-				jQuery(".multiselect").multiselect({sortable: false, searchable: false});
-});
-});
-				</script>';
+llxHeader('', $langs->trans("AgfSendCommonDocs"));
 
 if (! empty($id)) {
 	$agf = new Agsession($db);

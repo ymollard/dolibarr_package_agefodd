@@ -29,19 +29,19 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_sessadm.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_stagiaire.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once ('../class/agefodd_convention.class.php');
-require_once ('../core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/html.formagefodd.class.php');
-require_once ('../lib/agefodd.lib.php');
-require_once ('../lib/agefodd_document.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php');
-require_once ('../class/html.formagefoddsenddocs.class.php');
+require_once '../class/agsession.class.php';
+require_once '../class/agefodd_sessadm.class.php';
+require_once '../class/agefodd_session_stagiaire.class.php';
+require_once '../class/agefodd_stagiaire.class.php';
+require_once '../class/agefodd_session_element.class.php';
+require_once '../class/agefodd_convention.class.php';
+require_once '../core/modules/agefodd/modules_agefodd.php';
+require_once '../class/html.formagefodd.class.php';
+require_once '../lib/agefodd.lib.php';
+require_once '../lib/agefodd_document.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+require_once DOL_DOCUMENT_ROOT . "/core/class/html.formmail.class.php";
 
 $langs->load('propal');
 $langs->load('bills');
@@ -524,15 +524,8 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
  * View
 */
 
-$extrajs = array (
-		'/agefodd/includes/multiselect/js/ui.multiselect.js'
-);
-$extracss = array (
-		'/agefodd/includes/multiselect/css/ui.multiselect.css',
-		'/agefodd/css/agefodd.css'
-);
 
-llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', $extrajs, $extracss);
+llxHeader('', $langs->trans("AgfSessionDetail"));
 
 if(!empty($conf->referenceletters->enabled)) {
 	dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -541,23 +534,9 @@ if(!empty($conf->referenceletters->enabled)) {
 	}
 }
 
-print '<script type="text/javascript" language="javascript">
-	jQuery(document).ready(function() {
-	jQuery.extend($.ui.multiselect.locale, {
-	addAll:\'' . $langs->transnoentities("AddAll") . '\',
-		removeAll:\'' . $langs->transnoentities("RemoveAll") . '\',
-			itemsCount:\'' . $langs->transnoentities("ItemsCount") . '\'
-});
-				jQuery(function(){
-				jQuery("#receiver").addClass("multiselect").attr("multiple","multiple").attr("name","receiver[]");
-				jQuery(".multiselect").multiselect({sortable: false, searchable: false});
-});
-});
-				</script>';
-
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
-$formmail = new FormAgefoddsenddocs($db);
+$formmail = new FormMail($db);
 
 if (! empty($id)) {
 	$agf = new Agsession($db);
