@@ -161,8 +161,8 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 
 				$default_font_size = pdf_getPDFFontSize($outputlangs);
 
-				$posy = $this->marge_haute;
-				$posx = $this->page_largeur - $this->marge_droite - 55;
+				$posY = $this->marge_haute;
+				$posX = $this->page_largeur - $this->marge_droite - 55;
 
 				// Logo
 				$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
@@ -171,11 +171,11 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 						$height = pdf_getHeightForLogo($logo);
 						$width_logo=pdf_getWidthForLogo($logo);
 						if ($width_logo>0) {
-							$posx=$this->page_largeur-$this->marge_droite-$width_logo;
+							$posX=$this->page_largeur-$this->marge_droite-$width_logo;
 						} else {
-							$posx=$this->page_largeur-$this->marge_droite-55;
+							$posX=$this->page_largeur-$this->marge_droite-55;
 						}
-						$pdf->Image($logo, $posx, $posy, 0, $height);
+						$pdf->Image($logo, $posX, $posY, 0, $height);
 					} else {
 						$pdf->SetTextColor(200, 0, 0);
 						$pdf->SetFont('', 'B', $default_font_size - 2);
@@ -202,12 +202,12 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 							$logo_height=pdf_getHeightForLogo($otherlogo);
 							$width_otherlogo=pdf_getWidthForLogo($otherlogo);
 							if ($width_otherlogo>0 && $width_logo>0) {
-								$posx=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
+								$posX=$this->page_largeur-$this->marge_droite-$width_otherlogo-$width_logo-10;
 							} else {
-								$posx=$this->marge_gauche+100;
+								$posX=$this->marge_gauche+100;
 							}
 
-							$pdf->Image($otherlogo, $posx, $posy, 0, $logo_height);
+							$pdf->Image($otherlogo, $posX, $posY, 0, $logo_height);
 						}
 					}
 				}
@@ -226,39 +226,40 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 
 				// Sender properties
 				// Show sender
-				$posy = $this->marge_haute;
-				$posx = $this->marge_gauche;
+				$posY = $this->marge_haute;
+				$posX = $this->marge_gauche;
 
 				$hautcadre = 30;
-				$pdf->SetXY($posx, $posy);
+				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 				// Show sender name
-				$pdf->SetXY($posx, $posy);
+				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont('', 'B', $default_font_size);
 				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-				$posy = $pdf->GetY();
+				$posY = $pdf->GetY();
 
 				// Show sender information
-				$pdf->SetXY($posx, $posy);
+				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-				$posy = $pdf->GetY();
-				$pdf->SetXY($posx, $posy);
+				$posY = $pdf->GetY();
+				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-				$posy = $pdf->GetY();
-				$pdf->SetXY($posx, $posy);
+				$posY = $pdf->GetY();
+				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-				$posy = $pdf->GetY();
-				$pdf->SetXY($posx, $posy);
+				$posY = $pdf->GetY();
+				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 
-				$posY = $pdf->GetY() + 10;
+				$posY = $pdf->GetY();
+				printRefIntForma($this->db, $outputlangs, $agf, $default_font_size - 1, $pdf, $posX, $posY, 'L');
 
-				printRefIntForma($this->db, $outputlangs, $agf, $default_font_size - 1, $pdf, $posx, $posy, 'L');
+				$posY = $pdf->GetY() + 10;
 
 				$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
