@@ -4729,8 +4729,7 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
 		}
-
-			// Chargement des spécifique participants
+			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
@@ -4749,6 +4748,30 @@ class Agsession extends CommonObject
 					}
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
 				}
+			}
+
+			if ($obj_agefodd_convention->element_type == 'invoice') {
+				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
+			}
+			if ($obj_agefodd_convention->element_type == 'order') {
+				$obj_agefodd_convention->fetch_order_lines($obj_agefodd_convention->fk_element);
+			}
+			if ($obj_agefodd_convention->element_type == 'propal') {
+				$obj_agefodd_convention->fetch_propal_lines($obj_agefodd_convention->fk_element);
+			}
+			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
+				foreach($obj_agefodd_convention->lines as $line) {
+					$this->conv_amount_ht += $line->total_ht;
+					$this->conv_amount_tva += $line->total_tva;
+					$this->conv_amount_ttc += $line->total_ttc;
+				}
+				$this->conv_amount_ht = price($this->conv_amount_ht);
+				$this->conv_amount_tva = price($this->conv_amount_tva);
+				$this->conv_amount_ttc = price($this->conv_amount_ttc);
+			} else {
+				$this->conv_amount_ht ='';
+				$this->conv_amount_tva ='';
+				$this->conv_amount_ttc ='';
 			}
 		}
 
