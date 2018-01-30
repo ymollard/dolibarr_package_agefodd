@@ -644,15 +644,30 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
 			foreach ( $agfsta->lines as $line ) {
+				$this->str='';
 				// Cadre
 				$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 
 				// Nom
 				$pdf->SetXY($posX - 2, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-				$this->str = $line->nom . ' ' . $line->prenom;
+
+				if (! empty($line->civilite)) {
+					if ($line->civilite=='MR') {
+						$this->str ='M. ';
+					}elseif ($line->civilite=='MME' || $line->civilite=='MLE') {
+						$this->str ='Mme. ';
+					} else {
+						$this->str =$line->civilite. ' ';
+					}
+				}
+				$this->str .= $line->nom . ' ' . $line->prenom;
 				if (! empty($line->poste)) {
 					$this->str .= ' (' . $line->poste . ')';
+				}
+				if (! empty($line->date_birth)) {
+					$outputlangs->load("other");
+					$this->str .= "\n". $outputlangs->trans('DateToBirth').':'. dol_print_date($line->date_birth,'day');
 				}
 				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
