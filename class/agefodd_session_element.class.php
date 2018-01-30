@@ -318,9 +318,10 @@ class Agefodd_session_element extends CommonObject {
 	 *
 	 * @param int $id ob object
 	 * @param string $type is default
+	 * @param int $id_session id session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_element_by_id($id, $type = 'bc') {
+	public function fetch_element_by_id($id, $type = 'bc', $id_session=0) {
 		global $langs;
 
 		if (! empty($id)) {
@@ -342,6 +343,9 @@ class Agefodd_session_element extends CommonObject {
 				$sql .= " AND element_type='invoice_supplier_missions'";
 			} elseif ($type == 'invoice_supplier') {
 				$sql .= " AND element_type LIKE 'invoice_supplier%'";
+			}
+			if (!empty($id_session)) {
+				$sql .= " AND fk_session_agefodd = " . $id_session;
 			}
 
 			dol_syslog(get_class($this) . "::fetch_element_by_id", LOG_DEBUG);

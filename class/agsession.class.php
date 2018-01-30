@@ -3844,15 +3844,27 @@ class Agsession extends CommonObject
 
 			// Link new order to the session/thridparty
 			$agf = new Agefodd_session_element($this->db);
-			$agf->fk_element = $neworderid;
-			$agf->fk_session_agefodd = $this->id;
-			$agf->fk_soc = $socid;
-			$agf->element_type = 'order';
 
-			$result = $agf->create($user);
+			//If propal is link to session
+			$result = $agf->fetch_element_by_id($neworderid, 'order', $this->id);
+
 			if ($result < 0) {
 				$this->errors[] = $agf->error;
-				$error ++;
+				dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+				return - 1;
+			} else {
+				if (empty($agf->lines)) {
+					$agf->fk_element = $neworderid;
+					$agf->fk_session_agefodd = $this->id;
+					$agf->fk_soc = $socid;
+					$agf->element_type = 'order';
+
+					$result = $agf->create($user);
+					if ($result < 0) {
+						$this->errors[] = $agf->error;
+						$error ++;
+					}
+				}
 			}
 		}
 
