@@ -366,7 +366,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					if ($height > $height_left) {
 						$this->_pagefoot($agf, $outputlangs);
 						$this->pdf->AddPage();
-						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+						if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
 						$this->_pagehead($agf, $outputlangs);
 						$posY = $this->pdf->GetY() + 5;
 					} else {
@@ -479,7 +479,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 							if (($i + 1) < count($programme_array)) {
 								$this->_pagefoot($agf, $outputlangs);
 								$this->pdf->AddPage();
-								if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+								if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
 								$this->_pagehead($agf, $outputlangs);
 								$posY = $this->pdf->GetY() + 5;
 							}
