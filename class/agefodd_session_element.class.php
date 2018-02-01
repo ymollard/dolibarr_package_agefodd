@@ -342,12 +342,14 @@ class Agefodd_session_element extends CommonObject {
 			} elseif ($type == 'invoice_supplier_missions') {
 				$sql .= " AND element_type='invoice_supplier_missions'";
 			} elseif ($type == 'invoice_supplier') {
-				$sql .= " AND element_type LIKE 'invoice_supplier%'";
+				$sql .= " AND element_type LIKE 'invoice_supplier%' AND element_type NOT LIKE 'invoice_supplierline%'";
+			}elseif ($type == 'invoice_supplierline') {
+				$sql .= " AND element_type LIKE 'invoice_supplierline%'";
 			}
 			if (!empty($id_session)) {
 				$sql .= " AND fk_session_agefodd = " . $id_session;
 			}
-
+	
 			dol_syslog(get_class($this) . "::fetch_element_by_id", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -665,7 +667,7 @@ class Agefodd_session_element extends CommonObject {
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 			$sql .= " WHERE rowid=" . $this->id;
-
+			
 			dol_syslog(get_class($this) . "::delete");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -813,7 +815,10 @@ class Agefodd_session_element extends CommonObject {
 		require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 
 		global $langs;
-
+		
+		$action=GETPOST('action');
+		$lineid=GETPOST('lineid');
+		
 		$this->propal_sign_amount = 0;
 		$this->propal_amount = 0;
 		$this->order_amount = 0;
@@ -873,50 +878,57 @@ class Agefodd_session_element extends CommonObject {
 							$this->nb_invoice_unpaid ++;
 						}
 					}
+				
+					if ($obj->element_type == 'invoice_supplier_trainer' || $obj->element_type == 'invoice_supplierline_trainer') {
+							if($obj->element_type == 'invoice_supplier_trainer')$facturefourn = new FactureFournisseur($this->db);
+							else $facturefourn = new SupplierInvoiceLine($this->db);
 
-					if ($obj->element_type == 'invoice_supplier_trainer') {
-						$facturefourn = new FactureFournisseur($this->db);
-						$facturefourn->fetch($obj->fk_element);
-						if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-							foreach ( $facturefourn->lines as $line ) {
-								$this->trainer_cost_amount += $line->total_ht;
+							$facturefourn->fetch($obj->fk_element);
+							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+								foreach ( $facturefourn->lines as $line ) {
+									if(!($action == 'confirm_deleteline' && $lineid == $line->id))$this->trainer_cost_amount += $line->total_ht;
+								}
+							} else {
+								$this->trainer_cost_amount += $facturefourn->total_ht;
 							}
-						} else {
-							$this->trainer_cost_amount += $facturefourn->total_ht;
+							$this->invoicetrainerdraft = $this->invoicetrainerdraft || ($facturefourn->statut == 0);
+
+							dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_trainer facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
-						$this->invoicetrainerdraft = $this->invoicetrainerdraft || ($facturefourn->statut == 0);
 
-						dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_trainer facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
-					}
+						if ($obj->element_type == 'invoice_supplier_missions'|| $obj->element_type == 'invoice_supplierline_missions') {
+							if($obj->element_type == 'invoice_supplier_missions')$facturefourn = new FactureFournisseur($this->db);
+							else $facturefourn = new SupplierInvoiceLine($this->db);
+							$facturefourn->fetch($obj->fk_element);
 
-					if ($obj->element_type == 'invoice_supplier_missions') {
-						$facturefourn = new FactureFournisseur($this->db);
-						$facturefourn->fetch($obj->fk_element);
-
-						if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-							foreach ( $facturefourn->lines as $line ) {
-								$this->trip_cost_amount += $line->total_ht;
+							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+								foreach ( $facturefourn->lines as $line ) {
+									if(!($action == 'confirm_deleteline' && $lineid == $line->id))$this->trip_cost_amount += $line->total_ht;
+								}
+							} else {
+								$this->trip_cost_amount += $facturefourn->total_ht;
 							}
-						} else {
-							$this->trip_cost_amount += $facturefourn->total_ht;
+							dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_missions facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
-						dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_missions facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
-					}
 
-					if ($obj->element_type == 'invoice_supplier_room') {
-						$facturefourn = new FactureFournisseur($this->db);
-						$facturefourn->fetch($obj->fk_element);
+						if ($obj->element_type == 'invoice_supplier_room'|| $obj->element_type == 'invoice_supplierline_room') {
+							if($obj->element_type == 'invoice_supplier_room')$facturefourn = new FactureFournisseur($this->db);
+							else $facturefourn = new SupplierInvoiceLine($this->db);
+							$facturefourn->fetch($obj->fk_element);
 
-						if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-							foreach ( $facturefourn->lines as $line ) {
-								$this->room_cost_amount += $line->total_ht;
+							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+								foreach ( $facturefourn->lines as $line ) {
+									
+									if(!($action == 'confirm_deleteline' && $lineid == $line->id))$this->room_cost_amount += $line->total_ht;
+								}
+							} else {
+								$this->room_cost_amount += $facturefourn->total_ht;
 							}
-						} else {
-							$this->room_cost_amount += $facturefourn->total_ht;
+							dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
-						dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
-					}
+					
 				}
+				
 				$this->db->free($resql);
 			}
 			return 1;
