@@ -1013,8 +1013,8 @@ class modAgefodd extends DolibarrModules
 				's.note_private' => "",
 				's.note_public' => "",
 				's.nb_subscribe_min' => "5",
-				's.fk_c_category' => "100",
-				's.fk_c_category_bpf' => "F3d",
+				's.fk_c_category' => "ref:100",
+				's.fk_c_category_bpf' => "ref:F3d",
 				's.certif_duration' => "1",
 				's.color' => "DDDDDD",
 				's.datec' => "2016-12-31"
