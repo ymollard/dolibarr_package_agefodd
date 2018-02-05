@@ -1250,6 +1250,7 @@ AgfPrintFieldsWithCustomOrder=Ajuster l'ordre des champs sur la fiche d'une sess
 AgfPrintFieldsWithCustomOrderHelp=Cette option change l'ordre d'affichage des champs d'une session.<br>Spécifier dans le champ texte, les classes des lignes du tableau à trier, séparés par des virgules.<br>Exemple :<br>order_intitule,order_ref,agefodd_agsession_extras_codeattr<br>Pour les attributs complémentaires, les classes suivent le schéma suivant "agefodd_agsession_extras_"+codeAttributComplémentaire
 AgfViewTripAnsMissionCostPerParticipant=Afficher les coûts de déplacement et de mission par participant sur la fiche d'une session
 AgfFilterSessionListOnCourantMonth=Filtrer la liste des sessions sur le mois courant et l'année courante par défaut
+AgfExtendSessionAssociationToNonRelatedSessions=Pouvoir associer à un devis des sessions dont le client du devis n'est pas client ou participant
 AgfUseRealHours=Utiliser le temps de présence réel des stagiaires
 AgfUseRealHoursHelp=Permet de saisir le temps de présence réel des stagiaires par créneau horaire du calendrier de session
 AgfTraineeHours=Heures Stagiaire

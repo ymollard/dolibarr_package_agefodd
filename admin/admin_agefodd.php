@@ -2042,6 +2042,14 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfExtendSessionAssociationToNonRelatedSessions") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 $var=!$var;
 
