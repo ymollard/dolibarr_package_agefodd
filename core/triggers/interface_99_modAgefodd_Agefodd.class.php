@@ -857,7 +857,9 @@ class InterfaceAgefodd {
 			{
 				foreach($agf_fin->lines as $line){
 					$agf_fin->fk_session_agefodd =$line->fk_session_agefodd;
-					$agf_fin->updateSellingPrice($user);
+					$actionPage = GETPOST('action');
+					$lineid = GETPOST('lineid');
+					$agf_fin->updateSellingPrice($user,$actionPage,$lineid);
 				}
 			}
 			

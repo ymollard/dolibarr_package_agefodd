@@ -808,7 +808,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param int $sub_elment ob object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_by_session($id, $sub_elment = 0) {
+	public function fetch_by_session($id, $sub_elment = 0,$action = null, $lineid = null) {
 		require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php';
@@ -816,8 +816,6 @@ class Agefodd_session_element extends CommonObject {
 
 		global $langs;
 		
-		$action=GETPOST('action');
-		$lineid=GETPOST('lineid');
 		
 		$this->propal_sign_amount = 0;
 		$this->propal_amount = 0;
@@ -1048,13 +1046,13 @@ class Agefodd_session_element extends CommonObject {
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function updateSellingPrice($user) {
+	public function updateSellingPrice($user,$action = null, $lineid = null) {
 		global $conf;
 
 		// Update session selling price
 		$sell_price = 0;
 
-		$result = $this->fetch_by_session($this->fk_session_agefodd);
+		$result = $this->fetch_by_session($this->fk_session_agefodd,$action , $lineid );
 
 		// Par defaut si montant facturé non payé ou facturé payé => prix de vent c'est facturé non payé + facturé payé
 		// Sinon montant total propal
