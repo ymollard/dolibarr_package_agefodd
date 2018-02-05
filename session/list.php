@@ -72,6 +72,15 @@ $search_session_status = GETPOST('search_session_status');
 $search_sale = GETPOST('search_sale', 'int');
 $search_session_status = GETPOST('search_session_status');
 
+// prefilter the list if defined
+if(!empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
+    $button_removefilter_x = GETPOST("button_removefilter_x");
+    $button_search = GETPOST("button_search");
+    if(empty($button_removefilter_x) && empty($button_search)) {
+        $search_month = date("m");
+        $search_year = date("Y");
+    }
+}
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_trainning_name = '';

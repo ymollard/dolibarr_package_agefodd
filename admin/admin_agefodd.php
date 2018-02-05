@@ -2034,6 +2034,14 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfFilterSessionListOnCourantMonth") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 $var=!$var;
 
