@@ -74,7 +74,9 @@ $search_session_status = GETPOST('search_session_status');
 
 // prefilter the list if defined
 if(!empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
-    if(empty(GETPOST("button_removefilter_x")) && empty(GETPOST("button_search"))) {
+    $button_removefilter_x = GETPOST("button_removefilter_x");
+    $button_search = GETPOST("button_search");
+    if(empty($button_removefilter_x) && empty($button_search)) {
         $search_month = date("m");
         $search_year = date("Y");
     }
