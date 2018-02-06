@@ -388,21 +388,9 @@ if (empty($search_fourninvoiceref)) {
             FROM llx_agefodd_session as s 
             LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue 
             LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place 
-            LEFT JOIN llx_agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd 
-            LEFT JOIN llx_agefodd_session_adminsitu as sa ON s.rowid = sa.fk_agefodd_session AND sa.trigger_name='AGF_SESSION_CLOSE' 
-            LEFT JOIN llx_societe as so ON so.rowid = s.fk_soc 
-            LEFT JOIN llx_societe as sorequester ON sorequester.rowid = s.fk_soc_requester 
-            LEFT JOIN llx_agefodd_session_formateur as sf ON sf.fk_session = s.rowid 
-            LEFT JOIN llx_agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur 
-            LEFT JOIN llx_agefodd_session_status_type as dictstatus ON s.status = dictstatus.rowid 
-            LEFT JOIN llx_agefodd_session_contact as sessioncontact ON s.rowid = sessioncontact.fk_session_agefodd
-            LEFT JOIN llx_agefodd_contact as agefoddcontact ON agefoddcontact.rowid = sessioncontact.fk_agefodd_contact 
-            LEFT JOIN llx_socpeople as socp ON socp.rowid = agefoddcontact.fk_socpeople 
-            LEFT JOIN llx_socpeople as socppresta ON socppresta.rowid = s.fk_socpeople_presta 
-            LEFT JOIN llx_agefodd_session_extrafields as ef ON (s.rowid = ef.fk_object) 
             WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)
             AND s.rowid NOT IN ('".implode("','", $excludeSessions)."')
-            GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes, p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color 
+            GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne 
             ORDER BY s.dated ASC";
 	    
 	    $resql = $db->query($sql);
