@@ -378,6 +378,31 @@ if (empty($search_fourninvoiceref)) {
 			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
 		}
 	}
+	
+	if (!empty($conf->global->AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS)){
+	    $excludeSessions = array();
+	    foreach ($agf->lines as $line) $excludeSessions[] = (int)$line->rowid;
+	    $excludeSessions = array_merge($excludeSessions, array_keys($sessions));
+	    
+	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated 
+            FROM llx_agefodd_session as s 
+            LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue 
+            LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place 
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)
+            AND s.rowid NOT IN ('".implode("','", $excludeSessions)."')
+            GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne 
+            ORDER BY s.dated ASC";
+	    
+	    $resql = $db->query($sql);
+	    if($resql){
+	        while ($obj = $db->fetch_object($resql)){
+	            !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
+	            $sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+	            //var_dump($obj->rowid);
+	        }
+	    }
+	}
+	
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
 	print '<td align="right">';
