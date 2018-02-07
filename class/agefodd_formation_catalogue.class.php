@@ -1204,6 +1204,53 @@ class Agefodd extends CommonObject {
 		}
 		return 0;
 	}
+	
+	/**
+     *  Update note of element
+     *
+     *  @param      string		$note		New value for note
+     *  @param		string		$suffix		'', '_public' or '_private'
+     *  @return     int      		   		<0 if KO, >0 if OK
+     */
+    function update_note($note,$suffix='')
+    {
+		
+        global $user;
+    	if (! $this->table_element)
+    	{
+    		dol_syslog(get_class($this)."::update_note was called on objet with property table_element not defined", LOG_ERR);
+    		return -1;
+    	}
+		if (! in_array($suffix,array('','_public','_private')))
+		{
+    		dol_syslog(get_class($this)."::update_note Parameter suffix must be empty, '_private' or '_public'", LOG_ERR);
+			return -2;
+		}
+        // Special cas
+        //var_dump($this->table_element);exit;
+		if ($this->table_element == 'product') $suffix='';
+    	$sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element;
+    	$sql.= " SET note".$suffix." = ".(!empty($note)?("'".$this->db->escape($note)."'"):"NULL");
+    	$sql.= " ,fk_user_mod = ".$user->id;
+    	$sql.= " WHERE rowid =". $this->id;
+    	dol_syslog(get_class($this)."::update_note", LOG_DEBUG);
+    	if ($this->db->query($sql))
+    	{
+    		if ($suffix == '_public') $this->note_public = $note;
+    		else if ($suffix == '_private') $this->note_private = $note;
+    		else
+    		{
+    		    $this->note = $note;      // deprecated
+    		    $this->note_private = $note;
+    		}
+    		return 1;
+    	}
+    	else
+    	{
+    		$this->error=$this->db->lasterror();
+    		return -1;
+    	}
+    }
 }
 class AgfObjPedaLine {
 	public $id;
