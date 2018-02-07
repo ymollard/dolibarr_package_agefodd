@@ -660,13 +660,16 @@ class pdf_convention extends ModelePDFAgefodd {
 
 					if(! empty($agf->type_session)) { // Session inter-entreprises : OPCA gérés par participant
 						dol_include_once('/agefodd/class/agefodd_opca.class.php');
-						$stagiaires = new Agefodd_session_stagiaire($db);
-						$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
 
-						foreach($stagiaires->lines as $line) {
+						foreach($agf_conv->line_trainee as $idSessionTrainee) {
+							$sessionTrainee = new Agefodd_session_stagiaire($db);
+							$sessionTrainee->fetch($idSessionTrainee);
+
+							$trainee = new Agefodd_stagiaire($db);
+							$trainee->fetch($sessionTrainee->fk_stagiaire);
 
 							$opca = new Agefodd_opca($db);
-							$opca->getOpcaForTraineeInSession($line->socid, $agf->id, $line->stagerowid);
+							$opca->getOpcaForTraineeInSession($trainee->socid, $agf->id, $idSessionTrainee);
 
 							if(! empty($opca->soc_OPCA_name)) {
 								$TOPCA[] = $opca->soc_OPCA_name;
