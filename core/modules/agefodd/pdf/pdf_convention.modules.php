@@ -653,6 +653,35 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 				$this->str = $agf_conv->art5;
+
+				if(preg_match('/List_OPCA/', $this->str)) {
+
+					$TOPCA = array();
+
+					if(! empty($agf->type_session)) { // Session inter-entreprises : OPCA gérés par participant
+						dol_include_once('/agefodd/class/agefodd_opca.class.php');
+						$stagiaires = new Agefodd_session_stagiaire($db);
+						$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
+
+						foreach($stagiaires->lines as $line) {
+
+							$opca = new Agefodd_opca($db);
+							$opca->getOpcaForTraineeInSession($line->socid, $agf->id, $line->stagerowid);
+
+							if(! empty($opca->soc_OPCA_name)) {
+								$TOPCA[] = $opca->soc_OPCA_name;
+							}
+						}
+					} elseif(! empty($agf->soc_OPCA_name)) {
+						$TOPCA[] = $agf->soc_OPCA_name;
+					}
+
+					if(! empty($TOPCA)) {
+						$listOPCA = implode(', ', $TOPCA);
+						$this->str = str_replace('List_OPCA', $listOPCA, $this->str);
+					}
+				}
+
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 
