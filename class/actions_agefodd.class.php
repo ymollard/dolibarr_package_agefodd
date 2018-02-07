@@ -343,7 +343,7 @@ class ActionsAgefodd
 	public function pdf_getLinkedObjects($parameters, &$object, &$action, $hookmanager) {
 		global $conf;
 
-		if (empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF))
+		if (empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF) && empty($conf->global->AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES))
 			return 0;
 
 		$TContext = explode(':', $parameters['context']);
@@ -356,6 +356,7 @@ class ActionsAgefodd
 		if (! empty($intersec)) {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
 			// $linkedobjects = $parameters['linkedobjects'];
 
@@ -371,20 +372,46 @@ class ActionsAgefodd
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
 			if ($result > 0) {
+				
 				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
 					$result = $sessiondetail->fetch($session->fk_session_agefodd);
 					if ($result > 0) {
-						$ref_value = $outputlangs->convToOutputCharset($sessiondetail->formref);
-						if (! empty($sessiondetail->formrefint)) {
-							$ref_value .= '/'.$outputlangs->convToOutputCharset($sessiondetail->formrefint);
+						if (!empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF))
+						{
+							$ref_value = $outputlangs->convToOutputCharset($sessiondetail->formref);
+							if (! empty($sessiondetail->formrefint)) {
+								$ref_value .= '/'.$outputlangs->convToOutputCharset($sessiondetail->formrefint);
+							}
+							$ref_value .= ' (' . $sessiondetail->id . ')';
+							$this->results[get_class($sessiondetail) . $sessiondetail->id.'_1'] = array(
+									'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId"),
+									'ref_value' => $ref_value,
+									'date_value' => ''
+							);	
 						}
-						$ref_value .= ' (' . $sessiondetail->id . ')';
-						$this->results[get_class($sessiondetail) . $sessiondetail->id] = array(
-								'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId"),
-								'ref_value' => $ref_value,
-								'date_value' => ''
-						);
+						
+						if (!empty($conf->global->AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES))
+						{
+							$formation = new Agefodd($object->db);
+							if ($formation->fetch($sessiondetail->fk_formation_catalogue) > 0)
+							{
+								$this->results[get_class($formation) . $formation->id] = array(
+									'ref_title' => $outputlangs->transnoentities("AgefoddTitleAndCodeInt"),
+									'ref_value' => $formation->intitule.' / '.(!empty($formation->ref_interne) ? $formation->ref_interne : '-'),
+									'date_value' => ''
+								);
+							}
+
+							$date_d = dol_print_date($sessiondetail->dated, '%d/%m/%Y');
+							$date_f = dol_print_date($sessiondetail->datef, '%d/%m/%Y');
+							$this->results[get_class($sessiondetail) . $sessiondetail->id.'_2'] = array(
+									'ref_title' => $outputlangs->transnoentities("AgefoddSessIdAndDates"),
+									'ref_value' => $sessiondetail->id.' / '.$date_d.' - '.$date_f,
+									'date_value' => ''
+							);	
+						}
+						
 					} else {
 						dol_print_error('', $agfsess->error);
 					}

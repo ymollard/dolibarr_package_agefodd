@@ -1990,6 +1990,22 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
+print '<tr class="impair"><td>' . $langs->trans("AgfPrintTrainingTitleAndSessInfoOnPDF") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+	);
+	print $form->selectarray("AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES", $arrval, $conf->global->AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES);
+}
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
 $var = true;
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfPrintInternalRefOnPDF") . '</td>';
 print '<td align="left">';
