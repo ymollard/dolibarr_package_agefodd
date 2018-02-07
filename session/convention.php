@@ -534,7 +534,28 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	if ($agf_conv->art5)
 		$art5 = $agf_conv->art5;
 	else {
-		$art5 = $langs->trans('AgfConvArt5_1');
+		$listOPCA = '';
+
+		if(! empty($agf->type_session)) { // Session inter-entreprises : OPCA gérés par participant
+			dol_include_once('/agefodd/class/agefodd_opca.class.php');
+			$stagiaires = new Agefodd_session_stagiaire($db);
+			$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
+
+			foreach($stagiaires->lines as $line) {
+
+				$opca = new Agefodd_opca($db);
+				$opca->getOpcaForTraineeInSession($line->socid, $agf->id, $line->stagerowid);
+
+				if(! empty($opca->soc_OPCA_name)) { // Au moins un participant avec un OPCA
+					$listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+					break;
+				}
+			}
+		} elseif(! empty($agf->fk_soc_OPCA)) {
+			$listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+		}
+
+		$art5 = $langs->trans('AgfConvArt5_1', $listOPCA);
 	}
 
 	// texte 9
@@ -698,7 +719,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$chapter++;
 	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-	print '<td><textarea name="art5" rows="7" cols="5" class="flat" style="width:560px;">' . $art5 . '</textarea></td></tr>';
+	print '<td><textarea name="art5" rows="7" cols="5" class="flat" style="width:560px;">' . $art5 . '</textarea>';
+	print img_picto($langs->trans('AgfExplainListOPCA'), 'info').$langs->trans('AgfExplainListOPCA');
+	print '</td></tr>';
 
 	$chapter++;
 	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
