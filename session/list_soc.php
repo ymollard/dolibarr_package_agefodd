@@ -257,6 +257,7 @@ if ($result >= 0) {
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
 		print_liste_field_titre($langs->trans("AgfParticipantsWithTotal"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("AgfSessionCostPerTrainee"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfSessionCostForThirdparty"), $_SERVEUR ['PHP_SELF'], '', '', $arg_url, '', $sortfield, $sortorder);
 	}
 	print '<td></td>';
 	print "</tr>\n";
@@ -351,7 +352,7 @@ if ($result >= 0) {
 	print '</td>';
 
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-		print '<td></td>';
+		print '<td></td><td></td>';
 	}
 
 	print "</tr>\n";
@@ -440,6 +441,8 @@ if ($result >= 0) {
 
 				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
 				print '<td>' . price(round($coutTotalLigne,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+				
+				print '<td>' . price(round($coutTotalLigne,2) * $nbSocParticipant) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
 			}
 			print '<td></td>';
 			print "</tr>\n";

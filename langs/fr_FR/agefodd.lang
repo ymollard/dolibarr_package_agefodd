@@ -1246,6 +1246,7 @@ AgfTrainerAvailabilityOnlyWarning=Ne Bloque pas l'inscription d'un formateur si 
 AgfPrintInternalRefOnPDF=Afficher la référence interne de la formation sur les documents PDF
 AgfAddCustomColumnsOnFilter=Ajouter sur la liste des sessions d'un tiers, une ligne de total et deux colonnes supplémentaires si le type de relation est "Participant"
 AgfSessionCostPerTrainee=Coût par participant
+AgfSessionCostForThirdparty=Coût pour le tiers
 AgfParticipantsWithTotal=Participants / Participants total
 AgfPrintFieldsWithCustomOrder=Ajuster l'ordre des champs sur la fiche d'une session de formation
 AgfPrintFieldsWithCustomOrderHelp=Cette option change l'ordre d'affichage des champs d'une session.<br>Spécifier dans le champ texte, les classes des lignes du tableau à trier, séparés par des virgules.<br>Exemple :<br>order_intitule,order_ref,agefodd_agsession_extras_codeattr<br>Pour les attributs complémentaires, les classes suivent le schéma suivant "agefodd_agsession_extras_"+codeAttributComplémentaire
