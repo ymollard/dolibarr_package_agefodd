@@ -4777,6 +4777,8 @@ class Agsession extends CommonObject
 					$this->conv_amount_tva += $line->total_tva;
 					$this->conv_amount_ttc += $line->total_ttc;
 				}
+				
+				$this->conv_tva_tx = $this->conv_amount_tva / $this->conv_amount_ht * 100;
 				$this->conv_amount_ht = price($this->conv_amount_ht);
 				$this->conv_amount_tva = price($this->conv_amount_tva);
 				$this->conv_amount_ttc = price($this->conv_amount_ttc);
