@@ -360,6 +360,7 @@ if ($result >= 0) {
 
 	$var = true;
 	$total = 0;
+	$totalforthirdparty = 0;
 	foreach ( $agf->lines as $line ) {
 		if($i >= $limit) break;
 		
@@ -438,6 +439,7 @@ if ($result >= 0) {
 				$coutTotalLigne /= $line->nb_stagiaire;
 			//	$coutTotalLigne *= $nbSocParticipant;
 				$total += $coutTotalLigne;
+				$totalforthirdparty += $nbSocParticipant * $coutTotalLigne;
 
 				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
 				print '<td>' . price(round($coutTotalLigne,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
@@ -486,6 +488,8 @@ if ($result >= 0) {
 
 		print '<td align="right" colspan="13"><strong>Total :</strong></td>';
 		print '<td><strong>' . price(round($total,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+		print '<td><strong>' . price(round($totalforthirdparty,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+		
 
 		print '</tr>';
 	}

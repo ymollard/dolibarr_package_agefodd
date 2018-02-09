@@ -512,48 +512,15 @@ elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefo
 		{
 			setEventMessage($agf_fin->error, 'errors');
 		}
-
-		if (count($agf_fin->lines) > 0)
-		{
-			
-			$totalhttrainer = 0;
-			$totalhtroom = 0;
-			$totalhtmission = 0;
-			foreach ($agf_fin->lines as $line)
-			{
-				$isLine = strstr($line->element_type, 'line');
-
-				if (!empty($isLine))
-				{
-					$suplier_invoice = new SupplierInvoiceLine($db);
-				}
-				else
-				{
-					$suplier_invoice = new FactureFournisseur($db);
-				}
-				
-				$suplier_invoice->fetch($line->fk_element);
-				if ($line->element_type == 'invoice_supplier_trainer' || $line->element_type == 'invoice_supplierline_trainer')
-				{
-					$totalhttrainer += $suplier_invoice->total_ht;
-				}
-				if ($line->element_type == 'invoice_supplier_room' || $line->element_type == 'invoice_supplierline_room')
-				{
-					$totalhtroom += $suplier_invoice->total_ht;
-				}
-				if ($line->element_type == 'invoice_supplier_missions' || $line->element_type == 'invoice_supplierline_missions')
-				{
-					$totalhtmission += $suplier_invoice->total_ht;
-				}
-			}
-		}
-		$agf->cost_trainer = $totalhttrainer;
-		$agf->cost_site = $totalhtroom;
-		$agf->cost_trip = $totalhtmission;
-		$result = $agf->update($user, 1);
-		if ($result < 0)
-		{
-			setEventMessage($agf->error, 'errors');
+		
+		$TSessions = $agf_fin->get_linked_sessions($agf_fin->fk_element, $agf_fin->element_type);
+		
+		foreach ($TSessions as $k => $dummy){
+		    if($k !== 'total') {
+		        $agf_fin->fk_session_agefodd = $k;
+		        $agf_fin->updateSellingPrice($user);
+		    }
+		    
 		}
 
 		Header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
@@ -613,53 +580,21 @@ elseif ($action == 'link_confirm' && $confirm == 'yes' && $user->rights->agefodd
 		else
 		{
 			// Update training cost
-			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0);
+			$result = $session_invoice->fetch_by_session($id);
 			if ($result < 0)
 			{
 				setEventMessage($session_invoice->error, 'errors');
 			}
-
-			if (count($session_invoice->lines) > 0)
-			{
-				
-				
-				$totalhttrainer = 0;
-				$totalhtroom = 0;
-				$totalhtmission = 0;
-
-				foreach ($session_invoice->lines as $line)
-				{
-					$isLine = strstr($line->element_type,'line');
-					
-					if(!empty($isLine)){
-						$suplier_invoice = new SupplierInvoiceLine($db);
-					}else {
-						$suplier_invoice = new FactureFournisseur($db);
-					}
-					$suplier_invoice->fetch($line->fk_element);
-					if ($line->element_type == 'invoice_supplier_trainer'||$line->element_type == 'invoice_supplierline_trainer')
-					{
-						$totalhttrainer += $suplier_invoice->total_ht;
-					}
-					if ($line->element_type == 'invoice_supplier_room'||$line->element_type == 'invoice_supplierline_room')
-					{
-						$totalhtroom += $suplier_invoice->total_ht;
-					}
-					if ($line->element_type == 'invoice_supplier_missions'||$line->element_type == 'invoice_supplierline_missions')
-					{
-						$totalhtmission += $suplier_invoice->total_ht;
-					}
-				}
+			$TSessions = $session_invoice->get_linked_sessions($session_invoice->fk_element, $session_invoice->element_type);
+			
+			foreach ($TSessions as $k => $dummy){
+			    if($k !== 'total') {
+			        $session_invoice->fk_session_agefodd = $k;
+			        $session_invoice->updateSellingPrice($user);
+			    }
+			    
 			}
-
-			$agf->cost_trainer = $totalhttrainer;
-			$agf->cost_site = $totalhtroom;
-			$agf->cost_trip = $totalhtmission;
-			$result = $agf->update($user, 1);
-			if ($result < 0)
-			{
-				setEventMessage($agf->error, 'errors');
-			}
+			
 		}
 	}
 }
