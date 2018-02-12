@@ -815,8 +815,8 @@ class Agefodd_session_element extends CommonObject {
 		require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 
 		global $langs;
-		
-		
+		//$action == 'confirm_deleteline'){ var_dump($obj); exit;}
+
 		$this->propal_sign_amount = 0;
 		$this->propal_amount = 0;
 		$this->order_amount = 0;
@@ -834,6 +834,7 @@ class Agefodd_session_element extends CommonObject {
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 		$sql .= " WHERE fk_session_agefodd=" . $id;
+		
 		if (! empty($sub_elment)) {
 			$sql .= ' AND fk_sub_element=' . $sub_elment;
 		}
@@ -844,7 +845,7 @@ class Agefodd_session_element extends CommonObject {
 			$num = $this->db->num_rows($resql);
 			if ($num > 0) {
 				while ( $obj = $this->db->fetch_object($resql) ) {
-
+				    
 					if ($obj->element_type == 'order') {
 						$order = new Commande($this->db);
 						$order->fetch($obj->fk_element);
@@ -882,12 +883,13 @@ class Agefodd_session_element extends CommonObject {
 							else $facturefourn = new SupplierInvoiceLine($this->db);
 
 							$facturefourn->fetch($obj->fk_element);
-							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
+							$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
+							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) { // facture fournisseur
 								foreach ( $facturefourn->lines as $line ) {
-									if(!($action == 'confirm_deleteline' && $lineid == $line->id))$this->trainer_cost_amount += $line->total_ht;
+								    if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->trainer_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 								}
-							} else {
-								$this->trainer_cost_amount += $facturefourn->total_ht;
+							} else { // ligne de facture fournisseur
+							    $this->trainer_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
 							}
 							$this->invoicetrainerdraft = $this->invoicetrainerdraft || ($facturefourn->statut == 0);
 
@@ -899,12 +901,14 @@ class Agefodd_session_element extends CommonObject {
 							else $facturefourn = new SupplierInvoiceLine($this->db);
 							$facturefourn->fetch($obj->fk_element);
 
+							$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
 							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-								foreach ( $facturefourn->lines as $line ) {
-									if(!($action == 'confirm_deleteline' && $lineid == $line->id))$this->trip_cost_amount += $line->total_ht;
-								}
+							    
+							    foreach ( $facturefourn->lines as $line ) {
+							        if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->trip_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							    }
 							} else {
-								$this->trip_cost_amount += $facturefourn->total_ht;
+							    $this->trip_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
 							}
 							dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_missions facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
@@ -913,14 +917,14 @@ class Agefodd_session_element extends CommonObject {
 							if($obj->element_type == 'invoice_supplier_room')$facturefourn = new FactureFournisseur($this->db);
 							else $facturefourn = new SupplierInvoiceLine($this->db);
 							$facturefourn->fetch($obj->fk_element);
+							$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
 
-							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
-								foreach ( $facturefourn->lines as $line ) {
-									
-									if(!($action == 'confirm_deleteline' && $lineid == $line->id))$this->room_cost_amount += $line->total_ht;
-								}
+							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {							    
+							    foreach ( $facturefourn->lines as $line ) {
+							        if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->room_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							    }
 							} else {
-								$this->room_cost_amount += $facturefourn->total_ht;
+							    $this->room_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
 							}
 							dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
@@ -935,6 +939,29 @@ class Agefodd_session_element extends CommonObject {
 			dol_syslog(get_class($this) . "::fetch_by_session " . $this->error, LOG_ERR);
 			return - 1;
 		}
+	}
+	
+	/**
+	 * Get all sessions linked with the supplier invoice given
+	 * @param $id of the supplier invoice
+	 */
+	public function get_linked_sessions($id, $element_type = '%invoice_supplier%'){
+	    $sql = "SELECT rowid, fk_session_agefodd FROM " . MAIN_DB_PREFIX . "agefodd_session_element WHERE element_type LIKE '".$element_type."' AND fk_element =".$id;
+	    
+	    $res = $this->db->query($sql);
+	    if ($res){
+	        dol_include_once('/agefodd/class/agsession.class.php');
+	        $tab = array();
+	        $tab['total'] = 0;
+	       while($obj = $this->db->fetch_object($res)){
+	           $sess = new Agsession($this->db);
+	           $sess->fetch($obj->fk_session_agefodd);
+	           $tab[$obj->fk_session_agefodd] = (int)$sess->nb_stagiaire;
+	           $tab['total'] += $sess->nb_stagiaire;
+	       }
+	       return $tab;
+	    }
+	    return false;
 	}
 
 	/**
@@ -1048,11 +1075,11 @@ class Agefodd_session_element extends CommonObject {
 	 */
 	public function updateSellingPrice($user,$action = null, $lineid = null) {
 		global $conf;
-
+		
 		// Update session selling price
 		$sell_price = 0;
 
-		$result = $this->fetch_by_session($this->fk_session_agefodd,$action , $lineid );
+		$result = $this->fetch_by_session($this->fk_session_agefodd, 0, $action , $lineid );
 
 		// Par defaut si montant facturé non payé ou facturé payé => prix de vent c'est facturé non payé + facturé payé
 		// Sinon montant total propal
