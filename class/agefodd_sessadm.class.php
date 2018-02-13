@@ -271,10 +271,11 @@ class Agefodd_sessadm extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
+		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule, l.delais_alerte_end,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
 		$sql .= ',s.fk_user_mod,s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_admlevel as l ON s.fk_agefodd_session_admlevel=l.rowid";
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
 
@@ -298,6 +299,7 @@ class Agefodd_sessadm extends CommonObject {
 				$line->level_rank = $obj->level_rank;
 				$line->fk_parent_level = $obj->fk_parent_level;
 				$line->delais_alerte = $obj->delais_alerte;
+				$line->delais_alerte_end = $obj->delais_alerte_end;
 				$line->dated = $this->db->jdate($obj->dated);
 				$line->datef = $this->db->jdate($obj->datef);
 				$line->datea = $this->db->jdate($obj->datea);

@@ -341,14 +341,14 @@ if ($user->rights->agefodd->creer) {
 						$bgcolor = 'orange';
 
 						// if alert date is past then RED
-					if (dol_now() > $line->datea)
+					if (dol_now() > $line->datea && empty($line->delais_alerte_end))
 						$bgcolor = 'red';
 
-						// if end date is in the past adn task is mark as done , the task is done
+						// if end date is in the past and task is mark as done , the task is done
 					if (! empty($line->archive))
 						$bgcolor = 'green';
-						// if end date is in the past, the task is done
-					if ((dol_now() > $line->datef) && (empty($line->archive)))
+
+					if ((dol_now() > dol_time_plus_duree($line->datef, $line->delais_alerte_end, 'd')) && (empty($line->archive)))
 						$bgcolor = 'red';
 
 					if ($sess_adm->has_child($line->id)) {
