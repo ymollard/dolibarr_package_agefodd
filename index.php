@@ -132,7 +132,7 @@ print '<td width="50px" align="right">' . $langs->trans("AgfNumber") . '</td></t
 
 // sessions en cours
 print '<tr class="liste"><td width="10px">' . img_object($langs->trans("AgfShowDetails"), "generic") . '</td>';
-$resql = $agf->fetch_session(0);
+$resql = $agf->fetch_session(2);
 print '<td colspan="2" >' . $langs->trans("AgfRunningSession") . '</td><td align="right">';
 print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '?status=2">' . $agf->total . '</a>&nbsp;</td></tr>';
 
@@ -187,7 +187,7 @@ print '</td></tr>';
 
 // sessions archivées
 print '<tr class="liste"><td width="10px">' . img_object($langs->trans("AgfShowDetails"), "generic") . '</td>';
-$resql = $agf->fetch_session(1);
+$resql = $agf->fetch_session(4);
 if ($resql) {
 	print '<td colspan="2" >' . $langs->trans("AgfMenuSessArchList") . '</td><td align="right">';
 	print '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '?status=4">' . $agf->total . '</a>&nbsp;</td></tr>';
