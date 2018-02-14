@@ -343,20 +343,17 @@ class Agefodd_index {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $archive Archive
+	 * @param	int $fk_status	session_status_type
 	 * @return int if KO, $num of student if OK
 	 */
-	public function fetch_session($archive = 0) {
+	public function fetch_session($fk_status = 0) {
 		global $langs;
 
 		$sql = "SELECT count(*) as total";
-		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session";
-
-		if (empty($archive)) {
-			$sql .= " WHERE status <> 4";
-		} else {
-			$sql .= " WHERE status=4";
-		}
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session";
+		$sql .= " WHERE";
+		if (empty($fk_status)) $sql .= " status <> 4";
+		else $sql .= " status=$fk_status";
 
 		$sql .= " AND entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
