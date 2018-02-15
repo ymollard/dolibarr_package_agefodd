@@ -534,7 +534,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
 		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-		    $sql .= " AND sesssta.status_in_session = 3";
+		    $sql .= " AND sesssta.status_in_session IN (3,4)";
 		}
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -556,6 +556,7 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " AND sess.status IN (5)";
 			    $sql .= " AND sess.fk_socpeople_presta IS NULL";
 			    $sql .= " AND sess.fk_soc_employer IS NULL";
+			    dol_syslog(get_class($this) . " AGF_USE_REAL_HOURS::" . __METHOD__, LOG_DEBUG);
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
 			    	$num=$this->db->num_rows($resql);
@@ -592,7 +593,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
 		$sql .= " AND sesssta.hour_foad <> 0";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . " - FOAD ::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -628,7 +629,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
         if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-            $sql .= " AND sesssta.status_in_session = 3";
+            $sql .= " AND sesssta.status_in_session IN (3,4)";
         }
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -650,6 +651,7 @@ class ReportBPF extends AgefoddExportExcel
                 $sql .= " AND sess.status IN (5)";
                 $sql .= " AND sess.fk_socpeople_presta IS NULL";
                 $sql .= " AND sess.fk_soc_employer IS NOT NULL";
+                dol_syslog(get_class($this) . " AGF_USE_REAL_HOURS::" . __METHOD__, LOG_DEBUG);
                 $resql2 = $this->db->query($sql);
                 if ($resql2) {
                 	$num=$this->db->num_rows($resql);
@@ -686,7 +688,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.fk_socpeople_presta IS NULL";
 		$sql .= " AND sess.fk_soc_employer IS NOT NULL";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . " - FOAD ::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -731,7 +733,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-		    $sql .= " AND sesssta.status_in_session = 3";
+		    $sql .= " AND sesssta.status_in_session IN (3,4)";
 		}
 		$sql .= " GROUP BY catform.intitule";
 
@@ -755,6 +757,7 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			    $sql .= " AND sess.status IN (5)";
 			    $sql .= " GROUP BY catform.intitule";
+			    dol_syslog(get_class($this) . " AGF_USE_REAL_HOURS::" . __METHOD__, LOG_DEBUG);
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
 			    	$num=$this->db->num_rows($resql);
@@ -793,7 +796,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sesssta.hour_foad <> 0";
 		$sql .= " GROUP BY catform.intitule";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . " - FOAD ::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -838,7 +841,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5)";
 		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-		    $sql .= " AND sesssta.status_in_session = 3";
+		    $sql .= " AND sesssta.status_in_session IN (3,4)";
 		}
 		$sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
 
@@ -862,6 +865,7 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 			    $sql .= " AND sess.status IN (5)";
 			    $sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
+			    dol_syslog(get_class($this) . " AGF_USE_REAL_HOURS::" . __METHOD__, LOG_DEBUG);
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
 			    	$num=$this->db->num_rows($resql);
@@ -899,7 +903,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sesssta.hour_foad <> 0";
 		$sql .= " GROUP BY CONCAT(catform.code , '-', catform.intitule)";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . " - FOAD ::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -945,7 +949,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
 		if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-		    $sql .= " AND sesssta.status_in_session = 3";
+		    $sql .= " AND sesssta.status_in_session IN (3,4)";
 		}
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
@@ -967,6 +971,8 @@ class ReportBPF extends AgefoddExportExcel
 			    $sql .= " AND sess.status IN (5)";
 			    $sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 			    $sql .= " AND sess.fk_soc_employer IS NULL";
+
+			    dol_syslog(get_class($this) . " AGF_USE_REAL_HOURS::" . __METHOD__, LOG_DEBUG);
 			    $resql2 = $this->db->query($sql);
 			    if ($resql2) {
 			    	$num=$this->db->num_rows($resql);
@@ -1003,7 +1009,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sesssta.hour_foad IS  NOT NULL";
 		$sql .= " AND sesssta.hour_foad <> 0";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . " - FOAD ::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -1119,7 +1125,7 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " AND sess.status IN (5)";
 			$sql .= " AND sess.fk_socpeople_presta IS NULL";
 			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-			    $sql .= " AND sesssta.status_in_session = 3";
+			    $sql .= " AND sesssta.status_in_session IN (3,4)";
 			}
 
 			$total_cnt = 0;
@@ -1151,6 +1157,8 @@ class ReportBPF extends AgefoddExportExcel
 				    if (! empty($data['idtype'])) {
 				        $sql .= " AND sesssta.fk_agefodd_stagiaire_type IN (" . $data['idtype'] . ") ";
 				    }
+
+				    dol_syslog(get_class($this) . "AGF_USE_REAL_HOURS::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
 				    $resql2 = $this->db->query($sql);
 				    if ($resql2) {
 				    	$num=$this->db->num_rows($resql);
@@ -1177,10 +1185,7 @@ class ReportBPF extends AgefoddExportExcel
 			}
 			$this->db->free($resql);
 
-			if (empty($data['idtype'])) {
-				$this->trainee_data[$data['label']]['nb'] = (!empty($obj->cnt)) ? ($obj->cnt - $total_cnt) : 0;
-				$this->trainee_data[$data['label']]['time'] = (!empty($obj->timeinsession)) ? ($obj->timeinsession - $total_timeinsession) : 0;
-			}
+
 
 			// Add time from FOAD
 			$sql = "select SUM(sessstaout.hour_foad) as timeinsession ";
@@ -1199,7 +1204,7 @@ class ReportBPF extends AgefoddExportExcel
 			$sql .= " AND sessstaout.hour_foad IS  NOT NULL";
 			$sql .= " AND sessstaout.hour_foad <> 0";
 
-			dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
+			dol_syslog(get_class($this) . " - FOAD ::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				if ($this->db->num_rows($resql)) {
@@ -1217,6 +1222,7 @@ class ReportBPF extends AgefoddExportExcel
 			$this->db->free($resql);
 
 			if ($data['idtype'] == '1,2,7,5,4') {
+				//Ajout des heures forcer
 				if ($this->db->type == 'pgsql') {
 					$sql = "SELECT SUM(TIME_TO_SEC(TIMEDIFF('second', statime.heuref, statime.heured))) / (24 * 60 * 60) AS timeinsession ";
 				} else {
@@ -1270,6 +1276,11 @@ class ReportBPF extends AgefoddExportExcel
 				}
 				$this->db->free($resql);
 			}
+
+			if (empty($data['idtype'])) {
+				$this->trainee_data[$data['label']]['nb'] = (!empty($obj->cnt)) ? ($obj->cnt - $total_cnt) : 0;
+				$this->trainee_data[$data['label']]['time'] = (!empty($obj->timeinsession)) ? ($obj->timeinsession - $total_timeinsession) : 0;
+			}
 		}
 	}
 }
@@ -1293,6 +1304,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 1,
@@ -1302,7 +1314,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
-					'checkOPCA' => 1
+					'checkOPCA' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 7,
@@ -1314,6 +1327,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 1,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 5,
@@ -1323,7 +1337,8 @@ function fetch_financial_c($filter = array()) {
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
-					'checkOPCA' => 1
+					'checkOPCA' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => '17,3',
@@ -1335,6 +1350,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 1,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 4,
@@ -1346,6 +1362,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 1,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 8,
@@ -1356,6 +1373,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 9,
@@ -1367,61 +1385,67 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 10,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
 					'label' => 'C-5 Pouvoirs publics spécifiques Instances européennes',
-					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 11,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
 					'label' => 'C-6 Pouvoirs publics spécifiques Etat',
-					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 12,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
 					'label' => 'C-7 Pouvoirs publics spécifiques Conseils régionaux',
-					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 13,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
 					'label' => 'C-8 Pouvoirs publics spécifiques Pôle emploi',
-					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 14,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
 					'label' => 'C-9 Pouvoirs publics spécifiques Autres ressources publiques',
-					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
+					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 1,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 15,
@@ -1433,6 +1457,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 0,
 					'checkOPCA' => 0,
 					'checkPV' => 0,
+					'datefac'=>1,
 			),
 			array(
 					'idtypesta' => 16,
@@ -1443,6 +1468,7 @@ function fetch_financial_c($filter = array()) {
 					'employer' => 1,
 					'checkOPCA' => 0,
 					'checkPV' => 0,
+					'datefac'=>1,
 			)
 	);
 
@@ -2022,6 +2048,9 @@ function fetch_financial_d($filter = array()) {
 			        INNER JOIN
 			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture ";
 			if (!empty($data['employer'])) {
+				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+			}
+			if (!empty($data['datefac'])) {
 				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
 			}
 			$sql .= " WHERE
