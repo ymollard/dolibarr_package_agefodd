@@ -1277,3 +1277,4 @@ AgfPDFBackgroundLandscape=PDF de fond de page utilisé les documents agefodd (pa
 ErrorOnlyPDFSupported=Seul de PDF son accepter pour les fonds de page
 AgfTraineeCost=Coût par participants
 AgfEffectiveDuration=Durée effective
+AgfDisplayBirthDateFichePres=Afficher la date de naissance dans les fiche de présences

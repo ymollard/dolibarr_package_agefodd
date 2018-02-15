@@ -478,6 +478,11 @@ if ($action == 'setvarother') {
 		$res = dolibarr_set_const($db, 'AGF_ADD_PROGRAM_TO_CONVMAIL', $add_progrm_to_convmail, 'yesno', 0, '', $conf->entity);
 		if (! $res > 0)
 			$error ++;
+
+		$add_dtbirth_fichepres = GETPOST('AGF_ADD_DTBIRTH_FICHEPRES', 'int');
+		$res = dolibarr_set_const($db, 'AGF_ADD_DTBIRTH_FICHEPRES', $add_dtbirth_fichepres, 'yesno', 0, '', $conf->entity);
+		if (! $res > 0)
+			$error ++;
 	}
 
 	$fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
@@ -2061,6 +2066,14 @@ $var=!$var;
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfExtendSessionAssociationToNonRelatedSessions") . '</td>';
 print '<td align="left">';
 print ajax_constantonoff('AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDisplayBirthDateFichePres") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_ADD_DTBIRTH_FICHEPRES');
 print '</td>';
 print '<td></td>';
 print '</tr>';

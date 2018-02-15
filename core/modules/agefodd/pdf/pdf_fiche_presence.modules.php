@@ -665,7 +665,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				if (! empty($line->poste)) {
 					$this->str .= ' (' . $line->poste . ')';
 				}
-				if (! empty($line->date_birth)) {
+				if (! empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
 					$outputlangs->load("other");
 					$this->str .= "\n". $outputlangs->trans('DateToBirth').':'. dol_print_date($line->date_birth,'day');
 				}
