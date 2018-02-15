@@ -274,7 +274,7 @@ class ActionsAgefodd
 			if (is_array($mergeprogram) && count($mergeprogram) > 0) {
 				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 				$agf = new Agefodd($db);
-				
+
 				foreach ( $mergeprogram as $training_id ) {
 					$agf->fetch($training_id);
 					$agf->generatePDAByLink();
@@ -372,25 +372,31 @@ class ActionsAgefodd
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
 			if ($result > 0) {
-				
+
 				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
 					$result = $sessiondetail->fetch($session->fk_session_agefodd);
 					if ($result > 0) {
 						if (!empty($conf->global->AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF))
 						{
-							$ref_value = $outputlangs->convToOutputCharset($sessiondetail->formref);
+							$ref_value = '';
+							if (!empty($conf->global->AGF_HIDE_TRAININGREF_ON_PDF)) {
+								$ref_value = $outputlangs->convToOutputCharset($sessiondetail->formref);
+							}
 							if (! empty($sessiondetail->formrefint)) {
-								$ref_value .= '/'.$outputlangs->convToOutputCharset($sessiondetail->formrefint);
+								if (!empty($ref_value)) {
+									$ref_value .= '/';
+								}
+								$ref_value .= $outputlangs->convToOutputCharset($sessiondetail->formrefint);
 							}
 							$ref_value .= ' (' . $sessiondetail->id . ')';
 							$this->results[get_class($sessiondetail) . $sessiondetail->id.'_1'] = array(
 									'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId"),
 									'ref_value' => $ref_value,
 									'date_value' => ''
-							);	
+							);
 						}
-						
+
 						if (!empty($conf->global->AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES))
 						{
 							$formation = new Agefodd($object->db);
@@ -409,9 +415,9 @@ class ActionsAgefodd
 									'ref_title' => $outputlangs->transnoentities("AgefoddSessIdAndDates"),
 									'ref_value' => $sessiondetail->id.' / '.$date_d.' - '.$date_f,
 									'date_value' => ''
-							);	
+							);
 						}
-						
+
 					} else {
 						dol_print_error('', $agfsess->error);
 					}
