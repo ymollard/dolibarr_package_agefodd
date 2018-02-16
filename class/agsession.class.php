@@ -4853,6 +4853,7 @@ class Agsession extends CommonObject
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
 			}
 		}
+		$this->date_text=$this->libSessionDate();
 
 		$this->trainer_text='';
 		$trainerarray=array();
