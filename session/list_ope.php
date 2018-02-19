@@ -335,7 +335,7 @@ if ($resql != - 1) {
 			}
 			print '</td>';
 
-			print '<td>' . stripslashes($line->ref_interne) . '</td>';
+			print '<td><a href="'. dol_buildpath('/agefodd/site/card.php?id=', 2) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
 
 			print '<td>';
 			if (! empty($line->socid) && $line->socid != - 1) {
