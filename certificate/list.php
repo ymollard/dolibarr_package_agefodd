@@ -267,7 +267,7 @@ if ($resql != - 1) {
 		if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
 
-		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="../session/card.php?id=' . $line->id_session . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->id_session . '</a></td>';
+		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="../session/subscribers_certif.php?id=' . $line->id_session . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->id_session . '</a></td>';
 		print '<td>';
 
 		if (! empty($line->customer_id) && $line->customer_id != - 1) {
