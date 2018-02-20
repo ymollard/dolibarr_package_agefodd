@@ -170,9 +170,9 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfCertifLabel"), $_SERVEUR ['PHP_SELF'], 'certif.certif_label', '', $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfCertifDateSt"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_start", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
-	print '<td></td>';
+	print_liste_field_titre($langs->trans("AgfCertifDateWarning"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
 	print "</tr>\n";
-
+	//AgfCertificateValidity
 	// Search bar
 	$url_form = $_SERVER ["PHP_SELF"];
 	$addcriteria = false;
@@ -291,9 +291,14 @@ if ($resql != - 1) {
 		print '<td>' . dol_print_date($line->certif_dt_start, 'daytextshort') . '</td>';
 
 		print '<td>' . dol_print_date($line->certif_dt_end, 'daytextshort') . '</td>';
-		print '<td></td>';
+		
+		if(!empty($line->certif_dt_end) && $line->certif_dt_end < dol_now()) $style = "background-color:red;";
+		elseif(!empty($line->certif_dt_warning) && $line->certif_dt_warning < dol_now()) $style = "background-color:orange;";
+		else $style = "background-color:green;";
+		
+		print '<td style="'.$style.'">'.dol_print_date($line->certif_dt_warning, 'daytextshort').'</td>';
 		print "</tr>\n";
-
+		
 		$oldid = $line->rowid;
 
 		$i ++;
