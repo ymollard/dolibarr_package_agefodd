@@ -297,7 +297,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		// Manage filter
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if (strpos($key, 'date')) // To allow $filter['YEAR(s.dated)']=>$year
+				if (strpos($key, 'date') || strpos($key, 'certif_dt')) // To allow $filter['YEAR(s.dated)']=>$year
 {
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {

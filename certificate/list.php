@@ -48,6 +48,7 @@ $page = GETPOST('page', 'int');
 $socid = GETPOST('socid', 'int');
 
 // Search criteria
+$search_soc = GETPOST("search_soc");
 $search_trainning_name = GETPOST("search_trainning_name");
 $search_teacher_id = GETPOST("search_teacher_id");
 $search_training_ref = GETPOST("search_training_ref", 'alpha');
@@ -58,9 +59,12 @@ $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
+$search_certif_start_date = dol_mktime(0, 0, 0, GETPOST('search_certif_start_datemonth', 'int'), GETPOST('search_certif_start_dateday', 'int'), GETPOST('search_certif_start_dateyear', 'int'));
+$search_certif_end_date = dol_mktime(0, 0, 0, GETPOST('search_certif_end_datemonth', 'int'), GETPOST('search_certif_end_dateday', 'int'), GETPOST('search_certif_end_dateyear', 'int'));
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
+    $search_soc = '';
 	$search_trainning_name = '';
 	$search_teacher_id = "";
 	$search_training_ref = '';
@@ -69,9 +73,15 @@ if (GETPOST("button_removefilter_x")) {
 	$search_site = "";
 	$search_training_ref_interne = "";
 	$search_type_session = "";
+	$search_certif_start_date = "";
+	$search_certif_end_date = "";
 }
 
 $filter = array ();
+if (! empty($search_soc)) {
+    $filter ['soc.nom'] = $search_soc;
+    $option .= "&search_soc=" . $search_soc;
+}
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
 }
@@ -86,6 +96,12 @@ if (! empty($search_start_date)) {
 }
 if (! empty($search_end_date)) {
 	$filter ['s.datef'] = $db->idate($search_end_date);
+}
+if (! empty($search_certif_start_date)) {
+    $filter ['certif.certif_dt_start'] = $db->idate($search_certif_start_date);
+}
+if (! empty($search_certif_end_date)) {
+    $filter ['certif.certif_dt_end'] = $db->idate($search_certif_end_date);
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
@@ -187,6 +203,7 @@ if ($resql != - 1) {
 	print '<td>&nbsp;</td>';
 
 	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '">';
 	print '</td>';
 
 	print '<td class="liste_titre">';
@@ -220,9 +237,11 @@ if ($resql != - 1) {
 	print '</td>';
 
 	print '<td class="liste_titre">';
+	print $form->select_date($search_certif_start_date, 'search_certif_start_date', 0, 0, 1, 'search_form');
 	print '</td>';
 
 	print '<td class="liste_titre">';
+	print $form->select_date($search_certif_end_date, 'search_certif_end_date', 0, 0, 1, 'search_form');
 	print '</td>';
 
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
