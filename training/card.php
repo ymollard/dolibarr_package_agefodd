@@ -1030,7 +1030,46 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print "</table>";
+				
+				print '<div class="tabsAction">';
+				print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('Modify') . '</a>';
+				print '</div>';
+				?>
+				<script>
+				$(document).ready(function() {
+					$('#modifyPedago').click(function(e) {
+						e.preventDefault();
+						listepedago();
+					});
 
+					function listepedago(){
+						console.log('love');
+						if($('#pedagoModal').length==0) {
+							$('body').append('<div id="pedagoModal" title="<?php echo $langs->transnoentities('AgfObjPeda'); ?>"></div>');
+						}
+						
+						$.ajax({
+                            url : "<?php echo dol_buildpath('/agefodd/scripts/pedagoajax.php',1); ?>"
+                            ,data:{
+                                put: 'printform'
+                                ,idTraining: '<?php echo $id; ?>'
+                            }
+                            ,method:"post"
+                            ,dataType:'json'
+                        }).done(function(data) {
+                            console.log(data);
+                        	$('#pedagoModal').html(data.form);
+                        });
+						
+						$('#pedagoModal').dialog({
+							modal:true,
+							width:'80%'
+						});
+
+					}
+				});
+				</script>
+				<?php
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
