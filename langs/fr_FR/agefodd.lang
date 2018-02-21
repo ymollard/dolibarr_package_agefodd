@@ -673,6 +673,7 @@ AgfArchiveConfirm=Confirmer l'archivage
 AgfArchiveByYearComplete=Toutes les sessions ont été archivées
 AgfManageOPCA=Gérer les OPCA
 AgftrainingAdmTask=Tâches administratives
+AgfAdmSessionTime=Gestion du temps
 AgfAfterTraining=Après la formation
 AgfPDFCertificate1=Né(e) le
 AgfPDFCertificate2=à

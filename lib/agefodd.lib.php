@@ -408,7 +408,22 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [1] = $langs->trans("Settings");
 	$head [$h] [2] = 'settings';
 	$h ++;
+	
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_options.php", 1);
+	$head [$h] [1] = $langs->trans("Options");
+	$head [$h] [2] = 'options';
+	$h ++;
 
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_administrativetasks.php", 1);
+	$head [$h] [1] = $langs->trans("AgftrainingAdmTask");
+	$head [$h] [2] = 'administrativetasks';
+	$h ++;
+	
+	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_session_time.php", 1);
+	$head [$h] [1] = $langs->trans("AgfAdmSessionTime");
+	$head [$h] [2] = 'sessiontime';
+	$h ++;
+	
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/formation_catalogue_extrafields.php", 1);
 	$head [$h] [1] = $langs->trans("ExtraFieldsTraining");
 	$head [$h] [2] = 'attributetraining';
@@ -878,27 +893,28 @@ function ebi_get_adm_get_next_indice_action($id) {
 	if ($result) {
 		$num = $db->num_rows($result);
 		$obj = $db->fetch_object($result);
+		
 		$db->free($result);
 		if (! empty($obj->nb_action)) {
 			return intval(intval($obj->nb_action) + 1);
 		} else {
-			$sql = "SELECT MAX(s.indice) as nb_action";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
-			$sql .= " WHERE fk_parent_level=(SELECT fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel WHERE rowid=" . $id . ")";
-
-			dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
-			$result = $db->query($sql);
-			if ($result) {
-				$num = $db->num_rows($result);
-				$obj = $db->fetch_object($result);
-
-				$db->free($result);
-				return intval(intval($obj->nb_action) + 1);
-			} else {
-
-				$error = "Error " . $db->lasterror();
-				return - 1;
-			}
+			
+		    $sql = "SELECT s.indice as parentindice FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
+		    $sql.= " WHERE rowid = " . $id;
+		    
+		    dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
+		    $result = $db->query($sql);
+		    
+		    if ($result) {
+		        $obj = $db->fetch_object($result);
+		        $parentIndice = $obj->parentindice;
+		        return intval(intval($parentIndice) + 1);
+		    } else {
+		        
+		        $error = "Error " . $db->lasterror();
+		        return - 1;
+		    }
+		    
 		}
 	} else {
 
