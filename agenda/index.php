@@ -1001,7 +1001,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 						if ($event->sessionstatus == 'ENV') {
 							$colorbis = 'ffcc66';
 						}
-						elseif ($event->sessionstatus == 'CONF') {
+						elseif ($event->sessionstatus == 'CONF' || $event->sessionstatus == 'ONGOING') {
 							$colorbis= '33cc00';
 						}
 						elseif ($event->sessionstatus == 'NOT') {
