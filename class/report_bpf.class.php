@@ -581,7 +581,7 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt, SUM(sesssta.hour_foad) as timeinsession ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, SUM(sesssta.hour_foad)/24 as timeinsession ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -676,7 +676,7 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt, SUM(sesssta.hour_foad) as timeinsession ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt, SUM(sesssta.hour_foad)/24 as timeinsession ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -783,7 +783,7 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Add time from FOAD
 
-		$sql = "select SUM(sesssta.hour_foad) as timeinsession, catform.intitule ";
+		$sql = "select SUM(sesssta.hour_foad)/24 as timeinsession, catform.intitule ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -890,7 +890,7 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad) as timeinsession,CONCAT(catform.code , '-', catform.intitule) as intitule ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad)/24 as timeinsession,CONCAT(catform.code , '-', catform.intitule) as intitule ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -997,7 +997,7 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad) as timeinsession ";
+		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad)/24 as timeinsession ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -1188,7 +1188,7 @@ class ReportBPF extends AgefoddExportExcel
 
 
 			// Add time from FOAD
-			$sql = "select SUM(sessstaout.hour_foad) as timeinsession ";
+			$sql = "select SUM(sessstaout.hour_foad)/24 as timeinsession ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sessstaout";
 			$sql .= " WHERE sessstaout.fk_session_agefodd IN (SELECT sess.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
