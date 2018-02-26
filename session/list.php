@@ -724,7 +724,7 @@ if ($resql != - 1) {
 				print '</td>';
 			}
 
-			if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td>' . stripslashes($line->ref_interne) . '</td>';
+			if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td><a href="'. dol_buildpath('/agefodd/site/card.php?id=', 2) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td>' . $line->nb_stagiaire . '</td>';
 
 			if ($user->rights->agefodd->session->margin) {

@@ -4738,7 +4738,7 @@ class Agsession extends CommonObject
 
 	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {
 
-		global $db, $conf;
+		global $db, $conf, $langs;
 
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer' || $object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid;
 		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
@@ -4787,7 +4787,7 @@ class Agsession extends CommonObject
 					$this->conv_amount_tva += $line->total_tva;
 					$this->conv_amount_ttc += $line->total_ttc;
 				}
-				
+
 				$this->conv_tva_tx = $this->conv_amount_tva / $this->conv_amount_ht * 100;
 				$this->conv_amount_ht = price($this->conv_amount_ht);
 				$this->conv_amount_tva = price($this->conv_amount_tva);
@@ -4839,18 +4839,31 @@ class Agsession extends CommonObject
 		}
 
 		// Chargement des horaires de la session
+		$TdatesText=array();
 		if(empty($this->THorairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			$calendrier = new Agefodd_sesscalendar($db);
 			$calendrier->fetch_all($this->id);
 			$this->THorairesSession = $calendrier->lines;
 			if (is_array($calendrier->lines) && count($calendrier->lines)>0) {
+				$old_date='';
+				$this->dthour_text='';
 				foreach ($calendrier->lines as $line) {
 					$dates[$line->date_session]=$line->date_session;
+
+					if ($line->date_session != $old_date) {
+						$this->dthour_text .= "<br>";
+						$this->dthour_text .= dol_print_date($line->date_session, 'daytext') . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+					} else {
+						$this->dthour_text .= ', ';
+						$this->dthour_text .= dol_print_date($line->heured, 'hour') . ' - ' . dol_print_date($line->heuref, 'hour');
+					}
+					$old_date = $line->date_session;
 				}
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
 			}
 		}
+		$this->date_text=$this->libSessionDate();
 
 		$this->trainer_text='';
 		$trainerarray=array();

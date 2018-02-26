@@ -439,12 +439,12 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 					$programme_array = array();
 					foreach ( $object_modules->lines as $line_chapter ) {
-						$programme_array[] = $line_chapter->title;
+						$programme_array[] = " &bull; ".trim($line_chapter->title)."<br />";
 					}
 					if (count($programme_array) > 0) {
-						$programme = '  ' . chr(149) . ' ';
-						$programme .= implode('  ' . chr(149) . ' ', $programme_array);
+						$programme .=implode('', $programme_array);
 					}
+
 				} else {
 					$programme = $agf->programme;
 				}
@@ -562,7 +562,8 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $fontsize);
 					$this->str = $programme;
 					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
-					$this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
+
+					$res = $this->pdf->MultiCell(0, 5, $this->str, 0, 'L', false, 1, $posX, $posY, true, 0, $ishtml);
 					$posY = $this->pdf->GetY() + $this->espace_apres_corps_text;
 				}
 				// $this->pdf->SetXY($posX, $this->pdf->GetY());
