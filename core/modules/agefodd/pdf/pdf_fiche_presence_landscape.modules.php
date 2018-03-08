@@ -195,7 +195,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		global $user, $langs, $conf, $mysoc;
 
 		$height_for_footer = 20;
-		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
+		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
 			
 		// New page
 		$pdf->AddPage();
