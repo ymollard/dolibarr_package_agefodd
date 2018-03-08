@@ -193,6 +193,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$tplidx = $pdf->importPage(1);
 		}
 
+		$height_for_footer = 20;
+		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
+					
 		$session_hours=array();
 		$tmp_array=array();
 		$agf_date = new Agefodd_sesscalendar($this->db);
@@ -539,7 +542,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				}
 
 				$posY = $pdf->GetY();
-				if ($posY > $this->page_hauteur - 20) {
+				if ($posY > $this->page_hauteur - $height_for_footer) {
 
 					$pdf->AddPage();
 					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -682,7 +685,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				}
 
 				$posY = $pdf->GetY();
-				if ($posY > $this->page_hauteur - 20) {
+				if ($posY > $this->page_hauteur - $height_for_footer) {
 					$pdf->AddPage();
 					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 					$pagenb ++;
