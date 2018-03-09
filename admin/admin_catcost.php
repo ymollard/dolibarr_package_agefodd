@@ -107,7 +107,19 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM '.MAIN_DB_PREFIX.'categorie WHERE type='.Categorie::TYPE_PRODUCT.' AND entity IN ('.getEntity('category',1).')';
+// For backward compatibility
+if (is_numeric(Categorie::TYPE_PRODUCT)) {
+	$typeproduct=Categorie::TYPE_PRODUCT;
+} else {
+	foreach(Categorie::$MAP_ID_TO_CODE as $key=>$val) {
+		if (Categorie::TYPE_PRODUCT==$val) {
+			$typeproduct=$key;
+			break;
+		}
+	}
+}
+
+$sql = ' SELECT rowid, label FROM '.MAIN_DB_PREFIX.'categorie WHERE type='.$typeproduct.' AND entity IN ('.getEntity('category',1).')';
 $resql= $db->query($sql);
 if (!$resql) {
 	setEventMessage($db->lasterror,'errors');

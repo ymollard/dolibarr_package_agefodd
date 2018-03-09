@@ -209,7 +209,44 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_CUSTOMER . ' AND entity IN (' . getEntity('category', 1) . ')';
+// For backward compatibility
+if (is_numeric(Categorie::TYPE_PRODUCT)) {
+	$typeproduct=Categorie::TYPE_PRODUCT;
+} else {
+	foreach(Categorie::$MAP_ID_TO_CODE as $key=>$val) {
+		if (Categorie::TYPE_PRODUCT==$val) {
+			$typeproduct=$key;
+			break;
+		}
+	}
+}
+
+// For backward compatibility
+if (is_numeric(Categorie::TYPE_CUSTOMER)) {
+	$typecustomer=Categorie::TYPE_CUSTOMER;
+} else {
+	foreach(Categorie::$MAP_ID_TO_CODE as $key=>$val) {
+		if (Categorie::TYPE_CUSTOMER==$val) {
+			$typecustomer=$key;
+			break;
+		}
+	}
+}
+
+// For backward compatibility
+if (is_numeric(Categorie::TYPE_SUPPLIER)) {
+	$typesupplier=Categorie::TYPE_SUPPLIER;
+} else {
+	foreach(Categorie::$MAP_ID_TO_CODE as $key=>$val) {
+		if (Categorie::TYPE_SUPPLIER==$val) {
+			$typesupplier=$key;
+			break;
+		}
+	}
+}
+
+
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typeproduct . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -235,7 +272,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_CUSTOMER . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typecustomer . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -261,7 +298,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_CUSTOMER . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typecustomer . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -287,7 +324,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_CUSTOMER . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typecustomer . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -313,7 +350,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_SUPPLIER . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typesupplier . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -339,7 +376,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_PRODUCT . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typeproduct . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -365,7 +402,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_PRODUCT . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typeproduct . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -391,7 +428,7 @@ print '<td align="left">';
 $option_categ = array ();
 $selected_categ = array ();
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . Categorie::TYPE_PRODUCT . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typeproduct . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
