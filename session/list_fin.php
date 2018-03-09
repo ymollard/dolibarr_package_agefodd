@@ -99,6 +99,7 @@ llxHeader('', $title);
 if (! empty($search_orderid)) {
 	$order = new Commande($db);
 	$order->fetch($search_orderid);
+	$order->fetch_thirdparty();
 	$search_orderref = $order->ref;
 	$object_socid = $order->socid;
 }
@@ -106,6 +107,7 @@ if (! empty($search_orderid)) {
 if (! empty($search_invoiceid)) {
 	$invoice = new Facture($db);
 	$invoice->fetch($search_invoiceid);
+	$invoice->fetch_thirdparty();
 	$search_invoiceref = $invoice->ref;
 	$object_socid = $invoice->socid;
 }
@@ -113,6 +115,7 @@ if (! empty($search_invoiceid)) {
 if (! empty($search_fourninvoiceid)) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch($search_fourninvoiceid);
+	$fourninvoice->fetch_thirdparty();
 	$search_fourninvoiceref = $fourninvoice->ref;
 	$object_socid = $fourninvoice->socid;
 }
@@ -120,6 +123,7 @@ if (! empty($search_fourninvoiceid)) {
 if (! empty($search_orderref)) {
 	$order = new Commande($db);
 	$order->fetch('', $search_orderref);
+	$order->fetch_thirdparty();
 	$search_orderid = $order->id;
 	$object_socid = $order->socid;
 }
@@ -127,6 +131,7 @@ if (! empty($search_orderref)) {
 if (! empty($search_invoiceref)) {
 	$invoice = new Facture($db);
 	$invoice->fetch('', $search_invoiceref);
+	$invoice->fetch_thirdparty();
 	$search_invoiceid = $invoice->id;
 	$object_socid = $invoice->socid;
 }
@@ -134,6 +139,7 @@ if (! empty($search_invoiceref)) {
 if (! empty($search_fourninvoiceref)) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch('', $search_fourninvoiceref);
+	$fourninvoice->fetch_thirdparty();
 	$search_fourninvoiceid = $fourninvoice->id;
 	$object_socid = $fourninvoice->socid;
 }
@@ -141,6 +147,7 @@ if (! empty($search_fourninvoiceref)) {
 if (! empty($search_propalref)) {
 	$propal = new Propal($db);
 	$propal->fetch('', $search_propalref);
+	$propal->fetch_thirdparty();
 	$search_propalid = $propal->id;
 	$object_socid = $propal->socid;
 }
@@ -148,6 +155,7 @@ if (! empty($search_propalref)) {
 if (! empty($search_propalid)) {
 	$propal = new Propal($db);
 	$propal->fetch($search_propalid, '');
+	$propal->fetch_thirdparty();
 	$search_propalref = $propal->ref;
 	$object_socid = $propal->socid;
 }
@@ -155,31 +163,75 @@ if (! empty($search_propalid)) {
 if (! empty($search_orderid) || ! empty($search_orderref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php';
 	$head = commande_prepare_head($order);
-	dol_fiche_head($head, 'tabAgefodd', $langs->trans("AgfMenuSessByInvoiceOrder"), 0, 'order');
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans("Order"), 0, 'order');
 	$element_type = 'order';
 	$element_id = $search_orderid;
+
+	$morehtmlref='<div class="refidno">';
+	// Ref customer
+	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $order->ref_client, $order, 0, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $order->ref_client, $order, 0, 'string', '', null, null, '', 1);
+	// Thirdparty
+	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $order->thirdparty->getNomUrl(1);
+	$morehtmlref.='</div>';
+	if (function_exists('dol_banner_tab')) {
+		dol_banner_tab($order, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+	}
 }
 
 if (! empty($search_invoiceid) || ! empty($search_invoiceref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php';
 	$head = facture_prepare_head($invoice);
-	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'bill');
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('InvoiceCustomer'), 0, 'bill');
 	$element_type = 'invoice';
 	$element_id = $search_invoiceid;
+
+	$morehtmlref='<div class="refidno">';
+	// Ref customer
+	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $invoice->ref_client, $invoice, 0, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $invoice->ref_client, $invoice, 0, 'string', '', null, null, '', 1);
+	// Thirdparty
+	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $invoice->thirdparty->getNomUrl(1);
+	$morehtmlref.='</div>';
+	if (function_exists('dol_banner_tab')) {
+		dol_banner_tab($invoice, 'ref', $linkback, 1, 'facnumber', 'ref', $morehtmlref, '', 0, '', '');
+	}
 }
 
 if (! empty($search_fourninvoiceid) || ! empty($search_fourninvoiceref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php';
 	$head = facturefourn_prepare_head($fourninvoice);
-	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'bill');
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('SupplierInvoice'), 0, 'bill');
+
+	$morehtmlref='<div class="refidno">';
+	// Ref customer
+	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $fourninvoice->ref_client, $fourninvoice, 0, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $fourninvoice->ref_client, $fourninvoice, 0, 'string', '', null, null, '', 1);
+	// Thirdparty
+	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $fourninvoice->thirdparty->getNomUrl(1);
+	$morehtmlref.='</div>';
+	if (function_exists('dol_banner_tab')) {
+		dol_banner_tab($fourninvoice, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+	}
 }
 
 if (! empty($search_propalref) || ! empty($search_propalid)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php';
 	$head = propal_prepare_head($propal);
-	dol_fiche_head($head, 'tabAgefodd', $langs->trans('AgfMenuSessByInvoiceOrder'), 0, 'propal');
+	dol_fiche_head($head, 'tabAgefodd', $langs->trans('Proposal'), 0, 'propal');
 	$element_type = 'propal';
 	$element_id = $search_propalid;
+
+	$morehtmlref='<div class="refidno">';
+	// Ref customer
+	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $propal->ref_client, $propal, 0, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $propal->ref_client, $propal, 0, 'string', '', null, null, '', 1);
+	// Thirdparty
+	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $propal->thirdparty->getNomUrl(1);
+	$morehtmlref.='</div>';
+	if (function_exists('dol_banner_tab')) {
+		dol_banner_tab($propal, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+	}
 }
 
 if ($action == 'link_element') {
@@ -202,10 +254,14 @@ $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit,
 
 $session_array_id = array ();
 
+
+
 if ($resql != - 1) {
 	$num = $resql;
 
 	$menu = $langs->trans("AgfMenuSessAct");
+
+
 
 	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
 
@@ -378,21 +434,21 @@ if (empty($search_fourninvoiceref)) {
 			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
 		}
 	}
-	
+
 	if (!empty($conf->global->AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS)){
 	    $excludeSessions = array();
 	    foreach ($agf->lines as $line) $excludeSessions[] = (int)$line->rowid;
 	    $excludeSessions = array_merge($excludeSessions, array_keys($sessions));
-	    
-	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated 
-            FROM llx_agefodd_session as s 
-            LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue 
-            LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place 
+
+	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+            FROM llx_agefodd_session as s
+            LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
+            LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place
             WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)
             AND s.rowid NOT IN ('".implode("','", $excludeSessions)."')
-            GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne 
+            GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
             ORDER BY s.dated ASC";
-	    
+
 	    $resql = $db->query($sql);
 	    if($resql){
 	        while ($obj = $db->fetch_object($resql)){
@@ -402,7 +458,7 @@ if (empty($search_fourninvoiceref)) {
 	        }
 	    }
 	}
-	
+
 	print '<table class="noborder" width="100%">';
 	print '<tr>';
 	print '<td align="right">';
