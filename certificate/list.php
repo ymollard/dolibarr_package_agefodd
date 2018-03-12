@@ -53,14 +53,18 @@ $search_trainning_name = GETPOST("search_trainning_name");
 $search_teacher_id = GETPOST("search_teacher_id");
 $search_training_ref = GETPOST("search_training_ref", 'alpha');
 $search_start_date = dol_mktime(0, 0, 0, GETPOST('search_start_datemonth', 'int'), GETPOST('search_start_dateday', 'int'), GETPOST('search_start_dateyear', 'int'));
+$search_start_date2 = dol_mktime(0, 0, 0, GETPOST('search_start_date2month', 'int'), GETPOST('search_start_date2day', 'int'), GETPOST('search_start_date2year', 'int'));
 $search_end_date = dol_mktime(0, 0, 0, GETPOST('search_end_datemonth', 'int'), GETPOST('search_end_dateday', 'int'), GETPOST('search_end_dateyear', 'int'));
+$search_end_date2 = dol_mktime(0, 0, 0, GETPOST('search_end_date2month', 'int'), GETPOST('search_end_date2day', 'int'), GETPOST('search_end_date2year', 'int'));
 $search_site = GETPOST("search_site");
 $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
 $search_certif_start_date = dol_mktime(0, 0, 0, GETPOST('search_certif_start_datemonth', 'int'), GETPOST('search_certif_start_dateday', 'int'), GETPOST('search_certif_start_dateyear', 'int'));
+$search_certif_start_date2 = dol_mktime(0, 0, 0, GETPOST('search_certif_start_date2month', 'int'), GETPOST('search_certif_start_date2day', 'int'), GETPOST('search_certif_start_date2year', 'int'));
 $search_certif_end_date = dol_mktime(0, 0, 0, GETPOST('search_certif_end_datemonth', 'int'), GETPOST('search_certif_end_dateday', 'int'), GETPOST('search_certif_end_dateyear', 'int'));
+$search_certif_end_date2 = dol_mktime(0, 0, 0, GETPOST('search_certif_end_date2month', 'int'), GETPOST('search_certif_end_date2day', 'int'), GETPOST('search_certif_end_date2year', 'int'));
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -69,12 +73,16 @@ if (GETPOST("button_removefilter_x")) {
 	$search_teacher_id = "";
 	$search_training_ref = '';
 	$search_start_date = "";
+	$search_start_date2 = "";
 	$search_end_date = "";
+	$search_end_date2 = "";
 	$search_site = "";
 	$search_training_ref_interne = "";
 	$search_type_session = "";
 	$search_certif_start_date = "";
+	$search_certif_start_date2 = "";
 	$search_certif_end_date = "";
+	$search_certif_end_date2 = "";
 }
 
 $filter = array ();
@@ -94,14 +102,26 @@ if (! empty($search_training_ref)) {
 if (! empty($search_start_date)) {
 	$filter ['s.dated'] = $db->idate($search_start_date);
 }
+if (! empty($search_start_date2)) {
+    $filter ['s.dated2'] = $db->idate($search_start_date2);
+}
 if (! empty($search_end_date)) {
-	$filter ['s.datef'] = $db->idate($search_end_date);
+    $filter ['s.datef'] =  $db->idate($search_end_date);
+}
+if (! empty($search_end_date)) {
+    $filter ['s.datef2'] =  $db->idate($search_end_date2);
 }
 if (! empty($search_certif_start_date)) {
     $filter ['certif.certif_dt_start'] = $db->idate($search_certif_start_date);
 }
+if (! empty($search_certif_start_date2)) {
+    $filter ['certif.certif_dt_start2'] = $db->idate($search_certif_start_date2);
+}
 if (! empty($search_certif_end_date)) {
     $filter ['certif.certif_dt_end'] = $db->idate($search_certif_end_date);
+}
+if (! empty($search_certif_end_date2)) {
+    $filter ['certif.certif_dt_end2'] = $db->idate($search_certif_end_date2);
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
@@ -222,26 +242,30 @@ if ($resql != - 1) {
 	// print $formAgefodd->
 	print '</td>';
 
-	print '<td class="liste_titre">';
-	print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
+	print '<td class="liste_titre">' . $langs->trans('From') . ' ';
+	print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form').'<BR>'.$langs->trans('to').' ';
+	print $form->select_date($search_start_date2, 'search_start_date2', 0, 0, 1, 'search_form');
+	print '</td>';
+
+	print '<td class="liste_titre">' . $langs->trans('From') . ' ';
+	print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form').'<BR>'.$langs->trans('to').' ';
+	print $form->select_date($search_end_date2, 'search_end_date2', 0, 0, 1, 'search_form');
 	print '</td>';
 
 	print '<td class="liste_titre">';
-	print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form');
 	print '</td>';
 
 	print '<td class="liste_titre">';
 	print '</td>';
 
-	print '<td class="liste_titre">';
+	print '<td class="liste_titre">' . $langs->trans('From') . ' ';
+	print $form->select_date($search_certif_start_date, 'search_certif_start_date', 0, 0, 1, 'search_form').'<BR>'.$langs->trans('to').' ';
+	print $form->select_date($search_certif_start_date2, 'search_certif_start_date2', 0, 0, 1, 'search_form');
 	print '</td>';
 
-	print '<td class="liste_titre">';
-	print $form->select_date($search_certif_start_date, 'search_certif_start_date', 0, 0, 1, 'search_form');
-	print '</td>';
-
-	print '<td class="liste_titre">';
-	print $form->select_date($search_certif_end_date, 'search_certif_end_date', 0, 0, 1, 'search_form');
+	print '<td class="liste_titre">' . $langs->trans('From') . ' ';
+	print $form->select_date($search_certif_end_date, 'search_certif_end_date', 0, 0, 1, 'search_form').'<BR>'.$langs->trans('to').' ';
+	print $form->select_date($search_certif_end_date2, 'search_certif_end_date2', 0, 0, 1, 'search_form');
 	print '</td>';
 
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
