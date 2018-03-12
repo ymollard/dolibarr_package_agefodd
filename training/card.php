@@ -273,6 +273,33 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 }
 
 /*
+ * Action ajax_obj_update (objectif pedagogique)
+ */
+if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
+    $newObjectifs = GETPOST('pedago');
+    
+    $agf_peda = new Agefodd($db);
+    $result_peda = $agf_peda->fetch_objpeda_per_formation($id);
+    
+    foreach ($agf_peda->lines as $line){
+        $agf_peda->remove_objpeda($line->id);
+    }
+    if (!empty($newObjectifs)){
+        foreach ($newObjectifs as $objectif){
+            //$agf = new Agefodd($db);
+            
+            $agf_peda->intitule = $objectif['intitule'];
+            $agf_peda->priorite = (int) $objectif['priorite'];
+            $agf_peda->fk_formation_catalogue = $id;
+            
+            $result = $agf_peda->create_objpeda($user);
+            
+        }
+    }
+    
+}
+
+/*
  * Action create (objectif pedagogique)
  */
 
@@ -1030,10 +1057,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print "</table>";
-				
-				print '<div class="tabsAction">';
-				print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('Modify') . '</a>';
-				print '</div>';
+				if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
+    				print '<div class="tabsAction">';
+    				print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('Modify') . '</a>';
+    				print '</div>';
+				}
 				?>
 				<script>
 				$(document).ready(function() {
@@ -1043,7 +1071,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					});
 
 					function listepedago(){
-						console.log('love');
+						
 						if($('#pedagoModal').length==0) {
 							$('body').append('<div id="pedagoModal" title="<?php echo $langs->transnoentities('AgfObjPeda'); ?>"></div>');
 						}
@@ -1057,13 +1085,12 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
                             ,method:"post"
                             ,dataType:'json'
                         }).done(function(data) {
-                            console.log(data);
                         	$('#pedagoModal').html(data.form);
                         });
 						
 						$('#pedagoModal').dialog({
 							modal:true,
-							width:'80%'
+							width:'50%'
 						});
 
 					}
