@@ -273,6 +273,33 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 }
 
 /*
+ * Action ajax_obj_update (objectif pedagogique)
+ */
+if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
+    $newObjectifs = GETPOST('pedago');
+    
+    $agf_peda = new Agefodd($db);
+    $result_peda = $agf_peda->fetch_objpeda_per_formation($id);
+    
+    foreach ($agf_peda->lines as $line){
+        $agf_peda->remove_objpeda($line->id);
+    }
+    if (!empty($newObjectifs)){
+        foreach ($newObjectifs as $objectif){
+            //$agf = new Agefodd($db);
+            
+            $agf_peda->intitule = $objectif['intitule'];
+            $agf_peda->priorite = (int) $objectif['priorite'];
+            $agf_peda->fk_formation_catalogue = $id;
+            
+            $result = $agf_peda->create_objpeda($user);
+            
+        }
+    }
+    
+}
+
+/*
  * Action create (objectif pedagogique)
  */
 
@@ -1030,7 +1057,46 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print "</table>";
+				if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
+    				print '<div class="tabsAction">';
+    				print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('Modify') . '</a>';
+    				print '</div>';
+				}
+				?>
+				<script>
+				$(document).ready(function() {
+					$('#modifyPedago').click(function(e) {
+						e.preventDefault();
+						listepedago();
+					});
 
+					function listepedago(){
+						
+						if($('#pedagoModal').length==0) {
+							$('body').append('<div id="pedagoModal" title="<?php echo $langs->transnoentities('AgfObjPeda'); ?>"></div>');
+						}
+						
+						$.ajax({
+                            url : "<?php echo dol_buildpath('/agefodd/scripts/pedagoajax.php',1); ?>"
+                            ,data:{
+                                put: 'printform'
+                                ,idTraining: '<?php echo $id; ?>'
+                            }
+                            ,method:"post"
+                            ,dataType:'json'
+                        }).done(function(data) {
+                        	$('#pedagoModal').html(data.form);
+                        });
+						
+						$('#pedagoModal').dialog({
+							modal:true,
+							width:'50%'
+						});
+
+					}
+				});
+				</script>
+				<?php
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
