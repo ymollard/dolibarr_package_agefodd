@@ -170,7 +170,7 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfCertifLabel"), $_SERVEUR ['PHP_SELF'], 'certif.certif_label', '', $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfCertifDateSt"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_start", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateWarning"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateWarning").' '.$form->textwithpicto('', $langs->trans("AgfCertifLegend"), 1, 'help'), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
 	print "</tr>\n";
 	//AgfCertificateValidity
 	// Search bar
