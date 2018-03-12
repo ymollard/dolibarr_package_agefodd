@@ -880,14 +880,12 @@ class FormAgefodd extends Form
 	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $returntype='', $multiselect = false) {
 		global $conf, $langs;
 
-		if($multiselect) {
-			$TSelectid = array();
-			if(is_array($selectid)) {
-				$TSelectid = $selectid;
-			}
-			else {
-				$TSelectid[] = $selectid;
-			}
+		$TSelectid = array();
+		if(is_array($selectid)) {
+			$TSelectid = $selectid;
+		}
+		else {
+			$TSelectid[] = $selectid;
 		}
 
 		$sql = "SELECT t.rowid, t.code ,t.intitule ";

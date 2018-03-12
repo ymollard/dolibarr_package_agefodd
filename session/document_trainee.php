@@ -594,10 +594,13 @@ if (! empty($id)) {
 				$formmail->clear_attached_files();
 				if ($action == 'presend_convocation_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+					$formmail->param['fileinit'] = $file;
 				} elseif ($action == 'presend_attestation_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+					$formmail->param['fileinit'] = $file;
 				} elseif ($action == 'presend_attestationendtraining_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+					$formmail->param['fileinit'] = $file;
 				}
 			}
 

@@ -88,13 +88,15 @@ INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, 
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
 (1,'ENV', 'Envisagée', 1, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
-(2,'CONF', 'Confirmée client', 1, 1, '2013-01-01 00:00:00' );
+(2,'CONF', 'Confirmée client', 2, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
-(3,'NOT', 'Non réalisée', 1, 1, '2013-01-01 00:00:00' );
+(3,'NOT', 'Non réalisée', 6, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
-(4,'ARCH', 'Archivée', 1, 1, '2013-01-01 00:00:00' );
+(4,'ARCH', 'Archivée', 7, 1, '2013-01-01 00:00:00' );
 INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
-(5,'DONE', 'Réalisée', 1, 1, '2013-01-01 00:00:00' );
+(5,'DONE', 'Réalisée', 5, 1, '2013-01-01 00:00:00' );
+INSERT INTO llx_agefodd_session_status_type (rowid,code, intitule, sort, active, tms) VALUES
+(6,'ONGOING', 'En cours', 4, 1, '2013-01-01 00:00:00' );
 
 
 INSERT INTO llx_agefodd_formation_catalogue_type_bpf (rowid,code,intitule,sort,active,tms) VALUES
