@@ -84,9 +84,9 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		if (! empty($conf->global->AGF_USE_REAL_HOURS) && $agfsta->status_in_session !== GETPOST('stagiaire_session_status', 'int') && GETPOST('stagiaire_session_status', 'int') == 4) {
 			$part = true;
 		}
-		
+
 		$agfsta->status_in_session = GETPOST('stagiaire_session_status', 'int');
-		
+
 		$agfsta->hour_foad = GETPOST('hour_foad', 'int');
 
 		if ($agfsta->update($user) > 0) {
@@ -191,6 +191,43 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 	}
 }
 
+if ($action=='remove_opcafksocOPCA'){
+
+	$agf = new Agsession($db);
+
+	$result = $agf->fetch(GETPOST('sessid', 'int'));
+
+	if ($result > 0) {
+
+		if ($agf->type_session == 1) {
+
+			$agfsta = new Agefodd_session_stagiaire($db);
+			$agfsta->fetch(GETPOST('stagerowid', 'int'));
+
+			$opca = new Agefodd_opca($db);
+			/*
+			 *  Test si les infos existent déjà
+			 * -> si OUI alors on update
+			 * -> si NON on crée l'entrée dans la table
+			 */
+			$rowid_opca_trainee = $opca->getOpcaForTraineeInSession(GETPOST('fk_soc_trainee', 'int'), GETPOST('sessid', 'int'), $agfsta->id);
+			if (!empty($rowid_opca_trainee)) {
+				$opca->id=$rowid_opca_trainee;
+				$result = $opca->delete($user);
+
+				if ($result > 0) {
+					Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $agf->id. '&modstagid='.GETPOST('modstagid', 'int'));
+					exit();
+				} else {
+					setEventMessage($agf->error, 'errors');
+				}
+			}
+		}
+	}else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
 /*
  * Action editrealhours
  */
@@ -232,7 +269,7 @@ if ($action == 'editrealhours') {
 	                $agf->create($user);
 	            }
 		    }
-		    
+
 		    $totalheures = array_sum($value);
 		    if (( float ) $dureeCalendrier == ( float ) $totalheures) {
 		        // stagiaire entièrement présent
@@ -252,7 +289,7 @@ if ($action == 'editrealhours') {
 		        $stagiaire->status_in_session = 5;
 		        $stagiaire->update($user);
 		    }
-		    
+
 		}
 	}
 	Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
@@ -373,6 +410,23 @@ if ($action == 'updatetraineestatus') {
 		}
 	}
 }
+
+if ($action == 'remove_fksocOPCA' && $user->rights->agefodd->modifier) {
+
+	$agf = new Agsession($db);
+	$result = $agf->fetch($id);
+	unset($agf->fk_soc_OPCA);
+	unset($agf->fk_socpeople_OPCA);
+	$result = $agf->update($user);
+
+	if ($result > 0) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
 
 /*
  * View
@@ -561,13 +615,13 @@ if (! empty($id)) {
     					} else {
     					    $val = 0;
     					}
-    
+
     					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
     				}
 				} else {
 				    print '<td align="center">'. (($i == 0) ? $langs->trans("AgfNoCalendar") : '') .'</td>';
 				}
-				
+
 				$total = $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id);
 				print '<td align="center">' . $total . '</td>';
 				print '</tr>';
@@ -689,6 +743,9 @@ if (! empty($id)) {
 								)
 						);
 						print $form->select_thirdparty_list($agf_opca->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 'SelectThirdParty', 1, 0, $events);
+						if (! empty($agf_opca->fk_soc_OPCA) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?sessid=' . $agf->id . '&amp;action=remove_opcafksocOPCA&amp;stagerowid='.$stagiaires->lines[$i]->stagerowid.'&amp;fk_soc_trainee='.$stagiaires->lines[$i]->socid.'&amp;modstagid='.$stagiaires->lines[$i]->id.'">' . img_delete($langs->trans('Delete')) . '</a>';
+						}
 						print '</td></tr>';
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
@@ -1015,7 +1072,9 @@ if (! empty($id)) {
 						)
 				);
 				print $form->select_thirdparty_list($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))', 'SelectThirdParty', 1, 0, $events);
-
+				if (! empty($agf->fk_soc_OPCA) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
+					print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_fksocOPCA">' . img_delete($langs->trans('Delete')) . '</a>';
+				}
 				// Print biller choice;
 				$socbiller = new Societe($db);
 				$socbiller->fetch($agf->fk_soc);

@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.0.18';
+		$this->version = '3.0.19';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -1736,6 +1736,20 @@ class modAgefodd extends DolibarrModules
 				'type' => 'left',
 				'titre' => 'AgfMenuSessDoneList',
 				'url' => '/agefodd/session/list.php?search_session_status=5&leftmenu=AgfMenuSessList',
+				'langs' => 'agefodd@agefodd',
+				'position' => 200 + $r,
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'perms' => '$user->rights->agefodd->lire',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu[$r] = array(
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSessList',
+				'type' => 'left',
+				'titre' => 'AgfMenuSessOnGoingList',
+				'url' => '/agefodd/session/list.php?search_session_status=6&leftmenu=AgfMenuSessList',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',

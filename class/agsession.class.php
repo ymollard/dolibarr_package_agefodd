@@ -4356,8 +4356,18 @@ class Agsession extends CommonObject
 				if (! empty($propal->id) && is_array($propal->lines) && count($propal->lines) > 0) {
 					foreach ( $propal->lines as $line ) {
 						if ($line->fk_product == $product->id) {
-							$amount = $line->total_ht;
-							$invoice->lines[0]->qty = 1;
+							if (empty($conf->global->AGF_INVOICE_BY_QTY)) {
+								$amount = $line->total_ht;
+								$invoice->lines[0]->qty = 1;
+							} else {
+								$amount = $line->total_ht / $line->qty;
+								$invoice->lines[0]->qty = $line->qty;
+								
+								if (!empty($line->remise_percent)) {
+									$invoice->lines[0]->remise_percent=$line->remise_percent;
+									$amount=$line->subprice;
+								}
+							}
 
 							dol_syslog(get_class($this) . "::createInvoice from propal amount=" . $amount, LOG_DEBUG);
 						}
