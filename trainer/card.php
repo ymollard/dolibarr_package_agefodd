@@ -283,9 +283,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				if ($action == 'active')
 					$value = 0;
 
-				$ret = $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
-				if ($ret == 'html')
-					print '<br>';
+				print $form->formconfirm($_SERVER['PHP_SELF'] . "?arch=" . $value . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 			}
 
 			print '<form name="create_contact" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
@@ -392,12 +390,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				print '</td>';
 				print '</tr>';
 			}
-			
+
 			// Trainer type
 			print '<tr><td>'.$langs->trans('AgfTrainerNature').'</td>';
 			print '<td>'.$langs->trans('AgfTrainerType'.ucfirst($agf->type_trainer)).'</td>';
 			print '</tr>';
-			
+
 			// See trainer
 			if ($agf->type_trainer == $agf->type_trainer_def[1]) {
 			    if ($user->rights->societe->contact->creer) {
@@ -432,7 +430,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'editcategory' && $action != 'edittraining') {
-	
+
 	if ($user->rights->agefodd->creer) {
 		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {

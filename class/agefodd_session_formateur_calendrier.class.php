@@ -550,7 +550,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$error ++;
 		}
 
-		$action->label = $session->formintitule . '(' . $session->formref . ')';
+		$action->label = $session->formintitule . '(' . $session->formref . ')'.'('.$session->id.')';
 		$action->location = $session->placecode;
 		$action->datep = $this->heured;
 		$action->datef = $this->heuref;
@@ -574,6 +574,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 						)
 				);
 				$action->userownerid = $formateur->fk_user;
+				$action->userassigned = array($formateur->fk_user);
 			}
 		} else {
 			$contactstat = new Contact($this->db);
@@ -591,7 +592,13 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 
 		if ($error == 0) {
 
-			$result = $action->add($user);
+
+			if (method_exists($action, 'create')) {
+				$result = $action->create($user);
+			} else {
+				//For backward compatibility
+				$result = $action->add($user);
+			}
 
 			if ($result < 0) {
 				$error ++;
