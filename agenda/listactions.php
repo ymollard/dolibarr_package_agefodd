@@ -75,8 +75,10 @@ $filter_commercial = GETPOST('commercial', 'int');
 $filter_customer = GETPOST('fk_soc', 'int');
 $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
+$filter_trainee = GETPOST('traineeid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
 $filter_location = GETPOST('location', 'int');
+$filter_session_status=GETPOST('search_session_status','array');
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
 }
@@ -88,6 +90,9 @@ if ($filter_contact == - 1) {
 }
 if ($filter_trainer == - 1) {
 	$filter_trainer = 0;
+}
+if ($filter_trainee == -1) {
+	$filter_trainee=0;
 }
 if ($filter_type_session == - 1) {
 	$filter_type_session = '';
@@ -205,7 +210,15 @@ if ($filter_location != - 1) {
 if (! empty($filter_trainer)) {
 	$param .= '&trainerid=' . $filter_trainer;
 }
+if (! empty($filter_trainee)) {
+	$param .= '&traineeid=' . $filter_trainee;
+}
+if (is_array($filter_session_status) && count($filter_session_status)>0){
+	foreach($filter_session_status as $val) {
+		$param .= '&search_session_status[]=' . $val;
+	}
 
+}
 if (! empty($filterdatestart))
 	$param .= "&dt_start_filtermonth=" . GETPOST('dt_start_filtermonth', 'int') . '&dt_start_filterday=' . GETPOST('dt_start_filterday', 'int') . '&dt_start_filteryear=' . GETPOST('dt_start_filteryear', 'int');
 if (! empty($filterdatesend))
@@ -264,6 +277,9 @@ if (! empty($filter_trainer)) {
 	}
 	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
+if (! empty($filter_trainee)) {
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as trainee_session ON agf.rowid = trainee_session.fk_session_agefodd ';
+}
 $sql .= " WHERE c.id = a.fk_action";
 $sql .= ' AND a.fk_user_author = u.rowid';
 $sql .= ' AND a.entity IN (' . getEntity('agefodd'/*'session'*/) . ')'; // To limit to entity
@@ -319,6 +335,12 @@ if ($filter_type_session != '') {
 if (! empty($filter_location)) {
 	$sql .= " AND agf.fk_session_place=" . $filter_location;
 }
+if (! empty($filter_session_status)) {
+	$sql .= " AND agf.status IN (" . implode(',',$filter_session_status).")";
+}
+if (! empty($filter_trainee)) {
+	$sql .= " AND trainee_session.fk_stagiaire=".$filter_trainee;
+}
 $sql .= $db->order($sortfield, $sortorder);
 $sql .= $db->plimit($limit + 1, $offset);
 // print $sql;
@@ -349,7 +371,7 @@ if ($resql) {
 	$head = agf_calendars_prepare_head($paramnoaction);
 
 	dol_fiche_head($head, 'cardlist', $langs->trans('AgfMenuAgenda'), 0, $picto);
-	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location);
+	$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, $filterdatesend, $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status,$filter_trainee);
 	dol_fiche_end();
 
 	// Add link to show birthdays

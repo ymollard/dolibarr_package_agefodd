@@ -88,6 +88,8 @@ $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
 $filter_location = GETPOST('location', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
+$filter_trainee = GETPOST('traineeid', 'int');
+$filter_session_status=GETPOST('search_session_status','array');
 
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
@@ -129,6 +131,9 @@ if ($filter_type_session == - 1) {
 }
 if ($filter_location == - 1) {
 	$filter_location = '';
+}
+if ($filter_trainee == -1) {
+	$filter_trainee=0;
 }
 
 $onlysession = GETPOST('onlysession', 'int');
@@ -300,7 +305,15 @@ if (!empty($filter_type_session)) {
 if (!empty($filter_location)) {
 	$param .= "&amp;location=" . $filter_location;
 }
+if (! empty($filter_trainee)) {
+	$param .= '&traineeid=' . $filter_trainee;
+}
+if (is_array($filter_session_status) && count($filter_session_status)>0){
+	foreach($filter_session_status as $val) {
+		$param .= '&search_session_status[]=' . $val;
+	}
 
+}
 $param .= "&amp;maxprint=" . $maxprint;
 
 $prev = dol_get_first_day_week($day, $month, $year);
@@ -363,7 +376,7 @@ $paramnoaction = preg_replace('/action=[a-z_]+/', '', $param);
 $head = agf_calendars_prepare_head($paramnoaction);
 
 dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status,$filter_trainee);
 dol_fiche_end();
 
 $showextcals = $listofextcals;
@@ -416,6 +429,9 @@ if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 		$sql .= " AND ca.code='AC_AGF_SESST' ";
 	}
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON trainercal.fk_agefodd_session_formateur = trainer_session.rowid ";
+}
+if (! empty($filter_trainee)) {
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as trainee_session ON agf.rowid = trainee_session.fk_session_agefodd ';
 }
 $sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 
@@ -482,7 +498,12 @@ if (! empty($filter_location)) {
 if (! empty($filterdatestart)) {
 	$sql .= ' AND a.datep>=\'' . $db->idate($filterdatestart) . '\'';
 }
-
+if (! empty($filter_session_status)) {
+	$sql .= " AND agf.status IN (" . implode(',',$filter_session_status).")";
+}
+if (! empty($filter_trainee)) {
+	$sql .= " AND trainee_session.fk_stagiaire=".$filter_trainee;
+}
 // Sort on date
 $sql .= ' ORDER BY datep';
 // print $sql;

@@ -54,6 +54,7 @@ $filter_commercial = GETPOST('commercial', 'int');
 $filter_customer = GETPOST('fk_soc', 'int');
 $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
+$filter_trainee = GETPOST('traineeid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
 $filter_location = GETPOST('location', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
@@ -76,6 +77,9 @@ if ($filter_type_session == - 1) {
 }
 if ($filter_location == - 1) {
 	$filter_location = '';
+}
+if ($filter_trainee == -1) {
+	$filter_trainee=0;
 }
 $type = GETPOST('type');
 $sortfield = GETPOST("sortfield", 'alpha');
@@ -282,6 +286,9 @@ if ($filter_contact) {
 if ($filter_trainer) {
 	$param .= "&trainerid=" . $filter_trainer;
 }
+if ($filter_trainee) {
+	$param .= "&traineeid=" . $filter_trainee;
+}
 if ($type) {
 	$param .= "&type=" . $type;
 }
@@ -380,7 +387,7 @@ $paramnoaction=preg_replace('/action=[a-z_]+/','',$param);
 
 $head = agf_calendars_prepare_head($paramnoaction);
 dol_fiche_head($head, $tabactive, $langs->trans('AgfMenuAgenda'), 0, $picto);
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, '', '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status,$filter_trainee);
 dol_fiche_end();
 
 $link = '';
@@ -434,6 +441,9 @@ if (! empty($filter_trainer)) {
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON trainercal.fk_agefodd_session_formateur = trainer_session.rowid ";
 	}
 	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
+}
+if (! empty($filter_trainee)) {
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as trainee_session ON agf.rowid = trainee_session.fk_session_agefodd ';
 }
 
 $sql .= ' WHERE agf.entity IN (' . getEntity('agefodd') . ')';
@@ -500,6 +510,9 @@ if (! empty($filter_location)) {
 }
 if (! empty($filter_session_status)) {
 	$sql .= " AND agf.status IN (" . implode(',',$filter_session_status).")";
+}
+if (! empty($filter_trainee)) {
+	$sql .= " AND trainee_session.fk_stagiaire=".$filter_trainee;
 }
 
 // Sort on date
