@@ -449,11 +449,10 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 					$ishtml = $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING ? 1 : 0;
 					$programme_array = array ();
 					foreach ( $object_modules->lines as $line_chapter ) {
-						$programme_array[] = $line_chapter->title;
+						$programme_array[] = '&bull; '.$line_chapter->title;
 					}
 					if (count($programme_array) > 0) {
-						$programme = '  ' . chr(149) . ' ';
-						$programme .= implode('  ' . chr(149) . ' ', $programme_array);
+						$programme .= implode('<br />', $programme_array);
 					}
 				} else {
 					$programme = $agf->programme;

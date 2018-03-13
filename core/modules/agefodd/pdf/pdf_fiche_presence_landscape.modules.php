@@ -194,6 +194,9 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs, $tplidx) {
 		global $user, $langs, $conf, $mysoc;
 
+		$height_for_footer = 20;
+		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
+			
 		// New page
 		$pdf->AddPage();
 		if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -533,7 +536,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			}
 
 			$posY = $pdf->GetY();
-			if ($posY > $this->page_hauteur - 20) {
+			if ($posY > $this->page_hauteur - $height_for_footer) {
 				$pdf->AddPage();
 				$pagenb ++;
 				$posY = $this->marge_haute;
@@ -663,7 +666,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			}
 
 			$posY = $pdf->GetY();
-			if ($posY > $this->page_hauteur - 20) {
+			if ($posY > $this->page_hauteur - $height_for_footer) {
 				$pdf->AddPage();
 				$pagenb ++;
 				$posY = $this->marge_haute;

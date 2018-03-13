@@ -298,8 +298,25 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
 				if (strpos($key, 'date') || strpos($key, 'certif_dt')) // To allow $filter['YEAR(s.dated)']=>$year
-{
-					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+                {
+                    if($key == "s.dated"){
+                        if(!empty($filter['s.dated2'])) $sql .= ' AND ' . $key .' BETWEEN \'' . $value . '\' AND \'' . $filter['s.dated2'] . '\'';
+                        else $sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+                    }
+                    if($key == "s.datef"){
+                        if(!empty($filter['s.datef2'])) $sql .= ' AND ' . $key .' BETWEEN \'' . $value . '\' AND \'' . $filter['s.datef2'] . '\'';
+                        else $sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+                    }
+                    if($key == 'certif.certif_dt_start'){
+                        if(!empty($filter['certif.certif_dt_start2'])) $sql .= ' AND ' . $key .' BETWEEN \'' . $value . '\' AND \'' . $filter['certif.certif_dt_start2'] . '\'';
+                        else $sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+                    }
+                    if($key == 'certif.certif_dt_end'){
+                        if(!empty($filter['certif.certif_dt_end2'])) $sql .= ' AND ' . $key .' BETWEEN \'' . $value . '\' AND \'' . $filter['certif.certif_dt_end2'] . '\'';
+                        else $sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+                    }
+                    
+					
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {

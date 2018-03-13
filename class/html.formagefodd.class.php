@@ -1244,7 +1244,7 @@ class FormAgefodd extends Form
 		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
 
 		$action_arr = ActionComm::getActions($this->db, $socid, $object->id, $typeelement);
-		
+
 		// On récupère les événements liés aux factures elles mêmes liées à la session de formation
 		$agf = new Agefodd_session_element($this->db);
 		$result = $agf->fetch_by_session_by_thirdparty($object->id, $socid, 'invoice');
@@ -1256,7 +1256,7 @@ class FormAgefodd extends Form
 				}
 			}
 		}
-		
+
 		// On récupère les événements liés aux propales elles mêmes liées à la session de formation
 		$result = $agf->fetch_by_session_by_thirdparty($object->id, $socid, 'propal');
 		if(!empty($agf->lines)) {
@@ -1267,7 +1267,7 @@ class FormAgefodd extends Form
 				}
 			}
 		}
-		
+
 		$num = count($action_arr);
 		if ($num) {
 			if ($typeelement == 'agefodd_agsession')
@@ -1363,7 +1363,7 @@ class FormAgefodd extends Form
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action='',$filter_session_status='') {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action='',$filter_session_status='',$filter_trainee=0) {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1441,6 +1441,13 @@ class FormAgefodd extends Form
 			print $langs->trans("or") . ' ' . $langs->trans("AgfFormateur");
 			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 			print $this->select_formateur($filter_trainer, "trainerid", '', 1);
+			print '</td></tr>';
+
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans("or") . ' ' . $langs->trans("AgfParticipant");
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
+			print $this->select_stagiaire($filter_trainee, "traineeid", '', 1);
 			print '</td></tr>';
 
 			print '<tr>';

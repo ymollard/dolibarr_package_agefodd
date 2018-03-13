@@ -273,6 +273,33 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 }
 
 /*
+ * Action ajax_obj_update (objectif pedagogique)
+ */
+if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
+    $newObjectifs = GETPOST('pedago');
+    
+    $agf_peda = new Agefodd($db);
+    $result_peda = $agf_peda->fetch_objpeda_per_formation($id);
+    
+    foreach ($agf_peda->lines as $line){
+        $agf_peda->remove_objpeda($line->id);
+    }
+    if (!empty($newObjectifs)){
+        foreach ($newObjectifs as $objectif){
+            //$agf = new Agefodd($db);
+            
+            $agf_peda->intitule = $objectif['intitule'];
+            $agf_peda->priorite = (int) $objectif['priorite'];
+            $agf_peda->fk_formation_catalogue = $id;
+            
+            $result = $agf_peda->create_objpeda($user);
+            
+        }
+    }
+    
+}
+
+/*
  * Action create (objectif pedagogique)
  */
 
@@ -735,68 +762,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '</table>';
 				print '</form>';
 
-				// Affichage des objectifs pedagogiques
-				print_barre_liste($langs->trans("AgfObjPeda"), "", "", "", "", "", '', 0);
-
-				print '<div class="tabBar">';
-				print '<form name="obj_peda" id="obj_peda" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
-				print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
-				print '<input type="hidden" name="action" value="obj_update">' . "\n";
-				print '<input type="hidden" name="idforma" value="' . $id . '">' . "\n";
-				print '<table class="border" width="100%">';
-				print '<tr>';
-				if (count($agf_peda->lines) > 0) {
-					print '<td align="center" width="50">' . $langs->trans("AgfObjPoids") . '</td>';
-					print '<td>' . $langs->trans("AgfObjDesc") . '</td>';
-				} elseif (empty($objc)) {
-					print '<td width="10%" colspan="2">' . $langs->trans("AgfNoObj") . '</td>';
-				}
-				print '<td>';
-				if (empty($objc) && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-					print '&nbsp;<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $agf->id . '&amp;objc=1&objpedamodif=1">';
-					print img_edit_add($langs->trans("AgfNewObjAdd")) . "</a>";
-				}
-				print '</td>';
-				print '</tr>';
-
-				foreach ( $agf_peda->lines as $line ) {
-					print '<tr><td align="center" width="40">' . "\n";
-					print '<input name="priorite_' . $line->id . '" class="flat" size="4" value="' . $line->priorite . '"></td>';
-
-					print '<td width="400"><input name="intitule_' . $line->id . '" class="flat" size="50" value="' . stripslashes($line->intitule) . '"></td>' . "\n";
-
-					print "<td>";
-
-					if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=obj_update&idforma=' . $id . '&objpedaid=' . $line->id . '&obj_remove_x=1">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
-					}
-
-					print '</tr>' . "\n";
-					$priorite = $line->priorite;
-				}
-				if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-					print '<tr><td colspan="3">';
-					print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="obj_update" alt="' . $langs->trans("AgfModSave") . '">';
-					print '</td></tr>';
-				}
-
-				// New Objectif peda line
-				if (! empty($objc)) {
-					print '<table class="border" width="100%">';
-					$priorite ++;
-					print '<tr><td align="center" width="40">' . "\n";
-					print '<input name="priorite_new" id="priorite_new" class="flat" size="4" value="' . $priorite . '"></td>';
-					print '<td width="400"><input name="intitule_new" class="flat" size="50"></td>' . "\n";
-					print "<td>";
-					if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-						print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="obj_add" alt="' . $langs->trans("AgfNewObjAdd") . '">';
-					}
-					print '</td></tr>' . "\n";
-				}
-				print '</table>' . "\n";
-				print '</form>' . "\n";
-
-				print '</div>' . "\n";
 			} else {
 				/*
 				 * Display
@@ -1030,7 +995,46 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print "</table>";
+				if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
+    				print '<div class="tabsAction">';
+    				print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('Modify') . '</a>';
+    				print '</div>';
+				}
+				?>
+				<script>
+				$(document).ready(function() {
+					$('#modifyPedago').click(function(e) {
+						e.preventDefault();
+						listepedago();
+					});
 
+					function listepedago(){
+						
+						if($('#pedagoModal').length==0) {
+							$('body').append('<div id="pedagoModal" title="<?php echo $langs->transnoentities('AgfObjPeda'); ?>"></div>');
+						}
+						
+						$.ajax({
+                            url : "<?php echo dol_buildpath('/agefodd/scripts/pedagoajax.php',1); ?>"
+                            ,data:{
+                                put: 'printform'
+                                ,idTraining: '<?php echo $id; ?>'
+                            }
+                            ,method:"post"
+                            ,dataType:'json'
+                        }).done(function(data) {
+                        	$('#pedagoModal').html(data.form);
+                        });
+						
+						$('#pedagoModal').dialog({
+							modal:true,
+							width:'50%'
+						});
+
+					}
+				});
+				</script>
+				<?php
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
