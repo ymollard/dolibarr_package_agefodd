@@ -93,6 +93,11 @@ if (! $sortfield) $sortfield="a.datec";
 
 $canedit = 1;
 
+if ($user->rights->agefodd->agendatrainer && ! $user->rights->agefodd->agenda) {
+	header("Location: ".dol_buildpath('/agefodd/agenda/pertrainer.php', 1));
+	exit;
+}
+
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
 

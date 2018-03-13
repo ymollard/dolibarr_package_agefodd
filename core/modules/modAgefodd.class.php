@@ -2062,10 +2062,10 @@ class modAgefodd extends DolibarrModules
 				'type' => 'left',
 				'titre' => 'AgfMenuAgenda',
 				'leftmenu' => 'AgfMenuAgenda',
-				'url' => '',
+				'url' => '/agefodd/agenda/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 700 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && ($user->rights->agefodd->lire || && $user->rights->agefodd->agendatrainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 2
