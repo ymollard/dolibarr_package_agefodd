@@ -1282,3 +1282,4 @@ AgfDisplayBirthDateFichePres=Afficher la date de naissance dans les fiche de pr�
 AgfInvoiceCalcAmountDivByQty=Pour les factures crée depuis le module, le montant est divisé par la quantité du devis
 AgfStatusSession_ONGOING=En cours
 AgfMenuSessOnGoingList=Sessions en cours
+AgfCertifLegend=vert = délai d'alerte non-dépassé <br> orange = délai d'alerte dépassé <br> rouge = certificat invalide
