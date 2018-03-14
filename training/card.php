@@ -616,7 +616,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 		$head = training_prepare_head($agf);
 
 		dol_fiche_head($head, 'card', $langs->trans("AgfCatalogDetail"), 0, 'label');
-
+		
 		if ($result) {
 
 			$agf_peda = new Agefodd($db);
@@ -766,7 +766,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				/*
 				 * Display
 				 */
-
+			    dol_agefodd_banner_tab($agf, $id);
 				// confirm delete
 				if ($action == 'delete') {
 					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
@@ -788,7 +788,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print '<table class="border" width="100%">';
-
+/*
 				print "<tr>";
 				print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
 				print $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id');
@@ -799,7 +799,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
 				print $agf->ref_obj . '</td></tr>';
-
+*/
 				print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
 				print $agf->ref_interne . '</td></tr>';
 

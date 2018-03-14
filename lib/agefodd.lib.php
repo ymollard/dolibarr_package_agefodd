@@ -1481,3 +1481,44 @@ function printSessionFieldsWithCustomOrder() {
 		}
 	}
 }
+
+function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fieldid='rowid', $fieldref='ref', $morehtmlref='', $moreparam='', $nodbprefix=0, $morehtmlleft='', $morehtmlstatus='', $onlybanner=0, $morehtmlright='')
+{
+    global $conf, $form, $user, $langs;
+    
+    $error = 0;
+    
+    $maxvisiblephotos=1;
+    $showimage=1;
+    $modulepart="product";
+    
+    if ($showimage)
+    {
+        if (!empty($object->element)){
+            $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
+            $phototoshow = $form->showphoto($modulepart,$object,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+            $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
+            $morehtmlleft.=$phototoshow;
+            $morehtmlleft.='</div>';
+
+        }
+    }
+    
+    // libstatut
+    if ($object->element == 'agefodd_formation_catalogue'){
+        $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
+    }
+    
+    // Other infos
+    if ($object->element == 'agefodd_formation_catalogue'){
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.=$object->intitule . '<br>' . $object->ref_obj;
+        $morehtmlref.='</div>';
+    }
+    
+    print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
+    print $form->showrefnav($object, 'id', $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
+    print '</div><br>';
+    print '<div class="underrefbanner clearboth"></div>';
+    print '<div class="underbanner clearboth"></div>';
+}

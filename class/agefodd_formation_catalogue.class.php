@@ -1251,6 +1251,29 @@ class Agefodd extends CommonObject {
     		return -1;
     	}
     }
+    
+    function getLibStatut($mode = 0){
+        global $langs;
+        
+        if($this->archive){
+            $picto = 'statut5';
+            $statut = $langs->trans("AgfCatArchivee");            
+        } else {
+            $picto = 'statut4';
+            $statut = $langs->trans("AgfCatActive");
+        }
+        
+        switch ($mode){
+            case 0 :
+                return img_picto('', $picto);
+                break;
+            case 1 :
+                return img_picto('', $picto) . "&nbsp;" . $statut;
+                break;
+            default:
+                return img_picto('', $picto);
+        }
+    }
 }
 class AgfObjPedaLine {
 	public $id;
