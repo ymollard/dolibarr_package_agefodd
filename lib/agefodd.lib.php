@@ -1517,8 +1517,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     }
     
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
-    print $form->showrefnav($object, 'id', $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
+    print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
     print '</div><br>';
     print '<div class="underrefbanner clearboth"></div>';
-    print '<div class="underbanner clearboth"></div>';
+    //print '<div class="underbanner clearboth"></div>';
 }

@@ -766,7 +766,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				/*
 				 * Display
 				 */
-			    dol_agefodd_banner_tab($agf, $id);
+			    dol_agefodd_banner_tab($agf, 'id');
+			    print '<div class="underbanner clearboth"></div>';
 				// confirm delete
 				if ($action == 'delete') {
 					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
