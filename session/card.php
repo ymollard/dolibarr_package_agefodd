@@ -858,7 +858,7 @@ printSessionFieldsWithCustomOrder();
 				}
 
 				dol_fiche_head($head, 'card', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
-
+				
 				$agf_fact = new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
 				$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -1150,6 +1150,10 @@ printSessionFieldsWithCustomOrder();
 					printSessionFieldsWithCustomOrder();
 				} else {
 					// Display view mode
+					
+				    dol_agefodd_banner_tab($agf, 'id');
+				    print '<div class="underbanner clearboth"></div>';
+				    
 					/*
 					 * Confirm delete
 					 */

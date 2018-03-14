@@ -4735,6 +4735,32 @@ class Agsession extends CommonObject
 			return 1;
 		}
 	}
+	
+	function getLibStatut($mode = 0){
+	    global $langs, $db;
+	    
+	    $sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
+	    
+	    $res = $db->query($sql);
+	    $TStatut = array();
+	    
+	    if($res){
+	        while($obj = $db->fetch_object($res)){
+	            $TStatut[$obj->rowid] = $obj->code;
+	        }
+	    }
+
+	    switch ($mode){
+	        case 0 :
+	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
+	            break;
+	        case 1 :
+	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . img_picto('', 'status'.$this->status);
+	            break;
+	        default:
+	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
+	    }
+	}
 
 	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {
 

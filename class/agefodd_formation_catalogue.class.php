@@ -1241,13 +1241,13 @@ class Agefodd extends CommonObject {
         
         switch ($mode){
             case 0 :
-                return img_picto('', $picto);
+                return $statut;
                 break;
             case 1 :
-                return img_picto('', $picto) . "&nbsp;" . $statut;
+                return $statut . "&nbsp;" . img_picto('', $picto);
                 break;
             default:
-                return img_picto('', $picto);
+                return $statut . "&nbsp;" . img_picto('', $picto);
         }
     }
 }

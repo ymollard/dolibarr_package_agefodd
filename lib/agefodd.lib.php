@@ -1488,13 +1488,16 @@ function printSessionFieldsWithCustomOrder() {
 
 function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fieldid='rowid', $fieldref='ref', $morehtmlref='', $moreparam='', $nodbprefix=0, $morehtmlleft='', $morehtmlstatus='', $onlybanner=0, $morehtmlright='')
 {
-    global $conf, $form, $user, $langs;
+    global $conf, $form, $user, $langs, $db;
+    
+    dol_include_once('/agefodd/class/html.formagefodd.class.php');
+    $formAgefodd = new FormAgefodd($db);
     
     $error = 0;
     
     $maxvisiblephotos=1;
     $showimage=1;
-    $modulepart="product";
+    $modulepart="agefodd";
     
     if ($showimage)
     {
@@ -1510,14 +1513,45 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     
     // libstatut
     if ($object->element == 'agefodd_formation_catalogue'){
+        
         $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
+        
+    } elseif ($object->element == 'agefodd_agsession'){
+        
+        $morehtmlstatus.='<div align="right"><span class="statusrefsell">'.$object->getLibStatut(1).'</span></div>';
+        $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
+        
     }
     
     // Other infos
     if ($object->element == 'agefodd_formation_catalogue'){
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/training/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        
         $morehtmlref.='<div class="refidno">';
-        $morehtmlref.=$object->intitule . '<br>' . $object->ref_obj;
+        $morehtmlref.= $langs->trans("AgfFormIntitule") . ' : ' . $object->intitule . '<br>';
+        $morehtmlref.= $langs->trans("AgfFormRef") . ' : ' . $object->ref_obj;
         if(!empty($object->ref_interne)) $morehtmlref .= '<br>' . $object->ref_interne;
+        $morehtmlref.='</div>';
+        
+    }  elseif ($object->element == 'agefodd_agsession'){
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.= $object->formintitule;
+        
+        if (!empty($object->fk_soc)){
+            dol_include_once('/societe/class/societe.class.php');
+            $soc = new Societe($db);
+            $soc->fetch($object->fk_soc);
+            $morehtmlref .= '<br>' . $langs->trans("Customer") . ' : ' .$soc->getNomUrl(1);
+        }
+        
+        if (!empty($object->placeid)){
+            $morehtmlref .= '<br>'. $langs->trans("AgfLieu") . ' : ';
+            $morehtmlref .= '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->placeid . '">' . $object->placecode . '</a>';
+        }
+        
         $morehtmlref.='</div>';
     }
     

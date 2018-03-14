@@ -791,21 +791,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print '<table class="border" width="100%">';
-/*
-				print "<tr>";
-				print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
-				print $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id');
-				print '</td></tr>';
 
-				print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
-				print '<td colspan=2>' . stripslashes($agf->intitule) . '</td></tr>';
-
-				print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
-				print $agf->ref_obj . '</td></tr>';
-
-				print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
-				print $agf->ref_interne . '</td></tr>';
-*/
 				print '<tr><td>' . $langs->trans("AgfDuree") . '</td><td colspan=2>';
 				print $agf->duree . '</td></tr>';
 
