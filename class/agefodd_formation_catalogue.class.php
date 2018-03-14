@@ -888,30 +888,6 @@ class Agefodd extends CommonObject {
 	}
 
 	/**
-	 * Return information of Place
-	 *
-	 * @return void
-	 */
-	public function printFormationInfo() {
-		global $form, $langs;
-
-		print '<table class="border" width="100%">';
-
-		print "<tr>";
-		print '<td width="20%">' . $langs->trans("Ref") . '</td><td colspan=2>';
-		print $this->ref;
-		print '</td></tr>';
-
-		print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
-		print '<td colspan=2>' . stripslashes($this->intitule) . '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
-		print $this->ref_interne . '</td></tr>';
-
-		print '</table>';
-	}
-
-	/**
 	 * Create admin level for a session
 	 */
 	public function createAdmLevelForTraining($user) {

@@ -71,7 +71,11 @@ function training_prepare_head($object) {
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath('/agefodd/training/note.php', 1) . '?id=' . $object->id;
-	$head [$h] [1] = $langs->trans("AgfNote");
+	$head [$h] [1] = $langs->trans("AgfCatalogNote");
+	$nbNotes = 0;
+	if (!empty($object->note_private)) $nbNotes++;
+	if (!empty($object->note_public)) $nbNotes++;
+	if (!empty($nbNotes)) $head[$h][1].= ' <span class="badge">'.$nbNotes.'</span>';
 	$head [$h] [2] = 'notes';
 	$hselected = $h;
 	$h ++;
@@ -1513,6 +1517,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     if ($object->element == 'agefodd_formation_catalogue'){
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.=$object->intitule . '<br>' . $object->ref_obj;
+        if(!empty($object->ref_interne)) $morehtmlref .= '<br>' . $object->ref_interne;
         $morehtmlref.='</div>';
     }
     

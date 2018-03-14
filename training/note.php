@@ -58,14 +58,14 @@ $user->rights->agefodd_formation_catalogue->creer = $user->rights->agefodd->agef
  * Actions
 */
 
-if ($action == 'setnote_public' && $user->rights->commande->creer) {
+if ($action == 'setnote_public' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	$object->fetch($id);
 	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_public'), ENT_QUOTES), '_public');
 	if ($result < 0)
 		setEventMessage($object->error, 'errors');
 } 
 
-else if ($action == 'setnote_private' && $user->rights->commande->creer) {
+else if ($action == 'setnote_private' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	$object->fetch($id);
 	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_private'), ENT_QUOTES), '_private');
 	if ($result < 0)
@@ -87,9 +87,8 @@ if ($id > 0 || ! empty($ref)) {
 	
 	dol_fiche_head($head, 'notes', $langs->trans("AgfCatalogNote"), 0, 'label');
 	
-	print '<table class="border" width="100%">';
-	
-	$object->printFormationInfo();
+	dol_agefodd_banner_tab($object, 'id');
+	print '<div class="underbanner clearboth"></div>';
 	
 	print '<br>';
 	
