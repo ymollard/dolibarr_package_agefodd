@@ -1519,7 +1519,12 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     } elseif ($object->element == 'agefodd_agsession'){
         
         $morehtmlstatus.='<div align="right"><span class="statusrefsell">'.$object->getLibStatut(1).'</span></div>';
-        $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
+        
+        require_once ('../class/agefodd_sessadm.class.php');
+        $sess_adm = new Agefodd_sessadm($db);
+        $result = $sess_adm->fetch_all($object->id);
+        
+        if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
         
     }
     
