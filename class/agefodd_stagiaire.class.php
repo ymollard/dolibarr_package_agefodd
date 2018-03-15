@@ -199,6 +199,7 @@ class Agefodd_stagiaire extends CommonObject {
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
+		
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
@@ -243,6 +244,8 @@ class Agefodd_stagiaire extends CommonObject {
 					$this->fk_socpeople = 0;
 					$this->date_birth = $this->db->jdate($obj->date_birth);
 				}
+			} else {
+			    return -1;
 			}
 
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');

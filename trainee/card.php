@@ -354,7 +354,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
  * View
 */
 $title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("AgfMenuActStagiaireNew") : $langs->trans("AgfStagiaireDetail"));
-llxHeader('', $title);
 
 $form = new Form($db);
 $formcompany = new FormCompany($db);
@@ -364,7 +363,7 @@ $formAgefodd = new FormAgefodd($db);
  * Action create
 */
 if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
-
+    llxHeader('', $title);
 	print "\n" . '<script type="text/javascript">
 		$(document).ready(function () {
 			$("input[type=radio][name=create_thirdparty]").change(function() {
@@ -629,11 +628,12 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf = new Agefodd_stagiaire($db);
 		$result = $agf->fetch($id);
 
-		if ($result) {
-			$head = trainee_prepare_head($agf);
+		$head = trainee_prepare_head($agf);
 
-			dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
+		if ($result > 0) {			
+		    llxHeader('', $title);
+		    dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
+		    
 			// Affichage en mode "édition"
 			if ($action == 'edit') {
 				print '<form name="update" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
@@ -762,6 +762,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				print '</div>' . "\n";
 			} else {
 				// Display in "view" mode
+				
+			    dol_agefodd_banner_tab($agf, 'id');
+			    print '<div class="underbanner clearboth"></div>';
+			    
 				/*
 				* Confirmation de la suppression
 				*/
@@ -770,20 +774,6 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				}
 
 				print '<table class="border" width="100%">';
-
-				print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
-				print '<td>' . $form->showrefnav($agf, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-
-				print '<tr><td>' . $langs->trans("Firstname") . '</td>';
-				print '<td>' . ucfirst($agf->prenom) . '</td></tr>';
-
-				if (! empty($agf->fk_socpeople)) {
-					print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-					print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . strtoupper($agf->nom) . '</a></td></tr>';
-				} else {
-					print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-					print '<td>' . strtoupper($agf->nom) . '</td></tr>';
-				}
 
 				print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
 
@@ -842,31 +832,36 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 				print '</div>';
 			}
+			
+			/*
+			 * Barre d'actions
+			 *
+			 */
+			
+			print '<div class="tabsAction">';
+			
+			if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
+			    if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+			        print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
+			    } else {
+			        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+			    }
+			    if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+			        print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
+			    } else {
+			        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
+			    }
+			}			
+			
 		} else {
 			setEventMessage($agf->error, 'errors');
+			Header("Location: list.php");
+			exit();
 		}
 	}
 }
 
-/*
- * Barre d'actions
-*
-*/
 
-print '<div class="tabsAction">';
-
-if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
-	if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
-		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
-	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
-	}
-	if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
-		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
-	} else {
-		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
-	}
-}
 
 print '</div>';
 
