@@ -65,6 +65,17 @@ if ($action == 'setvar') {
 		$error ++;
 	}
 
+	$categ = GETPOST('AGF_CAT_BPF_FAF', 'array');
+	if (empty($categ)) {
+		$res = dolibarr_set_const($db, 'AGF_CAT_BPF_FAF', '', 'chaine', 0, '', $conf->entity);
+	} else {
+		$res = dolibarr_set_const($db, 'AGF_CAT_BPF_FAF', implode(',', $categ), 'chaine', 0, '', $conf->entity);
+	}
+
+	if (! $res > 0) {
+		$error ++;
+	}
+
 	$categ = GETPOST('AGF_CAT_BPF_PARTICULIER', 'array');
 	if (empty($categ)) {
 		$res = dolibarr_set_const($db, 'AGF_CAT_BPF_PARTICULIER', '', 'chaine', 0, '', $conf->entity);
@@ -246,7 +257,7 @@ if (is_numeric(Categorie::TYPE_SUPPLIER)) {
 }
 
 
-$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typeproduct . ' AND entity IN (' . getEntity('category', 1) . ')';
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typecustomer . ' AND entity IN (' . getEntity('category', 1) . ')';
 $resql = $db->query($sql);
 if (! $resql) {
 	setEventMessage($db->lasterror, 'errors');
@@ -289,6 +300,32 @@ print $formAgefodd->agfmultiselectarray('AGF_CAT_BPF_ADMINISTRATION', $option_ca
 print '</td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfReportBPFCategAdmnistrationHelp"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+// Cat FAF
+print '<tr class="pair"><td>' . $langs->trans("AgfReportBPFCategFAF") . '</td>';
+print '<td align="left">';
+$option_categ = array ();
+$selected_categ = array ();
+
+$sql = ' SELECT rowid, label FROM ' . MAIN_DB_PREFIX . 'categorie WHERE type=' . $typecustomer . ' AND entity IN (' . getEntity('category', 1) . ')';
+$resql = $db->query($sql);
+if (! $resql) {
+	setEventMessage($db->lasterror, 'errors');
+} else {
+	while ( $obj = $db->fetch_object($resql) ) {
+		$option_categ[$obj->rowid] = $obj->label;
+	}
+}
+if (! empty($conf->global->AGF_CAT_BPF_FAF)) {
+	$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_FAF);
+}
+
+print $formAgefodd->agfmultiselectarray('AGF_CAT_BPF_FAF', $option_categ, $selected_categ);
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("AgfReportBPFCategFAFHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
 

@@ -1315,6 +1315,7 @@ function fetch_financial_c($filter = array()) {
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
 					'checkOPCA' => 1,
+					'checkPV' => 0,
 					'datefac'=>1,
 			),
 			array(
@@ -1338,6 +1339,7 @@ function fetch_financial_c($filter = array()) {
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
 					'checkOPCA' => 1,
+					'checkPV' => 0,
 					'datefac'=>1,
 			),
 			array(
@@ -1369,9 +1371,10 @@ function fetch_financial_c($filter = array()) {
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
 					'label' => 'C-3 des fonds d assurance formation de non-salariés',
-					'confcust' => '',
+					'confcust' => 'AGF_CAT_BPF_FAF',
+					'confcustlabel' => 'AgfReportBPFCategFAF',
 					'employer' => 0,
-					'checkOPCA' => 0,
+					'checkOPCA' => 1,
 					'checkPV' => 0,
 					'datefac'=>1,
 			),
@@ -1636,6 +1639,29 @@ function fetch_financial_d($filter = array()) {
 				}
 
 				$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_ADMINISTRATION', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+				if (! $res > 0) {
+					$error ++;
+				}
+			}
+
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - FAF\',2,\'\',NULL,1,\'agefodd\')';
+			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			} else {
+				$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+				$selected_categ = array();
+				if (! empty($conf->global->AGF_CAT_BPF_FAF)) {
+					$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_FAF);
+				}
+				if (! in_array($idcateg, $selected_categ)) {
+					$selected_categ[] = $idcateg;
+				}
+
+				$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_FAF', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
 
 				if (! $res > 0) {
 					$error ++;
