@@ -225,6 +225,7 @@ AgfTeacherSite=Détail des sites de formation
 AgfSessPlaceCode=Réf du site
 AgfCreateContact=Création d'un correspondant
 AgfNoSession=Cette session n'existe pas
+AgfNoSessionFound=Pas de session
 AgfDelaiSessionLevel=Délai d'alerte (jours) par rapport au debut de la session
 AgfRankSessionLevel=Niveau
 AgfAdminSessionLevel=Administration des actions de bases des formations

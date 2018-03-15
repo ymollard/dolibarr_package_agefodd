@@ -104,6 +104,9 @@ if ($object->id) {
 	$head = trainee_prepare_head($object);
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfStagiaireDetail"), 0, 'bill');
+	
+	dol_agefodd_banner_tab($object, 'id');
+	print '<div class="underbanner clearboth"></div>';
 
 	$form = new Form($db);
 
@@ -113,41 +116,6 @@ if ($object->id) {
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file['size'];
 	}
-
-	print '<table class="border" width="100%">';
-
-	print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
-	print '<td>' . $form->showrefnav($object, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-
-	print '<tr><td>' . $langs->trans("Firstname") . '</td>';
-	print '<td>' . ucfirst($object->prenom) . '</td></tr>';
-
-	if (! empty($object->fk_socpeople)) {
-		print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-		print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $object->fk_socpeople . '">' . strtoupper($object->nom) . '</a></td></tr>';
-	} else {
-		print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-		print '<td>' . strtoupper($object->nom) . '</td></tr>';
-	}
-
-	print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
-
-	$contact_static = new Contact($db);
-	$contact_static->civility_id = $object->civilite;
-
-	print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-
-	print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
-	if ($object->socid) {
-		$soc = new Societe($db);
-		$soc->fetch($object->socid);
-		print $soc->getNomUrl(1);
-	} else {
-		print '&nbsp;';
-	}
-	print '</td></tr>';
-	print '</table>';
-	print '</div>';
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer);

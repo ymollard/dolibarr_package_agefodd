@@ -47,6 +47,7 @@ $id = GETPOST('id', 'int');
 llxHeader('', $langs->trans("AgfStagiaireDetail"));
 
 $agf = new Agefodd_stagiaire($db);
+$agf->fetch($id);
 $result = $agf->info($id);
 if ($result < 0) {
 	setEventMessage($agf->error, 'errors');
@@ -55,6 +56,9 @@ if ($result < 0) {
 $head = trainee_prepare_head($agf);
 
 dol_fiche_head($head, 'info', $langs->trans("AgfStagiaireDetail"), 0, 'user');
+
+dol_agefodd_banner_tab($agf, 'id');
+print '<div class="underbanner clearboth"></div>';
 
 print '<table width="100%"><tr><td>';
 dol_print_object_info($agf);
