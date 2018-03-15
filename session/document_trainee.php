@@ -552,7 +552,7 @@ if (! empty($id)) {
 	
 	$result = $agf->fetch_societe_per_session($id);
 
-	if ($result) {
+	if ($result>0) {
 		$idform = $agf->formid;
 		
 		// Put user on the right action block after reload
@@ -772,6 +772,10 @@ if (! empty($id)) {
 			print '</div>' . "\n";
 			
 		}
+	} elseif ($result==0) {
+	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
+	} else {
+	    setEventMessages($agf->error, null, 'errors');
 	}
 	
 	if (!empty($linecount)){

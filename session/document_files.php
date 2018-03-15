@@ -130,22 +130,15 @@ if ($object->id) {
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 
+	dol_agefodd_banner_tab($object, 'id');
+	print '<div class="underbanner clearboth"></div>';
+	
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file ['size'];
 	}
-
-	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-	print '</div>';
-
-	// Print session card
-	$object->printSessionInfo();
-
-	print '&nbsp';
-	print '</div>';
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
