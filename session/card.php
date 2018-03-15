@@ -1193,14 +1193,14 @@ printSessionFieldsWithCustomOrder();
 						);
 						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
 					}
-
+/*
 					print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
 					print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					print '</div>';
-
+*/
 					printSessionFieldsWithCustomOrder();
 					print '<div class="fichecenter">';
-					print '<table id="session_card" class="border" width="100%">';
+					//print '<table id="session_card" class="border" width="100%">';
 					// Print session card
 					$agf->printSessionInfo(false);
 

@@ -182,14 +182,8 @@ if (! empty($id)) {
 		print $form->formconfirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . $_POST ["certifrowid"] . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
 	}
 
-	print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-	print '</div>';
-
-	// Print session card
-	$agf->printSessionInfo();
-
-	print '&nbsp';
+	dol_agefodd_banner_tab($agf, 'id');
+	print '<div class="underbanner clearboth"></div>';
 
 	print '<div class="tabBar">' . "\n";
 	print '<table class="border" width="100%">';

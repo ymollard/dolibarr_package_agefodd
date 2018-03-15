@@ -3240,14 +3240,15 @@ class Agsession extends CommonObject
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
 
-		print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
-
+		print '<table id="session_card" class="border tableforfield" width="100%">';
+/*
+        print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
 		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td colspan="'.$colspan.'">' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
 
 		print '<tr class="order_intitule"><td>' . $langs->trans("AgfFormIntitule") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->formintitule . '</a></td></tr>';
-
+*/
 		print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->intitule_custo . '</a></td></tr>';
 
