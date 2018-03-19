@@ -1577,6 +1577,50 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
                 $phototoshow = $form->showphoto($modulepart,$object,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
             }
             
+            if ($object->table_element == 'agefodd_stagiaire' && ! empty($object->fk_socpeople)) { // trainee from a contact
+                dol_include_once('/contact/class/contact.class.php');
+                
+                $contact = new Contact($db);
+                $contact->fetch($object->fk_socpeople);
+                $phototoshow = $form->showphoto($modulepart,$contact,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+                
+            }
+            elseif ($object->table_element == 'agefodd_formateur')
+            {
+                if($object->type_trainer == 'socpeople')
+                {
+                    dol_include_once('/contact/class/contact.class.php');
+                    
+                    $contact = new Contact($db);
+                    $contact->fetch($object->fk_socpeople);
+                    $phototoshow = $form->showphoto($modulepart,$contact,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+                }
+                else
+                {
+                    $u = new User($db);
+                    $u->fetch($object->fk_user);
+                    $phototoshow = $form->showphoto($modulepart,$u,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+                }
+            }
+            elseif($object->table_element == 'agefodd_place')
+            {
+                $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                $phototoshow.= img_picto('', 'object_address'); 
+                $phototoshow.= '</div></div>';
+            }
+            elseif($object->table_element == 'agefodd_formation_catalogue')
+            {
+                $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                $phototoshow.= img_picto('', 'object_label');
+                $phototoshow.= '</div></div>';
+            }
+            elseif($object->table_element == 'agefodd_session')
+            {
+                $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                $phototoshow.= img_picto('', 'object_calendarday');
+                $phototoshow.= '</div></div>';
+            }
+            
             if ($phototoshow)
             {
                 $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
