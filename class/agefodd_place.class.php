@@ -670,6 +670,28 @@ class Agefodd_place extends CommonObject {
 		return 1;
 	}
 
+	function getLibStatut($mode = 0){
+	    global $langs;
+	    
+	    if($this->archive){
+	        $picto = 'statut5';
+	        $statut = $langs->trans("AgfCatArchive");
+	    } else {
+	        $picto = 'statut4';
+	        $statut = $langs->trans("AgfCatActif");
+	    }
+	    
+	    switch ($mode){
+	        case 0 :
+	            return $statut;
+	            break;
+	        case 1 :
+	            return $statut . "&nbsp;" . img_picto('', $picto);
+	            break;
+	        default:
+	            return $statut . "&nbsp;" . img_picto('', $picto);
+	    }
+	}
 }
 class AgfPlaceLine {
 	public $id;

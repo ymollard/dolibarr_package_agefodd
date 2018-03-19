@@ -1638,13 +1638,18 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         
     } elseif ($object->table_element == 'agefodd_session'){
         
-        $morehtmlstatus.='<div align="right"><span class="statusrefsell">'.$object->getLibStatut(1).'</span></div>';
+        $morehtmlstatus.='<div align="right">'.$object->getLibStatut(1);
         
         require_once ('../class/agefodd_sessadm.class.php');
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
         
         if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
+        $morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')).'</div>';
+
+    } elseif ($object->table_element == 'agefodd_place'){
+        
+        $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
         
     }
     
@@ -1677,6 +1682,17 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             $morehtmlref .= '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->placeid . '">' . $object->placecode . '</a>';
         }
         
+        if (!empty($object->dated))
+        {
+            $morehtmlref .= '<br>'. $langs->trans("AgfDateDebut") . ' : ' . dol_print_date($object->dated, 'daytext');
+        }
+        
+        if (!empty($object->datef))
+        {
+            $morehtmlref .= '<br>'. $langs->trans("AgfDateFin") . ' : ' . dol_print_date($object->datef, 'daytext');
+        }
+        // var_dump($object);
+        
         $morehtmlref.='</div>';
         
     } elseif ($object->table_element == 'agefodd_stagiaire'){ // trainee
@@ -1684,6 +1700,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $morehtml .= '<a href="' . dol_buildpath('/agefodd/trainee/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
         
+        $morehtmlref.= $langs->trans('Name').' : ';
         if (! empty($object->fk_socpeople)) { // trainee from a contact
             dol_include_once('/contact/class/contact.class.php');
             
@@ -1694,7 +1711,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             $morehtmlref .= ucfirst($object->prenom) . ' ' . strtoupper($object->nom) . '<br>';
         }
         
-        $morehtmlref.= $object->thirdparty->getNomUrl(1);
+        $morehtmlref.= $langs->trans('Company').' : ' . $object->thirdparty->getNomUrl(1);
         
         $morehtmlref.='</div>';
         
@@ -1703,8 +1720,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/trainer/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         
         $morehtmlref.='<div class="refidno">';
-        $morehtmlref.= ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname));
-        $morehtmlref.= '<br>'. $langs->trans('AgfTrainerType'.ucfirst($object->type_trainer));
+        $morehtmlref.= $langs->trans('Name').' : ' . ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname));
+        $morehtmlref.= '<br>'.$langs->trans('AgfTrainerNature') . ' : ' . $langs->trans('AgfTrainerType'.ucfirst($object->type_trainer));
         $morehtmlref.='</div>';
         
     } elseif ($object->table_element == 'agefodd_place'){ // Sites
@@ -1712,12 +1729,12 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/site/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         
         $morehtmlref.='<div class="refidno">';
-        $morehtmlref.= $object->ref_interne;
+        $morehtmlref.=  $langs->trans("Ref"). ' : ' . $object->ref_interne;
         
         if (!empty($object->socid)){
             $soc = new Societe($db);
             $soc->fetch($object->socid);
-            $morehtmlref.= '<br>'.$soc->getNomUrl(1);
+            $morehtmlref.= '<br>'.  $langs->trans("Company") . ' : ' .$soc->getNomUrl(1);
         }
         
         $morehtmlref.='</div>';

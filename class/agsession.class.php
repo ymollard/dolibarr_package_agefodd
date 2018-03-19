@@ -3277,13 +3277,13 @@ class Agsession extends CommonObject
 		}
 
 		print "</td></tr>";
-
+/*
 		print '<tr class="order_dated"><td>' . $langs->trans("AgfDateDebut") . '</td>';
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->dated, 'daytext') . '</td></tr>';
 
 		print '<tr class="order_datef"><td>' . $langs->trans("AgfDateFin") . '</td>';
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->datef, 'daytext') . '</td></tr>';
-
+*/
 		print '<tr class="order_customer"><td width="20%">' . $langs->trans("Customer") . '</td>';
 		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc)) && ($this->fk_soc > 0)) {
