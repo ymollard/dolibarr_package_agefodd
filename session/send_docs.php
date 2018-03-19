@@ -1749,6 +1749,8 @@ if (! empty($id)) {
 					$socstatic = new Societe($db);
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array('email');
+					$socstatic->id = $socid;
+					$soc_contact += $socstatic->contact_property_array('email');
 					foreach ( $soc_contact as $id => $mail ) {
 						$contactstatic = new Contact($db);
 						$contactstatic->fetch($id);
