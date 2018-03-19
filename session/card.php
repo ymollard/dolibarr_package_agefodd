@@ -1283,8 +1283,13 @@ printSessionFieldsWithCustomOrder();
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
 					if(! empty($conf->global->AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT)) {
-						print '<td>' . price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT') . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
-						$spend_cost += price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT');
+						if (!empty($agf->nb_stagiaire)) {
+							$costparticipant=price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT');
+						} else {
+							$costparticipant=price2num($agf->cost_trip, 'MT');
+						}
+						print '<td>' . $costparticipant . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
+						$spend_cost += $costparticipant;
 					}
 					else {
 						print '<td>' . price($agf->cost_trip) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';

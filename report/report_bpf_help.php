@@ -115,7 +115,7 @@ print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFCe",'<strong>'.$langs->transnoentities('AgfReportBPFCategProdPeda').'</strong>','<strong>'.$langs->transnoentities('AgfReportBPFCategOPCA').'</strong>');
 print "<br>\n";
 print "<br>\n";
-print img_picto('', 'puce').' '.$langs->trans("AgfBPFC3",'<strong>'.$langs->transnoentities('AgfReportBPFCategProdPeda').'</strong>');
+print img_picto('', 'puce').' '.$langs->trans("AgfBPFC3",'<strong>'.$langs->transnoentities('AgfReportBPFCategProdPeda').'</strong>','<strong>'.$langs->transnoentities('AgfReportBPFCategFAF').'</strong>');
 print "<br>\n";
 print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFC4",'<strong>'.$langs->transnoentities('AgfReportBPFCategProdPeda').'</strong>','<strong>'.$langs->transnoentities('AgfReportBPFCategAdmnistration').'</strong>');
