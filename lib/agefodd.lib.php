@@ -1658,6 +1658,26 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/trainer/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.= ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname));
+        $morehtmlref.= '<br>'. $langs->trans('AgfTrainerType'.ucfirst($object->type_trainer));
+        $morehtmlref.='</div>';
+        
+    } elseif ($object->table_element == 'agefodd_place'){ // Sites
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/site/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.= $object->ref_interne;
+        
+        if (!empty($object->socid)){
+            $soc = new Societe($db);
+            $soc->fetch($object->socid);
+            $morehtmlref.= '<br>'.$soc->getNomUrl(1);
+        }
+        
+        $morehtmlref.='</div>';
+        
     }
     
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';

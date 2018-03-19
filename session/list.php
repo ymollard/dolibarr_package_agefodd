@@ -297,10 +297,11 @@ if (! empty($site_view)) {
 		$head = site_prepare_head($agf);
 
 		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
+		
+		dol_agefodd_banner_tab($agf, 'site_view=1&search_site');
+		print '<div class="underbanner clearboth"></div>';
 	}
 
-	$agf->printPlaceInfo();
-	print '</div>';
 }
 
 $agf = new Agsession($db);
