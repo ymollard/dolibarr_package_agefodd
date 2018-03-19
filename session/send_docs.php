@@ -375,7 +375,7 @@ if (! empty($removedfile)) {
 	$upload_dir_tmp = $vardir . '/temp';
 
 	// TODO Delete only files that was uploaded from email form
-	$mesg = dol_remove_file_process($removedfile, 0, 1);
+	$mesg = dol_remove_file_process($removedfile, 0, 1, $formmail->trackid);
 
 	$action = $pre_action;
 }
@@ -390,7 +390,7 @@ if (! empty($addfile)) {
 	$vardir = $conf->user->dir_output . "/" . $user->id;
 	$upload_dir_tmp = $vardir . '/temp';
 
-	$mesg = dol_add_file_process($upload_dir_tmp, 0, 0);
+	$mesg = dol_add_file_process($upload_dir_tmp, 0, 0, 'addedfile', '', null, $formmail->trackid);
 
 	$action = $pre_action;
 }
