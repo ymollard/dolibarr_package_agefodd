@@ -1147,7 +1147,7 @@ class Agefodd extends CommonObject {
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur_training as link';
 		$sql .= ' ON f.rowid=link.fk_trainer AND link.fk_training=' . $this->id;
 		$sql .= " WHERE f.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-
+		$this->trainers = array();
 		// $line->fk_socpeople
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);

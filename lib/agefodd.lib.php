@@ -59,6 +59,8 @@ function training_prepare_head($object) {
 	if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
 		$head [$h] [0] = dol_buildpath('/agefodd/training/trainer.php', 1) . '?id=' . $object->id;
 		$head [$h] [1] = $langs->trans("AgfTrainingTrainer");
+		$badgenbform = $object->fetchTrainer();
+		if (!empty($badgenbform)) $head [$h] [1] .= " <span class='badge'>" . $badgenbform."</span>";
 		$head [$h] [2] = 'trainingtrainer';
 		$hselected = $h;
 		$h ++;
@@ -103,7 +105,7 @@ function training_prepare_head($object) {
  * @return array head table of tabs
  */
 function session_prepare_head($object, $showconv = 0) {
-	global $langs, $conf, $user;
+	global $langs, $conf, $user, $db;
 
 	$h = 0;
 	$head = array ();
@@ -126,6 +128,12 @@ function session_prepare_head($object, $showconv = 0) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
+	
+	dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+	$stagiaires = new Agefodd_session_stagiaire($db);
+	$badgenbtrainee = $stagiaires->fetch_stagiaire_per_session($id);
+	if (!empty($badgenbtrainee)) $head [$h] [1] .= " <span class='badge'>" . $badgenbtrainee."</span>";
+	
 	$head [$h] [2] = 'subscribers';
 	$h ++;
 
@@ -138,6 +146,10 @@ function session_prepare_head($object, $showconv = 0) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfFormateur");
+	dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+	$formateurs = new Agefodd_session_formateur($db);
+	$badgenbform = $formateurs->fetch_formateur_per_session($id);
+	if (!empty($badgenbform)) $head [$h] [1] .= " <span class='badge'>" . $badgenbform."</span>";
 	$head [$h] [2] = 'trainers';
 	$h ++;
 
