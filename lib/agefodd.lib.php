@@ -78,6 +78,8 @@ function training_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/training/document_files.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Documents");
+	$badgeFiles = countFiles($object);
+	if (!empty($badgeFiles)) $head [$h] [1] .= " <span class='badge'>" . $badgeFiles."</span>";
 	$head [$h] [2] = 'documentfiles';
 	$hselected = $h;
 	$h ++;
@@ -167,6 +169,8 @@ function session_prepare_head($object, $showconv = 0) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Documents");
+	$badgeFiles = countFiles($object);
+	if (!empty($badgeFiles)) $head [$h] [1] .= " <span class='badge'>" . $badgeFiles."</span>";
 	$head [$h] [2] = 'documentfiles';
 	$h ++;
 
@@ -240,6 +244,8 @@ function trainee_prepare_head($object, $showcursus = 0) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/document_files.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Documents");
+	$badgeFiles = countFiles($object);
+	if (!empty($badgeFiles)) $head [$h] [1] .= " <span class='badge'>" . $badgeFiles."</span>";
 	$head [$h] [2] = 'documentfiles';
 	$h ++;
 
@@ -277,6 +283,8 @@ function trainer_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/document_files.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Documents");
+	$badgeFiles = countFiles($object);
+	if (!empty($badgeFiles)) $head [$h] [1] .= " <span class='badge'>" . $badgeFiles."</span>";
 	$head [$h] [2] = 'documentfiles';
 	$h ++;
 
@@ -313,7 +321,7 @@ function contact_prepare_head($object) {
 	$h ++;
 
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_contact');
-
+	
 	return $head;
 }
 
@@ -341,6 +349,8 @@ function site_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/site/document_files.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Documents");
+	$badgeFiles = countFiles($object);
+	if (!empty($badgeFiles)) $head [$h] [1] .= " <span class='badge'>" . $badgeFiles."</span>";
 	$head [$h] [2] = 'documentfiles';
 	$h ++;
 
@@ -518,6 +528,41 @@ function agf_calendars_prepare_head($param) {
 	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_agenda','remove');
 
 	return $head;
+}
+
+/**
+ *  renvoi le nombre de fichiers joints
+ */
+function countFiles(&$object){
+    global $conf;
+    
+    dol_include_once('/core/lib/files.lib.php');
+    
+    switch ($object->element){
+        case 'agefodd_formation_catalogue' :
+            $upload_dir = $conf->agefodd->dir_output . "/training/". $object->id;
+            break;
+          
+        case 'agefodd_place' :
+            $upload_dir = $conf->agefodd->dir_output . "/place/". $object->id;
+            break;
+            
+        case 'agefodd_formateur' :
+            $upload_dir = $conf->agefodd->dir_output . "/trainer/". $object->id;
+            break;
+            
+        case 'agefodd' :
+            $upload_dir = $conf->agefodd->dir_output . "/trainee/". $object->id;
+            break;
+        
+        Default :
+            $upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
+    }
+    if ($object->element == "agefodd_agsession") $upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
+    
+    $filearray = dol_dir_list($upload_dir, "files");
+    
+    return count($filearray);
 }
 
 /**

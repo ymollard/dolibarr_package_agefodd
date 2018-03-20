@@ -74,8 +74,8 @@ $result = $object->fetch($id);
 if ($result < 0) {
 	setEventMessage($object->error, 'errors');
 } else {
-	$upload_dir = $conf->agefodd->dir_output . "/trainer/". $object->id;
-	$relativepathwithnofile="trainer/" . $object->id.'/';
+	$upload_dir = $conf->agefodd->dir_output . "/place/". $object->id;
+	$relativepathwithnofile="place/" . $object->id.'/';
 }
 
 /*
