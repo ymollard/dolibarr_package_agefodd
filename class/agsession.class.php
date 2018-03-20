@@ -2185,6 +2185,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.fk_socpeople_presta";
 		$sql .= " ,sa.archive as closesessionstatus";
 		$sql .= " ,sorequester.nom as socrequestername";
+		$sql .= " ,soemployer.nom as soemployername";
 		$sql .= " ,c.color as trainingcolor,";
 		// Avoid perf problem with too many trainnee into archive sessions
 		if (is_array($filter) && key_exists('s.status', $filter) && $filter['s.status'] == '4') {
@@ -2213,6 +2214,8 @@ class Agsession extends CommonObject
 		$sql .= " ON s.rowid = sa.fk_agefodd_session AND sa.trigger_name='AGF_SESSION_CLOSE'";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON so.rowid = s.fk_soc";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soemployer";
+		$sql .= " ON soemployer.rowid = s.fk_soc_employer";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as sorequester";
 		$sql .= " ON sorequester.rowid = s.fk_soc_requester";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
@@ -2288,6 +2291,8 @@ class Agsession extends CommonObject
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire ';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc ';
 					$sql .= ' WHERE insersoc.nom LIKE \'%' . $this->db->escape($value) . '%\' )))';
+				} elseif ($key == 'socppresta.name') {
+				    $sql .= ' AND ((socppresta.lastname LIKE \'%' . $this->db->escape($value) . '%\') OR (socppresta.lastname LIKE \'%' . $this->db->escape($value) . '%\'))';
 				} elseif ($key == 'so.parent|sorequester.parent') {
 
 					$sql .= ' AND (';
