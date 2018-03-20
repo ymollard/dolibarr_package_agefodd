@@ -105,6 +105,7 @@ $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 if ($result<0) {
 	setEventMessage($agf->error,'errors');
 }
+$linenum=count($agf->lines);
 
 print '<div width="100%" align="right">';
 if ($arch == 2) {

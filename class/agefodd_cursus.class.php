@@ -531,7 +531,6 @@ class Agefodd_cursus extends CommonObject {
 
 			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
-			var_dump($num);
 
 			$i = 0;
 			while ( $i < $num ) {

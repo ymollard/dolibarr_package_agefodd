@@ -52,9 +52,7 @@ if (empty($sortfield))
 if (empty($arch))
 	$arch = 0;
 
-if ($page == - 1) {
-	$page = 0;
-}
+	if (empty($page) || $page == -1) { $page = 0; }
 
 $offset = $limit * $page;
 $pageprev = $page - 1;
