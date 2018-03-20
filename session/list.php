@@ -51,6 +51,12 @@ $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
+$massaction=GETPOST('massaction','alpha');
+$toselect = GETPOST('toselect', 'array');
+
+// Massactions
+if (strpos('statut', $massaction) == 0) var_dump(substr($massaction, 6));
+
 // Search criteria
 $search_trainning_name = GETPOST("search_trainning_name");
 $search_soc = GETPOST("search_soc");
@@ -390,6 +396,8 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user
 if ($resql != - 1) {
 	$num = $resql;
 
+	$arrayofselected=is_array($toselect)?$toselect:array();
+	
 	if ($status_view == 1) {
 		$menu = $langs->trans("AgfMenuSessDraftList");
 	} elseif ($status_view == 2) {
@@ -431,7 +439,28 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	$sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
+	
+	$res = $db->query($sql);
+	$TStatut = array();
+	
+	if($res){
+	    while($obj = $db->fetch_object($res)){
+	        $TStatut['statut'.$obj->rowid] = $langs->trans('AgfStatusSession_' .$obj->code);
+	    }
+	}
+	
+	$arrayofmassactions = $TStatut;
+	
+	/*
+	$arrayofmassactions =  array(
+	    //'presend'=>$langs->trans("SendByMail"),
+	    //'builddoc'=>$langs->trans("PDFMerge"),
+	);
+		*/
+	$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
+	
+	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter='';
 	// If the user can view prospects other than his'
@@ -476,10 +505,10 @@ if ($resql != - 1) {
 	print '	});'."\n";
 	print '});'."\n";
 	print '</script>'."\n";
-
+	
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
-	//if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
+	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
 
 	$i = 0;
 	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
@@ -878,8 +907,19 @@ if ($resql != - 1) {
 				}
 			}
 
+			// Action
+			print '<td class="nowrap" align="center">';
+			if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
+			{
+			    $selected=0;
+			    if (in_array($line->rowid, $arrayofselected)) $selected=1;
+			    print '<input id="cb'.$line->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->rowid.'"'.($selected?' checked="checked"':'').'>';
+			}
+			print '</td>';
+			if (! $i) $totalarray['nbfield']++;
+			
 			//Action column
-			print '<td>&nbsp;</td>';
+			//print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		} else {
 			print "<tr $bc[$var]>";
@@ -930,8 +970,19 @@ if ($resql != - 1) {
 			   }
 			}
 
+			// Action
+			print '<td class="nowrap" align="center">';
+			if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
+			{
+			    $selected=0;
+			    if (in_array($line->rowid, $arrayofselected)) $selected=1;
+			    print '<input id="cb'.$line->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->rowid.'"'.($selected?' checked="checked"':'').'>';
+			}
+			print '</td>';
+			if (! $i) $totalarray['nbfield']++;
+			
 			//Action column
-			print '<td>&nbsp;</td>';
+			// print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		}
 
