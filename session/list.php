@@ -49,6 +49,7 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
 // Search criteria
 $search_trainning_name = GETPOST("search_trainning_name");
@@ -79,7 +80,7 @@ $idforma = GETPOST('idforma', 'int'); // id formation catalogue
 if(!empty($idforma)){
     $agformation = new Agefodd($db);
     $agformation->fetch($idforma);
-    
+
     $training_view = 1;
     $search_training_ref = $agformation->ref_obj;
 }
@@ -140,7 +141,7 @@ $arrayfields=array(
     's.fk_socpeople_presta'=>array('label'=>'AgfTypePresta', 'checked'=>0),
     's.fk_soc_employer' =>array('label'=>'AgfTypeEmployee', 'checked'=>0),
     's.fk_soc_requester'=>array('label'=>'AgfTypeRequester', 'checked'=>0),
-    
+
     's.sell_price'		=>array('label'=>"AgfAmoutHTHF", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
     's.cost_trainer'	=>array('label'=>"AgfCostTrainer", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
 	'AgfCostOther'		=>array('label'=>"AgfCostOther", 'checked'=>1, 'enabled' => $user->rights->agefodd->session->margin),
@@ -160,11 +161,14 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 }
 
 $filter = array ();
+$option='';
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
+	$option .= '&search_trainning_name=' . $search_trainning_name;
 }
 if (! empty($search_soc)) {
 	$filter ['so.nom'] = $search_soc;
+	$option .= '&search_soc=' . $search_soc;
 }
 if (! empty($search_socpeople_presta)) {
     $filter ['socppresta.name'] = $search_socpeople_presta;
@@ -177,49 +181,62 @@ if (! empty($search_soc_requester)) {
 }
 if (! empty($search_sale)) {
 	$filter ['sale.fk_user_com'] = $search_sale;
+	$option .= '&search_sale=' . $search_sale;
 }
 if (! empty($search_teacher_id) && $search_teacher_id != - 1) {
 	$filter ['f.rowid'] = $search_teacher_id;
+	$option .= '&search_teacher_id=' . $search_teacher_id;
 }
 if (! empty($search_training_ref)) {
 	$filter ['c.ref'] = $search_training_ref;
+	$option .= '&search_training_ref=' . $search_training_ref;
 }
 if (! empty($search_start_date)) {
 	$filter ['s.dated'] = $db->idate($search_start_date);
+	$option .= '&search_start_datemonth=' . dol_print_date($search_start_date, '%m') . '&search_start_dateday=' . dol_print_date($search_start_date, '%d') . '&search_start_dateyear=' . dol_print_date($search_start_date, '%Y');
 }
 if (! empty($search_end_date)) {
 	$filter ['s.datef'] = $db->idate($search_end_date);
+	$option .= '&search_end_datemonth=' . dol_print_date($search_end_date, '%m') . '&search_end_dateday=' . dol_print_date($search_end_date, '%d') . '&search_end_dateyear=' . dol_print_date($search_end_date, '%Y');
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
+	$option .= '&search_site=' . $search_site;
 
 	if (empty($sortorder)) {
 		$sortorder = "DESC";
 	}
-
 }
 if (! empty($search_training_ref_interne)) {
 	$filter ['c.ref_interne'] = $search_training_ref_interne;
+	$option .= '&search_training_ref_interne=' . $search_training_ref_interne;
 }
 if ($search_type_session != '' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
+	$option .= '&search_type_session=' . $search_type_session;
 }
 if (! empty($status_view)) {
 	$filter ['s.status'] = $status_view;
+	$option .= '&status=' . $status_view;
 }
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
+	$option .= '&search_id=' . $search_id;
 }
-
 if (! empty($search_month)) {
 	$filter ['MONTH(s.dated)'] = $search_month;
+	$option .= '&search_month=' . $search_month;
 }
-
 if (! empty($search_year)) {
 	$filter ['YEAR(s.dated)'] = $search_year;
+	$option .= '&search_year=' . $search_year;
 }
 if (! empty($search_session_status)) {
 	$filter ['s.status'] = $search_session_status;
+	$option .= '&search_session_status=' . $search_session_status;
+}
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
 }
 
 foreach ($search_array_options as $key => $val)
@@ -244,16 +261,12 @@ if (empty($sortfield)) {
 	$sortfield = "s.dated";
 }
 
+if (empty($page) || $page == -1) { $page = 0; }
 
 
-if ($page == - 1) {
-	$page = 0;
-}
-
-$offset = $conf->liste_limit * $page;
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
@@ -284,12 +297,17 @@ if ($status_view == 1) {
 llxHeader('', $title);
 
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "ASC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "s.dated";
+}
 
 if ($training_view && ! empty($search_training_ref)) {
+
+	$option .= '&training_view=' . $training_view;
+
 	$agf = new Agefodd($db);
 	$result = $agf->fetch('', $search_training_ref);
 
@@ -302,6 +320,9 @@ if ($training_view && ! empty($search_training_ref)) {
 }
 
 if (! empty($site_view)) {
+
+	$option .= '&site_view=' . $site_view;
+
 	$agf = new Agefodd_place($db);
 	$result = $agf->fetch($search_site);
 
@@ -309,7 +330,7 @@ if (! empty($site_view)) {
 		$head = site_prepare_head($agf);
 
 		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
-		
+
 		dol_agefodd_banner_tab($agf, 'site_view=1&search_site');
 		print '<div class="underbanner clearboth"></div>';
 	}
@@ -385,56 +406,30 @@ if ($resql != - 1) {
 		$menu = $langs->trans("AgfMenuSess");
 	}
 
-	if (! empty($search_trainning_name))
-		$option .= '&search_trainning_name=' . $search_trainning_name;
-	if (! empty($search_soc))
-		$option .= '&search_soc=' . $search_soc;
-	if (! empty($search_sale))
-		$option .= '&search_sale=' . $search_sale;
-	if (! empty($status_view))
-		$option .= '&status=' . $status_view;
-	if (! empty($search_session_status))
-		$option .= '&search_session_status=' . $search_session_status;
-	if (! empty($search_id))
-		$option .= '&search_id=' . $search_id;
-	if (! empty($search_month))
-		$option .= '&search_month=' . $search_month;
-	if (! empty($search_year))
-		$option .= '&search_year=' . $search_year;
-	if (! empty($training_view))
-		$option .= '&training_view=' . $training_view;
-	if (! empty($site_view))
-		$option .= '&site_view=' . $site_view;
-	if (! empty($search_teacher_id))
-		$option .= '&search_teacher_id=' . $search_teacher_id;
-	if (! empty($search_training_ref))
-		$option .= '&search_training_ref=' . $search_training_ref;
-	if (! empty($search_start_date))
-		$option .= '&search_start_datemonth=' . dol_print_date($search_start_date, '%m') . '&search_start_dateday=' . dol_print_date($search_start_date, '%d') . '&search_start_dateyear=' . dol_print_date($search_start_date, '%Y');
-	if (! empty($search_end_date))
-		$option .= '&search_end_datemonth=' . dol_print_date($search_end_date, '%m') . '&search_end_dateday=' . dol_print_date($search_end_date, '%d') . '&search_end_dateyear=' . dol_print_date($search_end_date, '%Y');
-	if (! empty($search_site) && $search_site != - 1)
-		$option .= '&search_site=' . $search_site;
-	if (! empty($search_training_ref_interne))
-		$option .= '&search_training_ref_interne=' . $search_training_ref_interne;
-	if ($search_type_session != '' && $search_type_session != - 1)
-		$option .= '&search_type_session=' . $search_type_session;
-
 	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
-	if (! empty($status_view))
+	if (! empty($status_view)) {
 		print '<input type="hidden" name="status" value="' . $status_view . '"/>';
-	if (! empty($site_view))
+	}
+	if (! empty($site_view)) {
 		print '<input type="hidden" name="site_view" value="' . $site_view . '"/>';
-	if (! empty($training_view))
+	}
+	if (! empty($training_view)) {
 		print '<input type="hidden" name="training_view" value="' . $training_view . '"/>';
-	if (! empty($sortfield))
+	}
+	if (! empty($sortfield)) {
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
-	if (! empty($sortorder))
+	}
+	if (! empty($sortorder)) {
 		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
-	if (! empty($page))
+	}
+	if (! empty($page)) {
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
+	}
+	if (! empty($limit)) {
+		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+	}
 
 	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
@@ -576,25 +571,25 @@ if ($resql != - 1) {
 	}
 
 	if (! empty($arrayfields['s.nb_stagiaire']['checked'])) print '<td class="liste_titre"></td>';
-	
+
 	if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
 	    print '<td class="liste_titre">';
 	    print '<input type="text" class="flat" name="search_socpeople_presta" value="' . $search_socpeople_presta . '" size="15">';
 	    print '</td>';
 	}
-	
+
 	if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
 	    print '<td class="liste_titre">';
 	    print '<input type="text" class="flat" name="search_soc_employer" value="' . $search_soc_employer . '" size="15">';
 	    print '</td>';
 	}
-	
+
 	if (! empty($arrayfields['s.fk_soc_requester']['checked'])) {
 	    print '<td class="liste_titre">';
 	    print '<input type="text" class="flat" name="search_soc_requester" value="' . $search_soc_requester . '" size="15">';
 	    print '</td>';
 	}
-	
+
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print '<td class="liste_titre"></td>';
 	if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
 
@@ -773,7 +768,7 @@ if ($resql != - 1) {
 
 			if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td><a href="'. dol_buildpath('/agefodd/site/card.php?id=', 2) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td>' . $line->nb_stagiaire . '</td>';
-			
+
 			if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
 			    if($line->fk_socpeople_presta > 0){
 			        $contact = new Contact($db);
@@ -782,7 +777,7 @@ if ($resql != - 1) {
 			        unset($contact);
 			    } else print '<td></td>';
 			}
-			
+
 			if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
 			    if($line->fk_soc_employer > 0){
 			        $soc = new Societe($db);
@@ -791,9 +786,9 @@ if ($resql != - 1) {
 			        unset($soc);
 			    } else print '<td></td>';
 			}
-			
+
 			if (! empty($arrayfields['s.fk_soc_requester']['checked'])){
-			    if($line->socrequesterid > 0){ 
+			    if($line->socrequesterid > 0){
 			        $soc = new Societe($db);
 			        $soc->fetch($line->socrequesterid);
 			        print '<td>' . $soc->getNomUrl(1) . '</td>';

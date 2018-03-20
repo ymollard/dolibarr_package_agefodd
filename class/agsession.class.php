@@ -2525,7 +2525,9 @@ class Agsession extends CommonObject
 
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid, sorequester.nom";
-		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		if (! empty($sortfield)) {
+			$sql .= $this->db->order($sortfield, $sortorder);
+		}
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
@@ -2618,7 +2620,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,sf.trainer_status";
-		$sql .= " ,s.sell_price,";
+		$sql .= " ,s.sell_price";
 		$sql .= " ,s.fk_soc_employer,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=0 OR status_in_session IS NULL) AND fk_session_agefodd=s.rowid) as nb_prospect,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1 OR status_in_session=3) AND fk_session_agefodd=s.rowid) as nb_confirm,";
@@ -2645,7 +2647,7 @@ class Agsession extends CommonObject
 		$sql .= " WHERE ";
 		$sql .= " s.type_session=1";
 		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
+		//$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0)";
 
 		// Manage filter
 		if (! empty($filter)) {
@@ -2671,7 +2673,9 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		if (! empty($sortfield)) {
+			$sql .= $this->db->order($sortfield, $sortorder);
+		}
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
@@ -4368,7 +4372,7 @@ class Agsession extends CommonObject
 							} else {
 								$amount = $line->total_ht / $line->qty;
 								$invoice->lines[0]->qty = $line->qty;
-								
+
 								if (!empty($line->remise_percent)) {
 									$invoice->lines[0]->remise_percent=$line->remise_percent;
 									$amount=$line->subprice;
@@ -4741,15 +4745,15 @@ class Agsession extends CommonObject
 			return 1;
 		}
 	}
-	
+
 	function getLibStatut($mode = 0){
 	    global $langs, $db;
-	    
+
 	    $sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
-	    
+
 	    $res = $db->query($sql);
 	    $TStatut = array();
-	    
+
 	    if($res){
 	        while($obj = $db->fetch_object($res)){
 	            $TStatut[$obj->rowid] = $obj->code;

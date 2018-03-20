@@ -76,16 +76,16 @@ if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {
 	$search_propalid = '';
 }
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "DESC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "s.rowid";
-
-if ($page == - 1) {
-	$page = 0;
 }
 
-$limit = $conf->liste_limit;
+if (empty($page) || $page == -1) { $page = 0; }
+
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -251,6 +251,9 @@ if ($action == 'link_element') {
 
 $agf = new Agsession($db);
 $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid);
+if ($resql<0) {
+	setEventMessage($agf->error,'errors');
+}
 
 $session_array_id = array ();
 

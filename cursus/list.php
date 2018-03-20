@@ -42,6 +42,7 @@ llxHeader('', $langs->trans("AgfMenuCursus"));
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $arch = GETPOST('arch', 'int');
 
 if (empty($sortorder))
@@ -55,18 +56,18 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 $agf = new Agefodd_cursus($db);
-
+$nbtotalofrecords = 0;
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch);
+}
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
 
 $linenum = count($agf->lines);
-
-print_barre_liste($langs->trans("AgfMenuCursus"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum);
 
 print '<div width="100%" align="right">';
 if ($arch == 2) {
@@ -75,6 +76,24 @@ if ($arch == 2) {
 	print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=2">' . $langs->trans("AgfAfficherCursusArchives") . '</a>' . "\n";
 }
 print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=' . $arch . '">' . $txt . '</a>' . "\n";
+
+print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
+print '<input type="hidden" name="arch" value="' . $arch . '" >';
+if (! empty($sortfield)) {
+	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+}
+if (! empty($sortorder)) {
+	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+}
+if (! empty($page)) {
+	print '<input type="hidden" name="page" value="' . $page . '"/>';
+}
+if (! empty($limit)) {
+	print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+}
+print_barre_liste($langs->trans("AgfMenuCursus"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum,$nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "t.rowid", '', "&arch=" . $arch, '', $sortfield, $sortorder);
@@ -94,13 +113,14 @@ if ($result > 0) {
 		print '<td' . $style . '>' . $agf->lines [$i]->ref_interne . '</td>' . "\n";
 		print '<td ' . $style . '>' . $agf->lines [$i]->intitule . '</td>';
 		print '</tr>' . "\n";
-		
+
 		$i ++;
 	}
 } else {
 	setEventMessage($agf->error, 'errors');
 }
 print "</table>";
+print '</form>';
 print '<div>';
 
 print '<div class="tabsAction">';

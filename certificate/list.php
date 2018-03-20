@@ -140,9 +140,7 @@ if (empty($sortfield))
 if (empty($arch))
 	$arch = 0;
 
-if ($page == - 1) {
-	$page = 0;
-}
+if (empty($page) || $page == -1) { $page = 0; }
 
 $limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
 $offset = $limit * $page;
@@ -165,7 +163,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 }
 $resql = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter);
 
-if ($resql != - 1) {
+if ($resql>=0) {
 	$num = $resql;
 
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
@@ -315,14 +313,14 @@ if ($resql != - 1) {
 		print '<td>' . dol_print_date($line->certif_dt_start, 'daytextshort') . '</td>';
 
 		print '<td>' . dol_print_date($line->certif_dt_end, 'daytextshort') . '</td>';
-		
+
 		if(!empty($line->certif_dt_end) && $line->certif_dt_end < dol_now()) $style = "background-color:red;";
 		elseif(!empty($line->certif_dt_warning) && $line->certif_dt_warning < dol_now()) $style = "background-color:orange;";
 		else $style = "background-color:green;";
-		
+
 		print '<td style="'.$style.'">'.dol_print_date($line->certif_dt_warning, 'daytextshort').'</td>';
 		print "</tr>\n";
-		
+
 		$oldid = $line->rowid;
 
 		$i ++;

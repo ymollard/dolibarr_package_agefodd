@@ -513,16 +513,25 @@ class Agefodd_cursus extends CommonObject {
 		$sql .= " t.tms";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as t";
 		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agcursus*/) . ")";
-		if ($arch == 0 || $arch == 1)
+		if ($arch == 0 || $arch == 1) {
 			$sql .= " AND t.archive = " . $arch;
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
+		}
+
+		if (! empty($sortfield)) {
+			$sql .= $this->db->order($sortfield, $sortorder);
+		}
+
+		if (! empty($limit)) {
+			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
+		}
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
+			var_dump($num);
 
 			$i = 0;
 			while ( $i < $num ) {

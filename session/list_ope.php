@@ -47,6 +47,7 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
 // Search criteria
 $search_trainning_name = GETPOST("search_trainning_name");
@@ -82,60 +83,67 @@ if (GETPOST("button_removefilter_x")) {
 $filter = array ();
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
+	$option .= '&search_trainning_name=' . $search_trainning_name;
 }
 if (! empty($search_sale)) {
 	$filter ['sale.fk_user_com'] = $search_sale;
+	$option .= '&search_sale=' . $search_sale;
 }
 if (! empty($search_soc_requester)) {
 	$filter ['sorequester.nom'] = $search_soc_requester;
-}
-if (! empty($ts_logistique)) {
-	$filter ['extra.ts_logistique'] = $ts_logistique;
+	$option .= '&search_soc_requester=' . $search_soc_requester;
 }
 if (! empty($search_soc)) {
 	$filter ['so.nom'] = $search_soc;
+	$option .= '&search_soc=' . $search_soc;
 }
 if (! empty($search_teacher_id)  && $search_teacher_id != - 1) {
 	$filter ['f.rowid'] = $search_teacher_id;
+	$option .= '&search_teacher_id=' . $search_teacher_id;
 }
 if (! empty($search_training_ref)) {
 	$filter ['c.ref'] = $search_training_ref;
+	$option .= '&search_training_ref=' . $search_training_ref;
 }
 if (! empty($search_start_date)) {
 	$filter ['s.dated'] = $db->idate($search_start_date);
+	$option .= '&search_start_datemonth=' . dol_print_date($search_start_date, '%m') . '&search_start_dateday=' . dol_print_date($search_start_date, '%d') . '&search_start_dateyear=' . dol_print_date($search_start_date, '%Y');
 }
 if (! empty($search_end_date)) {
 	$filter ['s.datef'] = $db->idate($search_end_date);
+	$option .= '&search_end_datemonth=' . dol_print_date($search_end_date, '%m') . '&search_end_dateday=' . dol_print_date($search_end_date, '%d') . '&search_end_dateyear=' . dol_print_date($search_end_date, '%Y');
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
-}
-if (! empty($search_order) && $search_order != - 1) {
-	$filter ['s.fk_session_place'] = $search_order;
+	$option .= '&search_site=' . $search_site;
 }
 if (! empty($search_training_ref_interne)) {
 	$filter ['c.ref_interne'] = $search_training_ref_interne;
+	$option .= '&search_training_ref_interne=' . $search_training_ref_interne;
 }
 if ($search_type_session != '' && $search_type_session != - 1) {
 	$filter ['s.type_session'] = $search_type_session;
+	$option .= '&search_type_session=' . $search_type_session;
 }
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
+	$option .= '&search_id=' . $search_id;
 }
-if (! empty($search_id)) {
-	$filter ['s.rowid'] = $search_id;
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
 }
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "DESC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "s.dated";
-
-if ($page == - 1) {
-	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+if (empty($page) || $page == -1) { $page = 0; }
+
+
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -181,15 +189,27 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all_with_task_state($sortorder, $sortfield, 0, 0, $filter, $user);
 }
-$resql = $agf->fetch_all_with_task_state($sortorder, $sortfield, $conf->liste_limit, $offset, $filter, $user);
+$resql = $agf->fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter, $user);
 
 if ($resql != - 1) {
 	$num = $resql;
 
-	$option = '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
 
-	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] .'" name="search_form">' . "\n";
+	if (! empty($sortfield)) {
+		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+	}
+	if (! empty($sortorder)) {
+		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+	}
+	if (! empty($page)) {
+		print '<input type="hidden" name="page" value="' . $page . '"/>';
+	}
+	if (! empty($limit)) {
+		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+	}
+
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 	// If the user can view prospects other than his'
 	if ($user->rights->societe->client->voir || $socid) {
@@ -203,27 +223,9 @@ if ($resql != - 1) {
 	}
 
 	$i = 0;
+
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-
-	if (! empty($search_id))
-		$option .= '&search_id=' . $search_id;
-	if (! empty($search_start_date))
-		$option .= '&search_start_datemonth=' . dol_print_date($search_start_date, '%m') . '&search_start_dateday=' . dol_print_date($search_start_date, '%d') . '&search_start_dateyear=' . dol_print_date($search_start_date, '%Y');
-	if (! empty($search_end_date))
-		$option .= '&search_end_datemonth=' . dol_print_date($search_end_date, '%m') . '&search_end_dateday=' . dol_print_date($search_end_date, '%d') . '&search_end_dateyear=' . dol_print_date($search_end_date, '%Y');
-	if (! empty($search_trainning_name))
-		$option .= '&search_trainning_name=' . $search_trainning_name;
-	if (! empty($search_teacher_id))
-		$option .= '&search_teacher_id=' . $search_teacher_id;
-	if (! empty($search_site) && $search_site != - 1)
-		$option .= '&search_site=' . $search_site;
-	if (! empty($search_soc))
-		$option .= '&search_soc=' . $search_soc;
-	if (! empty($search_soc_requester))
-		$option .= '&search_soc_requester=' . $search_soc_requester;
-	if ($search_type_session != '' && $search_type_session != - 1)
-		$option .= '&search_type_session=' . $search_type_session;
 
 	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
@@ -240,8 +242,6 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-
-	print '<td/>';
 	print "</tr>\n";
 
 	print '<tr class="liste_titre">';
@@ -300,7 +300,7 @@ if ($resql != - 1) {
 	print '</td>';
 
 	print "</tr>\n";
-	print '</form>';
+
 
 	$var = true;
 	foreach ( $agf->lines as $line ) {
@@ -363,7 +363,7 @@ if ($resql != - 1) {
 			print '<td>' . $line->task3 . '</td>';
 
 			print '<td>' . $line->nb_stagiaire . '</td>';
-			print '<td>' . ($line->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
+			print '<td>' . (empty($line->type_session) ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
 			print '<td title="' . stripslashes($line->notes) . '">' . stripslashes(dol_trunc($line->notes, 60)) . '</td>';
 
 			print "</tr>\n";
@@ -404,6 +404,7 @@ if ($resql != - 1) {
 	}
 
 	print "</table>";
+	print '</form>';
 } else {
 	setEventMessage($agf->error, 'errors');
 }
