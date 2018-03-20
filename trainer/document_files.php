@@ -105,6 +105,9 @@ if ($object->id) {
 	$head = trainer_prepare_head($object);
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfTeacher"), 0, 'bill');
+	
+	dol_agefodd_banner_tab($object, 'id');
+	print '<div class="underbanner clearboth"></div>';
 
 	$form = new Form($db);
 
@@ -114,16 +117,6 @@ if ($object->id) {
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file['size'];
 	}
-
-	print '<table class="border" width="100%">';
-
-	print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
-	print '<td>' . $form->showrefnav($object, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
-
-	print '<tr><td>' . $langs->trans("Name") . '</td>';
-	print '<td>' . ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname)) . '</td></tr>';
-	print '</table>';
-	print '</div>';
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer);

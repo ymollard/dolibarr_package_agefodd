@@ -203,6 +203,9 @@ $head = training_prepare_head($agf);
 
 dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
+dol_agefodd_banner_tab($agf, 'id');
+print '<div class="underbanner clearboth"></div>';
+
 $admlevel = new Agefodd_training_admlevel($db);
 $result0 = $admlevel->fetch_all($trainingid);
 

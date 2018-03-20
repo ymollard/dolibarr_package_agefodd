@@ -542,16 +542,19 @@ if (! empty($id)) {
 	$agf = new Agsession($db);
 	$agf->fetch($id);
 
+	// Display View mode
+	$head = session_prepare_head($agf);
+	
+	dol_fiche_head($head, 'document_trainee', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	
+	dol_agefodd_banner_tab($agf, 'id');
+	print '<div class="underbanner clearboth"></div>';
+	
 	$result = $agf->fetch_societe_per_session($id);
 
-	if ($result) {
+	if ($result>0) {
 		$idform = $agf->formid;
-
-		// Display View mode
-		$head = session_prepare_head($agf);
-
-		dol_fiche_head($head, 'document_trainee', $langs->trans("AgfSessionDetail"), 0, 'generic');
-
+		
 		// Put user on the right action block after reload
 		if (! empty($session_trainee_id)) {
 			print '<script type="text/javascript">
@@ -562,15 +565,6 @@ if (! empty($id)) {
 					});
 					</script> ';
 		}
-
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">' . "\n";
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>' . "\n";
-
-		// Print session card
-		$agf->printSessionInfo();
-
-		print '&nbsp';
 
 		/*
 		 * Formulaire d'envoi des documents
@@ -743,16 +737,6 @@ if (! empty($id)) {
 			}
 		} else {
 
-			print '<div class="tabsAction">';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=convocation_trainee">' . $langs->trans('AgfGenerateAllConvocation') . '</a>';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestation_trainee">' . $langs->trans('AgfGenerateAllAttestation') . '</a>';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfGenerateAllAttestationEndTraining') . '</a>';
-			print '<BR><BR>';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=convocation_trainee">' . $langs->trans('AgfSendMailAllConvocation') . '</a>';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestation_trainee">' . $langs->trans('AgfSendMailAllAttestation') . '</a>';
-			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfSendMailAllAttestationEndTraining') . '</a>';
-			print '</div>';
-
 			$agf_trainee = new Agefodd_session_stagiaire($db);
 			$result = $agf_trainee->fetch_stagiaire_per_session($id);
 			if ($result < 0) {
@@ -784,8 +768,35 @@ if (! empty($id)) {
 						print '&nbsp;' . "\n";
 				}
 			}
+			
 			print '</div>' . "\n";
+			
 		}
+	} elseif ($result==0) {
+	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
+	} else {
+	    setEventMessages($agf->error, null, 'errors');
+	}
+	
+	if (!empty($linecount)){
+	    print '<div class="tabsAction">';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=convocation_trainee">' . $langs->trans('AgfGenerateAllConvocation') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestation_trainee">' . $langs->trans('AgfGenerateAllAttestation') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfGenerateAllAttestationEndTraining') . '</a>';
+	    print '<BR>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=convocation_trainee">' . $langs->trans('AgfSendMailAllConvocation') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestation_trainee">' . $langs->trans('AgfSendMailAllAttestation') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfSendMailAllAttestationEndTraining') . '</a>';
+	    print '</div>';
+	} else {
+	    print '<div style="text-align:center"><br>'.$langs->trans('AgfNobody').'</div>';
+	    print '<div class="tabsAction">';
+	    if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && $agf->status != 4) {
+	        print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/subscribers.php', 2) . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
+	    } else {
+	        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
+	    }
+	    print '</div>';
 	}
 }
 

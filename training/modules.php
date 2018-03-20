@@ -122,21 +122,9 @@ dol_fiche_head($head, 'trainingmodule', $langs->trans("AgfTrainingModule"), 0, '
 if ($action == 'delete') {
 	print $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'confirm_delete', '', 0, 1);
 }
-print '<table class="border" width="100%">';
-print "<tr>";
-print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
-print $object->id;
-print '</td></tr>';
 
-print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
-print '<td colspan=2>' . stripslashes($object->intitule) . '</td></tr>';
-
-print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
-print $object->ref_obj . '</td></tr>';
-
-print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
-print $object->ref_interne . '</td></tr>';
-print '</table>';
+dol_agefodd_banner_tab($object, 'id');
+print '<div class="underbanner clearboth"></div><br>';
 
 print_fiche_titre($langs->trans("AgfTrainingModule"));
 if (is_array($object_modules->lines) && count($object_modules->lines) > 0) {

@@ -93,6 +93,8 @@ $head = training_prepare_head($agf);
 
 dol_fiche_head($head, 'trainingtrainer', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
+dol_agefodd_banner_tab($agf, 'id');
+print '<div class="underbanner clearboth"></div>';
 
 print '<form name="create_contact" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
@@ -101,20 +103,6 @@ print '<input type="hidden" name="id" value="'.$id.'">' . "\n";
 
 
 print '<table class="border" width="100%">';
-
-print "<tr>";
-print '<td width="20%">' . $langs->trans("Id") . '</td><td>';
-print $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id');
-print '</td></tr>';
-
-print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
-print '<td>' . stripslashes($agf->intitule) . '</td></tr>';
-
-print '<tr><td>' . $langs->trans("Ref") . '</td><td>';
-print $agf->ref_obj . '</td></tr>';
-
-print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td>';
-print $agf->ref_interne . '</td></tr>';
 
 print '<tr><td>' . $langs->trans("AgfTrainingTrainer");
 if ($action != 'edittrainer' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {

@@ -73,7 +73,11 @@ function training_prepare_head($object) {
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath('/agefodd/training/note.php', 1) . '?id=' . $object->id;
-	$head [$h] [1] = $langs->trans("AgfNote");
+	$head [$h] [1] = $langs->trans("AgfCatalogNote");
+	$nbNotes = 0;
+	if (!empty($object->note_private)) $nbNotes++;
+	if (!empty($object->note_public)) $nbNotes++;
+	if (!empty($nbNotes)) $head[$h][1].= ' <span class="badge">'.$nbNotes.'</span>';
 	$head [$h] [2] = 'notes';
 	$hselected = $h;
 	$h ++;
@@ -1537,4 +1541,266 @@ function printSessionFieldsWithCustomOrder() {
 		<?php
 		}
 	}
+}
+
+function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fieldid='rowid', $fieldref='ref', $morehtmlref='', $moreparam='', $nodbprefix=0, $morehtmlleft='', $morehtmlstatus='', $onlybanner=0, $morehtmlright='')
+{
+    global $conf, $form, $user, $langs, $db;
+    
+    dol_include_once('/agefodd/class/html.formagefodd.class.php');
+    $formAgefodd = new FormAgefodd($db);
+    
+    $error = 0;
+    
+    $maxvisiblephotos=1;
+    $showimage=1;
+    $modulepart="agefodd";
+    if ($object->table_element == 'agefodd_stagiaire'){
+        $modulepart = "contact";
+    } elseif ($object->table_element == 'agefodd_formateur'){
+        $modulepart = "userphoto";
+    }
+    
+    if ($showimage)
+    {
+        if (!empty($object->table_element)){
+            /*
+            $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
+            $phototoshow = $form->showphoto($modulepart,$object,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+            $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
+            $morehtmlleft.=$phototoshow;
+            $morehtmlleft.='</div>';
+            */
+            $phototoshow='';
+            // Check if a preview file is available
+            if (in_array($modulepart, array('propal', 'commande', 'facture', 'ficheinter', 'contract', 'supplier_order', 'supplier_proposal', 'supplier_invoice', 'expensereport')) && class_exists("Imagick"))
+            {
+                $objectref = dol_sanitizeFileName($object->ref);
+                $dir_output = $conf->$modulepart->dir_output . "/";
+                if (in_array($modulepart, array('invoice_supplier', 'supplier_invoice')))
+                {
+                    $subdir = get_exdir($object->id, 2, 0, 0, $object, $modulepart).$objectref;
+                }
+                else
+                {
+                    $subdir = get_exdir($object->id, 0, 0, 0, $object, $modulepart).$objectref;
+                }
+                $filepath = $dir_output . $subdir . "/";
+                $file = $filepath . $objectref . ".pdf";
+                $relativepath = $subdir.'/'.$objectref.'.pdf';
+                
+                // Define path to preview pdf file (preview precompiled "file.ext" are "file.ext_preview.png")
+                $fileimage = $file.'_preview.png';              // If PDF has 1 page
+                $fileimagebis = $file.'_preview-0.png';         // If PDF has more than one page
+                $relativepathimage = $relativepath.'_preview.png';
+                
+                // Si fichier PDF existe
+                if (file_exists($file))
+                {
+                    $encfile = urlencode($file);
+                    // Conversion du PDF en image png si fichier png non existant
+                    if ( (! file_exists($fileimage) || (filemtime($fileimage) < filemtime($file)))
+                    && (! file_exists($fileimagebis) || (filemtime($fileimagebis) < filemtime($file)))
+                    )
+                    {
+                        if (empty($conf->global->MAIN_DISABLE_PDF_THUMBS))		// If you experience trouble with pdf thumb generation and imagick, you can disable here.
+                        {
+                            $ret = dol_convert_file($file, 'png', $fileimage);
+                            if ($ret < 0) $error++;
+                        }
+                    }
+                    
+                    $heightforphotref=70;
+                    if (! empty($conf->dol_optimize_smallscreen)) $heightforphotref=60;
+                    // Si fichier png PDF d'1 page trouve
+                    if (file_exists($fileimage))
+                    {
+                        $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                        $phototoshow.= '<img height="'.$heightforphotref.'" class="photo photowithmargin photowithborder" src="'.DOL_URL_ROOT . '/viewimage.php?modulepart=apercu'.$modulepart.'&amp;file='.urlencode($relativepathimage).'">';
+                        $phototoshow.= '</div></div>';
+                    }
+                    // Si fichier png PDF de plus d'1 page trouve
+                    elseif (file_exists($fileimagebis))
+                    {
+                        $preview = preg_replace('/\.png/','',$relativepathimage) . "-0.png";
+                        $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                        $phototoshow.= '<img height="'.$heightforphotref.'" class="photo photowithmargin photowithborder" src="'.DOL_URL_ROOT . '/viewimage.php?modulepart=apercu'.$modulepart.'&amp;file='.urlencode($preview).'"><p>';
+                        $phototoshow.= '</div></div>';
+                    }
+                }
+            }
+            else if (! $phototoshow)
+            {
+                $phototoshow = $form->showphoto($modulepart,$object,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+            }
+            
+            if ($object->table_element == 'agefodd_stagiaire' && ! empty($object->fk_socpeople)) { // trainee from a contact
+                dol_include_once('/contact/class/contact.class.php');
+                
+                $contact = new Contact($db);
+                $contact->fetch($object->fk_socpeople);
+                $phototoshow = $form->showphoto($modulepart,$contact,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+                
+            }
+            elseif ($object->table_element == 'agefodd_formateur')
+            {
+                if($object->type_trainer == 'socpeople')
+                {
+                    dol_include_once('/contact/class/contact.class.php');
+                    
+                    $contact = new Contact($db);
+                    $contact->fetch($object->fk_socpeople);
+                    $phototoshow = $form->showphoto($modulepart,$contact,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+                }
+                else
+                {
+                    $u = new User($db);
+                    $u->fetch($object->fk_user);
+                    $phototoshow = $form->showphoto($modulepart,$u,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
+                }
+            }
+            elseif($object->table_element == 'agefodd_place')
+            {
+                $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                $phototoshow.= img_picto('', 'object_address'); 
+                $phototoshow.= '</div></div>';
+            }
+            elseif($object->table_element == 'agefodd_formation_catalogue')
+            {
+                $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                $phototoshow.= img_picto('', 'object_label');
+                $phototoshow.= '</div></div>';
+            }
+            elseif($object->table_element == 'agefodd_session')
+            {
+                $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
+                $phototoshow.= img_picto('', 'object_calendarday');
+                $phototoshow.= '</div></div>';
+            }
+            
+            if ($phototoshow)
+            {
+                $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
+                $morehtmlleft.=$phototoshow;
+                $morehtmlleft.='</div>';
+            }
+
+        }
+    }
+    
+    // libstatut
+    if ($object->table_element == 'agefodd_formation_catalogue'){
+        
+        $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
+        
+    } elseif ($object->table_element == 'agefodd_session'){
+        
+        $morehtmlstatus.='<div align="right">'.$object->getLibStatut(1);
+        
+        require_once ('../class/agefodd_sessadm.class.php');
+        $sess_adm = new Agefodd_sessadm($db);
+        $result = $sess_adm->fetch_all($object->id);
+        
+        if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
+        $morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')).'</div>';
+
+    } elseif ($object->table_element == 'agefodd_place'){
+        
+        $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
+        
+    }
+    
+    // Other infos
+    if ($object->table_element == 'agefodd_formation_catalogue'){ // formation catalogue
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/training/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.= $langs->trans("AgfFormIntitule") . ' : ' . $object->intitule . '<br>';
+        $morehtmlref.= $langs->trans("AgfFormRef") . ' : ' . $object->ref_obj;
+        if(!empty($object->ref_interne)) $morehtmlref .= '<br>' . $object->ref_interne;
+        $morehtmlref.='</div>';
+        
+    }  elseif ($object->table_element == 'agefodd_session'){ //session formation
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.= $object->formintitule;
+        
+        if (!empty($object->fk_soc)){
+            dol_include_once('/societe/class/societe.class.php');
+            $soc = new Societe($db);
+            $soc->fetch($object->fk_soc);
+            $morehtmlref .= '<br>' . $langs->trans("Customer") . ' : ' .$soc->getNomUrl(1);
+        }
+        
+        if (!empty($object->placeid)){
+            $morehtmlref .= '<br>'. $langs->trans("AgfLieu") . ' : ';
+            $morehtmlref .= '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->placeid . '">' . $object->placecode . '</a>';
+        }
+        
+        if (!empty($object->dated))
+        {
+            $morehtmlref .= '<br>'. $langs->trans("AgfDateDebut") . ' : ' . dol_print_date($object->dated, 'daytext');
+        }
+        
+        if (!empty($object->datef))
+        {
+            $morehtmlref .= '<br>'. $langs->trans("AgfDateFin") . ' : ' . dol_print_date($object->datef, 'daytext');
+        }
+        // var_dump($object);
+        
+        $morehtmlref.='</div>';
+        
+    } elseif ($object->table_element == 'agefodd_stagiaire'){ // trainee
+        
+        $morehtml .= '<a href="' . dol_buildpath('/agefodd/trainee/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtmlref.='<div class="refidno">';
+        
+        $morehtmlref.= $langs->trans('Name').' : ';
+        if (! empty($object->fk_socpeople)) { // trainee from a contact
+            dol_include_once('/contact/class/contact.class.php');
+            
+            $contact = new Contact($db);
+            $contact->fetch($object->fk_socpeople);
+            $morehtmlref.= $contact->getNomUrl(1) . '<br>';
+        } else {
+            $morehtmlref .= ucfirst($object->prenom) . ' ' . strtoupper($object->nom) . '<br>';
+        }
+        
+        $morehtmlref.= $langs->trans('Company').' : ' . $object->thirdparty->getNomUrl(1);
+        
+        $morehtmlref.='</div>';
+        
+    } elseif ($object->table_element == 'agefodd_formateur'){ // trainer
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/trainer/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.= $langs->trans('Name').' : ' . ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname));
+        $morehtmlref.= '<br>'.$langs->trans('AgfTrainerNature') . ' : ' . $langs->trans('AgfTrainerType'.ucfirst($object->type_trainer));
+        $morehtmlref.='</div>';
+        
+    } elseif ($object->table_element == 'agefodd_place'){ // Sites
+        
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/site/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
+        
+        $morehtmlref.='<div class="refidno">';
+        $morehtmlref.=  $langs->trans("Ref"). ' : ' . $object->ref_interne;
+        
+        if (!empty($object->socid)){
+            $soc = new Societe($db);
+            $soc->fetch($object->socid);
+            $morehtmlref.= '<br>'.  $langs->trans("Company") . ' : ' .$soc->getNomUrl(1);
+        }
+        
+        $morehtmlref.='</div>';
+        
+    }
+    
+    print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
+    print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
+    print '</div><br>';
+    print '<div class="underrefbanner clearboth"></div>';
+    //print '<div class="underbanner clearboth"></div>';
 }

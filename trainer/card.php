@@ -266,6 +266,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$head = trainer_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfTeacher"), 0, 'user');
+			
+			dol_agefodd_banner_tab($agf, 'id');
+			print '<div class="underbanner clearboth"></div>';
 
 			/*
 			 * Delete confirm
@@ -297,12 +300,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<input type="hidden" name="id" value="' . $agf->id . '">' . "\n";
 
 			print '<table class="border" width="100%">';
-
-			print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
-			print '<td>' . $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
-
-			print '<tr><td>' . $langs->trans("Name") . '</td>';
-			print '<td>' . ucfirst(strtolower($agf->civilite)) . ' ' . strtoupper($agf->name) . ' ' . ucfirst(strtolower($agf->firstname)) . '</td></tr>';
 
 			print '<tr><td>' . $langs->trans("AgfTrainerCategory");
 			if ($action != 'editcategory' && $user->rights->agefodd->creer) {
@@ -431,9 +428,26 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'editcategory' && $action != 'edittraining') {
 
+    $href = '';
+    if ($agf->type_trainer == 'socpeople'){
+        if(DOL_VERSION > 3.6){
+            $href = dol_buildpath('/contact/card.php?id='.$agf->spid, 2).'&action=edit';
+        } else {
+            $href = dol_buildpath('/contact/fiche.php?id='.$agf->spid, 2).'&action=edit';
+        }
+    } else {
+        if(DOL_VERSION > 3.6){
+            $href = dol_buildpath('/user/card.php?id='.$agf->fk_user, 2).'&action=edit';
+        } else {
+            $href = dol_buildpath('/user/fiche.php?id='.$agf->fk_user, 2).'&action=edit';
+        }
+    }
+    
 	if ($user->rights->agefodd->creer) {
+	    print '<a class="butAction" href="' . $href . '">' . $langs->trans('Modify') . '</a>';
 		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 	} else {
+	    print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 

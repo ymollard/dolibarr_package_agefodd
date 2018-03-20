@@ -89,9 +89,9 @@ if (! empty($search_namefirstname)) {
 }
 
 if (! $sortorder)
-	$sortorder = "DESC";
+	$sortorder = "ASC";
 if (! $sortfield)
-	$sortfield = "s.rowid";
+	$sortfield = "s.nom";
 
 if ($page == - 1) {
 	$page = 0;
@@ -196,7 +196,7 @@ if ($result >= 0) {
 		$var = ! $var;
 		print "<tr $bc[$var]>";
 		print '<td><a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "user") . ' ' . $line->rowid . '</a></td>';
-		print '<td>' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</td>';
+		print '<td><a href="card.php?id=' . $line->rowid . '">' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</a></td>';
 
 		$contact_static = new Contact($db);
 		$contact_static->civility_id = $line->civilite;

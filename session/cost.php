@@ -618,6 +618,9 @@ if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
 
 dol_fiche_head($head, 'cost', $langs->trans("AgfCostManagement"), 0, 'bill');
 
+dol_agefodd_banner_tab($agf, 'id');
+print '<div class="underbanner clearboth"></div>';
+
 /*
  * Confirm unlink
  */
@@ -698,13 +701,6 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 		print '<br>';
 }
 
-print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-print '</div>';
-
-// Print session card
-$agf->printSessionInfo();
-
 /*
  * Trainer cost management
  */
@@ -713,7 +709,7 @@ print_fiche_titre($langs->trans('AgfFormateur'));
 $agf_formateurs = new Agefodd_session_formateur($db);
 $agf_fin = new Agefodd_session_element($db);
 $nbform = $agf_formateurs->fetch_formateur_per_session($agf->id);
-if ($result < 0) {
+if ($nbform < 0) {
 	setEventMessage($agf_formateurs->error, 'errors');
 }
 

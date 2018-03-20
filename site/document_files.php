@@ -107,6 +107,9 @@ if ($object->id) {
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessPlace"), 0, 'address');
 
+	dol_agefodd_banner_tab($object, 'id');
+	print '<div class="underbanner clearboth"></div>';
+	
 	$form = new Form($db);
 
 	// Construit liste des fichiers
@@ -115,32 +118,6 @@ if ($object->id) {
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file['size'];
 	}
-
-	print '<table class="border" width="100%">';
-
-	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
-	print '<td>' . $form->showrefnav($object, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-
-	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
-	print '<td>' . $object->ref_interne . '</td></tr>';
-
-	print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
-	if ($object->socid) {
-		$soc = new Societe($db);
-		$soc->fetch($object->socid);
-		print $soc->getNomUrl();
-	} else {
-		print '&nbsp;';
-	}
-	print '</tr>';
-
-	print '<tr><td valign="top">' . $langs->trans("Contact") . '</td><td>';
-	$contact = new Contact($db);
-	$contact->fetch($object->fk_socpeople);
-	print $contact->getNomUrl();
-	print '</tr>';
-	print '</table>';
-	print '</div>';
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->agefodd_place->creer);

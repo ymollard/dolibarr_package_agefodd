@@ -47,11 +47,15 @@ $id = GETPOST('id', 'int');
 llxHeader('', $langs->trans("AgfCatalogDetail"));
 
 $agf = new Agefodd($db);
+$agf->fetch($id);
 $agf->info($id);
 
 $head = training_prepare_head($agf);
 
 dol_fiche_head($head, 'info', $langs->trans("AgfCatalogDetail"), 0, 'bill');
+
+dol_agefodd_banner_tab($agf, 'id');
+print '<div class="underbanner clearboth"></div>';
 
 print '<table width="100%"><tr><td>';
 dol_print_object_info($agf);

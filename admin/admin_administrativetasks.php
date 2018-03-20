@@ -42,6 +42,9 @@ if (! $user->rights->agefodd->admin && ! $user->admin)
     accessforbidden();
     
 $action = GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
+
+llxHeader('', $langs->trans('AgefoddSetupDesc'));
 
 if ($action == 'sessionlevel_create') {
     $agf = new Agefodd_session_admlevel($db);
@@ -165,14 +168,25 @@ if ($action == 'sessionlevel_update') {
         
         // Delete action
         if (GETPOST('sesslevel_remove_x')) {
-            
-            $result = $agf->delete($user);
-            if ($result != 1) {
-                setEventMessage($agf->error, 'errors');
-            }
+            print $form->formconfirm($_SERVER['PHP_SELF'] ."?id=".$agf->id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteAction"), "confirm_sessionlevel_delete", '', '', 1);
         }
     } else {
         setEventMessage('This action do not exists', 'errors');
+    }
+}
+
+if ($action == 'confirm_sessionlevel_delete' && $confirm == 'yes'){
+    $agf = new Agefodd_session_admlevel($db);
+    
+    $id = GETPOST('id', 'int');
+
+    $result = $agf->fetch($id);
+    
+    if ($result > 0) {
+        $result = $agf->delete($user);
+        if ($result != 1) {
+            setEventMessage($agf->error, 'errors');
+        }
     }
 }
 
@@ -181,7 +195,7 @@ if ($action == 'sessionlevel_update') {
  *
  */
 
-llxHeader('', $langs->trans('AgefoddSetupDesc'));
+
 
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);

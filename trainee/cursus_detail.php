@@ -131,62 +131,13 @@ if (! empty($id) && ! empty($cursus_id)) {
 		$head = trainee_prepare_head($agf, 1);
 
 		dol_fiche_head($head, 'cursusdetail', $langs->trans("AgfStagiaireDetail"), 0, 'user');
+		
+		dol_agefodd_banner_tab($agf, 'id');
+		print '<div class="underbanner clearboth"></div>';
 
-		// Trainee Detail
-		print '<table class="border" width="100%">';
-
-		print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
-		print '<td>' . $agf->id . '</td></tr>';
-
-		if (! empty($agf->fk_socpeople)) {
-			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-			print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf->fk_socpeople . '">' . strtoupper($agf->nom) . '</a></td></tr>';
-		} else {
-			print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-			print '<td>' . strtoupper($agf->nom) . '</td></tr>';
-		}
-
-		print '<tr><td>' . $langs->trans("Firstname") . '</td>';
-		print '<td>' . ucfirst($agf->prenom) . '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("AgfCivilite") . '</td>';
-
-		$contact_static = new Contact($db);
-		$contact_static->civility_id = $agf->civilite;
-
-		print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-
-		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
-		if ($agf->socid) {
-			print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $agf->socid . '">';
-			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($agf->socname, 20) . '</a>';
-		} else {
-			print '&nbsp;';
-		}
-		print '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("AgfFonction") . '</td>';
-		print '<td>' . $agf->fonction . '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("Phone") . '</td>';
-		print '<td>' . dol_print_phone($agf->tel1) . '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("Mobile") . '</td>';
-		print '<td>' . dol_print_phone($agf->tel2) . '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("Mail") . '</td>';
-		print '<td>' . dol_print_email($agf->mail, $agf->id, $agf->socid, 'AC_EMAIL', 25) . '</td></tr>';
-
-		print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
-		if (! empty($agf->note))
-			$notes = nl2br($agf->note);
-		else
-			$notes = $langs->trans("AgfUndefinedNote");
-		print '<td>' . stripslashes($notes) . '</td></tr>';
-
-		print "</table>";
-		print '</div>';
-
+		//delete pagination
+		print '<script>$("div.pagination").first().hide();</script>';
+		
 		// Cursus Detail
 		$agf_cursus = new Agefodd_cursus($db);
 		$result = $agf_cursus->fetch($cursus_id);

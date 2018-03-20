@@ -91,7 +91,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 	}
 }
 
-if ($action == 'replicateconftraining') {
+if ($action == 'confirm_replicateconftraining' && $confirm == 'yes') {
 	$agf_level = new Agefodd_sessadm($db);
 	$result = $agf_level->remove_all($id);
 	if ($result < 0) {
@@ -134,8 +134,15 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$agf = new Agefodd_sessadm($db);
 
 		$parent_level = GETPOST('action_level', 'int');
-
 		$agf->fk_agefodd_session_admlevel = 0;
+		
+		$sql = 'SELECT MAX(fk_agefodd_session_admlevel) as max FROM '.MAIN_DB_PREFIX.'agefodd_session_adminsitu WHERE `fk_agefodd_session` = ' . $id;
+		$res = $db->query($sql);
+		if($res){
+		    $obj = $db->fetch_object($res);
+		    if ($obj->max !== NULL) $agf->fk_agefodd_session_admlevel = ((int)$obj->max) + 1;
+		}
+		
 		$agf->fk_agefodd_session = $id;
 		$agf->delais_alerte = 0;
 		$agf->archive = 0;
@@ -205,7 +212,13 @@ if ($user->rights->agefodd->creer) {
 		dol_fiche_head($head, 'administrative', $langs->trans("AgfSessionDetail"), 0, 'bill');
 
 		$agf = new Agefodd_sessadm($db);
-
+		
+		if ($action == 'replicateconftraining' ) {
+		    require_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+		    $form = new Form($db);
+		    print $form->formconfirm($_SERVER["PHP_SELF"]."?id=".$id, $langs->trans('AgfReplaceByTrainingLevel'), $langs->trans('AgfReplaceByTrainingLevelHelp'), "confirm_replicateconftraining", '', '', 1);
+		}
+		
 		// Creation card
 		if ($action == 'create') {
 			print '<form name="create_confirm" action="administrative.php" method="post">' . "\n";
@@ -302,13 +315,12 @@ if ($user->rights->agefodd->creer) {
 			$sess_adm = new Agefodd_sessadm($db);
 			$result = $sess_adm->fetch_all($id);
 
-			print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-			print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-			print '</div>';
+			dol_agefodd_banner_tab($agf_session, 'id');
+			print '<div class="underbanner clearboth"></div>';
 
 			print '<table width="100%" class="border">';
 
-			if ($result) {
+			if ($result > 0) {
 
 				$i = 0;
 				foreach ( $sess_adm->lines as $line ) {
@@ -405,6 +417,10 @@ if ($user->rights->agefodd->creer) {
 
 					$i ++;
 				}
+			} elseif (empty($result)){
+			    print '<tr><td style="text-align:center">'.$langs->trans('AgfErrNoAdminTasksFound').'</td></tr>';
+			} else {
+			    print '<tr><td style="text-align:center">'.$langs->trans('AgfErrFetchAdminTasks').'</td></tr>';
 			}
 
 			print '</table>';

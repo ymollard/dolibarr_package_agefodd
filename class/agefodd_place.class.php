@@ -670,31 +670,27 @@ class Agefodd_place extends CommonObject {
 		return 1;
 	}
 
-	/**
-	 * Return information of Place
-	 *
-	 * @return void
-	 */
-	public function printPlaceInfo() {
-		global $langs, $form;
-
-		print '<table class="border" width="100%">';
-
-		print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
-		print '<td>' . $this->ref . '</td></tr>';
-
-		print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
-		print '<td>' . $this->ref_interne . '</td></tr>';
-
-		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
-		if ($this->socid) {
-			print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $this->socid . '">';
-			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($this->socname, 20) . '</a>';
-		} else {
-			print '&nbsp;';
-		}
-		print '</tr>';
-		print '</table>';
+	function getLibStatut($mode = 0){
+	    global $langs;
+	    
+	    if($this->archive){
+	        $picto = 'statut5';
+	        $statut = $langs->trans("AgfCatArchive");
+	    } else {
+	        $picto = 'statut4';
+	        $statut = $langs->trans("AgfCatActif");
+	    }
+	    
+	    switch ($mode){
+	        case 0 :
+	            return $statut;
+	            break;
+	        case 1 :
+	            return $statut . "&nbsp;" . img_picto('', $picto);
+	            break;
+	        default:
+	            return $statut . "&nbsp;" . img_picto('', $picto);
+	    }
 	}
 }
 class AgfPlaceLine {
