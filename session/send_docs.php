@@ -403,13 +403,16 @@ if (! empty($id)) {
 
 	$result = $agf->fetch_societe_per_session($id);
 
-	if ($result) {
+	// Display consult
+	$head = session_prepare_head($agf);
+	
+	dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	
+	dol_agefodd_banner_tab($agf, 'id');
+	print '<div class="underbanner clearboth"></div>';
+	
+	if ($result>0) {
 		$idform = $agf->formid;
-
-		// Display consult
-		$head = session_prepare_head($agf);
-
-		dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
 		/*
 		 * Confirm delete
@@ -417,13 +420,6 @@ if (! empty($id)) {
 		if ($action == 'delete') {
 			print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete");
 		}
-
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">' . "\n";
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>' . "\n";
-
-		$agf->printSessionInfo();
-		print '</div>' . "\n";
 
 		/*
 		 * Formulaire d'envoi des documents
@@ -2030,12 +2026,12 @@ if (! empty($id)) {
 			print '</div>' . "\n";
 		}
 
-		print '<div class="tabsAction">';
+		
 		if ($action != 'view_actioncomm') {
+		    print '<div class="tabsAction">';
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+			print '</div>';
 		}
-
-		print '</div>';
 
 		if ($action == 'view_actioncomm') {
 			// List of actions on element
@@ -2043,6 +2039,10 @@ if (! empty($id)) {
 			$formactions = new FormAgefodd($db);
 			$somethingshown = $formactions->showactions($agf, 'agefodd_agsession', $socid);
 		}
+	} elseif ($result==0) {
+	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
+	} else {
+	    setEventMessages($agf->error, null, 'errors');
 	}
 }
 

@@ -493,14 +493,9 @@ if (! empty($id)) {
 			print $form->formconfirm($_SERVER['PHP_SELF'] . "?stagerowid=" . GETPOST('stagerowid', 'int') . '&id=' . $id, $langs->trans("AgfDeleteStag"), $langs->trans("AgfConfirmDeleteStag"), "confirm_delete_stag", '', '', 1);
 		}
 
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>';
-
-		// Print session card
-		$agf->printSessionInfo();
-
-		print '&nbsp';
+		dol_agefodd_banner_tab($agf, 'id');
+		print '<div class="underbanner clearboth"></div>';
+		
 		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
 			$agf->type_session = 1;
 		}
@@ -1026,14 +1021,8 @@ if (! empty($id)) {
 	} else {
 		// Display View mode
 
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>';
-
-		// Print session card
-		$agf->printSessionInfo();
-
-		print '&nbsp';
+	    dol_agefodd_banner_tab($agf, 'id');
+	    print '<div class="underbanner clearboth"></div>';
 
 		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
 			$agf->type_session = 1;

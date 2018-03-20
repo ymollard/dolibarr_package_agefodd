@@ -498,6 +498,9 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '</div>' . "\n";
 			} else {
 				// Display View mode
+				
+			    dol_agefodd_banner_tab($agf, 'id');
+			    print '<div class="underbanner clearboth"></div>';
 
 				/*
 				 * Confirm delete
@@ -520,17 +523,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 				print '<table class="border" width="100%">';
 
-				print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
-				print '<td>' . $form->showrefnav($agf, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-
-				print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
-				print '<td>' . $agf->ref_interne . '</td></tr>';
-
 				print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 				if ($agf->socid) {
 					$soc = new Societe($db);
 					$soc->fetch($agf->socid);
-					print $soc->getNomUrl();
+					print $soc->getNomUrl(1);
 				} else {
 					print '&nbsp;';
 				}

@@ -167,6 +167,9 @@ $head = site_prepare_head($agf_place);
 
 dol_fiche_head($head, 'reg_int_tab', $langs->trans("AgfSessPlace"), 0, 'address');
 
+dol_agefodd_banner_tab($agf_place, 'id');
+print '<div class="underbanner clearboth"></div>';
+
 /*
  * Action create
 */
@@ -177,13 +180,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<input type="hidden" name="action" value="create_confirm">' . "\n";
 	print '<input type="hidden" name="id" value="' . $id . '">' . "\n";
 
+	print '<br>';
 	print '<table class="border" width="100%">'. "\n";
-
-	print '<tr><td width="20%">' . $langs->trans("Id") . '</td>'. "\n";
-	print '<td>' . $form->showrefnav($agf_place, 'id', '', 1, 'rowid', 'id') . '</td></tr>'. "\n";
-
-	print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>'. "\n";
-	print '<td>' . $agf_place->ref_interne . '</td></tr>'. "\n";
 
 	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>'. "\n";
 	$doleditor = new DolEditor('reg_int', GETPOST('reg_int'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
@@ -217,12 +215,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 			print '<table class="border" width="100%">';
 
-			print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
-			print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-
-			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
-			print '<td>' . $agf_place->ref_interne . '</td></tr>';
-
 			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>';
 			$doleditor = new DolEditor('reg_int', $agf->reg_int, '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 			$doleditor->Create();
@@ -246,7 +238,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			print '</div>' . "\n";
 		} else {
 			// Card location interal rules View mode
-
+		    
 			/*
 			 * Delete confirm
 			*/
@@ -255,12 +247,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			}
 
 			print '<table class="border" width="100%">';
-
-			print '<tr><td width="20%">' . $langs->trans("Id") . '</td>';
-			print '<td>' . $form->showrefnav($agf_place, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
-
-			print '<tr><td>' . $langs->trans("AgfSessPlaceCode") . '</td>';
-			print '<td>' . $agf_place->ref_interne . '</td></tr>';
 
 			print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td>';
 			print '<td>' . $agf->reg_int . '</td></tr>';

@@ -320,18 +320,13 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 
 	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
 
-	print '<div width=100% align="center" style="margin: 0 0 3px 0;">' . "\n";
-	print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-	print '</div>' . "\n";
-
-	// Print session card
-	$agf->printSessionInfo();
-
-	print '&nbsp';
+	dol_agefodd_banner_tab($agf, 'id');
+	print '<div class="underbanner clearboth"></div>';
 
 	print '<table class="border" width="100%">' . "\n";
-
+	
 	print '<tr class="liste_titre">' . "\n";
+	
 	print '<td colspan=3>';
 	print '<a href="#">' . $langs->trans("AgfCommonDocs") . '</a></td>' . "\n";
 	print '</tr>' . "\n";
@@ -403,6 +398,8 @@ if (! empty($id)) {
 
 	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
+	dol_agefodd_banner_tab($agf, 'id');
+	print '<div class="underbanner clearboth"></div>';
 
 	if ($result > 0) {
 		// Put user on the right action block after reload
@@ -524,15 +521,6 @@ if (! empty($id)) {
 			}
 			print $form->formconfirm($_SERVER['PHP_SELF'] . '?type=' . $type_link . '&socid=' . $socid . '&id=' . $id . '&idelement=' . $idelement, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", $form_question, '', 1);
 		}
-
-		print '<div width=100% align="center" style="margin: 0 0 3px 0;">' . "\n";
-		print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-		print '</div>' . "\n";
-
-		// Print session card
-		$agf->printSessionInfo();
-
-		print '&nbsp';
 
 		print '<div class="fichecenter"><table class="border" width="100%">' . "\n";
 
@@ -729,6 +717,7 @@ if (! empty($id)) {
 		}
 		print '</div></div>' . "\n";
 	} elseif ($result==0) {
+	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
 		setEventMessages($langs->trans('AgfThirdparyMandatory'), null, 'errors');
 	} else {
 		setEventMessages($agf->error, null, 'errors');

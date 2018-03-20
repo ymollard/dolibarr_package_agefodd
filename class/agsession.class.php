@@ -3245,14 +3245,15 @@ class Agsession extends CommonObject
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
 
-		print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
-
+		print '<table id="session_card" class="border tableforfield" width="100%">';
+/*
+        print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
 		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
 		print '<td colspan="'.$colspan.'">' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
 
 		print '<tr class="order_intitule"><td>' . $langs->trans("AgfFormIntitule") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->formintitule . '</a></td></tr>';
-
+*/
 		print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->intitule_custo . '</a></td></tr>';
 
@@ -3281,13 +3282,13 @@ class Agsession extends CommonObject
 		}
 
 		print "</td></tr>";
-
+/*
 		print '<tr class="order_dated"><td>' . $langs->trans("AgfDateDebut") . '</td>';
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->dated, 'daytext') . '</td></tr>';
 
 		print '<tr class="order_datef"><td>' . $langs->trans("AgfDateFin") . '</td>';
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->datef, 'daytext') . '</td></tr>';
-
+*/
 		print '<tr class="order_customer"><td width="20%">' . $langs->trans("Customer") . '</td>';
 		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc)) && ($this->fk_soc > 0)) {
@@ -4739,6 +4740,32 @@ class Agsession extends CommonObject
 
 			return 1;
 		}
+	}
+	
+	function getLibStatut($mode = 0){
+	    global $langs, $db;
+	    
+	    $sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
+	    
+	    $res = $db->query($sql);
+	    $TStatut = array();
+	    
+	    if($res){
+	        while($obj = $db->fetch_object($res)){
+	            $TStatut[$obj->rowid] = $obj->code;
+	        }
+	    }
+
+	    switch ($mode){
+	        case 0 :
+	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
+	            break;
+	        case 1 :
+	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . img_picto('', 'status'.$this->status);
+	            break;
+	        default:
+	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
+	    }
 	}
 
 	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {

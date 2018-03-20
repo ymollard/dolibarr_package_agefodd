@@ -143,28 +143,13 @@ if ($object->id) {
 		$totalsize += $file['size'];
 	}
 
-	print '<table class="border" width="100%">';
-
-	print "<tr>";
-	print '<td width="20%">' . $langs->trans("Id") . '</td><td colspan=2>';
-	print $form->showrefnav($object, 'id', '', 1, 'rowid', 'id');
-	print '</td></tr>';
-
-	print '<tr><td width="20%">' . $langs->trans("AgfIntitule") . '</td>';
-	print '<td colspan=2>' . stripslashes($object->intitule) . '</td></tr>';
-
-	print '<tr><td>' . $langs->trans("Ref") . '</td><td colspan=2>';
-	print $object->ref_obj . '</td></tr>';
-
-	print '<tr><td>' . $langs->trans("AgfRefInterne") . '</td><td colspan=2>';
-	print $object->ref_interne . '</td></tr>';
-	print '</table>';
-	print '</div>';
+	dol_agefodd_banner_tab($object, 'id');
+	print '<div class="underbanner clearboth"></div>';
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
 	$param = '&id=' . $object->id;
-	
+
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 
 

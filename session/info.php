@@ -47,11 +47,15 @@ $id = GETPOST('id', 'int');
 llxHeader('', $langs->trans("AgfSessionDetail"));
 
 $agf = new Agsession($db);
+$agf->fetch($id);
 $agf->info($id);
 
 $head = session_prepare_head($agf);
 
 dol_fiche_head($head, 'info', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
+
+dol_agefodd_banner_tab($agf, 'id');
+print '<div class="underbanner clearboth"></div>';
 
 print '<table width="100%"><tr><td>';
 dol_print_object_info($agf);

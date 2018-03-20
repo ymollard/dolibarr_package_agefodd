@@ -74,6 +74,16 @@ $search_session_status = GETPOST('search_session_status');
 $search_sale = GETPOST('search_sale', 'int');
 $search_session_status = GETPOST('search_session_status');
 
+// Banner function
+$idforma = GETPOST('idforma', 'int'); // id formation catalogue
+if(!empty($idforma)){
+    $agformation = new Agefodd($db);
+    $agformation->fetch($idforma);
+    
+    $training_view = 1;
+    $search_training_ref = $agformation->ref_obj;
+}
+
 // prefilter the list if defined
 if(!empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
     $button_removefilter_x = GETPOST("button_removefilter_x");
@@ -286,8 +296,9 @@ if ($training_view && ! empty($search_training_ref)) {
 	$head = training_prepare_head($agf);
 
 	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
-
-	$agf->printFormationInfo();
+	dol_agefodd_banner_tab($agf, 'idforma');
+	print '<div class="underbanner clearboth"></div>';
+	//$agf->printFormationInfo();
 	print '</div>';
 }
 
@@ -299,10 +310,11 @@ if (! empty($site_view)) {
 		$head = site_prepare_head($agf);
 
 		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
+		
+		dol_agefodd_banner_tab($agf, 'site_view=1&search_site');
+		print '<div class="underbanner clearboth"></div>';
 	}
 
-	$agf->printPlaceInfo();
-	print '</div>';
 }
 
 $agf = new Agsession($db);

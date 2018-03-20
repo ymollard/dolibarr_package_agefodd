@@ -161,18 +161,8 @@ if ($id) {
 		
 		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfTeacher"), 0, 'user');
 		
-		print '<table class="border" width="100%">';
-		
-		print '<tr><td width="20%">' . $langs->trans("Ref") . '</td>';
-		print '<td>' . $form->showrefnav($agf, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
-		
-		print '<tr><td>' . $langs->trans("Name") . '</td>';
-		
-		print '<td>' . ucfirst(strtolower($agf->civilite)) . ' ' . strtoupper($agf->name) . ' ' . ucfirst(strtolower($agf->firstname)) . '</td></tr>';
-		
-		print "</table>";
-		
-		print '</div>';
+		dol_agefodd_banner_tab($agf, 'id');
+		print '<div class="underbanner clearboth"></div>';
 		
 		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="search_form">' . "\n";
 		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";

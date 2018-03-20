@@ -405,14 +405,9 @@ if (! $res)
 
 				dol_fiche_head($head, 'trainers', $langs->trans("AgfSessionDetail"), 0, 'group');
 
-				print '<div width=100% align="center" style="margin: 0 0 3px 0;">';
-				print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
-				print '</div>';
-
-				// Print session card
-				$agf->printSessionInfo();
-
-				print '&nbsp;</div>';
+				dol_agefodd_banner_tab($agf, 'action=edit&id');
+				print '<div class="underbanner clearboth"></div>';
+				
 				print_barre_liste($langs->trans("AgfFormateur"), "", "", "", "", "", '', 0);
 
 				/*
@@ -668,7 +663,7 @@ if (! $res)
 
 					print '</table>';
 					print '</form>' . "\n";
-					if (empty($newform_var) && ! empty($user->rights->agefodd->modifier)) {
+					/*if (empty($newform_var) && ! empty($user->rights->agefodd->modifier)) {
 						print '</div>';
 						print '<table style="border:0;" width="100%">';
 						print '<tr><td align="right">';
@@ -684,7 +679,7 @@ if (! $res)
 						}
 						print '</td></tr>';
 						print '</table>';
-					}
+					}*/
 					print '</div>';
 				} else {
 					// Display view mode
@@ -918,7 +913,7 @@ if (! $res)
 			 */
 
 			print '<div class="tabsAction">';
-
+            
 			if ($action != 'create' && $action != 'edit' && (! empty($agf->id)) && $nbform >= 1) {
 				if ($user->rights->agefodd->creer) {
 					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Modify') . '</a>';
@@ -932,7 +927,22 @@ if (! $res)
 					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
 				}
 			}
-
+			if ($action == 'edit' && $newform_var < 1){
+                if ($user->rights->agefodd->creer) {
+                    print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&newform=1">' . $langs->trans("AgfFormateurAdd") . '</a>';
+                } else {
+                    print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+                }
+                
+                if ($user->rights->agefodd->creer) {
+                    print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
+                } else {
+                    print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
+                }
+            }
+            if ($action == 'edit' && $newform_var >= 1){
+                print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Cancel') . '</a>';
+            }
 			print '</div>';
 
 			llxFooter();
