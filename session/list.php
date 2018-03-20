@@ -298,8 +298,7 @@ if ($training_view && ! empty($search_training_ref)) {
 	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
 	dol_agefodd_banner_tab($agf, 'idforma');
 	print '<div class="underbanner clearboth"></div>';
-	//$agf->printFormationInfo();
-	print '</div>';
+	
 }
 
 if (! empty($site_view)) {

@@ -23,6 +23,13 @@
  * \ingroup agefodd
  * \brief Some display function
  */
+dol_include_once('/core/lib/files.lib.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
+
 $langs->load('agefodd@agefodd');
 
 /**
@@ -33,7 +40,7 @@ $langs->load('agefodd@agefodd');
  *
  */
 function training_prepare_head($object) {
-	global $langs, $conf, $user;
+	global $langs, $conf, $user, $db;
 
 	$h = 0;
 	$head = array ();
@@ -46,6 +53,12 @@ function training_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?training_view=1&search_training_ref=' . urlencode($object->ref_obj);
 	$head [$h] [1] = $langs->trans("AgfMenuSess");
+	
+	$sess = new Agsession($db);
+	$filt['s.fk_formation_catalogue'] = $object->id;
+	$badgeNbSess = $sess->fetch_all('', '', 0, 0, $filt);
+	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
+	
 	$head [$h] [2] = 'sessions';
 	$hselected = $h;
 	$h ++;
@@ -68,6 +81,11 @@ function training_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/training/modules.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfTrainingModule");
+	
+	$object_modules = new Agefoddformationcataloguemodules($db);
+	$badgeNbModules = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array ('t.fk_formation_catalogue' => $object->id	));
+	if (!empty($badgeNbModules)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbModules . "</span>";
+	
 	$head [$h] [2] = 'trainingmodule';
 	$hselected = $h;
 	$h ++;
@@ -133,7 +151,6 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
 	
-	dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$badgenbtrainee = $stagiaires->fetch_stagiaire_per_session($id);
 	if (!empty($badgenbtrainee)) $head [$h] [1] .= " <span class='badge'>" . $badgenbtrainee."</span>";
@@ -144,13 +161,18 @@ function session_prepare_head($object, $showconv = 0) {
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers_certif.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
+		
+		$agf_certif = new Agefodd_stagiaire_certif($db);
+		$badgeNbCertif = $agf_certif->fetch_all('', '', 0, 0, array('t.fk_session_agefodd'=>$id));
+		if (!empty($badgeNbCertif)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbCertif."</span>";
+		
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfFormateur");
-	dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+	
 	$formateurs = new Agefodd_session_formateur($db);
 	$badgenbform = $formateurs->fetch_formateur_per_session($id);
 	if (!empty($badgenbform)) $head [$h] [1] .= " <span class='badge'>" . $badgenbform."</span>";
@@ -222,7 +244,7 @@ function session_prepare_head($object, $showconv = 0) {
  * @return array head table of tabs
  */
 function trainee_prepare_head($object, $showcursus = 0) {
-	global $langs, $conf, $user;
+	global $langs, $conf, $user, $db;
 
 	$h = 0;
 	$head = array ();
@@ -235,12 +257,22 @@ function trainee_prepare_head($object, $showcursus = 0) {
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head [$h] [0] = dol_buildpath('/agefodd/trainee/certificate.php', 1) . '?id=' . $object->id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
+		
+		$agf_certif = new Agefodd_stagiaire_certif($db);
+		$badgeNbCertif = $agf_certif->fetch_all_by_trainee($object->id);
+		if (!empty($badgeNbCertif)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbCertif."</span>";
+		
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/session.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfSessionDetail");
+	
+	$sess = new Agsession($db);
+	$badgeNbSess = $sess->fetch_session_per_trainee($object->id);
+	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
+	
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
 
@@ -282,7 +314,7 @@ function trainee_prepare_head($object, $showcursus = 0) {
  * @return array head table of tabs
  */
 function trainer_prepare_head($object) {
-	global $langs, $conf, $user;
+	global $langs, $conf, $user, $db;
 
 	$h = 0;
 	$head = array ();
@@ -294,6 +326,11 @@ function trainer_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/session.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfSessionDetail");
+	
+	$sess = new Agsession($db);
+	$badgeNbSess = $sess->fetch_session_per_trainer($object->id);
+	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
+	
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
 
@@ -348,7 +385,7 @@ function contact_prepare_head($object) {
  * @return array head table of tabs
  */
 function site_prepare_head($object) {
-	global $langs, $conf, $user;
+	global $langs, $conf, $user, $db;
 
 	$h = 0;
 	$head = array ();
@@ -372,6 +409,12 @@ function site_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_site=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfMenuSess");
+	
+	$sess = new Agsession($db);
+	$filt['s.fk_session_place'] = $object->id;
+	$badgeNbSess = $sess->fetch_all('', '', 0, 0, $filt);
+	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
+	
 	$head [$h] [2] = 'sessions';
 	$h ++;
 
@@ -551,8 +594,6 @@ function agf_calendars_prepare_head($param) {
  */
 function countFiles(&$object){
     global $conf;
-    
-    dol_include_once('/core/lib/files.lib.php');
     
     switch ($object->element){
         case 'agefodd_formation_catalogue' :

@@ -628,7 +628,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit, $offset) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, array $filter = array()) {
 		global $langs;
 
 		$sql = "SELECT";
@@ -651,8 +651,28 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 
 		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
+		
+		// Manage filter
+		$sqlwhere = array();
+		if (count($filter) > 0) {
+		    foreach ($filter as $key => $value) {
+		        if (strpos('t.fk', $key) == 0) { 
+		            $sqlwhere [] = $key . ' =' . $this->db->escape($value);
+		        } else {
+		            $sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+		        }
+		        
+		    }
+		}
+		if (count($sqlwhere) > 0) {
+		    $sql .= ' AND ' . implode(' AND ', $sqlwhere);
+		}
+		
+        if (!empty($sortfield)) $sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder . ' ';
+        
+		if (!empty($limit)) {
+		    $sql .= $this->db->plimit($limit + 1, $offset);
+		}
 
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -664,7 +684,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			while ( $i < $num ) {
 				$obj = $this->db->fetch_object($resql);
 
-				$line = new AgfStagiaireCertifLine();
+				$line = new Agefodd_stagiaire_certif($this->db);
 
 				$line->id = $obj->rowid;
 
