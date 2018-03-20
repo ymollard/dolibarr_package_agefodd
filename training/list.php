@@ -46,18 +46,20 @@ $langs->load('agefodd@agefodd');
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'alpha');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $arch = GETPOST('arch', 'int');
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "DESC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "c.rowid";
-
-if ($page == - 1) {
-	$page = 0;
 }
 
-$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
+
+if (empty($page) || $page == -1) { $page = 0; }
+
+
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -185,6 +187,10 @@ if (! empty($search_fk_product)) {
 	$filter ['c.fk_product'] = $search_fk_product;
 	$option .= '&search_fk_product=' . $search_fk_product;
 }
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
+}
+
 
 foreach ($search_array_options as $key => $val)
 {
@@ -205,24 +211,29 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch, $filter, array_keys($extrafields->attribute_label));
 }
-
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter, array_keys($extrafields->attribute_label));
 
 
 $i = 0;
 
-print '<form method="get" action="' . $url_form . '" name="searchFormList" id="searchFormList">' . "\n";
+print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="arch" value="' . $arch . '" >';
-if (! empty($sortfield))
+if (! empty($sortfield)) {
 	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
-if (! empty($sortorder))
+}
+if (! empty($sortorder)) {
 	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
-if (! empty($page))
+}
+if (! empty($page)) {
 	print '<input type="hidden" name="page" value="' . $page . '"/>';
+}
+if (! empty($limit)) {
+	print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+}
 
-	print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER ['PHP_SELF'], '&arch=' . $arch, $sortfield, $sortorder, '', $resql,$nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
+print_barre_liste($langs->trans("AgfMenuCat"), $page, $_SERVER ['PHP_SELF'], $option. "&arch=" . $arch, $sortfield, $sortorder, '', $resql,$nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 
 $varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;

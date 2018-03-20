@@ -105,11 +105,14 @@ $showbirthday = empty($conf->use_javascript_ajax) ? GETPOST("showbirthday", "int
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
 $page = GETPOST("page", 'int');
-if ($page == - 1) {
-	$page = 0;
-}
-$limit = $conf->liste_limit;
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
+
+if (empty($page) || $page == -1) { $page = 0; }
+
 $offset = $limit * $page;
+$pageprev = $page - 1;
+$pagenext = $page + 1;
+
 if (! $sortorder) {
 	$sortorder = "DESC";
 	if ($status == 'todo')
@@ -342,6 +345,15 @@ if (! empty($filter_trainee)) {
 	$sql .= " AND trainee_session.fk_stagiaire=".$filter_trainee;
 }
 $sql .= $db->order($sortfield, $sortorder);
+
+$nbtotalofrecords = 0;
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+	$resql = $db->query($sql);
+	if ($resql) {
+		$nbtotalofrecords = $db->num_rows($resql);
+	}
+}
+
 $sql .= $db->plimit($limit + 1, $offset);
 // print $sql;
 
@@ -377,7 +389,7 @@ if ($resql) {
 	// Add link to show birthdays
 	$link = '';
 
-	print_barre_liste($newtitle, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $link, $num, 0, '');
+	print_barre_liste($newtitle, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $link, $num, $nbtotalofrecords, '', 0, '', '', $limit);
 	// print '<br>';
 
 	$i = 0;

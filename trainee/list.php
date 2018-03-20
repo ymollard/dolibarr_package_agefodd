@@ -45,6 +45,7 @@ llxHeader('', $langs->trans("AgfStagiaireList"));
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'alpha');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
 // Search criteria
 $search_name = GETPOST("search_name");
@@ -66,38 +67,48 @@ if (GETPOST("button_removefilter_x")) {
 }
 
 $filter = array ();
+$option='';
 if (! empty($search_name)) {
 	$filter ['s.nom'] = $search_name;
+	$option .= '&search_name=' . $search_name;
 }
 if (! empty($search_firstname)) {
 	$filter ['s.prenom'] = $search_firstname;
+	$option .= '&search_firstname=' . $search_name;
 }
 if (! empty($search_civ)) {
 	$filter ['civ.code'] = $search_civ;
+	$option .= '&search_civ=' . $search_civ;
 }
 if (! empty($search_soc)) {
 	$filter ['so.nom'] = $search_soc;
+	$option .= '&search_soc=' . $search_soc;
 }
 if (! empty($search_tel)) {
 	$filter ['s.tel1'] = $search_tel;
+	$option .= '&search_tel=' . $search_tel;
 }
 if (! empty($search_mail)) {
 	$filter ['s.mail'] = $search_mail;
 }
 if (! empty($search_namefirstname)) {
 	$filter ['naturalsearch'] = $search_namefirstname;
+	$option .= '&search_mail=' . $search_mail;
+}
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
 }
 
-if (! $sortorder)
+if (! $sortorder) {
 	$sortorder = "ASC";
-if (! $sortfield)
+}
+if (! $sortfield) {
 	$sortfield = "s.nom";
-
-if ($page == - 1) {
-	$page = 0;
 }
 
-$limit = $conf->liste_limit;
+if (empty($page) || $page == -1) { $page = 0; }
+
+
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -118,33 +129,24 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result >= 0) {
-	$option='';
-	if (! empty($search_name))
-		$option .= '&search_name=' . $search_name;
-	if (! empty($search_firstname))
-		$option .= '&search_firstname=' . $search_name;
-	if (! empty($search_civ))
-		$option .= '&search_civ=' . $search_civ;
-	if (! empty($search_soc))
-		$option .= '&search_soc=' . $search_soc;
-	if (! empty($search_tel))
-		$option .= '&search_tel=' . $search_tel;
-	if (! empty($search_mail))
-		$option .= '&search_mail=' . $search_mail;
-
-	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result, $nbtotalofrecords);
 
 	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
-	if (! empty($sortfield))
+	if (! empty($sortfield)) {
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
-	if (! empty($sortorder))
+	}
+	if (! empty($sortorder)) {
 		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
-	if (! empty($page))
+	}
+	if (! empty($page)) {
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
+	}
+	if (! empty($limit)) {
+		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+	}
 
+	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
-
 
 	print '<tr class="liste_titre_filter">';
 

@@ -199,7 +199,7 @@ class Agefodd_stagiaire extends CommonObject {
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
+
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
@@ -313,7 +313,7 @@ class Agefodd_stagiaire extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 

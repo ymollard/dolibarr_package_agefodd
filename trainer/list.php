@@ -44,22 +44,24 @@ $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 $arch = GETPOST('arch', 'int');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $search_id = GETPOST('search_id', 'int');
 $search_lastname = GETPOST('search_lastname', 'alpha');
 $search_firstname = GETPOST('search_firstname', 'alpha');
 $search_mail = GETPOST('search_mail', 'alpha');
 $search_type_trainer = GETPOST('search_type_trainer', 'alpha');
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "ASC";
-if (empty($sortfield))
-	$sortfield = "s.lastname, s.firstname";
-if (empty($arch))
-	$arch = 0;
-
-if ($page == - 1) {
-	$page = 0;
 }
+if (empty($sortfield)) {
+	$sortfield = "s.lastname, s.firstname";
+}
+if (empty($arch)) {
+	$arch = 0;
+}
+
+if (empty($page) || $page == -1) { $page = 0; }
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -91,8 +93,11 @@ if (! empty($search_type_trainer)) {
     $filter ['type_trainer'] = $search_type_trainer;
     $option .= '&search_type_trainer=' . $search_type_trainer;
 }
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
+}
 
-$limit = $conf->liste_limit;
+
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -107,10 +112,13 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $arch, $filter);
 }
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter);
+if ($result<0) {
+	setEventMessage($agf->error,'errors');
+}
 
 $linenum = count($agf->lines);
 
-print_barre_liste($langs->trans("AgfTeacher"), $page, $_SERVER ['PHP_SELF'], $option . "&arch=" . $arch, $sortfield, $sortorder, "", $linenum, $nbtotalofrecords);
+
 
 print '<div width=100%" align="right">';
 if ($arch == 2) {
@@ -120,6 +128,8 @@ if ($arch == 2) {
 }
 
 print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
+
+print_barre_liste($langs->trans("AgfTeacher"), $page, $_SERVER ['PHP_SELF'], $option . "&arch=" . $arch, $sortfield, $sortorder, "", $linenum, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 print '<table class="noborder  tagtable liste listwithfilterbefore" width="100%">';
 

@@ -43,6 +43,7 @@ llxHeader('', $langs->trans("AgfSessPlace"));
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $arch = GETPOST('arch', 'int');
 
 $search_soc = GETPOST("search_soc");
@@ -55,6 +56,7 @@ if (GETPOST("button_removefilter_x")) {
 }
 
 $filter = array ();
+$option='';
 if (! empty($search_soc)) {
 	$filter ['s.nom'] = $search_soc;
 	$option .= "&search_soc=" . $search_soc;
@@ -68,17 +70,20 @@ if ($arch != '') {
 	$option .= "&arch=" . $arch;
 }
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "ASC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "p.ref_interne";
-
-
-if ($page == - 1) {
-	$page = 0;
+}
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
 }
 
-$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
+
+if (empty($page) || $page == -1) { $page = 0; }
+
+
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -88,11 +93,18 @@ $soc=new Societe($db);
 
 $hookmanager->initHooks(array('sitelist'));
 
+$nbtotalofrecords = 0;
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
+	if ($nbtotalofrecords<0) {
+		setEventMessage($agf->error,'errors');
+	}
+}
+
 $result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
-
-$linenum = count($agf->lines);
-
-
+if ($result<0) {
+	setEventMessage($agf->error,'errors');
+}
 
 print '<div width="100%" align="right">';
 if ($arch == 2) {
@@ -105,15 +117,21 @@ print '<a href="' . $_SERVER ['PHP_SELF'] . '?arch=' . $arch . '">' . $txt . '</
 
 
 print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
-if (! empty($sortfield))
+if (! empty($sortfield)) {
 	print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
-if (! empty($sortorder))
+}
+if (! empty($sortorder)) {
 	print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
-if (! empty($page))
+}
+if (! empty($page)) {
 	print '<input type="hidden" name="page" value="' . $page . '"/>';
+}
+if (! empty($limit)) {
+	print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+}
 
 
-print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $linenum, $linenum,'title_generic.png', 0, '', '', $limit);
+print_barre_liste($langs->trans("AgfSessPlace"), $page, $_SERVER ['PHP_SELF'], $option. "&arch=" . $arch, $sortfield, $sortorder,"", $linenum, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
 

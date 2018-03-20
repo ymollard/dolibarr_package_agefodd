@@ -843,7 +843,7 @@ class Agefodd extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -1180,7 +1180,7 @@ class Agefodd extends CommonObject {
 		}
 		return 0;
 	}
-	
+
 	/**
      *  Update note of element
      *
@@ -1190,7 +1190,7 @@ class Agefodd extends CommonObject {
      */
     function update_note($note,$suffix='')
     {
-		
+
         global $user;
     	if (! $this->table_element)
     	{
@@ -1227,18 +1227,18 @@ class Agefodd extends CommonObject {
     		return -1;
     	}
     }
-    
+
     function getLibStatut($mode = 0){
         global $langs;
-        
+
         if($this->archive){
             $picto = 'statut5';
-            $statut = $langs->trans("AgfCatArchivee");            
+            $statut = $langs->trans("AgfCatArchivee");
         } else {
             $picto = 'statut4';
             $statut = $langs->trans("AgfCatActive");
         }
-        
+
         switch ($mode){
             case 0 :
                 return $statut;

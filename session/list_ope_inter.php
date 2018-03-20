@@ -49,6 +49,7 @@ if (! $user->rights->agefodd->lire)
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
 // Search criteria
 $search_status = GETPOST('search_status');
@@ -75,31 +76,40 @@ if (GETPOST("button_removefilter_x")) {
 }
 
 $filter = array ();
+$option='';
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
+	$option .= '&search_id=' . $search_id;
 }
 if (! empty($search_status)) {
 	$filter ['s.status'] = $search_status;
+	$option .= '&search_status=' . $search_status;
 }
 if (empty($search_status)) {
 	$filter ['!s.status'] = '(3,4)';
 }
 if (! empty($search_month)) {
 	$filter ['MONTH(s.dated)'] = $search_month;
+	$option .= '&search_month=' . $search_month;
 }
 if (! empty($search_year)) {
 	$filter ['YEAR(s.dated)'] = $search_year;
+	$option .= '&search_year=' . $search_year;
 }
 if (! empty($search_teacher_id) && $search_teacher_id != - 1) {
 	$filter ['sf.rowid'] = $search_teacher_id;
+	$option .= '&search_teacher_id=' . $search_teacher_id;
 }
 if ($search_teacher_status != '' && $search_teacher_status != - 1) {
 	$filter ['sf.trainer_status'] = $search_teacher_status;
+	$option .= '&search_teacher_status=' . $search_teacher_status;
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter ['s.fk_session_place'] = $search_site;
+	$option .= '&search_site=' . $search_site;
 }
 if (! empty($search_room_status) && $search_room_status != - 1) {
+	$option .= '&search_room_status=' . $search_room_status;
 	if ($search_room_status == 'option') {
 		$filter ['s.is_date_res_site'] = 1;
 		$filter ['s.is_date_res_confirm_site'] = 0;
@@ -110,18 +120,23 @@ if (! empty($search_room_status) && $search_room_status != - 1) {
 }
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
+	$option .= '&search_trainning_name=' . $search_trainning_name;
+}
+if (!empty($limit)) {
+	$option .= '&limit=' . $limit;
 }
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "ASC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "s.dated";
-
-if ($page == - 1) {
-	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+if (empty($page) || $page == -1) { $page = 0; }
+
+
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -139,41 +154,27 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all_inter($sortorder, $sortfield, 0, 0, $filter, $user);
 }
-$resql = $agf->fetch_all_inter($sortorder, $sortfield, $conf->liste_limit, $offset, $filter, $user);
+$resql = $agf->fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter, $user);
 
 if ($resql != - 1) {
 	$num = $resql;
 
-	if (! empty($search_id)) {
-		$option .= '&search_id=' . $search_id;
-	}
-	if (! empty($search_status)) {
-		$option .= '&search_status=' . $search_status;
-	}
-	if (! empty($search_month)) {
-		$option .= '&search_month=' . $search_month;
-	}
-	if (! empty($search_year)) {
-		$option .= '&search_year=' . $search_year;
-	}
-	if (! empty($search_teacher_id)) {
-		$option .= '&search_teacher_id=' . $search_teacher_id;
-	}
-	if ($search_teacher_status != '' && $search_teacher_status != - 1) {
-		$option .= '&search_teacher_status=' . $search_teacher_status;
-	}
-	if (! empty($search_site) && $search_site != - 1) {
-		$option .= '&search_site=' . $search_site;
-	}
-	if (! empty($search_room_status) && $search_room_status != - 1) {
-		$option .= '&search_room_status=' . $search_room_status;
-	}
-	if (! empty($search_trainning_name))
-		$option .= '&search_trainning_name=' . $search_trainning_name;
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
+	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] .'" name="search_form">' . "\n";
+	if (! empty($sortfield)) {
+		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
+	}
+	if (! empty($sortorder)) {
+		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
+	}
+	if (! empty($page)) {
+		print '<input type="hidden" name="page" value="' . $page . '"/>';
+	}
+	if (! empty($limit)) {
+		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
+	}
 
-	print '<form method="post" action="' . $url_form . '" name="search_form">' . "\n";
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
 	$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
@@ -322,7 +323,7 @@ if ($resql != - 1) {
 	print '</td>';
 
 	print "</tr>\n";
-	print '</form>';
+
 
 	$var = true;
 	foreach ( $agf->lines as $line ) {
@@ -534,6 +535,7 @@ if ($resql != - 1) {
 	}
 
 	print "</table>";
+	print '</form>';
 
 	print '<script type="text/javascript" language="javascript">' . "\n";
 	print '$(document).ready(function() {
