@@ -4650,6 +4650,10 @@ class Agsession extends CommonObject
 
 		$place_to_test = array ();
 
+		if (empty($this->id)) {
+			return 1;
+		}
+
 		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_place WHERE control_occupation IS NOT NULL';
 		dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
