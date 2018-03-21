@@ -105,8 +105,7 @@ class modAgefodd extends DolibarrModules
 						'invoicecard',
 						'admin',
 						'emailtemplates',
-						'upgrade',
-				        'sessionlist'
+						'upgrade'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
 				'models' => 1
