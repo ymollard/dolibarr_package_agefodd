@@ -458,18 +458,8 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	$sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
 	
-	$res = $db->query($sql);
-	$TStatut = array();
-	
-	if($res){
-	    while($obj = $db->fetch_object($res)){
-	        $arrayofmassactions['set_statut'.$obj->rowid] = $langs->trans('AgfChangeStatutTo') . ' ' . $langs->trans('AgfStatusSession_' .$obj->code);
-	    }
-	}
-	
-	$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
+	$massactionbutton=$formAgefodd->selectMassSessionsAction();
 	
 	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 

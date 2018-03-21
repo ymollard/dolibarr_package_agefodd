@@ -1675,4 +1675,21 @@ class FormAgefodd extends Form
 
 		return $return;
 	}
+	
+	public function selectMassSessionsAction (){
+	    global $langs;
+	    
+	    $sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
+	    
+	    $res = $this->db->query($sql);
+	    $TStatut = array();
+	    
+	    if($res){
+	        while($obj = $this->db->fetch_object($res)){
+	            $TStatut['set_statut'.$obj->rowid] = $langs->trans('AgfChangeStatutTo') . ' ' . $langs->trans('AgfStatusSession_' .$obj->code);
+	        }
+	    }
+	    
+	    return $this->selectMassAction('', $TStatut);
+	}
 }
