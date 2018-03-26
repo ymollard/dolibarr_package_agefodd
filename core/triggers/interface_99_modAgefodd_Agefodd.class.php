@@ -449,8 +449,8 @@ class InterfaceAgefodd {
 					$sta = new Agefodd_stagiaire($this->db);
 
 					$obj = $this->db->fetch_object($resql);
+					$sta->fetch($obj->rowid);
 
-					$sta->id = $obj->rowid;
 					$sta->nom = $object->lastname;
 					$sta->prenom = $object->firstname;
 					$sta->civilite = $object->civility_id;
@@ -614,7 +614,7 @@ class InterfaceAgefodd {
 			//On delete chaque element ligne lié à une session
 			foreach($object->lines as $line){
 				$agf_fin->fetch_element_by_id($line->id, 'invoice_supplierline');
-				
+
 				if (count($agf_fin->lines) > 0) {
 					foreach($agf_fin->lines as $line){
 						$agf_fin->id = $line->id;
@@ -625,7 +625,7 @@ class InterfaceAgefodd {
 			}
 			//Puis on delete les elements factures
 			$agf_fin->fetch_element_by_id($object->id, 'invoice_supplier');
-		
+
 			if (count($agf_fin->lines) > 0) {
 				foreach($agf_fin->lines as $line){
 					$agf_fin->id = $line->id;
@@ -633,7 +633,7 @@ class InterfaceAgefodd {
 					$agf_fin->delete($user);
 				}
 			}
-			
+
 
 			return 1;
 		} elseif ($action == 'PROPAL_DELETE') {
@@ -842,7 +842,7 @@ class InterfaceAgefodd {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->rowid, 'invoice_supplierline');
-		
+
 			if (count($agf_fin->lines) > 0) {
 				foreach($agf_fin->lines as $line){
 					$agf_fin->id = $line->id;
@@ -852,7 +852,7 @@ class InterfaceAgefodd {
 			}
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->fk_facture_fourn, 'invoice_supplier');
-			
+
 			if (count($agf_fin->lines) > 0)
 			{
 				foreach($agf_fin->lines as $line){
@@ -862,7 +862,7 @@ class InterfaceAgefodd {
 					$agf_fin->updateSellingPrice($user,$actionPage,$lineid);
 				}
 			}
-			
+
 
 			return 1;
 		}elseif ($action == 'LINEBILL_SUPPLIER_CREATE')
@@ -873,8 +873,8 @@ class InterfaceAgefodd {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			$agf_fin = new Agefodd_session_element($this->db);
 			$agf_fin->fetch_element_by_id($object->fk_facture_fourn, 'invoice_supplier');
-			
-			
+
+
 			if (count($agf_fin->lines) > 0)
 			{
 				foreach($agf_fin->lines as $line){
