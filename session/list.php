@@ -51,6 +51,32 @@ $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
+$massaction=GETPOST('massaction','alpha');
+$toselect = GETPOST('toselect', 'array');
+
+// Massactions
+if (!empty($massaction) && strpos('set_statut', $massaction) == 0 && !empty($toselect)) {
+    $newStatut = substr($massaction, 10);
+    $error = 0;
+    
+    $sess = new Agsession($db);
+    foreach ($toselect as $idsess){
+        $sess->fetch($idsess);
+        
+        $sess->status=$newStatut;
+        $result=$sess->update($user);
+        
+        if ($result<0) {
+            $error++;
+            setEventMessage($sess->error,'errors');
+        }
+    }
+    
+    if (!$error) setEventMessage($langs->trans('AgfChangeStatutSuccess'), 'mesgs');
+    
+    $toselect = array();
+}
+
 // Search criteria
 $search_trainning_name = GETPOST("search_trainning_name");
 $search_soc = GETPOST("search_soc");
@@ -296,7 +322,6 @@ if ($status_view == 1) {
 
 llxHeader('', $title);
 
-
 if (empty($sortorder)) {
 	$sortorder = "ASC";
 }
@@ -390,6 +415,8 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user
 if ($resql != - 1) {
 	$num = $resql;
 
+	$arrayofselected=is_array($toselect)?$toselect:array();
+	
 	if ($status_view == 1) {
 		$menu = $langs->trans("AgfMenuSessDraftList");
 	} elseif ($status_view == 2) {
@@ -431,7 +458,10 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	
+	$massactionbutton=$formAgefodd->selectMassSessionsAction();
+	
+	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter='';
 	// If the user can view prospects other than his'
@@ -476,10 +506,10 @@ if ($resql != - 1) {
 	print '	});'."\n";
 	print '});'."\n";
 	print '</script>'."\n";
-
+	
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
-	//if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
+	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
 
 	$i = 0;
 	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
@@ -592,7 +622,7 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print '<td class="liste_titre"></td>';
 	if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
-
+	
 	// Extra fields
 	if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
 		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -710,7 +740,7 @@ if ($resql != - 1) {
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
 
-			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
 
 			if (! empty($arrayfields['so.nom']['checked']))
 			{
@@ -878,8 +908,19 @@ if ($resql != - 1) {
 				}
 			}
 
+			// Action
+			print '<td class="nowrap" align="center">';
+			if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
+			{
+			    $selected=0;
+			    if (in_array($line->rowid, $arrayofselected)) $selected=1;
+			    print '<input id="cb'.$line->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->rowid.'"'.($selected?' checked="checked"':'').'>';
+			}
+			print '</td>';
+			if (! $i) $totalarray['nbfield']++;
+			
 			//Action column
-			print '<td>&nbsp;</td>';
+			//print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		} else {
 			print "<tr $bc[$var]>";
