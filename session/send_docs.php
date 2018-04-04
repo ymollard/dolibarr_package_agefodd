@@ -278,7 +278,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$actionmsg .= $langs->trans('TextUsedInTheMessageBody') . ":\n";
 					$actionmsg .= $message;
 				}
-				$actionmsg2 = $langs->trans('ActionACCUEIL_SENTBYMAIL');
+				$actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
 			}
 
 			$attachedfiles = $formmail->get_attached_files();

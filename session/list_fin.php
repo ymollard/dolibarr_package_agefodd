@@ -53,6 +53,7 @@ $page = GETPOST('page', 'int');
 $search_orderid = GETPOST('search_orderid', 'int');
 $search_invoiceid = GETPOST('search_invoiceid', 'int');
 $search_fourninvoiceid = GETPOST('search_fourninvoiceid', 'int');
+$search_fourninvoiceref = GETPOST('search_fourninvoiceref');
 $search_orderref = GETPOST('search_orderref', 'alpha');
 $search_invoiceref = GETPOST('search_invoiceref', 'alpha');
 $search_propalref = GETPOST('search_propalref', 'alpha');
@@ -70,6 +71,7 @@ if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {
 	$search_orderid = '';
 	$search_invoiceid = '';
 	$search_fourninvoiceid = '';
+	$search_fourninvoiceref = '';
 	$search_orderref = '';
 	$search_invoiceref = '';
 	$search_propalref = '';
@@ -211,7 +213,7 @@ if (! empty($search_fourninvoiceid) || ! empty($search_fourninvoiceref)) {
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $fourninvoice->thirdparty->getNomUrl(1);
 	$morehtmlref.='</div>';
 	if (function_exists('dol_banner_tab')) {
-		dol_banner_tab($fourninvoice, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+		dol_banner_tab($fourninvoice, 'search_fourninvoiceref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 	}
 }
 

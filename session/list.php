@@ -58,22 +58,22 @@ $toselect = GETPOST('toselect', 'array');
 if (!empty($massaction) && strpos('set_statut', $massaction) == 0 && !empty($toselect)) {
     $newStatut = substr($massaction, 10);
     $error = 0;
-    
+
     $sess = new Agsession($db);
     foreach ($toselect as $idsess){
         $sess->fetch($idsess);
-        
+
         $sess->status=$newStatut;
         $result=$sess->update($user);
-        
+
         if ($result<0) {
             $error++;
             setEventMessage($sess->error,'errors');
         }
     }
-    
+
     if (!$error) setEventMessage($langs->trans('AgfChangeStatutSuccess'), 'mesgs');
-    
+
     $toselect = array();
 }
 
@@ -320,6 +320,8 @@ if ($status_view == 1) {
 	$title = $langs->trans("AgfMenuSess");
 }
 
+$contextpage = 'listsession'.$status_view;
+
 llxHeader('', $title);
 
 if (empty($sortorder)) {
@@ -341,7 +343,7 @@ if ($training_view && ! empty($search_training_ref)) {
 	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
 	dol_agefodd_banner_tab($agf, 'idforma');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 }
 
 if (! empty($site_view)) {
@@ -416,7 +418,7 @@ if ($resql != - 1) {
 	$num = $resql;
 
 	$arrayofselected=is_array($toselect)?$toselect:array();
-	
+
 	if ($status_view == 1) {
 		$menu = $langs->trans("AgfMenuSessDraftList");
 	} elseif ($status_view == 2) {
@@ -458,9 +460,9 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	
+
 	$massactionbutton=$formAgefodd->selectMassSessionsAction();
-	
+
 	print_barre_liste($menu, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter='';
@@ -506,7 +508,7 @@ if ($resql != - 1) {
 	print '	});'."\n";
 	print '});'."\n";
 	print '</script>'."\n";
-	
+
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
@@ -622,7 +624,7 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) print '<td class="liste_titre"></td>';
 	if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) print '<td class="liste_titre"></td>';
-	
+
 	// Extra fields
 	if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
 		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -918,7 +920,7 @@ if ($resql != - 1) {
 			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
-			
+
 			//Action column
 			//print '<td>&nbsp;</td>';
 			print "</tr>\n";

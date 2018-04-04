@@ -358,6 +358,25 @@ class InterfaceAgefodd {
 
 				$ok = 1;
 			}
+		} elseif ($action == 'ATTESTATIONENDTRAINING_SENTBYMAIL') {
+		    dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+		    
+		    if ($object->actiontypecode == 'AC_AGF_ATTES') {
+		        
+		        dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
+		        $langs->load("agefodd@agefodd");
+		        $langs->load("agenda");
+		        
+		        if (empty($object->actionmsg2)) {
+		            $object->actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
+		        }
+		        if (empty($object->actionmsg)) {
+		            $object->actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
+		            
+		        }
+		        
+		        $ok = 1;
+		    }
 		}
 
 		// Add entry in event table
