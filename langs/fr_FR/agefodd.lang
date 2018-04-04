@@ -1290,3 +1290,4 @@ AgfInvoiceCalcAmountDivByQty=Pour les factures crée depuis le module, le montan
 AgfStatusSession_ONGOING=En cours
 AgfMenuSessOnGoingList=Sessions en cours
 AgfCertifLegend=vert = délai d'alerte non-dépassé <br> orange = délai d'alerte dépassé <br> rouge = certificat invalide
+AgfReportBPFCategFAF=Categorie des fond d'assurance formation de non-salariés
