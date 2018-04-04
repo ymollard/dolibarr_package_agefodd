@@ -549,9 +549,9 @@ if (empty($search_fourninvoiceref)) {
 	    $excludeSessions = array_merge($excludeSessions, array_keys($sessions));
 
 	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
-            FROM llx_agefodd_session as s
-            LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
-            LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place
+            FROM ".MAIN_DB_PREFIX."agefodd_session as s
+            LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
+            LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
             WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)
             AND s.rowid NOT IN ('".implode("','", $excludeSessions)."')
             GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
@@ -580,15 +580,15 @@ if (empty($search_fourninvoiceref)) {
 } else {
     $sessids = array();
     $sql = "SELECT s.rowid as sessid, sf.rowid as opsid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, sp.lastname as name_socp, sp.firstname as firstname_socp
-        FROM llx_agefodd_session as s 
-        LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
-        LEFT JOIN llx_agefodd_place as p ON p.rowid = s.fk_session_place
-        LEFT JOIN llx_agefodd_session_formateur as sf on s.rowid = sf.fk_session
-        LEFT JOIN llx_agefodd_formateur as f ON sf.fk_agefodd_formateur = f.rowid 
-        LEFT JOIN llx_socpeople as sp ON f.fk_socpeople = sp.rowid 
-        LEFT JOIN llx_societe as soc ON soc.rowid = sp.fk_soc
-        LEFT JOIN llx_user as u ON f.fk_user = u.rowid 
-        LEFT JOIN llx_agefodd_formateur_type as st ON st.rowid = sf.fk_agefodd_formateur_type 
+        FROM ".MAIN_DB_PREFIX."agefodd_session as s 
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf on s.rowid = sf.fk_session
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f ON sf.fk_agefodd_formateur = f.rowid 
+        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp ON f.fk_socpeople = sp.rowid 
+        LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sp.fk_soc
+        LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid 
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur_type as st ON st.rowid = sf.fk_agefodd_formateur_type 
         WHERE soc.rowid = ".$object_socid." ORDER BY s.rowid ASC";
 
     $resql = $db->query($sql);
@@ -602,11 +602,11 @@ if (empty($search_fourninvoiceref)) {
     }
     
     $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
-        FROM llx_agefodd_session as sess
-        LEFT JOIN llx_agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
-        LEFT JOIN llx_agefodd_place as p ON p.rowid = sess.fk_session_place
-        LEFT JOIN llx_societe as s ON p.fk_societe = s.rowid 
-        LEFT JOIN llx_socpeople as socp ON p.fk_socpeople = socp.rowid 
+        FROM ".MAIN_DB_PREFIX."agefodd_session as sess
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = sess.fk_session_place
+        LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid 
+        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid 
         WHERE p.entity IN (4,1)
         AND p.fk_societe = 27
         ORDER BY sess.rowid ASC";
