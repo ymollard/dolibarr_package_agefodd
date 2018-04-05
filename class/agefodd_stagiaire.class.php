@@ -105,6 +105,11 @@ class Agefodd_stagiaire extends CommonObject {
 			$this->errors[] = $langs->trans("AgfCiviliteMandatory");
 		}
 
+		if (empty($this->socid)) {
+			$error ++;
+			$this->errors[] = $langs->trans("AgfThirdpartyOfTraineeMandatory");
+		}
+
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_stagiaire(";
 		$sql .= "nom, prenom, civilite, fk_user_author,fk_user_mod, datec, ";
