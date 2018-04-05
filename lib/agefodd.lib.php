@@ -1845,6 +1845,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     }
 
+    if ($conf->multicompany->enabled) $object->element = 'agefodd';
+    
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
     print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
     print '</div><br>';
