@@ -53,12 +53,18 @@ function training_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?training_view=1&search_training_ref=' . urlencode($object->ref_obj);
 	$head [$h] [1] = $langs->trans("AgfMenuSess");
-	
+
 	$sess = new Agsession($db);
+	$TbadgeNbSess=array();
 	$filt['s.fk_formation_catalogue'] = $object->id;
 	$badgeNbSess = $sess->fetch_all('', '', 0, 0, $filt);
-	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
-	
+	if ($badgeNbSess>0) {
+		foreach($sess->lines as $key=>$val) {
+			$TbadgeNbSess[$val->id]=$val->id;
+		}
+	}
+	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . count($TbadgeNbSess)."</span>";
+
 	$head [$h] [2] = 'sessions';
 	$hselected = $h;
 	$h ++;
@@ -81,11 +87,11 @@ function training_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/training/modules.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfTrainingModule");
-	
+
 	$object_modules = new Agefoddformationcataloguemodules($db);
 	$badgeNbModules = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array ('t.fk_formation_catalogue' => $object->id	));
 	if (!empty($badgeNbModules)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbModules . "</span>";
-	
+
 	$head [$h] [2] = 'trainingmodule';
 	$hselected = $h;
 	$h ++;
@@ -150,29 +156,29 @@ function session_prepare_head($object, $showconv = 0) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
-	
+
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$badgenbtrainee = $stagiaires->fetch_stagiaire_per_session($id);
 	if (!empty($badgenbtrainee)) $head [$h] [1] .= " <span class='badge'>" . $badgenbtrainee."</span>";
-	
+
 	$head [$h] [2] = 'subscribers';
 	$h ++;
 
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers_certif.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
-		
+
 		$agf_certif = new Agefodd_stagiaire_certif($db);
 		$badgeNbCertif = $agf_certif->fetch_all('', '', 0, 0, array('t.fk_session_agefodd'=>$id));
 		if (!empty($badgeNbCertif)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbCertif."</span>";
-		
+
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfFormateur");
-	
+
 	$formateurs = new Agefodd_session_formateur($db);
 	$badgenbform = $formateurs->fetch_formateur_per_session($id);
 	if (!empty($badgenbform)) $head [$h] [1] .= " <span class='badge'>" . $badgenbform."</span>";
@@ -257,22 +263,22 @@ function trainee_prepare_head($object, $showcursus = 0) {
 	if ($conf->global->AGF_MANAGE_CERTIF) {
 		$head [$h] [0] = dol_buildpath('/agefodd/trainee/certificate.php', 1) . '?id=' . $object->id;
 		$head [$h] [1] = $langs->trans("AgfCertificate");
-		
+
 		$agf_certif = new Agefodd_stagiaire_certif($db);
 		$badgeNbCertif = $agf_certif->fetch_all_by_trainee($object->id);
 		if (!empty($badgeNbCertif)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbCertif."</span>";
-		
+
 		$head [$h] [2] = 'certificate';
 		$h ++;
 	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/session.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfSessionDetail");
-	
+
 	$sess = new Agsession($db);
 	$badgeNbSess = $sess->fetch_session_per_trainee($object->id);
 	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
-	
+
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
 
@@ -326,11 +332,11 @@ function trainer_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainer/session.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfSessionDetail");
-	
+
 	$sess = new Agsession($db);
 	$badgeNbSess = $sess->fetch_session_per_trainer($object->id);
 	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
-	
+
 	$head [$h] [2] = 'sessionlist';
 	$h ++;
 
@@ -374,7 +380,7 @@ function contact_prepare_head($object) {
 	$h ++;
 
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_contact');
-	
+
 	return $head;
 }
 
@@ -409,12 +415,12 @@ function site_prepare_head($object) {
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_site=' . $object->id;
 	$head [$h] [1] = $langs->trans("AgfMenuSess");
-	
+
 	$sess = new Agsession($db);
 	$filt['s.fk_session_place'] = $object->id;
 	$badgeNbSess = $sess->fetch_all('', '', 0, 0, $filt);
 	if (!empty($badgeNbSess)) $head [$h] [1] .= " <span class='badge'>" . $badgeNbSess."</span>";
-	
+
 	$head [$h] [2] = 'sessions';
 	$h ++;
 
@@ -477,7 +483,7 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [1] = $langs->trans("Settings");
 	$head [$h] [2] = 'settings';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_options.php", 1);
 	$head [$h] [1] = $langs->trans("Options");
 	$head [$h] [2] = 'options';
@@ -487,12 +493,12 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [1] = $langs->trans("AgftrainingAdmTask");
 	$head [$h] [2] = 'administrativetasks';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_session_time.php", 1);
 	$head [$h] [1] = $langs->trans("AgfAdmSessionTime");
 	$head [$h] [2] = 'sessiontime';
 	$h ++;
-	
+
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/formation_catalogue_extrafields.php", 1);
 	$head [$h] [1] = $langs->trans("ExtraFieldsTraining");
 	$head [$h] [2] = 'attributetraining';
@@ -594,31 +600,31 @@ function agf_calendars_prepare_head($param) {
  */
 function countFiles(&$object){
     global $conf;
-    
+
     switch ($object->element){
         case 'agefodd_formation_catalogue' :
             $upload_dir = $conf->agefodd->dir_output . "/training/". $object->id;
             break;
-          
+
         case 'agefodd_place' :
             $upload_dir = $conf->agefodd->dir_output . "/place/". $object->id;
             break;
-            
+
         case 'agefodd_formateur' :
             $upload_dir = $conf->agefodd->dir_output . "/trainer/". $object->id;
             break;
-            
+
         case 'agefodd' :
             $upload_dir = $conf->agefodd->dir_output . "/trainee/". $object->id;
             break;
-        
+
         Default :
             $upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
     }
     if ($object->element == "agefodd_agsession") $upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
-    
+
     $filearray = dol_dir_list($upload_dir, "files");
-    
+
     return count($filearray);
 }
 
@@ -995,28 +1001,28 @@ function ebi_get_adm_get_next_indice_action($id) {
 	if ($result) {
 		$num = $db->num_rows($result);
 		$obj = $db->fetch_object($result);
-		
+
 		$db->free($result);
 		if (! empty($obj->nb_action)) {
 			return intval(intval($obj->nb_action) + 1);
 		} else {
-			
+
 		    $sql = "SELECT s.indice as parentindice FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel as s";
 		    $sql.= " WHERE rowid = " . $id;
-		    
+
 		    dol_syslog("agefodd:lib:ebi_get_adm_get_next_indice_action sql=" . $sql, LOG_DEBUG);
 		    $result = $db->query($sql);
-		    
+
 		    if ($result) {
 		        $obj = $db->fetch_object($result);
 		        $parentIndice = $obj->parentindice;
 		        return intval(intval($parentIndice) + 1);
 		    } else {
-		        
+
 		        $error = "Error " . $db->lasterror();
 		        return - 1;
 		    }
-		    
+
 		}
 	} else {
 
@@ -1587,12 +1593,12 @@ function printSessionFieldsWithCustomOrder() {
 function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fieldid='rowid', $fieldref='ref', $morehtmlref='', $moreparam='', $nodbprefix=0, $morehtmlleft='', $morehtmlstatus='', $onlybanner=0, $morehtmlright='')
 {
     global $conf, $form, $user, $langs, $db;
-    
+
     dol_include_once('/agefodd/class/html.formagefodd.class.php');
     $formAgefodd = new FormAgefodd($db);
-    
+
     $error = 0;
-    
+
     $maxvisiblephotos=1;
     $showimage=1;
     $modulepart="agefodd";
@@ -1601,7 +1607,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     } elseif ($object->table_element == 'agefodd_formateur'){
         $modulepart = "userphoto";
     }
-    
+
     if ($showimage)
     {
         if (!empty($object->table_element)){
@@ -1629,12 +1635,12 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
                 $filepath = $dir_output . $subdir . "/";
                 $file = $filepath . $objectref . ".pdf";
                 $relativepath = $subdir.'/'.$objectref.'.pdf';
-                
+
                 // Define path to preview pdf file (preview precompiled "file.ext" are "file.ext_preview.png")
                 $fileimage = $file.'_preview.png';              // If PDF has 1 page
                 $fileimagebis = $file.'_preview-0.png';         // If PDF has more than one page
                 $relativepathimage = $relativepath.'_preview.png';
-                
+
                 // Si fichier PDF existe
                 if (file_exists($file))
                 {
@@ -1650,7 +1656,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
                             if ($ret < 0) $error++;
                         }
                     }
-                    
+
                     $heightforphotref=70;
                     if (! empty($conf->dol_optimize_smallscreen)) $heightforphotref=60;
                     // Si fichier png PDF d'1 page trouve
@@ -1674,21 +1680,21 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             {
                 $phototoshow = $form->showphoto($modulepart,$object,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
             }
-            
+
             if ($object->table_element == 'agefodd_stagiaire' && ! empty($object->fk_socpeople)) { // trainee from a contact
                 dol_include_once('/contact/class/contact.class.php');
-                
+
                 $contact = new Contact($db);
                 $contact->fetch($object->fk_socpeople);
                 $phototoshow = $form->showphoto($modulepart,$contact,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
-                
+
             }
             elseif ($object->table_element == 'agefodd_formateur')
             {
                 if($object->type_trainer == 'socpeople')
                 {
                     dol_include_once('/contact/class/contact.class.php');
-                    
+
                     $contact = new Contact($db);
                     $contact->fetch($object->fk_socpeople);
                     $phototoshow = $form->showphoto($modulepart,$contact,0,0,0,'photoref','small',1,0,$maxvisiblephotos);
@@ -1703,7 +1709,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             elseif($object->table_element == 'agefodd_place')
             {
                 $phototoshow = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref">';
-                $phototoshow.= img_picto('', 'object_address'); 
+                $phototoshow.= img_picto('', 'object_address');
                 $phototoshow.= '</div></div>';
             }
             elseif($object->table_element == 'agefodd_formation_catalogue')
@@ -1718,7 +1724,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
                 $phototoshow.= img_picto('', 'object_calendarday');
                 $phototoshow.= '</div></div>';
             }
-            
+
             if ($phototoshow)
             {
                 $morehtmlleft.='<div class="floatleft inline-block valignmiddle divphotoref">';
@@ -1728,117 +1734,117 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         }
     }
-    
+
     // libstatut
     if ($object->table_element == 'agefodd_formation_catalogue'){
-        
+
         $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
-        
+
     } elseif ($object->table_element == 'agefodd_session'){
-        
+
         $morehtmlstatus.='<div align="right">'.$object->getLibStatut(1)."<br>";
-        
+
         require_once ('../class/agefodd_sessadm.class.php');
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
-        
+
         if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
         $morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')).'</div>';
 
     } elseif ($object->table_element == 'agefodd_place'){
-        
+
         $morehtmlstatus.='<span class="statusrefsell">'.$object->getLibStatut(1).'</span>';
-        
+
     }
-    
+
     // Other infos
     if ($object->table_element == 'agefodd_formation_catalogue'){ // formation catalogue
-        
+
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/training/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
-        
+
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.= $langs->trans("AgfFormIntitule") . ' : ' . $object->intitule . '<br>';
         $morehtmlref.= $langs->trans("AgfFormRef") . ' : ' . $object->ref_obj;
         if(!empty($object->ref_interne)) $morehtmlref .= '<br>' . $object->ref_interne;
         $morehtmlref.='</div>';
-        
+
     }  elseif ($object->table_element == 'agefodd_session'){ //session formation
-        
+
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.= $object->formintitule;
-        
+
         if (!empty($object->fk_soc)){
             dol_include_once('/societe/class/societe.class.php');
             $soc = new Societe($db);
             $soc->fetch($object->fk_soc);
             $morehtmlref .= '<br>' . $langs->trans("Customer") . ' : ' .$soc->getNomUrl(1);
         }
-        
+
         if (!empty($object->placeid)){
             $morehtmlref .= '<br>'. $langs->trans("AgfLieu") . ' : ';
             $morehtmlref .= '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->placeid . '">' . $object->placecode . '</a>';
         }
-        
+
         if (!empty($object->dated))
         {
             $morehtmlref .= '<br>'. $langs->trans("AgfDateDebut") . ' : ' . dol_print_date($object->dated, 'daytext');
         }
-        
+
         if (!empty($object->datef))
         {
             $morehtmlref .= '<br>'. $langs->trans("AgfDateFin") . ' : ' . dol_print_date($object->datef, 'daytext');
         }
         // var_dump($object);
-        
+
         $morehtmlref.='</div>';
-        
+
     } elseif ($object->table_element == 'agefodd_stagiaire'){ // trainee
-        
+
         $morehtml .= '<a href="' . dol_buildpath('/agefodd/trainee/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
-        
+
         $morehtmlref.= $langs->trans('Name').' : ';
         if (! empty($object->fk_socpeople)) { // trainee from a contact
             dol_include_once('/contact/class/contact.class.php');
-            
+
             $contact = new Contact($db);
             $contact->fetch($object->fk_socpeople);
             $morehtmlref.= $contact->getNomUrl(1) . '<br>';
         } else {
             $morehtmlref .= ucfirst($object->prenom) . ' ' . strtoupper($object->nom) . '<br>';
         }
-        
+
         $morehtmlref.= $langs->trans('Company').' : ' . $object->thirdparty->getNomUrl(1);
-        
+
         $morehtmlref.='</div>';
-        
+
     } elseif ($object->table_element == 'agefodd_formateur'){ // trainer
-        
+
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/trainer/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
-        
+
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.= $langs->trans('Name').' : ' . ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname));
         $morehtmlref.= '<br>'.$langs->trans('AgfTrainerNature') . ' : ' . $langs->trans('AgfTrainerType'.ucfirst($object->type_trainer));
         $morehtmlref.='</div>';
-        
+
     } elseif ($object->table_element == 'agefodd_place'){ // Sites
-        
+
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/site/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
-        
+
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.=  $langs->trans("Ref"). ' : ' . $object->ref_interne;
-        
+
         if (!empty($object->socid)){
             $soc = new Societe($db);
             $soc->fetch($object->socid);
             $morehtmlref.= '<br>'.  $langs->trans("Company") . ' : ' .$soc->getNomUrl(1);
         }
-        
+
         $morehtmlref.='</div>';
-        
+
     }
-    
+
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
     print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
     print '</div><br>';
