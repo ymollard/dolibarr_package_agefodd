@@ -2280,7 +2280,7 @@ class Agsession extends CommonObject
 					$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -' . $intervalday . ')';
 				} elseif (strpos($key, 'date')) { // To allow $filter['YEAR(s.dated)']=>$year
 					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 's.rowid')) {
+				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 's.rowid') || $key=='s.fk_formation_catalogue') {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} elseif ($key == '!s.status') {
 					$sql .= ' AND s.status <> ' . $value;
@@ -2352,6 +2352,7 @@ class Agsession extends CommonObject
 					$line = new AgfSessionLine();
 
 					$line->rowid = $obj->rowid;
+					$line->id = $obj->rowid;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
 					$line->socrequesterid = $obj->fk_soc_requester;

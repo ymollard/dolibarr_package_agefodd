@@ -1291,3 +1291,5 @@ AgfStatusSession_ONGOING=En cours
 AgfMenuSessOnGoingList=Sessions en cours
 AgfCertifLegend=vert = délai d'alerte non-dépassé <br> orange = délai d'alerte dépassé <br> rouge = certificat invalide
 AgfReportBPFCategFAF=Categorie des fond d'assurance formation de non-salariés
+AgfThirdpartyOfTraineeMandatory=La société d'un participant est obligatoire (impossible de crée un participant d'un contact qui n'est pas associé à un tier)
+AgfStaMail=Participant e-mail
