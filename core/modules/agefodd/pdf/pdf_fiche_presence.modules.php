@@ -670,7 +670,23 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				}
 				if (! empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
 					$outputlangs->load("other");
-					$this->str .= "\n". $outputlangs->trans('DateToBirth').':'. dol_print_date($line->date_birth,'day');
+					$this->str .= "\n". $outputlangs->trans('DateToBirth').' : '. dol_print_date($line->date_birth,'day');
+				}
+				if ($conf->multicompany->enabled && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+				    $c = new Societe($this->db);
+				    $c->fetch($line->socid);
+				    dol_include_once('/multicompany/class/dao_multicompany.class.php');
+				    $dao = new DaoMulticompany($this->db);
+				    $dao->getEntities();
+				    $entityName = '';
+				    if (count($dao->entities)>0){
+				        foreach ($dao->entities as $e){
+				            if ($e->id == $c->entity) {
+				                $entityName = $e->label;
+				                $this->str .= "\n". $outputlangs->trans('Entity').' : '. $e->label;
+				            }
+				        }
+				    }
 				}
 				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 

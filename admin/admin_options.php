@@ -198,6 +198,11 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_ADD_DTBIRTH_FICHEPRES', $add_dtbirth_fichepres, 'yesno', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
+        
+        $add_entityname_fichepres = GETPOST('AGF_ADD_ENTITYNAME_FICHEPRES', 'int');
+        $res = dolibarr_set_const($db, 'AGF_ADD_ENTITYNAME_FICHEPRES', $add_entityname_fichepres, 'yesno', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
     }
 
     $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
@@ -1126,6 +1131,16 @@ print '</td>';
 print '<td></td>';
 print '</tr>';
 $var=!$var;
+
+if ($conf->multicompany->enabled){
+    print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDisplayEntityNameFichePres") . '</td>';
+    print '<td align="left">';
+    print ajax_constantonoff('AGF_ADD_ENTITYNAME_FICHEPRES');
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+    $var=!$var;
+}
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfInvoiceCalcAmountDivByQty") . '</td>';
 print '<td align="left">';
