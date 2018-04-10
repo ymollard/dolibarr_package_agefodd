@@ -630,24 +630,20 @@ if ($resql != - 1) {
 		}
 		
 		if (! (empty($search_orderref))) {
-		    $idfin = $order->id;
+		    $idfin = $search_orderid;
 		    $type = 'bc';
-		    $urlcomplete = '&search_orderid='.$idfin;
 		}
 		if (! (empty($search_invoiceref))) {
-		    $idfin = $invoice->id;
+		    $idfin = $search_invoiceid;
 		    $type = 'fac';
-		    $urlcomplete = '&search_invoiceid='.$idfin;
 		}
 		if (! (empty($search_fourninvoiceref))) {
-		    $idfin = $fourninvoice->id;
+		    $idfin = $search_fourninvoiceid;
 		    $type = "fourn";
-		    $urlcomplete = '&search_fourninvoiceid='.$idfin;
 		}
 		if (! (empty($search_propalref))) {
-		    $idfin = $propal->id;
+		    $idfin = $search_propalid;
 		    $type = 'prop';
-		    $urlcomplete = '&search_propalid='.$idfin;
 		}
 		
 		$agf_fin = new Agefodd_session_element($db);
