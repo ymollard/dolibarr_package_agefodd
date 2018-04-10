@@ -145,7 +145,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			$civility_id = GETPOST('civility_id', 'alpha');
 			$socid = GETPOST('societe', 'int');
 
-
 			$create_thirdparty = GETPOST('create_thirdparty', 'int');
 
 			if ($socid==-1) {
@@ -630,10 +629,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 		$head = trainee_prepare_head($agf);
 
-		if ($result > 0) {			
+		if ($result > 0) {
 		    llxHeader('', $title);
 		    dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-		    
+
 			// Affichage en mode "édition"
 			if ($action == 'edit') {
 				print '<form name="update" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
@@ -762,10 +761,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				print '</div>' . "\n";
 			} else {
 				// Display in "view" mode
-				
+
 			    dol_agefodd_banner_tab($agf, 'id');
 			    print '<div class="underbanner clearboth"></div>';
-			    
+
 				/*
 				* Confirmation de la suppression
 				*/
@@ -816,7 +815,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 				else
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td>' . stripslashes($notes) . '</td></tr>';
-				
+
 				if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
 				    require_once ('../class/agefodd_session_stagiaire_heures.class.php');
 				    $agfssh = new Agefoddsessionstagiaireheures($db);
@@ -832,14 +831,14 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 				print '</div>';
 			}
-			
+
 			/*
 			 * Barre d'actions
 			 *
 			 */
-			
+
 			print '<div class="tabsAction">';
-			
+
 			if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 			    if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
 			        print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
@@ -851,8 +850,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 			    } else {
 			        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 			    }
-			}			
-			
+			}
+
 		} else {
 			setEventMessage($agf->error, 'errors');
 			Header("Location: list.php");

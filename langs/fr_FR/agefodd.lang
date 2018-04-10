@@ -1162,7 +1162,7 @@ AgfTypeEmployeeHelp=Client qui est la société qui vous sous-traite de la sessi
 AgfQRCodeCertifInfo=Information du QR code sur le certificat format carte de crédit
 AgfConseilsPratiqueByEmail=Document formateur envoyer par email
 AgfRptSelectAtLeastOneCriteria=Veuillez selectionner des critéres de recherche pour ce rapport.
-AgfErroVarNotSetBPF = La configuration du module Foramtion (onglet BPF ou produit de frais) n'est pas complète. Notament pour la catégorie %s
+AgfErroVarNotSetBPF = La configuration du module Formation (onglet BPF ou produit de frais) n'est pas complète. Notament pour la catégorie %s
 AgfBPFIntro=Ce rapport peut être utilisé pour les centres de formation professionnelle continue en France dans le cadre de l'exigence de l'administration qui exige le
 AgfBPFHelpconfig=La première étape est de configurer les différents éléments du module et de Dolibarr
 AgfMenuReportBPFHelp = Manuel d'utilisation du BPF dans le module formation 
@@ -1290,3 +1290,6 @@ AgfInvoiceCalcAmountDivByQty=Pour les factures crée depuis le module, le montan
 AgfStatusSession_ONGOING=En cours
 AgfMenuSessOnGoingList=Sessions en cours
 AgfCertifLegend=vert = délai d'alerte non-dépassé <br> orange = délai d'alerte dépassé <br> rouge = certificat invalide
+AgfReportBPFCategFAF=Categorie des fond d'assurance formation de non-salariés
+AgfThirdpartyOfTraineeMandatory=La société d'un participant est obligatoire (impossible de crée un participant d'un contact qui n'est pas associé à un tier)
+AgfStaMail=Participant e-mail
