@@ -230,7 +230,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 	 */
 	function _pagebody() {
 		global $user, $langs, $conf, $mysoc;
-
+		
 		// New page
 		$this->pdf->AddPage();
 
@@ -239,7 +239,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-
+		
 		// Date
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($this->ref_object->id);
@@ -342,6 +342,13 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 
+		// spécifique multicompany
+		if (!empty($conf->multicompany->enabled)) {
+		    dol_include_once('/multicompany/class/dao_multicompany.class.php');
+		    $dao = new DaoMulticompany($this->db);
+		    $dao->getEntities();
+		}
+		
 		// Fill header with background color
 		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
@@ -377,7 +384,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			$this->pdf->MultiCell(100, 4, $this->outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		// Other Logo
-		if ($conf->multicompany->enabled && ! empty($conf->global->AGF_MULTICOMPANY_MULTILOGO)) {
+		if (!empty($conf->multicompany->enabled) && ! empty($conf->global->AGF_MULTICOMPANY_MULTILOGO)) {
 			$sql = 'SELECT value FROM ' . MAIN_DB_PREFIX . 'const WHERE name =\'MAIN_INFO_SOCIETE_LOGO\' AND entity=1';
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -561,7 +568,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
 		$this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
 		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->ref_object->id), 0, 'L');
-
+		$this->haut_col2 += $hauteur + 1;
 		// Lieu
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posYintitule);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres11');
@@ -624,10 +631,27 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->posY_trainee = $this->posY;
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
-		$this->str = $this->line->nom . ' ' . $this->line->prenom . ' - ' . dol_trunc($line->line->socname, 27);
-		if (! empty($line->line->poste)) {
-			$this->str .= ' (' . $line->line->poste . ')';
+		$this->str = $this->line->nom . ' ' . $this->line->prenom . ' - ' . dol_trunc($this->line->socname, 27);
+ 		
+		if (! empty($this->line->poste)) {
+		    $this->str .= "\n".' (' . $this->line->poste . ')';
 		}
+		if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+		    $c = new Societe($this->db);
+		    $c->fetch($this->line->socid);
+		    
+		    $entityName = '';
+		    if (count($dao->entities)>0){
+		        foreach ($dao->entities as $e){
+		            if ($e->id == $c->entity){
+		                $entityName = $e->label;
+		                $this->str .= "\n". $this->outputlangs->trans('Entity').' : '. $e->label;
+		                break;
+		            }
+		        }
+		    }
+		}
+		
 		$this->pdf->MultiCell($this->larg_col3, $this->h_ligne, $this->outputlangs->convToOutputCharset($this->str), 'T', 'C', false, 1, $this->posX + $this->larg_col1 + $this->larg_col2, $this->posY, true, 1, false, true, $this->h_ligne, 'T', true);
 
 		$this->posY = $this->pdf->GetY() - 1;

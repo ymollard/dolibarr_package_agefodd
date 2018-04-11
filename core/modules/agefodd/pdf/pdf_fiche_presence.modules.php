@@ -195,7 +195,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 
 		$height_for_footer = 20;
 		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
-					
+				
+		if (!empty($conf->multicompany->enabled)) {
+		    dol_include_once('/multicompany/class/dao_multicompany.class.php');
+		    $dao = new DaoMulticompany($this->db);
+		    $dao->getEntities();
+		}
+		
 		$session_hours=array();
 		$tmp_array=array();
 		$agf_date = new Agefodd_sesscalendar($this->db);
@@ -645,7 +651,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			// ligne
 			$h_ligne = 7;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-
+			
 			foreach ( $agfsta->lines as $line ) {
 				$this->str='';
 				// Cadre
@@ -670,7 +676,22 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				}
 				if (! empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
 					$outputlangs->load("other");
-					$this->str .= "\n". $outputlangs->trans('DateToBirth').':'. dol_print_date($line->date_birth,'day');
+					$this->str .= "\n". $outputlangs->trans('DateToBirth').' : '. dol_print_date($line->date_birth,'day');
+				}
+				if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+				    $c = new Societe($this->db);
+				    $c->fetch($line->socid);
+				    
+				    $entityName = '';
+				    if (count($dao->entities)>0){
+				        foreach ($dao->entities as $e){
+				            if ($e->id == $c->entity) {
+				                $entityName = $e->label;
+				                $this->str .= "\n". $outputlangs->trans('Entity').' : '. $e->label;
+				                break;
+				            }
+				        }
+				    }
 				}
 				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 

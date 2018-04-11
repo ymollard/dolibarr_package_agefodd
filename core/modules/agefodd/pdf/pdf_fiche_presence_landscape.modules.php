@@ -196,7 +196,13 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 
 		$height_for_footer = 20;
 		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
-			
+		
+		if (!empty($conf->multicompany->enabled)) {
+		    dol_include_once('/multicompany/class/dao_multicompany.class.php');
+		    $dao = new DaoMulticompany($this->db);
+		    $dao->getEntities();
+		}
+		
 		// New page
 		$pdf->AddPage();
 		if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -426,7 +432,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		$this->str = $agf_place->ref_interne . "\n" . $agf_place->adresse . "\n" . $agf_place->cp . " " . $agf_place->ville;
 		$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-		$posY += $hauteur;
+		$posY += $hauteur +1;
 		$haut_col4 += $hauteur;
 
 		// Cadre
@@ -437,11 +443,11 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 		 * *** Bloc formateur ****
 		 */
 
-		$pdf->SetXY($posX - 2, $posY - 2);
+		$pdf->SetXY($posX - 2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres12');
 		$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY += 2;
+		$posY += 4;
 
 		$cadre_tableau = array (
 				$posX - 2,
@@ -652,6 +658,21 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			$this->str = $line->nom . ' ' . $line->prenom;
 			if (! empty($line->poste)) {
 				$this->str .= ' (' . $line->poste . ')';
+			}
+			if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+			    $c = new Societe($this->db);
+			    $c->fetch($line->socid);
+			    
+			    $entityName = '';
+			    if (count($dao->entities)>0){
+			        foreach ($dao->entities as $e){
+			            if ($e->id == $c->entity){
+			                $entityName = $e->label;
+			                $this->str .= "\n". $outputlangs->trans('Entity').' : '. $e->label;
+			                break;
+			            }
+			        }
+			    }
 			}
 			$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "C", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
