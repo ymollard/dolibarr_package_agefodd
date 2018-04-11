@@ -49,6 +49,11 @@ $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 
+$action = GETPOST('action');
+$confirm = GETPOST('confirm');
+$idelement = GETPOST('idelement');
+$idsess = GETPOST('idsess');
+
 // Search criteria
 $search_orderid = GETPOST('search_orderid', 'int');
 $search_invoiceid = GETPOST('search_invoiceid', 'int');
@@ -95,15 +100,13 @@ $pagenext = $page + 1;
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-$title = $langs->trans("AgfMenuSessByInvoiceOrder");
-llxHeader('', $title);
-
 if (! empty($search_orderid)) {
 	$order = new Commande($db);
 	$order->fetch($search_orderid);
 	$order->fetch_thirdparty();
 	$search_orderref = $order->ref;
 	$object_socid = $order->socid;
+	$urlcomplete = '&search_orderid='.$search_orderid;
 }
 
 if (! empty($search_invoiceid)) {
@@ -112,6 +115,7 @@ if (! empty($search_invoiceid)) {
 	$invoice->fetch_thirdparty();
 	$search_invoiceref = $invoice->ref;
 	$object_socid = $invoice->socid;
+	$urlcomplete = '&search_invoiceid='.$search_invoiceid;
 }
 
 if (! empty($search_fourninvoiceid)) {
@@ -120,6 +124,7 @@ if (! empty($search_fourninvoiceid)) {
 	$fourninvoice->fetch_thirdparty();
 	$search_fourninvoiceref = $fourninvoice->ref;
 	$object_socid = $fourninvoice->socid;
+	$urlcomplete = '&search_fourninvoiceid='.$search_fourninvoiceid;
 }
 
 if (! empty($search_orderref)) {
@@ -128,6 +133,7 @@ if (! empty($search_orderref)) {
 	$order->fetch_thirdparty();
 	$search_orderid = $order->id;
 	$object_socid = $order->socid;
+	$urlcomplete = '&search_orderid='.$search_orderid;
 }
 
 if (! empty($search_invoiceref)) {
@@ -136,6 +142,7 @@ if (! empty($search_invoiceref)) {
 	$invoice->fetch_thirdparty();
 	$search_invoiceid = $invoice->id;
 	$object_socid = $invoice->socid;
+	$urlcomplete = '&search_invoiceid='.$search_invoiceid;
 }
 
 if (! empty($search_fourninvoiceref)) {
@@ -144,6 +151,7 @@ if (! empty($search_fourninvoiceref)) {
 	$fourninvoice->fetch_thirdparty();
 	$search_fourninvoiceid = $fourninvoice->id;
 	$object_socid = $fourninvoice->socid;
+	$urlcomplete = '&search_fourninvoiceid='.$search_fourninvoiceid;
 }
 
 if (! empty($search_propalref)) {
@@ -152,6 +160,7 @@ if (! empty($search_propalref)) {
 	$propal->fetch_thirdparty();
 	$search_propalid = $propal->id;
 	$object_socid = $propal->socid;
+	$urlcomplete = '&search_propalid='.$search_propalid;
 }
 
 if (! empty($search_propalid)) {
@@ -160,7 +169,54 @@ if (! empty($search_propalid)) {
 	$propal->fetch_thirdparty();
 	$search_propalref = $propal->ref;
 	$object_socid = $propal->socid;
+	$urlcomplete = '&search_propalid='.$search_propalid;
 }
+
+if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer)
+{
+    $agf_fin = new Agefodd_session_element($db);
+    $result = $agf_fin->fetch($idelement);
+    if ($result < 0)
+    {
+        setEventMessage($agf_fin->error, 'errors');
+    }
+    
+    // If exists we update
+    if ($agf_fin->id)
+    {
+        $result2 = $agf_fin->delete($user);
+    }
+    if ($result2 > 0)
+    {
+        
+        // Update training cost
+        $result = $agf_fin->fetch_by_session_by_thirdparty($idsess, 0);
+        if ($result < 0)
+        {
+            setEventMessage($agf_fin->error, 'errors');
+        }
+        
+        $TSessions = $agf_fin->get_linked_sessions($agf_fin->fk_element, $agf_fin->element_type);
+        
+        foreach ($TSessions as $k => $dummy){
+            if($k !== 'total') {
+                $agf_fin->fk_session_agefodd = $k;
+                $agf_fin->updateSellingPrice($user);
+            }
+            
+        }
+        
+        Header('Location: '.$_SERVER['PHP_SELF']."?".substr($urlcomplete, 1));
+        exit();
+    }
+    else
+    {
+        setEventMessage($agf->error, 'errors');
+    }
+}
+
+$title = $langs->trans("AgfMenuSessByInvoiceOrder");
+llxHeader('', $title);
 
 if (! empty($search_orderid) || ! empty($search_orderref)) {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php';
@@ -416,6 +472,16 @@ if (GETPOST('link_mission')){
     
 }
 
+if ($action == 'unlink') {
+    
+    $agf_liste = new Agefodd_session_element($db);
+    $result = $agf_liste->fetch($idelement);
+    $ref = $agf_liste->facfournnumber;
+    
+    print $form->formconfirm($_SERVER['PHP_SELF'] . '?socid=' . $object_socid . '&idsess=' . $idsess . '&idelement=' . $idelement.$urlcomplete, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", '', '', 1);
+    
+} 
+
 $agf = new Agsession($db);
 $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid);
 if ($resql<0) {
@@ -540,7 +606,11 @@ if ($resql != - 1) {
 		if ($line->color && ((($couleur_rgb[0] * 299) + ($couleur_rgb[1] * 587) + ($couleur_rgb[2] * 114)) / 1000) < 125)
 			$color_a = ' style="color: #FFFFFF;"';
 
-		print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		if (empty($search_fourninvoiceref)) {
+		    print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		} else {
+		    print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="cost.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		}
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
 		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
@@ -558,7 +628,42 @@ if ($resql != - 1) {
 		if (! (empty($search_propalref))) {
 			print '<td>' . $line->propalref . '</td>';
 		}
-		print '<td></td>';
+		
+		if (! (empty($search_orderref))) {
+		    $idfin = $search_orderid;
+		    $type = 'bc';
+		}
+		if (! (empty($search_invoiceref))) {
+		    $idfin = $search_invoiceid;
+		    $type = 'fac';
+		}
+		if (! (empty($search_fourninvoiceref))) {
+		    $idfin = $search_fourninvoiceid;
+		    $type = "fourn";
+		}
+		if (! (empty($search_propalref))) {
+		    $idfin = $search_propalid;
+		    $type = 'prop';
+		}
+		
+		$agf_fin = new Agefodd_session_element($db);
+		if ($type !== 'fourn') { 
+		    $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+		} else {
+		    $TFournTypes = array('invoice_supplier_trainer', 'invoice_supplier_room', 'invoice_supplier_missions');
+		    foreach ($TFournTypes as $type){
+		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+		        if(!empty($agf_fin->lines)) break;
+		    }
+		}
+		//var_dump($agf_fin);
+		
+		print '<td align="right">';
+		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $agf_fin->lines[0]->id . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
+		print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+		print '</td>';
+// 		print '<td></td>';
 		print "</tr>\n";
 
 		$i ++;
@@ -672,7 +777,7 @@ if (empty($search_fourninvoiceref)) {
         LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid 
         LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid 
         WHERE p.entity IN (4,1)
-        AND p.fk_societe = 27
+        AND p.fk_societe = ".$object_socid."
         AND s.rowid NOT IN ('".implode("','", $session_array_id)."')
         ORDER BY sess.rowid ASC";
     
