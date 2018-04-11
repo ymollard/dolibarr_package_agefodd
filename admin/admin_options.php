@@ -1132,7 +1132,7 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
-if ($conf->multicompany->enabled){
+if (!empty($conf->multicompany->enabled)){
     print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDisplayEntityNameFichePres") . '</td>';
     print '<td align="left">';
     print ajax_constantonoff('AGF_ADD_ENTITYNAME_FICHEPRES');

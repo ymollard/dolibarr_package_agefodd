@@ -239,7 +239,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-
+		
 		// Date
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($this->ref_object->id);
@@ -342,6 +342,13 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 
+		// spécifique multicompany
+		if (!empty($conf->multicompany->enabled)) {
+		    dol_include_once('/multicompany/class/dao_multicompany.class.php');
+		    $dao = new DaoMulticompany($this->db);
+		    $dao->getEntities();
+		}
+		
 		// Fill header with background color
 		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
 		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
@@ -377,7 +384,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			$this->pdf->MultiCell(100, 4, $this->outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		// Other Logo
-		if ($conf->multicompany->enabled && ! empty($conf->global->AGF_MULTICOMPANY_MULTILOGO)) {
+		if (!empty($conf->multicompany->enabled) && ! empty($conf->global->AGF_MULTICOMPANY_MULTILOGO)) {
 			$sql = 'SELECT value FROM ' . MAIN_DB_PREFIX . 'const WHERE name =\'MAIN_INFO_SOCIETE_LOGO\' AND entity=1';
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -629,18 +636,17 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		if (! empty($this->line->poste)) {
 		    $this->str .= "\n".' (' . $this->line->poste . ')';
 		}
-		if ($conf->multicompany->enabled && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+		if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
 		    $c = new Societe($this->db);
 		    $c->fetch($this->line->socid);
-		    dol_include_once('/multicompany/class/dao_multicompany.class.php');
-		    $dao = new DaoMulticompany($this->db);
-		    $dao->getEntities();
+		    
 		    $entityName = '';
 		    if (count($dao->entities)>0){
 		        foreach ($dao->entities as $e){
 		            if ($e->id == $c->entity){
 		                $entityName = $e->label;
 		                $this->str .= "\n". $this->outputlangs->trans('Entity').' : '. $e->label;
+		                break;
 		            }
 		        }
 		    }
