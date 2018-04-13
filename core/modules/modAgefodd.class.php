@@ -1140,6 +1140,8 @@ class modAgefodd extends DolibarrModules
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfFormTypeSession',
 				's.dated' => 'AgfDateDebut',
 				's.datef' => 'AgfDateFin',
+				'cal.heured' => 'AgfPeriodTimeB',
+				'cal.heuref' => 'AgfPeriodTimeE',
 				's.nb_stagiaire' => 'AgfNbreParticipants',
 				's.notes' => 'AgfNote',
 				's.cost_trainer' => 'AgfCoutFormateur',
@@ -1203,6 +1205,8 @@ class modAgefodd extends DolibarrModules
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
 				's.dated' => 'AgfSessionDetail',
 				's.datef' => 'AgfSessionDetail',
+				'cal.heured' => 'AgfSessionDetail',
+				'cal.heuref' => 'AgfSessionDetail',
 				's.nb_stagiaire' => 'AgfSessionDetail',
 				's.notes' => 'AgfSessionDetail',
 				's.cost_trainer' => 'AgfSessionDetail',
@@ -1264,6 +1268,7 @@ class modAgefodd extends DolibarrModules
 
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier as cal ON s.rowid = cal.fk_agefodd_session';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_place as p ON p.rowid = s.fk_session_place';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
