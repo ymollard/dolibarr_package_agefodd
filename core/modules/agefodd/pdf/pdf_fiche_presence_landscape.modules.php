@@ -196,13 +196,13 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 
 		$height_for_footer = 20;
 		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
-		
+
 		if (!empty($conf->multicompany->enabled)) {
 		    dol_include_once('/multicompany/class/dao_multicompany.class.php');
 		    $dao = new DaoMulticompany($this->db);
 		    $dao->getEntities();
 		}
-		
+
 		// New page
 		$pdf->AddPage();
 		if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -642,6 +642,9 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 
 		// ligne
 		$h_ligne = 7;
+		if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+			$h_ligne = $h_ligne + 3;
+		}
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
 		$agfsta = new Agefodd_session_stagiaire($this->db);
@@ -662,7 +665,7 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
 			    $c = new Societe($this->db);
 			    $c->fetch($line->socid);
-			    
+
 			    $entityName = '';
 			    if (count($dao->entities)>0){
 			        foreach ($dao->entities as $e){
