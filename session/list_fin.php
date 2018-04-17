@@ -39,6 +39,7 @@ require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.commande.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 
 // Security check
@@ -59,6 +60,8 @@ $search_orderid = GETPOST('search_orderid', 'int');
 $search_invoiceid = GETPOST('search_invoiceid', 'int');
 $search_fourninvoiceid = GETPOST('search_fourninvoiceid', 'int');
 $search_fourninvoiceref = GETPOST('search_fourninvoiceref');
+$search_fournorderid = GETPOST('search_fournorderid', 'int');
+$search_fournorderref = GETPOST('search_fournorderref');
 $search_orderref = GETPOST('search_orderref', 'alpha');
 $search_invoiceref = GETPOST('search_invoiceref', 'alpha');
 $search_propalref = GETPOST('search_propalref', 'alpha');
@@ -77,6 +80,8 @@ if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {
 	$search_invoiceid = '';
 	$search_fourninvoiceid = '';
 	$search_fourninvoiceref = '';
+	$search_fournorderid = '';
+	$search_fournorderref = '';
 	$search_orderref = '';
 	$search_invoiceref = '';
 	$search_propalref = '';
@@ -127,6 +132,15 @@ if (! empty($search_fourninvoiceid)) {
 	$urlcomplete = '&search_fourninvoiceid='.$search_fourninvoiceid;
 }
 
+if (! empty($search_fournorderid)) {
+    $fournorder = new CommandeFournisseur($db);
+    $fournorder->fetch($search_fournorderid);
+    $fournorder->fetch_thirdparty();
+    $search_fournorderref = $fournorder->ref;
+    $object_socid = $fournorder->socid;
+    $urlcomplete = '&search_fournorderid='.$search_fournorderid;
+}
+
 if (! empty($search_orderref)) {
 	$order = new Commande($db);
 	$order->fetch('', $search_orderref);
@@ -152,6 +166,15 @@ if (! empty($search_fourninvoiceref)) {
 	$search_fourninvoiceid = $fourninvoice->id;
 	$object_socid = $fourninvoice->socid;
 	$urlcomplete = '&search_fourninvoiceid='.$search_fourninvoiceid;
+}
+
+if (! empty($search_fournorderref)) {
+    $fournorder = new CommandeFournisseur($db);
+    $fournorder->fetch('', $search_fournorderref);
+    $fournorder->fetch_thirdparty();
+    $search_fournorderid = $fournorder->id;
+    $object_socid = $fournorder->socid;
+    $urlcomplete = '&search_fournorderid='.$search_fournorderid;
 }
 
 if (! empty($search_propalref)) {
@@ -271,6 +294,26 @@ if (! empty($search_fourninvoiceid) || ! empty($search_fourninvoiceref)) {
 	if (function_exists('dol_banner_tab')) {
 		dol_banner_tab($fourninvoice, 'search_fourninvoiceref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 	}
+}
+
+if (! empty($search_fournorderid) || ! empty($search_fournordereref)) {
+    require_once DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php';
+    $head = ordersupplier_prepare_head($fournorder);
+    dol_fiche_head($head, 'tabAgefodd', $langs->trans('SupplierOrder'), 0, 'bill');
+    
+    $element_type = 'order_supplier';
+    $element_id = $search_fournorderid;
+    
+    $morehtmlref='<div class="refidno">';
+    // Ref customer
+    $morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $fournorder->ref_client, $fournorder, 0, 'string', '', 0, 1);
+    $morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $fournorder->ref_client, $fournorder, 0, 'string', '', null, null, '', 1);
+    // Thirdparty
+    $morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $fournorder->thirdparty->getNomUrl(1);
+    $morehtmlref.='</div>';
+    if (function_exists('dol_banner_tab')) {
+        dol_banner_tab($fournorder, 'search_fournorderref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+    }
 }
 
 if (! empty($search_propalref) || ! empty($search_propalid)) {
@@ -483,7 +526,7 @@ if ($action == 'unlink') {
 } 
 
 $agf = new Agsession($db);
-$resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid);
+$resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid, $search_fournorderid);
 if ($resql<0) {
 	setEventMessage($agf->error,'errors');
 }
@@ -520,6 +563,9 @@ if ($resql != - 1) {
 	}
 	if (! (empty($search_fourninvoiceref))) {
 		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
+	}
+	if (! (empty($search_fournorderref))) {
+	    print_liste_field_titre($langs->trans("Order"), $_SERVEUR['PHP_SELF'], "fournorder.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_propalref))) {
 		print_liste_field_titre($langs->trans("Proposal"), $_SERVEUR['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
@@ -579,6 +625,11 @@ if ($resql != - 1) {
 		print '<input type="text" class="flat" name="search_fourninvoiceref" value="' . $search_fourninvoiceref . '" size="20">';
 		print '</td>';
 	}
+	if (! (empty($search_fournorderref))) {
+	    print '<td class="liste_titre">';
+	    print '<input type="text" class="flat" name="search_fournorderref" value="' . $search_fournorderref . '" size="20">';
+	    print '</td>';
+	}
 	if (! (empty($search_propalref))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_propalref" value="' . $search_propalref . '" size="20">';
@@ -625,6 +676,9 @@ if ($resql != - 1) {
 		if (! (empty($search_fourninvoiceref))) {
 			print '<td>' . $line->fourninvoiceref . '</td>';
 		}
+		if (! (empty($search_fournorderref))) {
+		    print '<td>' . $line->fournorderref . '</td>';
+		}
 		if (! (empty($search_propalref))) {
 			print '<td>' . $line->propalref . '</td>';
 		}
@@ -641,6 +695,10 @@ if ($resql != - 1) {
 		    $idfin = $search_fourninvoiceid;
 		    $type = "fourn";
 		}
+		if (! (empty($search_fournorderref))) {
+		    $idfin = $search_fournorderid;
+		    $type = "fourn";
+		}
 		if (! (empty($search_propalref))) {
 		    $idfin = $search_propalid;
 		    $type = 'prop';
@@ -650,10 +708,15 @@ if ($resql != - 1) {
 		if ($type !== 'fourn') { 
 		    $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
 		} else {
-		    $TFournTypes = array('invoice_supplier_trainer', 'invoice_supplier_room', 'invoice_supplier_missions');
-		    foreach ($TFournTypes as $type){
+		    if(!empty($search_fourninvoiceref)){
+    		    $TFournTypes = array('invoice_supplier_trainer', 'invoice_supplier_room', 'invoice_supplier_missions');
+    		    foreach ($TFournTypes as $type){
+    		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+    		        if(!empty($agf_fin->lines)) break;
+    		    }
+		    } else {
+		        $type = 'order_supplier';
 		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
-		        if(!empty($agf_fin->lines)) break;
 		    }
 		}
 		//var_dump($agf_fin);
@@ -674,8 +737,6 @@ if ($resql != - 1) {
 	setEventMessage($agf->error, 'errors');
 }
 
-// Do not display add form for suppier invoice
-// TODO : set this option for supplier invoice
 if (empty($search_fourninvoiceref)) {
 	$filter=array();
 	$soc = new Societe($db);

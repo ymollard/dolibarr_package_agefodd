@@ -35,6 +35,7 @@ require_once ('../class/agefodd_session_formateur_calendrier.class.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.commande.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../class/agefodd_session_element.class.php');
@@ -1287,6 +1288,48 @@ if (! empty($place->id)) {
 }
 
 print '</form>';
+
+
+/*
+ * Supplier Orders list
+ */
+$agf_supplierorder = new Agefodd_session_element($db);
+// Get all document lines
+$result = $agf_supplierorder->fetch_by_session_by_thirdparty($id, 0, array('\'order_supplier\''));
+
+if ($result > 0) {
+    print '<br>';
+    print_fiche_titre($langs->trans('AgfOrders'));
+    
+    print '<table class="border" width="100%">';
+    
+    foreach ($agf_supplierorder->lines as $line){
+        if(!empty($line->fk_soc)){
+            $soc = new Societe($db);
+            $soc->fetch($line->fk_soc);
+        }
+        if (!empty($line->fk_element)){
+            $order = new CommandeFournisseur($db);
+            $order->fetch($line->fk_element);
+        }
+        print '<tr>';
+        
+        if(!empty($line->fk_soc)) print '<td width="20%">'.$soc->getNomUrl(1).'</td>';
+        else print '<td width="20%"></td>';
+        
+        // Unlink order
+        $legende = $langs->trans("AgfOrdersUnselect");
+        $delink = '<a href="'.$_SERVER['PHP_SELF'].'?action=unlink&idelement='.$line->id.'&id='.$line->fk_session_agefodd.'&socid='.$line->fk_soc.'" alt="'.$legende.'" title="'.$legende.'">';
+        $delink .= '<img src="'.dol_buildpath('/agefodd/img/unlink.png', 1).'" border="0" align="absmiddle" hspace="2px" ></a>';
+        
+        if(!empty($line->fk_element)) print '<td>'.$order->getLibStatut(4).' '.$order->getNomUrl(1).' ('.price($order->total_ht).'€) '.$delink.'</td>';
+        else print '<td></td>';
+        print '</tr>';
+        
+    }
+    print '</table>';
+    
+}
 
 llxFooter();
 $db->close();

@@ -1294,3 +1294,5 @@ AgfCertifLegend=vert = délai d'alerte non-dépassé <br> orange = délai d'aler
 AgfReportBPFCategFAF=Categorie des fond d'assurance formation de non-salariés
 AgfThirdpartyOfTraineeMandatory=La société d'un participant est obligatoire (impossible de crée un participant d'un contact qui n'est pas associé à un tier)
 AgfStaMail=Participant e-mail
+AgfOrders=Commandes
+AgfOrdersUnselect=Délier la commande
