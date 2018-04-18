@@ -69,7 +69,7 @@ class modAgefodd extends DolibarrModules
 		// If file is in module/images directory, use this->picto=DOL_URL_ROOT.'/module/images/file.png'
 		$this->picto = 'agefodd@agefodd';
 
-		$this->editor_name = 'ATM Consulting';
+		$this->editor_name = 'ATM-Consulting';
 		$this->editor_url = 'https://www.atm-consulting.fr';
 
 		// Data directories to create when module is enabled.
