@@ -3080,7 +3080,7 @@ class Agsession extends CommonObject
 	 * @param string $fourninvoiceid num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '') {
+	public function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '', $fournorderid = '') {
 		global $langs;
 
 		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
@@ -3093,6 +3093,9 @@ class Agsession extends CommonObject
 		}
 		if (! empty($fourninvoiceid)) {
 			$sql .= " ,fourninvoice.ref as fourninvoiceref";
+		}
+		if (! empty($fournorderid)) {
+		    $sql .= " ,fournorder.ref as fournorderref";
 		}
 		if (! empty($orderid)) {
 			$sql .= " ,order_dol.ref as orderref";
@@ -3123,6 +3126,12 @@ class Agsession extends CommonObject
 			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%'";
 			$sql .= ' AND fourninvoice.rowid=' . $fourninvoiceid;
 		}
+		
+		if (! empty($fournorderid)) {
+		    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "commande_fournisseur as fournorder ";
+		    $sql .= " ON fournorder.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'order_supplier%'";
+		    $sql .= ' AND fournorder.rowid=' . $fournorderid;
+		}
 
 		if (! empty($orderid)) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "commande as order_dol ";
@@ -3145,6 +3154,10 @@ class Agsession extends CommonObject
 
 		if (! empty($fourninvoiceid)) {
 			$sql .= " ,fourninvoice.ref ";
+		}
+		
+		if (! empty($fournorderid)) {
+		    $sql .= " ,fournorder.ref ";
 		}
 
 		if (! empty($orderid)) {
@@ -3200,6 +3213,9 @@ class Agsession extends CommonObject
 					}
 					if (! empty($fourninvoiceid)) {
 						$line->fourninvoiceref = $obj->fourninvoiceref;
+					}
+					if (! empty($fournorderid)) {
+					    $line->fournorderref = $obj->fournorderref;
 					}
 
 					$this->lines[$i] = $line;
