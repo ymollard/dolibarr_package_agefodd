@@ -355,7 +355,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				 */
 
 				// Récuperation
-				$agf_op = new Agefodd($this->db, "", $id);
+				$agf_op = new Formation($this->db, "", $id);
 				$result2 = $agf_op->fetch_objpeda_per_formation($agf->formid);
 
 				$width = 160;

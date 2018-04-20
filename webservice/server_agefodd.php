@@ -290,7 +290,7 @@ function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
 		$fuser->getrights();
 		
 		if ($fuser->rights->agefodd->read) {
-			$agefodd = new Agefodd($db);
+			$agefodd = new Formation($db);
 			$result = $agefodd->fetch($id, $ref, $ref_ext);
 			if ($result > 0) {
 				// Create
@@ -386,7 +386,7 @@ function createAgefodd($authentication, $agefodd) {
 	// Check parameters
 	
 	if (! $error) {
-		$newobject = new Agefodd($db);
+		$newobject = new Formation($db);
 		
 		$newobject->id = $agefodd->id;
 		$newobject->entity = $agefodd->entity;

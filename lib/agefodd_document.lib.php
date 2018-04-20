@@ -970,7 +970,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-		$agfTraining = new Agefodd($db);
+		$agfTraining = new Formation($db);
 		$agfTraining->fetch($idform);
 		$agfTraining->generatePDAByLink();
 		$filename = 'fiche_pedago_' . $idform . '.pdf';

@@ -630,7 +630,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 
 			require_once 'agefodd_formation_catalogue.class.php';
 			// Find next certificate code
-			$agf_training = new Agefodd($this->db);
+			$agf_training = new Formation($this->db);
 			$agf_training->fetch($session->formid);
 			$obj = empty($conf->global->AGF_CERTIF_ADDON) ? 'mod_agefoddcertif_simple' : $conf->global->AGF_CERTIF_ADDON;
 			$path_rel = dol_buildpath('/agefodd/core/modules/agefodd/certificate/' . $conf->global->AGF_CERTIF_ADDON . '.php');

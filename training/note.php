@@ -44,7 +44,7 @@ $action = GETPOST('action', 'alpha');
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
 	accessforbidden();
 
-$object = new Agefodd($db);
+$object = new Formation($db);
 $result = $object->fetch($id, $ref);
 if ($result < 0) {
 	setEventMessage($object->error, 'errors');

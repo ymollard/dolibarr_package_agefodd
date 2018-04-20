@@ -55,7 +55,7 @@ $objc = GETPOST('objc', 'int');
 $categid = GETPOST('categid', 'int');
 $categidbpf= GETPOST('categidbpf', 'int');
 
-$agf = new Agefodd($db);
+$agf = new Formation($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
@@ -63,7 +63,7 @@ $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
  * Actions delete
  */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 	$agf->id = $id;
 	$result = $agf->remove($id);
 
@@ -76,7 +76,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 }
 
 if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 
 	$result = $agf->fetch($id);
 
@@ -96,7 +96,7 @@ if ($action == 'arch_confirm_delete' && $confirm == "yes" && $user->rights->agef
  */
 if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	if (! $_POST["cancel"]) {
-		$agf = new Agefodd($db);
+		$agf = new Formation($db);
 
 		$result = $agf->fetch($id);
 
@@ -181,7 +181,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
  */
 if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	if (! $_POST["cancel"]) {
-		$agf = new Agefodd($db);
+		$agf = new Formation($db);
 
 		$agf->intitule = GETPOST('intitule', 'alpha');
 		if (empty($agf->intitule)) {
@@ -278,7 +278,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
     $newObjectifs = GETPOST('pedago');
     
-    $agf_peda = new Agefodd($db);
+    $agf_peda = new Formation($db);
     $result_peda = $agf_peda->fetch_objpeda_per_formation($id);
     
     foreach ($agf_peda->lines as $line){
@@ -286,7 +286,7 @@ if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_ca
     }
     if (!empty($newObjectifs)){
         foreach ($newObjectifs as $objectif){
-            //$agf = new Agefodd($db);
+            //$agf = new Formation($db);
             
             $agf_peda->intitule = $objectif['intitule'];
             $agf_peda->priorite = (int) $objectif['priorite'];
@@ -304,13 +304,13 @@ if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_ca
  */
 
 if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 
 	$idforma = GETPOST('idforma', 'int');
 
 	// Uate objectif pedagogique
 	if (GETPOST('obj_update_x')) {
-		$agf_peda = new Agefodd($db);
+		$agf_peda = new Formation($db);
 
 		$result_peda = $agf_peda->fetch_objpeda_per_formation($idforma);
 		if ($result_peda < 0) {
@@ -358,7 +358,7 @@ if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalog
 }
 
 if ($action == 'confirm_clone' && $confirm == 'yes') {
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 	if ($agf->fetch($id) > 0) {
 		$result = $agf->createFromClone($id);
 		if ($result < 0) {
@@ -484,7 +484,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfIntitule") . '</span></td><td>';
 	print '<input name="intitule" class="flat" size="50" value="'.GETPOST('intitule', 'alpha').'"></td></tr>';
 
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 
 	$defaultref = '';
 	$obj = empty($conf->global->AGF_ADDON) ? 'mod_agefodd_simple' : $conf->global->AGF_ADDON;
@@ -610,7 +610,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 		if (empty($arch))
 			$arch = 0;
 
-		$agf = new Agefodd($db);
+		$agf = new Formation($db);
 		$result = $agf->fetch($id);
 
 		$head = training_prepare_head($agf);
@@ -619,7 +619,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 		
 		if ($result) {
 
-			$agf_peda = new Agefodd($db);
+			$agf_peda = new Formation($db);
 			$result_peda = $agf_peda->fetch_objpeda_per_formation($id);
 
 			// Affichage en mode "édition"

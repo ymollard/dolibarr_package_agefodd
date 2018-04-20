@@ -139,11 +139,11 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 			$pdf->SetAutoPageBreak(1, 0);
 
 			// Récuperation des objectifs pedagogique de la formation
-			$agf_op = new Agefodd($this->db);
+			$agf_op = new Formation($this->db);
 			$result2 = $agf_op->fetch_objpeda_per_formation($agf->fk_formation_catalogue);
 
 			// Récupération de la duree de la formation
-			$agf_duree = new Agefodd($this->db);
+			$agf_duree = new Formation($this->db);
 			$result = $agf_duree->fetch($agf->fk_formation_catalogue);
 
 			// Recuperation des stagiaires participant à la formation

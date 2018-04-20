@@ -131,7 +131,7 @@ llxHeader('', $langs->trans('AgfMenuCat'));
 
 
 
-$agf = new Agefodd($db);
+$agf = new Formation($db);
 $form = new Form($db);
 $formagefodd = new FormAgefodd($db);
 $formfile = new FormFile($db);
@@ -394,7 +394,7 @@ if ($resql > 0) {
 
 			print '<td style="min-width: 20px" class="nobordernopadding nowrap">';
 			$legende = $langs->trans("AgfDocOpen");
-			$agfTraining = new Agefodd($db);
+			$agfTraining = new Formation($db);
 			$agfTraining->fetch($line->rowid);
 			$agfTraining->generatePDAByLink();
 			if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $line->rowid . '.pdf')) {

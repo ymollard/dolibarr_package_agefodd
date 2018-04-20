@@ -111,7 +111,7 @@ class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 
 		if (! is_object($agf)) {
 			$id = $agf;
-			$agf = new Agefodd($this->db);
+			$agf = new Formation($this->db);
 			$agf->fetch($id);
 
 			// Vilain hack : si !empty($courrier) alors c'est un id de session

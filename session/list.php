@@ -104,7 +104,7 @@ $search_session_status = GETPOST('search_session_status');
 // Banner function
 $idforma = GETPOST('idforma', 'int'); // id formation catalogue
 if(!empty($idforma)){
-    $agformation = new Agefodd($db);
+    $agformation = new Formation($db);
     $agformation->fetch($idforma);
 
     $training_view = 1;
@@ -335,7 +335,7 @@ if ($training_view && ! empty($search_training_ref)) {
 
 	$option .= '&training_view=' . $training_view;
 
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 	$result = $agf->fetch('', $search_training_ref);
 
 	$head = training_prepare_head($agf);

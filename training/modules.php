@@ -43,7 +43,7 @@ if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
 	// Load translation files required by the page
 $langs->load("agefodd@agefodd");
 
-$object = new Agefodd($db);
+$object = new Formation($db);
 $object_modules = new Agefoddformationcataloguemodules($db);
 
 if (! empty($id)) {

@@ -273,7 +273,7 @@ class ActionsAgefodd
 
 			if (is_array($mergeprogram) && count($mergeprogram) > 0) {
 				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-				$agf = new Agefodd($db);
+				$agf = new Formation($db);
 
 				foreach ( $mergeprogram as $training_id ) {
 					$agf->fetch($training_id);
@@ -399,7 +399,7 @@ class ActionsAgefodd
 
 						if (!empty($conf->global->AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES))
 						{
-							$formation = new Agefodd($object->db);
+							$formation = new Formation($object->db);
 							if ($formation->fetch($sessiondetail->fk_formation_catalogue) > 0)
 							{
 								$this->results[get_class($formation) . $formation->id] = array(

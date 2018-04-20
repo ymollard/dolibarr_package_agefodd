@@ -200,7 +200,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 	if (strpos($model, 'fiche_pedago') !== false){
 		$agf = new Agsession($db);
 		$agf->fetch($id);
-		$agfTraining = new Agefodd($db);
+		$agfTraining = new Formation($db);
 		$agfTraining->fetch($agf->fk_formation_catalogue);
 		$PDALink = $agfTraining->generatePDAByLink();
 	}

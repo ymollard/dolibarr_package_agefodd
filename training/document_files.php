@@ -67,7 +67,7 @@ if (! $sortorder)
 if (! $sortfield)
 	$sortfield = "name";
 
-$object = new Agefodd($db);
+$object = new Formation($db);
 $result = $object->fetch($id);
 
 if ($result < 0) {

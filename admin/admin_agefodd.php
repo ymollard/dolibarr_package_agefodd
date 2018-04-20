@@ -441,7 +441,7 @@ foreach ( $dirmodels as $reldir ) {
 						}
 						print '</td>';
 
-						$agf = new Agefodd($db);
+						$agf = new Formation($db);
 						$agf->initAsSpecimen();
 
 						// Info

@@ -27,7 +27,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 /**
  * trainning Class
  */
-class Agefodd extends CommonObject {
+class Formation extends CommonObject {
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd_formation_catalogue';
@@ -951,7 +951,7 @@ class Agefodd extends CommonObject {
 
 		$error = 0;
 
-		$object = new Agefodd($this->db);
+		$object = new Formation($this->db);
 
 		$this->db->begin();
 
@@ -993,7 +993,7 @@ class Agefodd extends CommonObject {
 			$error ++;
 		}
 
-		$source = new Agefodd($this->db);
+		$source = new Formation($this->db);
 		$result_peda = $source->fetch_objpeda_per_formation($fromid);
 		if ($result_peda < 0) {
 			$this->errors[] = $source->error;

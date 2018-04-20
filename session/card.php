@@ -262,7 +262,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$result = $agf->fetch($id);
 
 		if ($agf->fk_formation_catalogue != GETPOST('formation', 'int')) {
-			$training_session = new Agefodd($db);
+			$training_session = new Formation($db);
 			$result = $training_session->fetch(GETPOST('formation', 'int'));
 			if ($result > 0) {
 				$agf->nb_subscribe_min = $training_session->nb_subscribe_min;

@@ -157,7 +157,7 @@ $title = $langs->trans("AgfMenuSess");
 llxHeader('', $title);
 
 if ($training_view && ! empty($search_training_ref)) {
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 	$result = $agf->fetch('', $search_training_ref);
 
 	$head = training_prepare_head($agf);

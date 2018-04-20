@@ -107,7 +107,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 			$agf_session = new Agsession($this->db);
 			$ret = $agf_session->fetch($id);
 			if ($ret) {
-				$agf = new Agefodd($this->db);
+				$agf = new Formation($this->db);
 				$agf->fetch($agf_session->formid);
 
 				$agf_place = new Agefodd_place($this->db);
