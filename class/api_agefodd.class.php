@@ -137,25 +137,60 @@ class Agefodd extends DolibarrApi
      * 
      * @url     POST /sessions/
      * 
-     * @param array $request_data   Request data
-     * @return int  ID of session
+     * 
+     * @param string    $mode           create or clone 
+     * @param array     $request_data   Request data
+     * 
+     * @return int      ID of session
      */
-    function postSession($request_data = NULL)
+    function postSession($mode = 'create', $request_data)
     {
-        if(! DolibarrApiAccess::$user->rights->categorie->creer) {
-			throw new RestException(401);
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
 		}
 
-        // Check mandatory fields
-        $result = $this->_validate($request_data);
+		if ($mode == "clone"){
+		    if (in_array('id', $request_data['request_data'])){
+		        return $this->_cloneSession((int)$v);
+		    } else throw new RestException(404, 'session not found');
+
+		} else {
+		    // Check mandatory fields
+            $result = $this->_validate($request_data, 'session');
+            
+            foreach($request_data as $field => $value) {
+                $this->session->$field = $value;
+            }
+            if ($this->session->create(DolibarrApiAccess::$user) < 0) {
+                throw new RestException(500, 'Error when creating session', array_merge(array($this->session->error), $this->session->errors));
+            }
+            return $this->getSession($this->session->id);
+		}
         
-        foreach($request_data as $field => $value) {
-            $this->session->$field = $value;
+    }
+    
+    /**
+     * Clone a session object
+     *
+     * @param int $id ID of the session to clone
+     * @return int  ID of the clone
+     */
+    function _cloneSession($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
-        if ($this->session->create(DolibarrApiAccess::$user) < 0) {
-            throw new RestException(500, 'Error when creating session', array_merge(array($this->session->error), $this->session->errors));
+        
+        $result = $this->session->fetch($id);
+        if( $result < 0 || empty($this->session->id) ) {
+            throw new RestException(404, 'session not found');
+        } 
+        
+        $cloneid = $this->session->createFromClone($id);
+        if ($cloneid < 0) {
+            throw new RestException(500, 'Error when cloning session', array_merge(array($this->session->error), $this->session->errors));
         }
-        return $this->getSession($this->session->id);
+        return $this->getSession($cloneid);
     }
 
     /**
@@ -286,17 +321,24 @@ class Agefodd extends DolibarrApi
     /**
      * Validate fields before create or update object
      * 
-     * @param array|null    $data    Data to validate
+     * @param array|null    $data           Data to validate
+     * @param string        $objecttype     type of agefodd object
      * @return array
      * 
      * @throws RestException
      */
-    function _validate($data)
+    function _validate($data, $objecttype)
     {
         global $conf;
         
+        switch ($objecttype){
+            case 'session' :
+                $Tfields = Agefodd::$SESSIONFIELDS;
+                break;
+        }
+        
         $object = array();
-        foreach (Agefodd::$SESSIONFIELDS as $field) {
+        foreach ($Tfields as $field) {
             if (!isset($data[$field]) || empty($data[$field]) || $data[$field] <= 0)
                 throw new RestException(400, "$field field missing");
             $object[$field] = $data[$field];
