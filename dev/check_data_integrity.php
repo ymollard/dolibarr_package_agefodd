@@ -412,6 +412,24 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Stagiaire sans société lié
+$sql = 'SELECT rowid, nom, prenom FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'participants '.$obj->nom.' / '.$obj->prenom.' dans '.MAIN_DB_PREFIX.'agefodd_stagiaire qui n a plus de société associer<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+
+
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
