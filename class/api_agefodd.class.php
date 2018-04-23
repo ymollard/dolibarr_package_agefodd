@@ -21,6 +21,7 @@
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
  dol_include_once('/agefodd/class/agsession.class.php');
+ dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 
 /**
  * API class for Agefodd
@@ -38,6 +39,15 @@ class Agefodd extends DolibarrApi
         'fk_formation_catalogue',
         'fk_session_place'
     );
+    
+    static $TRAINEEFIELDS = array(
+        'nom'
+        ,'prenom'
+        ,'civilite'
+        ,'fk_soc'
+        //,'fk_user_mod'
+        //,'datec'
+    );
 
     /**
      * @var Agsession $session {@type Session}
@@ -53,7 +63,7 @@ class Agefodd extends DolibarrApi
 		global $db, $conf;
 		$this->db = $db;
 		$this->session = new Agsession($this->db);
-		
+		$this->trainee = new Agefodd_stagiaire($this->db);
     }
 
     /**
@@ -148,19 +158,29 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
 		}
-
-		if ($mode == "clone"){
-		    if (in_array('id', $request_data['request_data'])){
-		        return $this->_cloneSession((int)$v);
+		
+		if ($mode == "createadm"){ // creation des taches administratives de la session passée en param
+		    
+		    if (in_array('id', array_keys($request_data['request_data']))){
+		        $this->session->fetch((int)$request_data['request_data']['id']);
+		        $result = $this->session->createAdmLevelForSession(DolibarrApiAccess::$user);
+		        return empty($result) ? $this->getSession($this->session->id) : $result .' '. $this->session->error;
+		    } else throw new RestException(404, 'session not found');
+		    
+		} elseif ($mode == "clone"){ // clone de la session passée en param
+		    
+		    if (in_array('id', array_keys($request_data['request_data']))){
+		        return $this->_cloneSession((int)$request_data['request_data']['id']);
 		    } else throw new RestException(404, 'session not found');
 
-		} else {
+		} else { //creation d'une session
 		    // Check mandatory fields
-            $result = $this->_validate($request_data, 'session');
-            
-            foreach($request_data as $field => $value) {
+		    $result = $this->_validate($request_data['request_data'], 'session');
+		    
+		    foreach($request_data['request_data'] as $field => $value) {
                 $this->session->$field = $value;
             }
+            
             if ($this->session->create(DolibarrApiAccess::$user) < 0) {
                 throw new RestException(500, 'Error when creating session', array_merge(array($this->session->error), $this->session->errors));
             }
@@ -334,6 +354,10 @@ class Agefodd extends DolibarrApi
         switch ($objecttype){
             case 'session' :
                 $Tfields = Agefodd::$SESSIONFIELDS;
+                break;
+                
+            case 'trainee' :
+                $Tfields = Agefodd::$TRAINEEFIELDS;
                 break;
         }
         
