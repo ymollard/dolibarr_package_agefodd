@@ -26,7 +26,7 @@ function printForm($idTraining){
     $agf_peda = new Formation($db);
     $result_peda = $agf_peda->fetch_objpeda_per_formation($idTraining);
     
-    $form = '<form name="obj_peda" id="obj_peda" action="' . dol_buildpath('/agefodd/training/card.php',2) . "?id=" . $idTraining . '" method="POST">' . "\n";
+    $form = '<form name="obj_peda" id="obj_peda" action="' . dol_buildpath('/agefodd/training/card.php',1) . "?id=" . $idTraining . '" method="POST">' . "\n";
     $form.= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
     $form.= '<input type="hidden" name="action" value="ajax_obj_update">' . "\n";
     $form.= '<input type="hidden" name="idforma" value="' . $idTraining . '">' . "\n";

@@ -1069,8 +1069,14 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as c ON s.fk_soc = c.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_extrafields as extratrainee ON extratrainee.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' WHERE c.entity IN (' . getEntity("societe", 1) . ')';
 
+		$keyforselect = 'agefodd_stagiaire';
+		$keyforelement = 'AgfMailTypeContactTrainee';
+		$keyforaliasextra = 'extratrainee';
+		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
+		
 		// certificate export
 		$r ++;
 		$this->export_code[$r] = $this->rights_class . '_' . $r;

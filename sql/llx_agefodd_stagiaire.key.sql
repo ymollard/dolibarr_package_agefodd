@@ -22,5 +22,6 @@
 -- Contraintes pour la table llx_agefodd_stagiaire
 --
 ALTER TABLE llx_agefodd_stagiaire ADD CONSTRAINT llx_agefodd_stagiaire_ibfk_1 FOREIGN KEY (civilite) REFERENCES llx_c_civility (code);
+ALTER TABLE llx_agefodd_stagiaire ADD CONSTRAINT llx_agefodd_stagiaire_ibfk_2 FOREIGN KEY (fk_soc) REFERENCES llx_societe (rowid);
 ALTER TABLE llx_agefodd_stagiaire ADD INDEX nom_sta (nom);
 ALTER TABLE llx_agefodd_stagiaire ADD INDEX fk_soc_sta (fk_soc);

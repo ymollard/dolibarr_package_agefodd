@@ -1815,7 +1815,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             $morehtmlref .= ucfirst($object->prenom) . ' ' . strtoupper($object->nom) . '<br>';
         }
 
-        $morehtmlref.= $langs->trans('Company').' : ' . $object->thirdparty->getNomUrl(1);
+        $morehtmlref.= (!empty($object->thirdparty)) ? $langs->trans('Company').' : ' . $object->thirdparty->getNomUrl(1) : '';
 
         $morehtmlref.='</div>';
 
