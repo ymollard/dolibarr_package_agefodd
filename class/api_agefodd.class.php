@@ -21,6 +21,7 @@
  
  dol_include_once('/agefodd/class/agsession.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+ dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 
 /**
  * API class for Agefodd
@@ -63,6 +64,7 @@ class Agefodd extends DolibarrApi
 		$this->db = $db;
 		$this->session = new Agsession($this->db);            // agefodd session
 		$this->trainee = new Agefodd_stagiaire($this->db);    // agefodd trainee
+		$this->trainer = new Agefodd_teacher($this->db);      // agefodd teacher
     }
 
     
@@ -102,7 +104,7 @@ class Agefodd extends DolibarrApi
         if ($result > 0)
         {
             foreach ($this->session->lines as $line){
-                $obj_ret[] = parent::_cleanObjectDatas($line);
+                $obj_ret[] = $this->_cleanObjectDatas($line);
             }
         }
         else {
@@ -157,7 +159,7 @@ class Agefodd extends DolibarrApi
         if ($result > 0)
         {
             foreach ($this->session->lines as $line){
-                $obj_ret[] = parent::_cleanObjectDatas($line);
+                $obj_ret[] = $this->_cleanObjectDatas($line);
             }
         }
         else {
@@ -375,7 +377,7 @@ class Agefodd extends DolibarrApi
         if ($result > 0)
         {
             foreach ($this->trainee->lines as $line){
-                $obj_ret[] = parent::_cleanObjectDatas($line);
+                $obj_ret[] = $this->_cleanObjectDatas($line);
             }
         }
         else {
@@ -423,7 +425,7 @@ class Agefodd extends DolibarrApi
         if ($result > 0)
         {
             foreach ($this->trainee->lines as $line){
-                $obj_ret[] = parent::_cleanObjectDatas($line);
+                $obj_ret[] = $this->_cleanObjectDatas($line);
             }
         }
         else {
@@ -495,7 +497,7 @@ class Agefodd extends DolibarrApi
         }
         
         foreach ($this->session->lines as $line){
-            $obj_ret[] = parent::_cleanObjectDatas($line);
+            $obj_ret[] = $this->_cleanObjectDatas($line);
         }
         
         return $obj_ret;
@@ -633,6 +635,144 @@ class Agefodd extends DolibarrApi
     }
     
     /***************************************************************** Trainer Part *****************************************************************/
+    
+    /**
+     * List trainers
+     *
+     * Get a list of Agefodd trainer
+     *
+     * @param string   $sortorder Sort Order
+	 * @param string   $sortfield Sort field
+	 * @param int      $limit offset limit
+	 * @param int      $offset offset limit
+	 * @param int      $arch archive
+	 * 
+     * @return array                Array of trainers objects
+     *
+     * @url     GET /trainer/
+     * @throws RestException
+     */
+    function trainerIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $offset = 0, $arch = 0) {
+        global $db, $conf;
+        
+        $obj_ret = array();
+                
+        $result = $this->trainer->fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0);
+        
+        if ($result > 0)
+        {
+            foreach ($this->trainer->lines as $line){
+                $obj_ret[] = $this->_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve trainee list');
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No trainee found');
+        }
+        return $obj_ret;
+    }
+    
+    /**
+     * Filtered List trainers
+     *
+     * Get a list of Agefodd trainers
+     *
+     * @param string   $sortorder Sort Order
+	 * @param string   $sortfield Sort field
+	 * @param int      $limit offset limit
+	 * @param int      $offset offset limit
+	 * @param int      $arch archive
+	 * @param array    $filter array of filter
+     *
+     * @return array                Array of trainers objects
+     *
+     * @url     POST /trainers/filter
+     * @throws  RestException
+     */
+    function trainerFilteredIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $offset = 0, $arch = 0, $filter = array()) {
+        global $db, $conf;
+        
+        $obj_ret = array();
+                
+        $result = $this->trainer->fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter);
+        
+        if ($result > 0)
+        {
+            foreach ($this->trainer->lines as $line){
+                $obj_ret[] = $this->_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve trainee list '.$sql);
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No trainee found');
+        }
+        return $obj_ret;
+    }
+    
+    /**
+     * Get properties of a trainer object
+     *
+     * Return an array with trainer informations
+     *
+     * @param 	int 	$id ID of trainer
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /trainers/{id}
+     * @throws 	RestException
+     */
+    function getTrainer($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401);
+        }
+        
+        $result = $this->trainer->fetch($id);
+        if( $result < 0 || empty($this->trainer->id)) {
+            throw new RestException(404, 'trainer not found');
+        }
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        return $this->_cleanObjectDatas($this->trainer);
+    }
+    
+    /**
+     * Get informations for a trainer object
+     *
+     * Return an array with informations for the trainer
+     *
+     * @param 	int 	$id ID of trainer
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /trainers/{id}/infos/
+     * @throws 	RestException
+     */
+    function getTrainerInfos($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401);
+        }
+        
+        $result = $this->trainer->fetch($id);
+        if($result>0) $this->trainer->info($id);
+        if( $result < 0 || empty($this->trainer->id)) {
+            throw new RestException(404, 'trainer not found');
+        }
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        return $this->_cleanObjectDatas($this->trainer);
+    }
     
     /***************************************************************** Formation Part *****************************************************************/
     
