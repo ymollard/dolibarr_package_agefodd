@@ -62,10 +62,12 @@ class Agefodd extends DolibarrApi
     {
 		global $db, $conf;
 		$this->db = $db;
-		$this->session = new Agsession($this->db);
-		$this->trainee = new Agefodd_stagiaire($this->db);
+		$this->session = new Agsession($this->db);            // agefodd session
+		$this->trainee = new Agefodd_stagiaire($this->db);    // agefodd trainee
     }
 
+    
+    /***************************************************************** Session Part *****************************************************************/
     /**
      * Get properties of a session object
      *
@@ -105,7 +107,7 @@ class Agefodd extends DolibarrApi
      * @param string	$sortorder	Sort order
      * @param int		$limit		Limit for list
      * @param int		$page		Page number
-     * @return array                Array of category objects
+     * @return array                Array of session objects
      * 
      * @url     GET /sessions/
 	 * @throws RestException
@@ -282,8 +284,153 @@ class Agefodd extends DolibarrApi
             )
         );
     }
+    /***************************************************************** Trainee Part *****************************************************************/
     
+    /**
+     * List trainees
+     *
+     * Get a list of Agefodd trainees
+     *
+     * @param string	$sortfield	Sort field
+     * @param string	$sortorder	Sort order
+     * @param int		$limit		Limit for list
+     * @param int		$page		Page number
+     * @return array                Array of trainees objects
+     *
+     * @url     GET /trainees/
+     * @throws RestException
+     */
+    function traineeindex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0) {
+        global $db, $conf;
+        
+        $obj_ret = array();
+        
+        $offset = 0;
+        if ($limit)	{
+            if ($page < 0)
+            {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+            
+        }
+        
+        $result = $this->trainee->fetch_all($sortorder, $sortfield, $limit, $offset); // TODO modify to fetch trainee optionnals
+        
+        if ($result > 0)
+        {
+            foreach ($this->trainee->lines as $line){
+                $obj_ret[] = parent::_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve trainee list '.$sql);
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No trainee found');
+        }
+        return $obj_ret;
+    }
     
+    /**
+     * Get properties of a trainee object
+     *
+     * Return an array with trainee informations
+     *
+     * @param 	int 	$id ID of trainee
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /trainees/{id}
+     * @throws 	RestException
+     */
+    function getTrainee($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401);
+        }
+        
+        $result = $this->trainee->fetch($id);
+        if( $result < 0 || empty($this->trainee->id)) {
+            throw new RestException(404, 'trainee not found');
+        }
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        return $this->_cleanObjectDatas($this->trainee);
+    }
+    
+    /**
+     * Get sessions for a trainee object
+     *
+     * Return an array with session informations for the trainee
+     *
+     * @param 	int 	$id ID of trainee
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /trainees/{id}/sessions/
+     * @throws 	RestException
+     */
+    function getTraineeSessions($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401);
+        }
+        
+        $result = $this->session->fetch_session_per_trainee($id);
+        if( $result < 0) {
+            throw new RestException(404, 'trainee not found');
+        } elseif (count($this->session->lines) == 0) {
+            throw new RestException(404, 'no session for this trainee');
+        }
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        foreach ($this->session->lines as $line){
+            $obj_ret[] = parent::_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Create trainee object
+     *
+     * @url     POST /trainees/
+     *
+     * @param array     $request_data   Request data
+     *
+     * @return int      ID of trainee
+     */
+    function postTrainee($request_data)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        // Check mandatory fields
+        $result = $this->_validate($request_data, 'trainee');
+        
+        foreach($request_data as $field => $value) {
+            $this->trainee->$field = $value;
+        }
+        
+        if ($this->trainee->create(DolibarrApiAccess::$user) < 0) {
+            throw new RestException(500, 'Error when creating session', array_merge(array($this->trainee->error), $this->trainee->errors));
+        }
+        
+        return $this->getTrainee($this->trainee->id);
+        
+    }
+    
+    // TODO Create / Update / delete
+    
+    /***************************************************************** Common Part *****************************************************************/
     /**
      * Clean sensible object datas
      *
@@ -325,7 +472,7 @@ class Agefodd extends DolibarrApi
         unset($object->cats);
         unset($object->motherof);
         unset($object->context);
-        unset($object->socid);
+        //unset($object->socid);
         unset($object->thirdparty);
         unset($object->contact);
         unset($object->contact_id);
@@ -363,7 +510,7 @@ class Agefodd extends DolibarrApi
         
         $object = array();
         foreach ($Tfields as $field) {
-            if (!isset($data[$field]) || empty($data[$field]) || $data[$field] <= 0)
+            if (!isset($data[$field]) || empty($data[$field]) || $data[$field] == -1)
                 throw new RestException(400, "$field field missing");
             $object[$field] = $data[$field];
         }

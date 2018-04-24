@@ -286,7 +286,7 @@ class Agefodd_stagiaire extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " so.rowid as socid, so.nom as socname,";
+		$sql .= " s.rowid as stagid, so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
@@ -389,6 +389,14 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->place_birth = $obj->place_birth;
 					}
 
+					require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+					$extrafields = new ExtraFields($this->db);
+					$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
+					if (count($extralabels) > 0) {
+					    $this->fetch_optionals($obj->stagid, $extralabels);
+					    $line->array_options = $this->array_options;
+					}
+					
 					$this->lines[$i] = $line;
 
 					$i ++;
