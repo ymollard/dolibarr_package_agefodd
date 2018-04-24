@@ -647,7 +647,7 @@ class Agefodd_teacher extends CommonObject {
 		}
 
 		if (empty($error) && count($categories)>0) {
-			foreach($categories as $key=>$catid) {
+			foreach($categories as $catid) {
 				$sql = 'INSERT INTO '.MAIN_DB_PREFIX.'agefodd_formateur_category(fk_trainer,fk_category,fk_user_author,datec,fk_user_mod,tms) ';
 				$sql .= ' VALUES ('.$this->id.','.$catid.','.$user->id.',\''.$this->db->idate(dol_now()).'\','.$user->id.',\''.$this->db->idate(dol_now()).'\')';
 

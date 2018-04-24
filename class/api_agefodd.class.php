@@ -48,6 +48,10 @@ class Agefodd extends DolibarrApi
         //,'fk_user_mod'
         //,'datec'
     );
+    
+    static $TRAINERFIELDS = array(
+        'id'
+    );
 
     /**
      * @var Agsession $session {@type Session}
@@ -593,7 +597,7 @@ class Agefodd extends DolibarrApi
             }
         }
         
-        if($this->trainee->update(DolibarrApiAccess::$user, 1))
+        if($this->trainee->update(DolibarrApiAccess::$user))
             return $this->getTrainee($id);
             
             return false;
@@ -602,7 +606,7 @@ class Agefodd extends DolibarrApi
     /**
      * Delete trainee
      *
-     * @url	DELETE /trainee/{id}
+     * @url	DELETE /trainees/{id}
      *
      * @param int $id   trainee ID
      * @return array
@@ -646,7 +650,7 @@ class Agefodd extends DolibarrApi
 	 * 
      * @return array                Array of trainers objects
      *
-     * @url     GET /trainer/
+     * @url     GET /trainers/
      * @throws RestException
      */
     function trainerIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $offset = 0, $arch = 0) {
@@ -747,6 +751,44 @@ class Agefodd extends DolibarrApi
     }
     
     /**
+     * Get sessions for a trainer object
+     *
+     * Return an array with session informations for the trainer
+     *
+     * @param 	int 	$id ID of trainer
+     * @param   string  $sortorder order
+	 * @param   string  $sortfield field
+	 * @param   int     $limit page
+	 * @param   int     $offset
+	 * @param   array   $filter
+     * 
+     * @return 	array|mixed data without useless information
+     *
+     * @url	POST /trainers/{id}/sessions/
+     * @throws 	RestException
+     */
+    function getTrainerSessions($id, $sortorder = 'DESC', $sortfield = 's.dated', $limit = 0, $offset = 0, $filter = array())
+    {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->session->fetch_session_per_trainer($id, $sortorder, $sortfield, $limit, $offset, $filter);
+        if( $result < 0) {
+            throw new RestException(404, 'trainer not found');
+        } elseif (count($this->session->lines) == 0) {
+            throw new RestException(404, 'no session for this trainer');
+        }
+        
+        foreach ($this->session->lines as $line){
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
      * Get informations for a trainer object
      *
      * Return an array with informations for the trainer
@@ -772,6 +814,146 @@ class Agefodd extends DolibarrApi
         
         return $this->_cleanObjectDatas($this->trainer);
     }
+    
+    /**
+     * Get categories of trainers
+     * 
+     * return array of categories of trainers
+     * 
+     * @return array data without useless information
+     * 
+     * @url GET /trainers/categories
+     * @throws RestException
+     */
+    function getTrainerCategories()
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+               
+        $result = $this->trainer->fetchAllCategories();
+        if( empty($result)) throw new RestException(404, 'no categories found');
+        elseif ($result < 0) throw new RestException(500, 'Error while retrieving categories');
+        
+        return $this->trainer->dict_categories;
+    }
+    
+    /**
+     * Create trainer object
+     *
+     * @url     POST /trainers/
+     * 
+     * @param int       $id     id of the source (contact or user)
+     * @param string    $mode   fromContact or fromUser
+     * 
+     *
+     * @return int      ID of trainee
+     */
+    function postTrainer($id = 0, $mode = 'fromContact')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if ($id <= 0) throw new RestException(404, 'no valid id provided');
+        switch ($mode) {
+            case 'fromContact' :
+                dol_include_once('/contact/class/contact.class.php');
+                $c = new Contact($this->db);
+                $result = $c->fetch($id);
+                if($result <= 0) throw new RestException(404, "Contact $id not found");
+                else 
+                {
+                    $this->trainer->spid = $id;
+                    $this->trainer->type_trainer = $this->trainer->type_trainer_def[1];
+                }
+                break;
+                
+            case 'fromUser' :
+                dol_include_once('/user/class/user.class.php');
+                $u = new User($this->db);
+                $result = $u->fetch($id);
+                if($result <= 0) throw new RestException(404, "User $id not found");
+                else
+                {
+                    $this->trainer->fk_user = $id;
+                    $this->trainer->type_trainer = $this->trainer->type_trainer_def[0];
+                }
+                break;
+            
+            Default :
+                throw new RestException(500, "invalid mode $mode. It must be 'fromContact' or 'fromUser'");
+        }
+
+        // Check mandatory fields
+        //$result = $this->_validate($request_data, 'trainer');
+        
+        if ($this->trainer->create(DolibarrApiAccess::$user) < 0) {
+            throw new RestException(500, 'Error when creating trainer', array_merge(array($this->trainee->error), $this->trainee->errors));
+        }
+        
+        return $this->getTrainer($this->trainer->id);   
+    }    
+    
+    /**
+     * Archive/Activate a trainer
+     * 
+     * @url     PUT /trainers/{id}/archive
+     *
+     * @param int   $id             Id of trainer to update
+     * 
+     * @return int
+     */
+    function archiveTrainer($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->trainer->fetch($id);
+        if( $result < 0 || empty($this->trainer->id) ) {
+            throw new RestException(404, 'trainer not found');
+        }
+        
+        $this->trainer->archive = (empty($this->trainer->archive)) ? 1 : 0;
+        if($this->trainer->update(DolibarrApiAccess::$user))
+            return $this->getTrainer($id);
+            
+            return false;
+    }
+    
+    /**
+     * Delete trainer
+     *
+     * @url	DELETE /trainers/{id}
+     *
+     * @param int $id   trainer ID
+     * @return array
+     */
+    function deleteTrainer($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->trainer->fetch($id);
+        if( ! $result ) {
+            throw new RestException(404, 'trainer not found');
+        }
+        
+        if($this->trainer->remove($id) < 0)
+        {
+            throw new RestException(500, 'Error while deleting trainer '.$id);
+        }
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'trainer deleted'
+            )
+        );
+    }
+    
     
     /***************************************************************** Formation Part *****************************************************************/
     
@@ -857,9 +1039,9 @@ class Agefodd extends DolibarrApi
         unset($object->libelle_incoterms);
         unset($object->location_incoterms);
         unset($object->civility_id);
-        unset($object->name);
-        unset($object->lastname);
-        unset($object->firstname);
+        //unset($object->name);
+        //unset($object->lastname);
+        //unset($object->firstname);
         unset($object->shipping_method_id);
         unset($object->fk_delivery_address);
         unset($object->cond_reglement);
@@ -906,6 +1088,10 @@ class Agefodd extends DolibarrApi
                 
             case 'trainee' :
                 $Tfields = Agefodd::$TRAINEEFIELDS;
+                break;
+                
+            case 'trainer' :
+                $Tfields = Agefodd::$TRAINERFIELDS;
                 break;
         }
         
