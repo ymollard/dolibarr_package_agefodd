@@ -87,6 +87,11 @@ class Agefodd extends DolibarrApi
     function sessionIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0) {
         global $db, $conf;
         
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
         $obj_ret = array();
         
         $offset = 0;
@@ -137,6 +142,11 @@ class Agefodd extends DolibarrApi
     function sessionFilteredIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $filter=array(), $user = 0, $array_options_keys=array()) {
         global $db, $conf;
         
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
         $obj_ret = array();
         
         $offset = 0;
@@ -184,18 +194,14 @@ class Agefodd extends DolibarrApi
      */
     function getSession($id)
     {		
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401);
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->session->fetch($id);
         if( $result < 0 || empty($this->session->id)) {
             throw new RestException(404, 'session not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         return $this->_cleanObjectDatas($this->session);
@@ -215,7 +221,7 @@ class Agefodd extends DolibarrApi
     function postSession($mode = 'create', $request_data)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
 		}
 		
 		if ($mode == "createadm"){ // creation des taches administratives de la session passée en param
@@ -257,7 +263,7 @@ class Agefodd extends DolibarrApi
     function _cloneSession($id)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->session->fetch($id);
@@ -284,7 +290,7 @@ class Agefodd extends DolibarrApi
     function putSession($id, $request_data = NULL)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->session->fetch($id);
@@ -300,7 +306,7 @@ class Agefodd extends DolibarrApi
             }
         }
         
-        if($this->session->update(DolibarrApiAccess::$user, 1))
+        if($this->session->update(DolibarrApiAccess::$user))
             return $this->getSession($id);
             
             return false;
@@ -316,17 +322,14 @@ class Agefodd extends DolibarrApi
      */
     function deleteSession($id)
     {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd_session',$this->session->id)) {
         if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
-            throw new RestException(401);
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
         $result = $this->session->fetch($id);
         if( ! $result ) {
             throw new RestException(404, 'session not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd_session',$this->session->id)) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         if($this->session->remove($id) < 0)
@@ -359,6 +362,11 @@ class Agefodd extends DolibarrApi
      */
     function traineeIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0) {
         global $db, $conf;
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
         
         $obj_ret = array();
         
@@ -408,6 +416,11 @@ class Agefodd extends DolibarrApi
     function traineeFilteredIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $filter = array()) {
         global $db, $conf;
         
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
         $obj_ret = array();
         
         $offset = 0;
@@ -450,18 +463,14 @@ class Agefodd extends DolibarrApi
      */
     function getTrainee($id)
     {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401);
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->trainee->fetch($id);
         if( $result < 0 || empty($this->trainee->id)) {
             throw new RestException(404, 'trainee not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         return $this->_cleanObjectDatas($this->trainee);
@@ -480,8 +489,9 @@ class Agefodd extends DolibarrApi
      */
     function getTraineeSessions($id)
     {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401);
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->session->fetch_session_per_trainee($id);
@@ -489,11 +499,6 @@ class Agefodd extends DolibarrApi
             throw new RestException(404, 'trainee not found');
         } elseif (count($this->session->lines) == 0) {
             throw new RestException(404, 'no session for this trainee');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         foreach ($this->session->lines as $line){
@@ -516,19 +521,15 @@ class Agefodd extends DolibarrApi
      */
     function getTraineeInfos($id)
     {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401);
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->trainee->fetch($id);
         if($result>0) $this->trainee->info($id);
         if( $result < 0 || empty($this->trainee->id)) {
             throw new RestException(404, 'trainee not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         return $this->_cleanObjectDatas($this->trainee);
@@ -546,7 +547,7 @@ class Agefodd extends DolibarrApi
     function postTrainee($request_data)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+            throw new RestException(401, 'Create not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         // Check mandatory fields
@@ -576,7 +577,7 @@ class Agefodd extends DolibarrApi
     function putTrainee($id, $request_data = NULL)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->trainee->fetch($id);
@@ -609,16 +610,12 @@ class Agefodd extends DolibarrApi
     function deleteTrainee($id)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
-            throw new RestException(401);
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
         $result = $this->trainee->fetch($id);
         if( ! $result ) {
             throw new RestException(404, 'trainee not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd_session',$this->session->id)) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         if($this->trainee->remove($id) < 0)
@@ -654,6 +651,11 @@ class Agefodd extends DolibarrApi
      */
     function trainerIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $offset = 0, $arch = 0) {
         global $db, $conf;
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
         
         $obj_ret = array();
                 
@@ -694,6 +696,11 @@ class Agefodd extends DolibarrApi
     function trainerFilteredIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $offset = 0, $arch = 0, $filter = array()) {
         global $db, $conf;
         
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
         $obj_ret = array();
                 
         $result = $this->trainer->fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter);
@@ -726,18 +733,14 @@ class Agefodd extends DolibarrApi
      */
     function getTrainer($id)
     {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401);
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->trainer->fetch($id);
         if( $result < 0 || empty($this->trainer->id)) {
             throw new RestException(404, 'trainer not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         return $this->_cleanObjectDatas($this->trainer);
@@ -756,19 +759,15 @@ class Agefodd extends DolibarrApi
      */
     function getTrainerInfos($id)
     {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401);
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $result = $this->trainer->fetch($id);
         if($result>0) $this->trainer->info($id);
         if( $result < 0 || empty($this->trainer->id)) {
             throw new RestException(404, 'trainer not found');
-        }
-        
-        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         return $this->_cleanObjectDatas($this->trainer);
