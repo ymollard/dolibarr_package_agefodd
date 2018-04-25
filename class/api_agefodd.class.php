@@ -203,6 +203,8 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->session = new Agsession($this->db);
+        
         $result = $this->session->fetch($id);
         if( $result < 0 || empty($this->session->id)) {
             throw new RestException(404, 'session not found');
@@ -212,6 +214,65 @@ class Agefodd extends DolibarrApi
     }
 
     /**
+     * Get Thirdparties of a session
+     * 
+     * Return an array with thirdparties
+     * 
+     * @param   int     $id
+     * @return  array   data without useless information
+     * 
+     * @url GET /sessions/{id}/thirdparties/
+     * @throw RestException
+     * 
+     */
+    function getSessionThirdparties($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($id);
+        if( $result < 0 || empty($this->session->id)) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        $result = $this->session->fetch_societe_per_session($id);
+        
+        return $this->_cleanObjectDatas($this->session->lines); 
+    }
+    
+    /**
+     * Get informations for a session object
+     *
+     * Return an array with informations for the session
+     *
+     * @param 	int 	$id ID of session
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /sessions/{id}/infos/
+     * @throws 	RestException
+     */
+    function getSessionInfos($id)
+    {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($id);
+        if($result>0) $this->session->info($id);
+        if( $result < 0 || empty($this->session->id)) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        return $this->_cleanObjectDatas($this->session);
+    }
+    
+    /**
      * Create session object
      * 
      * @url     POST /sessions/
@@ -220,7 +281,7 @@ class Agefodd extends DolibarrApi
      * @param string    $mode           create or clone 
      * @param array     $request_data   Request data
      * 
-     * @return int      ID of session
+     * @return 	array|mixed data without useless information
      */
     function postSession($mode = 'create', $request_data)
     {
@@ -289,7 +350,7 @@ class Agefodd extends DolibarrApi
      * 
      * @param int   $id             Id of session to update
      * @param array $request_data   Datas   
-     * @return int 
+     * @return 	array|mixed data without useless information
      */
     function putSession($id, $request_data = NULL)
     {
@@ -314,6 +375,70 @@ class Agefodd extends DolibarrApi
             return $this->getSession($id);
             
             return false;
+    }
+    
+    /**
+     * Archive a session
+     *
+     * @url     PUT /sessions/{id}/archive
+     *
+     * @param int   $id Id of session to archive
+     *
+     * @return 	array|mixed data without useless information
+     */
+    function archiveSession($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->session->fetch($id);
+        if( $result < 0 || empty($this->session->id) ) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        $this->session->status = 4;
+        if($this->session->updateArchive(DolibarrApiAccess::$user))
+            return $this->getSession($id);
+            
+            return false;
+    }
+    
+    /**
+     * Set Sale user for a session
+     *
+     * @url     PUT /sessions/sale/
+     *
+     * @param int    $id        ID of the session
+     * @param int    $userId    ID of the sale (delete link to a sale if empty)
+     *
+     * @return 	array|mixed data without useless information
+     * @throw RestException
+     */
+    function setSessionCommercial($id, $userId = 0)
+    {
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->session->fetch($id);
+        if( $result < 0 || empty($this->session->id) ) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        if (!empty($userId))
+        {
+            $u = new User($this->db);
+            $result = $u->fetch($userId);
+            if(empty($result)) throw new RestException(404, "User $userId not found.");
+            elseif ($result<0) throw new RestException(500, "Error while retrieving user $userId");
+        }
+        
+        $result = $this->session->setCommercialSession($userId, DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error while setting sale");
+        
+        return $this->getSession($this->session->id);
     }
     
     /**
@@ -471,6 +596,8 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        $this->trainee = new Agefodd_stagiaire($this->db);
         
         $result = $this->trainee->fetch($id);
         if( $result < 0 || empty($this->trainee->id)) {
@@ -742,6 +869,8 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->trainer = new Agefodd_teacher($this->db);
+        
         $result = $this->trainer->fetch($id);
         if( $result < 0 || empty($this->trainer->id)) {
             throw new RestException(404, 'trainer not found');
@@ -836,6 +965,57 @@ class Agefodd extends DolibarrApi
         elseif ($result < 0) throw new RestException(500, 'Error while retrieving categories');
         
         return $this->trainer->dict_categories;
+    }
+    
+    /**
+     * Set categories of a trainers
+     *
+     * return informations trainers
+     * @param int   $id         ID of a trainer
+     * @param array $categories Array of categories id to apply
+     *
+     * @return array data without useless information
+     *
+     * @url POST /trainers/categories
+     * @throws RestException
+     */
+    function setTrainerCategories($id, $categories = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $TCats = $categories;
+        $categories = array();
+        
+        $result = $this->trainer->fetch($id);
+        if( $result < 0 || empty($this->trainer->id)) {
+            throw new RestException(404, 'trainer not found');
+        }
+        
+        if(!empty($TCats)){
+            $result = $this->trainer->fetchAllCategories();
+            if( empty($result)) throw new RestException(404, 'no categories found');
+            elseif ($result < 0) throw new RestException(500, 'Error while retrieving categories');
+            
+            // create array to validate the array provided
+            $TCatIds = array();
+            foreach ($this->trainer->dict_categories as $cat){
+                $TCatIds[] = $cat->dictid;
+            }
+            
+            foreach ($TCats as $c){
+                if(in_array($c, $TCatIds)) $categories[] = $c;
+            }
+        }
+        
+        $result = $this->trainer->setTrainerCat($categories, DolibarrApiAccess::$user);
+        if ($result < 0) throw new RestException(500, 'Error while setting categories : '. $this->trainer->error);
+        
+        $this->trainer->dict_categories = array();
+        return $this->getTrainer($this->trainer->id);
+        
+        //return $this->trainer->dict_categories;
     }
     
     /**
