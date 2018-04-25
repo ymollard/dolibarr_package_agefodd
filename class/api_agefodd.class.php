@@ -435,8 +435,15 @@ class Agefodd extends DolibarrApi
         }
         
         $result = $this->session->fetch_societe_per_session($id);
+        if( $result <= 0) throw new RestException(404, 'No thirdparty found');
         
-        return $this->_cleanObjectDatas($this->session->lines); 
+        $obj_ret = array();
+        
+        foreach ($this->session->lines as $line){
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret; 
     }
     
     /**
@@ -540,6 +547,52 @@ class Agefodd extends DolibarrApi
     }
 
     /**
+     * Create a proposal for one customer thirdparty of the session
+     * 
+     * Return array
+     * 
+     * @param int $sessid   ID of the session
+     * @param int $socid    ID of the customer
+     * 
+     * @return array|mixed
+     * @throw RestException
+     * 
+     * @url POST sessions/createproposal/
+     */
+    function sessionCreateProposal($sessid, $socid)
+   {
+        if (empty($sessid) || $sessid < 0) throw new RestException(503, "Invalid sessid");
+        if (empty($socid) || $socid < 0) throw new RestException(503, "Invalid socid");
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'session not found');
+        
+        $result = $this->session->fetch_societe_per_session($sessid);
+        if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+        
+        $TCustomers = array();
+        foreach ($this->session->lines as $line)
+        {
+            if ($line->typeline == "customer") $TCustomers[] = $line->socid;
+        }
+        
+        if(count($TCustomers) == 0) throw  new RestException(404, "No customer for this session");
+        if(!in_array($socid, $TCustomers)) throw new RestException(503, "$socid is not a customer of this session");
+        
+        //TODO Fix update line
+        $result = $this->session->createProposal(DolibarrApiAccess::$user, $socid);
+        if($result < 0) throw new RestException(500, 'Error when creating the proposal', array_merge(array($this->session->error, $this->db->lastqueryerror), $this->session->errors));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "Proposal $result created for the socid"
+            )
+        );
+    }
+    
+    /**
      * Update session
      * 
      * @url     PUT /sessions/{id}
@@ -553,6 +606,8 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        $this->session = new Agsession($this->db);
         
         $result = $this->session->fetch($id);
         if( $result < 0 || empty($this->session->id) ) {
@@ -620,7 +675,7 @@ class Agefodd extends DolibarrApi
         return array(
             'success' => array(
                 'code' => 200,
-                'message' => 'session deleted'
+                'message' => "sessions archived for year $year"
             )
         );
     }
