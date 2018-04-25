@@ -96,6 +96,7 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->session = new Agsession($this->db);
         $obj_ret = array();
         
         $offset = 0;
@@ -151,6 +152,7 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->session = new Agsession($this->db);
         $obj_ret = array();
         
         $offset = 0;
@@ -165,7 +167,8 @@ class Agefodd extends DolibarrApi
         
         if (!empty($user)) {
             $u = new User($this->db);
-            $u->fetch($user);
+            $result = $u->fetch($user);
+            if($result <= 0) throw new RestException(404, "User $user not found");
         } else $u = 0;
         
         $result = $this->session->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $u, $array_options_keys=array());
@@ -182,6 +185,199 @@ class Agefodd extends DolibarrApi
         if( ! count($obj_ret)) {
             throw new RestException(404, 'No session found');
         }
+        return $obj_ret;
+    }
+    
+    /**
+     * Filtered List of Sessions with admin tasks
+     *
+     * Get a list of Agefodd Sessions
+     *
+     * @param string	$sortfield	        Sort field
+     * @param string	$sortorder	        Sort order
+     * @param int		$limit		        Limit for list
+     * @param int		$page		        Page number
+     * @param int       $user               id of the sale User
+     * @param array		$filter		        array of filters ($k => $v)
+     * 
+     *
+     * @return array                Array of session objects
+     *
+     * @url     POST /sessions/withtasks
+     * @throws RestException
+     */
+    function sessionFilteredIndexWithTasks($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $user = 0, $filter= array()) {
+        global $db, $conf;
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $obj_ret = array();
+        
+        $offset = 0;
+        if ($limit)	{
+            if ($page < 0)
+            {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+            
+        }
+        
+        if (!empty($user)) {
+            $u = new User($this->db);
+            $result = $u->fetch($user);
+            if($result <= 0) throw new RestException(404, "User $user not found");
+        } else $u = 0;
+        
+        $result = $this->session->fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter, $u);
+        
+        if ($result > 0)
+        {
+            foreach ($this->session->lines as $line){
+                $line->TasksLate = $line->task0; unset($line->task0);
+                $line->TasksHot = $line->task1; unset($line->task1);
+                $line->TasksTodo = $line->task2; unset($line->task2);
+                $line->TasksInProgress = $line->task3; unset($line->task3);
+                $obj_ret[] = $this->_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve session list | '.$this->session->error);
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No session found');
+        }
+        return $obj_ret;
+    }
+    
+    /**
+     * Filtered List of Sessions inter-societies
+     *
+     * Get a list of Agefodd Sessions
+     *
+     * @param string	$sortfield	        Sort field
+     * @param string	$sortorder	        Sort order
+     * @param int		$limit		        Limit for list
+     * @param int		$page		        Page number
+     * @param int       $user               id of the sale User
+     * @param array		$filter		        array of filters ($k => $v)
+     *
+     * @return array                Array of session objects
+     *
+     * @url     POST /sessions/inter
+     * @throws RestException
+     */
+    function sessionInterFilteredIndex($sortfield = "s.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $user = 0, $filter= array()) {
+        global $db, $conf;
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $obj_ret = array();
+        
+        $offset = 0;
+        if ($limit)	{
+            if ($page < 0)
+            {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+            
+        }
+        
+        if (!empty($user)) {
+            $u = new User($this->db);
+            $result = $u->fetch($user);
+            if($result <= 0) throw new RestException(404, "User $user not found");
+        } else $u = 0;
+        
+        $result = $this->session->fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter, $u);
+        
+        if ($result > 0)
+        {
+            foreach ($this->session->lines as $line){
+                $obj_ret[] = $this->_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve session list | '.$this->session->error);
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No session found');
+        }
+        return $obj_ret;
+    }
+    
+    /**
+     * Get all sessions linked to a document
+     * 
+     * Return an array of session linked to the document provided
+     *
+     * @param string    $documentType (order, propal, invoice, supplier_invoice, supplier_order)
+     * @param int       $documentId
+     * @param string    $sortorder order
+     * @param string    $sortfield field
+     * @param int       $limit
+     * @param int       $offset
+     * 
+     * @return array    Array of session objects
+     *
+     * @url    GET /sessions/linked
+     * @throws RestException
+     */
+    function sessionLinkedbyDoc($documentType, $documentId, $sortorder = 'ASC', $sortfield = 's.rowid', $limit = 100, $offset = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $orderid = $invoiceid = $propalid = $fourninvoiceid = $fournorderid = '';
+        $Ttypes = array('order', 'propal', 'invoice', 'supplier_invoice', 'supplier_order');
+        
+        if (! in_array($documentType, $Ttypes)) throw new RestException(500, "Type '$documentType' not supported");
+        if (empty($documentId) || $documentId < 0) throw new RestException(500, "Invalid id : $documentId");
+        
+        switch ($documentType)
+        {
+            case 'order' :
+                $orderid = $documentId;
+                break;
+            
+            case 'propal' :
+                $propalid = $documentId;
+                break;
+                
+            case 'invoice' :
+                $invoiceid = $documentId;
+                break;
+                
+            case 'supplier_invoice' :
+                $fourninvoiceid = $documentId;
+                break;
+                
+            case 'supplier_order' :
+                $fournorderid = $documentId;
+                break;                
+        }
+        
+        $this->session = new Agsession($this->db);
+        $obj_ret = array();
+        
+        $result = $this->session->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid, $invoiceid, $propalid, $fourninvoiceid, $fournorderid);
+        if (empty($result)) throw new RestException(404, "No session found");
+        elseif ($result < 0) throw new RestException(503, 'Error when retrieve session list | '.$this->session->error);
+        
+        foreach ($this->session->lines as $line){
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
         return $obj_ret;
     }
     
@@ -402,6 +598,31 @@ class Agefodd extends DolibarrApi
             return $this->getSession($id);
             
             return false;
+    }
+    
+    /**
+     * Set archive flag to 1 to session according to selected year
+     *
+     * @url     PUT /sessions/archiveYear/{year}
+     *
+     * @param int $year year
+     * 
+     * @return array
+     */
+    function archiveYearSession($year)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->session->updateArchiveByYear($year, DolibarrApiAccess::$user);
+        if ($result < 0) throw new RestException(500, 'Error when cloning session', array_merge(array($this->session->error), $this->session->errors));
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'session deleted'
+            )
+        );
     }
     
     /**
