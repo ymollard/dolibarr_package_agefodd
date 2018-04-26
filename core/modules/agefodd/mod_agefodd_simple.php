@@ -52,7 +52,9 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	 * @return string Example
 	 */
 	function getExample() {
-		return $this->prefix . "0501-0001";
+	    $agf = new Formation($db);
+	    return $this->getNextValue($soc, $agf);
+		//return $this->prefix . "0501-0001";
 	}
 
 	/**
