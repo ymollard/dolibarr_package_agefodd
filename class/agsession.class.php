@@ -4129,7 +4129,7 @@ class Agsession extends CommonObject
 		}
 
 		if (empty($error)) {
-			if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+		    if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR && !empty($this->fk_product)) {
 
 				$propal->fetch($newpropalid);
 				$propal_line = new PropaleLigne($this->db);
@@ -4519,7 +4519,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		if (empty($error)) {
+		if (empty($error) && empty($frompropalid)) {
 			// Link new order to the session/thridparty
 
 			$agf = new Agefodd_session_element($this->db);

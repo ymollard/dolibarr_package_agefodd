@@ -256,7 +256,7 @@ if (! empty($search_orderid) || ! empty($search_orderref)) {
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $order->thirdparty->getNomUrl(1);
 	$morehtmlref.='</div>';
 	if (function_exists('dol_banner_tab')) {
-		dol_banner_tab($order, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+		dol_banner_tab($order, 'search_orderref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 	}
 }
 
@@ -275,7 +275,7 @@ if (! empty($search_invoiceid) || ! empty($search_invoiceref)) {
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $invoice->thirdparty->getNomUrl(1);
 	$morehtmlref.='</div>';
 	if (function_exists('dol_banner_tab')) {
-		dol_banner_tab($invoice, 'ref', $linkback, 1, 'facnumber', 'ref', $morehtmlref, '', 0, '', '');
+		dol_banner_tab($invoice, 'search_invoiceref', $linkback, 1, 'facnumber', 'ref', $morehtmlref, '', 0, '', '');
 	}
 }
 
@@ -331,7 +331,7 @@ if (! empty($search_propalref) || ! empty($search_propalid)) {
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $propal->thirdparty->getNomUrl(1);
 	$morehtmlref.='</div>';
 	if (function_exists('dol_banner_tab')) {
-		dol_banner_tab($propal, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+		dol_banner_tab($propal, 'search_propalref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 	}
 }
 
