@@ -586,7 +586,7 @@ class Agefodd extends DolibarrApi
        }
        
        if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
-       if(!in_array($socid, $TCustomers)) throw new RestException(503, "$socid is not a thirdparty of this session");
+       if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
        
        $result = $this->session->createProposal(DolibarrApiAccess::$user, $socid);
        if($result < 0) throw new RestException(500, 'Error when creating the proposal', array_merge(array($this->session->error, $this->db->lastqueryerror), $this->session->errors));
@@ -594,7 +594,7 @@ class Agefodd extends DolibarrApi
        return array(
            'success' => array(
                'code' => 200,
-               'message' => "Proposal $result created for the socid"
+               'message' => "Proposal ID $result created for the socid"
            )
        );
     }
@@ -641,7 +641,7 @@ class Agefodd extends DolibarrApi
         }
         
         if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
-        if(!in_array($socid, $TCustomers)) throw new RestException(503, "$socid is not a thirdparty of this session");
+        if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
         
         $result = $this->session->createOrder(DolibarrApiAccess::$user, $socid, $frompropalid);
         if($result < 0) throw new RestException(500, 'Error when creating the order', array_merge(array($this->session->error, $this->db->lastqueryerror), $this->session->errors));
@@ -649,7 +649,63 @@ class Agefodd extends DolibarrApi
         return array(
             'success' => array(
                 'code' => 200,
-                'message' => "Proposal $result created for the socid"
+                'message' => "Proposal ID $result created for the socid"
+            )
+        );
+    }
+    
+    /**
+     * Create an invoice for a thirdparty of the session
+     *
+     * Return array
+     *
+     * @param int       $sessid           ID of the session
+     * @param int       $socid            ID of the customer
+     * @param int       $frompropalid     ID of an existing and signed proposal for the thirdparty 
+     * @param number    $amount           Amount to affect to session product
+     *
+     * @return array|mixed
+     * @throw RestException
+     *
+     * @url POST sessions/createinvoice/
+     */
+    function sessionCreateInvoice($sessid, $socid, $frompropalid = 0, $amount = 0) 
+    {
+        global $conf, $user;
+        $user = DolibarrApiAccess::$user;
+        
+        if(empty($conf->facture->enabled)) throw new RestException(503, "Module invoice must be enabled");
+        if(! DolibarrApiAccess::$user->rights->facture->creer) {
+            throw new RestException(401, 'Invoice creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if (empty($sessid) || $sessid < 0) throw new RestException(503, "Invalid sessid");
+        if (empty($socid) || $socid < 0) throw new RestException(503, "Invalid socid");
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'session not found');
+        if( empty($this->session->fk_product)) throw new RestException(503, "No product linked to the session.");
+        
+        $result = $this->session->fetch_societe_per_session($sessid);
+        if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+        
+        $TCustomers = array();
+        foreach ($this->session->lines as $line)
+        {
+            /*if ($line->typeline == "customer")*/ $TCustomers[] = $line->socid;
+        }
+        
+        if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
+        if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
+        
+        $result = $this->session->createInvoice($user, $socid, $frompropalid, $amount);
+        if($result < 0) throw new RestException(500, 'Error when creating the order', array_merge(array($this->session->error, $this->db->lastqueryerror), $this->session->errors));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "Invoice ID $result created for the socid"
             )
         );
     }
