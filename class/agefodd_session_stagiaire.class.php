@@ -505,6 +505,48 @@ class Agefodd_session_stagiaire extends CommonObject {
 			return - 1;
 		}
 	}
+	
+	/**
+	 * Retour la liste des financements possible pour un stagiaire
+	 *
+	 * @return array
+	 */
+	public function fetch_type_fin($filter = '') {
+	    global $conf, $langs;
+	    
+	    $sql = "SELECT t.rowid, t.intitule";
+	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as t";
+	    if (! empty($filter)) {
+	        $sql .= ' WHERE ' . $filter;
+	    }
+	    $sql .= " ORDER BY t.sort";
+	    
+	    dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+	    $result = $this->db->query($sql);
+	    if ($result) {
+	        
+	        $TTypes = array();
+	        
+	        $num = $this->db->num_rows($result);
+	        
+	        if ($num) {
+	            while ( $obj = $this->db->fetch_object($result) ) {
+	                
+	                $label = stripslashes($obj->intitule);
+	                
+	                $TTypes[$obj->rowid] = $label;
+	                
+	            }
+	        }
+	        
+	        $this->db->free($result);
+	        return $TTypes;
+	    } else {
+	        $this->error = "Error " . $this->db->lasterror();
+	        dol_syslog(get_class($this) . "::select_type_stagiaire " . $this->error, LOG_ERR);
+	        return - 1;
+	    }
+	}
 
 	/**
 	 * Create object (trainee in session) into database
