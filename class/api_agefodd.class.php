@@ -22,6 +22,7 @@
  dol_include_once('/agefodd/class/agsession.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
 /**
  * API class for Agefodd
@@ -52,6 +53,11 @@ class Agefodd extends DolibarrApi
     static $TRAINERFIELDS = array(
         'id'
     );
+    
+    static $TRAININGFIELDS = array(
+        'intitule'
+        ,'duree'
+    );
 
     /**
      * @var Agsession $session {@type Session}
@@ -69,6 +75,7 @@ class Agefodd extends DolibarrApi
 		$this->session = new Agsession($this->db);            // agefodd session
 		$this->trainee = new Agefodd_stagiaire($this->db);    // agefodd trainee
 		$this->trainer = new Agefodd_teacher($this->db);      // agefodd teacher
+		$this->training = new Formation($this->db);           // agefodd training
     }
 
     
@@ -1530,6 +1537,115 @@ class Agefodd extends DolibarrApi
     
     
     /***************************************************************** Formation Part *****************************************************************/
+    
+    /**
+     * List Training
+     *
+     * Get a list of Agefodd Training
+     *
+     * @param string	$sortfield	Sort field
+     * @param string	$sortorder	Sort order
+     * @param int		$limit		Limit for list
+     * @param int		$page		Page number
+     * @return array                Array of formation objects
+     *
+     * @url     GET /trainings/
+     * @throws RestException
+     */
+    function trainingIndex($sortfield = "c.rowid", $sortorder = 'DESC', $limit = 100, $page = 0) {
+        global $db, $conf;
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainig = new Formation($this->db);
+        $obj_ret = array();
+        
+        $offset = 0;
+        if ($limit)	{
+            if ($page < 0)
+            {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+            
+        }
+        
+        $result = $this->training->fetch_all($sortorder, $sortfield, $limit, $offset);
+        
+        if ($result > 0)
+        {
+            foreach ($this->training->lines as $line){
+                $obj_ret[] = $this->_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve training list ', array_merge(array($this->training->error, $this->db->lastqueryerror), $this->training->errors));
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No training found');
+        }
+        return $obj_ret;
+    }
+    
+    /**
+     * Filtered List of Trainings
+     *
+     * Get a list of Agefodd Training
+     *
+     * @param string	$sortfield	        Sort field
+     * @param string	$sortorder	        Sort order
+     * @param int		$limit		        Limit for list
+     * @param int		$page		        Page number
+     * @param int       $arch               archived training (0 or 1)
+     * @param array		$filter		        array of filters ($k => $v)
+     * @param array     $array_options_keys array of filters on extrafields
+     *
+     * @return array                Array of training objects
+     *
+     * @url     POST /trainings/filter
+     * @throws RestException
+     */
+    function trainingFilteredIndex($sortfield = "c.rowid", $sortorder = 'DESC', $limit = 100, $page = 0, $arch = 0, $filter = array(), $array_options_keys=array()) {
+        global $db, $conf;
+        
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $obj_ret = array();
+        
+        $offset = 0;
+        if ($limit)	{
+            if ($page < 0)
+            {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+            
+        }
+                
+        $result = $this->training->fetch_all($sortorder, $sortfield, $limit, $offset, $arch, $filter, $array_options_keys);
+        
+        if ($result > 0)
+        {
+            foreach ($this->training->lines as $line){
+                $obj_ret[] = $this->_cleanObjectDatas($line);
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieve training list ', array_merge(array($this->training->error, $this->db->lastqueryerror), $this->training->errors));
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No training found');
+        }
+        return $obj_ret;
+    }
+    
     
     /***************************************************************** Place Part *****************************************************************/
     
