@@ -102,23 +102,28 @@ class Agefodd_session_stagiaire extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_stagiaire_per_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
+            
+		    $num = $this->db->num_rows($resql);
+            if ($num){
+                $obj = $this->db->fetch_object($resql);
 
-			$obj = $this->db->fetch_object($resql);
-
-			$this->id = $obj->rowid;
-			$this->fk_session_agefodd = $obj->fk_session_agefodd;
-			$this->fk_stagiaire = $obj->fk_stagiaire;
-			$this->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
-			$this->fk_soc_link = $obj->fk_soc_link;
-			$this->fk_soc_requester = $obj->fk_soc_requester;
-			$this->fk_socpeople_sign = $obj->fk_socpeople_sign;
-			$this->fk_user_author = $obj->fk_user_author;
-			$this->fk_user_mod = $obj->fk_user_mod;
-			$this->datec = $this->db->jdate($obj->datec);
-			$this->status_in_session = $obj->status_in_session;
-			$this->hour_foad= $obj->hour_foad;
-
+    			$this->id = $obj->rowid;
+    			$this->fk_session_agefodd = $obj->fk_session_agefodd;
+    			$this->fk_stagiaire = $obj->fk_stagiaire;
+    			$this->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
+    			$this->fk_soc_link = $obj->fk_soc_link;
+    			$this->fk_soc_requester = $obj->fk_soc_requester;
+    			$this->fk_socpeople_sign = $obj->fk_socpeople_sign;
+    			$this->fk_user_author = $obj->fk_user_author;
+    			$this->fk_user_mod = $obj->fk_user_mod;
+    			$this->datec = $this->db->jdate($obj->datec);
+    			$this->status_in_session = $obj->status_in_session;
+    			$this->hour_foad= $obj->hour_foad;
+            }
+            
 			$this->db->free($resql);
+			
+		    return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_stagiaire_per_session " . $this->error, LOG_ERR);
@@ -141,22 +146,27 @@ class Agefodd_session_stagiaire extends CommonObject {
 	    $resql = $this->db->query($sql);
 	    if ($resql) {
 	        
-	        $obj = $this->db->fetch_object($resql);
+	        $num = $this->db->num_rows($resql);
+	        if ($num){
+	            $obj = $this->db->fetch_object($resql);
 	        
-	        $this->id = $obj->rowid;
-	        $this->fk_session_agefodd = $obj->fk_session_agefodd;
-	        $this->fk_stagiaire = $obj->fk_stagiaire;
-	        $this->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
-	        $this->fk_soc_link = $obj->fk_soc_link;
-	        $this->fk_soc_requester = $obj->fk_soc_requester;
-	        $this->fk_socpeople_sign = $obj->fk_socpeople_sign;
-	        $this->fk_user_author = $obj->fk_user_author;
-	        $this->fk_user_mod = $obj->fk_user_mod;
-	        $this->datec = $this->db->jdate($obj->datec);
-	        $this->status_in_session = $obj->status_in_session;
-	        $this->hour_foad= $obj->hour_foad;
+    	        $this->id = $obj->rowid;
+    	        $this->fk_session_agefodd = $obj->fk_session_agefodd;
+    	        $this->fk_stagiaire = $obj->fk_stagiaire;
+    	        $this->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
+    	        $this->fk_soc_link = $obj->fk_soc_link;
+    	        $this->fk_soc_requester = $obj->fk_soc_requester;
+    	        $this->fk_socpeople_sign = $obj->fk_socpeople_sign;
+    	        $this->fk_user_author = $obj->fk_user_author;
+    	        $this->fk_user_mod = $obj->fk_user_mod;
+    	        $this->datec = $this->db->jdate($obj->datec);
+    	        $this->status_in_session = $obj->status_in_session;
+    	        $this->hour_foad= $obj->hour_foad;
+	        }
 	        
 	        $this->db->free($resql);
+	        
+	        return $num;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
 	        dol_syslog(get_class($this) . "::fetch_stagiaire_per_session " . $this->error, LOG_ERR);
