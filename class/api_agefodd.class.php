@@ -20,6 +20,7 @@
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
  dol_include_once('/agefodd/class/agsession.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
@@ -874,6 +875,151 @@ class Agefodd extends DolibarrApi
             )
         );
     }
+    
+    
+    /**
+     * Add a trainee to a session
+     * 
+     * @param int        $sessId            ID of the session
+     * @param int        $traineeId         ID of the trainee to add
+     * @param int        $type_fin          ID of the type of funding
+     * @param int        $traineeStatus     ID of the status of the trainee in the Session
+     * @param int        $fk_soc_link       ID of the thirdparty on documents
+     * @param int        $fk_soc_requester  ID of the thirdparty which requested the training
+     * @param int        $fk_socpeople_sign ID of the contact who signed the training contract
+     * @param number     $hour_foad         Number of FOAD hours (for france)
+     * 
+     * @throws RestException
+     * @return number
+     * 
+     * @url	POST /sessions/addtrainee
+     */
+    function sessionAddTrainee($sessId, $traineeId, $type_fin = 0, $traineeStatus = 0, $fk_soc_link = 0, $fk_soc_requester = 0, $fk_socpeople_sign = 0, $hour_foad = 0)
+    {
+        global $conf;
+        
+        $agf = new Agefodd_session_stagiaire($this->db);
+        
+        // check parameters
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessId);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $this->trainee = new Agefodd_stagiaire($this->db);
+        $this->trainee->fetch($traineeId);
+        if( $result < 0 || empty($this->trainee->id)) throw new RestException(404, 'Trainee not found');
+        
+        $agf->fetch_stagiaire_per_session($sessId);
+        if (count($agf->lines)) {
+            foreach ($agf->lines as $line) {
+                if ($line->id == $traineeId) throw new RestException(500, 'Trainee already signed up');
+            }
+        }
+        
+        if(empty($type_fin) && !empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) $type_fin = $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
+        
+        if(!empty($fk_soc_link)){
+            $c = new Societe($this->db);
+            $result = $c->fetch($fk_soc_link);
+            if($result <= 0) throw new RestException(404, "Thirdparty $fk_soc_link not found");            
+        }
+        
+        if(!empty($fk_soc_requester)){
+            $c = new Societe($this->db);
+            $result = $c->fetch($fk_soc_requester);
+            if($result <= 0) throw new RestException(404, "Thirdparty $fk_soc_requester not found");
+        }
+        
+        if(!empty($fk_socpeople_sign)){
+            $c = new Contact($this->db);
+            $result = $c->fetch($fk_socpeople_sign);
+            if($result <= 0) throw new RestException(404, "Contact $fk_socpeople_sign not found");
+        }
+        
+        $agf->fk_session_agefodd = $sessId;
+        $agf->fk_stagiaire = $traineeId;
+        $agf->fk_agefodd_stagiaire_type = $type_fin;
+        $agf->status_in_session = $traineeStatus;
+        
+        $agf->fk_soc_link = $fk_soc_link;                   // tiers pour les documents
+        $agf->fk_soc_requester = $fk_soc_requester;         // tiers demandeur
+        $agf->fk_socpeople_sign = $fk_socpeople_sign;       // signataire de la convention
+        $agf->hour_foad = $hour_foad;                       // heure en parcours FOAD
+        
+        $result = $agf->create(DolibarrApiAccess::$user);
+        
+        if ($result > 0) {
+            return array(
+                'success' => array(
+                    'code' => 200,
+                    'message' => 'trainee added to the session'
+                )
+            );
+        } else {
+            throw new RestException(500, 'Error while adding the trainee', array($this->db->lastqueryerror));
+        }
+    }
+    
+    /**
+     * Get trainees of the session
+     * 
+     * @param int $id ID of a Session
+     * 
+     * @return array|mixed without useless informations
+     * 
+     * @url GET /sessions/gettrainees/{id}
+     */
+    function sessionGetTrainees($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $agf = new Agefodd_session_stagiaire($this->db);
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($id);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $agf->fetch_stagiaire_per_session($id);
+        if(empty($result)) throw new RestException(404, "No trainee found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving trainees", array($this->db->lastqueryerror));
+        
+        $obj_ret = array();
+        foreach ($agf->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Remove a trainee from a session
+     * 
+     * @param int $sessid       ID of the session
+     * @param int $stagerowid   ID of the trainee in session
+     * @param int $traineeid    ID of the trainee
+     * 
+     * @url DELETE /sessions/trainee/
+     */
+    function sessionDeleteTrainee($sessid, $stagerowid = 0, $traineeid = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        /*
+        $agf = new Agefodd_session_stagiaire($this->db);
+        $result = $agf->fetch($stagerowid);
+        */
+    }
+    
     /***************************************************************** Trainee Part *****************************************************************/
     
     /**
