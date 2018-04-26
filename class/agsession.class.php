@@ -4129,7 +4129,7 @@ class Agsession extends CommonObject
 		}
 
 		if (empty($error)) {
-			if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+		    if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR && !empty($this->fk_product)) {
 
 				$propal->fetch($newpropalid);
 				$propal_line = new PropaleLigne($this->db);
