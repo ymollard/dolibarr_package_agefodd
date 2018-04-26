@@ -4519,7 +4519,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		if (empty($error)) {
+		if (empty($error) && empty($frompropalid)) {
 			// Link new order to the session/thridparty
 
 			$agf = new Agefodd_session_element($this->db);
