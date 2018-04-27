@@ -37,33 +37,58 @@ class Agefodd extends DolibarrApi
     /**
      * @var array   $FIELDS     Mandatory fields, checked when create and update object 
      */
-    static $SESSIONFIELDS = array(
-        'fk_formation_catalogue',
-        'fk_session_place'
+    static $FIELDS = array(
+//         exemple
+
+//         'objecttypes' => array(
+//             'mandatoryFields' => array('id', 'entity')
+//             ,'fieldTypes' => array(
+//                 'id' => 'int'
+//                 ,'entity' => 'int'
+//                 ,'label' => 'string'
+//                 ,'price' => 'float'
+//             )
+//          )
+
+        // validate sessions
+        'session' => array(
+            'mandatoryFields' => array('fk_formation_catalogue', 'fk_session_place')
+            ,'fieldTypes' => array()
+        )
+        
+        // validate trainee
+        ,'trainee' => array(
+            'mandatoryFields' => array('nom', 'prenom', 'civilite', 'socid')
+            ,'fieldTypes' => array()
+        )
+        
+        // validate traineeinsession
+        ,'traineeinsession' => array(
+            'mandatoryFields' => array('fk_session_agefodd', 'fk_stagiaire')
+            ,'fieldTypes' => array(
+                'fk_session_agefodd' => 'int'
+                ,'fk_stagiaire' => 'int'
+            )
+        )
+        
+        // validate trainer
+        ,'trainer' => array(
+            'mandatoryFields' => array('id')
+            ,'fieldTypes' => array(
+                'id' => 'int'
+            )
+        )
+        
+        // validate training
+        ,'training' => array(
+            'mandatoryFields' => array('intitule', 'duree')
+            ,'fieldTypes' => array(
+                'intitule' => 'string'
+                ,'duree' => 'float'
+            )
+        )
     );
-    
-    static $TRAINEEFIELDS = array(
-        'nom'
-        ,'prenom'
-        ,'civilite'
-        ,'socid'
-        //,'fk_user_mod'
-        //,'datec'
-    );
-    
-    static $TRAINEEINSESSIONFIELDS = array(
-        'fk_session_agefodd'
-        ,'fk_stagiaire'
-    );
-    
-    static $TRAINERFIELDS = array(
-        'id'
-    );
-    
-    static $TRAININGFIELDS = array(
-        'intitule'
-        ,'duree'
-    );
+
 
     /**
      * @var Agsession $session {@type Session}
@@ -596,7 +621,7 @@ class Agefodd extends DolibarrApi
        $TCustomers = array();
        foreach ($this->session->lines as $line)
        {
-           /*if ($line->typeline == "customer")*/ $TCustomers[] = $line->socid;
+           $TCustomers[] = $line->socid;
        }
        
        if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
@@ -748,16 +773,15 @@ class Agefodd extends DolibarrApi
         
         foreach($request_data as $field => $value) {
             if ($field !== "array_options") {
-                $this->session->$field = $value;
+                if($field !== 'id' && $field !== 'rowid') $this->session->$field = $value;
             } else {
                 foreach ($value as $option => $val) $this->session->array_options[$option] = $val;
             }
         }
         
-        if($this->session->update(DolibarrApiAccess::$user))
-            return $this->getSession($id);
-            
-            return false;
+        if($this->session->update(DolibarrApiAccess::$user) < 0) throw new RestException(500, "Error while updating session", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getSession($id);
     }
     
     /**
@@ -976,13 +1000,14 @@ class Agefodd extends DolibarrApi
     /**
      * Get trainees of the session
      * 
-     * @param int $id ID of a Session
+     * @param int $id       ID of a Session
+     * @param int $socid    ID of a thirdparty (return only trainee of this thirdparty if provided)
      * 
      * @return array|mixed without useless informations
      * 
      * @url GET /sessions/gettrainees/{sessid}
      */
-    function sessionGetAllTrainees($sessid)
+    function sessionGetAllTrainees($sessid, $socid = 0)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
@@ -994,7 +1019,21 @@ class Agefodd extends DolibarrApi
         $result = $this->session->fetch($sessid);
         if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
         
-        $result = $this->traineeinsession->fetch_stagiaire_per_session($sessid);
+        if(!empty($socid)){
+            $result = $this->session->fetch_societe_per_session($sessid);
+            if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+        
+            $TCustomers = array();
+            foreach ($this->session->lines as $line)
+            {
+                $TCustomers[] = $line->socid;
+            }
+            
+            if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
+            if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
+        }
+        
+        $result = $this->traineeinsession->fetch_stagiaire_per_session($sessid, $socid);
         if(empty($result)) throw new RestException(404, "No trainee found");
         elseif($result < 0) throw new RestException(500, "Error while retrieving trainees", array($this->db->lastqueryerror));
         
@@ -1005,7 +1044,7 @@ class Agefodd extends DolibarrApi
     }
     
     /**
-     * Remove a trainee from a session
+     * Get a trainee in a session
      *
      * @param int $sessid       ID of the session
      * @param int $traineeid    ID of the trainee (same trainee ID used to add the trainee in session)
@@ -1032,7 +1071,7 @@ class Agefodd extends DolibarrApi
     }
     
     /**
-     * Remove a trainee from a session
+     * Update a trainee of a session
      *
      * @param int       $sessid       ID of the session
      * @param int       $traineeid    ID of the trainee (same trainee ID used to add the trainee in session)
@@ -1045,7 +1084,7 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
-        
+
         $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
         
         $this->session = new Agsession($this->db);
@@ -1055,8 +1094,15 @@ class Agefodd extends DolibarrApi
         $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
         if($result < 0) throw new RestException(500, 'Error while retrieving the trainee in session', array($this->db->lasterror, $this->db->lastqueryerror));
         elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
+                
+        foreach ($request as $field => $value){
+            if($field !== 'id' && $field !== 'rowid' && $field !== 'stagerowid') $this->traineeinsession->$field = $value;
+        }
         
-        return $this->_cleanObjectDatas($this->traineeinsession);
+        $result = $this->traineeinsession->update(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error while updating trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->sessionGetTrainee($sessid, $traineeid);
     }
     
     /**
@@ -1338,16 +1384,16 @@ class Agefodd extends DolibarrApi
         
         foreach($request_data as $field => $value) {
             if ($field !== "array_options") {
-                $this->trainee->$field = $value;
+                if($field !== 'id' && $field !== 'rowid') $this->trainee->$field = $value;
             } else {
                 foreach ($value as $option => $val) $this->trainee->array_options[$option] = $val;
             }
         }
         
-        if($this->trainee->update(DolibarrApiAccess::$user))
-            return $this->getTrainee($id);
+        $result = $this->trainee->update(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error while updating trainee", array($this->db->lasterror, $this->db->lastqueryerror));
             
-            return false;
+        return $this->getTrainee($id);
     }
     
     /**
@@ -1992,26 +2038,11 @@ class Agefodd extends DolibarrApi
     {
         global $conf;
         
-        switch ($objecttype){
-            case 'session' :
-                $Tfields = Agefodd::$SESSIONFIELDS;
-                break;
-                
-            case 'trainee' :
-                $Tfields = Agefodd::$TRAINEEFIELDS;
-                break;
-                
-            case 'traineeinsession' : 
-                $Tfields = Agefodd::$TRAINEEINSESSIONFIELDS;
-                break;
-                
-            case 'trainer' :
-                $Tfields = Agefodd::$TRAINERFIELDS;
-                break;
-        }
+        if(empty($objecttype)) throw new RestException(503, "Can't guess what type of object to validate");
+        if(!isset(Agefodd::$FIELDS[$objecttype])) throw new RestException(503, "Unknown object type to validate");
         
         $object = array();
-        foreach ($Tfields as $field) {
+        foreach (Agefodd::$FIELDS[$objecttype]['mandatoryFields'] as $field) {
             if (!isset($data[$field]) || empty($data[$field]) || $data[$field] == -1)
                 throw new RestException(400, "$field field missing");
             $object[$field] = $data[$field];
