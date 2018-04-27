@@ -1066,8 +1066,19 @@ class Agefodd extends DolibarrApi
         $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
         if($result < 0) throw new RestException(500, 'Error while retrieving the trainee in session', array($this->db->lasterror, $this->db->lastqueryerror));
         elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
+        $obj_ret = new stdClass();
         
-        return $this->_cleanObjectDatas($this->traineeinsession);
+        $obj_ret->fk_session_agefodd = (isset($this->traineeinsession->fk_session_agefodd) ? $this->traineeinsession->fk_session_agefodd : null);
+        $obj_ret->fk_stagiaire = (isset($this->traineeinsession->fk_stagiaire) ? $this->traineeinsession->fk_stagiaire : null);
+        $obj_ret->status_in_session = (isset($this->traineeinsession->status_in_session) ? $this->traineeinsession->status_in_session : 0);
+        $obj_ret->fk_agefodd_stagiaire_type = (isset($this->traineeinsession->fk_agefodd_stagiaire_type) ? $this->traineeinsession->fk_agefodd_stagiaire_type : 0);
+        $obj_ret->fk_soc_link = (isset($this->traineeinsession->fk_soc_link) ? $this->traineeinsession->fk_soc_link : null);
+        $obj_ret->fk_soc_requester = (isset($this->traineeinsession->fk_soc_requester) ? $this->traineeinsession->fk_soc_requester : null);
+        $obj_ret->fk_socpeople_sign = (isset($this->traineeinsession->fk_socpeople_sign) ? $this->traineeinsession->fk_socpeople_sign : null);
+        $obj_ret->hour_foad = (isset($this->traineeinsession->hour_foad) ? price2num($this->traineeinsession->hour_foad): null);
+        
+        
+        return $obj_ret;
     }
     
     /**
@@ -1081,8 +1092,8 @@ class Agefodd extends DolibarrApi
      */
     function sessionPutTrainee($sessid, $traineeid, $request = array())
     {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
 
         $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
@@ -1096,13 +1107,57 @@ class Agefodd extends DolibarrApi
         elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
                 
         foreach ($request as $field => $value){
-            if($field !== 'id' && $field !== 'rowid' && $field !== 'stagerowid') $this->traineeinsession->$field = $value;
+            if($field !== 'fk_stagiaire' && $field !== 'fk_session_agefodd' ) $this->traineeinsession->$field = $value;
         }
         
         $result = $this->traineeinsession->update(DolibarrApiAccess::$user);
         if($result<0) throw new RestException(500, "Error while updating trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
         
         return $this->sessionGetTrainee($sessid, $traineeid);
+    }
+    
+    /**
+     * Mass Update Status of the trainees in session
+     * 
+     * @param int       $sessid     ID of the session
+     * @param int       $status     ID of the status in session
+     * @param int       $socid      ID of a thirdparty (if used only status of the trainees of this thirdparty are changed)
+     * 
+     * @return array of trainees in session
+     * 
+     * @url PUT /sessions/traineesstatus/
+     */
+    function sessionMassUpdatetraineeStatus($sessid, $status, $socid = 0){
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        if(!is_numeric($status) || $status < 0) throw new RestException(500, 'Invalid status : '.$status);
+        
+        if(!empty($socid)){
+            $result = $this->session->fetch_societe_per_session($sessid);
+            if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+            
+            $TCustomers = array();
+            foreach ($this->session->lines as $line)
+            {
+                $TCustomers[] = $line->socid;
+            }
+            
+            if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
+            if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
+        }
+        
+        $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+        $this->traineeinsession->fk_session_agefodd = $sessid;
+        
+        $result = $this->traineeinsession->update_status_by_soc(DolibarrApiAccess::$user, 0, $socid, $status);
+        if ($result < 0) throw new RestException(500, 'Error during modification', array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->sessionGetAllTrainees($sessid);
     }
     
     /**
