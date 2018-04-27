@@ -194,6 +194,8 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs, $tplidx) {
 		global $user, $langs, $conf, $mysoc;
 
+		$nbsta_index=1;
+
 		$height_for_footer = 20;
 		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
 
@@ -655,10 +657,17 @@ class pdf_fiche_presence_landscape extends ModelePDFAgefodd {
 			// Cadre
 			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 
+			if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
+				$this->str=$nbsta_index.'. ';
+			} else {
+				$this->str='';
+			}
+			$nbsta_index++;
+
 			// Nom
 			$pdf->SetXY($posX - 2, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-			$this->str = $line->nom . ' ' . $line->prenom;
+			$this->str .= $line->nom . ' ' . $line->prenom;
 			if (! empty($line->poste)) {
 				$this->str .= ' (' . $line->poste . ')';
 			}

@@ -1296,3 +1296,4 @@ AgfThirdpartyOfTraineeMandatory=La société d'un participant est obligatoire (i
 AgfStaMail=Participant e-mail
 AgfOrders=Commandes
 AgfOrdersUnselect=Délier la commande
+AgfAddIndexOnTraineePresencePDF=Ajouter l'indice de position du participants dans les fiches de présences
