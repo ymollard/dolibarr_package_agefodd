@@ -166,7 +166,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
 }
 
-$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, array_keys($extrafields->attribute_label));
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($result >= 0) {
 
@@ -359,7 +359,7 @@ if ($result >= 0) {
 			{
 				if (! empty($arrayfields["ef.".$key]['checked']))
 				{
-					print '<td></td>';
+					print '<td>'.$line->array_options['options_'.$key].'</td>';
 				}
 			}
 		}
