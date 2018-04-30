@@ -1355,12 +1355,14 @@ class Agefodd extends DolibarrApi
         if (empty($result)) throw new RestException(404, "No trainer for this session");
         elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
         
+        $opsid = '';
         foreach ($this->trainerinsession->lines as $line) {
             if($line->formid == $trainerid) {
                 $opsid = $line->opsid;
                 break;
             }
         }
+        if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
         $this->trainerinsession = new Agefodd_session_formateur($this->db);
         
         $result = $this->trainerinsession->fetch($opsid);
@@ -1377,6 +1379,51 @@ class Agefodd extends DolibarrApi
         return $this->sessionGetTrainer($sessid, $trainerid);
     }
     
+    /**
+     * Remove a trainer from a session
+     *
+     * @param int $sessid       ID of the session
+     * @param int $trainerid    ID of the trainer (same trainee ID used to add the trainer in session)
+     *
+     * @url DELETE /sessions/trainer/
+     */
+    function sessionDeleteTrainer($sessid, $trainerid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+        if (empty($result)) throw new RestException(404, "No trainer for this session");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+        
+        $opsid = '';
+        foreach ($this->trainerinsession->lines as $line) {
+            if($line->formid == $trainerid) {
+                $opsid = $line->opsid;
+                break;
+            }
+        }
+        if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        
+        $result = $this->trainerinsession->fetch($opsid);
+        if($result < 0) throw new RestException(500, "Error while retrieving trainer");
+        
+        $result = $this->trainerinsession->remove($opsid);
+        if($result < 0) throw new RestException(500, 'Error while deleting the trainer in session', array($this->db->lasterror, $this->db->lastqueryerror));
+                
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Trainer removed from the session'
+            )
+        );
+    }
     
     /***************************************************************** Trainee Part *****************************************************************/
     
