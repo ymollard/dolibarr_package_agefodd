@@ -64,6 +64,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 
 		$this->db = $db;
 
+		// TODO basculer ce truc en dictionnaire
 		$this->labelstatut[0] = $langs->trans("TraineeSessionStatusProspect");
 		$this->labelstatut[1] = $langs->trans("TraineeSessionStatusVerbalAgreement");
 		$this->labelstatut[2] = $langs->trans("TraineeSessionStatusConfirm");
@@ -71,6 +72,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->labelstatut[4] = $langs->trans("TraineeSessionStatusPartPresent");
 		$this->labelstatut[5] = $langs->trans("TraineeSessionStatusNotPresent");
 		$this->labelstatut[6] = $langs->trans("TraineeSessionStatusCancelled");
+		$this->labelstatut[7] = $langs->trans('TraineeSessionStatusExcuse');
 
 		$this->labelstatut_short[0] = $langs->trans("TraineeSessionStatusProspectShort");
 		$this->labelstatut_short[1] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
@@ -79,6 +81,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->labelstatut_short[4] = $langs->trans("TraineeSessionStatusPartPresentShort");
 		$this->labelstatut_short[5] = $langs->trans("TraineeSessionStatusNotPresentShort");
 		$this->labelstatut_short[6] = $langs->trans("TraineeSessionStatusCancelledShort");
+		$this->labelstatut_short[7] = $langs->trans('TraineeSessionStatusExcuseShort');
 
 		return 1;
 	}

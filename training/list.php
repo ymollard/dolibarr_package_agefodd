@@ -105,6 +105,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_categ = '';
 	$search_fk_product='';
 }
+$contextpage = 'listtraining';
 include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 $arrayfields=array(

@@ -186,6 +186,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 	function _pagebody(&$pdf, $agf, $showaddress = 1, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
+		$nbsta_index=1;
+
 		// Set path to the background PDF File
 		if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_P))
 		{
@@ -658,8 +660,16 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
+
 			foreach ( $agfsta->lines as $line ) {
-				$this->str='';
+
+				if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
+					$this->str=$nbsta_index.'. ';
+				} else {
+					$this->str='';
+				}
+
+				$nbsta_index++;
 				// Cadre
 				$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 
@@ -669,11 +679,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 
 				if (! empty($line->civilite)) {
 					if ($line->civilite=='MR') {
-						$this->str ='M. ';
+						$this->str .='M. ';
 					}elseif ($line->civilite=='MME' || $line->civilite=='MLE') {
-						$this->str ='Mme. ';
+						$this->str .='Mme. ';
 					} else {
-						$this->str =$line->civilite. ' ';
+						$this->str .=$line->civilite. ' ';
 					}
 				}
 				$this->str .= $line->nom . ' ' . $line->prenom;

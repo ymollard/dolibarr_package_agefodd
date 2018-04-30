@@ -282,17 +282,23 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
+	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '', $array_options_keys=array()) {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid as stagid, so.rowid as socid, so.nom as socname,";
+		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
+		foreach ($array_options_keys as $key)
+		{
+			$sql.= ',ef.'.$key;
+		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON s.fk_soc = so.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_extrafields as ef";
+		$sql .= " ON s.rowid = ef.fk_object";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
@@ -304,6 +310,8 @@ class Agefodd_stagiaire extends CommonObject {
 					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
 				} elseif ($key != 's.tel1') {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+				} elseif (strpos($key,'ef.')!==false){
+					$sql.= $value;
 				} else {
 					$sql .= ' AND ' . $key . ' = \'' . $this->db->escape($value) . '\'';
 				}
@@ -389,14 +397,12 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->place_birth = $obj->place_birth;
 					}
 
-					require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
-					$extrafields = new ExtraFields($this->db);
-					$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
-					if (count($extralabels) > 0) {
-					    $this->fetch_optionals($obj->stagid, $extralabels);
-					    $line->array_options = $this->array_options;
+					$line->array_options = array();
+					foreach ($array_options_keys as $key)
+					{
+						$line->array_options['options_'.$key] = $obj->{$key};
 					}
-					
+
 					$this->lines[$i] = $line;
 
 					$i ++;

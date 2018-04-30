@@ -41,6 +41,7 @@ class Agefodd_session_formateur {
 	public $firstname;
 	public $trainer_status;
 	public $trainer_type;
+	public $trainer_type_label;
 	public $lines = array ();
 	public $labelstatut;
 	public $labelstatut_short;
@@ -161,12 +162,15 @@ class Agefodd_session_formateur {
 		$sql .= " f.fk_socpeople,";
 		$sql .= " sp.lastname, sp.firstname";
 		$sql .= " ,sf.trainer_status";
-		$sql .= " ,sf.fk_agefodd_formateur_type";
+		$sql .= " ,sf.fk_agefodd_formateur_type as trainer_type";
+		$sql .= " ,st.intitule as trainertypelabel";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " ON sf.fk_agefodd_formateur = f.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sp";
 		$sql .= " ON f.fk_socpeople = sp.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur_type as st";
+		$sql .= " ON st.rowid = sf.fk_agefodd_formateur_type";
 		$sql .= " WHERE sf.rowid = " . $id;
 		
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
@@ -181,6 +185,7 @@ class Agefodd_session_formateur {
 				$this->firstname = $obj->firstname;
 				$this->trainer_status = $obj->trainer_status;
 				$this->trainer_type = $obj->trainer_type;
+				$this->trainer_type_label = $obj->trainertypelabel;
 			}
 			$this->db->free($resql);
 			

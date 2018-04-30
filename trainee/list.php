@@ -46,6 +46,7 @@ $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'alpha');
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
+$contextpage = 'traineelist';
 
 // Search criteria
 $search_name = GETPOST("search_name");
@@ -64,6 +65,34 @@ if (GETPOST("button_removefilter_x")) {
 	$search_soc = '';
 	$search_tel = '';
 	$search_mail = '';
+}
+
+$hookmanager->initHooks(array('traineelist'));
+
+include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+$agf = new Agefodd_stagiaire($db);
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
+
+$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+
+$arrayfields=array(
+		's.rowid'			=>array('label'=>"Id", 'checked'=>1),
+		's.nom'			=>array('label'=>"AgfNomPrenom", 'checked'=>1),
+		'civ.code'			=>array('label'=>"AgfCivilite", 'checked'=>1),
+		'so.nom'			=>array('label'=>"Company", 'checked'=>1),
+		's.tel1'			=>array('Phone'=>"Company", 'checked'=>1),
+		's.mail'			=>array('Mail'=>"Company", 'checked'=>1),
+);
+
+// Extra fields
+if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+{
+	foreach($extrafields->attribute_label as $key => $val)
+	{
+		$arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
+	}
 }
 
 $filter = array ();
@@ -99,6 +128,21 @@ if (!empty($limit)) {
 	$option .= '&limit=' . $limit;
 }
 
+foreach ($search_array_options as $key => $val)
+{
+	$crit=$val;
+	$tmpkey=preg_replace('/search_options_/','',$key);
+	$typ=$extrafields->attribute_type[$tmpkey];
+	$mode_search=0;
+	if (in_array($typ, array('int','double','real'))) $mode_search=1;								// Search on a numeric
+	if (in_array($typ, array('sellist','link','chkbxlst','checkbox')) && $crit != '0' && $crit != '-1') $mode_search=2;	// Search on a foreign key int
+	if ($crit != '' && (! in_array($typ, array('select','sellist')) || $crit != '0') && (! in_array($typ, array('link')) || $crit != '-1'))
+	{
+		$filter['ef.'.$tmpkey]= natural_search('ef.'.$tmpkey, $crit, $mode_search);
+		$option .= '&search_options_'.$tmpkey.'=' . $crit;
+	}
+}
+
 if (! $sortorder) {
 	$sortorder = "ASC";
 }
@@ -115,10 +159,6 @@ $pagenext = $page + 1;
 
 $formcompagny = new FormCompany($db);
 
-$hookmanager->initHooks(array('traineelist'));
-
-$agf = new Agefodd_stagiaire($db);
-
 // Count total nb of records
 $nbtotalofrecords = 0;
 
@@ -126,11 +166,13 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
 }
 
-$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
+$result = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, array_keys($extrafields->attribute_label));
 
 if ($result >= 0) {
 
 	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 	if (! empty($sortfield)) {
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
 	}
@@ -146,49 +188,130 @@ if ($result >= 0) {
 
 	print_barre_liste($langs->trans("AgfStagiaireList"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $result, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
+	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
+	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 	print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
 
 	print '<tr class="liste_titre_filter">';
 
-	print '<td>&nbsp;</td>';
+	if (! empty($arrayfields['s.rowid']['checked'])) {
+		print '<td>&nbsp;</td>';
+	}
 
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_name" value="' . $search_name . '" size="10">';
-	print '<input type="text" class="flat" name="search_firstname" value="' . $search_firstname . '" size="10">';
-	print '</td>';
+	if (! empty($arrayfields['s.nom']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_name" value="' . $search_name . '" size="10">';
+		print '<input type="text" class="flat" name="search_firstname" value="' . $search_firstname . '" size="10">';
+		print '</td>';
+	}
 
-	print '<td class="liste_titre">';
-	print $formcompagny->select_civility($search_civ, 'search_civ');
-	print '</td>';
+	if (! empty($arrayfields['civ.code']['checked'])) {
+		print '<td class="liste_titre">';
+		print $formcompagny->select_civility($search_civ, 'search_civ');
+		print '</td>';
+	}
 
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
-	print '</td>';
+	if (! empty($arrayfields['so.nom']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
+		print '</td>';
+	}
 
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_tel" value="' . $search_tel . '" size="10">';
-	print '</td>';
+	if (! empty($arrayfields['s.tel1']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_tel" value="' . $search_tel . '" size="10">';
+		print '</td>';
+	}
 
-	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_mail" value="' . $search_mail . '" size="20">';
-	print '</td>';
+	if (! empty($arrayfields['s.mail']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_mail" value="' . $search_mail . '" size="20">';
+		print '</td>';
+	}
 
-	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	// Extra fields
+	if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
+		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
+	} else {
+		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+		{
+			foreach($extrafields->attribute_label as $key => $val)
+			{
+				if (! empty($arrayfields["ef.".$key]['checked'])) {
+					$align=$extrafields->getAlignFlag($key);
+					$typeofextrafield=$extrafields->attribute_type[$key];
+					print '<td class="liste_titre'.($align?' '.$align:'').'">';
+					if (in_array($typeofextrafield, array('varchar', 'int', 'double', 'select')) && empty($extrafields->attribute_computed[$key]))
+					{
+						$crit=$val;
+						$tmpkey=preg_replace('/search_options_/','',$key);
+						$searchclass='';
+						if (in_array($typeofextrafield, array('varchar', 'select'))) $searchclass='searchstring';
+						if (in_array($typeofextrafield, array('int', 'double'))) $searchclass='searchnum';
+						print '<input class="flat'.($searchclass?' '.$searchclass:'').'" size="4" type="text" name="search_options_'.$tmpkey.'" value="'.dol_escape_htmltag($search_array_options['search_options_'.$tmpkey]).'">';
+					}
+					else
+					{
+						// for the type as 'checkbox', 'chkbxlst', 'sellist' we should use code instead of id (example: I declare a 'chkbxlst' to have a link with dictionnairy, I have to extend it with the 'code' instead 'rowid')
+						echo $extrafields->showInputField($key, $search_array_options['search_options_'.$key], '', '', 'search_');
+					}
+					print '</td>';
+				}
+			}
+		}
+	}
+
+	// Action column
+	print '<td class="liste_titre" align="right">';
+	if(method_exists($form, 'showFilterButtons')) {
+		$searchpicto=$form->showFilterButtons();
+
+		print $searchpicto;
+	} else {
+		print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+		print '&nbsp; ';
+		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	}
 	print '</td>';
 
 	print "</tr>\n";
 
 
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfNomPrenom"), $_SERVER ['PHP_SELF'], "s.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "civ.code", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel1", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
-	print '<td>&nbsp;</td>';
+	if (! empty($arrayfields['s.rowid']['checked'])) {
+		print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['s.nom']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfNomPrenom"), $_SERVER ['PHP_SELF'], "s.nom", "", $option, '', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['civ.code']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfCivilite"), $_SERVER ['PHP_SELF'], "civ.code", "", $option, '', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['so.nom']['checked'])) {
+		print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['s.tel1']['checked'])) {
+		print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel1", "", $option, '', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['s.mail']['checked'])) {
+		print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
+	}
+	// Extra fields
+	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+	{
+		foreach($extrafields->attribute_label as $key => $val)
+		{
+			if (! empty($arrayfields["ef.".$key]['checked']))
+			{
+				$align=$extrafields->getAlignFlag($key);
+				$sortonfield = "ef.".$key;
+				if (! empty($extrafields->attribute_computed[$key])) $sortonfield='';
+				print getTitleFieldOfList($langs->trans($extralabels[$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align?'align="'.$align.'"':''), $sortfield, $sortorder)."\n";
+			}
+		}
+	}
+
+	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
 
 	$var = true;
@@ -197,23 +320,49 @@ if ($result >= 0) {
 		// Affichage liste des stagiaires
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		print '<td><a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "user") . ' ' . $line->rowid . '</a></td>';
-		print '<td><a href="card.php?id=' . $line->rowid . '">' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</a></td>';
-
-		$contact_static = new Contact($db);
-		$contact_static->civility_id = $line->civilite;
-
-		print '<td>' . $contact_static->getCivilityLabel() . '</td>';
-		print '<td>';
-		if ($line->socid) {
-			print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $line->socid . '">';
-			print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($line->socname, 20) . '</a>';
-		} else {
-			print '&nbsp;';
+		if (! empty($arrayfields['s.rowid']['checked'])) {
+			print '<td><a href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "user") . ' ' . $line->rowid . '</a></td>';
 		}
-		print '</td>';
-		print '<td>' . dol_print_phone($line->tel1) . '</td>';
-		print '<td>' . dol_print_email($line->mail, $line->rowid, $line->socid, 'AC_EMAIL', 25) . '</td>';
+
+		if (! empty($arrayfields['s.nom']['checked'])) {
+			print '<td><a href="card.php?id=' . $line->rowid . '">' . strtoupper($line->nom) . ' ' . ucfirst($line->prenom) . '</a></td>';
+		}
+
+		if (! empty($arrayfields['civ.code']['checked'])) {
+			$contact_static = new Contact($db);
+			$contact_static->civility_id = $line->civilite;
+
+			print '<td>' . $contact_static->getCivilityLabel() . '</td>';
+		}
+
+		if (! empty($arrayfields['so.nom']['checked'])) {
+			print '<td>';
+			if ($line->socid) {
+				print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $line->socid . '">';
+				print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($line->socname, 20) . '</a>';
+			} else {
+				print '&nbsp;';
+			}
+			print '</td>';
+		}
+		if (! empty($arrayfields['s.tel1']['checked'])) {
+			print '<td>' . dol_print_phone($line->tel1) . '</td>';
+		}
+		if (! empty($arrayfields['s.mail']['checked'])) {
+			print '<td>' . dol_print_email($line->mail, $line->rowid, $line->socid, 'AC_EMAIL', 25) . '</td>';
+		}
+
+		// Extra fields
+		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+		{
+			foreach($extrafields->attribute_label as $key => $val)
+			{
+				if (! empty($arrayfields["ef.".$key]['checked']))
+				{
+					print '<td></td>';
+				}
+			}
+		}
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 	}

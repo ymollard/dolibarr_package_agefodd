@@ -143,6 +143,8 @@ if (GETPOST("button_removefilter_x")) {
 
 $hookmanager->initHooks(array('sessionlist'));
 
+$contextpage = 'listsession'.$status_view;
+
 include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 $agf_session = new Agsession($db);
@@ -320,7 +322,7 @@ if ($status_view == 1) {
 	$title = $langs->trans("AgfMenuSess");
 }
 
-$contextpage = 'listsession'.$status_view;
+
 
 llxHeader('', $title);
 
@@ -435,7 +437,7 @@ if ($resql != - 1) {
 		$menu = $langs->trans("AgfMenuSess");
 	}
 
-	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="search_form">' . "\n";
+	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 	if (! empty($status_view)) {
