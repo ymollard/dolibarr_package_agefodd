@@ -282,8 +282,14 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '', $array_options_keys=array()) {
+	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
 		global $langs;
+
+		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+		$extrafields = new ExtraFields($this->db);
+		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
+
+		$array_options_keys=array_keys($extrafields->attribute_label);
 
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
@@ -397,10 +403,10 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->place_birth = $obj->place_birth;
 					}
 
-					$line->array_options = array();
-					foreach ($array_options_keys as $key)
-					{
-						$line->array_options['options_'.$key] = $obj->{$key};
+					if (count($extralabels) > 0) {
+						$statictrainee=new self($this->db);
+						$statictrainee->fetch_optionals($line->rowid, $extralabels);
+						$line->array_options=$statictrainee->array_options;
 					}
 
 					$this->lines[$i] = $line;
