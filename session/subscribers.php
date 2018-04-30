@@ -676,14 +676,17 @@ if (! empty($id)) {
 			setEventMessage($stagiaires->error, 'errors');
 		}
 		$nbstag = count($stagiaires->lines);
+		
 		if ($nbstag > 0) {
 			$fk_soc_used = array();
+			$var=false;
 			for($i = 0; $i < $nbstag; $i ++) {
-
+				$var=!$var;
+				
 				if ($stagiaires->lines[$i]->id == $modstagid && ! empty($stag_remove_x))
 					print '<tr bgcolor="#d5baa8">';
 				else
-					print '<tr>';
+					print '<tr '.$bc[$var].'>';
 
 				print '<td width="3%" align="center"><a name="modsta" id="modsta"></a><a name="modstagid' . $stagiaires->lines[$i]->id . '" id="modstagid' . $stagiaires->lines[$i]->id . '"></a>' . ($i + 1) . '</td>';
 
