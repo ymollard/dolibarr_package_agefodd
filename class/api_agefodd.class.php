@@ -23,6 +23,7 @@
  dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
 /**
@@ -71,6 +72,15 @@ class Agefodd extends DolibarrApi
             )
         )
         
+        // validate trainerinsession
+        ,'trainerinsession' => array(
+            'mandatoryFields' => array('fk_session', 'fk_agefodd_formateur')
+            ,'fieldTypes' => array(
+                'fk_session' => 'int'
+                ,'fk_agefodd_formateur' => 'int'
+            )
+        )
+        
         // validate trainer
         ,'trainer' => array(
             'mandatoryFields' => array('id')
@@ -107,6 +117,7 @@ class Agefodd extends DolibarrApi
 		$this->trainee = new Agefodd_stagiaire($this->db);                    // agefodd trainee
 		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);   // traineeinsession
 		$this->trainer = new Agefodd_teacher($this->db);                      // agefodd teacher
+		$this->trainerinsession = new Agefodd_session_formateur($this->db);   // trainerinsession
 		$this->training = new Formation($this->db);                           // agefodd training
     }
 
@@ -1192,6 +1203,52 @@ class Agefodd extends DolibarrApi
                 'message' => 'Trainee removed from the session'
             )
         );
+    }
+    
+    /***************************************************************** Trainerinsession Part *****************************************************************/
+    
+    /**
+     * Add a trainer to a session
+     *
+     * @param int        $sessId            ID of the session
+     * @param int        $trainerId         ID of the trainer to add
+     * @param int        $trainerId         ID of the trainer Type
+     * @param int        $trainerStatus     Status of the trainer in session
+     *
+     * @throws RestException
+     * @return number
+     *
+     * @url	POST /sessions/addtrainer
+     */
+    function sessionAddTrainer($sessId, $trainerId, $trainerType = 0, $trainerStatus = 0){
+        global $conf;
+        
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        
+        // check parameters
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creaton not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->_validate(array('fk_session' => $sessId, 'fk_agefodd_formateur' => $traineeId), 'trainerinsession');
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessId);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $this->trainer = new Agefodd_teacher($this->db);
+        $result = $this->trainer->fetch($trainerId);
+        if( $result < 0 || empty($this->trainer->id) ) throw new RestException(404, 'Trainer not found');
+        
+        $this->trainer->sessid = $sessId;
+        $this->trainer->formid = $trainerId;
+        $this->trainer->trainer_status = $trainerStatus;
+        $this->trainer->trainer_type = $trainerType;
+        $result = $this->trainer->create(DolibarrApiAccess::$user);
+        
+        if($result < 0) throw new RestException(500, "Error while adding trainer $trainerId to the session $sessId", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $result;
     }
     
     /***************************************************************** Trainee Part *****************************************************************/
