@@ -2393,6 +2393,7 @@ class Agsession extends CommonObject
 					$line->admin_task_close_session = $obj->closesessionstatus;
 					$line->trainingcolor = $obj->trainingcolor;
 					$line->fk_product = $obj->fk_product;
+					$line->status = $obj->status;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
