@@ -1223,14 +1223,14 @@ class Agefodd extends DolibarrApi
     function sessionAddTrainer($sessId, $trainerId, $trainerType = 0, $trainerStatus = 0){
         global $conf;
         
+        if (empty($trainerType)) $trainerType = $conf->global->AGF_DEFAULT_FORMATEUR_TYPE;
+        
         $this->trainerinsession = new Agefodd_session_formateur($this->db);
         
         // check parameters
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Creaton not allowed for login '.DolibarrApiAccess::$user->login);
         }
-        
-        $this->_validate(array('fk_session' => $sessId, 'fk_agefodd_formateur' => $traineeId), 'trainerinsession');
         
         $this->session = new Agsession($this->db);
         $result = $this->session->fetch($sessId);
@@ -1240,16 +1240,143 @@ class Agefodd extends DolibarrApi
         $result = $this->trainer->fetch($trainerId);
         if( $result < 0 || empty($this->trainer->id) ) throw new RestException(404, 'Trainer not found');
         
-        $this->trainer->sessid = $sessId;
-        $this->trainer->formid = $trainerId;
-        $this->trainer->trainer_status = $trainerStatus;
-        $this->trainer->trainer_type = $trainerType;
-        $result = $this->trainer->create(DolibarrApiAccess::$user);
+        $this->_validate(array('fk_session' => $sessId, 'fk_agefodd_formateur' => $trainerId), 'trainerinsession');
+        
+        $this->trainerinsession->sessid = $sessId;
+        $this->trainerinsession->formid = $trainerId;
+        $this->trainerinsession->trainer_status = $trainerStatus;
+        $this->trainerinsession->trainer_type = $trainerType;
+        $result = $this->trainerinsession->create(DolibarrApiAccess::$user);
         
         if($result < 0) throw new RestException(500, "Error while adding trainer $trainerId to the session $sessId", array($this->db->lasterror, $this->db->lastqueryerror));
         
         return $result;
     }
+    
+    /**
+     * Get trainers of the session
+     * 
+     * @param int $id       ID of a Session
+     * 
+     * @return array|mixed without useless informations
+     * 
+     * @url GET /sessions/gettrainers/{sessid}
+     */
+    function sessionGetAllTrainers($sessid){
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session '.$sessid.' not found');
+        
+        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+        if (empty($result)) throw new RestException(404, "No trainer for this session");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+        
+        $obj_ret = array();
+        foreach ($this->trainerinsession->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
+        
+    }
+    
+    /**
+     * Get a trainer in a session
+     *
+     * @param int $sessid       ID of the session
+     * @param int $trainerid    ID of the trainer (same trainee ID used to add the trainee in session)
+     *
+     * @url GET /sessions/trainer/
+     */
+    function sessionGetTrainer($sessid, $trainerid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+        if (empty($result)) throw new RestException(404, "No trainer for this session");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+        
+        foreach ($this->trainerinsession->lines as $line) {
+            if($line->formid == $trainerid) {
+                $opsid = $line->opsid;
+                break;
+            }
+        }
+        
+        $result = $this->trainerinsession->fetch($opsid);
+        if($result < 0) throw new RestException(500, "Error while retrieving trainer");
+        
+        unset($this->trainerinsession->lines);
+        unset($this->trainerinsession->labelstatut);
+        unset($this->trainerinsession->labelstatut_short);
+        unset($this->trainerinsession->errors);
+        unset($this->trainerinsession->error);
+        unset($this->trainerinsession->element);
+        unset($this->trainerinsession->table_element);
+        
+        return $this->trainerinsession;
+        
+    }
+    
+    /**
+     * Update a trainer of a session
+     *
+     * @param int       $sessid       ID of the session
+     * @param int       $trainerid    ID of the trainer (same trainer ID used to add the trainer in session)
+     * @param array     $request      Array fields to update (trainer_status, trainer_type)
+     *
+     * @url PUT /sessions/trainer/
+     */
+    function sessionPutTrainer($sessid, $trainerid, $request = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+        if (empty($result)) throw new RestException(404, "No trainer for this session");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+        
+        foreach ($this->trainerinsession->lines as $line) {
+            if($line->formid == $trainerid) {
+                $opsid = $line->opsid;
+                break;
+            }
+        }
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        
+        $result = $this->trainerinsession->fetch($opsid);
+        if($result < 0) throw new RestException(500, "Error while retrieving trainer");
+        $this->trainerinsession->opsid = $opsid;
+        
+        foreach ($request as $field => $value){
+            if(in_array($field, array('trainer_status', 'trainer_type'))) $this->trainerinsession->$field = $value;
+        }
+        
+        $result = $this->trainerinsession->update(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error while updating trainer in session", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->sessionGetTrainer($sessid, $trainerid);
+    }
+    
     
     /***************************************************************** Trainee Part *****************************************************************/
     
