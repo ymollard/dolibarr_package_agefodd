@@ -531,7 +531,7 @@ class Agefodd extends DolibarrApi
      * @url     POST /sessions/
      * 
      * 
-     * @param string    $mode           create or clone 
+     * @param string    $mode           create, clone or createadm (create admin tasks)
      * @param array     $request_data   Request data
      * 
      * @return 	array|mixed data without useless information
@@ -2294,6 +2294,193 @@ class Agefodd extends DolibarrApi
         return $obj_ret;
     }
     
+    /**
+     * Create Training object
+     *
+     * @url     POST /trainings/
+     *
+     *
+     * @param string    $mode           create, clone, createobjpeda(create goals) or createadm (create admin tasks)
+     * @param array     $request_data   Request data
+     *
+     * @return 	array|mixed data without useless information
+     */
+    function postTraining($mode = 'create', $request_data)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        switch ($mode)
+        {
+            case 'create' :
+                return $this->_createTraining($request_data['request_data']);
+                break;
+              
+            case 'clone' :
+                if(!in_array('id', array_keys($request_data['request_data']))) throw new RestException(404, "No source id provided");
+                return $this->_cloneTraining($request_data['request_data']['id']);
+                break;
+        }
+//         if ($mode == "createadm"){ // creation des taches administratives de la session passée en param
+            
+//             if (in_array('id', array_keys($request_data['request_data']))){
+//                 $this->session->fetch((int)$request_data['request_data']['id']);
+//                 $result = $this->session->createAdmLevelForSession(DolibarrApiAccess::$user);
+//                 return empty($result) ? $this->getSession($this->session->id) : $result .' '. $this->session->error;
+//             } else throw new RestException(404, 'session not found');
+            
+//         } elseif ($mode == "clone"){ // clone de la session passée en param
+            
+//             if (in_array('id', array_keys($request_data['request_data']))){
+//                 return $this->_cloneSession((int)$request_data['request_data']['id']);
+//             } else throw new RestException(404, 'session not found');
+            
+//         } else { //creation d'une session
+//             // Check mandatory fields
+//             $result = $this->_validate($request_data['request_data'], 'session');
+            
+//             foreach($request_data['request_data'] as $field => $value) {
+//                 $this->session->$field = $value;
+//             }
+            
+//             if ($this->session->create(DolibarrApiAccess::$user) < 0) {
+//                 throw new RestException(500, 'Error when creating session', array_merge(array($this->session->error), $this->session->errors));
+//             }
+//             return $this->getSession($this->session->id);
+//         }
+        
+    }
+    
+    /**
+     * Create Training object
+     * 
+     * @param array $request_data
+     * 
+     * @return array|mixed data without useless information
+     */
+    function _createTraining($request_data)
+    {
+        // Check mandatory fields
+        $result = $this->_validate($request_data, 'training');
+
+        $this->training = new Formation($this->db);
+        
+        foreach($request_data as $field => $value) {
+            $this->training->$field = $value;
+        }
+        
+        if(!isset($request_data['ref']) || empty($request_data['ref'])){
+            $obj = empty($conf->global->AGF_ADDON) ? 'mod_agefodd_simple' : $conf->global->AGF_ADDON;
+            
+            $path_rel = dol_buildpath('/agefodd/core/modules/agefodd/' . $obj . '.php');
+            if (is_readable($path_rel)) {
+                dol_include_once('/agefodd/core/modules/agefodd/' . $obj . '.php');
+                $modAgefodd = new $obj();
+                $defaultref = $modAgefodd->getNextValue($soc, $agf);
+            }
+            $this->training->ref_obj = $defaultref;
+        }
+        
+        $result = $this->training->create(DolibarrApiAccess::$user);
+        
+        if ($result < 0) {
+            throw new RestException(500, 'Error when creating training', array_merge(array($this->db->lasterror, $this->db->lastqueryerror), $this->session->errors));
+        }
+        return $this->getTraining($result);
+    }
+    
+    /**
+     * Clone Training object
+     * 
+     * @param int $id ID of the training to clone
+     * 
+     * @return 	array|mixed data without useless information
+     */
+    function _cloneTraining($id)
+    {
+        if(empty($id) || !is_numeric($id)) throw new RestException(503, "Invalid id provided");
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $result = $this->training->createFromClone($id);
+        if($result<0) throw new RestException(500, 'Training not created', array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getTraining($result);
+    }
+    
+    /**
+     * Update Training
+     *
+     * @url     PUT /trainings/{id}
+     *
+     * @param int   $id             Id of training to update
+     * @param array $request_data   Datas
+     * @return 	array|mixed data without useless information
+     */
+    function putTraining($id, $request_data = NULL)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        foreach (Agefodd::$FIELDS['training']['mandatoryFields'] as $field){
+            if (!isset($request_data[$field]) || empty($request_data[$field]) || $request_data[$field] == -1) $request_data[$field] = $this->training->$field;
+        }
+        
+        foreach($request_data as $field => $value) {
+            if ($field !== "array_options") {
+                if($field !== 'id' && $field !== 'rowid') $this->training->$field = $value;
+            } else {
+                foreach ($value as $option => $val) $this->training->array_options[$option] = $val;
+            }
+        }
+        
+        if($this->training->update(DolibarrApiAccess::$user) < 0) throw new RestException(500, "Error while updating session", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getTraining($id);
+    }
+    
+    /**
+     * Delete training
+     *
+     * @url	DELETE /trainings/{id}
+     *
+     * @param int $id   training ID
+     * @return array
+     */
+    function deleteTraining($id)
+    {
+        //if( ! DolibarrApi::_checkAccessToResource('agefodd_session',$this->session->id)) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->training->fetch($id);
+        if( ! $result ) {
+            throw new RestException(404, 'training not found');
+        }
+        
+        if($this->training->remove($id) < 0)
+        {
+            throw new RestException(500, 'error while deleting training '.$id);
+        }
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'training deleted'
+            )
+        );
+    }
     
     /***************************************************************** Place Part *****************************************************************/
     
