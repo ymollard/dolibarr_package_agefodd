@@ -78,8 +78,11 @@ if (GETPOST("button_removefilter_x")) {
 	$search_type_affect = "";
 }
 
-if (empty($search_type_affect))
+if (empty($search_type_affect)) {
 	$search_type_affect = 'thirdparty';
+}
+
+$hookmanager->initHooks(array('sessionsoclist'));
 
 $filter = array ();
 $option='';
@@ -263,10 +266,10 @@ if ($result >= 0) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_session', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$i = 0;
-	print '<table class="noborder" width="100%">';
+	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
@@ -478,7 +481,7 @@ if ($result >= 0) {
 	}
 
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-		print '<tr>';
+		print '<tr class="liste_total">';
 
 		print '<td align="right" colspan="13"><strong>Total :</strong></td>';
 		print '<td><strong>' . price(round($total,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';

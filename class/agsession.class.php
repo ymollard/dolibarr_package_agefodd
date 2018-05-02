@@ -669,8 +669,6 @@ class Agsession extends CommonObject
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sope";
 		$sql .= " ON sope.rowid = sa.fk_socpeople";
 		$sql .= " WHERE sa.rowid = " . $id;
-		if (! empty($socid))
-			$sql .= " AND so.rowid = " . $socid;
 		$sql .= " ORDER BY sa.nom";
 
 		dol_syslog(get_class($this) . "::fetch_session_per_trainee", LOG_DEBUG);
@@ -2393,6 +2391,7 @@ class Agsession extends CommonObject
 					$line->admin_task_close_session = $obj->closesessionstatus;
 					$line->trainingcolor = $obj->trainingcolor;
 					$line->fk_product = $obj->fk_product;
+					$line->status = $obj->status;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
@@ -3126,7 +3125,7 @@ class Agsession extends CommonObject
 			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%'";
 			$sql .= ' AND fourninvoice.rowid=' . $fourninvoiceid;
 		}
-		
+
 		if (! empty($fournorderid)) {
 		    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "commande_fournisseur as fournorder ";
 		    $sql .= " ON fournorder.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'order_supplier%'";
@@ -3155,7 +3154,7 @@ class Agsession extends CommonObject
 		if (! empty($fourninvoiceid)) {
 			$sql .= " ,fourninvoice.ref ";
 		}
-		
+
 		if (! empty($fournorderid)) {
 		    $sql .= " ,fournorder.ref ";
 		}
@@ -4781,12 +4780,35 @@ class Agsession extends CommonObject
 	        }
 	    }
 
+
+
 	    switch ($mode){
 	        case 0 :
 	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
 	            break;
 	        case 1 :
-	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . img_picto('', 'status'.$this->status);
+	        	switch ($this->status){
+	        		case 1 :
+	        			$img_picto=img_picto('', 'statut1');
+	        			break;
+	        		case 2 :
+	        			$img_picto=img_picto('', 'statut4');
+	        			break;
+	        		case 3 :
+	        			$img_picto=img_picto('', 'statut5');
+	        			break;
+	        		case 4 :
+	        			$img_picto=img_picto('', 'statut0');
+	        			break;
+	        		case 5 :
+	        			$img_picto=img_picto('', 'statut6');
+	        			break;
+	        		case 6 :
+	        			$img_picto=img_picto('', 'statut3');
+	        			break;
+	        	}
+
+	        	return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . $img_picto;
 	            break;
 	        default:
 	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
