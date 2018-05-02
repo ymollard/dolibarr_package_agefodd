@@ -43,6 +43,8 @@ if (! $user->rights->agefodd->lire)
 
 $id = GETPOST('id', 'int');
 
+$hookmanager->initHooks(array('sessiontaineelist'));
+
 /*
  * View
 */
@@ -71,11 +73,11 @@ if ($id) {
 
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
-		
-		print_fiche_titre($langs->trans("AgfSessionDetail"));
+
+		print_barre_liste($langs->trans("AgfSessionDetail"), 0, $_SERVEUR ['PHP_SELF'], '', '', '', '', $result, $result, 'title_generic.png', 0, '', '', 0, 1);
 
 		if (count($agf_session->lines) > 0) {
-			print '<table class="noborder"  width="100%">';
+			print '<table class="tagtable liste listwithfilterbefore"  width="100%">';
 			print '<tr class="liste_titre">';
 			print '<th class="liste_titre" width="10%">' . $langs->trans('AgfMenuSess') . '</th>';
 			print '<th class="liste_titre" width="10%">' . $langs->trans('AgfIntitule') . '</th>';
