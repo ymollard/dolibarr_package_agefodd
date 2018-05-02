@@ -78,8 +78,11 @@ if (GETPOST("button_removefilter_x")) {
 	$search_type_affect = "";
 }
 
-if (empty($search_type_affect))
+if (empty($search_type_affect)) {
 	$search_type_affect = 'thirdparty';
+}
+
+$hookmanager->initHooks(array('sessionsoclist'));
 
 $filter = array ();
 $option='';
@@ -263,7 +266,7 @@ if ($result >= 0) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_session', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$i = 0;
 	print '<table class="noborder" width="100%">';

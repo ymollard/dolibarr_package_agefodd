@@ -724,8 +724,6 @@ if ($resql != - 1) {
 
 	print "</tr>\n";
 
-
-
 	$var = true;
 	$oldid=0;
 	foreach ( $agf->lines as $line ) {
