@@ -4780,12 +4780,35 @@ class Agsession extends CommonObject
 	        }
 	    }
 
+
+
 	    switch ($mode){
 	        case 0 :
 	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
 	            break;
 	        case 1 :
-	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . img_picto('', 'status'.$this->status);
+	        	switch ($this->status){
+	        		case 1 :
+	        			$img_picto=img_picto('', 'statut1');
+	        			break;
+	        		case 2 :
+	        			$img_picto=img_picto('', 'statut4');
+	        			break;
+	        		case 3 :
+	        			$img_picto=img_picto('', 'statut5');
+	        			break;
+	        		case 4 :
+	        			$img_picto=img_picto('', 'statut0');
+	        			break;
+	        		case 5 :
+	        			$img_picto=img_picto('', 'statut6');
+	        			break;
+	        		case 6 :
+	        			$img_picto=img_picto('', 'statut3');
+	        			break;
+	        	}
+
+	        	return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . $img_picto;
 	            break;
 	        default:
 	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
