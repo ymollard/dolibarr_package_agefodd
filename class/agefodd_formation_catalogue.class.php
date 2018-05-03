@@ -280,15 +280,17 @@ class Formation extends CommonObject {
 				$this->sanction = $obj->sanction;
 				$this->color = $obj->color;
 				$this->qr_code_info = $obj->qr_code_info;
+				
+				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+    			$extrafields = new ExtraFields($this->db);
+    			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
+    			if (count($extralabels) > 0) {
+    				$this->fetch_optionals($this->id, $extralabels);
+    			}
 			}
 			$this->db->free($resql);
 
-			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
-			$extrafields = new ExtraFields($this->db);
-			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
-			if (count($extralabels) > 0) {
-				$this->fetch_optionals($this->id, $extralabels);
-			}
+			
 
 			return 1;
 		} else {
@@ -571,7 +573,7 @@ class Formation extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " o.intitule, o.priorite";
+		$sql .= " o.intitule, o.priorite, o.fk_formation_catalogue";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda";
 		$sql .= " as o";
 		$sql .= " WHERE o.rowid = " . $id;
@@ -582,6 +584,7 @@ class Formation extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$this->intitule = stripslashes($obj->intitule);
 				$this->priorite = $obj->priorite;
 			}
@@ -623,6 +626,7 @@ class Formation extends CommonObject {
 				$line = new AgfObjPedaLine();
 
 				$line->id = $obj->rowid;
+				$line->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$line->intitule = stripslashes($obj->intitule);
 				$line->priorite = $obj->priorite;
 
