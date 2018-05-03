@@ -623,6 +623,7 @@ class Agefodd extends CommonObject {
 				$line = new AgfObjPedaLine();
 
 				$line->id = $obj->rowid;
+				$line->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$line->intitule = stripslashes($obj->intitule);
 				$line->priorite = $obj->priorite;
 
