@@ -573,7 +573,7 @@ class Agefodd extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " o.intitule, o.priorite";
+		$sql .= " o.intitule, o.priorite, o.fk_formation_catalogue";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda";
 		$sql .= " as o";
 		$sql .= " WHERE o.rowid = " . $id;
@@ -584,6 +584,7 @@ class Agefodd extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$this->intitule = stripslashes($obj->intitule);
 				$this->priorite = $obj->priorite;
 			}
