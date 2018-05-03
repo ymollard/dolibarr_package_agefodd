@@ -260,7 +260,7 @@ class Agefodd_teacher extends CommonObject {
 					$error++;
 				}
 
-			}
+			} else return 0;
 			$this->db->free($resql);
 		} else {
 			$this->errors[] = "Error " . $this->db->lasterror();
