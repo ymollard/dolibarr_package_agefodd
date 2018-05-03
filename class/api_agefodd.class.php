@@ -25,6 +25,9 @@
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+ dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
+ 
+ dol_include_once('agefodd/lib/agefodd.lib.php');
 
 /**
  * API class for Agefodd
@@ -95,6 +98,14 @@ class Agefodd extends DolibarrApi
             ,'fieldTypes' => array(
                 'intitule' => 'string'
                 ,'duree' => 'float'
+            )
+        )
+        
+        ,'objpeda' => array(
+            'mandatoryFields' => array('fk_formation_catalogue', 'intitule')
+            ,'fieldTypes' => array(
+                'intitule' => 'string'
+                ,'fk_formation_catalogue' => 'int'
             )
         )
     );
@@ -2299,8 +2310,7 @@ class Agefodd extends DolibarrApi
      *
      * @url     POST /trainings/
      *
-     *
-     * @param string    $mode           create, clone, createobjpeda(create goals) or createadm (create admin tasks)
+     * @param string    $mode           create, clone or createadm (create admin tasks)
      * @param array     $request_data   Request data
      *
      * @return 	array|mixed data without useless information
@@ -2321,34 +2331,15 @@ class Agefodd extends DolibarrApi
                 if(!in_array('id', array_keys($request_data['request_data']))) throw new RestException(404, "No source id provided");
                 return $this->_cloneTraining($request_data['request_data']['id']);
                 break;
+                
+            case 'createadm' :
+                if(!in_array('id', array_keys($request_data['request_data']))) throw new RestException(404, "No training id provided");
+                return $this->_createTrainingAdm($request_data['request_data']['id']);
+                break;
+                
+            Default :
+                throw new RestException(404, "Invalid mode provided");
         }
-//         if ($mode == "createadm"){ // creation des taches administratives de la session passée en param
-            
-//             if (in_array('id', array_keys($request_data['request_data']))){
-//                 $this->session->fetch((int)$request_data['request_data']['id']);
-//                 $result = $this->session->createAdmLevelForSession(DolibarrApiAccess::$user);
-//                 return empty($result) ? $this->getSession($this->session->id) : $result .' '. $this->session->error;
-//             } else throw new RestException(404, 'session not found');
-            
-//         } elseif ($mode == "clone"){ // clone de la session passée en param
-            
-//             if (in_array('id', array_keys($request_data['request_data']))){
-//                 return $this->_cloneSession((int)$request_data['request_data']['id']);
-//             } else throw new RestException(404, 'session not found');
-            
-//         } else { //creation d'une session
-//             // Check mandatory fields
-//             $result = $this->_validate($request_data['request_data'], 'session');
-            
-//             foreach($request_data['request_data'] as $field => $value) {
-//                 $this->session->$field = $value;
-//             }
-            
-//             if ($this->session->create(DolibarrApiAccess::$user) < 0) {
-//                 throw new RestException(500, 'Error when creating session', array_merge(array($this->session->error), $this->session->errors));
-//             }
-//             return $this->getSession($this->session->id);
-//         }
         
     }
     
@@ -2410,6 +2401,38 @@ class Agefodd extends DolibarrApi
         if($result<0) throw new RestException(500, 'Training not created', array($this->db->lasterror, $this->db->lastqueryerror));
         
         return $this->getTraining($result);
+    }
+    
+    /**
+     * Create Admin task
+     * 
+     * @param int $id ID of the training
+     * 
+     * @return 	array|mixed data without useless information
+     */
+    function _createTrainingAdm($id)
+    {
+        if(empty($id) || !is_numeric($id)) throw new RestException(503, "Invalid id provided");
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $agf_adminlevel = new Agefodd_training_admlevel($this->db);
+        $agf_adminlevel->fk_training = $id;
+        $result = $agf_adminlevel->delete_training_task($user);
+        if($result < 0) throw new RestException(500, "Error delete adm for training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $result = $this->training->createAdmLevelForTraining(DolibarrApiAccess::$user);
+        if(!empty($result)) throw new RestException(503, "Error in Adm creation", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "Admin tasks created for training $id"
+            )
+        );
     }
     
     /**
@@ -2685,7 +2708,7 @@ class Agefodd extends DolibarrApi
      * @url GET /trainings/goals/
      * @throws RestException
      */
-    function trainingGetGoals($id)
+    function trainingGetAllGoals($id)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
@@ -2702,6 +2725,313 @@ class Agefodd extends DolibarrApi
         
         return $this->training->lines;
     }
+    
+    /**
+     * Add a goal to the training
+     * 
+     * @param int       $id         ID of the training
+     * @param array     $request    data to create the goal
+     * 
+     * @return array data without useless information
+     * 
+     * @url POST /trainings/addgoal/
+     * @throws RestException
+     */
+    function trainingAddGoal($id, $request = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $result = $this->training->fetch_objpeda_per_formation($id);
+        $request['priorite'] = 0;
+        if($result < 0) throw new RestException(503, "Error while retrieving existing goals", array($this->db->lasterror, $this->db->lastqueryerror));
+        else {
+            foreach ($this->training->lines as $goal){
+                if($goal->priorite > $request['priorite']) $request['priorite'] = $goal->priorite;
+            }
+            $request['priorite']++;
+        }
+        
+        $request['fk_formation_catalogue'] = $id;
+        $result = $this->_validate($request, 'objpeda');
+        
+        foreach($request as $field => $value) {
+            $this->training->$field = $value;
+        }
+        
+        $result = $this->training->create_objpeda(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(503, "Error in goal creation", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->trainingGetallGoals($id);
+    }
+    
+    /**
+     * Update a training goal
+     * 
+     * @param int       $id         ID of the training
+     * @param array     $request    data to update the goal
+     * 
+     * @return array data without useless information
+     * 
+     * @url PUT /trainings/goal/{id}
+     * @throws RestException
+     */
+    function trainingPutGoal($id, $request = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch_objpeda($id);
+        if(empty($result)) throw new RestException(404, "Goal not found");
+        elseif($result < 0) throw new RestException(503, "Error fetch", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $TChamps = array('intitule', 'fk_formation_catalogue', 'priorite');
+        
+        foreach ($TChamps as $champ) 
+        {
+            if(!isset($request[$champ]) || empty($request[$champ]))
+            {
+                $request[$champ] = $this->training->$champ;
+            }
+        }
+        
+        foreach($request as $field => $value) {
+            if($field !== 'id' && $field !== 'rowid') $this->training->$field = $value;
+        }
+        
+        $result = $this->training->update_objpeda(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(503, "Error in update", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->trainingGetGoal($id);
+    }
+    
+    /**
+     * Get one training goals
+     * 
+     * @param int $id ID of the goal to retrieve
+     * 
+     * @url GET /trainings/getgoal/
+     * 
+     * @return array data without useless information
+     * @throws RestException
+     */
+    function trainingGetGoal($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        
+        $result = $this->training->fetch_objpeda($id);
+        if(empty($result)) throw new RestException(404, "Goal not found");
+        elseif($result < 0) throw new RestException(503, "Error fetch", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $obj = new stdClass();
+        $obj->id = $this->training->id;
+        $obj->fk_formation_catalogue = $this->training->fk_formation_catalogue;
+        $obj->intitule = $this->training->intitule;
+        $obj->priorite = $this->training->priorite;
+        
+        return $obj;
+    }
+    
+    /**
+     * Remove a goal
+     * 
+     * @param int       $id     ID of the goal to delete
+     * 
+     * @return array data without useless information
+     * 
+     * @url DELETE /trainings/removegoal/
+     * @throws RestException
+     */
+    function trainingRemoveGoal($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        
+        $result = $this->training->fetch_objpeda($id);
+        if(empty($result)) throw new RestException(404, "Goal not found");
+        elseif($result < 0) throw new RestException(503, "Error fetch", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $result = $this->training->remove_objpeda($id);
+        if($result < 0) throw new RestException(503, "Error delete", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'training goal deleted'
+            )
+        );
+    }
+    
+    /**
+     * Get Admin tasks for a training
+     * 
+     * @param int $id ID of the training
+     * 
+     * @return array data without useless information
+     * 
+     * @url GET /trainings/admintasks/
+     * @throws RestException
+     */
+    function trainingGetAllAdm($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $admlevel = new Agefodd_training_admlevel($this->db);
+        $result = $admlevel->fetch_all($id);
+        if(empty($result)) throw new RestException(404, "No admin tasks found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving admin tasks", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $admlevel->lines;
+    }
+    
+    /**
+     *  Get an admin task
+     *  
+     *  @param int $id  the admin task rowid
+     *  
+     *  @return array data without useless information
+     * 
+     * @url GET /trainings/getadmintask/{id}
+     * @throws RestException
+     */
+    function trainingGetAdm($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $agf = new Agefodd_training_admlevel($this->db);
+        
+        $result = $agf->fetch($id);
+        if(empty($agf->id)) throw new RestException(404, "Admin task not found");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving admin task", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->_cleanObjectDatas($agf);
+    }
+    
+    /**
+     * Update an admin task
+     * 
+     * @param int       $id                 the admin task rowid
+     * @param string    $intitule           data to update the task
+     * @param int       $delais_alerte      number of days to alert before event
+     * @param int       $delais_alerte_end  number of days to alert after event
+     * @param int       $parent_level       ID of parent task 
+     * 
+     * @return array data without useless information
+     * 
+     * @url PUT /trainings/admintasks/{id}
+     * @throws RestException
+     */
+    function trainingPutAdm($id, $intitule, $delais_alerte = 0, $delais_alerte_end = 0, $parent_level = 0)
+    {
+        global $langs;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $agf = new Agefodd_training_admlevel($this->db);
+        
+        $result = $agf->fetch($id);
+        if(empty($agf->id)) throw new RestException(404, "Admin task not found");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving admin task", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $agf->intitule = $intitule;
+        if($delais_alerte !== $agf->delais_alerte) $agf->delais_alerte = $delais_alerte;
+        if($delais_alerte_end !== $agf->delais_alerte_end) $agf->delais_alerte_end = $delais_alerte_end;
+        if (! empty($parent_level)) {
+            if ($parent_level != $agf->fk_parent_level) {
+                $agf->fk_parent_level = $parent_level;
+                
+                $agf_static = new Agefodd_training_admlevel($this->db);
+                $result_stat = $agf_static->fetch($agf->fk_parent_level);
+                
+                if ($result_stat > 0) {
+                    if (! empty($agf_static->id)) {
+                        $agf->level_rank = $agf_static->level_rank + 1;
+                        $agf->indice = ebi_get_adm_training_get_next_indice_action($agf_static->id);
+                    } else { // no parent : This case may not occur but we never know
+                        $agf->indice = (ebi_get_adm_training_level_number() + 1) . '00';
+                        $agf->level_rank = 0;
+                    }
+                } else {
+                    throw new RestException(500, $agf_static->error);
+                }
+            }
+        } else {
+            // no parent
+            $agf->fk_parent_level = 0;
+            $agf->level_rank = 0;
+        }
+        
+        if ($agf->level_rank > 3) {
+            throw new RestException(500, $langs->trans("AgfAdminNoMoreThan3Level"));
+        } else {
+            $result1 = $agf->update(DolibarrApiAccess::$user);
+            if ($result1 != 1) {
+                throw new RestException(500, $agf_static->error, array($this->db->lasterror, $this->db->lastqueryerror));
+            }
+        }
+        
+        return $this->trainingGetAdm($id);
+    }
+    
+    /**
+     *  Get an admin task
+     *
+     *  @param int $id  the admin task rowid
+     *
+     *  @return array data without useless information
+     *
+     * @url DELETE /trainings/removeadmintask/{id}
+     * @throws RestException
+     */
+    function trainingRemoveAdm($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $agf = new Agefodd_training_admlevel($this->db);
+        
+        $result = $agf->fetch($id);
+        if(empty($agf->id)) throw new RestException(404, "Admin task not found");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving admin task", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $result = $agf->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(503, "Error delete", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Admin task deleted'
+            )
+        );
+    }
+    
     
     /***************************************************************** Place Part *****************************************************************/
     

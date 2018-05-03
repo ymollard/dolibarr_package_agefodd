@@ -583,11 +583,11 @@ class Formation extends CommonObject {
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				$this->id = $obj->rowid;
+				$this->id = $id;
 				$this->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$this->intitule = stripslashes($obj->intitule);
 				$this->priorite = $obj->priorite;
-			}
+			} else return 0;
 			$this->db->free($resql);
 
 			return 1;
