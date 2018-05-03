@@ -2108,7 +2108,7 @@ class Agefodd extends DolibarrApi
         global $db, $conf;
         
         //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2164,7 +2164,7 @@ class Agefodd extends DolibarrApi
         global $db, $conf;
         
         //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2215,7 +2215,7 @@ class Agefodd extends DolibarrApi
     function getTraining($id)
     {
         //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2243,7 +2243,7 @@ class Agefodd extends DolibarrApi
     function getTrainingInfos($id)
     {
         //if( ! DolibarrApi::_checkAccessToResource('agefodd',$this->session->id, 'agefodd_session')) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2270,7 +2270,7 @@ class Agefodd extends DolibarrApi
      */
     function getTrainingSessions($id, $sortorder = 'DESC', $sortfield = 's.dated', $limit = 0, $offset = 0, $filter = array())
     {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2307,7 +2307,7 @@ class Agefodd extends DolibarrApi
      */
     function postTraining($mode = 'create', $request_data)
     {
-        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
             throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2423,7 +2423,7 @@ class Agefodd extends DolibarrApi
      */
     function putTraining($id, $request_data = NULL)
     {
-        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2460,7 +2460,7 @@ class Agefodd extends DolibarrApi
     function deleteTraining($id)
     {
         //if( ! DolibarrApi::_checkAccessToResource('agefodd_session',$this->session->id)) {
-        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
             throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2480,6 +2480,227 @@ class Agefodd extends DolibarrApi
                 'message' => 'training deleted'
             )
         );
+    }
+    
+    /**
+     * Get all trainers for a training
+     * 
+     * @url GET /trainings/gettrainers/{id}
+     * 
+     * @param int $id       ID of a Training
+     * 
+     * @return array|mixed without useless informations
+     * @throws RestException
+     */
+    function trainingGetTrainers($id){
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $result = $this->training->fetchTrainer();
+        if(empty($result)) throw new RestException(404, "No trainer found for training $id");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving trainers", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $obj_ret = array();
+        foreach ($this->training->trainers as $trainer) $obj_ret[] = $this->_cleanObjectDatas($trainer);
+        
+        return $obj_ret;
+    }
+    
+    
+    /**
+     * Set trainers list for the training
+     *
+     * return trainers list for the training
+     * 
+     * @param int       $id         ID of a Training
+     * @param array     $trainers   Array of id of trainers for this training
+     *
+     * @return array data without useless information
+     *
+     * @url POST /trainings/settrainers/
+     * @throws RestException
+     */
+    function trainingSetTrainers($id, $trainers = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $Ttrainers = $trainers;
+        $trainers = array();
+        
+        // avoid to add non-existing trainers
+        foreach ($Ttrainers as $t){
+            $this->trainer = new Agefodd_teacher($this->db);
+            $res = $this->trainer->fetch($t);
+            if($res > 0) $trainers[] = $t;            
+        }
+        
+        $result = $this->training->setTrainingTrainer($trainers, DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error during update", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->trainingGetTrainers($id);
+    }
+    
+    /**
+     * Add a trainer for the training
+     * 
+     * return trainers list for the training
+     * 
+     * @param int       $id         ID of a Training
+     * @param int       $trainerid  ID of the trainer to add
+     * 
+     * @return array data without useless information
+     * 
+     * @url POST /trainings/addtrainer/
+     * @throws RestException
+     */
+    function trainingAddTrainer($id, $trainerid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $this->trainer = new Agefodd_teacher($this->db);
+        $res = $this->trainer->fetch($trainerid);
+        if(empty($res)) throw new RestException(404, "This trainer does not exist");
+        elseif($res < 0) throw new RestException(404, "Invalid trainer id provided");
+        
+        $this->training->fetchTrainer();
+        $Ttrainers = array();
+        foreach ($this->training->trainers as $trainer)
+        {
+            if($trainer->id == $trainerid) throw new RestException(503, "Trainer already in the list");
+            $Ttrainers[] = $trainer->id;
+        }
+        $Ttrainers[] = $trainerid;
+        
+        $result = $this->training->setTrainingTrainer($Ttrainers, DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error during update", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->trainingGetTrainers($id);
+    }
+    
+    /**
+     * Remove a trainer for the training
+     *
+     * return trainers list for the training
+     *
+     * @param int       $id         ID of a Training
+     * @param int       $trainerid  ID of the trainer to remove
+     * 
+     * @return array data without useless information
+     *
+     * @url DELETE /trainings/removetrainer/
+     * @throws RestException
+     */
+    function trainingRemoveTrainer($id, $trainerid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $this->training->fetchTrainer();
+        $Ttrainers = array();
+        $found = false;
+        foreach ($this->training->trainers as $trainer)
+        {
+            if((int)$trainer->id !== $trainerid) $Ttrainers[] = $trainer->id;
+            else $found = true;
+        }
+        if(!$found) throw new RestException(404, "Trainer $trainerid is not in the list for this training");
+        
+        
+        $result = $this->training->setTrainingTrainer($Ttrainers, DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error during update", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "trainer $trainerid removed from training $id"
+            )
+        );
+    }
+    
+    /**
+     * Generate pdf program of a training by link
+     * 
+     * @param int   $id     ID of the training
+     * 
+     * @return array data without useless information
+     * 
+     * @url POST /trainings/generatepdf
+     * @throws RestException
+     */
+    function trainingGeneratePDF($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $result = $this->training->generatePDAByLink();
+        if(empty($result)) throw new RestException(404, "Link PRG not found");
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "document generated"
+            )
+        );
+    }
+    
+    /**
+     * Get the list of goals for the training
+     * 
+     * @param int   $id     ID of the training
+     * 
+     * @return array data without useless information
+     * 
+     * @url GET /trainings/goals/
+     * @throws RestException
+     */
+    function trainingGetGoals($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($id);
+        if($result < 0) throw new RestException(500, "Error while retrieving training $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        if(empty($this->training->id)) throw new RestException(404, 'training not found');
+        
+        $result = $this->training->fetch_objpeda_per_formation($id);
+        if(empty($result)) throw new RestException(404, "no goals found for this training");
+        elseif($result < 0) throw new RestException(503, "Error while retrieving goals", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->training->lines;
     }
     
     /***************************************************************** Place Part *****************************************************************/
