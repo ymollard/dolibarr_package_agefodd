@@ -280,15 +280,17 @@ class Agefodd extends CommonObject {
 				$this->sanction = $obj->sanction;
 				$this->color = $obj->color;
 				$this->qr_code_info = $obj->qr_code_info;
+				
+				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+    			$extrafields = new ExtraFields($this->db);
+    			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
+    			if (count($extralabels) > 0) {
+    				$this->fetch_optionals($this->id, $extralabels);
+    			}
 			}
 			$this->db->free($resql);
 
-			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
-			$extrafields = new ExtraFields($this->db);
-			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
-			if (count($extralabels) > 0) {
-				$this->fetch_optionals($this->id, $extralabels);
-			}
+			
 
 			return 1;
 		} else {
