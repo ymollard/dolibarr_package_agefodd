@@ -537,6 +537,50 @@ class Agefodd extends DolibarrApi
     }
     
     /**
+     * Get sessions in the same place for the same dates
+     * 
+     * Return an array with informations for the session
+     *
+     * @param 	int 	$id ID of session
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /sessions/{id}/sameplacedate/
+     * @throws 	RestException
+     */
+    function getSessionsSamePlaceDate($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($id);
+        if( $result < 0 || empty($this->session->id)) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        $result = $this->session->fetchOtherSessionSameplacedate();
+        if($result < 0) throw new RestException(500, "Error while retrieving sessions", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(!count($this->lines_place)) throw new RestException(404, "No session found for this place at the same date");
+        
+        $obj_ret = array();
+        $sessAdded = array();
+        foreach ($this->lines_place as $sessid)
+        {
+            if(!in_array($sessid, $sessAdded))
+            {
+                $sessAdded[] = $sessid;
+                $agf = new Agsession($this->db);
+                $agf->fetch($sessid);
+                $obj_ret[] = $this->_cleanObjectDatas($agf);
+            }
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
      * Create session object
      * 
      * @url     POST /sessions/
@@ -1063,6 +1107,54 @@ class Agefodd extends DolibarrApi
         foreach ($this->traineeinsession->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
         
         return $obj_ret;
+    }
+    
+    /**
+     * Get trainees of the session by OPCA
+     *
+     * @param int $id           ID of a Session
+     * @param int $socid        ID of a OPCA (return only trainee Founded by this thirdparty if provided)
+     * @param int $traineeid    ID of the trainee (same trainee ID used to add the trainee in session)
+     *
+     * @return array|mixed without useless informations
+     *
+     * @url GET /sessions/gettraineesopca/{sessid}
+     */
+    function sessionGetAllTraineesOPCA($sessid, $socid = 0, $traineeid = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $traineeinsessionid = 0;
+        if(!empty($traineeid)){
+            $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
+            if($result < 0) throw new RestException(500, 'Error while retrieving the trainee in session', array($this->db->lasterror, $this->db->lastqueryerror));
+            elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
+            
+            $traineeinsession = $this->traineeinsession->id;
+            $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+        }
+        
+        $result = $this->traineeinsession->fetch_stagiaire_per_session_per_OPCA($sessid, $socid, $traineeinsessionid);
+        if(empty($result)) throw new RestException(404, "No trainee found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving trainees", array($this->db->lastqueryerror));
+        
+        $obj_ret = array();
+        
+        foreach ($this->traineeinsession->lines as $line)
+        {
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
+        
     }
     
     /**
@@ -2963,6 +3055,19 @@ class Agefodd extends DolibarrApi
         if($delais_alerte !== $agf->delais_alerte) $agf->delais_alerte = $delais_alerte;
         if($delais_alerte_end !== $agf->delais_alerte_end) $agf->delais_alerte_end = $delais_alerte_end;
         if (! empty($parent_level)) {
+            $admlevel = new Agefodd_training_admlevel($this->db);
+            $result = $admlevel->fetch_all($id);
+            if(empty($result)) throw new RestException(404, "No admin tasks found");
+            elseif($result < 0) throw new RestException(500, "Error while retrieving admin tasks", array($this->db->lasterror, $this->db->lastqueryerror));
+            
+            $TParentAdms = array();
+            foreach ($admlevel->lines as $trainingAdm)
+            {
+                $TParentAdms[] = $trainingAdm->rowid;
+            }
+            
+            if (!in_array($parent_level, $TParentAdms)) throw new RestException(503, "The parent_level is not an Admin task from this training");
+            
             if ($parent_level != $agf->fk_parent_level) {
                 $agf->fk_parent_level = $parent_level;
                 
