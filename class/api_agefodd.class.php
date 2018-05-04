@@ -26,6 +26,7 @@
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
  dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
+ dol_include_once('/agefodd/class/agefodd_place.class.php');
  
  dol_include_once('agefodd/lib/agefodd.lib.php');
 
@@ -108,6 +109,14 @@ class Agefodd extends DolibarrApi
                 ,'fk_formation_catalogue' => 'int'
             )
         )
+        
+        ,'place' => array(
+            'mandatoryFields' => array('ref_interne', 'fk_societe')
+            ,'fieldTypes' => array(
+                'ref_interne' => 'string'
+                ,'fk_societe' => 'int'
+            )
+        )
     );
 
 
@@ -130,6 +139,7 @@ class Agefodd extends DolibarrApi
 		$this->trainer = new Agefodd_teacher($this->db);                      // agefodd teacher
 		$this->trainerinsession = new Agefodd_session_formateur($this->db);   // trainerinsession
 		$this->training = new Formation($this->db);                           // agefodd training
+		$this->place = new Agefodd_place($this->db);                          // agefodd place
     }
 
     
@@ -3139,6 +3149,147 @@ class Agefodd extends DolibarrApi
     
     
     /***************************************************************** Place Part *****************************************************************/
+    
+    /**
+     * List Places
+     *
+     * Get a list of Agefodd Places
+     *
+     * @param string	$sortfield	Sort field
+     * @param string	$sortorder	Sort order
+     * @param int		$limit		Limit for list
+     * @param int		$offset		Page number
+     *
+     * @url     GET /places/
+     * @throws RestException
+     */
+    function placeIndex($sortfield = "p.rowid", $sortorder = 'DESC', $limit = 100, $offset=0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        $result = $this->place->fetch_all($sortorder, $sortfield, $limit, $offset);
+        if(empty($result)) throw new RestException(404, "No place found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving places", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->place->lines;
+    }
+    
+    /**
+     * Filtered List of Places
+     *
+     * Get a list of Agefodd Places
+     *
+     * @param string	$sortfield	        Sort field
+     * @param string	$sortorder	        Sort order
+     * @param int		$limit		        Limit for list
+     * @param int		$page		        Page number
+     * @param array		$filter		        array of filters ($k => $v)
+     *
+     * @return array                Array of place objects
+     *
+     * @url     POST /places/filter
+     * @throws RestException
+     */
+    function placeFilteredIndex($sortfield = "p.rowid", $sortorder = 'DESC', $limit = 100, $offset=0, $filter = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        $result = $this->place->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
+        if(empty($result)) throw new RestException(404, "No place found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving places", array($this->db->lasterror, $this->db->lastqueryerror));
+
+        return $this->place->lines;
+    }
+    
+    
+    /**
+     * Get properties of a place object
+     * 
+     * @param int $id ID of the place
+     * 
+     * @url    GET /places/{id}
+     * @throws RestException
+     */
+    function getPlace($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        $result = $this->place->fetch($id);
+        if(empty($this->place->id)) throw new RestException(404, "Place not found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving place", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->_cleanObjectDatas($this->place);
+    }
+    
+    /**
+     * Get informations for a place object
+     *
+     * Return an array with informations for the place
+     *
+     * @param 	int 	$id ID of place
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET /places/{id}/infos/
+     * @throws 	RestException
+     */
+    function getPlaceInfos($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agsession($this->db);
+        
+        $result = $this->place->fetch($id);
+        if($result>0) $this->place->info($id);
+        if( $result < 0 || empty($this->place->id)) {
+            throw new RestException(404, 'place not found');
+        }
+        
+        return $this->_cleanObjectDatas($this->place);
+    }
+    
+    /**
+     * Create a place
+     * 
+     * Return an array with informations for the place created
+     * 
+     * @param string        $ref_interne    Reference of the place
+     * @param int           $owner          ID of the thirdparty owner
+     * @param array         $request        more data on the place
+     * 
+     * @url POST /places/
+     * @throws 	RestException
+     */
+    function postPlace($ref_interne, $owner, $request = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agsession($this->db);
+        $this->place->ref_interne = $ref_interne;
+        
+        $company = new Societe($this->db);
+        $result = $company->fetch($owner);
+        if(empty($result)) throw new RestException(404, "Thirdparty $owner not found");
+        elseif($result < 0) throw  new RestException(500, "Error", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $this->place->fk_societe = $owner;
+        //$result = $this->_validate($request, 'place');
+        
+        return $request;
+    }
+    
     
     /***************************************************************** Contact Part *****************************************************************/
     
