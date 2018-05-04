@@ -944,7 +944,8 @@ class Agefodd_session_element extends CommonObject {
 
 	/**
 	 * Get all sessions linked with the supplier invoice given
-	 * @param $id of the supplier invoice
+	 * @param int $id id of the supplier invoice
+	 * @param string $element_type element type
 	 */
 	public function get_linked_sessions($id, $element_type = '%invoice_supplier%'){
 	    $sql = "SELECT rowid, fk_session_agefodd FROM " . MAIN_DB_PREFIX . "agefodd_session_element WHERE element_type LIKE '".$element_type."' AND fk_element =".$id;
