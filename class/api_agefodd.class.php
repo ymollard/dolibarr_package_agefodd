@@ -3276,7 +3276,7 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
-        $this->place = new Agsession($this->db);
+        $this->place = new Agefodd_place($this->db);
         $this->place->ref_interne = $ref_interne;
         
         $company = new Societe($this->db);
@@ -3287,7 +3287,14 @@ class Agefodd extends DolibarrApi
         $this->place->fk_societe = $owner;
         //$result = $this->_validate($request, 'place');
         
-        return $request;
+        foreach($request as $field => $value) {
+            $this->place->$field = $value;
+        }
+        
+        $result = $this->place->create(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error in creation", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getPlace($this->place->id);
     }
     
     
