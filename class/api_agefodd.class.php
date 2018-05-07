@@ -21,9 +21,10 @@
  
  dol_include_once('/agefodd/class/agsession.class.php');
  dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
- dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
  dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
  dol_include_once('/agefodd/class/agefodd_place.class.php');
@@ -135,6 +136,7 @@ class Agefodd extends DolibarrApi
 		global $db, $conf;
 		$this->db = $db;
 		$this->session = new Agsession($this->db);                            // agefodd session
+		$this->sessioncalendar = new Agefodd_sesscalendar($this->db);         // agefodd sessioncalendar
 		$this->trainee = new Agefodd_stagiaire($this->db);                    // agefodd trainee
 		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);   // traineeinsession
 		$this->trainer = new Agefodd_teacher($this->db);                      // agefodd teacher
@@ -672,7 +674,7 @@ class Agefodd extends DolibarrApi
      * 
      * @return array|mixed
      * @throw RestException
-     * 
+     * require_once 'agefodd_session_calendrier.class.php';
      * @url POST sessions/createproposal/
      */
     function sessionCreateProposal($sessid, $socid)
@@ -825,7 +827,7 @@ class Agefodd extends DolibarrApi
             )
         );
     }
-    
+        
     /**
      * Update session
      * 
@@ -985,6 +987,188 @@ class Agefodd extends DolibarrApi
             )
         );
     }
+    
+    /***************************************************************** SessionCalendar Part ******************************************************************/
+    
+    /**
+     * Get calendar of the session
+     *
+     * @param int   $sessid     ID of the session
+     *
+     * @url GET /sessions/calendar/{sessid}
+     */
+    function sessionGetCalendar($sessid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        $result = $this->sessioncalendar->fetch_all($sessid);
+        if($result < 0) throw new RestException(500, "Can't retrieve the session's calendar", array($this->session->error, $this->db->lastqueryerror));
+        
+        if(!count($this->sessioncalendar->lines)) throw new RestException(404, "No calendar for this session yet");
+        
+        $obj_ret = array();
+        foreach ($this->sessioncalendar->lines as $line)
+        {
+            $obj = new stdClass();
+            $obj->id = $line->id;
+            $obj->date_session = date("Y-m-d", $line->date_session);
+            $obj->heured = date("Y-m-d H:i:s", $line->heured);
+            $obj->heuref = date("Y-m-d H:i:s", $line->heuref);
+            
+            $obj_ret[] = $obj;
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Create calendar for the session
+     *
+     * @param int       $sessid     ID of the session
+     * @param string    $mode       Creation method (datetodate, addperiod)
+     * @param array     $request    Data needed for creation
+     *
+     * @url POST /sessions/calendar/
+     */
+    function sessionCreateCalendar($sessid, $mode = "datetodate", $request = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        switch ($mode)
+        {
+            case "datetodate" :
+                return $this->_calendarDateToDate($sessid, $request);
+                break;
+                
+            case "addperiod" :
+                return $this->_calendarAddPeriod($sessid, $request);
+                break;
+                
+            Default :
+                throw new RestException(503, "Invalid mode");
+        }
+    }
+    
+    /**
+     * create calendar for a session from date start to date end
+     *
+     * @param int       $sessid     ID of the session
+     * @param array     $request    Data needed for creation
+     *
+     */
+    function _calendarDateToDate($sessid, $request)
+    {
+        dol_include_once('/core/lib/date.lib.php');
+        
+        if(!isset($request['weekday']) || empty($request['weekday'])) throw new RestException(503, "weekday must be provided for this mode. It must be an array with day of the week's numbers from 0 (Sunday) to 6 (Saturday).");
+        if(!isset($request['datestart']) || empty($request['datestart'])) throw new RestException(503, "datestart must be provided for this mode. It must be a string date with format Y-m-d");
+        if(!isset($request['dateend']) || empty($request['dateend'])) throw new RestException(503, "dateend must be provided for this mode. It must be a string date with format Y-m-d");
+        if(!isset($request['hours']) || empty($request['hours']) || !is_array($request['hours'])) throw new RestException(503, 'hours must be provided for this mode. It must be an array of arrays($starthour, $endhour). Hours must be in 24h format like 08:30 or 15:15.');
+        
+        $notpair = count($request['hours']) % 2;
+        if($notpair) throw new RestException(503, "the number entries for hours array must be even");
+        
+        return $notpair;
+    }
+    
+    /**
+     * add a period to the session calendar
+     *
+     * @param int       $sessid     ID of the session
+     * @param array     $request    Data needed for creation
+     */
+    function _calendarAddPeriod($sessid, $request)
+    {
+        if(!isset($request['date']) || empty($request['date'])) throw new RestException(503, "date must be provided for this mode. It must be a string date with the format Y-m-d");
+        if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $request['date'])) throw new RestException(503, "Bad date format");
+        
+        if(!isset($request['start_hour']) || !preg_match('/^[0-9]{2}:[0-9]{2}$/', $request['start_hour'])) throw new RestException(503, "start_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+        if(!isset($request['end_hour']) || !preg_match('/^[0-9]{2}:[0-9]{2}$/', $request['start_hour'])) throw new RestException(503, "end_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        
+        $this->sessioncalendar->sessid = $this->session->id;
+        $this->sessioncalendar->date_session = dol_mktime(0, 0, 0, substr($request['date'], 5, 2), substr($request['date'], 8, 2), substr($request['date'], 0, 4));
+        
+        // From calendar selection
+        $heure_tmp_arr = array();
+        
+        $heured_tmp = $request['start_hour'];
+        if (! empty($heured_tmp)) {
+            $heure_tmp_arr = explode(':', $heured_tmp);
+            $this->sessioncalendar->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, substr($request['date'], 5, 2), substr($request['date'], 8, 2), substr($request['date'], 0, 4));
+        }
+        
+        $heuref_tmp = $request['end_hour'];
+        if (! empty($heuref_tmp)) {
+            $heure_tmp_arr = explode(':', $heuref_tmp);
+            $this->sessioncalendar->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, substr($request['date'], 5, 2), substr($request['date'], 8, 2), substr($request['date'], 0, 4));
+        }
+        
+        $result = $this->sessioncalendar->create(DolibarrApiAccess::$user);
+        if ($result < 0) throw new RestException(500, "Creation error", array($this->session->error, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Period added to the session calendar'
+            )
+        );
+    }
+    
+    /**
+     * Delete a session calendar period
+     *
+     * @param int $id ID of the period
+     *
+     * @url DELETE /sessions/calendar/delperiod/{id}
+     */
+    function sessionCalendarDelPeriod($id){
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        $result = $this->sessioncalendar->fetch($id);
+        if($result<0) throw new RestException(404, "Period not found");
+        
+        $result = $this->sessioncalendar->remove($id);
+        if($result<0) throw new RestException(500, "Error in delete period", array($this->session->error, $this->db->lastqueryerror));
+        
+        // nettoyage des heures réelles
+        $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
+        $sql.= " WHERE fk_calendrier = " . $modperiod;
+        
+        $this->db->query($sql);
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Period delete from the session calendar'
+            )
+        );
+    }
+    
+    
     
     /***************************************************************** Traineeinsession Part *****************************************************************/
     
