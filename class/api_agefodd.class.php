@@ -27,6 +27,7 @@
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
  dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
  dol_include_once('/agefodd/class/agefodd_place.class.php');
+ dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
  
  dol_include_once('agefodd/lib/agefodd.lib.php');
 
@@ -860,14 +861,15 @@ class Agefodd extends DolibarrApi
         return $this->getSession($id);
     }
     
+    
     /**
      * Archive a session
      *
-     * @url     PUT /sessions/{id}/archive
+     * @url     PUT /sessions/archive
      *
-     * @param int   $id Id of session to archive
-     *
+     * @param 	int 	$id ID of place
      * @return 	array|mixed data without useless information
+     *
      */
     function archiveSession($id)
     {
@@ -880,7 +882,9 @@ class Agefodd extends DolibarrApi
             throw new RestException(404, 'session not found');
         }
         
-        $this->session->status = 4;
+        if((int)$this->session->status !== 4) $this->session->status = 4;
+        else $this->session->status = 1;
+        
         if($this->session->updateArchive(DolibarrApiAccess::$user))
             return $this->getSession($id);
             
@@ -2144,7 +2148,7 @@ class Agefodd extends DolibarrApi
     /**
      * Archive/Activate a trainer
      * 
-     * @url     PUT /trainers/{id}/archive
+     * @url     PUT /trainers/archive
      *
      * @param int   $id             Id of trainer to update
      * 
@@ -3227,6 +3231,18 @@ class Agefodd extends DolibarrApi
         if(empty($this->place->id)) throw new RestException(404, "Place not found");
         elseif($result < 0) throw new RestException(500, "Error while retrieving place", array($this->db->lasterror, $this->db->lastqueryerror));
         
+        if(!empty($this->place->fk_reg_interieur))
+        {
+            $agf = new Agefodd_reg_interieur($this->db);
+            $result = $agf->fetch($this->place->fk_reg_interieur);
+            if($result > 0) {
+                $obj = new stdClass();
+                $obj->reg_int = $agf->reg_int;
+                $obj->notes = $agf->notes;
+                $this->place->rules = $obj;
+            }
+        }
+        
         return $this->_cleanObjectDatas($this->place);
     }
     
@@ -3259,6 +3275,44 @@ class Agefodd extends DolibarrApi
     }
     
     /**
+     * Get all sessions for the place
+     *
+     * Return an array of sessions
+     *
+     * @param 	int 	$id ID of place
+     * @return 	array|mixed data without useless information
+     *
+     * @url POST /places/{id}/sessions/
+     * throws RestException
+     *
+     */
+    function getPlaceSessions($id, $sortorder = 'DESC', $sortfield = 's.dated', $limit = 0, $offset = 0, $filter = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Formation($this->db);
+        $result = $this->place->fetch($id);
+        if( $result < 0 || empty($this->place->id)) {
+            throw new RestException(404, 'place not found');
+        }
+        
+        $filter['s.fk_session_place'] = $this->place->id;
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
+        
+        if(empty($result)) throw new RestException(404, "No session found for this training");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving sessions", array($this->db->lasterror,$this->db->lastqueryerror));
+        
+        $obj_ret = array();
+        foreach ($this->session->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
+    }
+    
+    /**
      * Create a place
      * 
      * Return an array with informations for the place created
@@ -3273,7 +3327,7 @@ class Agefodd extends DolibarrApi
     function postPlace($ref_interne, $owner, $request = array())
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
         $this->place = new Agefodd_place($this->db);
@@ -3297,6 +3351,220 @@ class Agefodd extends DolibarrApi
         return $this->getPlace($this->place->id);
     }
     
+    /**
+     * Update place address from the owner thirdparty adresse
+     * 
+     * @param 	int 	$id ID of place
+     * @return 	array|mixed data without useless information
+     *
+     * @url	PUT /places/importaddress/
+     * @throws 	RestException
+     */
+    function placeImportAddress ($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        
+        $result = $this->place->fetch($id);
+        if(empty($this->place->id)) throw new RestException(404, "Place not found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving place", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        if(empty($this->place->fk_societe)) throw new RestException(503, "No owner for this place. A place MUST have a owner");
+        
+        $result = $this->place->import_customer_adress(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error in creation", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getPlace($id);
+    }
+    
+    /**
+     * Update a place
+     *
+     * Return an array with informations for the place created
+     *
+     * @param int           $id             ID of the place to update
+     * @param array         $request        more data on the place
+     *
+     * @url PUT /places/
+     *
+     */
+    function putPlace($id, $request = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        
+        $result = $this->place->fetch($id);
+        if(empty($this->place->id)) throw new RestException(404, "Place not found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving place", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        foreach ($request as $field => $value)
+        {
+            if($field == 'fk_societe' && !empty($value) && $value !== '-1') $this->place->$field = $value;
+            elseif($field !== 'rowid') $this->place->$field = $value;
+        }
+        
+        $result = $this->place->update(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error in update", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getPlace($id);
+    }
+    
+    /**
+     * Archive/Activate a place
+     *
+     * @url     PUT /places/archive
+     *
+     * @param int   $id     Id of place to update
+     * 
+     */
+    function archivePlace($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $result = $this->place->fetch($id);
+        if( $result < 0 || empty($this->place->id) ) {
+            throw new RestException(404, 'place not found');
+        }
+        
+        $this->place->archive = (empty($this->place->archive)) ? 1 : 0;
+        $result = $this->place->update(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error in update", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getPlace($id);
+    }
+    
+    /**
+     * Update place Rules and notes
+     * 
+     * Return an array with informations for the place created
+     * 
+     * @param int       $id     ID of the place
+     * @param string    $rules  Text that specifies rules for the place
+     * @param string    $notes  Text that specifies notes for the place
+     * 
+     * @url PUT /places/rules/
+     * 
+     */
+    function placePutRules($id, $rules = '', $notes = '')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        
+        $result = $this->place->fetch($id);
+        if( $result < 0 || empty($this->place->id) ) {
+            throw new RestException(404, 'place not found');
+        }
+        
+        $agf = new Agefodd_reg_interieur($this->db);
+        
+        if (empty($this->place->fk_reg_interieur)) // Create rules
+        {
+            if(!empty($rules)) $agf->reg_int = $rules;
+            if(!empty($notes)) $agf->notes = $notes;
+            $result = $agf->create(DolibarrApiAccess::$user);
+            
+            if ($result > 0) {
+                $this->place->fk_reg_interieur = $result;
+                $result = $this->place->update(DolibarrApiAccess::$user);
+                if($result < 0) throw new RestException(500, "Error in update", array($this->db->lasterror, $this->db->lastqueryerror));
+                
+            } else throw new RestException(500, "Error in rules creation", array($this->db->lasterror, $this->db->lastqueryerror));
+        } else { // Update rules
+            $result = $agf->fetch($this->place->fk_reg_interieur);
+            if ($result > 0) {
+                if(!empty($rules)) $agf->reg_int = $rules;
+                if(!empty($notes)) $agf->notes = $notes;
+                $result = $agf->update(DolibarrApiAccess::$user);
+                
+                if($result < 0) throw new RestException(500, "Error in update", array($this->db->lasterror, $this->db->lastqueryerror));
+                
+            } else {
+                throw new RestException(500, "Can't retrieve rules $this->place->fk_reg_interieur", array($this->db->lasterror, $this->db->lastqueryerror));
+            }
+        }
+        
+        return $this->getPlace($id);
+    }
+    
+    /**
+     * Update place Rules
+     *
+     * @param int       $id     ID of the place
+     *
+     * @url DELETE /places/rules/{id}
+     */
+    function placeDeleteRules($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        
+        $result = $this->place->fetch($id);
+        if( $result < 0 || empty($this->place->id) ) {
+            throw new RestException(404, 'place not found');
+        }
+        
+        if(empty($this->place->fk_reg_interieur)) throw new RestException(404, "No rule to delete");
+        
+        $agf = new Agefodd_reg_interieur($this->db);
+        $agf->id = $this->place->fk_reg_interieur;
+        $result = $agf->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error while deleting rules", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $result = $this->place->remove_reg_int(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error while updating place", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'place rules deleted'
+            )
+        );
+    }
+    
+    /**
+     * Delete a place
+     * 
+     * @param int $id   ID of the place to delete
+     * 
+     * @url DELETE /places/{id}
+     * @throws 	RestException
+     */
+    function deletePlace($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_place->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->place = new Agefodd_place($this->db);
+        
+        $result = $this->place->fetch($id);
+        if(empty($this->place->id)) throw new RestException(404, "Place not found");
+        elseif($result < 0) throw new RestException(500, "Error while retrieving place", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $result = $this->place->remove(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(503, "Error delete", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'place deleted'
+            )
+        );
+    }
     
     /***************************************************************** Contact Part *****************************************************************/
     
