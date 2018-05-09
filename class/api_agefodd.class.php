@@ -1056,11 +1056,11 @@ class Agefodd extends DolibarrApi
         switch ($mode)
         {
             case "datetodate" :
-                return $this->_calendarDateToDate($sessid, $request);
+                return $this->_sessioncalendarDateToDate($sessid, $request);
                 break;
                 
             case "addperiod" :
-                return $this->_calendarAddPeriod($sessid, $request);
+                return $this->_sessioncalendarAddPeriod($sessid, $request);
                 break;
                 
             Default :
@@ -1075,19 +1075,69 @@ class Agefodd extends DolibarrApi
      * @param array     $request    Data needed for creation
      *
      */
-    function _calendarDateToDate($sessid, $request)
+    function _sessioncalendarDateToDate($sessid, $request)
     {
         dol_include_once('/core/lib/date.lib.php');
         
-        if(!isset($request['weekday']) || empty($request['weekday'])) throw new RestException(503, "weekday must be provided for this mode. It must be an array with day of the week's numbers from 0 (Sunday) to 6 (Saturday).");
-        if(!isset($request['datestart']) || empty($request['datestart'])) throw new RestException(503, "datestart must be provided for this mode. It must be a string date with format Y-m-d");
-        if(!isset($request['dateend']) || empty($request['dateend'])) throw new RestException(503, "dateend must be provided for this mode. It must be a string date with format Y-m-d");
-        if(!isset($request['hours']) || empty($request['hours']) || !is_array($request['hours'])) throw new RestException(503, 'hours must be provided for this mode. It must be an array of arrays($starthour, $endhour). Hours must be in 24h format like 08:30 or 15:15.');
+        if(!isset($request['weekday']) || empty($request['weekday']) || !is_array($request['weekday'])) throw new RestException(503, "weekday must be provided for this mode. It must be an array with day of the week's numbers from 0 (Sunday) to 6 (Saturday).");
+        if(!isset($request['datestart']) || empty($request['datestart'])) throw new RestException(503, "datestart must be provided for this mode. It must be a string date with format yyyy-mm-dd");
+        if(!isset($request['dateend']) || empty($request['dateend'])) throw new RestException(503, "dateend must be provided for this mode. It must be a string date with format yyyy-mm-dd");
+        if(!isset($request['hours1']) || empty($request['hours1']) || !is_array($request['hours1'])) throw new RestException(503, 'hours1 must be provided for this mode. It must be an array($starthour, $endhour). Hours must be in 24h format like 08:30 or 15:15. You can define hours2 to have 2 range of hours per day');
         
-        $notpair = count($request['hours']) % 2;
-        if($notpair) throw new RestException(503, "the number entries for hours array must be even");
+        if(count($request['hours1']) !== 2) throw new RestException(503, "You must provide a start hour and an end hour for hours1");
+        foreach ($request['hours1'] as $hour) {
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $hour)) throw new RestException(503, "Bad hour $hour provided");
+        }
         
-        return $notpair;
+        if(isset($request['hours2'])) {
+            if(empty($request['hours2']) || !is_array($request['hours2'])){
+                throw new RestException(503, 'hours2 must be provided for this mode. It must be an array($starthour, $endhour). Hours must be in 24h format like 08:30 or 15:15.');
+            }
+            
+            if(count($request['hours2']) !== 2) throw new RestException(503, "You must provide a start hour and an end hour for hours2");
+            foreach ($request['hours2'] as $hour) {
+                if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $hour)) throw new RestException(503, "Bad hour $hour provided");
+            }
+        }
+        
+        $datestart = dol_mktime(0, 0, 0, substr($request['datestart'], 5, 2), substr($request['datestart'], 8, 2), substr($request['datestart'], 0, 4));
+        $dateend = dol_mktime(0, 0, 0, substr($request['dateend'], 5, 2), substr($request['dateend'], 8, 2), substr($request['dateend'], 0, 4));
+        if($datestart > $dateend) throw new RestException(503, "dateend must be after datestart");
+        
+        $treatmentdate = $datestart;
+        while ( $treatmentdate <= $dateend ) {
+            $weekday_num = dol_print_date($treatmentdate, '%w');
+            if (in_array($weekday_num, $request['weekday'])) {
+                $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+                $this->sessioncalendar->sessid = $sessid;
+                $this->sessioncalendar->date_session = $treatmentdate;
+                
+                $heure_tmp_arr = explode(':', $request['hours1'][0]);
+                $this->sessioncalendar->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+                $heure_tmp_arr = explode(':', $request['hours1'][1]);
+                $this->sessioncalendar->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+                
+                $result = $this->sessioncalendar->create(DolibarrApiAccess::$user);
+                if ($result < 0) throw new RestException(500, "Creation error", array($this->session->error, $this->db->lastqueryerror));
+               
+                if (isset($request['hours2'])) {
+                    $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+                    $this->sessioncalendar->sessid = $sessid;
+                    $this->sessioncalendar->date_session = $treatmentdate;
+                    
+                    $heure_tmp_arr = explode(':', $request['hours2'][0]);
+                    $this->sessioncalendar->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+                    $heure_tmp_arr = explode(':', $request['hours2'][1]);
+                    $this->sessioncalendar->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+                    
+                    $result = $this->sessioncalendar->create(DolibarrApiAccess::$user);
+                    if ($result < 0) throw new RestException(500, "Creation error", array($this->session->error, $this->db->lastqueryerror));
+                }
+            }
+            $treatmentdate = dol_time_plus_duree($treatmentdate, '1', 'd');
+        }
+        
+        return $this->sessionGetCalendar($sessid);
     }
     
     /**
@@ -1096,9 +1146,9 @@ class Agefodd extends DolibarrApi
      * @param int       $sessid     ID of the session
      * @param array     $request    Data needed for creation
      */
-    function _calendarAddPeriod($sessid, $request)
+    function _sessioncalendarAddPeriod($sessid, $request)
     {
-        if(!isset($request['date']) || empty($request['date'])) throw new RestException(503, "date must be provided for this mode. It must be a string date with the format Y-m-d");
+        if(!isset($request['date']) || empty($request['date'])) throw new RestException(503, "date must be provided for this mode. It must be a string date with the format yyyy-mm-dd");
         if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $request['date'])) throw new RestException(503, "Bad date format");
         
         if(!isset($request['start_hour']) || !preg_match('/^[0-9]{2}:[0-9]{2}$/', $request['start_hour'])) throw new RestException(503, "start_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
@@ -1136,13 +1186,86 @@ class Agefodd extends DolibarrApi
     }
     
     /**
+     * Update a session calendar period
+     *
+     * @param int $id ID of the period
+     *
+     * @url PUT /sessions/calendar/updateperiod/
+     */
+    function sessionCalendarPutPeriod($id, $date_session = '', $starthour = '', $endhour = '')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        $result = $this->sessioncalendar->fetch($id);
+        if($result<0) throw new RestException(404, "Period not found");
+        
+        if(!empty($date_session))
+        {
+            if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_session)) throw new RestException(503, "Bad date format. It must be in format yyyy-mm-dd");
+            $this->sessioncalendar->date_session = dol_mktime(0, 0, 0, substr($date_session, 5, 2), substr($date_session, 8, 2), substr($date_session, 0, 4));
+        }
+        
+        if(!empty($starthour))
+        {
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $start_hour)) throw new RestException(503, "start_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+            $heure_tmp_arr = explode(':', $starthour);
+            $tmpH = $heure_tmp_arr[0];
+            $tmpM = $heure_tmp_arr[1];
+        }
+        else
+        {
+            $tmpH = date("H",$this->sessioncalendar->heured);
+            $tmpM = date("i",$this->sessioncalendar->heured);
+        }
+        $this->sessioncalendar->heured = dol_mktime($tmpH, $tmpM, 0, date("m", $this->sessioncalendar->date_session), date("d", $this->sessioncalendar->date_session), date("Y", $this->sessioncalendar->date_session));
+        
+        if(!empty($endhour))
+        {
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $endhour)) throw new RestException(503, "$endhour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+            $heure_tmp_arr = explode(':', $endhour);
+            $tmpH = $heure_tmp_arr[0];
+            $tmpM = $heure_tmp_arr[1];
+        }
+        else
+        {
+            $tmpH = date("H",$this->sessioncalendar->heuref);
+            $tmpM = date("i",$this->sessioncalendar->heuref);
+        }
+        $this->sessioncalendar->heuref = dol_mktime($tmpH, $tmpM, 0, date("m", $this->sessioncalendar->date_session), date("d", $this->sessioncalendar->date_session), date("Y", $this->sessioncalendar->date_session));
+        
+        $result = $this->sessioncalendar->update(DolibarrApiAccess::$user, 1);
+        if($result < 0) throw new RestException(500, "Modification error", array($this->session->error, $this->db->lastqueryerror));
+        
+        dol_include_once('/comm/action/class/actioncomm.class.php');
+        $action = new ActionComm($this->db);
+        $result = $action->fetch($this->sessioncalendar->fk_actioncomm);
+        $result = $action->fetch_userassigned();
+        
+        if($result > 0)
+        {
+            $action->datep = $this->sessioncalendar->heured;
+            $action->datef = $this->sessioncalendar->heuref;
+            
+            $result = $action->update(DolibarrApiAccess::$user, 1);
+            if($result < 0) throw new RestException(500, "Event not updated");
+        }
+        
+        return $this->sessionGetCalendar($this->sessioncalendar->sessid);
+        
+    }
+    
+    /**
      * Delete a session calendar period
      *
      * @param int $id ID of the period
      *
      * @url DELETE /sessions/calendar/delperiod/{id}
      */
-    function sessionCalendarDelPeriod($id){
+    function sessionCalendarDelPeriod($id)
+    {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
@@ -1152,11 +1275,11 @@ class Agefodd extends DolibarrApi
         if($result<0) throw new RestException(404, "Period not found");
         
         $result = $this->sessioncalendar->remove($id);
-        if($result<0) throw new RestException(500, "Error in delete period", array($this->session->error, $this->db->lastqueryerror));
+        if($result<0) throw new RestException(500, "Error in delete period", array($this->db->lasterror, $this->db->lastqueryerror));
         
         // nettoyage des heures réelles
         $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
-        $sql.= " WHERE fk_calendrier = " . $modperiod;
+        $sql.= " WHERE fk_calendrier = " . $id;
         
         $this->db->query($sql);
         
@@ -1164,6 +1287,51 @@ class Agefodd extends DolibarrApi
             'success' => array(
                 'code' => 200,
                 'message' => 'Period delete from the session calendar'
+            )
+        );
+    }
+    
+    /**
+     * Delete all calendar period for a session
+     *
+     * @param int $sessid ID of the session
+     *
+     * @url DELETE /sessions/calendar/delall/{sessid}
+     */
+    function sessionCalendarDelAll($sessid){
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) {
+            throw new RestException(404, 'session not found');
+        }
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        $result = $this->sessioncalendar->fetch_all($sessid);
+        if($result < 0) throw new RestException(500, "Can't retrieve the session's calendar", array($this->session->error, $this->db->lastqueryerror));
+        
+        if(!count($this->sessioncalendar->lines)) throw new RestException(404, "No calendar for this session yet");
+        
+        foreach ($this->sessioncalendar->lines as $line)
+        {
+            $result = $this->sessioncalendar->remove($line->id);
+            if($result<0) throw new RestException(500, "Error in delete period", array($this->db->lasterror, $this->db->lastqueryerror));
+            
+            // nettoyage des heures réelles
+            $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
+            $sql.= " WHERE fk_calendrier = " . $line->id;
+            
+            $this->db->query($sql);
+        }
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'All period deleted for the session'
             )
         );
     }
