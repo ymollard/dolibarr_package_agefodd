@@ -23,6 +23,7 @@
  dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
@@ -135,14 +136,15 @@ class Agefodd extends DolibarrApi
     {
 		global $db, $conf;
 		$this->db = $db;
-		$this->session = new Agsession($this->db);                            // agefodd session
-		$this->sessioncalendar = new Agefodd_sesscalendar($this->db);         // agefodd sessioncalendar
-		$this->trainee = new Agefodd_stagiaire($this->db);                    // agefodd trainee
-		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);   // traineeinsession
-		$this->trainer = new Agefodd_teacher($this->db);                      // agefodd teacher
-		$this->trainerinsession = new Agefodd_session_formateur($this->db);   // trainerinsession
-		$this->training = new Formation($this->db);                           // agefodd training
-		$this->place = new Agefodd_place($this->db);                          // agefodd place
+		$this->session = new Agsession($this->db);                                            // agefodd session
+		$this->sessioncalendar = new Agefodd_sesscalendar($this->db);                         // agefodd sessioncalendar
+		$this->trainee = new Agefodd_stagiaire($this->db);                                    // agefodd trainee
+		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);                   // traineeinsession
+		$this->trainer = new Agefodd_teacher($this->db);                                      // agefodd teacher
+		$this->trainerinsession = new Agefodd_session_formateur($this->db);                   // trainerinsession
+		$this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);   //calendar of a trainer in a session
+		$this->training = new Formation($this->db);                                           // agefodd training
+		$this->place = new Agefodd_place($this->db);                                          // agefodd place
     }
 
     
@@ -1757,7 +1759,7 @@ class Agefodd extends DolibarrApi
      * Get a trainer in a session
      *
      * @param int $sessid       ID of the session
-     * @param int $trainerid    ID of the trainer (same trainee ID used to add the trainee in session)
+     * @param int $trainerid    ID of the trainer (same trainee ID used to add the trainer in session)
      *
      * @url GET /sessions/trainer/
      */
@@ -1892,6 +1894,102 @@ class Agefodd extends DolibarrApi
                 'message' => 'Trainer removed from the session'
             )
         );
+    }
+    
+    /**
+     * Get the calendar of a trainer in the session
+     * 
+     * @param int       $sessid       ID of the session
+     * @param int       $trainerid    ID of the trainer (same trainer ID used to add the trainer in session)
+     * 
+     * @url GET /sessions/trainer/calendar
+     */
+    function sessionGetTrainerCalendar($sessid, $trainerid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+        if (empty($result)) throw new RestException(404, "No trainer for this session");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+        
+        $opsid = '';
+        foreach ($this->trainerinsession->lines as $line) {
+            if($line->formid == $trainerid) {
+                $opsid = $line->opsid;
+                break;
+            }
+        }
+        if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
+        
+        $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+        $result = $this->trainerinsessioncalendar->fetch_all($opsid);
+        if($result < 0) throw new RestException(500, "Error retrieving calendar", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->trainerinsessioncalendar->lines)) throw new RestException(404, "No calendar found for this trainer in the session");
+        
+        $obj_ret = array();
+        foreach ($this->trainerinsessioncalendar->lines as $line)
+        {
+            $obj = new stdClass();
+            $obj->id = $line->id;
+            $obj->date_session = date("Y-m-d", $line->date_session);
+            $obj->heured = date("Y-m-d H:i:s", $line->heured);
+            $obj->heuref = date("Y-m-d H:i:s", $line->heuref);
+            $obj->status_in_session = $line->trainer_status_in_session;
+            
+            $obj_ret[] = $obj;
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * create the calendar of a trainer in the session
+     *
+     * @param int       $sessid       ID of the session
+     * @param int       $trainerid    ID of the trainer (same trainer ID used to add the trainer in session)
+     * @param string    $mode         Creation method ('addperiod' or 'fromsessioncalendar')
+     *
+     * @url POST /sessions/trainers/calendar
+     */
+    function sessionSetTrainerCalendar($sessid, $trainerid, $mode = "addperiod")
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+        if (empty($result)) throw new RestException(404, "No trainer for this session");
+        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+        
+        $opsid = '';
+        foreach ($this->trainerinsession->lines as $line) {
+            if($line->formid == $trainerid) {
+                $opsid = $line->opsid;
+                break;
+            }
+        }
+        if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
+        
+        switch($mode){
+            case 'addperiod' :
+                break;
+                
+            case 'fromsessioncalendar' :
+                break;
+                
+            Default :
+                throw new RestException(503, "Invalid mode");
+        }
     }
     
     /***************************************************************** Trainee Part *****************************************************************/
@@ -2438,6 +2536,46 @@ class Agefodd extends DolibarrApi
         return $this->getTrainer($this->trainer->id);
         
         //return $this->trainer->dict_categories;
+    }
+    
+    /**
+     * Get the calendar of a trainer
+     *
+     * @param int       $trainerid    ID of the trainer (same trainer ID used to add the trainer in session)
+     *
+     * @url GET /trainers/calendar
+     */
+    function trainerGetCalendar($trainerid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainer = new Agefodd_teacher($this->db);
+        $result = $this->trainer->fetch($trainerid);
+        if($result < 0) throw new RestException(500, "Error retrieving trainer", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->trainer->id)) throw new RestException(404, "trainer not found");
+        
+        $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+        $result = $this->trainerinsessioncalendar->fetch_all_by_trainer($trainerid);
+        if($result < 0) throw new RestException(500, "Error retrieving calendar", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->trainerinsessioncalendar->lines)) throw new RestException(404, "No calendar found for this trainer in the session");
+        
+        $obj_ret = array();
+        foreach ($this->trainerinsessioncalendar->lines as $line)
+        {
+            $obj = new stdClass();
+            $obj->id = $line->id;
+            $obj->date_session = date("Y-m-d", $line->date_session);
+            $obj->heured = date("Y-m-d H:i:s", $line->heured);
+            $obj->heuref = date("Y-m-d H:i:s", $line->heuref);
+            $obj->fk_session = $line->fk_session;
+            $obj->status_in_session = $line->trainer_status_in_session;
+            
+            $obj_ret[] = $obj;
+        }
+        
+        return $obj_ret;
     }
     
     /**
