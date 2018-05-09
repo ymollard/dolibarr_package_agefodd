@@ -546,7 +546,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 			$agf_elem = new Agefodd_session_element($db);
 			$agf_elem->fk_element = $fk_propal;
 			$agf_elem->fk_session_agefodd =  $agf->id;
-			$agf_elem->fk_soc = $socid;
+			$agf_elem->fk_soc = $custid;
 			$agf_elem->element_type = 'propal';
 
 			$result = $agf_elem->create($user);
