@@ -486,7 +486,7 @@ class Agefodd_sesscalendar {
 				$action->datef = $this->heuref;
 				$action->type_code = 'AC_AGF_SESS';
 
-				$result = $action->update($user);
+				$result = $action->update($user, 1);
 			} else {
 				$result = $this->createAction($user);
 			}
