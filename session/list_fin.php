@@ -203,7 +203,7 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
     {
         setEventMessage($agf_fin->error, 'errors');
     }
-    
+
     // If exists we update
     if ($agf_fin->id)
     {
@@ -211,24 +211,24 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
     }
     if ($result2 > 0)
     {
-        
+
         // Update training cost
         $result = $agf_fin->fetch_by_session_by_thirdparty($idsess, 0);
         if ($result < 0)
         {
             setEventMessage($agf_fin->error, 'errors');
         }
-        
+
         $TSessions = $agf_fin->get_linked_sessions($agf_fin->fk_element, $agf_fin->element_type);
-        
+
         foreach ($TSessions as $k => $dummy){
             if($k !== 'total') {
                 $agf_fin->fk_session_agefodd = $k;
                 $agf_fin->updateSellingPrice($user);
             }
-            
+
         }
-        
+
         Header('Location: '.$_SERVER['PHP_SELF']."?".substr($urlcomplete, 1));
         exit();
     }
@@ -300,10 +300,10 @@ if (! empty($search_fournorderid) || ! empty($search_fournordereref)) {
     require_once DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php';
     $head = ordersupplier_prepare_head($fournorder);
     dol_fiche_head($head, 'tabAgefodd', $langs->trans('SupplierOrder'), 0, 'bill');
-    
+
     $element_type = 'order_supplier';
     $element_id = $search_fournorderid;
-    
+
     $morehtmlref='<div class="refidno">';
     // Ref customer
     $morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $fournorder->ref_client, $fournorder, 0, 'string', '', 0, 1);
@@ -357,7 +357,7 @@ if (GETPOST('link_site')){
         $sess->fetch($id);
         $placeid = $sess->fk_session_place;
         $type= 'invoice_supplier_room';
-        
+
         // Create link with the session/customer
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
@@ -368,7 +368,7 @@ if (GETPOST('link_site')){
         if ($result < 0) {
             setEventMessage($session_invoice->error, 'errors');
         }
-        
+
         // Update training cost
         $result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
         if ($result < 0) {
@@ -381,13 +381,13 @@ if (GETPOST('link_site')){
                 if ($line->element_type == 'invoice_supplier_room')
                 {
                     $suplier_invoice->fetch($line->fk_element);
-                    
+
                     $total_ht += $suplier_invoice->total_ht;
                 }
                 else
                 {
                     $suplier_invoiceline->fetch($line->fk_element);
-                    
+
                     $total_ht += $suplier_invoiceline->total_ht;
                 }
             }
@@ -398,17 +398,17 @@ if (GETPOST('link_site')){
             setEventMessage($agf->error, 'errors');
         }
     }
-    
+
 }
 
 if (GETPOST('link_formateur')){
-    
+
     $id = GETPOST('session_id_form');
     if ($id > 0){
         $sess = new Agsession($db);
         $sess->fetch($id);
         $opsid = GETPOST('opsid', 'int');
-        
+
         // Create link with the session/customer
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
@@ -421,7 +421,7 @@ if (GETPOST('link_formateur')){
         {
             setEventMessage($session_invoice->error, 'errors');
         }
-        
+
         // Update training cost
         $result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
         if ($result < 0)
@@ -437,13 +437,13 @@ if (GETPOST('link_formateur')){
                 if ($line->element_type == 'invoice_supplier_trainer')
                 {
                     $suplier_invoice->fetch($line->fk_element);
-                    
+
                     $total_ht += $suplier_invoice->total_ht;
                 }
                 else
                 {
                     $suplier_invoiceline->fetch($line->fk_element);
-                    
+
                     $total_ht += $suplier_invoiceline->total_ht;
                 }
             }
@@ -455,17 +455,17 @@ if (GETPOST('link_formateur')){
             setEventMessage($agf->error, 'errors');
         }
     }
-    
+
 }
 
 if (GETPOST('link_mission')){
-    
+
     $id = GETPOST('session_id_missions');
     if ($id > 0){
         $sess = new Agsession($db);
         $sess->fetch($id);
         $opsid = GETPOST('opsid', 'int');
-        
+
         // Create link with the session/customer
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
@@ -478,7 +478,7 @@ if (GETPOST('link_mission')){
         {
             setEventMessage($session_invoice->error, 'errors');
         }
-        
+
         // Update training cost
         $result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'', '\'invoice_supplierline_missions\''));
         if ($result < 0)
@@ -494,13 +494,13 @@ if (GETPOST('link_mission')){
                 if ($line->element_type == 'invoice_supplier_missions')
                 {
                     $suplier_invoice->fetch($line->fk_element);
-                    
+
                     $total_ht += $suplier_invoice->total_ht;
                 }
                 else
                 {
                     $suplier_invoiceline->fetch($line->fk_element);
-                    
+
                     $total_ht += $suplier_invoiceline->total_ht;
                 }
             }
@@ -512,18 +512,18 @@ if (GETPOST('link_mission')){
             setEventMessage($agf->error, 'errors');
         }
     }
-    
+
 }
 
 if ($action == 'unlink') {
-    
+
     $agf_liste = new Agefodd_session_element($db);
     $result = $agf_liste->fetch($idelement);
     $ref = $agf_liste->facfournnumber;
-    
+
     print $form->formconfirm($_SERVER['PHP_SELF'] . '?socid=' . $object_socid . '&idsess=' . $idsess . '&idelement=' . $idelement.$urlcomplete, $langs->trans("AgfConfirmUnlink"), '', "unlink_confirm", '', '', 1);
-    
-} 
+
+}
 
 $agf = new Agsession($db);
 $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid, $search_fournorderid);
@@ -539,8 +539,6 @@ if ($resql != - 1) {
 	$num = $resql;
 
 	$menu = $langs->trans("AgfMenuSessAct");
-
-
 
 	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
 
@@ -682,7 +680,7 @@ if ($resql != - 1) {
 		if (! (empty($search_propalref))) {
 			print '<td>' . $line->propalref . '</td>';
 		}
-		
+
 		if (! (empty($search_orderref))) {
 		    $idfin = $search_orderid;
 		    $type = 'bc';
@@ -703,9 +701,9 @@ if ($resql != - 1) {
 		    $idfin = $search_propalid;
 		    $type = 'prop';
 		}
-		
+
 		$agf_fin = new Agefodd_session_element($db);
-		if ($type !== 'fourn') { 
+		if ($type !== 'fourn') {
 		    $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
 		} else {
 		    if(!empty($search_fourninvoiceref)){
@@ -720,7 +718,7 @@ if ($resql != - 1) {
 		    }
 		}
 		//var_dump($agf_fin);
-		
+
 		print '<td align="right">';
 		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
 		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $agf_fin->lines[0]->id . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -809,15 +807,15 @@ if (empty($search_fourninvoiceref)) {
     $sessids = array();
     // session  dans lequel un formateur est un contact du tiers $session_array_id
     $sql = "SELECT s.rowid as sessid, sf.rowid as opsid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, sp.lastname as name_socp, sp.firstname as firstname_socp
-        FROM ".MAIN_DB_PREFIX."agefodd_session as s 
+        FROM ".MAIN_DB_PREFIX."agefodd_session as s
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf on s.rowid = sf.fk_session
-        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f ON sf.fk_agefodd_formateur = f.rowid 
-        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp ON f.fk_socpeople = sp.rowid 
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur as f ON sf.fk_agefodd_formateur = f.rowid
+        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as sp ON f.fk_socpeople = sp.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sp.fk_soc
-        LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid 
-        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur_type as st ON st.rowid = sf.fk_agefodd_formateur_type 
+        LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur_type as st ON st.rowid = sf.fk_agefodd_formateur_type
         WHERE soc.rowid = ".$object_socid." AND s.rowid NOT IN ('".implode("','", $session_array_id)."') ORDER BY s.rowid ASC";
 
     $resql = $db->query($sql);
@@ -829,19 +827,19 @@ if (empty($search_fourninvoiceref)) {
             //var_dump($obj->rowid);
         }
     }
-    
+
     // session dont le lieu appartient au tiers
     $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
         FROM ".MAIN_DB_PREFIX."agefodd_session as sess
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = sess.fk_session_place
-        LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid 
-        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid 
+        LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid
+        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid
         WHERE p.entity IN (4,1)
         AND p.fk_societe = ".$object_socid."
         AND s.rowid NOT IN ('".implode("','", $session_array_id)."')
         ORDER BY sess.rowid ASC";
-    
+
     $resql2 = $db->query($sql2);
     if($resql2){
         while ($obj = $db->fetch_object($resql2)){
@@ -850,7 +848,7 @@ if (empty($search_fourninvoiceref)) {
             //var_dump($obj->rowid);
         }
     }
-    
+
     print '<table class="noborder" width="100%">';
     print '<tr>';
     print '<th>Type</th>';
@@ -889,9 +887,9 @@ if (empty($search_fourninvoiceref)) {
     print '</td>';
     print '</tr>';
     print "</table>";
-    
+
     ?>
-    
+
     <script type="text/javascript">
 		$(document).ready(function(){
 			$('#session_id_form').change(function(){
@@ -901,11 +899,17 @@ if (empty($search_fourninvoiceref)) {
 			});
 		});
 	</script>
-    
+
     <?php
-    
+
 }
 print '</form>';
+
+if ($user->rights->agefodd->creer && !empty($search_propalid)) {
+	print '<div class="tabsAction">';
+	print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?mainmenu=agefodd&action=create&fk_propal=' . $search_propalid . '&fk_soc='.$object_socid.'">' . $langs->trans('AgfMenuSessNew') . '</a>';
+	print '</div>';
+}
 
 llxFooter();
 $db->close();
