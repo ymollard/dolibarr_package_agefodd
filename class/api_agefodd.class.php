@@ -1212,7 +1212,7 @@ class Agefodd extends DolibarrApi
         
         if(!empty($starthour))
         {
-            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $start_hour)) throw new RestException(503, "start_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $starthour)) throw new RestException(503, "starthour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
             $heure_tmp_arr = explode(':', $starthour);
             $tmpH = $heure_tmp_arr[0];
             $tmpM = $heure_tmp_arr[1];
@@ -1226,7 +1226,7 @@ class Agefodd extends DolibarrApi
         
         if(!empty($endhour))
         {
-            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $endhour)) throw new RestException(503, "$endhour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $endhour)) throw new RestException(503, "endhour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
             $heure_tmp_arr = explode(':', $endhour);
             $tmpH = $heure_tmp_arr[0];
             $tmpM = $heure_tmp_arr[1];
@@ -1262,7 +1262,7 @@ class Agefodd extends DolibarrApi
     /**
      * Delete a session calendar period
      *
-     * @param int $id ID of the period
+     * @param int $id ID of the session calendar period
      *
      * @url DELETE /sessions/calendar/delperiod/{id}
      */
@@ -1279,6 +1279,7 @@ class Agefodd extends DolibarrApi
         $result = $this->sessioncalendar->remove($id);
         if($result<0) throw new RestException(500, "Error in delete period", array($this->db->lasterror, $this->db->lastqueryerror));
         
+        return $this->sessioncalendar;
         // nettoyage des heures réelles
         $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
         $sql.= " WHERE fk_calendrier = " . $id;
@@ -1937,6 +1938,7 @@ class Agefodd extends DolibarrApi
         {
             $obj = new stdClass();
             $obj->id = $line->id;
+            $obj->sessid = $sessid;
             $obj->date_session = date("Y-m-d", $line->date_session);
             $obj->heured = date("Y-m-d H:i:s", $line->heured);
             $obj->heuref = date("Y-m-d H:i:s", $line->heuref);
@@ -1957,7 +1959,7 @@ class Agefodd extends DolibarrApi
      *
      * @url POST /sessions/trainers/calendar
      */
-    function sessionSetTrainerCalendar($sessid, $trainerid, $mode = "addperiod")
+    function sessionSetTrainerCalendar($sessid, $trainerid, $mode = "addperiod", $request = array())
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
@@ -1982,14 +1984,256 @@ class Agefodd extends DolibarrApi
         
         switch($mode){
             case 'addperiod' :
+                return $this->_trainerAddSessionCalendarPeriod($sessid, $trainerid, $opsid, $request);
                 break;
                 
             case 'fromsessioncalendar' :
+                return $this->_trainerCopySessionCalendar($sessid, $trainerid, $opsid);
                 break;
                 
             Default :
                 throw new RestException(503, "Invalid mode");
         }
+    }
+    
+    function _trainerAddSessionCalendarPeriod($sessid, $trainerid, $opsid, $request)
+    {
+        global $langs, $conf;
+        
+        if(!isset($request['date']) || empty($request['date'])) throw new RestException(503, "date must be provided for this mode. It must be a string date with the format yyyy-mm-dd");
+        if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $request['date'])) throw new RestException(503, "Bad date format");
+        
+        if(!isset($request['start_hour']) || !preg_match('/^[0-9]{2}:[0-9]{2}$/', $request['start_hour'])) throw new RestException(503, "start_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+        if(!isset($request['end_hour']) || !preg_match('/^[0-9]{2}:[0-9]{2}$/', $request['start_hour'])) throw new RestException(503, "end_hour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+        
+        $error = 0;
+        $error_message = array();
+        $warning_message = array();
+        
+        $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+        
+        $this->trainerinsessioncalendar->sessid = $sessid;
+        $this->trainerinsessioncalendar->fk_agefodd_session_formateur = $opsid;
+        $this->trainerinsessioncalendar->date_session = dol_mktime(0, 0, 0, substr($request['date'], 5, 2), substr($request['date'], 8, 2), substr($request['date'], 0, 4));
+        
+        // From calendar selection
+        $heure_tmp_arr = array();
+        
+        $heured_tmp = $request['start_hour'];
+        if (! empty($heured_tmp)) {
+            $heure_tmp_arr = explode(':', $heured_tmp);
+            $this->trainerinsessioncalendar->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, substr($request['date'], 5, 2), substr($request['date'], 8, 2), substr($request['date'], 0, 4));
+        }
+        
+        $heuref_tmp = $request['end_hour'];
+        if (! empty($heuref_tmp)) {
+            $heure_tmp_arr = explode(':', $heuref_tmp);
+            $this->trainerinsessioncalendar->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, substr($request['date'], 5, 2), substr($request['date'], 8, 2), substr($request['date'], 0, 4));
+        }
+        
+        // Test if trainer is already book for another training
+        $result = $this->trainerinsessioncalendar->fetch_all_by_trainer($trainerid);
+        if ($result < 0) throw new RestException(500, "Error retrieving trainer calendar", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        foreach ( $this->trainerinsessioncalendar->lines as $line ) {
+            if (! empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6) {
+                if (($this->trainerinsessioncalendar->heured <= $line->heured && $this->trainerinsessioncalendar->heuref >= $line->heuref) || ($this->trainerinsessioncalendar->heured >= $line->heured && $this->trainerinsessioncalendar->heuref <= $line->heuref) || ($this->trainerinsessioncalendar->heured <= $line->heured && $this->trainerinsessioncalendar->heuref <= $line->heuref && $this->trainerinsessioncalendar->heuref > $line->heured) || ($this->trainerinsessioncalendar->heured >= $line->heured && $this->trainerinsessioncalendar->heuref >= $line->heuref && $this->trainerinsessioncalendar->heured < $line->heuref)) {
+                    if (! empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY)) {
+                        $warning_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+                    } else {
+                        $error ++;
+                        $error_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+                    }
+                }
+            }
+        }
+        if (! $error) {
+            
+            $result = $this->trainerinsessioncalendar->create(DolibarrApiAccess::$user);
+            if ($result < 0) {
+                $error ++;
+                $error_message[] = $this->trainerinsessioncalendar->error;
+            }
+        }
+        
+        if(!$error) {
+            return array(
+                'success' => array(
+                    'code' => 200,
+                    'message' => 'Trainer\'s calendar period added',
+                    'warnings' => $warning_message
+                )
+            );
+        } else {
+            return array(
+                'fail' => array(
+                    'code' => 500,
+                    'message' => 'Trainer\'s calendar period not added',
+                    'errors' => $error_message,
+                    'warnings' => $warning_message
+                )
+            );
+        }
+        
+    }
+    
+    function _trainerCopySessionCalendar($sessid, $trainerid, $opsid)
+    {
+        global $langs, $conf;
+        
+        $error_message = array();
+        $warning_message = array();
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        $result = $this->sessioncalendar->fetch_all($sessid);
+        if($result < 0) throw new RestException(500, "Error retrieving session calendar", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessioncalendar->lines)) throw new RestException(404, "No calendar defined for this session");
+        
+        // Delete all time already inputed
+        $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+        $this->trainerinsessioncalendar->fetch_all($opsid);
+        if (is_array($this->trainerinsessioncalendar->lines) && count($this->trainerinsessioncalendar->lines) > 0) {
+            foreach ( $this->trainerinsessioncalendar->lines as $line ) {
+                $delteobject = new Agefoddsessionformateurcalendrier($this->db);
+                $delteobject->remove($line->id);
+            }
+        }
+        
+        // Create as many as session caldendar
+        foreach ( $this->sessioncalendar->lines as $line ) {
+            $error = 0;
+            
+            $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+            
+            $this->trainerinsessioncalendar->sessid = $sessid;
+            $this->trainerinsessioncalendar->fk_agefodd_session_formateur = $opsid;
+            
+            $this->trainerinsessioncalendar->date_session = $line->date_session;
+            
+            $this->trainerinsessioncalendar->heured = $line->heured;
+            $this->trainerinsessioncalendar->heuref = $line->heuref;
+            
+            // Test if trainer is already book for another training
+            $result = $this->trainerinsessioncalendar->fetch_all_by_trainer($trainerid);
+            if ($result < 0) throw new RestException(500, "Error retrieving trainer calendar", array($this->db->lasterror, $this->db->lastqueryerror));
+            
+            foreach ( $this->trainerinsessioncalendar->lines as $line ) {
+                if (! empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6) {
+                    
+                    if (($this->trainerinsessioncalendar->heured <= $line->heured && $this->trainerinsessioncalendar->heuref >= $line->heuref) || ($this->trainerinsessioncalendar->heured >= $line->heured && $this->trainerinsessioncalendar->heuref <= $line->heuref) || ($this->trainerinsessioncalendar->heured <= $line->heured && $this->trainerinsessioncalendar->heuref <= $line->heuref && $this->trainerinsessioncalendar->heuref > $line->heured) || ($this->trainerinsessioncalendar->heured >= $line->heured && $this->trainerinsessioncalendar->heuref >= $line->heuref && $this->trainerinsessioncalendar->heured < $line->heuref)) {
+                        if (! empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY)) {
+                            $warning_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+                        } else {
+                            $error ++;
+                            $error_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+                        }
+                    }
+                }
+            }
+            
+            if (! $error) {
+                $result = $this->trainerinsessioncalendar->create(DolibarrApiAccess::$user);
+                if ($result < 0) {
+                    $error_message[] = $this->trainerinsessioncalendar->error;
+                }
+            }
+        }
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Trainer\'s calendar copied from the session',
+                'errors' => $error_message,
+                'warnings' => $warning_message
+            )
+        );
+    }
+    
+    /**
+     * Update a trainer's calendar period
+     *
+     * @param int $id ID of the period
+     *
+     * @url PUT /sessions/trainer/calendar/
+     */
+    function sessionPutTrainerCalendarPeriod($id, $date_session = '', $starthour = '', $endhour = '')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+        $result = $this->trainerinsessioncalendar->fetch($id);
+        if($result<0 || empty($this->trainerinsessioncalendar->id)) throw new RestException(404, "Period not found");
+        
+        if(!empty($date_session))
+        {
+            if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_session)) throw new RestException(503, "Bad date format. It must be in format yyyy-mm-dd");
+            $this->trainerinsessioncalendar->date_session = dol_mktime(0, 0, 0, substr($date_session, 5, 2), substr($date_session, 8, 2), substr($date_session, 0, 4));
+        }
+        
+        if(!empty($starthour))
+        {
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $starthour)) throw new RestException(503, "starthour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+            $heure_tmp_arr = explode(':', $starthour);
+            $tmpH = $heure_tmp_arr[0];
+            $tmpM = $heure_tmp_arr[1];
+        }
+        else
+        {
+            $tmpH = date("H",$this->trainerinsessioncalendar->heured);
+            $tmpM = date("i",$this->trainerinsessioncalendar->heured);
+        }
+        $this->trainerinsessioncalendar->heured = dol_mktime($tmpH, $tmpM, 0, date("m", $this->trainerinsessioncalendar->date_session), date("d", $this->trainerinsessioncalendar->date_session), date("Y", $this->trainerinsessioncalendar->date_session));
+        
+        if(!empty($endhour))
+        {
+            if(!preg_match('/^[0-9]{2}:[0-9]{2}$/', $endhour)) throw new RestException(503, "endhour must be provided for this mode. With 24h format for ex.: 14:30 or 09:00");
+            $heure_tmp_arr = explode(':', $endhour);
+            $tmpH = $heure_tmp_arr[0];
+            $tmpM = $heure_tmp_arr[1];
+        }
+        else
+        {
+            $tmpH = date("H",$this->trainerinsessioncalendar->heuref);
+            $tmpM = date("i",$this->trainerinsessioncalendar->heuref);
+        }
+        $this->trainerinsessioncalendar->heuref = dol_mktime($tmpH, $tmpM, 0, date("m", $this->trainerinsessioncalendar->date_session), date("d", $this->trainerinsessioncalendar->date_session), date("Y", $this->trainerinsessioncalendar->date_session));
+        
+        $this->trainerinsession->fetch($this->trainerinsessioncalendar->fk_agefodd_session_formateur);
+        
+        // the trainerinsessioncalendar->sessid doesn't exist but is needed to update linked ActionComm
+        $this->trainerinsessioncalendar->sessid =  $this->trainerinsession->sessid;
+        
+        $result = $this->trainerinsessioncalendar->update(DolibarrApiAccess::$user, 1);
+        if($result < 0) throw new RestException(500, "Modification error", array($this->trainerinsessioncalendar->error, $this->db->lastqueryerror));
+        
+        return $this->sessionGetTrainerCalendar($this->trainerinsession->sessid, $this->trainerinsession->formid);
+    }
+    
+    /**
+     * Delete a Calendar period for a trainer in a session
+     * 
+     * @param int   $id     ID of the trainer's calendar period
+     * 
+     * @url DELETE /sessions/trainer/calendar
+     */
+    function sessionDelTrainerCalendarPeriod($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);
+        $result = $this->trainerinsessioncalendar->remove($id);
+        if($result < 0) throw new RestException(500, "Error Deleting trainer calendar period", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Trainer\'s calendar period deleted'
+            )
+        );
     }
     
     /***************************************************************** Trainee Part *****************************************************************/
