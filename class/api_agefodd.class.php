@@ -2236,6 +2236,127 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /**
+     * Generate document of a session
+     * 
+     * @param int       $sessid     ID of the session
+     * @param string    $model      Name of the PDF model to generate
+     * @param string    $cour       Name of the letter model if model is courrier
+     * @param int       $langid     ID of a language if needed
+     * @param int       $socid      ID of the thirdparty involved (for convention)
+     * 
+     * @url POST /sessions/generatedocument
+     */
+    function sessionGenerateDocument($sessid, $model, $cour='', $langid = 0, $socid = 0)
+    {
+        global $conf, $langs;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'PDF generation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $idform = $this->session->fk_formation_catalogue;
+        
+        if (! empty($langid)) {
+            $outputlangs = new Translate("", $conf);
+            $outputlangs->setDefaultLang($langid);
+        }
+        
+//         switch($model)
+//         {
+//             case 'convention' :
+//                 dol_include_once('/agefodd/class/agefodd_convention.class.php');
+//                 if(empty($socid)) throw new RestException(404, "thirdparty not found to generate convention");
+//                 else 
+//                 {
+//                     $this->session->fetch_societe_per_session($sessid);
+//                     $array_soc = array ();
+//                     if (is_array($this->session->lines) && count($this->session->lines) > 0) {
+//                         foreach ( $this->session->lines as $line ) {
+//                             $array_soc[] = $line->socid;
+//                         }
+//                     }
+//                     if(!in_array($socid, $array_soc)) throw new RestException(404, "thirdparty not in the session");
+                    
+//                     return $array_soc;
+//                 }
+//                 break;
+                
+//             Default : 
+//                 $file = $model . '_' . $sessid . '.pdf';
+//         }
+
+        $id_tmp = $sessid;
+        if (! empty($cour))
+            $file = $model . '-' . $cour . '_' . $sessid . '_' . $socid . '.pdf';
+        elseif ($model == 'convention') {
+            
+            $convention = new Agefodd_convention($this->db);
+            $convention->fetch(0, 0, GETPOST('convid', 'int'));
+            $id_tmp = $convention->id;
+            $model = $convention->model_doc;
+            // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
+            if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $sessid;
+            $model = str_replace('pdf_', '', $model);
+            
+            $file = 'convention' . '_' . $sessid . '_' . $socid . '_' . $convention->id . '.pdf';
+        } elseif (! empty($socid)) {
+            $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
+        } elseif (strpos($model, 'fiche_pedago') !== false) {
+            $file = $model . '_' . $idform . '.pdf';
+            $id_tmp = $idform;
+            $cour = $sessid;
+        } elseif (strpos($model, 'mission_trainer') !== false) {
+            $file = $model . '_' . $sessiontrainerid . '.pdf';
+            $socid = $sessiontrainerid;
+            $id_tmp = $sessid;
+        } elseif (strpos($model, 'contrat_trainer') !== false) {
+            $file = $model . '_' . $sessiontrainerid . '.pdf';
+            $socid = $sessiontrainerid;
+            $id_tmp = $sessid;
+        } else {
+            $file = $model . '_' . $sessid . '.pdf';
+        }
+        
+        // this configuration variable is designed like
+        // standard_model_name:new_model_name&standard_model_name:new_model_name&....
+        if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+            $modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+            if (is_array($modelarray) && count($modelarray) > 0) {
+                foreach ( $modelarray as $modeloveride ) {
+                    $modeloverridearray = explode(':', $modeloveride);
+                    if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+                        if ($modeloverridearray[0] == $model) {
+                            $model = $modeloverridearray[1];
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
+            $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+            if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
+        }
+        if (strpos($model, 'fiche_pedago') !== false){
+            $agf = new Agsession($this->db);
+            $agf->fetch($id);
+            $agfTraining = new Formation($this->db);
+            $agfTraining->fetch($agf->fk_formation_catalogue);
+            $PDALink = $agfTraining->generatePDAByLink();
+        }
+        if(empty($PDALink)) {
+            dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
+            $result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
+        }
+        
+        return $this->session;
+    }
+    
     /***************************************************************** Trainee Part *****************************************************************/
     
     /**
@@ -4299,8 +4420,6 @@ class Agefodd extends DolibarrApi
             )
         );
     }
-    
-    /***************************************************************** Contact Part *****************************************************************/
     
     /***************************************************************** Cursus Part *****************************************************************/
     
