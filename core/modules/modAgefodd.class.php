@@ -103,6 +103,8 @@ class modAgefodd extends DolibarrModules
 						'propalcard',
 						'ordercard',
 						'invoicecard',
+						'ordersuppliercard',
+						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
 						'upgrade'
