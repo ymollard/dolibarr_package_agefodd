@@ -2241,13 +2241,13 @@ class Agefodd extends DolibarrApi
      * 
      * @param int       $sessid     ID of the session
      * @param string    $model      Name of the PDF model to generate
+     * @param int       $socid      ID of the thirdparty involved
      * @param string    $cour       Name of the letter model if model is courrier
      * @param int       $langid     ID of a language if needed
-     * @param int       $socid      ID of the thirdparty involved (for convention)
      * 
      * @url POST /sessions/generatedocument
      */
-    function sessionGenerateDocument($sessid, $model, $cour='', $langid = 0, $socid = 0)
+    function sessionGenerateDocument($sessid, $model, $socid = 0, $cour='', $langid = 0)
     {
         global $conf, $langs;
         
@@ -2259,46 +2259,40 @@ class Agefodd extends DolibarrApi
         $result = $this->session->fetch($sessid);
         if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
         
+        if(!empty($socid))
+        {
+            $result = $this->session->fetch_societe_per_session($sessid);
+            if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+            
+            $TCustomers = array();
+            foreach ($this->session->lines as $line)
+            {
+                /*if ($line->typeline == "customer")*/ $TCustomers[] = $line->socid;
+            }
+            
+            if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
+            if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
+            
+        }
+        
         $idform = $this->session->fk_formation_catalogue;
         
+        $outputlangs = $langs;
         if (! empty($langid)) {
             $outputlangs = new Translate("", $conf);
             $outputlangs->setDefaultLang($langid);
         }
-        
-//         switch($model)
-//         {
-//             case 'convention' :
-//                 dol_include_once('/agefodd/class/agefodd_convention.class.php');
-//                 if(empty($socid)) throw new RestException(404, "thirdparty not found to generate convention");
-//                 else 
-//                 {
-//                     $this->session->fetch_societe_per_session($sessid);
-//                     $array_soc = array ();
-//                     if (is_array($this->session->lines) && count($this->session->lines) > 0) {
-//                         foreach ( $this->session->lines as $line ) {
-//                             $array_soc[] = $line->socid;
-//                         }
-//                     }
-//                     if(!in_array($socid, $array_soc)) throw new RestException(404, "thirdparty not in the session");
-                    
-//                     return $array_soc;
-//                 }
-//                 break;
-                
-//             Default : 
-//                 $file = $model . '_' . $sessid . '.pdf';
-//         }
 
         $id_tmp = $sessid;
         if (! empty($cour))
             $file = $model . '-' . $cour . '_' . $sessid . '_' . $socid . '.pdf';
         elseif ($model == 'convention') {
-            
+            dol_include_once('/agefodd/class/agefodd_convention.class.php');
             $convention = new Agefodd_convention($this->db);
-            $convention->fetch(0, 0, GETPOST('convid', 'int'));
+            $convention->fetch(1702, 605, GETPOST('convid', 'int'));
             $id_tmp = $convention->id;
             $model = $convention->model_doc;
+            $model = 'pdf_convention';
             // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
             if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $sessid;
             $model = str_replace('pdf_', '', $model);
@@ -2311,10 +2305,13 @@ class Agefodd extends DolibarrApi
             $id_tmp = $idform;
             $cour = $sessid;
         } elseif (strpos($model, 'mission_trainer') !== false) {
+            $sessiontrainerid = $socid;
             $file = $model . '_' . $sessiontrainerid . '.pdf';
             $socid = $sessiontrainerid;
             $id_tmp = $sessid;
+            return $file;
         } elseif (strpos($model, 'contrat_trainer') !== false) {
+            $sessiontrainerid = $socid;
             $file = $model . '_' . $sessiontrainerid . '.pdf';
             $socid = $sessiontrainerid;
             $id_tmp = $sessid;
@@ -2351,10 +2348,15 @@ class Agefodd extends DolibarrApi
         }
         if(empty($PDALink)) {
             dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-            $result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
+            $result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
         }
         
-        return $this->session;
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "Model $model generated"
+            )
+        );
     }
     
     /***************************************************************** Trainee Part *****************************************************************/

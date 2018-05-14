@@ -280,7 +280,9 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 	} elseif (! empty($socid)) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif ($model == 'fiche_pedago') {
-		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
+	    $file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
+	} elseif ($model == 'fiche_pedago_modules') {
+	    $file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
 	} elseif (strpos($model, 'mission_trainer') !== false || strpos($model, 'contrat_trainer') !== false) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $sessiontrainerid . '.pdf';
 	} else {

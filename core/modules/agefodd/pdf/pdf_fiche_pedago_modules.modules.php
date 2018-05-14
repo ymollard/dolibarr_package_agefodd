@@ -23,13 +23,13 @@
  * \brief PDF for explanation sheet
  */
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_formation_catalogue_modules.class.php');
-require_once ('../class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
-require_once ('../lib/agefodd.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 class pdf_fiche_pedago_modules extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 
