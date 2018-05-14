@@ -4061,6 +4061,21 @@ class Agefodd extends DolibarrApi
         
     }
     
+    /**
+     * Update a training module
+     * 
+     * @param int       $id             ID of the training module
+     * @param string    $title          title of the module
+     * @param string    $content_text   text infos on the module
+     * @param int       $duration       duration of this training part
+     * @param string    $obj_peda       training goals of this part
+     * 
+     * @url PUT /trainingmodules/
+     */
+    function putTrainingModule($id, $title = '', $content_text = '', $duration = 0, $obj_peda = '')
+    {
+        
+    }
     
     /***************************************************************** Place Part *****************************************************************/
     
