@@ -27,6 +27,7 @@
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+ dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
  dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
  dol_include_once('/agefodd/class/agefodd_place.class.php');
  dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
@@ -142,8 +143,9 @@ class Agefodd extends DolibarrApi
 		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);                   // traineeinsession
 		$this->trainer = new Agefodd_teacher($this->db);                                      // agefodd teacher
 		$this->trainerinsession = new Agefodd_session_formateur($this->db);                   // trainerinsession
-		$this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);   //calendar of a trainer in a session
+		$this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);   // calendar of a trainer in a session
 		$this->training = new Formation($this->db);                                           // agefodd training
+		$this->trainingmodules = new Agefoddformationcataloguemodules($this->db);             // agefodd trainingmodule 
 		$this->place = new Agefodd_place($this->db);                                          // agefodd place
     }
 
@@ -4008,6 +4010,57 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /***************************************************************** Formation Module Part *****************************************************************/
+    
+    /**
+     * Get a list of training modules
+     * 
+     * @param string    $sortorder
+     * @param string    $sortfield
+     * @param int       $limit
+     * @param int       $offset
+     * @param array     $filter
+     * 
+     * @url POST /trainingmodules/
+     */
+    function trainingModuleIndex($sortorder = 'DESC', $sortfield = 't.rowid', $limit = 100, $offset = 0, $filter = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
+        $result = $this->trainingmodules->fetchAll($sortorder, $sortfield, $limit, $offset, $filter);
+        if($result < 0) throw new RestException(500, "Error retrieving modules", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "No training module found");
+        
+        $obj_ret = array();
+        foreach ($this->trainingmodules->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Get a training module
+     * @param int $id ID of the module
+     * 
+     * @url GET /trainingmodules/{id}
+     */
+    function getTrainingModule($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
+        $result = $this->trainingmodules->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving modules", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "No training module found");
+        
+        return $this->_cleanObjectDatas($this->trainingmodules);
+        
+    }
+    
     
     /***************************************************************** Place Part *****************************************************************/
     
@@ -4425,7 +4478,9 @@ class Agefodd extends DolibarrApi
     
     /***************************************************************** Cursus Part *****************************************************************/
     
-    /***************************************************************** Calendar Part *****************************************************************/
+    /***************************************************************** Cursus Trainee Part *****************************************************************/
+    
+    /***************************************************************** Certification Part *****************************************************************/
     
     /***************************************************************** Thirdparty Part *****************************************************************/
     
