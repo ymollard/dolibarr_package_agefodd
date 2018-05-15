@@ -20,7 +20,7 @@
 CREATE TABLE IF NOT EXISTS llx_agefodd_formation_objectifs_peda (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   fk_formation_catalogue integer NOT NULL,
-  intitule varchar(150) NOT NULL,
+  intitule varchar(500) NOT NULL,
   priorite smallint default NULL,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
