@@ -271,6 +271,8 @@ if ($result >= 0) {
 	$i = 0;
 	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 	print '<tr class="liste_titre">';
+	print '<td></td>';
+	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "socpf.lastname", "", $option, '', $sortfield, $sortorder);
@@ -282,7 +284,6 @@ if ($result >= 0) {
 	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], 's.status', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
 		print_liste_field_titre($langs->trans("AgfParticipantsWithTotal"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("AgfSessionCostPerTrainee"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
@@ -292,6 +293,22 @@ if ($result >= 0) {
 	print "</tr>\n";
 
 	print '<tr class="liste_titre">';
+
+	print '<td class="liste_titre" align="right">';
+	if(method_exists($form, 'showFilterButtons')) {
+		$searchpicto=$form->showFilterButtons();
+
+		print $searchpicto;
+	} else {
+		print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+		print '&nbsp; ';
+		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	}
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
+	print '</td>';
 
 	print '<td class="liste_titre">';
 	print '</td>';
@@ -335,22 +352,21 @@ if ($result >= 0) {
 	print $formAgefodd->select_session_status($status_view, 'status', '', 1, 0, array(), '', true);
 	print '</td>';
 
-	print '<td class="liste_titre">';
-	print $formAgefodd->select_type_affect($search_type_affect, 'search_type_affect');
-	print '</td>';
-
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-		print '<td></td>';
+		print '<td></td><td></td><td></td>';
 	}
 
-	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
-	print '</td>';
+	print '<td class="liste_titre" align="right">';
+	if(method_exists($form, 'showFilterButtons')) {
+		$searchpicto=$form->showFilterButtons();
 
-	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-		print '<td></td><td></td>';
+		print $searchpicto;
+	} else {
+		print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+		print '&nbsp; ';
+		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	}
+	print '</td>';
 
 	print "</tr>\n";
 	print '</form>';
@@ -383,6 +399,8 @@ if ($result >= 0) {
 			}
 
 			print "<tr " . $style . ">";
+			print '<td></td>';
+			print '<td>' . stripslashes($line->type_affect) . '</td>';
 			// Calcul de la couleur du lien en fonction de la couleur définie sur la session
 			// http://www.w3.org/TR/AERT#color-contrast
 			// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS
@@ -431,7 +449,6 @@ if ($result >= 0) {
 			print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
 			print '<td>' . stripslashes($line->status_lib) . '</td>';
-			print '<td>' . stripslashes($line->type_affect) . '</td>';
 			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
 				$coutTotalLigne /= $line->nb_stagiaire;
 			//	$coutTotalLigne *= $nbSocParticipant;
@@ -447,6 +464,7 @@ if ($result >= 0) {
 			print "</tr>\n";
 		} else {
 			print "<tr " . $style . ">";
+			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
 			print '<td>';
@@ -483,8 +501,9 @@ if ($result >= 0) {
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
 		print '<tr class="liste_total">';
 
-		print '<td align="right" colspan="13"><strong>Total :</strong></td>';
-		print '<td><strong>' . price(round($total,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+		print '<td align="right" colspan="14"><strong>Total :</strong></td>';
+		//print '<td><strong>' . price(round($total,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
+		print '<td></td>';
 		print '<td><strong>' . price(round($totalforthirdparty,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong></td>';
 
 
