@@ -4153,6 +4153,10 @@ class Agefodd extends DolibarrApi
      */
     function cloneTrainingModule($id)
     {
+        global $user;
+        
+        $user = DolibarrApiAccess::$user;
+        
         if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
             throw new RestException(401, 'Create not allowed for login '.DolibarrApiAccess::$user->login);
         }
@@ -4660,7 +4664,7 @@ class Agefodd extends DolibarrApi
      * 
      * @param int $id ID of the OPCA
      * 
-     * @url GET /opca/{id}
+     * @url GET /opca/
      */    
     function getOpca($id)
     {
@@ -4674,6 +4678,73 @@ class Agefodd extends DolibarrApi
         elseif(empty($this->opca->id)) throw new RestException(404, "OPCA not found");
         
         return $this->_cleanObjectDatas($this->opca);
+    }
+    
+    /**
+     * Get all OPCA of a session
+     * 
+     * @param int $sessid
+     * 
+     * @url GET /opca/bysession
+     */
+    function getSessionOpca($sessid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error retrieving session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $result = $this->opca->getOpcaSession($sessid);
+        if($result<0) throw new RestException(500, "Error retrieving OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->opca->lines)) throw new RestException(404, "No OPCA found for this session");
+
+        return $this->opca->lines;        
+        
+    }
+    
+    /**
+     * Get all OPCA in a session for a thirdparty ( and for a trainee)
+     * 
+     * @param int $fk_soc_trainee   ID of the thirdparty
+     * @param int $sessid           ID of the session
+     * @param int $traineeid        ID of a trainee
+     * 
+     * @url GET /opca/traineesession/
+     */
+    function getTraineeSessionOpca($fk_soc_trainee, $sessid, $traineeid = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error retrieving session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        $fk_trainee_session = 0;
+        if(!empty($traineeid))
+        {
+            $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+            $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
+            if($result < 0) throw new RestException(500, 'Error while retrieving the trainee in session', array($this->db->lasterror, $this->db->lastqueryerror));
+            elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
+            
+            $fk_trainee_session = $this->traineeinsession->id;
+        }
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $result = $this->opca->getOpcaForTraineeInSession($fk_soc_trainee, $sessid);
+        if($result < 0) throw new RestException(500, "Error getting the OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->opca->opca_rowid)) throw new RestException(404, "OPCA not found");
+        
+        return $this->getOpca($this->opca->opca_rowid);
+        
     }
     
     /**
@@ -4734,6 +4805,34 @@ class Agefodd extends DolibarrApi
         
         $result = $this->opca->create(DolibarrApiAccess::$user);
         if($result<0) throw new RestException(500, "Error creating opca", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getOpca($result);
+    }
+    
+    /**
+     * Clone an opca
+     * 
+     * @param int $id ID of the OPCA to clone
+     * 
+     * @url POST /opca/clone/
+     */
+    function cloneOpca($id)
+    {
+        global $user;
+        
+        $user = DolibarrApiAccess::$user;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $result = $this->opca->fetch($id);
+        if($result < 0) throw new RestException(500, "Error getting the OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->opca->id)) throw new RestException(404, "OPCA not found");
+        
+        $result = $this->opca->createFromClone($id);
+        if($result < 0) throw new RestException(500, "Error during clone", array($this->db->lasterror, $this->db->lastqueryerror));
         
         return $this->getOpca($result);
     }
