@@ -422,6 +422,8 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 	if (empty($cancel)) {
 		$agf = new Agsession($db);
 
+
+
 		$fk_session_place = GETPOST('place', 'int');
 		if (($fk_session_place == - 1) || (empty($fk_session_place))) {
 			$error ++;
@@ -495,6 +497,8 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		$agf->duree_session = GETPOST('duree_session', 'int');
 		$agf->intitule_custo = GETPOST('intitule_custo', 'alpha');
 
+		$fk_propal=GETPOST('fk_propal','int');
+
 		if ($error == 0) {
 
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
@@ -534,6 +538,22 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				if (! empty($sessionplaceerror)) {
 					setEventMessage($sessionplaceerror, 'warnings');
 				}
+			}
+		}
+
+		if ($error == 0 && !empty($fk_propal)) {
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_elem = new Agefodd_session_element($db);
+			$agf_elem->fk_element = $fk_propal;
+			$agf_elem->fk_session_agefodd =  $agf->id;
+			$agf_elem->fk_soc = $custid;
+			$agf_elem->element_type = 'propal';
+
+			$result = $agf_elem->create($user);
+
+			if ($result < 0) {
+				setEventMessage($agf_elem->error, 'errors');
+				$error ++;
 			}
 		}
 
@@ -640,12 +660,16 @@ $formother=new FormOther($db);
 if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$fk_soc_crea = GETPOST('fk_soc', 'int');
+	$fk_propal = GETPOST('fk_propal', 'int');
 
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
 	print '<form name="add" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="add_confirm">';
+	if (!empty($fk_propal)) {
+		print '<input type="hidden" name="fk_propal" value="'.$fk_propal.'">';
+	}
 
 	print '<table id="session_card" class="border tableforfield" width="100%">';
 

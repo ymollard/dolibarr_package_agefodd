@@ -65,6 +65,41 @@ class ActionsAgefodd
 	 $this->resprints = $out;
 	 }*/
 
+	public function completeTabsHead($parameters, &$object, &$action, $hookmanager) {
+
+		global $conf, $langs, $bc, $var;
+
+		$contextarray=array('ordersuppliercard','propalcard','ordercard','invoicecard','invoicesuppliercard');
+		$contextcurrent=explode(':', $parameters['context']);
+		$current_obj=$parameters['object'];
+		$res_array=array_intersect($contextarray, $contextcurrent);
+		if (is_array($res_array) && count($res_array)>0 && $parameters['mode']=='add') {
+			$head = $parameters['head'];
+			foreach ( $head as $key=>&$val) {
+				if ($val[2]==tabAgefodd) {
+					dol_include_once('/agefodd/class/agsession.class.php');
+					$agf = new Agsession($this->db);
+					$resql = $agf->fetch_all_by_order_invoice_propal('', '', 0, 0,
+							get_class($current_obj)=='Commande'?$current_obj->id:0,
+							get_class($current_obj)=='Facture'?$current_obj->id:0,
+							get_class($current_obj)=='Propal'?$current_obj->id:0,
+							get_class($current_obj)=='FactureFournisseur'?$current_obj->id:0,
+							get_class($current_obj)=='CommandeFournisseur'?$current_obj->id:0);
+					if ($resql <0) {
+						setEventMessage('From hook completeTabsHead agefodd :'.$agf->error,'errors');
+					} else {
+						$langs->load('agefodd@agefodd');
+						if ($resql > 0) $val[1].= ' <span class="badge">'.$resql.'</span>';
+					}
+				}
+			}
+			$this->results = $head;
+			return 1;
+		}
+
+		return 0;
+	}
+
 	/**
 	 * addSearchEntry Method Hook Call
 	 *

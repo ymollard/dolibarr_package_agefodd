@@ -3079,10 +3079,10 @@ class Agsession extends CommonObject
 	 * @param string $fourninvoiceid num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '', $fournorderid = '') {
+	public function fetch_all_by_order_invoice_propal($sortorder='', $sortfield='s.rowid', $limit=0, $offset=0, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '', $fournorderid = '') {
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref";
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session,";
@@ -3167,7 +3167,13 @@ class Agsession extends CommonObject
 			$sql .= " ,propal_dol.ref ";
 		}
 
-		$sql .= " ORDER BY $sortfield $sortorder " . $this->db->plimit($limit + 1, $offset);
+		if (!empty($sortfield)) {
+			$sql .= " ORDER BY $sortfield $sortorder ";
+		}
+
+		if (!empty($limit)) {
+			$sql .= $this->db->plimit($limit + 1, $offset);
+		}
 
 		dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal", LOG_DEBUG);
 		$resql = $this->db->query($sql);

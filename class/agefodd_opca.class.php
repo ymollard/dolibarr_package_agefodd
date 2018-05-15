@@ -185,7 +185,7 @@ class Agefodd_opca extends CommonObject {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-
+		$sql .= " t.fk_session_trainee,";
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA,";
@@ -210,7 +210,7 @@ class Agefodd_opca extends CommonObject {
 				$obj = $this->db->fetch_object($resql);
 
 				$this->id = $obj->rowid;
-
+				$this->fk_session_trainee = $obj->fk_session_trainee;
 				$this->fk_soc_trainee = $obj->fk_soc_trainee;
 				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_OPCA);
