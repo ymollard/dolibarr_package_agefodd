@@ -31,6 +31,7 @@
  dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
  dol_include_once('/agefodd/class/agefodd_place.class.php');
  dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
+ dol_include_once('/agefodd/class/agefodd_opca.class.php');
  
  dol_include_once('agefodd/lib/agefodd.lib.php');
 
@@ -147,6 +148,7 @@ class Agefodd extends DolibarrApi
 		$this->training = new Formation($this->db);                                           // agefodd training
 		$this->trainingmodules = new Agefoddformationcataloguemodules($this->db);             // agefodd trainingmodule 
 		$this->place = new Agefodd_place($this->db);                                          // agefodd place
+		$this->opca = new Agefodd_opca($this->db);                                            // agefodd OPCA
     }
 
     
@@ -4649,6 +4651,169 @@ class Agefodd extends DolibarrApi
                 'message' => 'place deleted'
             )
         );
+    }
+    
+    /***************************************************************** OPCA Part *****************************************************************/
+    
+    /**
+     * Get an OPCA
+     * 
+     * @param int $id ID of the OPCA
+     * 
+     * @url GET /opca/{id}
+     */    
+    function getOpca($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $result = $this->opca->fetch($id);
+        if($result < 0) throw new RestException(500, "Error getting the OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->opca->id)) throw new RestException(404, "OPCA not found");
+        
+        return $this->_cleanObjectDatas($this->opca);
+    }
+    
+    /**
+     * Create an Opca
+     * 
+     * @param int       $sessid                 ID of the session
+     * @param int       $traineeId              ID of the trainee
+     * @param int       $traineeSoc             ID of the society of the trainee
+     * @param int       $is_date_ask_OPCA       0 if no demand sent or 1
+     * @param string    $date_ask_OPCA          date of the demand if asked (Must be with the format yyyy-mm-dd)
+     * @param int       $is_OPCA                1 if there is an founder thirdparty
+     * @param int       $fk_soc_OPCA            ID of the thirdparty founder
+     * @param int       $fk_socpeople_OPCA      ID of the founder contact
+     * @param string    $num_OPCA_soc           Reference of the thirdparty in OPCA
+     * @param string    num_OPCA_file           Reference of the OPCA file
+     * 
+     * @throws RestException
+     * 
+     * @url POST /opca/
+     */
+    function postOpca($sessid, $traineeId, $traineeSoc,$is_date_ask_OPCA = 0, $date_ask_OPCA='', $is_OPCA = 0, $fk_soc_OPCA = 0, $fk_socpeople_OPCA = 0, $num_OPCA_soc = '', $num_OPCA_file = '')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error retrieving session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        $this->trainee = new Agefodd_stagiaire($this->db);
+        $result = $this->trainee->fetch($traineeId);
+        if($result < 0) throw new RestException(500, "Error retrieving trainee", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "trainee not found");
+        
+        $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+        $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeId);
+        if($result < 0) throw new RestException(500, 'Error while retrieving the trainee in session', array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $this->opca->fk_session_trainee = $this->traineeinsession->id;
+        $this->opca->fk_soc_trainee = $traineeSoc;
+        $this->opca->fk_session_agefodd = $sessid;
+        $this->opca->is_date_ask_OPCA = (empty($is_date_ask_OPCA)) ? 0 : 1;
+        
+        if(!empty($date_ask_OPCA)) {
+            if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_ask_OPCA)) throw new RestException(503, "Bad date format. date_ask_OPCA must be in format yyyy-mm-dd");
+            $this->opca->is_date_ask_OPCA = 1;
+            $this->opca->date_ask_OPCA = dol_mktime(0, 0, 0, substr($date_ask_OPCA, 5, 2), substr($date_ask_OPCA, 8, 2), substr($date_ask_OPCA, 0, 4));
+        }
+        $this->opca->is_OPCA = (empty($is_OPCA)) ? 0 : 1;
+        $this->opca->fk_soc_OPCA = (empty($fk_soc_OPCA)) ? 0 : $fk_soc_OPCA;
+        $this->opca->fk_socpeople_OPCA = (empty($fk_socpeople_OPCA)) ? 0 : $fk_socpeople_OPCA;
+        $this->opca->num_OPCA_soc = (empty($num_OPCA_soc)) ? '' : $num_OPCA_soc;
+        $this->opca->num_OPCA_file = (empty($num_OPCA_file)) ? '' : $num_OPCA_file;
+        
+        $result = $this->opca->create(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error creating opca", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getOpca($result);
+    }
+    
+    /**
+     * Update an OPCA
+     * 
+     * @param int       $id                     ID of the OPCA to update
+     * @param int       $is_date_ask_OPCA       0 if no demand sent or 1 (-1 = unchanged)
+     * @param string    $date_ask_OPCA          date of the demand if asked (Must be with the format yyyy-mm-dd)
+     * @param int       $is_OPCA                1 if there is a founder thirdparty (-1 = unchanged)
+     * @param int       $fk_soc_OPCA            ID of the thirdparty founder (-1 = unchanged)
+     * @param int       $fk_socpeople_OPCA      ID of the founder contact (-1 = unchanged)
+     * @param string    $num_OPCA_soc           Reference of the thirdparty in OPCA
+     * @param string    $num_OPCA_file           Reference of the OPCA file
+     * 
+     * @throws RestException
+     * 
+     * @url PUT /opca/
+     */
+    function putOpca($id, $is_date_ask_OPCA = -1, $date_ask_OPCA='', $is_OPCA = -1, $fk_soc_OPCA = -1, $fk_socpeople_OPCA = -1, $num_OPCA_soc = '', $num_OPCA_file = '')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $result = $this->opca->fetch($id);
+        if($result < 0) throw new RestException(500, "Error getting the OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->opca->id)) throw new RestException(404, "OPCA not found");
+        
+        if($is_date_ask_OPCA > -1) $this->opca->is_date_ask_OPCA = (empty($is_date_ask_OPCA)) ? 0 : 1;
+        
+        if(!empty($date_ask_OPCA)) {
+            if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_ask_OPCA)) throw new RestException(503, "Bad date format. date_ask_OPCA must be in format yyyy-mm-dd");
+            $this->opca->is_date_ask_OPCA = 1;
+            $this->opca->date_ask_OPCA = dol_mktime(0, 0, 0, substr($date_ask_OPCA, 5, 2), substr($date_ask_OPCA, 8, 2), substr($date_ask_OPCA, 0, 4));
+        }
+        if($is_OPCA > -1) $this->opca->is_OPCA = (empty($is_OPCA)) ? 0 : 1;
+        if($fk_soc_OPCA > -1) $this->opca->fk_soc_OPCA = $fk_soc_OPCA;
+        if($fk_socpeople_OPCA > -1) $this->opca->fk_socpeople_OPCA = $fk_socpeople_OPCA;
+        if(!empty($num_OPCA_soc)) $this->opca->num_OPCA_soc = $num_OPCA_soc;
+        if(!empty($num_OPCA_file)) $this->opca->num_OPCA_file = $num_OPCA_file;
+        
+        $result = $this->opca->update(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error updating opca", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getOpca($id);
+    }
+    
+    /**
+     * Delete an OPCA
+     * 
+     * @param int  $id  ID of the OPCA to delete
+     * 
+     * @throws RestException
+     * 
+     * @url DELETE /opca/
+     */
+    function deleteOpca($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->opca = new Agefodd_opca($this->db);
+        $result = $this->opca->fetch($id);
+        if($result < 0) throw new RestException(500, "Error getting the OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->opca->id)) throw new RestException(404, "OPCA not found");
+        
+        $result = $this->opca->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(503, "Error delete", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'OPCA deleted'
+            )
+        );
+        
     }
     
     /***************************************************************** Cursus Part *****************************************************************/
