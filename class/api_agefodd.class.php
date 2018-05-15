@@ -4021,7 +4021,7 @@ class Agefodd extends DolibarrApi
      * @param int       $offset
      * @param array     $filter
      * 
-     * @url POST /trainingmodules/
+     * @url POST /trainingmodules/filter/
      */
     function trainingModuleIndex($sortorder = 'DESC', $sortfield = 't.rowid', $limit = 100, $offset = 0, $filter = array())
     {
@@ -4035,7 +4035,19 @@ class Agefodd extends DolibarrApi
         elseif(empty($result)) throw new RestException(404, "No training module found");
         
         $obj_ret = array();
-        foreach ($this->trainingmodules->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        foreach ($this->trainingmodules->lines as $line) {
+            $obj = new stdClass();
+            
+            $obj->id = $line->id;
+            $obj->fk_formation_catalogue = $line->fk_formation_catalogue;
+            $obj->sort_order = $line->sort_order;
+            $obj->title = $line->title;
+            $obj->content_text = $line->content_text;
+            $obj->obj_peda = $line->obj_peda;
+            $obj->duration = $line->duration;
+            
+            $obj_ret[] = $obj;
+        }
         
         return $obj_ret;
     }
@@ -4052,13 +4064,106 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        if(empty($id)) throw new RestException(503, "No id provided");
+        
         $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
         $result = $this->trainingmodules->fetch($id);
         if($result < 0) throw new RestException(500, "Error retrieving modules", array($this->db->lasterror, $this->db->lastqueryerror));
         elseif(empty($result)) throw new RestException(404, "No training module found");
         
-        return $this->_cleanObjectDatas($this->trainingmodules);
+        $obj_ret = new stdClass();
         
+        $obj_ret->id = $this->trainingmodules->id;
+        $obj_ret->fk_formation_catalogue = $this->trainingmodules->fk_formation_catalogue;
+        $obj_ret->sort_order = $this->trainingmodules->sort_order;
+        $obj_ret->title = $this->trainingmodules->title;
+        $obj_ret->content_text = $this->trainingmodules->content_text;
+        $obj_ret->obj_peda = $this->trainingmodules->obj_peda;
+        $obj_ret->duration = $this->trainingmodules->duration;
+        
+        return $obj_ret;
+        
+    }
+    
+    /**
+     * Create a training module
+     * 
+     * @param int       $trainingId     ID of the training 
+     * @param string    $title          Title of the module
+     * @param float     $duration       duration of this training part
+     * @param string    $content_text   text infos on the module
+     * @param string    $obj_peda       training goals of this part
+     * @param string    $sort_order     Order of the training part in the training("max" to add module at the end or a number)
+     * 
+     * @url POST /trainingmodules/
+     */
+    function postTrainingModule($trainingId, $title, $duration = 0, $content_text = '', $obj_peda='', $sort_order = "max")
+    {
+        global $conf;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Create not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if(empty($trainingId)) throw new RestException(503, "No trainingId provided");
+        else {
+            $this->training = new Formation($this->db);
+            $result = $this->training->fetch($trainingId);
+            if($result < 0) throw new RestException(503, "Error retrieving training", array($this->db->lasterror, $this->db->lastqueryerror));
+            elseif(empty($this->training->id)) throw new RestException(404, "Training $trainingId not found");
+        }
+        
+        if(empty($title)) throw new RestException(503, "No title provided");
+        
+        $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
+        
+        $this->trainingmodules->entity=$conf->entity;
+        $this->trainingmodules->fk_formation_catalogue = $trainingId;
+        
+        if($sort_order == "max")
+        {
+            $this->trainingmodules->sort_order = $this->trainingmodules->findMaxSortOrder();
+        } elseif(!intval($sort_order)){
+            throw new RestException(500, "sort_order must be 'max' or a number");
+        } else $this->trainingmodules->sort_order = $sort_order;
+        
+        $this->trainingmodules->title = $title;
+        $this->trainingmodules->content_text = $content_text;
+        $this->trainingmodules->duration = $duration;
+        $this->trainingmodules->obj_peda = $obj_peda;
+        $this->trainingmodules->status=1;
+        
+        $result = $this->trainingmodules->create(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error creating the module", array($this->db->lasterror, $this->db->lastquery));
+        
+        return $this->getTrainingModule($this->trainingmodules->id);
+    }
+    
+    /**
+     * Clone a training module
+     * 
+     * @param int $id ID of the module
+     * 
+     * @throws RestException
+     * @return stdClass
+     * 
+     * @url POST /trainingmodules/clone/
+     */
+    function cloneTrainingModule($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Create not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
+        $result = $this->trainingmodules->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving modules", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "No training module found");
+        
+        $result = $this->trainingmodules->createFromClone($id);
+        if($result < 0) throw new RestException(500, "Error during module clone", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getTrainingModule($result);
     }
     
     /**
@@ -4067,15 +4172,70 @@ class Agefodd extends DolibarrApi
      * @param int       $id             ID of the training module
      * @param string    $title          title of the module
      * @param string    $content_text   text infos on the module
-     * @param int       $duration       duration of this training part
+     * @param float     $duration       duration of this training part
      * @param string    $obj_peda       training goals of this part
+     * @param int       $sort_order     Order of the training part in the training
      * 
      * @url PUT /trainingmodules/
      */
-    function putTrainingModule($id, $title = '', $content_text = '', $duration = 0, $obj_peda = '')
+    function putTrainingModule($id, $title = '', $content_text = '', $duration = 0, $obj_peda = '', $sort_order = 0)
     {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
         
+        if(empty($id)) throw new RestException(503, "No id provided");
+        
+        $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
+        $result = $this->trainingmodules->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving modules", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "No training module found");
+        
+        if(!empty($title)) $this->trainingmodules->title = $title;
+        if(!empty($content_text)) $this->trainingmodules->content_text = $content_text;
+        if(!empty($duration) || $this->trainingmodules->duration !== $duration) $this->trainingmodules->duration = $duration;
+        if(!empty($obj_peda)) $this->trainingmodules->obj_peda = $obj_peda;
+        if(!empty($sort_order)) $this->trainingmodules->sort_order = $sort_order;
+        
+        $result = $this->trainingmodules->update(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error updating training module $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getTrainingModule($id);
     }
+    
+    /**
+     * Delete a training module
+     * 
+     * @param int $id ID of the training module to delete
+     * 
+     * @throws RestException
+     * @url DELETE /trainingmodules/
+     */
+    function deleteTrainingModule($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if(empty($id)) throw new RestException(503, "No id provided");
+        
+        $this->trainingmodules = new Agefoddformationcataloguemodules($this->db);
+        $result = $this->trainingmodules->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving modules", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "No training module found");
+        
+        $result = $this->trainingmodules->delete(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error deleting training module $id", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'training module '.$id.' deleted'
+            )
+        );
+    }
+    
+    
     
     /***************************************************************** Place Part *****************************************************************/
     
