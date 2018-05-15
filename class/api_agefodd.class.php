@@ -24,6 +24,7 @@
  dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_element.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
@@ -149,6 +150,7 @@ class Agefodd extends DolibarrApi
 		$this->trainingmodules = new Agefoddformationcataloguemodules($this->db);             // agefodd trainingmodule 
 		$this->place = new Agefodd_place($this->db);                                          // agefodd place
 		$this->opca = new Agefodd_opca($this->db);                                            // agefodd OPCA
+		$this->sessionlinks = new Agefodd_session_element($this->db);                         // elements linked to a session
     }
 
     
@@ -4912,6 +4914,146 @@ class Agefodd extends DolibarrApi
                 'message' => 'OPCA deleted'
             )
         );
+        
+    }
+    
+    /***************************************************************** Session Links Part *****************************************************************/
+    
+    /**
+     * Get a SessionLink
+     * 
+     * @param int   $id     ID of the SessionLink
+     * 
+     * @throws RestException
+     * @url GET /sessions/links/{id}
+     */
+    function getLinks($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch($id);
+        if($result<0) throw new RestException(500, "Error while getting the link", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->id)) throw new RestException(404, "Link not found");
+        
+        return $this->_cleanObjectDatas($this->sessionlinks);
+    }
+    
+    /**
+     * Get all linked documents of a type for the thirdparty
+     * 
+     * @param int       $socid  ID of the thirdparty
+     * @param string    $type   Type of document ("bc" for orders, "fac" for invoices or "prop" for proposals)
+     * 
+     * @url GET /sessions/links/bysoc
+     */
+    function getLinksSoc($socid, $type = 'bc')
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if(empty($type) || !in_array($type, array('bc','prop', 'fac'))) throw new RestException(500, "Bad type $type provided");
+
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch_element_per_soc($socid, $type);
+        if($result<0) throw new RestException(500, "Error while getting the links", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->lines)) throw new RestException(404, "No link found with this parameters");
+        
+        $obj_ret = array();
+        
+        foreach ($this->sessionlinks->lines as $line)
+        {
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Get a link from the document id
+     * 
+     * @param int    $id        ID of the document
+     * @param string $type      Type of document ("bc" for orders, "fac" for invoices or "prop" for proposals)
+     * @param int    $sessid    filter on a session id
+     * 
+     * @url GET /sessions/links/bydoc
+     */
+    function getLinksById($id, $type = 'bc', $sessid = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if(empty($type) || !in_array($type, array('bc','prop', 'fac'))) throw new RestException(500, "Bad type $type provided");
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch_element_by_id($id, $type, $sessid);
+        if($result<0) throw new RestException(500, "Error while getting the links", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->lines)) throw new RestException(404, "No link found with this parameters");
+        
+        $obj_ret = array();
+        
+        foreach ($this->sessionlinks->lines as $line)
+        {
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Get all link for a session
+     * 
+     * @param int   $sessid     ID of the session
+     * @param int   $idsoc      ID of the thirdparty
+     * @param array $type       Array of types (you can use "propal", "order", "invoice")
+     * 
+     * @throws RestException
+     * @return array[]
+     * 
+     * @url POST /sessions/links/bythirdparty
+     */
+    function getLinksByThirdparty($sessid, $idsoc = 0, $type = array())
+    {
+        // fetch_by_session_by_thirdparty
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch_by_session_by_thirdparty($sessid, $idsoc, $type);
+        if($result<0) throw new RestException(500, "Error while getting the links", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->lines)) throw new RestException(404, "No link found with this parameters");
+        
+        $obj_ret = array();
+        
+        foreach ($this->sessionlinks->lines as $line)
+        {
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * 
+     * @param unknown $idsoc
+     * @throws RestException
+     */
+    function getLinksSupplierInvoices($idsoc)
+    {
+        // fetch_invoice_supplier_by_thridparty
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch_invoice_supplier_by_thridparty($idsoc);
+        if($result<0) throw new RestException(500, "Error while getting the links", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->lines)) throw new RestException(404, "No link found with this parameters");
         
     }
     
