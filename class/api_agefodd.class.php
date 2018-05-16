@@ -21,6 +21,7 @@
  
  dol_include_once('/agefodd/class/agsession.class.php');
  dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+ dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
  dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
@@ -143,6 +144,7 @@ class Agefodd extends DolibarrApi
 		$this->sessioncalendar = new Agefodd_sesscalendar($this->db);                         // agefodd sessioncalendar
 		$this->trainee = new Agefodd_stagiaire($this->db);                                    // agefodd trainee
 		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);                   // traineeinsession
+		$this->traineehours = new Agefoddsessionstagiaireheures($this->db);                   // hours spent by trainees in the sessions
 		$this->trainer = new Agefodd_teacher($this->db);                                      // agefodd teacher
 		$this->trainerinsession = new Agefodd_session_formateur($this->db);                   // trainerinsession
 		$this->trainerinsessioncalendar = new Agefoddsessionformateurcalendrier($this->db);   // calendar of a trainer in a session
@@ -5370,6 +5372,112 @@ class Agefodd extends DolibarrApi
                 'message' => 'Link deleted'
             )
         );
+    }
+    
+    /***************************************************************** Trainee Hours Part *****************************************************************/
+    
+    /**
+     * Get one TraineeHour by his id
+     * 
+     * @param int $id ID of the traineehour
+     * 
+     * @url GET /sessions/traineehours
+     */
+    function getTraineeHour($id) // fetch
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        
+    }
+    
+    function getTraineeHourBySession($sessid, $traineeid, $sessionCalendarId) // fetch_by_session
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+    }
+    
+    function getAllTraineeHourBySession($id, $trainee) // fetch_all_by_session
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+    }
+    
+    function getTraineeSessionHours($sessid, $traineeid) // heures_stagiaire
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+    }
+    
+    function getTotalTraineeHours($traineeid) // heures_stagiaire_totales
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+    }
+    
+    function createTraineeHour() // create
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Create not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+    }
+    
+    function putTraineeHour() // update
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Update not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+    }
+    
+    function deleteTraineeHour($id) // delete
+    {
+        global $conf, $langs;
+        
+        if(empty($conf->global->AGF_USE_REAL_HOURS)) throw new RestException(503, 'the configuration \''.$langs->transnoentitiesnoconv('AgfUseRealHours').'\' must be activated to use this feature.');
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
     }
     
     /***************************************************************** Cursus Part *****************************************************************/
