@@ -272,7 +272,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " t.heures,";
 	    $sql .= " t.fk_user_author,";
 	    $sql .= " t.datec,";
-	    $sql .= " t.tms";
+	    $sql .= " t.tms,";
 	    $sql .= " CONCAT(a.nom,' ', a.prenom) as nom_stagiaire";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as t";
 	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
