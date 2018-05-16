@@ -5039,9 +5039,12 @@ class Agefodd extends DolibarrApi
     }
     
     /**
+     * Get the list of IDs of linkable supplier_invoice for a thirdparty
      * 
-     * @param unknown $idsoc
+     * @param int   $idsoc      ID of the supplier thridparty
+     * 
      * @throws RestException
+     * @url GET /sessions/links/supplierinvoices
      */
     function getLinksSupplierInvoices($idsoc)
     {
@@ -5055,6 +5058,318 @@ class Agefodd extends DolibarrApi
         if($result<0) throw new RestException(500, "Error while getting the links", array($this->db->lasterror, $this->db->lastqueryerror));
         elseif(empty($this->sessionlinks->lines)) throw new RestException(404, "No link found with this parameters");
         
+        return $this->sessionlinks->lines;
+    }
+    
+    /**
+     * Get costs and amounts on a session
+     * 
+     * @param int       $sessid         ID of the session
+     * @param int       $trainerid      Filter on a trainer id
+     * 
+     * @throws RestException
+     * @return stdClass
+     * 
+     * @url GET /sessions/costs/
+     */
+    function getSessionAmounts($sessid, $trainerid = 0)
+    {
+        // fetch_by_session
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error getting the session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        $opsid = '';
+        if(!empty($trainerid))
+        {
+            $this->trainerinsession = new Agefodd_session_formateur($this->db);
+            $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+            if (empty($result)) throw new RestException(404, "No trainer for this session");
+            elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+            
+            
+            foreach ($this->trainerinsession->lines as $line) {
+                if($line->formid == $trainerid) {
+                    $opsid = $line->opsid;
+                    break;
+                }
+            }
+            if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch_by_session($sessid, $opsid);
+        if($result<0) throw new RestException(500, "Error while getting amounts", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $obj_ret = new stdClass();
+        
+        $obj_ret->propal_sign_amount = $this->sessionlinks->propal_sign_amount;
+        $obj_ret->propal_amount = $this->sessionlinks->propal_amount;
+        $obj_ret->order_amount = $this->sessionlinks->order_amount;
+        $obj_ret->invoice_ongoing_amount = $this->sessionlinks->invoice_ongoing_amount;
+        $obj_ret->nb_invoice_validated = $this->sessionlinks->nb_invoice_validated;
+        $obj_ret->nb_invoice_unpaid = $this->sessionlinks->nb_invoice_unpaid;
+        $obj_ret->invoice_payed_amount = $this->sessionlinks->invoice_payed_amount;
+        $obj_ret->trainer_cost_amount = $this->sessionlinks->trainer_cost_amount;
+        $obj_ret->trip_cost_amount = $this->sessionlinks->trip_cost_amount;
+        $obj_ret->room_cost_amount = $this->sessionlinks->room_cost_amount;
+        $obj_ret->invoicetrainerdraft = $this->sessionlinks->invoicetrainerdraft;
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Get the number of trainee for sessions linked with the supplier invoice given
+     * 
+     * @param int $id ID of the supplier invoice
+     * 
+     * @url GET /sessions/nbtraineebyinvoice
+     */
+    function getLinkedSessions($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->get_linked_sessions($id, '%invoice_supplier%');
+        if(!$result) throw new RestException(500, "Error", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $result;
+    }
+    
+    /**
+     * Get all element linked to a session
+     * 
+     * @param int   $sessid     ID of the session
+     * 
+     * @throws RestException
+     * 
+     * @url GET /sessions/links/
+     * 
+     */
+    function getAllSessionLinks($sessid)
+    {
+        //fetch_element_by_session
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch_element_by_session($sessid);
+        if($result<0) throw new RestException(500, "Error", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif (empty($this->sessionlinks->lines)) throw new RestException(404, "No link found");
+        
+        return $this->sessionlinks->lines;
+        
+    }
+    
+    /**
+     * Update a session selling price
+     * 
+     * @param int   $sessid     Id of the session
+     * 
+     * @url PUT /sessions/updatesellingprice/
+     */
+    function sessionUpdatePrices($sessid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error getting the session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $this->sessionlinks->fk_session_agefodd = $sessid;
+        $result = $this->sessionlinks->updateSellingPrice(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error updating prices", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'selling price for session '. $sessid .' updated'
+            )
+        );
+    }
+    
+    /**
+     * Create a link to a session
+     * 
+     * @param int       $sessid         ID of the session
+     * @param int       $fk_soc         ID of the thirdparty involved
+     * @param string    $element_type   Type of link (can be "propal", "invoice", "order", "invoice_supplier_room", "invoice_supplierline_room", "invoice_supplier_trainer", "invoice_supplierline_trainer", "invoice_supplier_missions" or "order_supplier")
+     * @param int       $fk_element     ID of the element to link
+     * @param int       $trainerid      ID of a trainer (only used if element_type is "invoice_supplier_trainer" or "invoice_supplier_trainer")
+     * 
+     * @url POST /sessions/links/
+     */
+    function createLink($sessid, $fk_soc, $element_type, $fk_element, $trainerid = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error getting the session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        if(empty($fk_soc)) throw new RestException(500, "fk_soc needed");
+        
+        $result = $this->session->fetch_societe_per_session($sessid);
+        if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+        
+        $TCustomers = array();
+        foreach ($this->session->lines as $line)
+        {
+            $TCustomers[] = $line->socid;
+        }
+        
+        if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
+        if(!in_array($fk_soc, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
+        
+        $TAllowedTypes = array("propal", "invoice", "order", "invoice_supplier_room", "invoice_supplierline_room", "invoice_supplier_trainer", "invoice_supplierline_trainer", "invoice_supplier_missions", "order_supplier");
+        if(!in_array($element_type, $TAllowedTypes)) throw new RestException(500, "Bad element_type $element_type provided");
+        
+        if(in_array($element_type, array("invoice_supplier_trainer", "invoice_supplier_trainer")))
+        {
+            if(empty($trainerid)) throw new RestException(500, "trainerid needed for the element_type $element_type");
+            else {
+                $opsid = '';
+                if(!empty($trainerid))
+                {
+                    $this->trainerinsession = new Agefodd_session_formateur($this->db);
+                    $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+                    if (empty($result)) throw new RestException(404, "No trainer for this session");
+                    elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+                    
+                    
+                    foreach ($this->trainerinsession->lines as $line) {
+                        if($line->formid == $trainerid) {
+                            $opsid = $line->opsid;
+                            break;
+                        }
+                    }
+                    if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
+                }
+            }
+        }
+        
+        if(empty($fk_element)) throw new RestException(500, "fk_element needed");
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $this->sessionlinks->fk_session_agefodd = $sessid;
+        $this->sessionlinks->fk_soc = $fk_soc;
+        $this->sessionlinks->element_type = $element_type;
+        $this->sessionlinks->fk_element = $fk_element;
+        if(!empty($opsid)) $this->sessionlinks->fk_sub_element = $opsid;
+        
+        $result = $this->sessionlinks->create(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error creating link", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getLinks($result);
+    }
+    
+    /**
+     * Update a link
+     * 
+     * @param int       $id             ID of the link
+     * @param int       $sessid         ID of the session (-1 = do not change anything)
+     * @param int       $fk_soc         ID of the thirdparty involved (-1 = do not change anything)
+     * @param string    $element_type   Type of link (can be "propal", "invoice", "order", "invoice_supplier_room", "invoice_supplierline_room", "invoice_supplier_trainer", "invoice_supplierline_trainer", "invoice_supplier_missions" or "order_supplier") ('' = do not change anything)
+     * @param int       $fk_element     ID of the element to link (-1 = do not change anything)
+     * @param int       $trainerid      ID of a trainer (only used if element_type is "invoice_supplier_trainer" or "invoice_supplier_trainer") (-1 = do not change anything)
+     * 
+     * @url PUT /sessions/links/
+     */
+    function putLink($id, $sessid = -1, $fk_soc = -1, $element_type = '', $fk_element = -1, $trainerid = -1)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch($id);
+        if($result<0) throw new RestException(500, "Error while getting the link", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->id)) throw new RestException(404, "Link not found");
+        
+        if($sessid > -1) $this->sessionlinks->fk_session_agefodd = $sessid;
+        if($fk_soc > -1) $this->sessionlinks->fk_soc = $fk_soc;
+        if(!empty($element_type))
+        {
+            $TAllowedTypes = array("propal", "invoice", "order", "invoice_supplier_room", "invoice_supplierline_room", "invoice_supplier_trainer", "invoice_supplierline_trainer", "invoice_supplier_missions", "order_supplier");
+            if(!in_array($element_type, $TAllowedTypes)) throw new RestException(500, "Bad element_type $element_type provided");
+            
+            $this->sessionlinks->element_type = $element_type;
+            
+            if(in_array($element_type, array("invoice_supplier_trainer", "invoice_supplier_trainer")))
+            {
+                if(empty($trainerid)) throw new RestException(500, "trainerid needed for the element_type $element_type");
+                else {
+                    $opsid = '';
+                    if(!empty($trainerid))
+                    {
+                        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+                        $result = $this->trainerinsession->fetch_formateur_per_session($sessid);
+                        if (empty($result)) throw new RestException(404, "No trainer for this session");
+                        elseif ($result < 0) throw new RestException(500, "Error while retrieving the trainers");
+                        
+                        foreach ($this->trainerinsession->lines as $line) {
+                            if($line->formid == $trainerid) {
+                                $opsid = $line->opsid;
+                                break;
+                            }
+                        }
+                        if (empty($opsid)) throw new RestException(404, "Trainer not found in this session");
+                        else $this->sessionlinks->fk_sub_element = $opsid;
+                    }
+                }
+                
+            } else unset($this->sessionlinks->fk_sub_element);
+        }
+        if($fk_element > -1) $this->sessionlinks->fk_element = $fk_element;
+        
+        $result = $this->sessionlinks->update(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error creating link", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getLinks($id);
+    }
+    
+    /**
+     * Delete a link
+     * 
+     * @param int   $id     ID of the link to delete
+     * 
+     * @url DELETE /sessions/links/
+     */
+    function deleteLink($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->sessionlinks = new Agefodd_session_element($this->db);
+        $result = $this->sessionlinks->fetch($id);
+        if($result<0) throw new RestException(500, "Error while getting the link", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessionlinks->id)) throw new RestException(404, "Link not found");
+        
+        $result = $this->sessionlinks->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(503, "Error delete", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Link deleted'
+            )
+        );
     }
     
     /***************************************************************** Cursus Part *****************************************************************/
