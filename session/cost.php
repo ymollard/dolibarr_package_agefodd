@@ -1138,7 +1138,7 @@ if (! empty($place->id)) {
 	print '<td width="20%" valign="top">';
 	print '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $place->id . '">' . $place->ref_interne . '</a>';
 	print '&nbsp;';
-	print $place->thirdparty->getNomUrl(1);
+	if(!empty($place->thirdparty)) print $place->thirdparty->getNomUrl(1);
 	print '</td>';
 
 	// If contact is a contact of a supllier
