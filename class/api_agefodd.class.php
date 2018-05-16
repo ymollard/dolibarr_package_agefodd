@@ -16,6 +16,7 @@
  */
 
  use Luracast\Restler\RestException;
+use OAuth\Common\Storage\Session;
 
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
@@ -5381,7 +5382,7 @@ class Agefodd extends DolibarrApi
      * 
      * @param int $id ID of the traineehour
      * 
-     * @url GET /sessions/traineehours
+     * @url GET /sessions/traineehours/byid
      */
     function getTraineeHour($id) // fetch
     {
@@ -5393,9 +5394,22 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        $result = $this->traineehours->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving the hours", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->traineehours->id)) throw new RestException(404, "Trainee Hour $id not found");
         
+        return $this->_cleanObjectDatas($this->traineehours);
     }
     
+    /**
+     * Get one TraineeHour by the id of the session, trainee Id and id of the session calendar period
+     *
+     * @param int $sessid               ID of the session
+     * @param int $traineeid            ID of the trainee
+     * @param int $sessionCalendarId    iD of the sessioncalendar period
+     *
+     * @url GET /sessions/traineehours
+     */
     function getTraineeHourBySession($sessid, $traineeid, $sessionCalendarId) // fetch_by_session
     {
         global $conf, $langs;
@@ -5406,9 +5420,22 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        $result = $this->traineehours->fetch_by_session($sessid, $traineeid, $sessionCalendarId);
+        if($result < 0) throw new RestException(500, "Error retrieving the hours", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif($result = 0) throw new RestException(404, "Trainee Hour not found");
+        
+        return $this->_cleanObjectDatas($this->traineehours);
     }
     
-    function getAllTraineeHourBySession($id, $trainee) // fetch_all_by_session
+    /**
+     * Get all TraineeHour of a trainee in a session
+     *
+     * @param int $sessid               ID of the session
+     * @param int $traineeid            ID of the trainee
+     *
+     * @url GET /sessions/traineehours/all
+     */
+    function getAllTraineeHourBySession($sessid, $traineeid) // fetch_all_by_session
     {
         global $conf, $langs;
         
@@ -5418,8 +5445,27 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        $result = $this->traineehours->fetch_all_by_session($sessid, $traineeid);
+        if($result < 0) throw new RestException(500, "Error retrieving the hours", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif($result = 0) throw new RestException(404, "No trainee Hour found");
+        
+        $obj_ret = array();
+        
+        foreach ($this->traineehours->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
     }
     
+    /**
+     * Get total hours spent by the trainee on the session
+     * 
+     * @param int   $sessid     ID of the session
+     * @param int   $traineeid  ID of the trainee
+     * 
+     * @throws RestException
+     * 
+     * @url GET /sessions/traineehours/forsession
+     */
     function getTraineeSessionHours($sessid, $traineeid) // heures_stagiaire
     {
         global $conf, $langs;
@@ -5430,8 +5476,17 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        return $this->traineehours->heures_stagiaire($sessid, $traineeid);
     }
     
+    /**
+     * Get total hours spent by the trainee
+     * 
+     * @param int $traineeid ID of the trainee
+     * 
+     * @throws RestException
+     * @url GET /sessions/traineehours/total
+     */
     function getTotalTraineeHours($traineeid) // heures_stagiaire_totales
     {
         global $conf, $langs;
@@ -5442,9 +5497,22 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        return $this->traineehours->heures_stagiaire_totales($traineeid);
     }
     
-    function createTraineeHour() // create
+    /**
+     * Create a trainee hour
+     * 
+     * @param int   $sessid
+     * @param int   $traineeid
+     * @param int   $calendarId
+     * @param number $hours
+     * 
+     * @throws RestException
+     * 
+     * @url POST /sessions/traineehours/
+     */
+    function createTraineeHour($sessid, $traineeid, $calendarId, $hours = 0) // create
     {
         global $conf, $langs;
         
@@ -5453,10 +5521,34 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Create not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error getting the session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "Session not found");
+        
+        $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+        $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
+        if($result < 0) throw new RestException(500, 'Error while retrieving the trainee in session', array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif (empty($result)) throw new RestException(404, 'Trainee not found in this session');
+        
+        $this->sessioncalendar = new Agefodd_sesscalendar($this->db);
+        $result = $this->sessioncalendar->fetch($calendarId);
+        if($result < 0) throw new RestException(500, "Error retrieving the session calendar", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->sessioncalendar)) throw new RestException(404, "Session calendar not found");
+                
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        $this->traineehours->fk_stagiaire = $traineeid;
+        $this->traineehours->fk_calendrier = $calendarId;
+        $this->traineehours->fk_session = $sessid;
+        $this->traineehours->heures = ( float ) $hours;
+        
+        $result = $this->traineehours->create(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error creating the trainee hour", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getAllTraineeHourBySession($sessid, $traineeid);
     }
     
-    function putTraineeHour() // update
+    function putTraineeHour($id, $sessid, $traineeid, $calendarId, $hours = 0) // update
     {
         global $conf, $langs;
         
@@ -5478,6 +5570,19 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        $result = $this->traineehours->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving the hours", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->traineehours->id)) throw new RestException(404, "Trainee Hour $id not found");
+        
+        $result = $this->traineehours->delete(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error deleting the hours", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Trainee Hour deleted'
+            )
+        );
     }
     
     /***************************************************************** Cursus Part *****************************************************************/
