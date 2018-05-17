@@ -532,7 +532,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session_adminsitu';
 		$sql .= " SET archive=" . $status . ",  fk_user_mod=" . $user->id;
 		$sql .= ' WHERE fk_agefodd_session=' . $session_id;
-		$sql .= " AND trigger_name='" . $trigger_name . "'";
+		$sql .= " AND trigger_name LIKE '%" . $trigger_name . "%'";
 
 		// print $sql;
 		// exit;

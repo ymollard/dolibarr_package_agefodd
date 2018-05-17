@@ -73,7 +73,12 @@ if ($action == 'link_confirm' && $user->rights->agefodd->creer) {
 	if ($type_link == 'bc')
 		$agf->element_type = 'order';
 	if ($type_link == 'fac')
+	{
 		$agf->element_type = 'invoice';
+		dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+		$admintask = new Agefodd_sessadm($db);
+		$admintask->updateByTriggerName($user, $id, 'AGF_BILL_LINK');
+	}
 	if ($type_link == 'prop')
 		$agf->element_type = 'propal';
 
@@ -204,8 +209,17 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$agfTraining->fetch($agf->fk_formation_catalogue);
 		$PDALink = $agfTraining->generatePDAByLink();
 	}
-	if(empty($PDALink)) {
+	if (empty($PDALink))
+	{
 		$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
+		
+		
+		if ($result == 1)
+		{
+			dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+			$admintask = new Agefodd_sessadm($db);
+			$admintask->updateByTriggerName($user, $id, 'AGF_GEN_'.$model);
+		}
 	}
 }
 
