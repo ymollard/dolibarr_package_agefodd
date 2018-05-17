@@ -259,11 +259,12 @@ class Agefodd_cursus extends CommonObject {
 			$error ++;
 			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfRefInterne"));
 		}
+		return $error;
 		if (empty($this->intitule)) {
 			$error ++;
 			$this->errors[] = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfIntitule"));
 		}
-
+		return $error;
 		if (! $error) {
 			// Check parameters
 			// Put here code to add a control on parameters values
@@ -280,7 +281,7 @@ class Agefodd_cursus extends CommonObject {
 			$sql .= " note_public=" . (isset($this->note_public) ? "'" . $this->db->escape($this->note_public) . "'" : "null");
 
 			$sql .= " WHERE rowid=" . $this->id;
-
+			
 			$this->db->begin();
 
 			dol_syslog(get_class($this) . "::update", LOG_DEBUG);

@@ -27,6 +27,7 @@ use OAuth\Common\Storage\Session;
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
  dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+ dol_include_once('/agefodd/class/agefodd_cursus.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
@@ -143,6 +144,7 @@ class Agefodd extends DolibarrApi
 		$this->db = $db;
 		$this->session = new Agsession($this->db);                                            // agefodd session
 		$this->sessioncalendar = new Agefodd_sesscalendar($this->db);                         // agefodd sessioncalendar
+		$this->cursus = new Agefodd_cursus($this->db);                                        // agefodd cursus
 		$this->trainee = new Agefodd_stagiaire($this->db);                                    // agefodd trainee
 		$this->traineeinsession = new Agefodd_session_stagiaire($this->db);                   // traineeinsession
 		$this->traineehours = new Agefoddsessionstagiaireheures($this->db);                   // hours spent by trainees in the sessions
@@ -5615,6 +5617,278 @@ class Agefodd extends DolibarrApi
     }
     
     /***************************************************************** Cursus Part *****************************************************************/
+
+    /**
+     * Get a list of cursus
+     * 
+     * @param string    $sortorder
+     * @param string    $sortfield
+     * @param int       $limit          limit the number of records returned
+     * @param int       $offset
+     * @param int       $arch           1 = search in archived cursus or 0 for not archived
+     * 
+     * @url GET /cursus/all
+     */
+    function cursusIndex($sortorder = 'DESC', $sortfield = 't.rowid', $limit = 100, $offset = 0, $arch = 0) // fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch_all($sortorder, $sortfield, $limit, $offset, $arch);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "No cursus found");
+        
+        $obj_ret = array();
+        
+        foreach ($this->cursus->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
+    }
+    /**
+     * Get a cursus
+     * 
+     * @param int   $id
+     * 
+     * @throws RestException
+     * @url GET /cursus/
+     */
+    function getCursus($id) // fetch($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        return $this->_cleanObjectDatas($this->cursus);
+    }
+    
+    /**
+     * Get a cursus object with more infos
+     *
+     * @param int   $id
+     *
+     * @throws RestException
+     * @url GET /cursus/infos
+     */
+    function getCursusInfos($id) // info($id)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $result = $this->cursus->info($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus infos", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->_cleanObjectDatas($this->cursus);
+    }
+    
+    /**
+     * Create a cursus
+     *
+     * @param string    $ref_interne    reference of the cursus
+     * @param string    $intitule       name of the cursus
+     * @param string    $note_private   Private note on the cursus
+     * @param string    $note_public    Public note on the cursus
+     * @param array     $extra          array of the cursus extrafields ('code'=>'value')
+     *
+     * @throws RestException
+     * @url POST /cursus/
+     */
+    function createCursus($ref_interne, $intitule, $note_private = '', $note_public = '', $extra = array()) // create($user)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $ref_interne = trim($ref_interne);
+        if(empty($ref_interne)) throw new RestException(500, "Invalid ref_interne");
+        $this->cursus->ref_interne = $ref_interne;
+        
+        $intitule = trim($intitule);
+        if(empty($intitule)) throw new RestException(500, "Invalid intitule");
+        $this->cursus->intitule = $intitule;
+        
+        $this->cursus->note_private = $note_private;
+        $this->cursus->note_public = $note_public;
+        
+        if(!empty($extra))
+        {
+            require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+            $extrafields = new ExtraFields($this->db);
+            $extralabels = $extrafields->fetch_name_optionals_label($this->cursus->table_element, true);
+            if (count($extralabels) > 0) {
+                foreach ($extralabels as $key => $v)
+                {
+                    if(array_key_exists($key, $extra))
+                    {
+                        $this->cursus->array_options['options_'.$key] = $extra[$key];
+                    }
+                }
+            }
+        }
+        
+        $result = $this->cursus->create(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error creating cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+
+        return $this->getCursus($result);
+    }
+    
+    /**
+     * Clone a cursus
+     *
+     * @param int   $id ID of the cursus to clone
+     *
+     * @throws RestException
+     * @url POST /cursus/clone
+     */
+    function cloneCursus($id) // createFromClone($fromid)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $result = $this->cursus->createFromClone($id);
+        if($result < 0) throw new RestException(500, "Error cloning cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getCursus($result);
+    }
+    
+    /**
+     * Archive/Active a cursus.
+     * 
+     * @param int $id   ID of the cursus
+     * 
+     * @throws RestException
+     * @url PUT /cursus/archive
+     */
+    function archiveCursus($id) // on cursus card
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        if(empty($this->cursus->archive)) $this->cursus->archive = 1;
+        else $this->cursus->archive = 0;
+        
+        $result = $this->cursus->update(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error updating cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getCursus($id);
+        
+    }
+    
+    /**
+     * Update a cursus
+     *
+     * @param int       $id             ID of the cursus
+     * @param string    $ref_interne    reference of the cursus (leave empty to apply no change)
+     * @param string    $intitule       name of the cursus (leave empty to apply no change)
+     * @param string    $note_private   Private note on the cursus
+     * @param string    $note_public    Public note on the cursus
+     * @param array     $extra          array of the cursus extrafields ('code'=>'value')
+     *
+     * @throws RestException
+     * @url PUT /cursus/
+     */
+    function putCursus($id, $ref_interne= '', $intitule = '', $note_private = '', $note_public = '', $extra = array()) // update($user)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        if(!empty($ref_interne)) {
+            $ref_interne = trim($ref_interne);
+            if(empty($ref_interne)) throw new RestException(500, "Invalid ref_interne");
+            $this->cursus->ref_interne = $ref_interne;
+        }
+        
+        if(!empty($intitule)) {
+            $intitule = trim($intitule);
+            if(empty($intitule)) throw new RestException(500, "Invalid intitule");
+            $this->cursus->intitule = $intitule;
+        }
+        
+        $this->cursus->note_private = $note_private;
+        $this->cursus->note_public = $note_public;
+        
+        if(!empty($extra))
+        {
+            require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+            $extrafields = new ExtraFields($this->db);
+            $extralabels = $extrafields->fetch_name_optionals_label($this->cursus->table_element, true);
+            if (count($extralabels) > 0) {
+                foreach ($extralabels as $key => $v)
+                {
+                    if(array_key_exists($key, $extra))
+                    {
+                        $this->cursus->array_options['options_'.$key] = $extra[$key];
+                    }
+                }
+            }
+        }
+        
+        $result = $this->cursus->update(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error updating cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getCursus($id);
+    }
+    
+    /**
+     * Delete a cursus
+     *
+     * @param int   $id
+     *
+     * @throws RestException
+     * @url DELETE /cursus/
+     */
+    function deleteCursus($id) // delete($user)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $result = $this->cursus->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error removing cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Cursus deleted'
+            )
+        );
+    }
     
     /***************************************************************** Cursus Trainee Part *****************************************************************/
     
