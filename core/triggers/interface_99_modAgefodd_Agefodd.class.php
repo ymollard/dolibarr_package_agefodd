@@ -515,13 +515,18 @@ class InterfaceAgefodd {
 					$agf_fin = new Agefodd_session_element($this->db);
 
 					$result = $agf_fin->add_invoice($user, $objectlinked->id, $objectlinked->element, $object->id);
-
+					
 					if ($result < 0) {
 						$error = "Failed to add agefodd invoice link : " . $agf_fin->error . " ";
 						$this->error = $error;
 
 						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
 						return - 1;
+					} else  {
+						dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+						$admintask = new Agefodd_sessadm($this->db);
+						
+						$admintask->updateByTriggerName($user, $agf_fin->fk_session_agefodd, 'AGF_BILL_CREATE');
 					}
 				}
 			}
