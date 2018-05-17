@@ -5548,7 +5548,17 @@ class Agefodd extends DolibarrApi
         return $this->getAllTraineeHourBySession($sessid, $traineeid);
     }
     
-    function putTraineeHour($id, $sessid, $traineeid, $calendarId, $hours = 0) // update
+    /**
+     * Update a trainee hour
+     *
+     * @param int       $id         ID of a trainee hour
+     * @param number    $hours      Number of hours
+     *
+     * @throws RestException
+     *
+     * @url PUT /sessions/traineehours/
+     */
+    function putTraineeHour($id, $hours = -1) // update
     {
         global $conf, $langs;
         
@@ -5558,8 +5568,27 @@ class Agefodd extends DolibarrApi
         }
         
         $this->traineehours = new Agefoddsessionstagiaireheures($this->db);
+        $result = $this->traineehours->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving the hours", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->traineehours->id)) throw new RestException(404, "Trainee Hour $id not found");
+        
+        if($hours>-1) $this->traineehours->heures = ( float ) $hours;
+        
+        $result = $this->traineehours->update(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error updating the trainee hour", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->getTraineeHour($id);
     }
     
+    /**
+     * Delete a trainee hour
+     *
+     * @param int       $id         ID of a trainee hour
+     *
+     * @throws RestException
+     *
+     * @url DELETE /sessions/traineehours/
+     */
     function deleteTraineeHour($id) // delete
     {
         global $conf, $langs;
