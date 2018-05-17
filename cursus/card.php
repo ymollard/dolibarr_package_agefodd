@@ -253,7 +253,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		if ($result > 0) {
 			$head = cursus_prepare_head($agf);
 
-			dol_fiche_head($head, 'card', $langs->trans("AgfMenuCursus"), 0, 'document');
+			dol_fiche_head($head, 'card', $langs->trans("AgfMenuCursus"), 0, 'project');
 
 			// Card in edit mode
 			if ($action == 'edit') {

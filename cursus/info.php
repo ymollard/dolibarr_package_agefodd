@@ -51,7 +51,7 @@ $agf->info($id);
 
 $head = cursus_prepare_head($agf);
 
-dol_fiche_head($head, 'info', $langs->trans("AgfMenuCursus"), 0, 'document');
+dol_fiche_head($head, 'info', $langs->trans("AgfMenuCursus"), 0, 'project');
 
 print '<table width="100%"><tr><td>';
 dol_print_object_info($agf);
