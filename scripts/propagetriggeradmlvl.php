@@ -43,8 +43,10 @@ $resql = $db->query('UPDATE '.MAIN_DB_PREFIX.'agefodd_training_admlevel as ata '
 	. 'SET ata.trigger_name = asa.trigger_name '
 	. 'WHERE asa.trigger_name IS NOT NULL');
 
-if($resql) print 'Propagation sur les formations effectuée <br/>';
-else  print 'Erreur lors de la propagation sur les formations <br/>';
+if($resql) print 'Propagation sur les formations effectuée ';
+else  print 'Erreur lors de la propagation sur les formations : '.$db->error();
+
+print ' <br/>';
 
 
 $resql = $db->query('UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ata '
@@ -53,4 +55,4 @@ $resql = $db->query('UPDATE '.MAIN_DB_PREFIX.'agefodd_session_adminsitu as ata '
 	. 'WHERE asa.trigger_name IS NOT NULL');
 			
 if($resql) print 'Propagation sur les sessions effectuée';
-else  print 'Erreur lors de la propagation sur les sessions ';
+else  print 'Erreur lors de la propagation sur les sessions : '.$db->error();
