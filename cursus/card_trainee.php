@@ -150,7 +150,7 @@ if (! empty($id)) {
 		*/
 		if ($action == 'delete_trainee') {
 			// Param url = id de la ligne stagiaire dans session - id session
-			print $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTraineeCursus"), $langs->trans("AgfConfirmRemoveTraineeCursus"), "confirm_delete_training", '', '', 1);
+			print $form->formconfirm($_SERVER ['PHP_SELF'] . '?id=' . $id . '&lineid=' . GETPOST('lineid', 'int'), $langs->trans("AgfRemoveTraineeCursus"), $langs->trans("AgfConfirmRemoveTraineeCursus"), "confirm_delete_trainee", '', '', 1);
 		}
 
 		print '<table class="border" width="100%">';
@@ -288,7 +288,7 @@ if (! empty($id)) {
 			print '</td>';
 			print '<td><a href="../trainee/cursus_detail.php?cursus_id=' . $id . '&id=' . $line->starowid . '">' . $line->nbsessdone . '</a></td>';
 			print '<td><a href="../trainee/cursus_detail.php?cursus_id=' . $id . '&id=' . $line->starowid . '">' . $line->nbsesstodo . '</a></td>';
-			print '<td>&nbsp;</td>';
+			print '<td align="center"><a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '&action=delete_trainee&lineid=' . $line->id . '"><img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="stag_remove" alt="' . $langs->trans("AgfModSave") . '"></a></td>';
 			print "</tr>\n";
 		}
 
