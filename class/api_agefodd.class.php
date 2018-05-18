@@ -17,6 +17,7 @@
 
  use Luracast\Restler\RestException;
 use OAuth\Common\Storage\Session;
+use OAuth\OAuth2\Service\Nest;
 
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
@@ -32,6 +33,7 @@ use OAuth\Common\Storage\Session;
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
+ dol_include_once('/agefodd/class/agefodd_formation_cursus.class.php');
  dol_include_once('/agefodd/class/agefodd_training_admlevel.class.php');
  dol_include_once('/agefodd/class/agefodd_place.class.php');
  dol_include_once('/agefodd/class/agefodd_reginterieur.class.php');
@@ -5886,6 +5888,145 @@ class Agefodd extends DolibarrApi
             'success' => array(
                 'code' => 200,
                 'message' => 'Cursus deleted'
+            )
+        );
+    }
+    
+    /**
+     * Get the list of the trainings in a cursus
+     * 
+     * @param int   $id     ID of the cursus
+     * 
+     * @throws RestException
+     * @url GET /cursus/trainings
+     */
+    function cursusGetTrainings($id, $sortorder = "ASC", $sortfield = "f.ref", $limit = 0, $offset = 0)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $agf = new Agefodd_formation_cursus($this->db);
+        $agf->fk_cursus = $this->cursus->id;
+        $result = $agf->fetch_formation_per_cursus($sortorder, $sortfield, $limit, $offset);
+        if($result < 0) throw new RestException(500, "Error retrieving trainings", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "No training found");
+        
+        $obj_ret = array();
+        
+        foreach ($agf->lines as $line)
+        {
+            $obj = new stdClass();
+            $obj->trainingid = $line->fk_formation_catalogue;
+            $obj->ref = $line->ref;
+            $obj->ref_interne = $line->ref_interne;
+            $obj->intitule = $line->intitule;
+            $obj->archive = $line->archive;
+            
+            $obj_ret[] = $obj;
+        }
+        
+        return $obj_ret;
+    }
+    
+    /**
+     * Add a training to a cursus
+     * 
+     * @param int   $id             ID of the cursus
+     * @param int   $trainingId     ID of the training to add
+     * 
+     * @throws RestException
+     * @url POST /cursus/addtraining
+     */
+    function cursusAddTraining($id, $trainingId)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($trainingId);
+        if($result < 0) throw new RestException(500, "Error retrieving training", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "training not found");
+        
+        $agf = new Agefodd_formation_cursus($this->db);
+        $agf->fk_cursus = $this->cursus->id;
+        $result = $agf->fetch_formation_per_cursus();
+        if($result < 0) throw new RestException(500, "Error retrieving trainings", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "No training found");
+        
+        foreach ($agf->lines as $line)
+        {
+            if($line->fk_formation_catalogue == $trainingId) throw new RestException(500, "Formation $trainingId already in the cursus $id");
+        }
+        
+        $agf->fk_formation_catalogue = $trainingId;
+        
+        $result = $agf->create(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error adding the training to cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->cursusGetTrainings($id);
+        
+    }
+    
+    /**
+     * Remove a training from a cursus
+     * 
+     * @param int   $id             ID of the cursus
+     * @param int   $trainingId     ID of the training to add
+     * 
+     * @throws RestException
+     * 
+     * @url DELETE /cursus/deltraining
+     */
+    function cursusRemoveTraining($id, $trainingId)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving the cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $this->training = new Formation($this->db);
+        $result = $this->training->fetch($trainingId);
+        if($result < 0) throw new RestException(500, "Error retrieving the training", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "training not found");
+        
+        $agf = new Agefodd_formation_cursus($this->db);
+        $agf->fk_cursus = $this->cursus->id;
+        $result = $agf->fetch_formation_per_cursus();
+        if($result < 0) throw new RestException(500, "Error retrieving trainings", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "No training found");
+        
+        $delId = 0;
+        foreach ($agf->lines as $line)
+        {
+            if($line->fk_formation_catalogue == $trainingId) $delId = $line->id;
+        }
+        
+        if(empty($delId)) throw new RestException(404, "The training $trainingId is not in the cursus $id");
+        
+        $agf->id = $delId;
+        $result = $agf->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error removing the training from the cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Training removed from the cursus'
             )
         );
     }
