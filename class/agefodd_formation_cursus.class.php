@@ -390,7 +390,7 @@ class Agefodd_formation_cursus extends CommonObject {
 
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-
+		$sql .= " t.fk_formation_catalogue,";
 		$sql .= " f.ref_interne,";
 		$sql .= " f.ref,";
 		$sql .= " f.entity,";
@@ -416,7 +416,7 @@ class Agefodd_formation_cursus extends CommonObject {
 				$line = new AgfCursusTrainingLine();
 
 				$line->id = $obj->rowid;
-
+				$line->fk_formation_catalogue = $obj->fk_formation_catalogue;
 				$line->ref_interne = $obj->ref_interne;
 				$line->ref = $obj->ref;
 				$line->intitule = $obj->intitule;
