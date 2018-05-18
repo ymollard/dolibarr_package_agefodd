@@ -6045,7 +6045,7 @@ class Agefodd extends DolibarrApi
      * @throws RestException
      * @url POST /cursus/trainees
      */
-    function cursusGetTrainees($id, $sortorder = 'ASC', $sortfield = 't.rowid', $limit = 0, $offset = 0, $filter = array())
+    function cursusGetTrainees($id, $sortorder = 'ASC', $sortfield = 't.rowid', $limit = 100, $offset = 0, $filter = array())
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
