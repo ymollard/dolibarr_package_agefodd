@@ -30,6 +30,7 @@ use OAuth\OAuth2\Service\Nest;
  dol_include_once('/agefodd/class/agefodd_session_element.class.php');
  dol_include_once('/agefodd/class/agefodd_cursus.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+ dol_include_once('/agefodd/class/agefodd_stagiaire_cursus.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
@@ -6029,6 +6030,106 @@ class Agefodd extends DolibarrApi
                 'message' => 'Training removed from the cursus'
             )
         );
+    }
+    
+    /**
+     * Get the list of trainee for cursus
+     * 
+     * @param int       $id         ID of the cursus
+     * @param string    $sortorder
+     * @param string    $sortfield
+     * @param number    $limit
+     * @param number    $offset
+     * @param array     $filter
+     * 
+     * @throws RestException
+     * @url POST /cursus/trainees
+     */
+    function cursusGetTrainees($id, $sortorder = 'ASC', $sortfield = 't.rowid', $limit = 0, $offset = 0, $filter = array())
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $agf = new Agefodd_stagiaire_cursus($this->db);
+        $agf->fk_cursus = $id;
+        $result = $agf->fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset, $filter);
+        if($result < 0) throw new RestException(500, "Error retrieving trainees", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "No trainee found");
+        
+        $obj_ret = array();
+        
+        foreach ($agf->lines as $line)
+        {
+            $obj = new stdClass();
+            $obj->traineeid = $line->starowid;
+            $obj->civilite = $line->civilite;
+            $obj->nom = $line->nom;
+            $obj->prenom = $line->prenom;
+            $obj->socid = $line->socid;
+            $obj->socname = $line->socname;
+            $obj->nbsessdone = $line->nbsessdone;
+            $obj->nbsesstodo = $line->nbsesstodo;
+            
+            $obj_ret[] = $obj;
+        }
+        
+        return $obj_ret;
+        
+    }
+    
+    /**
+     * Add a trainee to the cursus
+     * 
+     * @param int   $id         ID of the cursus
+     * @param int   $traineeId  ID of the trainee to add
+     * 
+     * @throws RestException
+     * @url POST /cursus/addtrainee
+     */
+    function cursusAddTrainee($id, $traineeId)
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving the cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Cursus not found");
+        
+        $this->trainee = new Agefodd_stagiaire($this->db);
+        $result = $this->trainee->fetch($traineeId);
+        if($result < 0) throw new RestException(500, "Error retrieving the trainee", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "Trainee not found");
+        
+        $agf = new Agefodd_stagiaire_cursus($this->db);
+        $agf->fk_cursus = $id;
+        $result = $agf->fetch_stagiaire_per_cursus('ASC', 't.rowid', 0, 0);
+        if($result < 0) throw new RestException(500, "Error retrieving trainees", array($this->db->lasterror, $this->db->lastqueryerror));
+        if($result == 0) throw new RestException(404, "No trainee found");
+        
+        foreach ($agf->lines as $line)
+        {
+            if($line->starowid == $traineeId) throw new RestException(500, "Trainee $traineeId is already in the cursus $id");            
+        }
+        
+        $agf->fk_stagiaire = $traineeId;
+        
+        $result = $agf->create(DolibarrApiAccess::$user);
+        if($result<0) throw new RestException(500, "Error adding the trainee to cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->cursusGetTrainees($id);
+    }
+    
+    function cursusRemoveTrainee($id, $traineeId)
+    {
+        
     }
     
     /***************************************************************** Cursus Trainee Part *****************************************************************/
