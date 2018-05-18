@@ -199,7 +199,9 @@ class Agefodd_cursus extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows($resql)) {
+		    $num = $this->db->num_rows($resql);
+		    
+			if ($num) {
 				$obj = $this->db->fetch_object($resql);
 
 				$this->id = $obj->rowid;
@@ -215,17 +217,17 @@ class Agefodd_cursus extends CommonObject {
 				$this->note_private = $obj->note_private;
 				$this->note_public = $obj->note_public;
 				$this->tms = $this->db->jdate($obj->tms);
+				
+				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+				$extrafields = new ExtraFields($this->db);
+				$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
+				if (count($extralabels) > 0) {
+				    $this->fetch_optionals($this->id, $extralabels);
+				}
 			}
 			$this->db->free($resql);
 
-			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
-			$extrafields = new ExtraFields($this->db);
-			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
-			if (count($extralabels) > 0) {
-				$this->fetch_optionals($this->id, $extralabels);
-			}
-
-			return 1;
+			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
