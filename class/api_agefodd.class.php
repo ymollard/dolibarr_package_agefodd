@@ -6334,6 +6334,15 @@ class Agefodd extends DolibarrApi
         return $this->cursusAddTrainee($id, $traineeId);
     }
     
+    /**
+     * Remove a cursus of a trainee
+     * 
+     * @param int   $id         ID of the cursus to add
+     * @param int   $traineeId  ID of the trainee
+     * 
+     * @throws RestException
+     * @url DELETE /trainees/delcursus
+     */
     function traineeDelCursus($id, $traineeId) // delete
     {
         return $this->cursusRemoveTrainee($id, $traineeId);
