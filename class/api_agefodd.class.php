@@ -16,8 +16,6 @@
  */
 
  use Luracast\Restler\RestException;
-use OAuth\Common\Storage\Session;
-use OAuth\OAuth2\Service\Nest;
 
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
@@ -6349,6 +6347,172 @@ class Agefodd extends DolibarrApi
     }
     
     /***************************************************************** Certification Part *****************************************************************/
+    // $conf->global->AGF_MANAGE_CERTIF must be activated for this part
+    
+    /**
+     * Get a list of certificates
+     * 
+     * @param string    $sortorder
+     * @param string    $sortfield
+     * @param int       $limit
+     * @param int       $offset
+     * @param array     $filter
+     * 
+     * @throws RestException
+     * @url POST /certificates/filter
+     */
+    function certifIndex($sortorder = "DESC", $sortfield = "t.rowid", $limit = 0, $offset = 0, $filter = array()) // fetch_all
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
+    /**
+     * Get a certificate by his ID or by the trainee and session id
+     * @param number $id
+     * @param number $id_trainee
+     * @param number $id_session
+     * 
+     * @throws RestException
+     * @url GET /certificates/
+     */
+    function getCertif($id = 0, $id_trainee = 0, $id_session = 0) // fetch
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
+    /**
+     * Get all certificates of the trainees of a thirdparty
+     * 
+     * @param int       $socid      ID of the thirdparty of the trainees
+     * @param string    $sortorder
+     * @param string    $sortfield
+     * @param int       $limit
+     * @param int       $offset
+     * @param array     $filter
+     * 
+     * @throws RestException
+     * @url POST /certificates/bythirdparty
+     */
+    function getCertifByThirdparty($socid, $sortorder = 'DESC', $sortfield = 'certif.certif_dt_start', $limit = 0, $offset = 0, $filter = array()) // fetch_certif_customer
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
+    /**
+     * Get the states of a certificate
+     * 
+     * @param int $id ID of the certificate
+     * 
+     * @throws RestException
+     * @url GET /certificates/states
+     */
+    function getCertifStates($id) // fetch_certif_state
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
+    /**
+     * Get an array of certificate types
+     * 
+     * @throws RestException
+     * @return array of types
+     * 
+     * @throws RestException
+     * @url GET /certificates/types
+     */
+    function getCertifTypes() // get_certif_type
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
+    /**
+     * Get infos on certificate creation
+     * 
+     * @param int $id ID of the certificate
+     * 
+     * @url GET /certificates/infos
+     */
+    function getCertifInfos($id) // info
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+    }
+    
+    /**
+     * Get all certificates of a trainee
+     * 
+     * @param int  $traineeId ID of the trainee
+     * 
+     * @throws RestException
+     * @url GET /trainees/certificates
+     */
+    function traineeGetCertificates($traineeId) // fetch_all_by_trainee
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+    }
+    
+    /**
+     * Create a certificate
+     * 
+     * @throws RestException
+     * @url POST /certificates/
+     */
+    function postCertif() // create
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+    }
     
     /***************************************************************** Thirdparty Part *****************************************************************/
     
