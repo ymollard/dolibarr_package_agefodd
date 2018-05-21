@@ -610,7 +610,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $offset offset limit
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
+	public function fetch_cursus_per_trainee($sortorder = 'ASC', $sortfield = 'c.rowid', $limit = 0, $offset = 0) {
 		global $langs;
 
 		$sql = "SELECT";
@@ -620,7 +620,8 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		$sql .= " c.archive";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_cursus as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_cursus as c ON t.fk_cursus=c.rowid AND t.fk_stagiaire=" . $this->fk_stagiaire;
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
+		$sql .= " ORDER BY " . $sortfield . " " . $sortorder;
+		if(!empty($limit)) $sql .= " " . $this->db->plimit($limit + 1, $offset);
 
 		dol_syslog(get_class($this) . "::fetch_cursus_per_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
