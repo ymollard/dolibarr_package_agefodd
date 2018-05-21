@@ -430,8 +430,9 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		}
 
 		$sql .= " AND fk_cursus=" . $this->fk_cursus;
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " " . $this->db->plimit($limit + 1, $offset);
-
+		$sql .= " ORDER BY " . $sortfield . " " . $sortorder;
+		if(!empty($limit)) $sql .= " " . $this->db->plimit($limit + 1, $offset);
+		
 		dol_syslog(get_class($this) . "::fetch_stagiaire_per_cursus", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
