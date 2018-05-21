@@ -6179,6 +6179,38 @@ class Agefodd extends DolibarrApi
     
     /***************************************************************** Cursus Trainee Part *****************************************************************/
     
+    function traineeGetCursus() // fetch
+    {
+        
+    }
+    
+    function traineeListCursus() // fetch_cursus_per_trainee
+    {
+        
+    }
+    
+    function traineeGetCursusSession() // fetch_session_cursus_per_trainee
+    {
+        
+    }
+    
+    function traineeGetSessionToPlan() // fetch_training_session_to_plan
+    {
+        
+    }
+    
+    function traineeAddCursus() // create
+    {
+        
+    }
+    
+    function traineeDelCursus() // delete
+    {
+        
+    }
+    
+    
+    
     /***************************************************************** Certification Part *****************************************************************/
     
     /***************************************************************** Thirdparty Part *****************************************************************/
