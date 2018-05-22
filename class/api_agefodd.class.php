@@ -29,6 +29,7 @@
  dol_include_once('/agefodd/class/agefodd_cursus.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire_cursus.class.php');
+ dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
  dol_include_once('/agefodd/class/agefodd_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
  dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
@@ -157,6 +158,7 @@ class Agefodd extends DolibarrApi
 		$this->place = new Agefodd_place($this->db);                                          // agefodd place
 		$this->opca = new Agefodd_opca($this->db);                                            // agefodd OPCA
 		$this->sessionlinks = new Agefodd_session_element($this->db);                         // elements linked to a session
+		$this->certif = new Agefodd_stagiaire_certif($this->db);                              // certificates
     }
 
     
@@ -4787,7 +4789,7 @@ class Agefodd extends DolibarrApi
         $this->trainee = new Agefodd_stagiaire($this->db);
         $result = $this->trainee->fetch($traineeId);
         if($result < 0) throw new RestException(500, "Error retrieving trainee", array($this->db->lasterror, $this->db->lastqueryerror));
-        elseif(empty($this->session->id)) throw new RestException(404, "trainee not found");
+        elseif(empty($this->trainee->id)) throw new RestException(404, "trainee not found");
         
         $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
         $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeId);
@@ -6103,7 +6105,7 @@ class Agefodd extends DolibarrApi
         $this->trainee = new Agefodd_stagiaire($this->db);
         $result = $this->trainee->fetch($traineeId);
         if($result < 0) throw new RestException(500, "Error retrieving the trainee", array($this->db->lasterror, $this->db->lastqueryerror));
-        if($result == 0) throw new RestException(404, "Trainee not found");
+        elseif($result == 0) throw new RestException(404, "Trainee not found");
         
         $agf = new Agefodd_stagiaire_cursus($this->db);
         $agf->fk_cursus = $id;
@@ -6147,7 +6149,7 @@ class Agefodd extends DolibarrApi
         $this->trainee = new Agefodd_stagiaire($this->db);
         $result = $this->trainee->fetch($traineeId);
         if($result < 0) throw new RestException(500, "Error retrieving the trainee", array($this->db->lasterror, $this->db->lastqueryerror));
-        if($result == 0) throw new RestException(404, "Trainee not found");
+        elseif($result == 0) throw new RestException(404, "Trainee not found");
         
         $agf = new Agefodd_stagiaire_cursus($this->db);
         $agf->fk_cursus = $id;
@@ -6198,7 +6200,7 @@ class Agefodd extends DolibarrApi
         $this->trainee = new Agefodd_stagiaire($this->db);
         $result = $this->trainee->fetch($traineeId);
         if($result < 0) throw new RestException(500, "Error retrieving the trainee", array($this->db->lasterror, $this->db->lastqueryerror));
-        if($result == 0) throw new RestException(404, "Trainee not found");
+        elseif($result == 0) throw new RestException(404, "Trainee not found");
         
         $agf = new Agefodd_stagiaire_cursus($this->db);
         $agf->fk_stagiaire = $traineeId;
@@ -6371,13 +6373,29 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch_all($sortorder, $sortfield, $limit, $offset, $filter);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "no certificates found with these parameters");
+        
+        $obj_ret = array();
+        
+        foreach ($this->certif->lines as $line) {
+            $line->fetch_certif_state($line->id);
+            $obj_ret[] = $this->_cleanObjectDatas($line);
+        }
+        
+        return $obj_ret;
     }
     
     /**
-     * Get a certificate by his ID or by the trainee and session id
-     * @param number $id
-     * @param number $id_trainee
-     * @param number $id_session
+     * Get a certificate by his ID or by the trainee and session id.
+     * 
+     * Use $id if you know it or the couple $id_trainee/$id_session if not
+     * 
+     * @param number $id            ID of the certificate
+     * @param number $id_trainee    ID of the trainee
+     * @param number $id_session    ID of the session
      * 
      * @throws RestException
      * @url GET /certificates/
@@ -6392,6 +6410,19 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        if(empty($id))
+        {
+            if(!empty($id_trainee) && empty($id_session)) throw new RestException(500, "field id_session missing");
+            elseif(empty($id_trainee) && !empty($id_session)) throw new RestException(500, "field id_trainee missing");
+            elseif(empty($id_trainee) && empty($id_session)) throw new RestException(500, "Can't get certificate without parameters");
+        }
+        
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch($id, $id_trainee, $id_session);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->certif->id)) throw new RestException(404, "no certificates found with these parameters");
+        
+        return $this->_cleanObjectDatas($this->certif);
     }
     
     /**
@@ -6416,7 +6447,19 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
+
+        if(empty($socid)) throw new RestException(500, "field socid missing");
+
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "no certificates found with these parameters");
         
+        $obj_ret = array();
+        
+        foreach ($this->certif->lines as $line) $obj_ret[] = $this->_cleanObjectDatas($line);
+        
+        return $obj_ret;
     }
     
     /**
@@ -6437,6 +6480,16 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->certif->id)) throw new RestException(404, "Certificate $id not found");
+        
+        $result = $this->certif->fetch_certif_state($id);
+        if($result < 0) throw new RestException(500, "Error retrieving states", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(count($this->certif->lines_state) == 0) throw new RestException(404, "No state found for certificate $id");
+        
+        return $this->certif->lines_state;
     }
     
     /**
@@ -6446,7 +6499,7 @@ class Agefodd extends DolibarrApi
      * @return array of types
      * 
      * @throws RestException
-     * @url GET /certificates/types
+     * @url GET /certificates/statetypes
      */
     function getCertifTypes() // get_certif_type
     {
@@ -6458,6 +6511,11 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->get_certif_type();
+        if($result < 0) throw new RestException(500, "Error retrieving certificate types", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $result;
     }
     
     /**
@@ -6476,6 +6534,14 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch($id);
+        $result = $this->certif->info($id);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->certif->id)) throw new RestException(404, "no certificates found with these parameters");
+        
+        return $this->_cleanObjectDatas($this->certif);
     }
     
     /**
@@ -6495,15 +6561,91 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        $this->trainee = new Agefodd_stagiaire($this->db);
+        $result = $this->trainee->fetch($traineeId);
+        if($result < 0) throw new RestException(500, "Error retrieving trainee", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch_all_by_trainee($traineeId);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "No certificate found for this trainee");
+        
+        return $this->certif->lines;
     }
     
     /**
      * Create a certificate
      * 
+     * @param int       $traineeId      ID of the trainee
+     * @param int       $sessid         ID of the session
+     * @param string    $date_start     start of the certificate validity (session start date if left blank)
+     * @param string    $date_end       end of the certificate validity ($date_start if left blank)
+     * @param string    $date_warning   date to alert the trainee of short validity (6 month before the end if blank)
+     * @param string    $label          optionnal label
+     * 
      * @throws RestException
      * @url POST /certificates/
      */
-    function postCertif() // create
+    function postCertif($traineeId, $sessid, $date_start = '', $date_end = '', $date_warning = '', $label = '') // create
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        
+        $this->trainee = new Agefodd_stagiaire($this->db);
+        $result = $this->trainee->fetch($traineeId);
+        if($result < 0) throw new RestException(500, "Error retrieving the trainee", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif($result == 0) throw new RestException(404, "Trainee not found");
+        
+        $this->certif->fk_stagiaire = $this->trainee->id;
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if($result < 0) throw new RestException(500, "Error retrieving the session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->session->id)) throw new RestException(404, "session not found");
+        
+        $this->certif->fk_session_agefodd = $this->session->id;
+        
+        $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+        $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeId);
+        if($result < 0) throw new RestException(500, "Error retrieving trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($result)) throw new RestException(404, "the trainee $traineeId is not in the session $sessid");
+        
+        $this->certif->fk_session_stagiaire = $this->traineeinsession->id;
+        
+        $obj = empty($conf->global->AGF_CERTIF_ADDON) ? 'mod_agefoddcertif_simple' : $conf->global->AGF_CERTIF_ADDON;
+        $path_rel = dol_buildpath('/agefodd/core/modules/agefodd/certificate/' . $conf->global->AGF_CERTIF_ADDON . '.php');
+        if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel)) {
+            $agf_training = new Formation($this->db);
+            $agf_training->fetch($this->session->fk_formation_catalogue);
+            dol_include_once('/agefodd/core/modules/agefodd/certificate/' . $conf->global->AGF_CERTIF_ADDON . '.php');
+            $modAgefodd = new $obj();
+            $certif_code = $modAgefodd->getNextValue($agf_training, $this->session);
+        }
+        
+        $this->certif->certif_code = $certif_code;
+        
+        if(empty($label)) $this->certif->certif_label = $certif_code;
+        else $this->certif->certif_label = $this->db->escape($label);
+        
+        
+        return $this->certif;
+    }
+    
+    /**
+     * Create a certificate
+     *
+     * @throws RestException
+     * @url PUT /certificates/
+     */
+    function putCertif() // update
     {
         global $conf, $langs;
         
@@ -6513,6 +6655,80 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
     }
+    
+    /**
+     * Set states of a certificate
+     * 
+     * @param int   $certif_id          ID of the certificate
+     * @param int   $certif_type_id     ID of the type of state (fk_certif_type)
+     * @param int   $certif_state       0 if state is "not validated" or 1 if "validated"
+     * 
+     * @throws RestException
+     * @url POST /certificates/states
+     * 
+     */
+    function setCertifStates($certif_id, $certif_type_id, $certif_state) // set_certif_state
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if(empty($certif_id)) throw new RestException(500, "field certif_id is required");
+        if(empty($certif_type_id)) throw new RestException(500, "field certif_type_id is required");
+        if(empty($certif_state)) $certif_state = 0;
+        else $certif_state = 1;
+        
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch($certif_id);
+        if($result < 0) throw new RestException(500, "Error retrieving certificate", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->certif->id)) throw new RestException(404, "no certificate found");
+        
+        $result = $this->certif->set_certif_state(DolibarrApiAccess::$user, $certif_id, $certif_type_id, $certif_state);
+        if($result < 0) throw new RestException(500, "Error during modification", array($this->db->lasterror, $this->db->lastqueryerror));
+                
+        return $this->getCertifStates($certif_id);
+    }
+    
+    /**
+     * Delete a certificate
+     * 
+     * @param int   $id     ID of the certificate to delete
+     * 
+     * @throws RestException
+     * @url DELETE /certificates/
+     */
+    function deleteCertif($id)
+    {
+        global $conf, $langs;
+        
+        if (empty($conf->global->AGF_MANAGE_CERTIF)) throw new RestException(500, "The option '" . $langs->trans("AgfManageCertification") . "' must be activated for this module part");
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving certificate", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->certif->id)) throw new RestException(404, "no certificate found");
+        
+        $result = $this->certif->delete(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error : certificate not deleted", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Certificate deleted'
+            )
+        );
+        
+    }
+    
+    
     
     /***************************************************************** Thirdparty Part *****************************************************************/
     

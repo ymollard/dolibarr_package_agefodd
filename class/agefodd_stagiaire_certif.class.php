@@ -387,6 +387,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$certif_type_array = $this->get_certif_type();
 
 		if (is_array($certif_type_array) && count($certif_type_array) > 0) {
+		    $i = 1;
 			foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
 				$line = new AgfStagiaireCertifLineState();
 
@@ -677,7 +678,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			$i = 0;
@@ -703,7 +704,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$line->certif_dt_warning = $this->db->jdate($obj->certif_dt_warning);
 				$line->mark = $obj->mark;
 
-				$this->line[$i] = $line;
+				$this->lines[$i] = $line;
 
 				$i ++;
 			}
