@@ -1520,24 +1520,28 @@ function fetch_financial_c($filter = array()) {
 			)
 	);
 
+	$sqldebugall=array();
 	foreach ( $array_fin as $key => $data ) {
-		$result = $this->_getAmountFin($data, $filter);
+		$result = $this->_getAmountFin($data, $filter,$sqldebugall);
 		if ($result < 0) {
 			return - 1;
 		}
 	}
 
+
 	// C - 12
-	$result = $this->_getAmountFinC12($filter);
+	$result = $this->_getAmountFinC12($filter,$sqldebugall);
 	if ($result < 0) {
 		return - 1;
 	}
 
 	// C - 13
-	$result = $this->_getAmountFinC13($filter);
+	$result = $this->_getAmountFinC13($filter,$sqldebugall);
 	if ($result < 0) {
 		return - 1;
 	}
+
+	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
 }
 
 /**
@@ -1912,7 +1916,7 @@ function fetch_financial_d($filter = array()) {
 	 * @param array $filter
 	 * @return number
 	 */
-	private function _getAmountFinC13($filter) {
+	private function _getAmountFinC13($filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (empty($conf->global->AGF_CAT_PRODUCT_CHARGES) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost")),$this->warnings)) {
@@ -1936,8 +1940,11 @@ function fetch_financial_d($filter = array()) {
 		$this->financial_data['C-13 Autres produits au titre de la formation professionnelle continue'] = 0;
 
 		if (! empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
-			$sql = " SELECT
-		   		SUM(fd.total_ht) as amount
+
+
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest = "
 				FROM
 				    " . MAIN_DB_PREFIX . "facturedet AS fd
 				        INNER JOIN
@@ -1963,6 +1970,10 @@ function fetch_financial_d($filter = array()) {
 								INNER JOIN
 							" . MAIN_DB_PREFIX . "facture AS factin ON factin.rowid=se.fk_element)";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
+
 			dol_syslog(get_class($this) . "::" . __METHOD__ . ' C-13', LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -1980,8 +1991,10 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
-			$sql = " SELECT
-	   		SUM(fd.total_ht) as amount
+
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest = "
 			FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
@@ -2016,6 +2029,9 @@ function fetch_financial_d($filter = array()) {
 						" . MAIN_DB_PREFIX . "agefodd_place as pl ON pl.rowid=sess.fk_session_place
 							AND pl.fk_pays<>1)";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
 			dol_syslog(get_class($this) . "::" . __METHOD__ . 'C-13', LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -2044,7 +2060,7 @@ function fetch_financial_d($filter = array()) {
 	 * @param array $filter
 	 * @return number
 	 */
-	private function _getAmountFinC12($filter) {
+	private function _getAmountFinC12($filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
@@ -2054,8 +2070,10 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
-			$sql = "SELECT
-	   		SUM(fd.total_ht) as amount
+
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest = "
 			FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
@@ -2070,6 +2088,9 @@ function fetch_financial_d($filter = array()) {
 			        WHERE
 			            cp.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_TOOLPEDA . "))";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
 			dol_syslog(get_class($this) . "::" . __METHOD__ . 'C-12', LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -2093,9 +2114,9 @@ function fetch_financial_d($filter = array()) {
 	 *
 	 * @param array $data
 	 * @param array $filter
-	 * @return number
+	 * @return number$
 	 */
-	private function _getAmountFin($data = array(), $filter) {
+	private function _getAmountFin($data = array(), $filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (! empty($data['confprod']) && empty($conf->global->{$data['confprod']}) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities($data['confprodlabel'])),$this->warnings)) {
@@ -2112,22 +2133,22 @@ function fetch_financial_d($filter = array()) {
 
 		if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']}) || (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']}))) {
 
-			$sql = "SELECT
-	   		SUM(fd.total_ht) as amount
-			FROM
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest =  " FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
 			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture ";
 			if (!empty($data['employer'])) {
-				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+				$sqlrest .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
 			}
 			if (!empty($data['datefac'])) {
-				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+				$sqlrest .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
 			}
-			$sql .= " WHERE
+			$sqlrest .= " WHERE
 			    f.fk_statut IN (1 , 2) ";
 			if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']})) {
-				$sql .= " AND fd.fk_product IN (SELECT
+				$sqlrest .= " AND fd.fk_product IN (SELECT
 			            cp.fk_product
 			        FROM
 			            " . MAIN_DB_PREFIX . "categorie_product AS cp
@@ -2136,7 +2157,7 @@ function fetch_financial_d($filter = array()) {
 			}
 
 			if (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']})) {
-				$sql .= " AND f.fk_soc IN (SELECT
+				$sqlrest .= " AND f.fk_soc IN (SELECT
 			            cs.fk_soc
 			        FROM
 			            " . MAIN_DB_PREFIX . "categorie_societe AS cs
@@ -2144,7 +2165,7 @@ function fetch_financial_d($filter = array()) {
 			            cs.fk_categorie IN (" . $conf->global->{$data['confcust']} . "))";
 			}
 
-			$sql .= " AND ( (f.rowid IN (SELECT DISTINCT
+			$sqlrest .= " AND ( (f.rowid IN (SELECT DISTINCT
 			            factin.rowid
 			        FROM
 			            " . MAIN_DB_PREFIX . "agefodd_session_element AS se
@@ -2156,31 +2177,31 @@ function fetch_financial_d($filter = array()) {
 							AND statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 
 			if (! empty($data['employer'])) {
-				$sql .= " AND sess.fk_soc_employer IS NOT NULL ";
+				$sqlrest .= " AND sess.fk_soc_employer IS NOT NULL ";
 			}
-			$sql .= " INNER JOIN
+			$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ss ON ss.fk_session_agefodd = sess.rowid
 			                AND ss.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")";
 			if (empty($data['checkOPCA']) && empty($data['employer'])) {
-				$sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire";
-			      $sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON ";
 			      if (empty($data['checkPV'])) {
-			      	$sql .= " factin.fk_soc = sta.fk_soc AND ";
+			      	$sqlrest .= " factin.fk_soc = sta.fk_soc AND ";
 			      }
-			      $sql .= " factin.rowid=se.fk_element))";
+			      $sqlrest .= " factin.rowid=se.fk_element))";
 			} elseif (!empty($data['checkOPCA'])) {
-				$sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_opca AS opca ON opca.fk_session_trainee = ss.rowid AND opca.fk_session_agefodd=sess.rowid
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = opca.fk_soc_OPCA AND factin.rowid=se.fk_element))";
 			} elseif (!empty($data['employer'])) {
-				$sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sess.fk_soc_employer AND factin.rowid=se.fk_element))";
 			}
 			if (! empty($data['checkOPCA'])) {
-				$sql .= " OR (f.rowid IN (SELECT DISTINCT
+				$sqlrest .= " OR (f.rowid IN (SELECT DISTINCT
 			            factinopca.rowid
 			        FROM
 			            " . MAIN_DB_PREFIX . "agefodd_session_element AS seopca
@@ -2191,16 +2212,19 @@ function fetch_financial_d($filter = array()) {
 							INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statimeopca ON statimeopca.fk_agefodd_session=sessopca.rowid
 							AND statimeopca.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statimeopca.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 				if (! empty($data['employer'])) {
-					$sql .= "  AND sessopca.fk_soc_employer IS NOT NULL ";
+					$sqlrest .= "  AND sessopca.fk_soc_employer IS NOT NULL ";
 				}
-				$sql .= " 	INNER JOIN
+				$sqlrest .= " 	INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ssopca ON ssopca.fk_session_agefodd = sessopca.rowid
 			                AND ssopca.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")
  							INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factinopca ON factinopca.fk_soc = sessopca.fk_soc_OPCA AND factinopca.rowid=seopca.fk_element))";
 			}
-			$sql .= ")";
+			$sqlrest .= ")";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
 			dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
