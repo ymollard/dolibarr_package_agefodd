@@ -2348,11 +2348,12 @@ class Agefodd extends DolibarrApi
                 }
             }
         }
-        
+        // TODO à implémenter
         if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
             $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
             if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
         }
+        
         if (strpos($model, 'fiche_pedago') !== false){
             $agf = new Agsession($this->db);
             $agf->fetch($id);
@@ -2371,6 +2372,79 @@ class Agefodd extends DolibarrApi
                 'message' => "Model $model generated"
             )
         );
+    }
+    
+    /**
+     * Get a list of agefodd documents
+     * 
+     * @url GET sessions/documents/
+     */
+    function documentsSessionList($sessid)
+    {
+        global $conf;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->session = new Agsession($this->db);
+        
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id)) throw new RestException(404, 'session not found');
+        
+        $upload_dir = $conf->agefodd->dir_output;
+        $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+        $files = array();
+        if (!empty($filearray)){
+            $TCommonModels = array(
+                "conseils",
+                "fiche_presence",
+                "fiche_presence_direct",
+                "fiche_presence_empty",
+                "fiche_presence_landscape",
+                "fiche_presence_trainee",
+                "fiche_presence_trainee_direct",
+                "fiche_evaluation",
+                "fiche_remise_eval",
+                "chevalet",
+                "attestationendtraining_empty"
+            );
+            foreach ($filearray as $file) {
+                // fiche pedago
+                if(preg_match("/^fiche_pedago(.*)_([0-9]+).pdf$/", $file['name'], $i) && $i[2] == $this->session->fk_formation_catalogue){
+                    $files[] = $file['name'];
+                }
+                foreach ($TCommonModels as $model){
+                    if(strpos($file['name'], $model) !== false && preg_match("/^".$model."_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) $files[] = $file['name'];
+                }
+            }
+        }
+        return $files;
+    }
+    
+    /**
+     * Get a list of available agefodd document models
+     *
+     * @url GET /documents/models
+     */
+    function documentsGetModels()
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $dir = dol_buildpath('/agefodd/core/modules/agefodd/pdf/');
+        
+        $filearray=dol_dir_list($dir,"files",0,'','(pdf_demo.*|\.meta|_preview.*\.png)$');
+        
+        $models = array();
+        if (!empty($filearray)){
+            foreach ($filearray as $file) {
+                $models[] = strtr($file['name'], array('pdf_' => '', '.modules.php' => ''));
+            }
+        }
+        
+        return $models;
     }
     
     /***************************************************************** Trainee Part *****************************************************************/
