@@ -504,6 +504,59 @@ class ReportBPF extends AgefoddExportExcel
 			}
 		}
 
+		// Fetch Trainee Block G
+		$result = $this->fetch_trainee_g($filter);
+		if ($result < 0) {
+			return $result;
+		}
+
+		// Contruct header (column name)
+		$array_column_header = array();
+		$array_column_header[0][0] = array(
+				'type' => 'text',
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperG')
+		);
+
+		$array_column_header[0][1] = array(
+				'type' => 'int',
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
+		);
+		$array_column_header[0][2] = array(
+				'type' => 'hours',
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
+		);
+		// 'autosize' => 0
+
+		$this->setArrayColumnHeader($array_column_header);
+
+		$result = $this->write_header();
+		if ($result < 0) {
+			return $result;
+		}
+
+		// Ouput Lines
+		$line_to_output = array();
+		$array_total_output = array();
+		if (is_array($this->trainee_data_g) && count($this->trainee_data_g) > 0) {
+			foreach ( $this->trainee_data_g as $label_type => $trainee_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainee_data['nb'];
+				$line_to_output[2] = $trainee_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainee_data['nb'];
+				$array_total_output[2] += $trainee_data['time'];
+
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
+			if ($result < 0) {
+				return $result;
+			}
+		}
+
 		$this->close_file(0, 0, 0);
 		return count($this->trainer_data) + count($this->trainee_data) + count($this->financial_data);
 		// return 1;
@@ -958,11 +1011,11 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		$key = 'Formations confiées par votre organisme à un autre organisme de formation';
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt, ";
+		$sql = "SELECT count(DISTINCT sesssta.rowid) as cnt, ";
 		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+			$sql .= " SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
 		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
+			$sql .= " SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
@@ -976,7 +1029,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::" . __METHOD__. ' '.$key, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -986,7 +1039,7 @@ class ReportBPF extends AgefoddExportExcel
 				}
 			}
 			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+			    $sql = "SELECT count(DISTINCT assh.fk_stagiaire) as cnt , ";
 			    $sql .= "SUM(assh.heures)/24 as timeinsession";
 			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
 			    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
@@ -1024,7 +1077,7 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad)/24 as timeinsession ";
+		$sql = "SELECT count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad)/24 as timeinsession ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
