@@ -6580,7 +6580,7 @@ class Agefodd extends DolibarrApi
      * @param int       $traineeId      ID of the trainee
      * @param int       $sessid         ID of the session
      * @param string    $date_start     start of the certificate validity (session start date if left blank)
-     * @param string    $date_end       end of the certificate validity ($date_start if left blank)
+     * @param string    $date_end       end of the certificate validity ( = $date_start if left blank)
      * @param string    $date_warning   date to alert the trainee of short validity (6 month before the end if blank)
      * @param string    $label          optionnal label
      * 
@@ -6634,6 +6634,29 @@ class Agefodd extends DolibarrApi
         
         if(empty($label)) $this->certif->certif_label = $certif_code;
         else $this->certif->certif_label = $this->db->escape($label);
+        
+        if(!empty($date_start) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_start)) throw new RestException(503, "Bad date format for date_start. It must be a string date with format yyyy-mm-dd");
+        elseif(empty($date_start)) $date_start = date("Y-m-d",$this->session->dated);
+        
+        $this->certif->certif_dt_start = strtotime($date_start);
+        
+        if(!empty($date_end) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_end)) throw new RestException(503, "Bad date format for date_end. It must be a string date with format yyyy-mm-dd");
+        
+        if (! empty($agf_training->certif_duration)) {
+            require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
+            $duration_array = explode(':', $agf_training->certif_duration);
+            $year = $duration_array [0];
+            $month = $duration_array [1];
+            $day = $duration_array [2];
+            $this->certif->certif_dt_end = dol_time_plus_duree($this->certif->certif_dt_start, $year, 'y');
+            $this->certif->certif_dt_end = dol_time_plus_duree($this->certif->certif_dt_end, $month, 'm');
+            $this->certif->certif_dt_end = dol_time_plus_duree($this->certif->certif_dt_end, $day, 'd');
+        } else {
+            $this->certif->certif_dt_end = $this->certif->certif_dt_start;
+        }
+        
+        if(!empty($date_warning) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_warning)) throw new RestException(503, "Bad date format for date_warning. It must be a string date with format yyyy-mm-dd");
+        $this->certif->certif_dt_warning = dol_time_plus_duree($this->certif->certif_dt_end, -6, 'm');
         
         
         return $this->certif;
