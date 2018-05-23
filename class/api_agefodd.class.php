@@ -626,7 +626,7 @@ class Agefodd extends DolibarrApi
             throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
 		}
 		
-		if ($mode == "createadm"){ // creation des taches administratives de la session passée en param
+		if ($mode == "createadm"){ // creation des taches administratives de la session pass��e en param
 		    
 		    if (in_array('id', array_keys($request_data['request_data']))){
 		        $this->session->fetch((int)$request_data['request_data']['id']);
@@ -634,7 +634,7 @@ class Agefodd extends DolibarrApi
 		        return empty($result) ? $this->getSession($this->session->id) : $result .' '. $this->session->error;
 		    } else throw new RestException(404, 'session not found');
 		    
-		} elseif ($mode == "clone"){ // clone de la session passée en param
+		} elseif ($mode == "clone"){ // clone de la session pass��e en param
 		    
 		    if (in_array('id', array_keys($request_data['request_data']))){
 		        return $this->_cloneSession((int)$request_data['request_data']['id']);
@@ -1294,7 +1294,7 @@ class Agefodd extends DolibarrApi
         if($result<0) throw new RestException(500, "Error in delete period", array($this->db->lasterror, $this->db->lastqueryerror));
         
         return $this->sessioncalendar;
-        // nettoyage des heures réelles
+        // nettoyage des heures r��elles
         $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
         $sql.= " WHERE fk_calendrier = " . $id;
         
@@ -1338,7 +1338,7 @@ class Agefodd extends DolibarrApi
             $result = $this->sessioncalendar->remove($line->id);
             if($result<0) throw new RestException(500, "Error in delete period", array($this->db->lasterror, $this->db->lastqueryerror));
             
-            // nettoyage des heures réelles
+            // nettoyage des heures r��elles
             $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
             $sql.= " WHERE fk_calendrier = " . $line->id;
             
@@ -2307,7 +2307,7 @@ class Agefodd extends DolibarrApi
             $id_tmp = $convention->id;
             $model = $convention->model_doc;
             $model = 'pdf_convention';
-            // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
+            // Si on est sur un mod��le externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les donn��es
             if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $sessid;
             $model = str_replace('pdf_', '', $model);
             
@@ -6583,11 +6583,12 @@ class Agefodd extends DolibarrApi
      * @param string    $date_end       end of the certificate validity ( = $date_start if left blank)
      * @param string    $date_warning   date to alert the trainee of short validity (6 month before the end if blank)
      * @param string    $label          optionnal label
+     * @param string    $note           optionnal note on the certificate
      * 
      * @throws RestException
      * @url POST /certificates/
      */
-    function postCertif($traineeId, $sessid, $date_start = '', $date_end = '', $date_warning = '', $label = '') // create
+    function postCertif($traineeId, $sessid, $date_start = '', $date_end = '', $date_warning = '', $label = '', $note = '') // create
     {
         global $conf, $langs;
         
@@ -6641,8 +6642,8 @@ class Agefodd extends DolibarrApi
         $this->certif->certif_dt_start = strtotime($date_start);
         
         if(!empty($date_end) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_end)) throw new RestException(503, "Bad date format for date_end. It must be a string date with format yyyy-mm-dd");
-        
-        if (! empty($agf_training->certif_duration)) {
+        elseif (!empty($date_end) && preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_end)) $this->certif->certif_dt_end = strtotime($date_end);
+        elseif (! empty($agf_training->certif_duration)) {
             require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
             $duration_array = explode(':', $agf_training->certif_duration);
             $year = $duration_array [0];
@@ -6656,10 +6657,32 @@ class Agefodd extends DolibarrApi
         }
         
         if(!empty($date_warning) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_warning)) throw new RestException(503, "Bad date format for date_warning. It must be a string date with format yyyy-mm-dd");
-        $this->certif->certif_dt_warning = dol_time_plus_duree($this->certif->certif_dt_end, -6, 'm');
+        elseif(!empty($date_warning)) $this->certif->certif_dt_warning = strtotime($date_warning);
+        else $this->certif->certif_dt_warning = dol_time_plus_duree($this->certif->certif_dt_end, -6, 'm');
         
+        if(!empty($note)) $this->certif->mark = $this->db->escape($note);
         
-        return $this->certif;
+        $resultcertif = $this->certif->create(DolibarrApiAccess::$user);
+        if($resultcertif < 0) throw new RestException(500, "Error in certificate creation", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        // certif states initialisation
+        $certif_type_array = $this->certif->get_certif_type();
+        
+        if (is_array($certif_type_array) && count($certif_type_array) > 0) {
+            $error = 0;
+            $errors = array();
+            foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
+                // Case state didn't exists yet
+                $result = $this->certif->set_certif_state(DolibarrApiAccess::$user, $resultcertif, $certif_type_id, 0);
+                if ($result < 0) {
+                    $error++;
+                    $errors[] = $this->certif->error;
+                }
+            }
+            if(!empty($error)) throw new RestException(500, "Error creating states", $errors);
+        }
+        
+        return $this->getCertif($resultcertif);
     }
     
     /**
