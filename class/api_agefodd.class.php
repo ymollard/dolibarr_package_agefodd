@@ -6699,7 +6699,7 @@ class Agefodd extends DolibarrApi
      * @param string    $date_warning   date to alert the trainee of short validity (must be a string date with format yyyy-mm-dd. No change if left blank)
      * @param string    $label          optionnal label of the certificate
      * @param string    $note           some notes on the certificate
-     * @param array     $states         array of certificate states by type
+     * @param array     $states         array of certificate states by type (array(fk_certif_type => 0 or 1))
      *
      * @throws RestException
      * @url PUT /certificates/
@@ -6732,7 +6732,30 @@ class Agefodd extends DolibarrApi
         if(!empty($label)) $this->certif->certif_label = $this->db->escape($label);
         if(!empty($note)) $this->certif->mark = $this->db->escape($note);
         
+        $resultcertif = $this->certif->update(DolibarrApiAccess::$user);
+        if($resultcertif < 0) throw new RestException(500, "Error in certificate modification", array($this->db->lasterror, $this->db->lastqueryerror));
+        
         // manage states
+        if(!empty($states)){
+            $certif_type_array = $this->certif->get_certif_type();
+            if (is_array($certif_type_array) && count($certif_type_array) > 0) {
+                $error = 0;
+                $errors = array();
+                foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
+                    if(array_key_exists($certif_type_id, $states)) {
+                        $state = !empty($states[$certif_type_id]) ? 1 : 0;
+                        $result = $this->certif->set_certif_state(DolibarrApiAccess::$user, $id, $certif_type_id, $state);
+                        if($result < 0){
+                            $error++;
+                            $errors[] = "Error during modification of the state $certif_type_id";
+                        }
+                    }
+                }
+                
+                if(!empty($error)) throw new RestException(500, "Error during modification of states", $errors);
+            }
+        }
+        
         
         return $this->getCertif($id);
     }
