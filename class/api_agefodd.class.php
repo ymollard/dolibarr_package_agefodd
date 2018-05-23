@@ -6612,13 +6612,18 @@ class Agefodd extends DolibarrApi
         if($result < 0) throw new RestException(500, "Error retrieving the session", array($this->db->lasterror, $this->db->lastqueryerror));
         elseif(empty($this->session->id)) throw new RestException(404, "session not found");
         
-        $this->certif->fk_session_agefodd = $this->session->id;
-        
         $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
         $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeId);
         if($result < 0) throw new RestException(500, "Error retrieving trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
         elseif(empty($result)) throw new RestException(404, "the trainee $traineeId is not in the session $sessid");
         
+        $agf_certif = new Agefodd_stagiaire_certif($this->db);
+        $res = $agf_certif->fetch(0, $this->trainee->id, $this->session->id, $this->traineeinsession->id);
+        if($res<0) throw new RestException(500, "Error retrieving certif");
+        elseif (!empty($agf_certif->id)) throw new RestException(503, "Error certificate already exists in the session $sessid for the trainee $traineeId. His Id is $agf_certif->id");
+        
+        $this->certif->fk_stagiaire = $this->trainee->id;
+        $this->certif->fk_session_agefodd = $this->session->id;
         $this->certif->fk_session_stagiaire = $this->traineeinsession->id;
         
         $obj = empty($conf->global->AGF_CERTIF_ADDON) ? 'mod_agefoddcertif_simple' : $conf->global->AGF_CERTIF_ADDON;
@@ -6686,12 +6691,20 @@ class Agefodd extends DolibarrApi
     }
     
     /**
-     * Create a certificate
+     * Update a certificate
+     * 
+     * @param int       $id             ID of the certificate to update
+     * @param string    $date_start     start of the certificate validity (must be a string date with format yyyy-mm-dd. No change if left blank)
+     * @param string    $date_end       end of the certificate validity (must be a string date with format yyyy-mm-dd. No change if left blank)
+     * @param string    $date_warning   date to alert the trainee of short validity (must be a string date with format yyyy-mm-dd. No change if left blank)
+     * @param string    $label          optionnal label of the certificate
+     * @param string    $note           some notes on the certificate
+     * @param array     $states         array of certificate states by type
      *
      * @throws RestException
      * @url PUT /certificates/
      */
-    function putCertif() // update
+    function putCertif($id, $date_start = '', $date_end = '', $date_warning = '', $label = '', $note = '', $states = array()) // update
     {
         global $conf, $langs;
         
@@ -6700,6 +6713,28 @@ class Agefodd extends DolibarrApi
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        if(empty($id)) throw new RestException(500, "the id of the certificate is required");
+        $this->certif = new Agefodd_stagiaire_certif($this->db);
+        $result = $this->certif->fetch($id);
+        if($result < 0) throw new RestException(500, "Error retrieving certificates", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->certif->id)) throw new RestException(404, "Certificate $id not found");
+        
+        if(!empty($date_start) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_start)) throw new RestException(503, "Bad date format for date_start. It must be a string date with format yyyy-mm-dd");
+        elseif(!empty($date_start) && preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_start)) $this->certif->certif_dt_start = strtotime($date_start);
+        
+        if(!empty($date_end) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_end)) throw new RestException(503, "Bad date format for date_end. It must be a string date with format yyyy-mm-dd");
+        elseif (!empty($date_end) && preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_end)) $this->certif->certif_dt_end = strtotime($date_end);
+        
+        if(!empty($date_warning) && !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_warning)) throw new RestException(503, "Bad date format for date_warning. It must be a string date with format yyyy-mm-dd");
+        elseif(!empty($date_warning) && preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_warning)) $this->certif->certif_dt_warning = strtotime($date_warning);
+        
+        if(!empty($label)) $this->certif->certif_label = $this->db->escape($label);
+        if(!empty($note)) $this->certif->mark = $this->db->escape($note);
+        
+        // manage states
+        
+        return $this->getCertif($id);
     }
     
     /**
