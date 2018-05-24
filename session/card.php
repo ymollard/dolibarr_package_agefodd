@@ -830,7 +830,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	?>
 <script type="text/javascript">
 	$(document).ready(function () {
-		$("#formation").change(function () {
+		<!--
+
+		$("body").on('#productid','change',function(){
+			$(this).val(result.fk_product);
+			});
+		-->
+		$("body").on('change','#formation',function () {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
 			ajax_set_duration_and_product(data);
@@ -852,10 +858,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						$("#duree_session").val("");
 					}
 					if((result.fk_product)!= null ){
-
 						$("#productid").val(result.fk_product).change();
 					}else{
 						$("#productid").val(0).change();
+					}
+					if($('#search_productid').length != 0 ){
+						$('#search_productid').val(result.ref_product).change();
 					}
 				},
     		    error: function(error){
