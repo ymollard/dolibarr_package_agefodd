@@ -16,6 +16,7 @@
  */
 
  use Luracast\Restler\RestException;
+use OAuth\Common\Storage\Session;
 
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
@@ -2377,9 +2378,17 @@ class Agefodd extends DolibarrApi
     /**
      * Get a list of agefodd documents
      * 
-     * @url GET sessions/documents/
+     * @param int       $sessid         ID of the session
+     * @param int       $socid          ID of the thirdparty (if you want to filter uncommon docs)
+     * @param int       $trainerid      ID of the trainer (if you want to filter trainers docs)
+     * @param int       $withcommon     Get Common docs of the session
+     * @param int       $withuncommon   Get thirdparty docs of the session
+     * @param int       $withtrainer    Get trainers docs of the session
+     * @param array     $filearray      Array of filename
+     * 
+     * @url GET /sessions/documents
      */
-    function documentsSessionList($sessid)
+    function documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1, $filearray = array())
     {
         global $conf;
         
@@ -2392,8 +2401,21 @@ class Agefodd extends DolibarrApi
         $result = $this->session->fetch($sessid);
         if( $result < 0 || empty($this->session->id)) throw new RestException(404, 'session not found');
         
-        $upload_dir = $conf->agefodd->dir_output;
-        $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+        $this->trainerinsession = new Agefodd_session_formateur($this->db);
+        $this->trainerinsession->fetch_formateur_per_session($sessid);
+        $TFormateurs = array();
+        if(!empty($this->trainerinsession->lines)){
+            foreach ($this->trainerinsession->lines as $line)
+            {
+                $TFormateurs[$line->formid] = $line->opsid;
+            }
+        }
+        
+        if(empty($filearray)) {
+            $upload_dir = $conf->agefodd->dir_output;
+            $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+        }
+        
         $files = array();
         if (!empty($filearray)){
             $TCommonModels = array(
@@ -2409,14 +2431,46 @@ class Agefodd extends DolibarrApi
                 "chevalet",
                 "attestationendtraining_empty"
             );
+            
+            $TUnCommonModels = array(
+                "attestation",
+                "attestationendtraining",
+                "attestationpresencecollective",
+                "attestationpresencetraining",
+                "convocation",
+                "certificateA4",
+                "certificatecard",
+                "courrier-accueil",
+                "courrier-cloture",
+                "courrier-convention"
+            );
             foreach ($filearray as $file) {
-                // fiche pedago
-                if(preg_match("/^fiche_pedago(.*)_([0-9]+).pdf$/", $file['name'], $i) && $i[2] == $this->session->fk_formation_catalogue){
-                    $files[] = $file['name'];
+                if($withcommon){
+                    // fiche pedago
+                    if(preg_match("/^fiche_pedago(.*)_([0-9]+).pdf$/", $file['name'], $i) && $i[2] == $this->session->fk_formation_catalogue){
+                        $files[] = $file['name'];
+                    }
+                    // documents communs
+                    $mod = substr($file['name'], 0, strrpos($file['name'], '_'));
+                    if(in_array($mod, $TCommonModels) && preg_match("/^".$mod."_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) $files[] = $file['name'];
                 }
-                foreach ($TCommonModels as $model){
-                    if(strpos($file['name'], $model) !== false && preg_match("/^".$model."_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) $files[] = $file['name'];
+                
+                if($withuncommon){
+                    $mod = substr($file['name'], 0, strpos($file['name'], '_'));
+                    if(in_array($mod, $TUnCommonModels) && preg_match("/^".$mod."_([0-9]+)_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) {
+                        if(empty($socid)) $files[] = $file['name'];
+                        elseif ($i[2] == $socid) $files[] = $file['name'];
+                    }
                 }
+                
+                if($withtrainer)
+                {
+                    if(preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs)) {
+                        if(empty($trainerid)) $files[] = $file['name'];
+                        elseif ($i[1] == $TFormateurs[$trainerid]) return $files[] = $file['name'];
+                    }
+                }
+                
             }
         }
         return $files;
@@ -2446,6 +2500,189 @@ class Agefodd extends DolibarrApi
         
         return $models;
     }
+    
+    /**
+     * Download an agefodd file
+     * 
+     * @param string $filename Name of the file to download
+     * 
+     * @url GET /documents/download
+     */
+    function documentsDownload($filename)
+    {
+        global $conf, $langs;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if (empty($filename)) {
+            throw new RestException(400, 'bad value for parameter filename');
+        }
+        
+        //--- Finds and returns the document
+        $entity=$conf->entity;
+        
+        $check_access = dol_check_secure_access_document('agefodd', $filename, $entity, DolibarrApiAccess::$user, '', 'read');
+        $accessallowed              = $check_access['accessallowed'];
+        $sqlprotectagainstexternals = $check_access['sqlprotectagainstexternals'];
+        $original_file              = $check_access['original_file'];
+        
+        if (preg_match('/\.\./',$original_file) || preg_match('/[<>|]/',$original_file))
+        {
+            throw new RestException(401);
+        }
+        if (!$accessallowed) {
+            throw new RestException(401);
+        }
+        
+        $file = basename($original_file);
+        $original_file_osencoded=dol_osencode($original_file);	// New file name encoded in OS encoding charset
+        
+        if (! file_exists($original_file_osencoded))
+        {
+            throw new RestException(404, 'File not found');
+        }
+        
+        $file_content=file_get_contents($original_file_osencoded);
+        return array('filename'=>$file, 'content'=>base64_encode($file_content), 'encoding'=>'MIME base64 (base64_encode php function, http://php.net/manual/en/function.base64-encode.php)' );
+    }
+        
+     /**
+      * Get the documents of a trainee
+      * 
+      * @param int $id              ID of the trainee
+      * @param int $sessid          ID of a Session (to filter on just one session)
+      * @param int $withcommon      1 to get the common files of the session or 0 to get only the trainee documents
+      * 
+      * @url GET /trainees/documents
+      */
+     function documentsTraineeList($id, $sessid = 0, $withcommon = 1)
+     {
+         global $conf;
+         
+         $this->trainee = new Agefodd_stagiaire($this->db);
+         $result = $this->trainee->fetch($id);
+         if($result < 0) throw new RestException(500, "Error retrieving trainee", array($this->db->lasterror, $this->db->lastqueryerror));
+         elseif(empty($result)) throw new RestException(404, "Trainee not found");
+         
+         $upload_dir = $conf->agefodd->dir_output;
+         $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+         $files = array();
+         
+         // si sessid n'est pas vide, 
+         if(!empty($sessid)){
+             // on vérifie si la session existe
+             $this->session = new Agsession($this->db);
+             $result = $this->session->fetch($sessid);
+             if($result < 0 || empty($this->session->id)) throw new RestException(404, "Session $sessid not found");
+             
+            // on récupère uniquement les documents + les documents du trainee de la session
+            $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+            $result = $this->traineeinsession->fetch_by_trainee($sessid, $id);
+            if($result < 0) throw new RestException(500, "Error retrieving trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
+            elseif(empty($result)) throw new RestException(404, "Trainee not found in this session");
+            
+            $socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
+            
+            $files[$sessid] = $this->documentsSessionList($sessid, $socid, 0, $withcommon, 1, 0, $filearray);
+            
+            if(!empty($filearray)) {
+                foreach ($filearray as $f)
+                {
+                    $mod = substr($f['name'], 0, strrpos($f['name'], '_'));
+                    if(in_array($mod, array("convocation_trainee", "attestation_trainee", "attestationendtraining_trainee")) && preg_match("/^".$mod."_([0-9]+).pdf$/", $f['name'], $i) && $i[1] == $this->traineeinsession->id) $files[$sessid][] = $f['name'];
+                }
+            }
+         }
+         else // sinon 
+         {
+             // on récupère la liste des sessions dans lequel il se trouve
+             $result = $this->session->fetch_session_per_trainee($id);
+             if($result > 0)
+             {
+                 // pour chaque session trouvée on récupère la liste des fichiers concernant le trainee
+                 foreach ($this->session->lines as $sess)
+                 {
+                     $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+                     $result = $this->traineeinsession->fetch_by_trainee($sess->rowid, $id);
+                     if($result < 0) throw new RestException(500, "Error retrieving trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
+                     
+                     $socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
+                     
+                     $files[$sess->rowid] = $this->documentsSessionList($sess->rowid, $socid, 0, $withcommon, 1, 0, $filearray);
+                     
+                     if(!empty($filearray)) {
+                         foreach ($filearray as $f)
+                         {
+                             $mod = substr($f['name'], 0, strrpos($f['name'], '_'));
+                             if(in_array($mod, array("convocation_trainee", "attestation_trainee", "attestationendtraining_trainee")) && preg_match("/^".$mod."_([0-9]+).pdf$/", $f['name'], $i) && $i[1] == $this->traineeinsession->id) $files[$sess->rowid][] = $f['name'];
+                         }
+                     }
+                 }
+             }
+             
+         }
+         
+         if(empty($files)) $files[] = "No document generated";
+         return $files;
+     }
+     
+     /**
+      * Get the documents of a trainer
+      *
+      * @param int $id              ID of the trainer
+      * @param int $sessid          ID of a Session (to filter on just one session)
+      * @param int $withcommon      1 to get the common files of the session or 0 to get only the trainer documents
+      *
+      * @url GET /trainers/documents
+      */
+     function documentsTrainerList($id, $sessid = 0, $withcommon = 0)
+     {
+         global $conf;
+         
+         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+         }
+         
+         $upload_dir = $conf->agefodd->dir_output;
+         $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+         $files = array();
+         
+         $this->trainer = new Agefodd_teacher($this->db);
+         $result = $this->trainer->fetch($id);
+         if($result < 0) throw new RestException(500, "Error retrieving trainer", array($this->db->lasterror, $this->db->lastqueryerror));
+         elseif(empty($result)) throw new RestException(404, "Trainer not found");
+         
+         if(!empty($sessid))// si sessid n'est pas vide
+         {
+             // on vérifie si la session existe
+             $this->session = new Agsession($this->db);
+             $result = $this->session->fetch($sessid);
+             if($result < 0 || empty($this->session->id)) throw new RestException(404, "Session $sessid not found");
+             
+             //on récupère les docs de la session concernant le trainer
+             $files[$sessid] = $this->documentsSessionList($sessid, 0, $id, $withcommon, 0, 1, $filearray);
+         }
+         else // sinon
+         {
+             // on récupère la liste des sessions du trainer
+             $result = $this->session->fetch_session_per_trainer($id);
+             if($result < 0) throw new RestException(500, "Error retrieving trainer sessions", array($this->db->lasterror, $this->db->lastqueryerror));
+             elseif (empty($result)) throw new RestException(404, "No session found for this trainer");
+             
+             // et pour chacune, on récupère les docs
+             foreach ($this->session->lines as $sess)
+             {
+                 $sessionfiles = $this->documentsSessionList($sess->rowid, 0, $id, $withcommon, 0, 1, $filearray);
+                 if(!empty($sessionfiles)) $files[$sess->rowid] = $sessionfiles;
+                 
+             }
+         }
+         
+         if(empty($files)) $files[] = "No document generated";
+         return $files;
+     }
     
     /***************************************************************** Trainee Part *****************************************************************/
     
