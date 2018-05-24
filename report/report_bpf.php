@@ -34,6 +34,7 @@ require_once ('../class/html.formagefodd.class.php');
 require_once ('../class/report_bpf.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -143,10 +144,10 @@ print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_fo
 print '<table class="border" width="100%">';
 
 if (empty($search_date_start)) {
-	$search_date_start = dol_get_first_day(dol_print_date(dol_now(),'%Y'));
+	$search_date_start = dol_get_first_day(dol_print_date(dol_time_plus_duree(dol_now(), -1, 'y'),'%Y'));
 }
 if (empty($search_date_end)) {
-	$search_date_end= dol_get_last_day(dol_print_date(dol_now(),'%Y'));
+	$search_date_end= dol_get_last_day(dol_print_date(dol_time_plus_duree(dol_now(), -1, 'y'),'%Y'));
 }
 
 print '<tr>';

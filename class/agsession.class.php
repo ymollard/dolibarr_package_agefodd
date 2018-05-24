@@ -4379,6 +4379,16 @@ class Agsession extends CommonObject
 			// Calculate price
 			$tva_tx = get_default_tva($mysoc, $invoice->thirdparty, $product->id);
 
+			// $txtva can have format '5.0(XXX)' or '5'
+			$tva_tx=price2num($tva_tx);
+			$vat_src_code='';
+			if (preg_match('/\((.*)\)/', $tva_tx, $reg))
+			{
+				$vat_src_code = $reg[1];
+				$tva_tx = preg_replace('/\s*\(.*\)/', '', $tva_tx);    // Remove code into vatrate.
+			}
+
+
 			if (! empty($frompropalid)) {
 				require_once (DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php');
 				$propal = new Propal($this->db);
@@ -4467,6 +4477,7 @@ class Agsession extends CommonObject
 			$invoice->lines[0]->total_tva = $invoice->lines[0]->total_ttc - $invoice->lines[0]->total_ht;
 			$invoice->lines[0]->subprice = $pu_ht;
 			$invoice->lines[0]->tva_tx = $tva_tx;
+			$invoice->lines[0]->vat_src_code=$vat_src_code;
 
 			// Add relative discount is exists on soc
 			if (! empty($soc->remise_percent)) {
@@ -4493,6 +4504,7 @@ class Agsession extends CommonObject
 						$invoiceline->total_tva = $line->total_tva;
 						$invoiceline->subprice = $line->subprice;
 						$invoiceline->tva_tx = $line->tva_tx;
+						$invoiceline->vat_src_code = $line->vat_src_code;
 						$invoice->lines[] = $invoiceline;
 						dol_syslog(get_class($this) . "::createInvoice invoiceline=" . var_export($invoiceline, true), LOG_DEBUG);
 					}
@@ -4524,7 +4536,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		if (empty($error) && empty($frompropalid)) {
+		if (empty($error) && !empty($propal->id) && $invoice->socid!==$propal->socid) {
 			// Link new order to the session/thridparty
 
 			$agf = new Agefodd_session_element($this->db);

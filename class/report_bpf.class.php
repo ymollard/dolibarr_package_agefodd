@@ -504,6 +504,59 @@ class ReportBPF extends AgefoddExportExcel
 			}
 		}
 
+		// Fetch Trainee Block G
+		$result = $this->fetch_trainee_g($filter);
+		if ($result < 0) {
+			return $result;
+		}
+
+		// Contruct header (column name)
+		$array_column_header = array();
+		$array_column_header[0][0] = array(
+				'type' => 'text',
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperG')
+		);
+
+		$array_column_header[0][1] = array(
+				'type' => 'int',
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
+		);
+		$array_column_header[0][2] = array(
+				'type' => 'hours',
+				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
+		);
+		// 'autosize' => 0
+
+		$this->setArrayColumnHeader($array_column_header);
+
+		$result = $this->write_header();
+		if ($result < 0) {
+			return $result;
+		}
+
+		// Ouput Lines
+		$line_to_output = array();
+		$array_total_output = array();
+		if (is_array($this->trainee_data_g) && count($this->trainee_data_g) > 0) {
+			foreach ( $this->trainee_data_g as $label_type => $trainee_data ) {
+				$line_to_output[0] = $label_type;
+				$line_to_output[1] = $trainee_data['nb'];
+				$line_to_output[2] = $trainee_data['time'];
+				$array_total_output[0] = 'Total';
+				$array_total_output[1] += $trainee_data['nb'];
+				$array_total_output[2] += $trainee_data['time'];
+
+				$result = $this->write_line($line_to_output, 0);
+				if ($result < 0) {
+					return $result;
+				}
+			}
+			$result = $this->write_line_total($array_total_output, '3d85c6');
+			if ($result < 0) {
+				return $result;
+			}
+		}
+
 		$this->close_file(0, 0, 0);
 		return count($this->trainer_data) + count($this->trainee_data) + count($this->financial_data);
 		// return 1;
@@ -958,11 +1011,11 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 
 		$key = 'Formations confiées par votre organisme à un autre organisme de formation';
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt, ";
+		$sql = "SELECT count(DISTINCT sesssta.rowid) as cnt, ";
 		if ($this->db->type == 'pgsql') {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession";
+			$sql .= " SUM(TIME_TO_SEC(TIMEDIFF('second',statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
 		} else {
-			$sql .= "SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession,";
+			$sql .= " SUM(TIME_TO_SEC(TIMEDIFF(statime.heuref, statime.heured)))/(24*60*60) as timeinsession ";
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
@@ -976,7 +1029,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
 
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::" . __METHOD__. ' '.$key, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -986,7 +1039,7 @@ class ReportBPF extends AgefoddExportExcel
 				}
 			}
 			if (!empty($conf->global->AGF_USE_REAL_HOURS)){
-			    $sql = "select count(DISTINCT assh.fk_stagiaire) as cnt , ";
+			    $sql = "SELECT count(DISTINCT assh.fk_stagiaire) as cnt , ";
 			    $sql .= "SUM(assh.heures)/24 as timeinsession";
 			    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures as assh";
 			    $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as sess ON sess.rowid = assh.fk_session";
@@ -1024,7 +1077,7 @@ class ReportBPF extends AgefoddExportExcel
 		$this->db->free($resql);
 
 		// Add time from FOAD
-		$sql = "select count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad)/24 as timeinsession ";
+		$sql = "SELECT count(DISTINCT sesssta.rowid) as cnt ,SUM(sesssta.hour_foad)/24 as timeinsession ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as sess ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS sesssta ON sesssta.fk_session_agefodd=sess.rowid AND sesssta.status_in_session IN (3,4) ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sesssta.fk_stagiaire ";
@@ -1520,24 +1573,28 @@ function fetch_financial_c($filter = array()) {
 			)
 	);
 
+	$sqldebugall=array();
 	foreach ( $array_fin as $key => $data ) {
-		$result = $this->_getAmountFin($data, $filter);
+		$result = $this->_getAmountFin($data, $filter,$sqldebugall);
 		if ($result < 0) {
 			return - 1;
 		}
 	}
 
+
 	// C - 12
-	$result = $this->_getAmountFinC12($filter);
+	$result = $this->_getAmountFinC12($filter,$sqldebugall);
 	if ($result < 0) {
 		return - 1;
 	}
 
 	// C - 13
-	$result = $this->_getAmountFinC13($filter);
+	$result = $this->_getAmountFinC13($filter,$sqldebugall);
 	if ($result < 0) {
 		return - 1;
 	}
+
+	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
 }
 
 /**
@@ -1912,7 +1969,7 @@ function fetch_financial_d($filter = array()) {
 	 * @param array $filter
 	 * @return number
 	 */
-	private function _getAmountFinC13($filter) {
+	private function _getAmountFinC13($filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (empty($conf->global->AGF_CAT_PRODUCT_CHARGES) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities("AgfCategOverheadCost")),$this->warnings)) {
@@ -1936,8 +1993,11 @@ function fetch_financial_d($filter = array()) {
 		$this->financial_data['C-13 Autres produits au titre de la formation professionnelle continue'] = 0;
 
 		if (! empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
-			$sql = " SELECT
-		   		SUM(fd.total_ht) as amount
+
+
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest = "
 				FROM
 				    " . MAIN_DB_PREFIX . "facturedet AS fd
 				        INNER JOIN
@@ -1963,6 +2023,10 @@ function fetch_financial_d($filter = array()) {
 								INNER JOIN
 							" . MAIN_DB_PREFIX . "facture AS factin ON factin.rowid=se.fk_element)";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
+
 			dol_syslog(get_class($this) . "::" . __METHOD__ . ' C-13', LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -1980,8 +2044,10 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_PRODPEDA) && ! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
-			$sql = " SELECT
-	   		SUM(fd.total_ht) as amount
+
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest = "
 			FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
@@ -2016,6 +2082,9 @@ function fetch_financial_d($filter = array()) {
 						" . MAIN_DB_PREFIX . "agefodd_place as pl ON pl.rowid=sess.fk_session_place
 							AND pl.fk_pays<>1)";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
 			dol_syslog(get_class($this) . "::" . __METHOD__ . 'C-13', LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -2044,7 +2113,7 @@ function fetch_financial_d($filter = array()) {
 	 * @param array $filter
 	 * @return number
 	 */
-	private function _getAmountFinC12($filter) {
+	private function _getAmountFinC12($filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
@@ -2054,8 +2123,10 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
-			$sql = "SELECT
-	   		SUM(fd.total_ht) as amount
+
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest = "
 			FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
@@ -2070,6 +2141,9 @@ function fetch_financial_d($filter = array()) {
 			        WHERE
 			            cp.fk_categorie IN (" . $conf->global->AGF_CAT_BPF_TOOLPEDA . "))";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
 			dol_syslog(get_class($this) . "::" . __METHOD__ . 'C-12', LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
@@ -2093,9 +2167,9 @@ function fetch_financial_d($filter = array()) {
 	 *
 	 * @param array $data
 	 * @param array $filter
-	 * @return number
+	 * @return number$
 	 */
-	private function _getAmountFin($data = array(), $filter) {
+	private function _getAmountFin($data = array(), $filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (! empty($data['confprod']) && empty($conf->global->{$data['confprod']}) && !in_array($langs->transnoentities('AgfErroVarNotSetBPF', $langs->transnoentities($data['confprodlabel'])),$this->warnings)) {
@@ -2112,22 +2186,22 @@ function fetch_financial_d($filter = array()) {
 
 		if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']}) || (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']}))) {
 
-			$sql = "SELECT
-	   		SUM(fd.total_ht) as amount
-			FROM
+			$sqldebug = ' SELECT DISTINCT f.rowid ';
+			$sql = " SELECT SUM(fd.total_ht) as amount ";
+			$sqlrest =  " FROM
 			    " . MAIN_DB_PREFIX . "facturedet AS fd
 			        INNER JOIN
 			    " . MAIN_DB_PREFIX . "facture AS f ON f.rowid = fd.fk_facture ";
 			if (!empty($data['employer'])) {
-				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+				$sqlrest .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
 			}
 			if (!empty($data['datefac'])) {
-				$sql .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
+				$sqlrest .= " AND (f.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')";
 			}
-			$sql .= " WHERE
+			$sqlrest .= " WHERE
 			    f.fk_statut IN (1 , 2) ";
 			if (! empty($data['confprod']) && !empty($conf->global->{$data['confprod']})) {
-				$sql .= " AND fd.fk_product IN (SELECT
+				$sqlrest .= " AND fd.fk_product IN (SELECT
 			            cp.fk_product
 			        FROM
 			            " . MAIN_DB_PREFIX . "categorie_product AS cp
@@ -2136,7 +2210,7 @@ function fetch_financial_d($filter = array()) {
 			}
 
 			if (! empty($data['confcust']) && !empty($conf->global->{$data['confcust']})) {
-				$sql .= " AND f.fk_soc IN (SELECT
+				$sqlrest .= " AND f.fk_soc IN (SELECT
 			            cs.fk_soc
 			        FROM
 			            " . MAIN_DB_PREFIX . "categorie_societe AS cs
@@ -2144,7 +2218,7 @@ function fetch_financial_d($filter = array()) {
 			            cs.fk_categorie IN (" . $conf->global->{$data['confcust']} . "))";
 			}
 
-			$sql .= " AND ( (f.rowid IN (SELECT DISTINCT
+			$sqlrest .= " AND ( (f.rowid IN (SELECT DISTINCT
 			            factin.rowid
 			        FROM
 			            " . MAIN_DB_PREFIX . "agefodd_session_element AS se
@@ -2156,31 +2230,31 @@ function fetch_financial_d($filter = array()) {
 							AND statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 
 			if (! empty($data['employer'])) {
-				$sql .= " AND sess.fk_soc_employer IS NOT NULL ";
+				$sqlrest .= " AND sess.fk_soc_employer IS NOT NULL ";
 			}
-			$sql .= " INNER JOIN
+			$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ss ON ss.fk_session_agefodd = sess.rowid
 			                AND ss.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")";
 			if (empty($data['checkOPCA']) && empty($data['employer'])) {
-				$sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_stagiaire AS sta ON sta.rowid = ss.fk_stagiaire";
-			      $sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON ";
 			      if (empty($data['checkPV'])) {
-			      	$sql .= " factin.fk_soc = sta.fk_soc AND ";
+			      	$sqlrest .= " factin.fk_soc = sta.fk_soc AND ";
 			      }
-			      $sql .= " factin.rowid=se.fk_element))";
+			      $sqlrest .= " factin.rowid=se.fk_element))";
 			} elseif (!empty($data['checkOPCA'])) {
-				$sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_opca AS opca ON opca.fk_session_trainee = ss.rowid AND opca.fk_session_agefodd=sess.rowid
 			                INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = opca.fk_soc_OPCA AND factin.rowid=se.fk_element))";
 			} elseif (!empty($data['employer'])) {
-				$sql .= " INNER JOIN
+				$sqlrest .= " INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factin ON factin.fk_soc = sess.fk_soc_employer AND factin.rowid=se.fk_element))";
 			}
 			if (! empty($data['checkOPCA'])) {
-				$sql .= " OR (f.rowid IN (SELECT DISTINCT
+				$sqlrest .= " OR (f.rowid IN (SELECT DISTINCT
 			            factinopca.rowid
 			        FROM
 			            " . MAIN_DB_PREFIX . "agefodd_session_element AS seopca
@@ -2191,16 +2265,19 @@ function fetch_financial_d($filter = array()) {
 							INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as statimeopca ON statimeopca.fk_agefodd_session=sessopca.rowid
 							AND statimeopca.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statimeopca.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 				if (! empty($data['employer'])) {
-					$sql .= "  AND sessopca.fk_soc_employer IS NOT NULL ";
+					$sqlrest .= "  AND sessopca.fk_soc_employer IS NOT NULL ";
 				}
-				$sql .= " 	INNER JOIN
+				$sqlrest .= " 	INNER JOIN
 			            " . MAIN_DB_PREFIX . "agefodd_session_stagiaire AS ssopca ON ssopca.fk_session_agefodd = sessopca.rowid
 			                AND ssopca.fk_agefodd_stagiaire_type IN (" . $data['idtypesta'] . ")
  							INNER JOIN
 			            " . MAIN_DB_PREFIX . "facture AS factinopca ON factinopca.fk_soc = sessopca.fk_soc_OPCA AND factinopca.rowid=seopca.fk_element))";
 			}
-			$sql .= ")";
+			$sqlrest .= ")";
 
+			$sql = $sql.$sqlrest;
+
+			$sqldebugarray[]='('.$sqldebug.$sqlrest.')';
 			dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $data['label'], LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {

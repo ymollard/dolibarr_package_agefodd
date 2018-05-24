@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
@@ -30,24 +30,27 @@ $data['errorMsg'] = ''; // default message for errors
 	if(GETPOST('action'))
 	{
 		$action = GETPOST('action');
-		
-		
+
+
 		if($action == 'get_duration_and_product')
 		{
 			$fk_training= GETPOST('fk_training');
 			if(!empty($fk_training)){
-				$sql="SELECT duree,fk_product FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue WHERE rowid='".$fk_training."'";
+				$sql="SELECT cat.duree,cat.fk_product,p.ref FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue cat";
+				$sql.=" LEFT JOIN ".MAIN_DB_PREFIX."product p on (p.rowid = cat.fk_product)";
+				$sql.=" WHERE cat.rowid=".$fk_training;
 				$resql = $db->query($sql);
 				if(!empty($resql)){
 					$obj = $db->fetch_object($resql);
 					$data['duree']=$obj->duree;
 					$data['fk_product']=$obj->fk_product;
-					$data['result'] = 1; 
+					$data['ref_product']=$obj->ref;
+					$data['result'] = 1;
 				}
 			}
-			
+
 		}
-		
+
 	}
 
 echo json_encode($data);
