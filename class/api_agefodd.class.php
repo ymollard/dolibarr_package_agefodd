@@ -2251,13 +2251,16 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /***************************************************************** Documents Part *****************************************************************/
+    
     /**
-     * Generate document of a session
+     * Generate an agefodd document of a session.
+     * 
      * 
      * @param int       $sessid     ID of the session
      * @param string    $model      Name of the PDF model to generate
      * @param int       $socid      ID of the thirdparty involved
-     * @param string    $cour       Name of the letter model if model is courrier
+     * @param string    $cour       Name of the letter model if model is courrier (it can be "accueil", "cloture" or "convention")
      * @param int       $langid     ID of a language if needed
      * 
      * @url POST /sessions/generatedocument
@@ -2273,6 +2276,21 @@ class Agefodd extends DolibarrApi
         $this->session = new Agsession($this->db);
         $result = $this->session->fetch($sessid);
         if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $TUnCommonModels = array(
+            "attestation",
+            "attestationendtraining",
+            "attestationpresencecollective",
+            "attestationpresencetraining",
+            "convocation",
+            "certificateA4",
+            "certificatecard",
+            "courrier"
+        );
+        
+        if(in_array($model, $TUnCommonModels) && empty($socid)) throw new RestException(500, "the field socid is required for this model");
+        
+        if($model == 'courrier' && empty($cour)) throw new RestException(500, "the field cour is required for model 'courrier'");
         
         if(!empty($socid))
         {
@@ -2301,19 +2319,20 @@ class Agefodd extends DolibarrApi
         $id_tmp = $sessid;
         if (! empty($cour))
             $file = $model . '-' . $cour . '_' . $sessid . '_' . $socid . '.pdf';
-        elseif ($model == 'convention') {
-            dol_include_once('/agefodd/class/agefodd_convention.class.php');
-            $convention = new Agefodd_convention($this->db);
-            $convention->fetch(1702, 605, GETPOST('convid', 'int'));
-            $id_tmp = $convention->id;
-            $model = $convention->model_doc;
-            $model = 'pdf_convention';
-            // Si on est sur un mod��le externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les donn��es
-            if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $sessid;
-            $model = str_replace('pdf_', '', $model);
+//         elseif ($model == 'convention') {
+//             dol_include_once('/agefodd/class/agefodd_convention.class.php');
+//             $convention = new Agefodd_convention($this->db);
+//             $convention->fetch(1702, 605, GETPOST('convid', 'int'));
+//             $id_tmp = $convention->id;
+//             $model = $convention->model_doc;
+//             $model = 'pdf_convention';
+//             // Si on est sur un mod��le externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les donn��es
+//             if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $sessid;
+//             $model = str_replace('pdf_', '', $model);
             
-            $file = 'convention' . '_' . $sessid . '_' . $socid . '_' . $convention->id . '.pdf';
-        } elseif (! empty($socid)) {
+//             $file = 'convention' . '_' . $sessid . '_' . $socid . '_' . $convention->id . '.pdf';
+//         } 
+        elseif (! empty($socid)) {
             $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
         } elseif (strpos($model, 'fiche_pedago') !== false) {
             $file = $model . '_' . $idform . '.pdf';
@@ -2489,7 +2508,7 @@ class Agefodd extends DolibarrApi
         
         $dir = dol_buildpath('/agefodd/core/modules/agefodd/pdf/');
         
-        $filearray=dol_dir_list($dir,"files",0,'','(pdf_demo.*|\.meta|_preview.*\.png)$');
+        $filearray=dol_dir_list($dir,"files",0,'','(pdf_courrier_.*|pdf_demo.*|\.meta|_preview.*\.png)$');
         
         $models = array();
         if (!empty($filearray)){
@@ -2549,7 +2568,7 @@ class Agefodd extends DolibarrApi
     }
         
      /**
-      * Get the documents of a trainee
+      * Get the generated documents of a trainee
       * 
       * @param int $id              ID of the trainee
       * @param int $sessid          ID of a Session (to filter on just one session)
@@ -2610,7 +2629,8 @@ class Agefodd extends DolibarrApi
                      
                      $socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
                      
-                     $files[$sess->rowid] = $this->documentsSessionList($sess->rowid, $socid, 0, $withcommon, 1, 0, $filearray);
+                     $sessionfiles = $this->documentsSessionList($sess->rowid, $socid, 0, $withcommon, 1, 0, $filearray);
+                     if(!empty($sessionfiles)) $files[$sess->rowid] = $sessionfiles;
                      
                      if(!empty($filearray)) {
                          foreach ($filearray as $f)
@@ -2629,7 +2649,7 @@ class Agefodd extends DolibarrApi
      }
      
      /**
-      * Get the documents of a trainer
+      * Get the generated agefodd documents of a trainer
       *
       * @param int $id              ID of the trainer
       * @param int $sessid          ID of a Session (to filter on just one session)
@@ -2678,6 +2698,91 @@ class Agefodd extends DolibarrApi
                  if(!empty($sessionfiles)) $files[$sess->rowid] = $sessionfiles;
                  
              }
+         }
+         
+         if(empty($files)) $files[] = "No document generated";
+         return $files;
+     }
+     
+     /**
+      * Get all generated agefodd documents for a thirdparty
+      * 
+      * @param int  $id         ID of the thirdparty
+      * @param int  $sessid     ID of a Session (to filter on just one session)
+      * @param int $withcommon  1 to get the common files of the session or 0 to get only the thirdparty documents
+      * 
+      * @url GET /thirdparties/documents
+      */
+     function documentsThirdpartyList($id, $sessid = 0, $withcommon = 0)
+     {
+         global $conf;
+         
+         if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+             throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+         }
+         
+         $upload_dir = $conf->agefodd->dir_output;
+         $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+         $files = array();
+         
+         if(!empty($sessid))
+         {
+             // on vérifie si la session existe
+             $this->session = new Agsession($this->db);
+             $result = $this->session->fetch($sessid);
+             if($result < 0 || empty($this->session->id)) throw new RestException(404, "Session $sessid not found");
+             
+             // on récupère les doc de la session demandée
+             $files[$sessid] = $this->documentsSessionList($sessid, $id, 0, $withcommon, 1, 0, $filearray);
+
+         }
+         else 
+         {
+             // récupère les sessions ou le tiers a une relation tiers ou trainee ou opca
+             $this->session = new Agsession($this->db);
+             $TSession = array();
+             $filter['type_affect'] = 'thirdparty';
+             $this->session->fetch_all_by_soc($id, 'ASC', 's.rowid', 0, 0, $filter);
+             if(count($this->session->lines))
+             {
+                 foreach ($this->session->lines as $line)
+                 {
+                     $TSession[$line->rowid] = $line->rowid;
+                 }
+                 $this->session->lines = array();
+             }
+             
+             $filter['type_affect'] = 'trainee';
+             $this->session->fetch_all_by_soc($id, 'ASC', 's.rowid', 0, 0, $filter);
+             if(count($this->session->lines))
+             {
+                 foreach ($this->session->lines as $line)
+                 {
+                     $TSession[$line->rowid] = $line->rowid;
+                 }
+                 $this->session->lines = array();
+             }
+             
+             $filter['type_affect'] = 'opca';
+             $this->session->fetch_all_by_soc($id, 'ASC', 's.rowid', 0, 0, $filter);
+             if(count($this->session->lines))
+             {
+                 foreach ($this->session->lines as $line)
+                 {
+                     $TSession[$line->rowid] = $line->rowid;
+                 }
+                 $this->session->lines = array();
+             }
+             
+             if(!empty($TSession))
+             {
+                 foreach ($TSession as $sessid) 
+                 {
+                     $sessionfiles = $this->documentsSessionList($sessid, $id, 0, $withcommon, 1, 0, $filearray);
+                     if(!empty($sessionfiles)) $files[$sessid] = $sessionfiles;
+                 }
+             }
+             
          }
          
          if(empty($files)) $files[] = "No document generated";
