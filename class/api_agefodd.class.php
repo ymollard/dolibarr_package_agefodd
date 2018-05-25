@@ -26,6 +26,7 @@
  dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
  dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
  dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+ dol_include_once('/agefodd/class/agefodd_convention.class.php');
  dol_include_once('/agefodd/class/agefodd_cursus.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
  dol_include_once('/agefodd/class/agefodd_stagiaire_cursus.class.php');
@@ -159,6 +160,7 @@ class Agefodd extends DolibarrApi
 		$this->opca = new Agefodd_opca($this->db);                                            // agefodd OPCA
 		$this->sessionlinks = new Agefodd_session_element($this->db);                         // elements linked to a session
 		$this->certif = new Agefodd_stagiaire_certif($this->db);                              // certificates
+		$this->convention = new Agefodd_convention($this->db);                                // agefodd convention
     }
 
     
@@ -2250,6 +2252,165 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /***************************************************************** Convention Part *****************************************************************/
+    /**
+     * Get a session convention.
+     * 
+     * You can get it by $sessid/$socid or the $id of the conventionif you know it
+     * 
+     * @param int $sessid ID of the session
+     * @param int $socid  ID of the thirdparty involved
+     * @param int $id     ID of the convention (if not 0, sessid and socid don't matter)
+     * 
+     * @url GET /sessions/convention
+     */
+    function sessionGetConvention($sessid, $socid, $id = 0) // fetch
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->convention = new Agefodd_convention($this->db);
+        $result = $this->convention->fetch($sessid, $socid, $id);
+        if($result < 0) throw new RestException(500, "Error retrieving convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->convention->id)) throw new RestException(404, "Convention not found");
+        
+        if(!empty($this->convention->line_trainee)){
+            // remplacer les id des traineeinsession qui est un attribut que nous garderont privé par celui du trainee de base
+            $trainees = $this->convention->line_trainee;
+            $this->convention->line_trainee = array();
+            foreach ($trainees as $traineeid)
+            {
+                $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+                $result = $this->traineeinsession->fetch($traineeid);
+                if($result > 0) $this->convention->line_trainee[] = $this->traineeinsession->fk_stagiaire;
+            }
+        }
+        
+        unset($this->convention->error);
+        unset($this->convention->errors);
+        unset($this->convention->element);
+        unset($this->convention->table_element);
+        
+        return $this->convention;
+    }
+    
+    /**
+     * Get infos on a convention
+     * 
+     * @param int $id ID of the convention
+     * 
+     * @url GET /sessions/convention/info
+     */
+    function sessionGetConventionInfos($id) // info
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->convention = new Agefodd_convention($this->db);
+        $result = $this->convention->fetch(0, 0, $id);
+        $result = $this->convention->info($id);
+        if($result < 0) throw new RestException(500, "Error retrieving convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->convention->id)) throw new RestException(404, "Convention not found");
+        
+        if(!empty($this->convention->line_trainee)){
+            // remplacer les id des traineeinsession qui est un attribut que nous garderont privé par celui du trainee de base
+            $trainees = $this->convention->line_trainee;
+            $this->convention->line_trainee = array();
+            foreach ($trainees as $traineeid)
+            {
+                $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+                $result = $this->traineeinsession->fetch($traineeid);
+                if($result > 0) $this->convention->line_trainee[] = $this->traineeinsession->fk_stagiaire;
+            }
+        }
+        
+        unset($this->convention->error);
+        unset($this->convention->errors);
+        unset($this->convention->element);
+        unset($this->convention->table_element);
+        
+        return $this->convention;
+    }
+    
+    /**
+     * Get all convention for a session.
+     * Can be filtered by socid
+     * 
+     * @param int $sessid ID of the session
+     * @param int $socid  ID of the thirdparty (to get only the convention of the thirdparty)
+     * 
+     * @url GET /sessions/convention/all
+     */
+    function sessionGetAllConvention($sessid, $socid = 0) // fetch_all
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $this->convention = new Agefodd_convention($this->db);
+        $result = $this->convention->fetch_all($sessid, $socid);
+        if($result < 0) throw new RestException(500, "Error retrieving convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->convention->lines)) throw new RestException(404, "No convention found");
+        
+        $obj_ret = array();
+        
+        foreach ($this->convention->lines as $line)
+        {
+            if(!empty($line->line_trainee)){
+                // remplacer les id des traineeinsession qui est un attribut que nous garderont privé par celui du trainee de base
+                $trainees = $line->line_trainee;
+                $line->line_trainee = array();
+                foreach ($trainees as $traineeid)
+                {
+                    $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+                    $result = $this->traineeinsession->fetch($traineeid);
+                    if($result > 0) $line->line_trainee[] = $this->traineeinsession->fk_stagiaire;
+                }
+            }
+            
+            unset($line->error);
+            unset($line->errors);
+            unset($line->element);
+            unset($line->table_element);
+            
+            $obj_ret[] = $line;
+        }
+        
+        return $obj_ret;
+    }
+    
+    function getLastConv($socid) // fetch_last_conv_per_socity
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
+    function sessionPostConvention()
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+    }
+    
+    function sessionPutConvention()
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+    }
+    
+    function sessionDeleteConvention()
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+    }
+    
     /***************************************************************** Documents Part *****************************************************************/
     
     /**
@@ -2268,7 +2429,7 @@ class Agefodd extends DolibarrApi
     {
         global $conf, $langs;
         
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'PDF generation not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
@@ -2351,7 +2512,7 @@ class Agefodd extends DolibarrApi
         elseif(in_array($model, $TUnCommonModels)) $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
         elseif(in_array($model, $TTraineeModels)) $file = $model . '_' . $this->traineeinsession->id . '.pdf';
         elseif ($model == 'convention') {
-            dol_include_once('/agefodd/class/agefodd_convention.class.php');
+            
             $convention = new Agefodd_convention($this->db);
             $result = $convention->fetch($sessid, $socid);
             if($result < 0) {
@@ -2359,7 +2520,7 @@ class Agefodd extends DolibarrApi
             }
             else
             {
-                $id_tmp = $convention->id;
+                $id_tmp = $convention->id;dol_include_once('/agefodd/class/agefodd_convention.class.php');
                 $file = 'convention' . '_' . $sessid . '_' . $socid . '_' . $convention->id . '.pdf';
             }
             
@@ -2444,6 +2605,10 @@ class Agefodd extends DolibarrApi
      */
     function documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1)
     {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
         if(empty($filearray)) {
             $upload_dir = $conf->agefodd->dir_output;
             $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
@@ -6720,7 +6885,7 @@ class Agefodd extends DolibarrApi
         
         // this configuration variable is designed like
         // standard_model_name:new_model_name&standard_model_name:new_model_name&....
-        if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+        if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE)) {
             $modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
             if (is_array($modelarray) && count($modelarray) > 0) {
                 foreach ( $modelarray as $modeloveride ) {
