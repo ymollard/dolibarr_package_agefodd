@@ -2611,6 +2611,7 @@ class Agefodd extends DolibarrApi
                 {
                     $mod = substr($f['name'], 0, strrpos($f['name'], '_'));
                     if(in_array($mod, array("convocation_trainee", "attestation_trainee", "attestationendtraining_trainee")) && preg_match("/^".$mod."_([0-9]+).pdf$/", $f['name'], $i) && $i[1] == $this->traineeinsession->id) $files[$sessid][] = $f['name'];
+                    if(preg_match("/^attestation_cursus_([0-9]+)_([0-9]+).pdf$/", $f['name'], $i )) return $f['name'];
                 }
             }
          }
@@ -2637,6 +2638,7 @@ class Agefodd extends DolibarrApi
                          {
                              $mod = substr($f['name'], 0, strrpos($f['name'], '_'));
                              if(in_array($mod, array("convocation_trainee", "attestation_trainee", "attestationendtraining_trainee")) && preg_match("/^".$mod."_([0-9]+).pdf$/", $f['name'], $i) && $i[1] == $this->traineeinsession->id) $files[$sess->rowid][] = $f['name'];
+                             if(preg_match("/^attestation_cursus_([0-9]+)_([0-9]+).pdf$/", $f['name'], $i ) && $i[2] == $id) $files['cursus_'.$i[1]] = $f['name'];
                          }
                      }
                  }
@@ -6591,6 +6593,72 @@ class Agefodd extends DolibarrApi
                 'message' => 'trainee removed'
             )
         );
+    }
+    
+    /**
+     * Generate a certificate for the cursus
+     * 
+     * @param int $id           ID of the cursus
+     * @param int $traineeId    ID of the trainee
+     * 
+     * @throws RestException
+     * @url POST /cursus/certificate
+     */
+    function cursusGenerateAttestation($id, $traineeId)
+    {
+        global $conf, $langs;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
+            throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if(empty($id)) throw new RestException(500, "the field id is required.");
+        if(empty($traineeId)) throw new RestException(500, "the field traineeId is required.");
+        
+        $this->cursus = new Agefodd_cursus($this->db);
+        $result = $this->cursus->fetch($id);
+        if ($result < 0) throw new RestException(500, "Error retrieving cursus", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif (empty($result)) throw new RestException(404, "Cursus not found");
+        
+        $outputlangs = $langs;
+        if ($conf->global->MAIN_MULTILANGS)
+            $newlang = $object->thirdparty->default_lang;
+        if (! empty($newlang)) {
+            $outputlangs = new Translate("", $conf);
+            $outputlangs->setDefaultLang($newlang);
+        }
+        $model = 'attestation_cursus';
+        $file = $model . '_' . $id . '_' . $traineeId . '.pdf';
+        
+        // this configuration variable is designed like
+        // standard_model_name:new_model_name&standard_model_name:new_model_name&....
+        if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+            $modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+            if (is_array($modelarray) && count($modelarray) > 0) {
+                foreach ( $modelarray as $modeloveride ) {
+                    $modeloverridearray = explode(':', $modeloveride);
+                    if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+                        if ($modeloverridearray[0] == $model) {
+                            $model = $modeloverridearray[1];
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        $this->cursus->fk_stagiaire = $traineeId;
+        dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
+        $result = agf_pdf_create($this->db, $this->cursus, '', $model, $outputlangs, $file, 0);
+        if ($result < 0) throw new RestException(500, "Can't create the file");
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "Attestation created with filename $file"
+            )
+        );
+        
     }
     
     /***************************************************************** Cursus Trainee Part *****************************************************************/
