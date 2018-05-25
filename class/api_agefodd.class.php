@@ -2439,11 +2439,20 @@ class Agefodd extends DolibarrApi
      * @param int       $withcommon     Get Common docs of the session
      * @param int       $withuncommon   Get thirdparty docs of the session
      * @param int       $withtrainer    Get trainers docs of the session
-     * @param array     $filearray      Array of filename
      * 
      * @url GET /sessions/documents
      */
-    function documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1, $filearray = array())
+    function documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1)
+    {
+        if(empty($filearray)) {
+            $upload_dir = $conf->agefodd->dir_output;
+            $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+        }
+        
+        return $this->_documentsSessionList($sessid, $socid, $trainerid, $withcommon, $withuncommon, $withtrainer, $filearray);
+    }
+    
+    function _documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1, $filearray = array())
     {
         global $conf;
         
@@ -2683,7 +2692,7 @@ class Agefodd extends DolibarrApi
             
             $socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
             
-            $files[$sessid] = $this->documentsSessionList($sessid, $socid, 0, $withcommon, 1, 0, $filearray);
+            $files[$sessid] = $this->_documentsSessionList($sessid, $socid, 0, $withcommon, 1, 0, $filearray);
             
             if(!empty($filearray)) {
                 foreach ($filearray as $f)
@@ -2709,7 +2718,7 @@ class Agefodd extends DolibarrApi
                      
                      $socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
                      
-                     $sessionfiles = $this->documentsSessionList($sess->rowid, $socid, 0, $withcommon, 1, 0, $filearray);
+                     $sessionfiles = $this->_documentsSessionList($sess->rowid, $socid, 0, $withcommon, 1, 0, $filearray);
                      if(!empty($sessionfiles)) $files[$sess->rowid] = $sessionfiles;
                      
                      if(!empty($filearray)) {
@@ -2763,7 +2772,7 @@ class Agefodd extends DolibarrApi
              if($result < 0 || empty($this->session->id)) throw new RestException(404, "Session $sessid not found");
              
              //on récupère les docs de la session concernant le trainer
-             $files[$sessid] = $this->documentsSessionList($sessid, 0, $id, $withcommon, 0, 1, $filearray);
+             $files[$sessid] = $this->_documentsSessionList($sessid, 0, $id, $withcommon, 0, 1, $filearray);
          }
          else // sinon
          {
@@ -2775,7 +2784,7 @@ class Agefodd extends DolibarrApi
              // et pour chacune, on récupère les docs
              foreach ($this->session->lines as $sess)
              {
-                 $sessionfiles = $this->documentsSessionList($sess->rowid, 0, $id, $withcommon, 0, 1, $filearray);
+                 $sessionfiles = $this->_documentsSessionList($sess->rowid, 0, $id, $withcommon, 0, 1, $filearray);
                  if(!empty($sessionfiles)) $files[$sess->rowid] = $sessionfiles;
                  
              }
@@ -2814,7 +2823,7 @@ class Agefodd extends DolibarrApi
              if($result < 0 || empty($this->session->id)) throw new RestException(404, "Session $sessid not found");
              
              // on récupère les doc de la session demandée
-             $files[$sessid] = $this->documentsSessionList($sessid, $id, 0, $withcommon, 1, 0, $filearray);
+             $files[$sessid] = $this->_documentsSessionList($sessid, $id, 0, $withcommon, 1, 0, $filearray);
 
          }
          else 
@@ -2859,7 +2868,7 @@ class Agefodd extends DolibarrApi
              {
                  foreach ($TSession as $sessid) 
                  {
-                     $sessionfiles = $this->documentsSessionList($sessid, $id, 0, $withcommon, 1, 0, $filearray);
+                     $sessionfiles = $this->_documentsSessionList($sessid, $id, 0, $withcommon, 1, 0, $filearray);
                      if(!empty($sessionfiles)) $files[$sessid] = $sessionfiles;
                  }
              }
