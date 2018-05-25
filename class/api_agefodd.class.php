@@ -2381,14 +2381,6 @@ class Agefodd extends DolibarrApi
         return $obj_ret;
     }
     
-    function getLastConv($socid) // fetch_last_conv_per_socity
-    {
-        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
-            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
-        }
-        
-    }
-    
     function sessionPostConvention()
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
@@ -2403,12 +2395,33 @@ class Agefodd extends DolibarrApi
         }
     }
     
-    function sessionDeleteConvention()
+    /**
+     * Delete a convention
+     * 
+     * @param int $id ID of the convention
+     * 
+     * @url DELETE /sessions/convention
+     */
+    function sessionDeleteConvention($id)
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
             throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
         }
         
+        $this->convention = new Agefodd_convention($this->db);
+        $result = $this->convention->fetch($sessid, $socid, $id);
+        if($result < 0) throw new RestException(500, "Error retrieving convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->convention->id)) throw new RestException(404, "Convention not found");
+        
+        $result = $this->convention->remove($id);
+        if($result < 0) throw new RestException(500, "Can't delete the convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => "convention has been deleted"
+            )
+        );
     }
     
     /***************************************************************** Documents Part *****************************************************************/
@@ -7617,6 +7630,29 @@ class Agefodd extends DolibarrApi
         }
         
         return $obj_ret;
+    }
+    
+    /**
+     * Get the last signed convention
+     * 
+     * @param int $socid ID of a thirdparty
+     * 
+     * @throws RestException
+     * @url GET /thirdparties/{id}/lastconvention
+     */
+    function getLastConv($id) // Agefodd_convention::fetch_last_conv_per_socity
+    {
+        if(! DolibarrApiAccess::$user->rights->agefodd->lire) {
+            throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        $agf = new Agefodd_convention($this->db);
+        $result = $agf->fetch_last_conv_per_socity($id);
+        if($result < 0) throw new RestException(500, "Can't retrieve last convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($agf->sessid)) throw new RestException(404, "No convention found");
+        
+        return $this->sessionGetConvention($agf->sessid, $id);
+        
     }
     
     /***************************************************************** Common Part *****************************************************************/
