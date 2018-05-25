@@ -2258,7 +2258,7 @@ class Agefodd extends DolibarrApi
      * 
      * @param int       $sessid     ID of the session
      * @param string    $model      Name of the PDF model to generate
-     * @param int       $socid      ID of the thirdparty or trainer involved
+     * @param int       $socid      ID of the thirdparty involved (or trainer for model "mission_trainer" or trainee for models "convocation_trainee", "attestation_trainee" and "attestationendtraining_trainee")
      * @param string    $cour       Name of the letter model if model is courrier (it can be "accueil", "cloture" or "convention")
      * @param int       $langid     ID of a language if needed
      * 
@@ -2276,6 +2276,21 @@ class Agefodd extends DolibarrApi
         $result = $this->session->fetch($sessid);
         if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
         
+        if($model == "mission_trainer"){
+            $this->trainerinsession = new Agefodd_session_formateur($this->db);
+            $this->trainerinsession->fetch_formateur_per_session($sessid);
+            $TFormateurs = array();
+            if(!empty($this->trainerinsession->lines)){
+                foreach ($this->trainerinsession->lines as $line)
+                {
+                    $TFormateurs[$line->formid] = $line->opsid;
+                }
+            }
+            
+            $socid = $TFormateurs[$socid];
+        }
+        
+        
         $TUnCommonModels = array(
             "attestation",
             "attestationendtraining",
@@ -2287,11 +2302,18 @@ class Agefodd extends DolibarrApi
             "courrier"
         );
         
+        $TTraineeModels = array(
+            "convocation_trainee", 
+            "attestation_trainee", 
+            "attestationendtraining_trainee"
+        );
+        
         if((in_array($model, $TUnCommonModels) || $model == "convention") && empty($socid)) throw new RestException(500, "the field socid is required for this model");
+        if((in_array($model, $TTraineeModels)) && empty($socid)) throw new RestException(500, "the field socid must be the id of a trainee for the model '$model'");
         
         if($model == 'courrier' && empty($cour)) throw new RestException(500, "the field cour is required for model 'courrier'");
         
-        if(!empty($socid))
+        if(!empty($socid) && !in_array($model, $TTraineeModels) && $model !== "mission_trainer")
         {
             $result = $this->session->fetch_societe_per_session($sessid);
             if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
@@ -2307,6 +2329,14 @@ class Agefodd extends DolibarrApi
             
         }
         
+        if(in_array($model, $TTraineeModels))
+        {
+            $this->traineeinsession = new Agefodd_session_stagiaire($this->db);
+            $result = $this->traineeinsession->fetch_by_trainee($sessid, $socid);
+            if($result < 0) throw new RestException(500, "Error retrieving trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
+            elseif(empty($result)) throw new RestException(404, "trainee not in the session");
+        }
+        
         $idform = $this->session->fk_formation_catalogue;
         
         $outputlangs = $langs;
@@ -2318,7 +2348,8 @@ class Agefodd extends DolibarrApi
         $id_tmp = $sessid;
         
         if ($model == "courrier") $file = $model . '-' . $cour . '_' . $sessid . '_' . $socid . '.pdf';
-        elseif(in_array($model, $TUnCommonModels)) $file = $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
+        elseif(in_array($model, $TUnCommonModels)) $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
+        elseif(in_array($model, $TTraineeModels)) $file = $model . '_' . $this->traineeinsession->id . '.pdf';
         elseif ($model == 'convention') {
             dol_include_once('/agefodd/class/agefodd_convention.class.php');
             $convention = new Agefodd_convention($this->db);
@@ -2468,6 +2499,7 @@ class Agefodd extends DolibarrApi
                 "courrier-cloture",
                 "courrier-convention"
             );
+            
             foreach ($filearray as $file) {
                 if($withcommon){
                     // fiche pedago
