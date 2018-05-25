@@ -23,17 +23,17 @@
  * \brief PDF for contract / convention
  */
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once ('../class/agefodd_contact.class.php');
-require_once ('../class/agefodd_convention.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_stagiaire.class.php');
-require_once ('../class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
-require_once ('../lib/agefodd.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 class pdf_convention extends ModelePDFAgefodd {

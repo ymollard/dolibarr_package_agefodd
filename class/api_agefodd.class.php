@@ -16,7 +16,6 @@
  */
 
  use Luracast\Restler\RestException;
-use OAuth\Common\Storage\Session;
 
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
  
@@ -2259,7 +2258,7 @@ class Agefodd extends DolibarrApi
      * 
      * @param int       $sessid     ID of the session
      * @param string    $model      Name of the PDF model to generate
-     * @param int       $socid      ID of the thirdparty involved
+     * @param int       $socid      ID of the thirdparty or trainer involved
      * @param string    $cour       Name of the letter model if model is courrier (it can be "accueil", "cloture" or "convention")
      * @param int       $langid     ID of a language if needed
      * 
@@ -2288,7 +2287,7 @@ class Agefodd extends DolibarrApi
             "courrier"
         );
         
-        if(in_array($model, $TUnCommonModels) && empty($socid)) throw new RestException(500, "the field socid is required for this model");
+        if((in_array($model, $TUnCommonModels) || $model == "convention") && empty($socid)) throw new RestException(500, "the field socid is required for this model");
         
         if($model == 'courrier' && empty($cour)) throw new RestException(500, "the field cour is required for model 'courrier'");
         
@@ -2317,34 +2316,28 @@ class Agefodd extends DolibarrApi
         }
 
         $id_tmp = $sessid;
-        if (! empty($cour))
-            $file = $model . '-' . $cour . '_' . $sessid . '_' . $socid . '.pdf';
-//         elseif ($model == 'convention') {
-//             dol_include_once('/agefodd/class/agefodd_convention.class.php');
-//             $convention = new Agefodd_convention($this->db);
-//             $convention->fetch(1702, 605, GETPOST('convid', 'int'));
-//             $id_tmp = $convention->id;
-//             $model = $convention->model_doc;
-//             $model = 'pdf_convention';
-//             // Si on est sur un mod��le externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les donn��es
-//             if(strpos($model, 'rfltr_agefodd') !== false) $id_tmp = $sessid;
-//             $model = str_replace('pdf_', '', $model);
+        
+        if ($model == "courrier") $file = $model . '-' . $cour . '_' . $sessid . '_' . $socid . '.pdf';
+        elseif(in_array($model, $TUnCommonModels)) $file = $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
+        elseif ($model == 'convention') {
+            dol_include_once('/agefodd/class/agefodd_convention.class.php');
+            $convention = new Agefodd_convention($this->db);
+            $result = $convention->fetch($sessid, $socid);
+            if($result < 0) {
+                throw new RestException(500, "No convention found");
+            }
+            else
+            {
+                $id_tmp = $convention->id;
+                $file = 'convention' . '_' . $sessid . '_' . $socid . '_' . $convention->id . '.pdf';
+            }
             
-//             $file = 'convention' . '_' . $sessid . '_' . $socid . '_' . $convention->id . '.pdf';
-//         } 
-        elseif (! empty($socid)) {
-            $file = $model . '_' . $sessid . '_' . $socid . '.pdf';
-        } elseif (strpos($model, 'fiche_pedago') !== false) {
+        } 
+        elseif (strpos($model, 'fiche_pedago') !== false) {
             $file = $model . '_' . $idform . '.pdf';
             $id_tmp = $idform;
             $cour = $sessid;
-        } elseif (strpos($model, 'mission_trainer') !== false) {
-            $sessiontrainerid = $socid;
-            $file = $model . '_' . $sessiontrainerid . '.pdf';
-            $socid = $sessiontrainerid;
-            $id_tmp = $sessid;
-            return $file;
-        } elseif (strpos($model, 'contrat_trainer') !== false) {
+        } elseif (strpos($model, 'mission_trainer') !== false || strpos($model, 'contrat_trainer') !== false) {
             $sessiontrainerid = $socid;
             $file = $model . '_' . $sessiontrainerid . '.pdf';
             $socid = $sessiontrainerid;
@@ -2368,11 +2361,23 @@ class Agefodd extends DolibarrApi
                 }
             }
         }
-        // TODO à implémenter
-        if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
-            $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
-            if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
-        }
+        // TODO à implémenter   
+//         if($conf->referenceletters->enabled) {
+//             if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
+//                 $path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+//                 if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
+                
+//                 dol_include_once('/referenceletters/class/referenceletters.class.php');
+//                 $rfltr = new ReferenceLetters($this->db);
+                
+//                 $result = $rfltr->fetch($id_external_model);
+//                 if($result < 0) throw new RestException(500, "Can't retrieve external model");
+                
+//                 $model = strtr($rfltr->element_type, array('rfltr_agefodd_'=>''));
+                
+//             }
+//         }
+        
         
         if (strpos($model, 'fiche_pedago') !== false){
             $agf = new Agsession($this->db);
@@ -2476,7 +2481,10 @@ class Agefodd extends DolibarrApi
                 
                 if($withuncommon){
                     $mod = substr($file['name'], 0, strpos($file['name'], '_'));
-                    if(in_array($mod, $TUnCommonModels) && preg_match("/^".$mod."_([0-9]+)_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) {
+                    if((in_array($mod, $TUnCommonModels) && preg_match("/^".$mod."_([0-9]+)_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid)
+                        || ($mod == "convention" && preg_match("/^".$mod."_([0-9]+)_([0-9]+)_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) 
+                        ) 
+                    {
                         if(empty($socid)) $files[] = $file['name'];
                         elseif ($i[2] == $socid) $files[] = $file['name'];
                     }
@@ -2484,7 +2492,10 @@ class Agefodd extends DolibarrApi
                 
                 if($withtrainer)
                 {
-                    if(preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs)) {
+                    if((preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
+                        || (preg_match("/^contrat_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
+                    )
+                    {
                         if(empty($trainerid)) $files[] = $file['name'];
                         elseif ($i[1] == $TFormateurs[$trainerid]) return $files[] = $file['name'];
                     }
@@ -2565,6 +2576,42 @@ class Agefodd extends DolibarrApi
         
         $file_content=file_get_contents($original_file_osencoded);
         return array('filename'=>$file, 'content'=>base64_encode($file_content), 'encoding'=>'MIME base64 (base64_encode php function, http://php.net/manual/en/function.base64-encode.php)' );
+    }
+    
+    /**
+     * Delete an agefodd document
+     * 
+     * @param string $filename      Name of the document
+     * 
+     * @url DELETE /documents/
+     */
+    function documentDelete($filename)
+    {
+        global $conf;
+        
+        if(! DolibarrApiAccess::$user->rights->agefodd->supprimer) {
+            throw new RestException(401, 'Delete not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+        
+        if (empty($filename)) {
+            throw new RestException(400, 'bad value for parameter filename');
+        }
+        
+        $file = $conf->agefodd->dir_output . '/' . $filename;
+    
+        if (is_file($file))
+            unlink($file);
+        else {
+            $error = $file . ' : ' . $langs->trans("AgfDocDelError");
+            throw new RestException(500, $error);
+        }
+        
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Document successfully deleted'
+            )
+        );
     }
         
      /**
