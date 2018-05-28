@@ -1616,30 +1616,37 @@ class FormAgefodd extends Form
 
 		$outselect = '<select class="flat" id="' . $htmlname . '" name="' . $htmlname . '">';
 
-		$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
+		$TDir[] = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
+		$TDir[] = dol_buildpath('/agefodd/core/modules/agefodd/pdf/override/');
+		
+		foreach ($TDir as $dir)
+		{
+			if (is_dir($dir)) {
+				$handle = opendir($dir);
+				if (is_resource($handle)) {
+					$var = true;
 
-		if (is_dir($dir)) {
-			$handle = opendir($dir);
-			if (is_resource($handle)) {
-				$var = true;
+					// TODO PH faire la lecture du sous dossier "override"
+					while ( ($file = readdir($handle)) !== false ) {
+						if ($file === 'override') continue;
+						if (preg_match('/^(pdf_convention.*)\.modules.php$/i', $file, $reg)) {
+							$file = $reg[1];
 
-				while ( ($file = readdir($handle)) !== false ) {
-					if (preg_match('/^(pdf_convention.*)\.modules.php$/i', $file, $reg)) {
-						$file = $reg[1];
+							require_once ($dir . $file . ".modules.php");
 
-						require_once ($dir . $file . ".modules.php");
+							$module = new $file($this->db);
 
-						$module = new $file($this->db);
-
-						$selected = '';
-						if ($file == $model) {
-							$selected = 'selected="selected"';
+							$selected = '';
+							if ($file == $model) {
+								$selected = 'selected="selected"';
+							}
+							$outselect .= '<option value="' . $file . '" ' . $selected . '>' . $module->description . '</option>';
 						}
-						$outselect .= '<option value="' . $file . '" ' . $selected . '>' . $module->description . '</option>';
 					}
 				}
-			}
+			}	
 		}
+		
 
 		if (! empty($conf->referenceletters->enabled))
 			$this->addReferenceLettersModelsToSelect($outselect, $model);
