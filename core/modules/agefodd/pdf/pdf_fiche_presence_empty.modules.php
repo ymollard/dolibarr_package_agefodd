@@ -451,17 +451,17 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
-		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
 		// Signature
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 
 		$pdf->SetXY($posX + $larg_col1, $posY + 3);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres13');
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 		$posY += $h_ligne;
 
 		//Date
@@ -542,7 +542,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
-		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+		$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
 		// Société
 		$pdf->SetXY($posX + $larg_col1, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
@@ -552,12 +552,12 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY + 3);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
 		$this->str = $outputlangs->transnoentities('AgfPDFFichePres19');
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 		$posY += $h_ligne;
 
 		// Date
@@ -596,7 +596,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset(''), R, 2, "L", 0);
+			$pdf->Cell($larg_col1, $h_ligne, $outputlangs->convToOutputCharset(''), 'R', 2, "L", 0);
 
 			// Société
 			$pdf->SetXY($posX + $larg_col1, $posY);
