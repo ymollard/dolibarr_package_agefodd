@@ -18,6 +18,7 @@
  use Luracast\Restler\RestException;
 
  require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
+ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
  
  dol_include_once('/agefodd/class/agsession.class.php');
  dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
@@ -2381,11 +2382,363 @@ class Agefodd extends DolibarrApi
         return $obj_ret;
     }
     
-    function sessionPostConvention()
+    /**
+     * Create a Convention.
+     * 
+     * All text optionnal fields can be left blank and will be replaced by the last convention of this thirdparty or a default text
+     * 
+     * @param int       $sessid               ID of the session
+     * @param int       $socid                ID of the thirdparty
+     * @param int       $source_element_id    ID or the proposal, order or invoice linked to the session for this thirdparty
+     * @param string    $source_type          Type of the source element ("propal", "order" or "invoice")
+     * @param array     $trainees             Array of trainee id
+     * @param string    $intro1               First text of the convention (informations on your organisation)
+     * @param string    $intro2               Second text of the convention (informations on the thirdparty)
+     * @param array     $articles             Array of strings from "art1" to "art9"
+     * @param string    $sig                  The thirdparty signature
+     * @param string    $notes                Some comments on the convention
+     * 
+     * @url POST /sessions/convention
+     */
+    function sessionPostConvention($sessid, $socid, $source_element_id = 0, $source_type = '', $trainees = array(), $intro1 = '', $intro2 = '', $articles = array(), $sig = '', $notes = '')
     {
+        global $conf, $langs;
+        
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        if( $result < 0 || empty($this->session->id) ) throw new RestException(404, 'Session not found');
+        
+        $result = $this->session->fetch_societe_per_session($sessid);
+        if( $result <= 0 ) throw new RestException(404, 'No thirdparty found');
+        
+        $TCustomers = array();
+        foreach ($this->session->lines as $line)
+        {
+            /*if ($line->typeline == "customer")*/ $TCustomers[] = $line->socid;
+            
+        }
+        
+        if(count($TCustomers) == 0) throw  new RestException(404, "No thirdparty for this session");
+        if(!in_array($socid, $TCustomers)) throw new RestException(404, "$socid is not a thirdparty of this session");
+        
+        if(empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC) && (empty($source_element_id) || empty($source_type) || !in_array($source_type, array("propal", "order", "invoice")))) throw new RestException(500, "the fields source_element_id and source_type are required.");
+        
+        if (! empty($conf->propal->enabled))	{
+            require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+        }
+        if (! empty($conf->facture->enabled))	{
+            require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+        }
+        if (! empty($conf->commande->enabled))	{
+            require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+        }
+        
+        // Get proposal/order/invoice informations
+        $agf_comid = new Agefodd_session_element($this->db);
+        $result = $agf_comid->fetch_by_session_by_thirdparty($sessid, $socid);
+        
+        $order_array = array ();
+        $propal_array = array ();
+        $invoice_array = array ();
+        foreach ( $agf_comid->lines as $line ) {
+            if ($line->element_type == 'order' && ! empty($line->comref)) {
+                $order = new Commande($this->db);
+                $order->fetch($line->fk_element);
+                if (($order->statut != - 1) && ($order->statut != 0)) {
+                    $order_array [$line->fk_element] = $line->comref;
+                }
+            }
+            if ($line->element_type == 'propal' && ! empty($line->propalref)) {
+                $propal = new Propal($this->db);
+                $propal->fetch($line->fk_element);
+                if (($propal->statut != 3) && ($propal->statut != 0)) {
+                    $propal_array [$line->fk_element] = $line->propalref;
+                }
+            }
+            if ($line->element_type == 'invoice' && ! empty($line->facnumber)) {
+                $invoice = new Facture($this->db);
+                $invoice->fetch($line->fk_element);
+                if ($invoice->statut != 0) {
+                    $invoice_array [$line->fk_element] = $line->facnumber;
+                }
+            }
+        }
+        
+        if ((count($propal_array) == 0) && (count($order_array) == 0) && (count($invoice_array) == 0) && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
+            throw new RestException(500, $langs->trans("AgfFacturePropalHelp"));
+        }
+        
+        // on prérempli la convention avec les infos génériques (issues des traductions)
+        $this->_generateNewConv($sessid, $socid);
+        
+        $arraytotest = array_merge($trainees, $this->convention->line_trainee);
+        $this->convention->line_trainee = array();
+        
+        if(!empty($source_element_id)) {
+            if(!empty($source_type)) {
+                $this->convention->element = $source_element_id;
+                $this->convention->element_type = $source_type;
+            }
+            else
+            {
+                throw new RestException(500, "you have provided a source_element_id but the field source_type is missing");
+            }
+        }
+        
+        if(!empty($arraytotest)){
+            foreach ($arraytotest as $traineeid){
+                $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
+                if($result > 0) $this->convention->line_trainee[] = $this->traineeinsession->id;
+            }
+        }
+        
+        if(!empty($articles))
+        {
+            for($i = 1; $i < 10; $i++)
+            {
+                $key = "art".$i;
+                if(!empty($articles[$key])) $this->convention->{$key} = $articles[$key];
+            }
+        }
+        
+        $result = $this->convention->create(DolibarrApiAccess::$user);
+        if($result < 0) throw new RestException(500, "Error creating convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->sessionGetConvention(0, 0, $this->convention->id);
+    }
+    
+    function _generateNewConv($sessid, $socid)
+    {
+        global $conf, $langs, $mysoc;
+        
+        $this->session = new Agsession($this->db);
+        $result = $this->session->fetch($sessid);
+        
+        $this->convention = new Agefodd_convention($this->db);
+        $this->convention->sessid = $sessid;
+        $this->convention->socid = $socid;
+        $this->convention->model_doc = "pdf_convention";
+        
+        // intro1
+        $statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
+        $this->convention->intro1 = $langs->trans('AgfConvIntro1_1') . ' ' . $mysoc->name . ', ' . $statut;
+        if (! empty($mysoc->capital)) {
+            $this->convention->intro1 .= ' ' . $langs->trans('AgfConvIntro1_2');
+            $this->convention->intro1 .= ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
+        }
+        
+        $addr = preg_replace( "/\r|\n/", " ", $mysoc->address . ', ' . $mysoc->zip . ' ' . $mysoc->town );
+        $this->convention->intro1 .= $langs->trans('AgfConvIntro1_3') . ' ' . $addr;
+        if (! empty($mysoc->idprof1)) {
+            $this->convention->intro1 .= $langs->trans('AgfConvIntro1_4') . ' ' . $mysoc->idprof1;
+        }
+        if (empty($conf->global->AGF_ORGANISME_NUM)) {
+            $this->convention->intro1 .= ' ' . $langs->trans('AgfConvIntro1_5') . ' ' . $conf->global->AGF_ORGANISME_PREF;
+        } else {
+            $this->convention->intro1 .= ' ' . $langs->trans('AgfConvIntro1_6');
+            $this->convention->intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM. ' '. $langs->trans('AgfConvOrg1');
+        }
+        if (! empty($conf->global->AGF_ORGANISME_REPRESENTANT)) {
+            $this->convention->intro1 .= $langs->trans('AgfConvIntro1_8') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . $langs->trans('AgfConvIntro1_9');
+        }
+        
+        // intro2
+        // Get trhidparty info
+        $agf_soc = new Societe($this->db);
+        $result = $agf_soc->fetch($socid);
+        
+        
+        // intro2
+        $addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
+        $this->convention->intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name ;
+        if (!empty($addr)) {
+            $this->convention->intro2 .= ", ". $langs->trans('AgfConvIntro2_2') . ' ' . $addr ;
+        }
+        if (!empty($agf_soc->idprof2)) {
+            $this->convention->intro2 .= ", ". $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
+        }
+        
+        $signataire='';
+        $contactname=trim($this->session->contactname);
+        if (!empty($contactname)) {
+            $this->convention->intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
+            $this->convention->intro2 .= ucfirst(strtolower($this->session->contactcivilite)) . ' ' . $this->session->contactname;
+            $this->convention->intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
+        } else {
+            
+            //Trainee link to the company convention
+            $stagiaires = new Agefodd_session_stagiaire($this->db);
+            $result=$stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
+            if ($result>0) {
+                if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
+                    
+                    foreach ($stagiaires->lines as $line) {
+                        if (!empty($line->fk_socpeople_sign)) {
+                            $socpsign=new Contact($this->db);
+                            $socpsign->fetch($line->fk_socpeople_sign);
+                            $signataire=$socpsign->getFullName($langs).' ';
+                        }
+                    }
+                    if (!empty($signataire)) {
+                        $this->convention->intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' '.$signataire.' '. $langs->trans('AgfConvIntro2_5');
+                    }
+                    
+                    
+                }
+            }
+        }
+        
+        // article 1
+        $this->convention->art1 = $langs->trans('AgfConvArt1_1') . "\n";
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_2') . ' ' . $this->session->formintitule . ' ' . $langs->trans('AgfConvArt1_3') . " \n". "\n";
+        
+        $obj_peda = new Formation($this->db);
+        $resql = $obj_peda->fetch_objpeda_per_formation($this->session->formid);
+        if (count( $obj_peda->lines)>0) {
+            $this->convention->art1 .= $langs->trans('AgfConvArt1_4') . "\n";
+            foreach ( $obj_peda->lines as $line ) {
+                $this->convention->art1 .= "-	" . $line->intitule . "\n";
+            }
+            $this->convention->art1 .= "\n";
+        }
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_6') . "\n". "\n";
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_7');
+        
+        if ($this->session->dated == $this->session->datef)
+            $this->convention->art1 .= $langs->trans('AgfConvArt1_8') . ' ' . dol_print_date($this->session->datef);
+        else
+            $this->convention->art1 .= $langs->trans('AgfConvArt1_9') . ' ' . dol_print_date($this->session->dated) . ' ' . $langs->trans('AgfConvArt1_10') . ' ' . dol_print_date($this->session->datef);
+                
+        $this->convention->art1 .= "\n";
+                
+        // Durée de formation
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $this->session->duree_session . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n";
+        
+        $calendrier = new Agefodd_sesscalendar($this->db);
+        $resql = $calendrier->fetch_all($sessid);
+        $blocNumber = count($calendrier->lines);
+        $old_date = 0;
+        $duree = 0;
+        for($i = 0; $i < $blocNumber; $i ++) {
+            if ($calendrier->lines [$i]->date_session != $old_date) {
+                if ($i > 0)
+                    $this->convention->art1 .= "), ";
+                $this->convention->art1 .= dol_print_date($calendrier->lines [$i]->date_session, 'daytext') . ' (';
+            } else
+                $this->convention->art1 .= '/';
+            $this->convention->art1 .= dol_print_date($calendrier->lines [$i]->heured, 'hour');
+            $this->convention->art1 .= ' - ';
+            $this->convention->art1 .= dol_print_date($calendrier->lines [$i]->heuref, 'hour');
+            if ($i == $blocNumber - 1)
+                $this->convention->art1 .= ').' . "\n";
+                
+            $old_date = $calendrier->lines [$i]->date_session;
+        }
+        
+        // Formateur
+        $formateurs = new Agefodd_session_formateur($this->db);
+        $nbform = $formateurs->fetch_formateur_per_session($this->session->id);
+        foreach($formateurs->lines as $trainer) {
+            $TTrainer[] = $trainer->firstname . ' ' . $trainer->lastname;
+        }
+        if ($nbform>0) {
+            $this->convention->art1 .= "\n". $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
+        }
+        
+        $this->convention->art1 .= "\n". $langs->trans('AgfConvArt1_13') . "\n". "\n";
+        
+        
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_17') . "\n". "\n";
+        
+        // Adresse lieu de formation
+        $agf_place = new Agefodd_place($this->db);
+        $resql3 = $agf_place->fetch($agf->placeid);
+        $addr = preg_replace( "/\r|\n/", " ", $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville );
+        $this->convention->art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $addr . '.';
+        
+        
+        // article 2
+        $this->convention->art2 = $langs->trans('AgfConvArt2_1');
+        
+        // article 3
+        $this->convention->art3 = $langs->trans('AgfConvArt3_1');
+        
+        // article 4
+        if (empty($conf->global->FACTURE_TVAOPTION)) {
+            $this->convention->art4 = $langs->trans('AgfConvArt4_1');
+        } else {
+            $this->convention->art4 = $langs->trans('AgfConvArt4_3');
+        }
+        $this->convention->art4 .= "\n" . $langs->trans('AgfConvArt4_2');
+        
+        // article 5
+        $listOPCA = '';
+        
+        if(! empty($this->session->type_session)) { // Session inter-entreprises : OPCA gérés par participant
+            dol_include_once('/agefodd/class/agefodd_opca.class.php');
+            $stagiaires = new Agefodd_session_stagiaire($this->db);
+            $resulttrainee = $stagiaires->fetch_stagiaire_per_session($this->session->id);
+            if ($resulttrainee > 0) {
+                foreach($stagiaires->lines as $line) {
+                    $opca = new Agefodd_opca($this->db);
+                    $opca->getOpcaForTraineeInSession($line->socid, $this->session->id, $line->stagerowid);
+                    
+                    if(! empty($opca->soc_OPCA_name)) { // Au moins un participant avec un OPCA
+                        $listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+                        break;
+                    }
+                }
+            }
+            
+        } elseif(! empty($this->session->fk_soc_OPCA)) {
+            $listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+        }
+        
+        $this->convention->art5 = $langs->trans('AgfConvArt5_1', $listOPCA);
+        
+        // article 6
+        $this->convention->art6 = $langs->trans('AgfConvArt6_1') . "\n". "\n";
+        $this->convention->art6 .= $langs->trans('AgfConvArt6_2') . "\n". "\n";
+        $this->convention->art6 .= $langs->trans('AgfConvArt6_3') . "\n". "\n";
+        $this->convention->art6 .= $langs->trans('AgfConvArt6_4') . "\n". "\n";
+        
+        // article 7
+        $this->convention->art7 = $langs->trans('AgfConvArt7_1'). ' ';
+        $this->convention->art7 .= $langs->trans('AgfConvArt7_2') . ' ' . $mysoc->town . ".";
+        
+        // article 9
+        $this->convention->art9 = $langs->trans('AgfConvArt9_1'). "\n";
+        $this->convention->art9 .= $langs->trans('AgfConvArt9_2');
+        
+        // Signature du client
+        $this->convention->sig = $agf_soc->name . "\n";
+        $this->convention->sig .= $langs->trans('AgfConvArtSigCli') . ' ';
+        //$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
+        $contactname=trim($agf->contactname);
+        if (!empty($contactname)) {
+            $this->convention->sig .= $agf->contactname;
+        } elseif (!empty($signataire)) {
+            $this->convention->sig .= $signataire;
+        }
+        $this->convention->sig .= " (*)";
+        
+        // sélection des stagiaires liés à l'entreprise
+        $stagiaires = new Agefodd_session_stagiaire($this->db);
+        //Trainee link to the company convention
+        $stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
+        $options_trainee_array_selected_id = array();
+        foreach ( $stagiaires->lines as $traine_line ) {
+            $options_trainee_array_selected_id [] = $traine_line->id;
+        }
+        
+        $this->convention->line_trainee = $options_trainee_array_selected_id;
+        $this->convention->socname = $agf_soc->name;
+
     }
     
     function sessionPutConvention()
