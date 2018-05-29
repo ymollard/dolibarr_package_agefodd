@@ -4540,7 +4540,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		if (empty($error) && !empty($propal->id) && $invoice->socid!==$propal->socid) {
+		if ((empty($error) && empty($propal->id)) || $invoice->socid!==$propal->socid) {
 			// Link new order to the session/thridparty
 
 			$agf = new Agefodd_session_element($this->db);
