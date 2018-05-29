@@ -434,7 +434,7 @@ if (! empty($id)) {
 				$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_pedago') {
 
-				$agfTraining = new Agefodd($db);
+				$agfTraining = new Formation($db);
 				$agfTraining->fetch($agf->fk_formation_catalogue);
 				$agfTraining->generatePDAByLink();
 				$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
@@ -473,7 +473,7 @@ if (! empty($id)) {
 
 					if (! empty($conf->global->AGF_ADD_PROGRAM_TO_CONVMAIL)) {
 						// Ajout fiche péda
-						$agfTraining = new Agefodd($db);
+						$agfTraining = new Formation($db);
 						$agfTraining->fetch($agf->fk_formation_catalogue);
 						$agfTraining->generatePDAByLink();
 						$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
@@ -672,7 +672,7 @@ if (! empty($id)) {
 						print '<div class="error">' . $langs->trans('AgfConseilNotExists') . '</div>';
 					}
 					// Ajout fiche péda
-					$agfTraining = new Agefodd($db);
+					$agfTraining = new Formation($db);
 					$agfTraining->fetch($agf->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
@@ -762,7 +762,7 @@ if (! empty($id)) {
 					}
 
 					// Ajout fiche pédago
-					$agfTraining = new Agefodd($db);
+					$agfTraining = new Formation($db);
 					$agfTraining->fetch($agf->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
@@ -781,7 +781,7 @@ if (! empty($id)) {
 						$file_array[]=$file;
 					}
 					// Ajout fiche péda
-					$agfTraining = new Agefodd($db);
+					$agfTraining = new Formation($db);
 					$agfTraining->fetch($agf->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
 					$filename = 'fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';

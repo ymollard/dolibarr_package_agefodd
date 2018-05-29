@@ -361,7 +361,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						}
 					}
 					require_once '../class/agefodd_formation_catalogue.class.php';
-					$trainingcat = new Agefodd($db);
+					$trainingcat = new Formation($db);
 					$result = $trainingcat->fetch_all('ASC', 'c.ref', 0, 0);
 					if ($result < 0) {
 						setEventMessage($trainingcat->error, 'errors');
@@ -373,7 +373,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 				} else {
 					if (is_array($agf->trainings) && count($agf->trainings) > 0) {
-						$training_det = new Agefodd($db);
+						$training_det = new Formation($db);
 						print '<ul>';
 						foreach ( $agf->trainings as $training ) {
 							print '<li>';

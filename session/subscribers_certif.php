@@ -243,7 +243,7 @@ if (! empty($id)) {
 				$obj = empty($conf->global->AGF_CERTIF_ADDON) ? 'mod_agefoddcertif_simple' : $conf->global->AGF_CERTIF_ADDON;
 				$path_rel = dol_buildpath('/agefodd/core/modules/agefodd/certificate/' . $conf->global->AGF_CERTIF_ADDON . '.php');
 				if (! empty($conf->global->AGF_CERTIF_ADDON) && is_readable($path_rel) && (empty($agf_certif->certif_code))) {
-					$agf_training = new Agefodd($db);
+					$agf_training = new Formation($db);
 					$agf_training->fetch($agf->formid);
 					dol_include_once('/agefodd/core/modules/agefodd/certificate/' . $conf->global->AGF_CERTIF_ADDON . '.php');
 					$modAgefodd = new $obj();
@@ -255,7 +255,7 @@ if (! empty($id)) {
 
 				// Start date in the end of session ot now if not set yet
 				if (empty($agf_certif->certif_dt_start)) $agf_certif->certif_dt_start=$agf->dated;
-				$agf_training = new Agefodd($db);
+				$agf_training = new Formation($db);
 				$agf_training->fetch($agf->formid);
 
 				// End date is end of session more the time set in session

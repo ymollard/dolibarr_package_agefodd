@@ -446,7 +446,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$art1 = $langs->trans('AgfConvArt1_1') . "\n";
 	$art1 .= $langs->trans('AgfConvArt1_2') . ' ' . $agf->formintitule . ' ' . $langs->trans('AgfConvArt1_3') . " \n". "\n";
 
-	$obj_peda = new Agefodd($db);
+	$obj_peda = new Formation($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
 	if (count( $obj_peda->lines)>0) {
 		$art1 .= $langs->trans('AgfConvArt1_4') . "\n";

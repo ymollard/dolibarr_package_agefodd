@@ -24,15 +24,15 @@
  * \brief PDF for certificate (attestation)
  */
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_cursus.class.php');
-require_once ('../class/agefodd_formation_cursus.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_cursus.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_cursus.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-require_once ('../lib/agefodd.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 class pdf_attestation_cursus extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 
@@ -141,11 +141,11 @@ class pdf_attestation_cursus extends ModelePDFAgefodd {
 			}
 
 			// Récuperation des objectifs pedagogique de la formation
-			// $agf_op = new Agefodd($this->db);
+			// $agf_op = new Formation($this->db);
 			// $result2 = $agf_op->fetch_objpeda_per_formation($agf->fk_formation_catalogue);
 
 			// Récupération de la duree de la formation
-			// $agf_duree = new Agefodd($this->db);
+			// $agf_duree = new Formation($this->db);
 			// $result = $agf_duree->fetch($agf->fk_formation_catalogue);
 
 			// Recuperation des stagiaires participant à la formation

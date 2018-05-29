@@ -46,7 +46,7 @@ $id = GETPOST('id', 'int');
 
 llxHeader('', $langs->trans("AgfCatalogDetail"));
 
-$agf = new Agefodd($db);
+$agf = new Formation($db);
 $agf->fetch($id);
 $agf->info($id);
 

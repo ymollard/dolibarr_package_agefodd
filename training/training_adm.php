@@ -102,7 +102,7 @@ if ($action == 'replicateconfadmin') {
 		setEventMessage($agf_adminlevel->error, 'errors');
 	}
 
-	$agf = new Agefodd($db);
+	$agf = new Formation($db);
 	$result = $agf->fetch($trainingid);
 	$result = $agf->createAdmLevelForTraining($user);
 	if ($result < 0) {
@@ -196,7 +196,7 @@ llxHeader('', $title);
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-$agf = new Agefodd($db);
+$agf = new Formation($db);
 $result = $agf->fetch($trainingid);
 
 $head = training_prepare_head($agf);

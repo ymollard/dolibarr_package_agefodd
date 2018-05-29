@@ -225,55 +225,55 @@ if (! $res)
 
 					if (! empty($modperiod))
 						$agf_cal->id = $modperiod;
-						if (! empty($date_session))
-							$agf_cal->date_session = $date_session;
-							if (! empty($heured))
-								$agf_cal->heured = $heured;
-								if (! empty($heuref))
-									$agf_cal->heuref = $heuref;
-									if (! empty($trainer_cost))
-										$agf_cal->trainer_cost = $trainer_cost;
-										if (! empty($fk_agefodd_session_formateur))
-											$agf_cal->fk_agefodd_session_formateur = $fk_agefodd_session_formateur;
+					if (! empty($date_session))
+						$agf_cal->date_session = $date_session;
+					if (! empty($heured))
+						$agf_cal->heured = $heured;
+					if (! empty($heuref))
+						$agf_cal->heuref = $heuref;
+					if (! empty($trainer_cost))
+    					$agf_cal->trainer_cost = $trainer_cost;
+					if (! empty($fk_agefodd_session_formateur))
+						$agf_cal->fk_agefodd_session_formateur = $fk_agefodd_session_formateur;
 
-											// Test if trainer is already book for another training
-											$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid', 'int'));
-											if ($result < 0) {
-												$error ++;
-												$error_message[] = $agf_cal->error;
-											} else {
-												foreach ( $agf_cal->lines as $line ) {
-													if (! empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6) {
-														if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $id) {
-															if (! empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY)) {
-																$warning_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
-															} else {
-																$error ++;
-																$error_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
-															}
-														}
-													}
-												}
-											}
+					// Test if trainer is already book for another training
+					$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid', 'int'));
+					if ($result < 0) {
+						$error ++;
+						$error_message[] = $agf_cal->error;
+					} else {
+						foreach ( $agf_cal->lines as $line ) {
+							if (! empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6) {
+								if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $id) {
+									if (! empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY)) {
+										$warning_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+									} else {
+										$error ++;
+										$error_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
+									}
+								}
+							}
+						}
+					}
 
-											if (! $error) {
-												$result = $agf_cal->update($user);
-												if ($result < 0) {
-													$error ++;
-													$error_message[] = $agf_cal->error;
-												}
-											}
+					if (! $error) {
+						$result = $agf_cal->update($user);
+						if ($result < 0) {
+							$error ++;
+							$error_message[] = $agf_cal->error;
+						}
+					}
 
-											if (count($warning_message) > 0) {
-												setEventMessages(null, $warning_message, 'warnings');
-											}
+					if (count($warning_message) > 0) {
+						setEventMessages(null, $warning_message, 'warnings');
+					}
 
-											if (! $error) {
-												Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit_calendrier&id=" . $id);
-												exit();
-											} else {
-												setEventMessages(null, $error_message, 'errors');
-											}
+					if (! $error) {
+						Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit_calendrier&id=" . $id);
+						exit();
+					} else {
+						setEventMessages(null, $error_message, 'errors');
+					}
 				}
 
 				$copysessioncalendar = GETPOST('copysessioncalendar');

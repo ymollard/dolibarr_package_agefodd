@@ -24,17 +24,17 @@
  * \brief PDF for trainer mission
  */
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_calendrier.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_formateur.class.php');
-require_once ('../class/agefodd_session_formateur_calendrier.class.php');
-require_once ('../class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
-require_once ('../lib/agefodd.lib.php');
-require_once ('../class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 class pdf_mission_trainer extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet

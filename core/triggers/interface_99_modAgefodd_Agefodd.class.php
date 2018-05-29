@@ -428,7 +428,7 @@ class InterfaceAgefodd {
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-			$agftraincat = new Agefodd($this->db);
+			$agftraincat = new Formation($this->db);
 			$agftraincat->fetch($object->fk_formation_catalogue);
 
 			$num = count($actioncomm->actions);

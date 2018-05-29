@@ -23,17 +23,17 @@
  * \brief PDF for contract / convention
  */
 dol_include_once('/agefodd/core/modules/agefodd/modules_agefodd.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once ('../class/agefodd_contact.class.php');
-require_once ('../class/agefodd_convention.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
-require_once ('../class/agefodd_stagiaire.class.php');
-require_once ('../class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+dol_include_once('/agefodd/class/agefodd_contact.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
-require_once ('../lib/agefodd.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 class pdf_convention extends ModelePDFAgefodd {
@@ -353,7 +353,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				$pdf->MultiCell(0, 5, $outputlangs->trans('AgfConvention').' N°:'.str_replace('.pdf','',str_replace('convention_',' ',$fileori)), 0, 'C');
 
 				// Determine the total number of page
-				$agfTraining = new Agefodd($db);
+				$agfTraining = new Formation($db);
 				$agfTraining->fetch($agf->fk_formation_catalogue);
 				$agfTraining->generatePDAByLink();
 				$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
@@ -817,7 +817,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				 * Page 4 (Annexe 1)
 				*/
 				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
-					$agfTraining = new Agefodd($db);
+					$agfTraining = new Formation($db);
 					$agfTraining->fetch($agf->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';

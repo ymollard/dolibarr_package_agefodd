@@ -250,7 +250,7 @@ class Agefodd_stagiaire extends CommonObject {
 					$this->date_birth = $this->db->jdate($obj->date_birth);
 				}
 			} else {
-			    return -1;
+			    return 0;
 			}
 
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');

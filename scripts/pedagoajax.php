@@ -23,7 +23,7 @@ switch ($put){
 function printForm($idTraining){
     global $db, $user,$langs;
 
-    $agf_peda = new Agefodd($db);
+    $agf_peda = new Formation($db);
     $result_peda = $agf_peda->fetch_objpeda_per_formation($idTraining);
     
     $form = '<form name="obj_peda" id="obj_peda" action="' . dol_buildpath('/agefodd/training/card.php',1) . "?id=" . $idTraining . '" method="POST">' . "\n";

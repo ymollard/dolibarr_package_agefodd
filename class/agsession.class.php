@@ -162,7 +162,7 @@ class Agsession extends CommonObject
 			$this->nb_place = 0;
 
 			// find the nb_subscribe_min of training to set it into session
-		$training = new Agefodd($this->db);
+		$training = new Formation($this->db);
 		$training->fetch($this->fk_formation_catalogue);
 		$this->nb_subscribe_min = $training->nb_subscribe_min;
 		if (empty($this->duree_session)) {
@@ -285,7 +285,7 @@ class Agsession extends CommonObject
 				}
 
 				if (! empty($this->fk_formation_catalogue)) {
-					$training = new Agefodd($this->db);
+					$training = new Formation($this->db);
 					$training->fetch($this->fk_formation_catalogue);
 					if (! empty($training->id)) {
 						foreach ( $this->array_options as $key => $value ) {
@@ -2137,7 +2137,7 @@ class Agsession extends CommonObject
 		if (type == 'training') {
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-			$agf_training = new Agefodd($db);
+			$agf_training = new Formation($db);
 			$agf_training->fetch($this->formid);
 			$s = $agf_training->getToolTip();
 		}
@@ -4990,7 +4990,7 @@ class Agsession extends CommonObject
 
 		if(empty($this->formation)){
 		    dol_include_once('agefodd/class/agefodd_formation_catalogue.class.php');
-		    $formation = new Agefodd($db);
+		    $formation = new Formation($db);
 		    $formation->fetch($this->fk_formation_catalogue);
 		    $this->formation = $formation;
 		}

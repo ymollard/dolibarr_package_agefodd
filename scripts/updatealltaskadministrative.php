@@ -77,7 +77,7 @@ if ($resql) {
 			print ' delete_task training_id =' . $obj->rowid . ' OK <br>';
 		}
 		
-		$agf = new Agefodd($db);
+		$agf = new Formation($db);
 		$result = $agf->fetch($obj->rowid);
 		$result = $agf->createAdmLevelForTraining($user);
 		if ($result < 0) {

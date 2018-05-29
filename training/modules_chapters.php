@@ -49,7 +49,7 @@ if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)
 $langs->load("agefodd@agefodd");
 
 $object = new Agefoddformationcataloguemodules($db);
-$object_training = new Agefodd($db);
+$object_training = new Formation($db);
 
 $error = 0;
 

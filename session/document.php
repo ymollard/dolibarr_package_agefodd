@@ -212,7 +212,7 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 	if (strpos($model, 'fiche_pedago') !== false){
 		$agf = new Agsession($db);
 		$agf->fetch($id);
-		$agfTraining = new Agefodd($db);
+		$agfTraining = new Formation($db);
 		$agfTraining->fetch($agf->fk_formation_catalogue);
 		$PDALink = $agfTraining->generatePDAByLink();
 	}
@@ -301,7 +301,9 @@ if ($action == 'del' && $user->rights->agefodd->creer) {
 	} elseif (! empty($socid)) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $id . '_' . $socid . '.pdf';
 	} elseif ($model == 'fiche_pedago') {
-		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
+	    $file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
+	} elseif ($model == 'fiche_pedago_modules') {
+	    $file = $conf->agefodd->dir_output . '/' . $model . '_' . $idform . '.pdf';
 	} elseif (strpos($model, 'mission_trainer') !== false || strpos($model, 'contrat_trainer') !== false) {
 		$file = $conf->agefodd->dir_output . '/' . $model . '_' . $sessiontrainerid . '.pdf';
 	} else {
