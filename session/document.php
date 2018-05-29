@@ -104,12 +104,18 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 		if ($type_link == 'fac') {
 			$obj_link = new Facture($db);
 			$obj_link->fetch($agf->fk_element);
-			if (DOL_VERSION<=4.0) {
-				$resultdel = $obj_link->delete();
+			if ($obj_link->is_erasable()>0) {
+				if (DOL_VERSION <= 4.0) {
+					$resultdel = $obj_link->delete();
+				} else {
+					$resultdel = $obj_link->delete($user);
+				}
 			} else {
-				$resultdel = $obj_link->delete($user);
+				$resultdel=-1;
+				$obj_link->error=$langs->trans('DisabledBecauseNotLastInvoice');
 			}
 		}
+
 		if ($type_link == 'prop') {
 			$obj_link = new Propal($db);
 			$obj_link->fetch($agf->fk_element);
@@ -121,8 +127,9 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 		}
 	}
 
+
 	// If exists we update
-	if ($agf->id) {
+	if ($agf->id && $resultdel>=0) {
 		$result2 = $agf->delete($user);
 	}
 	if ($result2 > 0) {
@@ -212,8 +219,8 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 	if (empty($PDALink))
 	{
 		$result = agf_pdf_create($db, $id_tmp, '', $model, $outputlangs, $file, $socid, $cour, $path_external_model, $id_external_model, $convention);
-		
-		
+
+
 		if ($result == 1)
 		{
 			dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
@@ -338,9 +345,9 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 	print '<div class="underbanner clearboth"></div>';
 
 	print '<table class="border" width="100%">' . "\n";
-	
+
 	print '<tr class="liste_titre">' . "\n";
-	
+
 	print '<td colspan=3>';
 	print '<a href="#">' . $langs->trans("AgfCommonDocs") . '</a></td>' . "\n";
 	print '</tr>' . "\n";
