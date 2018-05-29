@@ -53,7 +53,7 @@ if (! $user->rights->agefodd->lire)
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
-$page = GETPOST("page", 'int');
+$page = (int) GETPOST("page", 'int');
 if ($page == - 1) {
 	$page = 0;
 }

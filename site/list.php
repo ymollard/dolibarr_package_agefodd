@@ -90,6 +90,7 @@ $pagenext = $page + 1;
 
 $agf = new Agefodd_place($db);
 $soc=new Societe($db);
+$form=new Form($db);
 
 $hookmanager->initHooks(array('sitelist'));
 
@@ -150,9 +151,17 @@ print '<td class="liste_titre">';
 print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
 print '</td>';
 
-print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-print '&nbsp; ';
-print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+// Search lens
+print '<td class="liste_titre" align="right">';
+if(method_exists($form, 'showFilterButtons')) {
+	$searchpicto=$form->showFilterButtons();
+
+	print $searchpicto;
+} else {
+	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+	print '&nbsp; ';
+	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+}
 print '</td>';
 
 print "</tr>\n";

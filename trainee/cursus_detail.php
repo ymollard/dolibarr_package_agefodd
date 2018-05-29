@@ -47,6 +47,7 @@ if (! $user->rights->agefodd->lire)
 $id = GETPOST('id', 'int');
 $cursus_id = GETPOST('cursus_id', 'int');
 $action = GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
 
 if ($page == - 1) {
 	$page = 0;
@@ -110,6 +111,16 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 		}
 	}
 }
+elseif ($action == 'confirm_deldoc' && $confirm == "yes" && $user->rights->agefodd->creer) {
+    $file = $conf->agefodd->dir_output . '/attestation_cursus_' . $cursus_id . '_' . $id . '.pdf';
+    
+    if (is_file($file))
+        unlink($file);
+    else {
+        $error = $file . ' : ' . $langs->trans("AgfDocDelError");
+        setEventMessage($error, 'errors');
+    }
+}
 
 /*
  * View
@@ -126,7 +137,9 @@ if (! empty($id) && ! empty($cursus_id)) {
 		$stagiaires = new Agefodd_session_stagiaire($db);
 
 		$form = new Form($db);
-
+		if($action == "deldoc"){
+		    print $form->formconfirm($_SERVER["PHP_SELF"]."?id=".$id."&cursus_id=".$cursus_id, $langs->trans('AgfRemoveAttestationCursus'), $langs->trans('AgfRemoveAttestationCursus'), "confirm_deldoc", '', '', 1);
+		}
 		$agf->cursus_id = $cursus_id;
 		$head = trainee_prepare_head($agf, 1);
 
@@ -300,6 +313,7 @@ if (! empty($id) && ! empty($cursus_id)) {
 		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=attestation_cursus_' . $cursus_id . '_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td></tr></table>';
+		
 	}
 }
 
@@ -312,8 +326,10 @@ print '<div class="tabsAction">';
 
 if ($user->rights->agefodd->creer) {
 	print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=builddoc&cursus_id=' . $cursus_id . '&id=' . $id . '">' . $langs->trans('AgfPrintAttestationCursus') . '</a>';
+	if (is_file($conf->agefodd->dir_output . '/attestation_cursus_' . $cursus_id . '_' . $id . '.pdf')) print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=deldoc&cursus_id=' . $cursus_id . '&id=' . $id . '">' . $langs->trans('AgfRemoveAttestationCursus') . '</a>';
 } else {
 	print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfPrintAttestationCursus') . '</a>';
+	if (is_file($conf->agefodd->dir_output . '/attestation_cursus_' . $cursus_id . '_' . $id . '.pdf')) print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfRemoveAttestationCursus') . '</a>';
 }
 
 print '</div>';

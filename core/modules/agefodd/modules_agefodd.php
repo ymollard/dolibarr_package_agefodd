@@ -216,7 +216,11 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 	$langs->load('bills');
 	
 	// Charge le modele
-	if(empty($path_external_model)) $nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
+	if(empty($path_external_model))
+	{
+		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php'))) $nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $typeModele . '.modules.php');
+		else $nomModele = dol_buildpath('/agefodd/core/modules/agefodd/pdf/override/pdf_' . $typeModele . '.modules.php');
+	}
 	else $nomModele = dol_buildpath($path_external_model);
 
 	if (file_exists($nomModele)) {

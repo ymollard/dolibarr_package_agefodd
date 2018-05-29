@@ -818,6 +818,7 @@ AgfCursusDetail=Détail du cursus
 AgfSessionInCursusToPlan=Liste des sessions de formation à planifier
 AgfAttestationCursus=Attestation de cursus
 AgfPrintAttestationCursus=Générer l'attestation de cursus
+AgfRemoveAttestationCursus=Supprimer l'attestation de cursus
 AgfPDFAttestationCursus1=Attestation de participation au cursus
 AgfPDFAttestationCursus2=Ce document atteste que
 AgfPDFAttestationCursus3=a effectivement suivi avec assiduité le cursus de formation intitulé

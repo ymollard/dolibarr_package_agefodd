@@ -988,8 +988,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
 					$file = $agf->model_doc . '.modules.php';
 					$class = $agf->model_doc;
-					if (file_exists($dir . $file)) {
-						require_once ($dir . $file);
+					if (file_exists($dir . $file) || file_exists($dir.'override/'.$file)) {
+						if (file_exists($dir . $file)) require_once ($dir . $file);
+						else require_once ($dir . 'override/' . $file);
 						$module = new $class($db);
 						print $module->description;
 					}

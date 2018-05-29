@@ -93,8 +93,8 @@ class FormAgefodd extends Form
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 					$label = $obj->intitule;
-					if (!empty($obj->ref_interne)) {
-						$label .= ' ('.$obj->ref_interne.')';
+					if (! empty($obj->ref_interne)) {
+						$label .= ' (' . $obj->ref_interne . ')';
 					}
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
@@ -877,14 +877,13 @@ class FormAgefodd extends Form
 	 * @param string $returntype typereturn
 	 * @return string The HTML control
 	 */
-	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $returntype='', $multiselect = false) {
+	public function select_session_status($selectid, $htmlname = 'session_status', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $returntype = '', $multiselect = false) {
 		global $conf, $langs;
 
 		$TSelectid = array();
-		if(is_array($selectid)) {
+		if (is_array($selectid)) {
 			$TSelectid = $selectid;
-		}
-		else {
+		} else {
 			$TSelectid[] = $selectid;
 		}
 
@@ -895,7 +894,7 @@ class FormAgefodd extends Form
 		}
 		$sql .= " ORDER BY t.sort";
 
-		$out='';
+		$out = '';
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
@@ -903,7 +902,7 @@ class FormAgefodd extends Form
 
 			if (empty($returntype)) {
 				$out .= '<select id="' . $htmlname . '" class="flat minwidth100" name="' . $htmlname;
-				if($multiselect) {
+				if ($multiselect) {
 					$out .= '[]" ';
 					$out .= 'multiple="multiple"';
 				}
@@ -915,8 +914,7 @@ class FormAgefodd extends Form
 			if ($showempty) {
 				if (empty($returntype)) {
 					$out .= '<option value=""></option>';
-				}else {
-
+				} else {
 				}
 			}
 			$num = $this->db->num_rows($result);
@@ -931,14 +929,14 @@ class FormAgefodd extends Form
 					}
 
 					if (! empty($TSelectid) && in_array($obj->rowid, $TSelectid)) {
-							if (empty($returntype)) {
-								$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
-							}
-						} else {
-							if (empty($returntype)) {
-								$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
-							}
+						if (empty($returntype)) {
+							$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 						}
+					} else {
+						if (empty($returntype)) {
+							$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+						}
+					}
 					$i ++;
 				}
 			}
@@ -947,11 +945,11 @@ class FormAgefodd extends Form
 			}
 			$this->db->free($result);
 
-			if(! empty($conf->global->MAIN_USE_JQUERY_MULTISELECT)) {
+			if (! empty($conf->global->MAIN_USE_JQUERY_MULTISELECT)) {
 				$out .= '<script type="text/javascript">';
-				$out .= '$(document).ready(function () {'
-					  . '	$("select[multiple]").select2();'
-					  . '});';
+				$out .= '$(document).ready(function () {';
+				$out .= '	$("select[multiple]").select2();';
+				$out .= '});';
 				$out .= '</script>';
 			}
 
@@ -1240,76 +1238,126 @@ class FormAgefodd extends Form
 		global $langs, $conf, $user;
 		global $bc;
 
-		require_once (DOL_DOCUMENT_ROOT . "/comm/action/class/actioncomm.class.php");
-		require_once (DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php");
+		require_once DOL_DOCUMENT_ROOT . "/comm/action/class/actioncomm.class.php";
+		require_once DOL_DOCUMENT_ROOT . "/societe/class/societe.class.php";
+		require_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
+		$formactions = new FormActions($this->db);
+		$form = new Form($this->db);
+
+		$actioncode= GETPOST('actioncode','array');
 
 		$action_arr = ActionComm::getActions($this->db, $socid, $object->id, $typeelement);
 
 		// On récupère les événements liés aux factures elles mêmes liées à la session de formation
 		$agf = new Agefodd_session_element($this->db);
 		$result = $agf->fetch_by_session_by_thirdparty($object->id, $socid, 'invoice');
-		if(!empty($agf->lines)) {
+		if (! empty($agf->lines)) {
 			foreach ( $agf->lines as $line ) {
 				if ($line->element_type == 'invoice' && ! empty($line->facnumber)) {
 					$action_arr_fac = ActionComm::getActions($this->db, $socid, $line->fk_element, 'invoice');
-					if(!empty($action_arr_fac)) $action_arr=array_merge($action_arr, $action_arr_fac);
+					if (! empty($action_arr_fac))
+						$action_arr = array_merge($action_arr, $action_arr_fac);
 				}
 			}
 		}
 
 		// On récupère les événements liés aux propales elles mêmes liées à la session de formation
 		$result = $agf->fetch_by_session_by_thirdparty($object->id, $socid, 'propal');
-		if(!empty($agf->lines)) {
+		if (! empty($agf->lines)) {
 			foreach ( $agf->lines as $line ) {
 				if ($line->element_type == 'propal' && ! empty($line->propalref)) {
 					$action_arr_prop = ActionComm::getActions($this->db, $socid, $line->fk_element, 'propal');
-					if(!empty($action_arr_prop)) $action_arr=array_merge($action_arr, $action_arr_prop);
+					if (! empty($action_arr_prop))
+						$action_arr = array_merge($action_arr, $action_arr_prop);
 				}
 			}
+		}
+
+		if (is_array($actioncode) && count($actioncode)>0) {
+			foreach ( $action_arr as $key=>$action ) {
+
+				if (!in_array($action->type_code,$actioncode)) {
+					unset($action_arr[$key]);
+				}
+			}
+			$action_arr=array_values($action_arr);
 		}
 
 		$num = count($action_arr);
-		if ($num) {
-			if ($typeelement == 'agefodd_agsession')
-				$title = $langs->trans('AgfActionsOnTraining');
-			// elseif ($typeelement == 'fichinter') $title=$langs->trans('ActionsOnFicheInter');
-			else
-				$title = $langs->trans("Actions");
 
-			print_titre($title);
 
-			$total = 0;
-			$var = true;
-			print '<table class="noborder" width="100%">';
-			print
-					'<tr class="liste_titre"><th class="liste_titre">' . $langs->trans('Ref') . '</th><th class="liste_titre">' . $langs->trans('Date') . '</th><th class="liste_titre">' . $langs->trans('Action') . '</th><th class="liste_titre">' . $langs->trans('ThirdParty') . '</th><th class="liste_titre">' . $langs->trans(
-							'By') . '</th></tr>';
-			print "\n";
-
-			foreach ( $action_arr as $action ) {
-				$var = ! $var;
-				print '<tr ' . $bc[$var] . '>';
-				print '<td>' . $action->getNomUrl(1) . '</td>';
-				print '<td>' . dol_print_date($action->datep, 'dayhour') . '</td>';
-				print '<td title="' . dol_escape_htmltag($action->label) . '">' . dol_trunc($action->label, 50) . '</td>';
-				$userstatic = new User($this->db);
-				$userstatic->id = $action->author->id;
-				$userstatic->firstname = $action->author->firstname;
-				$userstatic->lastname = $action->author->lastname;
-
-				$socurl = '';
-				$socstatic = new Societe($this->db);
-				if (! empty($action->socid)) {
-					$socstatic->fetch($action->socid);
-					$socurl = $socstatic->getNomUrl(1);
-				}
-
-				print '<td>' . $socurl . '</td>';
-				print '<td>' . $userstatic->getNomUrl(1) . '</td>';
-				print '</tr>';
-			}
-			print '</table>';
+		if ($typeelement == 'agefodd_agsession') {
+			$title = $langs->trans('AgfActionsOnTraining');
+		} else {
+			$title = $langs->trans("Actions");
 		}
+
+		print '<div class="div-table-responsive">';
+		print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
+		print '<input type="hidden" name="action" value="view_actioncomm"/>';
+		print '<input type="hidden" name="id" value="'.$object->id.'"/>';
+
+		print_barre_liste($title, 0, $_SERVER['PHP_SELF'], $option . "&arch=" . $arch, '', '', "", $num, $num, 'title_generic.png', 0, '', '', -1,1,1);
+
+		$total = 0;
+		$var = true;
+		print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
+		print '<tr class="liste_titre_filter">';
+		print '<td class="liste_titre"></td>';
+		print '<td class="liste_titre"></td>';
+		print '<td class="liste_titre">';
+		print $formactions->select_type_actions($actioncode, "actioncode", array(), (empty($conf->global->AGENDA_USE_EVENT_TYPE) ? 1 : - 1), 0, 1);
+		print '</td>';
+		print '<td class="liste_titre"></td>';
+		print '<td class="liste_titre"></td>';
+		// Search lens
+		print '<td class="liste_titre" align="right">';
+		if (method_exists($form, 'showFilterButtons')) {
+			$searchpicto = $form->showFilterButtons();
+
+			print $searchpicto;
+		} else {
+			print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+			print '&nbsp; ';
+			print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+		}
+		print '</td>';
+		print '</tr>';
+		print '<tr class="liste_titre">';
+		print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "", '', $option, '', '', '');
+		print_liste_field_titre($langs->trans("Date"), $_SERVER['PHP_SELF'], "", '', $option, '', '', '');
+		print_liste_field_titre($langs->trans("Type"), $_SERVER['PHP_SELF'], "", '', $option, '', '', '');
+		print_liste_field_titre($langs->trans("Action"), $_SERVER['PHP_SELF'], "", '', $option, '', '', '');
+		print_liste_field_titre($langs->trans("ThirdParty"), $_SERVER['PHP_SELF'], "", '', $option, '', '', '');
+		print_liste_field_titre($langs->trans("By"), $_SERVER['PHP_SELF'], "", '', $option, '', '', '');
+		print '</tr>';
+		print "\n";
+
+		foreach ( $action_arr as $action ) {
+			print '<tr class="oddeven">';
+			print '<td>' . $action->getNomUrl(1) . '</td>';
+			print '<td>' . dol_print_date($action->datep, 'dayhour') . '</td>';
+			print '<td>' . $action->type . '</td>';
+			print '<td title="' . dol_escape_htmltag($action->label) . '">' . dol_trunc($action->label, 50) . '</td>';
+			$userstatic = new User($this->db);
+			$userstatic->id = $action->author->id;
+			$userstatic->firstname = $action->author->firstname;
+			$userstatic->lastname = $action->author->lastname;
+
+			$socurl = '';
+			$socstatic = new Societe($this->db);
+			if (! empty($action->socid)) {
+				$socstatic->fetch($action->socid);
+				$socurl = $socstatic->getNomUrl(1);
+			}
+
+			print '<td>' . $socurl . '</td>';
+			print '<td>' . $userstatic->getNomUrl(1) . '</td>';
+			print '</tr>';
+		}
+		print '</table>';
+		print '</form>';
+		print '</div>';
 
 		return $num;
 	}
@@ -1363,7 +1411,7 @@ class FormAgefodd extends Form
 	 * @param int $canedit edit filter
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action='',$filter_session_status='',$filter_trainee=0) {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0) {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1510,17 +1558,17 @@ class FormAgefodd extends Form
 			print $langs->trans("AgfStatusSession");
 			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 
-			//Find all posible status
+			// Find all posible status
 			$sql_status = "SELECT t.rowid, t.code ,t.intitule ";
 			$sql_status .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
 			$sql_status .= ' WHERE active=1';
 			$sql .= " ORDER BY t.sort";
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-			$data_status=array();
+			$data_status = array();
 			$result_status = $this->db->query($sql_status);
 			if ($result_status) {
-				while ($obj_status = $this->db->fetch_object($result)) {
-					$data_status[$obj_status->rowid]=$obj_status->intitule;
+				while ( $obj_status = $this->db->fetch_object($result) ) {
+					$data_status[$obj_status->rowid] = $obj_status->intitule;
 				}
 			}
 			print $form->multiselectarray('search_session_status', $data_status, $filter_session_status, '', 0, '', 0, '100%');
@@ -1564,57 +1612,62 @@ class FormAgefodd extends Form
 	 * @return string HTML output
 	 */
 	public function select_conv_model($model = '', $htmlname = 'model_doc') {
-
 		global $conf;
 
 		$outselect = '<select class="flat" id="' . $htmlname . '" name="' . $htmlname . '">';
 
-		$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
+		$TDir[] = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
+		$TDir[] = dol_buildpath('/agefodd/core/modules/agefodd/pdf/override/');
+		
+		foreach ($TDir as $dir)
+		{
+			if (is_dir($dir)) {
+				$handle = opendir($dir);
+				if (is_resource($handle)) {
+					$var = true;
 
-		if (is_dir($dir)) {
-			$handle = opendir($dir);
-			if (is_resource($handle)) {
-				$var = true;
+					// TODO PH faire la lecture du sous dossier "override"
+					while ( ($file = readdir($handle)) !== false ) {
+						if ($file === 'override') continue;
+						if (preg_match('/^(pdf_convention.*)\.modules.php$/i', $file, $reg)) {
+							$file = $reg[1];
 
-				while ( ($file = readdir($handle)) !== false ) {
-					if (preg_match('/^(pdf_convention.*)\.modules.php$/i', $file, $reg)) {
-						$file = $reg[1];
+							require_once ($dir . $file . ".modules.php");
 
-						require_once ($dir . $file . ".modules.php");
+							$module = new $file($this->db);
 
-						$module = new $file($this->db);
-
-						$selected = '';
-						if ($file == $model) {
-							$selected = 'selected="selected"';
+							$selected = '';
+							if ($file == $model) {
+								$selected = 'selected="selected"';
+							}
+							$outselect .= '<option value="' . $file . '" ' . $selected . '>' . $module->description . '</option>';
 						}
-						$outselect .= '<option value="' . $file . '" ' . $selected . '>' . $module->description . '</option>';
 					}
 				}
-			}
+			}	
 		}
+		
 
-		if(!empty($conf->referenceletters->enabled)) $this->addReferenceLettersModelsToSelect($outselect, $model);
+		if (! empty($conf->referenceletters->enabled))
+			$this->addReferenceLettersModelsToSelect($outselect, $model);
 
 		$outselect .= '</select>';
 
 		return $outselect;
 	}
-
-	function addReferenceLettersModelsToSelect(&$outselect, $model='') {
-
+	function addReferenceLettersModelsToSelect(&$outselect, $model = '') {
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
+		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelList')) {
 			$TModelAgefodd = RfltrTools::getAgefoddModelList();
-			if(!empty($TModelAgefodd['rfltr_agefodd_convention'])) {
-				foreach($TModelAgefodd['rfltr_agefodd_convention'] as $id_model=>$model_name) {
+			if (! empty($TModelAgefodd['rfltr_agefodd_convention'])) {
+				foreach ( $TModelAgefodd['rfltr_agefodd_convention'] as $id_model => $model_name ) {
 					$selected = '';
-					if ($model === 'rfltr_agefodd_'.$id_model) $selected = 'selected="selected"';
-					$outselect.= '<option value="rfltr_agefodd_' . $id_model. '" ' . $selected . '>' . $model_name. '</option>';
+					if ($model === 'rfltr_agefodd_' . $id_model)
+						$selected = 'selected="selected"';
+					$outselect .= '<option value="rfltr_agefodd_' . $id_model . '" ' . $selected . '>' . $model_name . '</option>';
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -1675,21 +1728,20 @@ class FormAgefodd extends Form
 
 		return $return;
 	}
-	
-	public function selectMassSessionsAction (){
-	    global $langs;
-	    
-	    $sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
-	    
-	    $res = $this->db->query($sql);
-	    $TStatut = array();
-	    
-	    if($res){
-	        while($obj = $this->db->fetch_object($res)){
-	            $TStatut['set_statut'.$obj->rowid] = $langs->trans('AgfChangeStatutTo') . ' ' . $langs->trans('AgfStatusSession_' .$obj->code);
-	        }
-	    }
-	    
-	    return $this->selectMassAction('', $TStatut);
+	public function selectMassSessionsAction() {
+		global $langs;
+
+		$sql = "SELECT rowid, code FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type WHERE active = 1";
+
+		$res = $this->db->query($sql);
+		$TStatut = array();
+
+		if ($res) {
+			while ( $obj = $this->db->fetch_object($res) ) {
+				$TStatut['set_statut' . $obj->rowid] = $langs->trans('AgfChangeStatutTo') . ' ' . $langs->trans('AgfStatusSession_' . $obj->code);
+			}
+		}
+
+		return $this->selectMassAction('', $TStatut);
 	}
 }
