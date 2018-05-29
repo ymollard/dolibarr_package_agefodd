@@ -3665,7 +3665,11 @@ class Agsession extends CommonObject
 				$this->errors[] = $langs->trans('AgfProposalMustBeSignToCreateOrderFrom');
 				$error ++;
 			} else {
-				$neworderid = $order->createFromProposal($propal);
+				if((float) DOL_VERSION < 7.0) {
+					$neworderid = $order->createFromProposal($propal);
+				} else {
+					$neworderid = $order->createFromProposal($propal, $user);
+				}
 				if ($neworderid < 0) {
 					$this->errors[] = $order->error;
 					$error ++;
@@ -4536,7 +4540,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		if (empty($error) && !empty($propal->id) && $invoice->socid!==$propal->socid) {
+		if ((empty($error) && empty($propal->id)) || $invoice->socid!==$propal->socid) {
 			// Link new order to the session/thridparty
 
 			$agf = new Agefodd_session_element($this->db);
