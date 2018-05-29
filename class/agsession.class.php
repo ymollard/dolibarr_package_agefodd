@@ -3665,7 +3665,11 @@ class Agsession extends CommonObject
 				$this->errors[] = $langs->trans('AgfProposalMustBeSignToCreateOrderFrom');
 				$error ++;
 			} else {
-				$neworderid = $order->createFromProposal($propal);
+				if((float) DOL_VERSION < 7.0) {
+					$neworderid = $order->createFromProposal($propal);
+				} else {
+					$neworderid = $order->createFromProposal($propal, $user);
+				}
 				if ($neworderid < 0) {
 					$this->errors[] = $order->error;
 					$error ++;
