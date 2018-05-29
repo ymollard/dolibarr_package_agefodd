@@ -2385,11 +2385,11 @@ class Agefodd extends DolibarrApi
     /**
      * Create a Convention.
      * 
-     * All text optionnal fields can be left blank and will be replaced by the last convention of this thirdparty or a default text
+     * All text optionnal fields can be left blank and will be replaced by a default text
      * 
      * @param int       $sessid               ID of the session
      * @param int       $socid                ID of the thirdparty
-     * @param int       $source_element_id    ID or the proposal, order or invoice linked to the session for this thirdparty
+     * @param int       $source_element_id    ID of the proposal, order or invoice linked to the session for this thirdparty
      * @param string    $source_type          Type of the source element ("propal", "order" or "invoice")
      * @param array     $trainees             Array of trainee id
      * @param string    $intro1               First text of the convention (informations on your organisation)
@@ -2525,25 +2525,25 @@ class Agefodd extends DolibarrApi
         
         // intro1
         $statut = getFormeJuridiqueLabel($mysoc->forme_juridique_code);
-        $this->convention->intro1 = $langs->trans('AgfConvIntro1_1') . ' ' . $mysoc->name . ', ' . $statut;
+        $this->convention->intro1 = $langs->transnoentitiesnoconv('AgfConvIntro1_1') . ' ' . $mysoc->name . ', ' . $statut;
         if (! empty($mysoc->capital)) {
-            $this->convention->intro1 .= ' ' . $langs->trans('AgfConvIntro1_2');
-            $this->convention->intro1 .= ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
+            $this->convention->intro1 .= ' ' . $langs->transnoentitiesnoconv('AgfConvIntro1_2');
+            $this->convention->intro1 .= ' ' . $mysoc->capital . ' ' . $langs->transnoentitiesnoconv("Currency" . $conf->currency);
         }
         
         $addr = preg_replace( "/\r|\n/", " ", $mysoc->address . ', ' . $mysoc->zip . ' ' . $mysoc->town );
-        $this->convention->intro1 .= $langs->trans('AgfConvIntro1_3') . ' ' . $addr;
+        $this->convention->intro1 .= $langs->transnoentitiesnoconv('AgfConvIntro1_3') . ' ' . $addr;
         if (! empty($mysoc->idprof1)) {
-            $this->convention->intro1 .= $langs->trans('AgfConvIntro1_4') . ' ' . $mysoc->idprof1;
+            $this->convention->intro1 .= $langs->transnoentitiesnoconv('AgfConvIntro1_4') . ' ' . $mysoc->idprof1;
         }
         if (empty($conf->global->AGF_ORGANISME_NUM)) {
-            $this->convention->intro1 .= ' ' . $langs->trans('AgfConvIntro1_5') . ' ' . $conf->global->AGF_ORGANISME_PREF;
+            $this->convention->intro1 .= ' ' . $langs->transnoentitiesnoconv('AgfConvIntro1_5') . ' ' . $conf->global->AGF_ORGANISME_PREF;
         } else {
-            $this->convention->intro1 .= ' ' . $langs->trans('AgfConvIntro1_6');
-            $this->convention->intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM. ' '. $langs->trans('AgfConvOrg1');
+            $this->convention->intro1 .= ' ' . $langs->transnoentitiesnoconv('AgfConvIntro1_6');
+            $this->convention->intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->transnoentitiesnoconv('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM. ' '. $langs->transnoentitiesnoconv('AgfConvOrg1');
         }
         if (! empty($conf->global->AGF_ORGANISME_REPRESENTANT)) {
-            $this->convention->intro1 .= $langs->trans('AgfConvIntro1_8') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . $langs->trans('AgfConvIntro1_9');
+            $this->convention->intro1 .= $langs->transnoentitiesnoconv('AgfConvIntro1_8') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . $langs->transnoentitiesnoconv('AgfConvIntro1_9');
         }
         
         // intro2
@@ -2554,20 +2554,20 @@ class Agefodd extends DolibarrApi
         
         // intro2
         $addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
-        $this->convention->intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name ;
+        $this->convention->intro2 = $langs->transnoentitiesnoconv('AgfConvIntro2_1') . ' ' . $agf_soc->name ;
         if (!empty($addr)) {
-            $this->convention->intro2 .= ", ". $langs->trans('AgfConvIntro2_2') . ' ' . $addr ;
+            $this->convention->intro2 .= ", ". $langs->transnoentitiesnoconv('AgfConvIntro2_2') . ' ' . $addr ;
         }
         if (!empty($agf_soc->idprof2)) {
-            $this->convention->intro2 .= ", ". $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
+            $this->convention->intro2 .= ", ". $langs->transnoentitiesnoconv('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
         }
         
         $signataire='';
         $contactname=trim($this->session->contactname);
         if (!empty($contactname)) {
-            $this->convention->intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
+            $this->convention->intro2 .= ', ' . $langs->transnoentitiesnoconv('AgfConvIntro2_4') . ' ';
             $this->convention->intro2 .= ucfirst(strtolower($this->session->contactcivilite)) . ' ' . $this->session->contactname;
-            $this->convention->intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
+            $this->convention->intro2 .= ' ' . $langs->transnoentitiesnoconv('AgfConvIntro2_5');
         } else {
             
             //Trainee link to the company convention
@@ -2584,7 +2584,7 @@ class Agefodd extends DolibarrApi
                         }
                     }
                     if (!empty($signataire)) {
-                        $this->convention->intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' '.$signataire.' '. $langs->trans('AgfConvIntro2_5');
+                        $this->convention->intro2 .= ', ' . $langs->transnoentitiesnoconv('AgfConvIntro2_4') . ' '.$signataire.' '. $langs->transnoentitiesnoconv('AgfConvIntro2_5');
                     }
                     
                     
@@ -2593,30 +2593,30 @@ class Agefodd extends DolibarrApi
         }
         
         // article 1
-        $this->convention->art1 = $langs->trans('AgfConvArt1_1') . "\n";
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_2') . ' ' . $this->session->formintitule . ' ' . $langs->trans('AgfConvArt1_3') . " \n". "\n";
+        $this->convention->art1 = $langs->transnoentitiesnoconv('AgfConvArt1_1') . "\n";
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_2') . ' ' . $this->session->formintitule . ' ' . $langs->transnoentitiesnoconv('AgfConvArt1_3') . " \n". "\n";
         
         $obj_peda = new Formation($this->db);
         $resql = $obj_peda->fetch_objpeda_per_formation($this->session->formid);
         if (count( $obj_peda->lines)>0) {
-            $this->convention->art1 .= $langs->trans('AgfConvArt1_4') . "\n";
+            $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_4') . "\n";
             foreach ( $obj_peda->lines as $line ) {
                 $this->convention->art1 .= "-	" . $line->intitule . "\n";
             }
             $this->convention->art1 .= "\n";
         }
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_6') . "\n". "\n";
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_7');
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_6') . "\n". "\n";
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_7');
         
         if ($this->session->dated == $this->session->datef)
-            $this->convention->art1 .= $langs->trans('AgfConvArt1_8') . ' ' . dol_print_date($this->session->datef);
+            $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_8') . ' ' . dol_print_date($this->session->datef);
         else
-            $this->convention->art1 .= $langs->trans('AgfConvArt1_9') . ' ' . dol_print_date($this->session->dated) . ' ' . $langs->trans('AgfConvArt1_10') . ' ' . dol_print_date($this->session->datef);
+            $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_9') . ' ' . dol_print_date($this->session->dated) . ' ' . $langs->transnoentitiesnoconv('AgfConvArt1_10') . ' ' . dol_print_date($this->session->datef);
                 
         $this->convention->art1 .= "\n";
                 
         // Durée de formation
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_11') . ' ' . $this->session->duree_session . ' ' . $langs->trans('AgfConvArt1_12') . ' ' . "\n";
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_11') . ' ' . $this->session->duree_session . ' ' . $langs->transnoentitiesnoconv('AgfConvArt1_12') . ' ' . "\n";
         
         $calendrier = new Agefodd_sesscalendar($this->db);
         $resql = $calendrier->fetch_all($sessid);
@@ -2646,35 +2646,35 @@ class Agefodd extends DolibarrApi
             $TTrainer[] = $trainer->firstname . ' ' . $trainer->lastname;
         }
         if ($nbform>0) {
-            $this->convention->art1 .= "\n". $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
+            $this->convention->art1 .= "\n". $langs->transnoentitiesnoconv('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
         }
         
-        $this->convention->art1 .= "\n". $langs->trans('AgfConvArt1_13') . "\n". "\n";
+        $this->convention->art1 .= "\n". $langs->transnoentitiesnoconv('AgfConvArt1_13') . "\n". "\n";
         
         
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_17') . "\n". "\n";
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_14') . ' Nb_participants ';
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_17') . "\n". "\n";
         
         // Adresse lieu de formation
         $agf_place = new Agefodd_place($this->db);
         $resql3 = $agf_place->fetch($agf->placeid);
         $addr = preg_replace( "/\r|\n/", " ", $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville );
-        $this->convention->art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $addr . '.';
+        $this->convention->art1 .= $langs->transnoentitiesnoconv('AgfConvArt1_18') . $agf_place->ref_interne . $langs->transnoentitiesnoconv('AgfConvArt1_19') . ' ' . $addr . '.';
         
         
         // article 2
-        $this->convention->art2 = $langs->trans('AgfConvArt2_1');
+        $this->convention->art2 = $langs->transnoentitiesnoconv('AgfConvArt2_1');
         
         // article 3
-        $this->convention->art3 = $langs->trans('AgfConvArt3_1');
+        $this->convention->art3 = $langs->transnoentitiesnoconv('AgfConvArt3_1');
         
         // article 4
         if (empty($conf->global->FACTURE_TVAOPTION)) {
-            $this->convention->art4 = $langs->trans('AgfConvArt4_1');
+            $this->convention->art4 = $langs->transnoentitiesnoconv('AgfConvArt4_1');
         } else {
-            $this->convention->art4 = $langs->trans('AgfConvArt4_3');
+            $this->convention->art4 = $langs->transnoentitiesnoconv('AgfConvArt4_3');
         }
-        $this->convention->art4 .= "\n" . $langs->trans('AgfConvArt4_2');
+        $this->convention->art4 .= "\n" . $langs->transnoentitiesnoconv('AgfConvArt4_2');
         
         // article 5
         $listOPCA = '';
@@ -2689,35 +2689,35 @@ class Agefodd extends DolibarrApi
                     $opca->getOpcaForTraineeInSession($line->socid, $this->session->id, $line->stagerowid);
                     
                     if(! empty($opca->soc_OPCA_name)) { // Au moins un participant avec un OPCA
-                        $listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+                        $listOPCA = ' ('.$langs->transnoentitiesnoconv('AgfMailTypeContactOPCA').' : List_OPCA)';
                         break;
                     }
                 }
             }
             
         } elseif(! empty($this->session->fk_soc_OPCA)) {
-            $listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+            $listOPCA = ' ('.$langs->transnoentitiesnoconv('AgfMailTypeContactOPCA').' : List_OPCA)';
         }
         
-        $this->convention->art5 = $langs->trans('AgfConvArt5_1', $listOPCA);
+        $this->convention->art5 = $langs->transnoentitiesnoconv('AgfConvArt5_1', $listOPCA);
         
         // article 6
-        $this->convention->art6 = $langs->trans('AgfConvArt6_1') . "\n". "\n";
-        $this->convention->art6 .= $langs->trans('AgfConvArt6_2') . "\n". "\n";
-        $this->convention->art6 .= $langs->trans('AgfConvArt6_3') . "\n". "\n";
-        $this->convention->art6 .= $langs->trans('AgfConvArt6_4') . "\n". "\n";
+        $this->convention->art6 = $langs->transnoentitiesnoconv('AgfConvArt6_1') . "\n". "\n";
+        $this->convention->art6 .= $langs->transnoentitiesnoconv('AgfConvArt6_2') . "\n". "\n";
+        $this->convention->art6 .= $langs->transnoentitiesnoconv('AgfConvArt6_3') . "\n". "\n";
+        $this->convention->art6 .= $langs->transnoentitiesnoconv('AgfConvArt6_4') . "\n". "\n";
         
         // article 7
-        $this->convention->art7 = $langs->trans('AgfConvArt7_1'). ' ';
-        $this->convention->art7 .= $langs->trans('AgfConvArt7_2') . ' ' . $mysoc->town . ".";
+        $this->convention->art7 = $langs->transnoentitiesnoconv('AgfConvArt7_1'). ' ';
+        $this->convention->art7 .= $langs->transnoentitiesnoconv('AgfConvArt7_2') . ' ' . $mysoc->town . ".";
         
         // article 9
-        $this->convention->art9 = $langs->trans('AgfConvArt9_1'). "\n";
-        $this->convention->art9 .= $langs->trans('AgfConvArt9_2');
+        $this->convention->art9 = $langs->transnoentitiesnoconv('AgfConvArt9_1'). "\n";
+        $this->convention->art9 .= $langs->transnoentitiesnoconv('AgfConvArt9_2');
         
         // Signature du client
         $this->convention->sig = $agf_soc->name . "\n";
-        $this->convention->sig .= $langs->trans('AgfConvArtSigCli') . ' ';
+        $this->convention->sig .= $langs->transnoentitiesnoconv('AgfConvArtSigCli') . ' ';
         //$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
         $contactname=trim($agf->contactname);
         if (!empty($contactname)) {
@@ -2741,11 +2741,70 @@ class Agefodd extends DolibarrApi
 
     }
     
-    function sessionPutConvention()
+    /**
+     * Update a convention.
+     * 
+     * All fields left blank will not be changed
+     * 
+     * @param int $id ID of the convention
+     * @param int       $source_element_id    ID of the proposal, order or invoice linked to the session for this thirdparty
+     * @param string    $source_type          Type of the source element ("propal", "order" or "invoice")
+     * @param array     $trainees             Array of trainee id
+     * @param string    $intro1               First text of the convention (informations on your organisation)
+     * @param string    $intro2               Second text of the convention (informations on the thirdparty)
+     * @param array     $articles             Array of strings from "art1" to "art9"
+     * @param string    $sig                  The thirdparty signature
+     * @param string    $notes                Some comments on the convention
+     * 
+     * @url PUT /sessions/convention
+     */
+    function sessionPutConvention($id, $source_element_id = 0, $source_type = '', $trainees = array(), $intro1 = '', $intro2 = '', $articles = array(), $sig = '', $notes = '')
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
         }
+        
+        $this->convention = new Agefodd_convention($this->db);
+        $result = $this->convention->fetch(0, 0, $id);
+        if($result < 0) throw new RestException(500, "Error retrieving convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        elseif(empty($this->convention->id)) throw new RestException(404, "Convention not found");
+        
+        if (! empty($intro1))
+            $this->convention->intro1 = $intro1;
+        if (! empty($intro2))
+            $this->convention->intro2 = $intro2;
+        
+        if(!empty($articles))
+        {
+            for($i = 1; $i < 10; $i++)
+            {
+                $key = "art".$i;
+                if(!empty($articles[$key])) $this->convention->{$key} = $articles[$key];
+            }
+        }
+        
+        if (! empty($sig))
+            $this->convention->sig = $sig;
+        if (! empty($source_element_id))
+            $this->convention->fk_element = $source_element_id;
+        if (! empty($source_type))
+            $this->convention->element_type = $source_type;
+
+        $this->convention->notes = $notes;
+        
+        //$this->convention->line_trainee = $trainees;
+        if(!empty($trainees) && $trainees[0] !== ""){
+            $this->convention->line_trainee = array();
+            foreach ($trainees as $traineeid){
+                $result = $this->traineeinsession->fetch_by_trainee($sessid, $traineeid);
+                if($result > 0) $this->convention->line_trainee[] = $this->traineeinsession->id;
+            }
+        }
+        
+        $result = $this->convention->update(DolibarrApiAccess::$user);
+        if ($result < 0) throw new RestException(500, "Error updating the convention", array($this->db->lasterror, $this->db->lastqueryerror));
+        
+        return $this->sessionGetConvention(0, 0, $id);
     }
     
     /**
