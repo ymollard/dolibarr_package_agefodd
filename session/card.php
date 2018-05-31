@@ -1566,11 +1566,11 @@ printSessionFieldsWithCustomOrder();
 							print '<td style="border-left: 0px; border-right: 0px;">';
 							// Info funding company
 							if ($stagiaires->lines[$i]->socid) {
-								print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $stagiaires->lines[$i]->socid . '">';
-								print img_object($langs->trans("ShowCompany"), "company");
-								if (! empty($stagiaires->lines[$i]->soccode))
-									print ' ' . $stagiaires->lines[$i]->soccode . '-';
-								print ' ' . dol_trunc($stagiaires->lines[$i]->socname, 20) . '</a>';
+								$socstatic = new Societe($db);
+								$socstatic->fetch($stagiaires->lines[$i]->socid);
+								if (! empty($socstatic->id)) {
+									print $socstatic->getNomUrl(1);
+								}
 							} else {
 								print '&nbsp;';
 							}

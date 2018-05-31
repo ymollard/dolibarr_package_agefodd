@@ -315,7 +315,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && ($user->rights->age
 	    foreach ($agf_certif->line as $cert) {
 	       $cert->delete($user);
 	    }
-	    
+
 		// s'il y a des heures réelles saisies pour ce stagiaire, on les supprime
 		$heures = new Agefoddsessionstagiaireheures($db);
 		$heures->fetch_all_by_session($agf->id, $stagerowid);
@@ -503,7 +503,7 @@ if (! empty($id)) {
 
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
-		
+
 		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
 			$agf->type_session = 1;
 		}
@@ -676,13 +676,13 @@ if (! empty($id)) {
 			setEventMessage($stagiaires->error, 'errors');
 		}
 		$nbstag = count($stagiaires->lines);
-		
+
 		if ($nbstag > 0) {
 			$fk_soc_used = array();
 			$var=false;
 			for($i = 0; $i < $nbstag; $i ++) {
 				$var=!$var;
-				
+
 				if ($stagiaires->lines[$i]->id == $modstagid && ! empty($stag_remove_x))
 					print '<tr bgcolor="#d5baa8">';
 				else
@@ -868,12 +868,12 @@ if (! empty($id)) {
 					print '</td>';
 					print '<td width="20%" style="border-left: 0px;">';
 					// Display thridparty link with trainee
-					if ($stagiaires->lines[$i]->socid) {
-						print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $stagiaires->lines[$i]->socid . '">';
-						print img_object($langs->trans("ShowCompany"), "company");
-						if (! empty($stagiaires->lines[$i]->soccode))
-							print ' ' . $stagiaires->lines[$i]->soccode . '-';
-						print ' ' . dol_trunc($stagiaires->lines[$i]->socname, 20) . '</a>';
+					if (!empty($stagiaires->lines[$i]->socid)) {
+						$socstatic = new Societe($db);
+						$socstatic->fetch($stagiaires->lines[$i]->socid);
+						if (! empty($socstatic->id)) {
+							print $socstatic->getNomUrl(1);
+						}
 					} else {
 						print '&nbsp;';
 					}
@@ -1276,11 +1276,12 @@ if (! empty($id)) {
 				print '<td style="border-left: 0px; border-right: 0px;">';
 				// Infos organisme de rattachement
 				if ($stagiaires->lines[$i]->socid) {
-					print '<a href="' . DOL_URL_ROOT . '/comm/card.php?socid=' . $stagiaires->lines[$i]->socid . '">';
-					print img_object($langs->trans("ShowCompany"), "company");
-					if (! empty($stagiaires->lines[$i]->soccode))
-						print ' ' . $stagiaires->lines[$i]->soccode . '-';
-					print ' ' . dol_trunc($stagiaires->lines[$i]->socname, 20) . '</a>';
+					$socstatic = new Societe($db);
+					$socstatic->fetch($stagiaires->lines[$i]->socid);
+					if (! empty($socstatic->id)) {
+						print $socstatic->getNomUrl(1);
+					}
+					unset($socstatic);
 				} else {
 					print '&nbsp;';
 				}
@@ -1303,6 +1304,7 @@ if (! empty($id)) {
 					if (! empty($socstatic->id)) {
 						print $langs->trans('AgfTraineeSocDocUse') . ':' . $socstatic->getNomUrl(1);
 					}
+					unset($socstatic);
 				} else {
 					print '&nbsp;';
 				}
@@ -1312,6 +1314,7 @@ if (! empty($id)) {
 					if (! empty($socstatic->id)) {
 						print '<br>' . $langs->trans('AgfTypeRequester') . ':' . $socstatic->getNomUrl(1);
 					}
+					unset($socstatic);
 				} else {
 					print '&nbsp;';
 				}
