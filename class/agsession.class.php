@@ -3955,13 +3955,9 @@ class Agsession extends CommonObject
 		$propal->date = dol_now();
 		if (! empty($soc->cond_reglement_id)) {
 			$propal->cond_reglement_id = $soc->cond_reglement_id;
-		} else {
-			$propal->cond_reglement_id = 1;
 		}
 		if (! empty($soc->mode_reglement_id)) {
 			$propal->mode_reglement_id = $soc->mode_reglement_id;
-		} else {
-			$propal->mode_reglement_id = 1;
 		}
 		$propal->duree_validite = $conf->global->PROPALE_VALIDITY_DURATION;
 		$propal->modelpdf = $conf->global->PROPALE_ADDON_PDF;
