@@ -773,12 +773,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
 	print '</td></tr>';
 
-	print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . '</td>';
+	print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . $form->textwithpicto('', $langs->trans("AgfTypePrestaHelp"), 1, 'help').'</td>';
 	print '<td>';
 	$formAgefodd->select_contacts_custom(0, GETPOST('fk_socpeople_presta', 'int'), 'fk_socpeople_presta', 1, '', '', 1, '', 1, 0, array (), false, 1);
 	print '</td></tr>';
 
-	print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
+	print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help').'</td>';
 	print '<td>';
 	print $form->select_thirdparty_list($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 	print '</td></tr>';

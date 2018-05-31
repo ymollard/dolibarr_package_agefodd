@@ -1618,7 +1618,7 @@ class FormAgefodd extends Form
 
 		$TDir[] = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
 		$TDir[] = dol_buildpath('/agefodd/core/modules/agefodd/pdf/override/');
-		
+
 		foreach ($TDir as $dir)
 		{
 			if (is_dir($dir)) {
@@ -1644,9 +1644,9 @@ class FormAgefodd extends Form
 						}
 					}
 				}
-			}	
+			}
 		}
-		
+
 
 		if (! empty($conf->referenceletters->enabled))
 			$this->addReferenceLettersModelsToSelect($outselect, $model);
