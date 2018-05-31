@@ -506,6 +506,8 @@ class pdf_convention extends ModelePDFAgefodd {
 						} else {
 							$trainee_list_str=' ' . $langs->trans('AgfConvArt3_3') . ' '.implode(', ',$traine_list);
 						}
+					} else if (count($traine_list)==0) {
+						$trainee_list_str = $langs->trans('AgfConvArt3_5');
 					}
 
 					$art3 = str_replace('List_Participants', $trainee_list_str, $agf_conv->art3);
