@@ -96,7 +96,7 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 
 	$deleteobject = GETPOST('deleteobject', 'int');
 	if (! empty($deleteobject)) {
-		if ($type_link == 'bc') {
+		if ($type_link == 'bc' && $user->rights->commande->supprimer) {
 			$obj_link = new Commande($db);
 			$obj_link->fetch($agf->fk_element);
 			$resultdel = $obj_link->delete($user);
@@ -105,18 +105,19 @@ if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->
 			$obj_link = new Facture($db);
 			$obj_link->fetch($agf->fk_element);
 			if ($obj_link->is_erasable()>0) {
-				if (DOL_VERSION <= 4.0) {
-					$resultdel = $obj_link->delete();
-				} else {
-					$resultdel = $obj_link->delete($user);
+				if ($user->rights->facture->supprimer) {
+					if (DOL_VERSION <= 4.0) {
+						$resultdel = $obj_link->delete();
+					} else {
+						$resultdel = $obj_link->delete($user);
+					}
 				}
 			} else {
 				$resultdel=-1;
 				$obj_link->error=$langs->trans('DisabledBecauseNotLastInvoice');
 			}
 		}
-
-		if ($type_link == 'prop') {
+		if ($type_link == 'prop' && $user->rights->propal->supprimer) {
 			$obj_link = new Propal($db);
 			$obj_link->fetch($agf->fk_element);
 			$resultdel = $obj_link->delete($user);
