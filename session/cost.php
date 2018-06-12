@@ -491,8 +491,6 @@ elseif ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefo
 			$resultdel = $obj_link->delete($user,$obj_link->id);
 		}
 
-
-
 		if ($resultdel < O)
 		{
 			setEventMessage($obj_link->error, 'errors');
