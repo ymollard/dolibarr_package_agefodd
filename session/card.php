@@ -684,6 +684,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr class="order_intitule"><td><span class="fieldrequired">' . $langs->trans("AgfFormIntitule") . '</span></td>';
 	print '<td>' . $formAgefodd->select_formation(GETPOST('formation', 'int'), 'formation', 'intitule', 1) . '</td></tr>';
 
+	print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
+	print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . $agf->intitule_custo . '" /></td></tr>';
+
+	
 	print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
 
@@ -840,6 +844,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
 			ajax_set_duration_and_product(data);
+			$('#intitule_custo').val($(this).text());
 		});
 	});
 
