@@ -159,7 +159,7 @@ if (! empty($search_invoiceref)) {
 	$urlcomplete = '&search_invoiceid='.$search_invoiceid;
 }
 
-if (! empty($search_fourninvoiceref)) {
+if (! empty($search_fourninvoiceref) && empty($search_fourninvoiceid) ) {
 	$fourninvoice = new FactureFournisseur($db);
 	$fourninvoice->fetch('', $search_fourninvoiceref);
 	$fourninvoice->fetch_thirdparty();
@@ -620,6 +620,7 @@ if ($resql != - 1) {
 	}
 	if (! (empty($search_fourninvoiceref))) {
 		print '<td class="liste_titre">';
+		print '<input type="hidden" name="search_fourninvoiceid" value="' . $search_fourninvoiceid . '">';
 		print '<input type="text" class="flat" name="search_fourninvoiceref" value="' . $search_fourninvoiceref . '" size="20">';
 		print '</td>';
 	}
