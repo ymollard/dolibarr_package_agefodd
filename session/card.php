@@ -844,7 +844,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
 			ajax_set_duration_and_product(data);
-			$('#intitule_custo').val($(this).text());
+			var option_txt = $(this).find('option[value='+$(this).val()+']').text();
+			$('#intitule_custo').val(option_txt);
 		});
 	});
 
