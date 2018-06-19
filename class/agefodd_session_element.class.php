@@ -355,19 +355,17 @@ class Agefodd_session_element extends CommonObject {
 			if ($resql) {
 				$this->lines = array ();
 				$num = $this->db->num_rows($resql);
-				$i = 0;
-				for($i = 0; $i < $num; $i ++) {
+				while ($obj = $this->db->fetch_object($resql)) {
 					$line = new AgefoddElementLine();
 
-					$obj = $this->db->fetch_object($resql);
 					$line->id = $obj->rowid;
 					$line->socid = $obj->fk_soc;
 					$line->fk_session_agefodd = $obj->fk_session_agefodd;
 
-					$this->lines[$i] = $line;
+					$this->lines[] = $line;
 				}
 				$this->db->free($resql);
-				return 1;
+				return $num;
 			} else {
 				$this->error = "Error " . $this->db->lasterror();
 				dol_syslog(get_class($this) . "::fetch_element_by_id " . $this->error, LOG_ERR);

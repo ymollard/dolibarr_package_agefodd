@@ -706,6 +706,7 @@ if ($resql != - 1) {
 		$agf_fin = new Agefodd_session_element($db);
 		if ($type !== 'fourn') {
 		    $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+		    $idelement=$agf_fin->lines[0]->id;
 		} else {
 		    if(!empty($search_fourninvoiceref)){
     		    $TFournTypes = array('invoice_supplier_trainer', 'invoice_supplier_room', 'invoice_supplier_missions');
@@ -713,16 +714,21 @@ if ($resql != - 1) {
     		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
     		        if(!empty($agf_fin->lines)) break;
     		    }
+    		    $idelement=$agf_fin->lines[0]->id;
+    		    if (property_exists($line, 'agelemetnid') && !empty($line->agelemetnid)) {
+    		    	$idelement=$line->agelemetnid;
+    		    }
 		    } else {
 		        $type = 'order_supplier';
 		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+		        $idelement=$agf_fin->lines[0]->id;
 		    }
 		}
 		//var_dump($agf_fin);
 
 		print '<td align="right">';
 		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $agf_fin->lines[0]->id . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $idelement . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td>';
 // 		print '<td></td>';
