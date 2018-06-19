@@ -706,6 +706,7 @@ if ($resql != - 1) {
 		$agf_fin = new Agefodd_session_element($db);
 		if ($type !== 'fourn') {
 		    $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+		    $idelement=$agf_fin->lines[0]->id;
 		} else {
 		    if(!empty($search_fourninvoiceref)){
     		    $TFournTypes = array('invoice_supplier_trainer', 'invoice_supplier_room', 'invoice_supplier_missions');
@@ -713,16 +714,21 @@ if ($resql != - 1) {
     		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
     		        if(!empty($agf_fin->lines)) break;
     		    }
+    		    $idelement=$agf_fin->lines[0]->id;
+    		    if (property_exists($line, 'agelemetnid') && !empty($line->agelemetnid)) {
+    		    	$idelement=$line->agelemetnid;
+    		    }
 		    } else {
 		        $type = 'order_supplier';
 		        $agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
+		        $idelement=$agf_fin->lines[0]->id;
 		    }
 		}
 		//var_dump($agf_fin);
 
 		print '<td align="right">';
 		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $agf_fin->lines[0]->id . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $idelement . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td>';
 // 		print '<td></td>';
@@ -779,9 +785,11 @@ if (empty($search_fourninvoiceref)) {
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)
-            AND s.rowid NOT IN ('".implode("','", $excludeSessions)."')
-            GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
+	    if (is_array($excludeSessions) && count($excludeSessions)>0) {
+	    	$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
+	    }
+	    $sql .=" GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
             ORDER BY s.dated ASC";
 
 	    $resql = $db->query($sql);
@@ -817,7 +825,11 @@ if (empty($search_fourninvoiceref)) {
         LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sp.fk_soc
         LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur_type as st ON st.rowid = sf.fk_agefodd_formateur_type
-        WHERE soc.rowid = ".$object_socid." AND s.rowid NOT IN ('".implode("','", $session_array_id)."') ORDER BY s.rowid ASC";
+        WHERE soc.rowid = ".$object_socid;
+    if (is_array($session_array_id) && count($session_array_id)>0) {
+    	$sql .= " AND s.rowid NOT IN (".implode(",", $session_array_id).") ";
+    }
+    $sql .= " ORDER BY s.rowid ASC";
 
     $resql = $db->query($sql);
     if($resql){
@@ -837,9 +849,11 @@ if (empty($search_fourninvoiceref)) {
         LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid
         WHERE p.entity IN (4,1)
-        AND p.fk_societe = ".$object_socid."
-        AND s.rowid NOT IN ('".implode("','", $session_array_id)."')
-        ORDER BY sess.rowid ASC";
+        AND p.fk_societe = ".$object_socid;
+    if (is_array($session_array_id) && count($session_array_id)>0) {
+    	$sql .= " AND s.rowid NOT IN (".implode(",", $session_array_id).")";
+    }
+    $sql .= " ORDER BY sess.rowid ASC";
 
     $resql2 = $db->query($sql2);
     if($resql2){
