@@ -3122,7 +3122,7 @@ class Agsession extends CommonObject
 
 		if (! empty($fourninvoiceid)) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn as fourninvoice ";
-			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%'";
+			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%' AND ord_inv.element_type NOT LIKE 'invoice_supplierline%'";
 			$sql .= ' AND fourninvoice.rowid=' . $fourninvoiceid;
 		}
 
