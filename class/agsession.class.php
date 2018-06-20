@@ -3981,12 +3981,14 @@ class Agsession extends CommonObject
 			}
 			$refclient = dol_trunc($desc,35);
 
-			$desc .= "\n" . dol_print_date($this->dated, 'day');
+			if (empty($conf->global->AGF_HIDE_REF_PROPAL_DT_INFO)) {
+				$desc .= "\n" . dol_print_date($this->dated, 'day');
 
-			$refclient .= "\n" . dol_print_date($this->dated, 'day');;
-			if ($this->datef != $this->dated) {
-				$desc .= '-' . dol_print_date($this->datef, 'day');
-				$refclient .= '-' . dol_print_date($this->datef, 'day');
+				$refclient .= "\n" . dol_print_date($this->dated, 'day');;
+				if ($this->datef != $this->dated) {
+					$desc .= '-' . dol_print_date($this->datef, 'day');
+					$refclient .= '-' . dol_print_date($this->datef, 'day');
+				}
 			}
 
 			if (! empty($conf->global->AGF_REF_PROPAL_AUTO)) {

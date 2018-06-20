@@ -203,6 +203,11 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_ADD_ENTITYNAME_FICHEPRES', $add_entityname_fichepres, 'yesno', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
+
+        $add_hide_dt_info = GETPOST('AGF_HIDE_REF_PROPAL_DT_INFO', 'int');
+        $res = dolibarr_set_const($db, 'AGF_HIDE_REF_PROPAL_DT_INFO', $add_hide_dt_info, 'yesno', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
     }
 
     $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
@@ -1158,8 +1163,31 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
-print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHidePropalDtInfo") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_HIDE_REF_PROPAL_DT_INFO');
+print '</td>';
+print '<td></td>';
+print '</tr>';
 $var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHideInvoiceDtInfo") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_HIDE_REF_INVOICE_DT_INFO');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDoNotAutoLinkInvoice") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_NOT_AUTO_LINK_INVOICE');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 
 print '</table><br>';
 print '</form>';

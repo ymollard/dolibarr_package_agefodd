@@ -1303,3 +1303,6 @@ AgfStaMail=Participant e-mail
 AgfOrders=Commandes
 AgfOrdersUnselect=Délier la commande
 AgfAddIndexOnTraineePresencePDF=Ajouter l'indice de position du participants dans les fiches de présences
+AgfHidePropalDtInfo=Masquer les dates de la session sur les propositions crées associées aux sessions
+AgfHideInvoiceDtInfo=Masquer les dates de la session sur les factures crées associées aux sessions
+AgfDoNotAutoLinkInvoice=Ne pas associer les factures aux sessions associés au devis lors de la création de facture depuis des devis qui sont lié à des sessions
