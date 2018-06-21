@@ -47,7 +47,7 @@ if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
 
-$hookmanager->initHooks(array('agefoddlist'));
+$hookmanager->initHooks(array('agefoddsessionlist'));
 
 $parameters=array('from'=>'original');
 $reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
