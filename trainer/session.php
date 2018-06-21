@@ -182,29 +182,16 @@ if ($id) {
 		$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
 		
 		if ($moreforfilter) {
-			print '<div class="liste_titre">';
-			print $moreforfilter;
+			print '<div class="liste_titre liste_titre_bydiv">';
+			print '<div class="divsearchfield">'.$moreforfilter.'</div>';
 			print '</div>';
 		}
 		
-		print '<table class="noborder"  width="100%">';
-		print '<tr class="liste_titre">';
-		print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, 'width="10%"', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Customer"), $_SERVER ['PHP_SELF'], "so.nom", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Type"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfDebutSession"), $_SERVER ['PHP_SELF'], "s.dated", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfFinSession"), $_SERVER ['PHP_SELF'], "s.datef", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfPDFFichePeda1"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfDays"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfEuroTrainerHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfEuroSessionHTHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "sf.trainer_status", '', $option, '', $sortfield, $sortorder);
-		print '<td></td>';
-		print '</tr>';
+		print '<div class="div-table-responsive">';
+		print '<table class="noborder listwithfilterbefore"  width="100%">';
 		
 		// Filter
-		print '<tr class="liste_titre">';
+		print '<tr class="liste_titre_filter">';
 		// Id session
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_id" value="' . $search_id . '" size="4">';
@@ -230,6 +217,9 @@ if ($id) {
 		// durrée
 		print '<td class="liste_titre">';
 		print '</td>';
+		// durrée jours
+		print '<td class="liste_titre">';
+		print '</td>';
 		// Montant trainer
 		print '<td class="liste_titre">';
 		print '</td>';
@@ -240,12 +230,30 @@ if ($id) {
 		print '<td class="liste_titre">';
 		print $formAgefodd->select_trainer_session_status('search_status_in_session', $search_status_in_session, array (), 1);
 		print '</td>';
-		print '<td width="2%">';
+		print '<td class="liste_titre" width="2%">';
+		print '<div class="nowrap">';
 		print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 		print '&nbsp; ';
 		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+		print '</div>';
 		print '</td>';
 		print "</tr>\n";
+		
+		
+		print '<tr class="liste_titre">';
+		print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, 'width="10%"', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Customer"), $_SERVER ['PHP_SELF'], "so.nom", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Type"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDebutSession"), $_SERVER ['PHP_SELF'], "s.dated", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFinSession"), $_SERVER ['PHP_SELF'], "s.datef", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfPDFFichePeda1"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDays"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfEuroTrainerHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfEuroSessionHTHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "sf.trainer_status", '', $option, '', $sortfield, $sortorder);
+		print '<th></th>';
+		print '</tr>';
 		
 		$style = 'pair';
 		if (count($agf_session->lines) > 0) {
@@ -401,6 +409,7 @@ if ($id) {
 		print '<td></td>';
 		print '</tr>';
 		print '</table>';
+		print '</div>';
 		print '</form>';
 	} else {
 		$langs->trans('AgfNoSession');
