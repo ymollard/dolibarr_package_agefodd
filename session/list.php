@@ -30,21 +30,28 @@ if (! $res)
 
 require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once ('../class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-require_once ('../lib/agefodd.lib.php');
-require_once ('../class/html.formagefodd.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
-require_once ('../class/agefodd_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
+
+
+$hookmanager->initHooks(array('agefoddlist'));
+
+$parameters=array('from'=>'original');
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
@@ -743,7 +750,7 @@ if ($resql != - 1) {
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
 
-			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
+			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="'.dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
 
 			if (! empty($arrayfields['so.nom']['checked']))
 			{
