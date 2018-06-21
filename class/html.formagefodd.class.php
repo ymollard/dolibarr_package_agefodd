@@ -336,7 +336,7 @@ class FormAgefodd extends Form
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class='') {
 		global $conf, $langs;
 
 		$sql = "SELECT p.rowid, p.ref_interne";
@@ -352,7 +352,7 @@ class FormAgefodd extends Form
 				$out .= ajax_combobox($htmlname, $event);
 			}
 
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			$out .= '<select id="' . $htmlname . '" class="flat '.$class.'" name="' . $htmlname . '">';
 			if ($showempty) {
 				$out .= '<option value="-1"></option>';
 			}

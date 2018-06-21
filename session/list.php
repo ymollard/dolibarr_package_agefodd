@@ -588,7 +588,7 @@ if ($resql != - 1) {
 	if (! empty($arrayfields['p.ref_interne']['checked']))
 	{
 		print '<td class="liste_titre">';
-		print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
+		print $formAgefodd->select_site_forma($search_site, 'search_site', 1, 0, array(), 'maxwidth200');
 		print '</td>';
 	}
 
