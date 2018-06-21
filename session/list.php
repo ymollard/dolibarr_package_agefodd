@@ -516,11 +516,12 @@ if ($resql != - 1) {
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
 
 	$i = 0;
+	print '<div class="div-table-responsive">';
 	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 
-	print '<tr class="liste_titre">';
+	print '<tr class="liste_titre_filter">';
 
-	if (! empty($arrayfields['s.rowid']['checked'])) print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+	if (! empty($arrayfields['s.rowid']['checked'])) print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
 	if (! empty($arrayfields['so.nom']['checked']))
 	{
@@ -1009,6 +1010,7 @@ if ($resql != - 1) {
 		print "</tr>\n";
 	}
 	print "</table>";
+	print "</div>";
 } else {
 	setEventMessage($agf->error, 'errors');
 }
