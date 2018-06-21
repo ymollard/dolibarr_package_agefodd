@@ -960,6 +960,7 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['dicstatus.intitule']['checked']))			print '<td></td>';
 			if (! empty($arrayfields['p.ref_interne']['checked']))				print '<td></td>';
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))				print '<td></td>';
+			if (! empty($arrayfields['s.fk_soc_requester']['checked']))			print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
 				if (! empty($arrayfields['s.sell_price']['checked']))			print '<td name="margininfolineb1'.$line->rowid.'" style="display:none"></td>';
 				if (! empty($arrayfields['s.cost_trainer']['checked']))			print '<td name="margininfolineb2'.$line->rowid.'" style="display:none"></td>';
@@ -1004,6 +1005,7 @@ if ($resql != - 1) {
 		if (! empty($arrayfields['dicstatus.intitule']['checked']))		print '<td></td>';
 		if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td></td>';
 		if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td></td>';
+		if (! empty($arrayfields['s.fk_soc_requester']['checked']))		print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
 			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['s.cost_trainer']['checked']))		print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
