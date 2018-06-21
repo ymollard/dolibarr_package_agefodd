@@ -174,16 +174,16 @@ if ($id) {
 			print '<a href="' . $_SERVER ['PHP_SELF'] . '?' . $option . '">' . $langs->trans("AgfAfficherSessionArchives") . '</a>' . "\n";
 		}
 		
-		$moreforfilter .= $langs->trans('SalesRepresentatives') . ': ';
-		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user);
+		$moreforfilter .= '<div class="divsearchfield">'.$langs->trans('SalesRepresentatives') . ': ';
+		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user).'</div>';
 		
-		$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
+		$moreforfilter .= '<div class="divsearchfield">'.$langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
 		$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
-		$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
+		$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5).'</div>';
 		
 		if ($moreforfilter) {
 			print '<div class="liste_titre liste_titre_bydiv">';
-			print '<div class="divsearchfield">'.$moreforfilter.'</div>';
+			print $moreforfilter;
 			print '</div>';
 		}
 		
