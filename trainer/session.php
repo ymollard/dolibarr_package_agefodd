@@ -259,7 +259,7 @@ if ($id) {
 					$style = 'class="pair"';
 				}
 				
-				if ($line->status == 4) {
+				if (!empty($conf->global->AGEFODD_USE_BG_GRAY) && $line->status == 4) {
 					$style = ' style="background: gray"';
 				}
 				
