@@ -196,6 +196,9 @@ if ($id) {
 		print_liste_field_titre($langs->trans("AgfDebutSession"), $_SERVER ['PHP_SELF'], "s.dated", '', $option, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("AgfFinSession"), $_SERVER ['PHP_SELF'], "s.datef", '', $option, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("AgfPDFFichePeda1"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDays"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfEuroTrainerHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfEuroSessionHTHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "sf.trainer_status", '', $option, '', $sortfield, $sortorder);
 		print '<td></td>';
 		print '</tr>';
@@ -225,6 +228,12 @@ if ($id) {
 		print '<td class="liste_titre">';
 		print '</td>';
 		// durrée
+		print '<td class="liste_titre">';
+		print '</td>';
+		// Montant trainer
+		print '<td class="liste_titre">';
+		print '</td>';
+		// Montant HT & HF
 		print '<td class="liste_titre">';
 		print '</td>';
 		// Status
@@ -301,6 +310,72 @@ if ($id) {
 				
 				// print '<td>'.dol_print_date($line->realdurationsession,'hour').'</td>';
 				print '<td>' . $hour . ':' . $rmin . '</td>';
+				
+				// durrée Jours
+				$duration_days = round($duree / 7 / 3600,1);
+				/*if ($duration_days==0 && $duree!=0) {
+					$duration_days=0.5;
+				}*/
+				$duree_jour_total += $duration_days;
+				print '<td>' . $duration_days . '</td>';
+				
+				// Montant trainer HF
+				$agf_fin = new Agefodd_session_element($db);
+				if (!empty($contact->socid)) {
+					
+					//TODO manage multi contact
+					if ($conf->companycontacts->enabled) {
+						
+						$agf_fin->fk_soc_array=array();
+						
+						$sql_innercontact = "SELECT c.fk_soc_source ";
+						$sql_innercontact.= " FROM ".MAIN_DB_PREFIX."company_contacts as c";
+						$sql_innercontact.= " WHERE c.fk_contact=".$contact->id;
+						
+						$resql_innercontact = $db->query($sql_innercontact);
+						if ($resql_innercontact)
+						{
+							while ($obj_innercontact = $db->fetch_object($resql_innercontact)) {
+								$agf_fin->fk_soc_array[$obj_innercontact->fk_soc_source]=$obj_innercontact->fk_soc_source;
+							}
+							
+						} else {
+							setEventMessage($db->lasterror,'errors');
+						}
+						
+						$agf_fin->fk_soc_array[$contact->socid]=$contact->socid;
+					}
+					
+					$agf_fin->fk_soc=$contact->socid;
+				}
+				$agf_fin->fetch_by_session($line->rowid,$line->trainersessionid);
+				$sellprice = $agf_fin->trainer_cost_amount;
+
+				// Remove charges of product of category 'frais'
+				$result = $agf_fin->get_charges_amount($line->rowid, '66,67', 'invoice_supplier_trainer',$line->trainersessionid);
+				if (! empty($result) && $result != - 1) {
+					$sellprice -= $result;
+				}
+				$totalsellprice += $sellprice;
+				
+				print '<td>' . price($sellprice) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
+				
+				$agf_fin->fetch_by_session($line->rowid);
+				// Montant facturé ht & hors frais
+				$amount_act_invoiced = 0;
+				$amount_act_invoiced = $agf_fin->invoice_ongoing_amount + $agf_fin->invoice_payed_amount;
+				
+				// Remove charges of product of category 'frais'
+				$result = $agf_fin->get_charges_amount($line->rowid, $conf->global->AGF_CAT_PRODUCT_CHARGES, 'invoice');
+				if (! empty($result) && $result != - 1 && $result <= $amount_act_invoiced) {
+					$amount_act_invoiced_less_charges = $amount_act_invoiced - $result;
+				} else {
+					$amount_act_invoiced_less_charges = $amount_act_invoiced;
+				}
+				$totalsellprice_invoice += $amount_act_invoiced_less_charges;
+				
+				print '<td>' . price($amount_act_invoiced_less_charges) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
+				
 				print '<td>' . $trainer->LibStatut($line->trainer_status, 4) . '</td>';
 				print '<td></td>';
 				print '</tr>';
@@ -319,6 +394,9 @@ if ($id) {
 		$rmin = sprintf("%02d", $min % 60);
 		$hour = floor($min / 60);
 		print '<td>' . $hour . ':' . $rmin . '</td>';
+		print '<td>' . $duree_jour_total . '</td>';
+		print '<td>' . price($totalsellprice) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
+		print '<td>' . price($totalsellprice_invoice) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
 		print '<td></td>';
 		print '<td></td>';
 		print '</tr>';
