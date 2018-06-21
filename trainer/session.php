@@ -46,7 +46,7 @@ if (! $user->rights->agefodd->lire)
 $id = GETPOST('id', 'int');
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
-$page = GETPOST('page', 'int');
+$page = (int) GETPOST('page', 'int');
 $optioncss = GETPOST('optioncss', 'alpha');
 $search_id = GETPOST('search_id', 'int');
 $search_intitule = GETPOST('search_intitule', 'alpha');
