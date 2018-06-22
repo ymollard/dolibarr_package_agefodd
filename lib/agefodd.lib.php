@@ -582,6 +582,11 @@ function agf_calendars_prepare_head($param) {
 	$head[$h][2] = 'cardlist';
 	$h++;
 
+	$head[$h][0] = dol_buildpath("/agefodd/agenda/perlocation.php", 1).($param?'?'.$param:'');
+	$head[$h][1] = $langs->trans("AgfMenuAgendaPerLocation");
+	$head[$h][2] = 'cardperlocation';
+	$h++;
+
 	$object=new stdClass();
 
 	// Show more tabs from modules

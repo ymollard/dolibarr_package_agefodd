@@ -35,52 +35,12 @@ require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT . '/user/class/usergroup.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once '../lib/agefodd.lib.php';
-if (! empty($conf->projet->enabled))
-	require_once DOL_DOCUMENT_ROOT . '/core/class/html.formprojet.class.php';
+
 require_once '../class/html.formagefodd.class.php';
 require_once '../class/agefodd_formateur.class.php';
 
-if (! isset($conf->global->AGENDA_MAX_EVENTS_DAY_VIEW))
-	$conf->global->AGENDA_MAX_EVENTS_DAY_VIEW = 3;
-
-$filter = GETPOST("filter", '', 3);
-$usergroup = GETPOST("usergroup", "int", 3);
-
-$showbirthday = 0;
-
-$sortfield = GETPOST("sortfield", 'alpha');
-$sortorder = GETPOST("sortorder", 'alpha');
-$page = (int) GETPOST("page", "int");
-
-if ($page == - 1) {
-	$page = 0;
-}
-$limit = $conf->liste_limit;
-$offset = $limit * $page;
-if (! $sortorder)
-	$sortorder = "ASC";
-if (! $sortfield)
-	$sortfield = "a.datec";
-
-	// Security check
-$socid = GETPOST("socid", "int");
-if (! $user->rights->agefodd->agendatrainer) {
-	accessforbidden();
-}
-
 
 $type = GETPOST("type");
-$canedit = 1;
-
-// $action=GETPOST('action','alpha');
-$action = 'show_peruser'; // We use 'show_week' mode
-                          // $year=GETPOST("year");
-$year = GETPOST("year", "int") ? GETPOST("year", "int") : date("Y");
-$month = GETPOST("month", "int") ? GETPOST("month", "int") : date("m");
-$week = GETPOST("week", "int") ? GETPOST("week", "int") : date("W");
-$day = GETPOST("day", "int") ? GETPOST("day", "int") : date("d");
-$pid = GETPOST("projectid", "int", 3);
-$status = GETPOST("status");
 
 $filter_commercial = GETPOST('commercial', 'int');
 $filter_customer = GETPOST('fk_soc', 'int');
@@ -88,9 +48,10 @@ $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
 $filter_location = GETPOST('location', 'int');
-$display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filter_trainee = GETPOST('traineeid', 'int');
-$filter_session_status=GETPOST('search_session_status','array');
+$display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
+$filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth','int'), GETPOST('dt_start_filterday','int'), GETPOST('dt_start_filteryear','int'));
+$filter_session_status = GETPOST('search_session_status', 'array');
 
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
@@ -115,6 +76,8 @@ if ($type == 'trainerext' && !empty($user->contact_id)) {
 	}
 }
 
+
+
 if ($filter_commercial == - 1) {
 	$filter_commercial = 0;
 }
@@ -137,27 +100,66 @@ if ($filter_trainee == -1) {
 	$filter_trainee=0;
 }
 
+$type = GETPOST('type');
+
+if (! $user->rights->agefodd->agendalocation)
+		accessforbidden();
+
 $onlysession = GETPOST('onlysession', 'int');
 if ($onlysession != '0') {
 	$onlysession = 1;
 }
-$filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth', 'int'), GETPOST('dt_start_filterday', 'int'), GETPOST('dt_start_filteryear', 'int'));
 
-$maxprint = (isset($_GET["maxprint"]) ? GETPOST("maxprint") : $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW);
-$actioncode = GETPOST("actioncode", "alpha", 3) ? GETPOST("actioncode", "alpha", 3) : (GETPOST("actioncode") == '0' ? '0' : '');
+$year = GETPOST("year", "int") ? GETPOST("year", "int") : date("Y");
+$month = GETPOST("month", "int") ? GETPOST("month", "int") : date("m");
+$week = GETPOST("week", "int") ? GETPOST("week", "int") : date("W");
+$day = GETPOST("day", "int") ? GETPOST("day", "int") : date("d");
 
-$dateselect = dol_mktime(0, 0, 0, GETPOST('dateselectmonth'), GETPOST('dateselectday'), GETPOST('dateselectyear'));
-if ($dateselect > 0) {
-	$day = GETPOST('dateselectday');
-	$month = GETPOST('dateselectmonth');
-	$year = GETPOST('dateselectyear');
-} else {
-	if ($filterdatestart > 0) {
-		$day = GETPOST('dt_start_filterday', 'int');
-		$month = GETPOST('dt_start_filtermonth', 'int');
-		$year = GETPOST('dt_start_filteryear', 'int');
-	}
+
+if (!empty($filterdatestart)) {
+	$year=GETPOST('dt_start_filteryear','int');
+	$month=GETPOST('dt_start_filtermonth','int');
+	$day=GETPOST('dt_start_filterday','int');
 }
+
+
+$action = 'show_perlocation'; // We use 'show_week' mode
+
+$langs->load("users");
+$langs->load("agenda");
+$langs->load("other");
+$langs->load("commercial");
+
+// Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
+$hookmanager->initHooks(array (
+		'agenda'
+		,'agefodd_agenda'
+));
+
+/*
+ * Actions
+ */
+
+
+/*
+ * View
+ */
+
+$help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&oacute;dulo_Agenda';
+llxHeader('', $langs->trans("Agenda"), $help_url);
+
+$form = new Form($db);
+$companystatic = new Societe($db);
+$formagefodd = new FormAgefodd($db);
+
+$now = dol_now();
+$nowarray = dol_getdate($now);
+$nowyear = $nowarray['year'];
+$nowmonth = $nowarray['mon'];
+$nowday = $nowarray['mday'];
+
+// Define list of all external calendars (global setup)
+$listofextcals = array ();
 
 $tmp = empty($conf->global->MAIN_DEFAULT_WORKING_HOURS) ? '9-18' : $conf->global->MAIN_DEFAULT_WORKING_HOURS;
 $tmparray = explode('-', $tmp);
@@ -181,82 +183,6 @@ if ($end_d < 1 || $end_d > 7)
 if ($end_d < $begin_d)
 	$end_d = $begin_d + 1;
 
-if ($actioncode == '')
-	$actioncode = (empty($conf->global->AGENDA_DEFAULT_FILTER_TYPE) ? '' : $conf->global->AGENDA_DEFAULT_FILTER_TYPE);
-if ($status == '' && ! isset($_GET['status']) && ! isset($_POST['status']))
-	$status = (empty($conf->global->AGENDA_DEFAULT_FILTER_STATUS) ? '' : $conf->global->AGENDA_DEFAULT_FILTER_STATUS);
-if (empty($action) && ! isset($_GET['action']) && ! isset($_POST['action']))
-	$action = (empty($conf->global->AGENDA_DEFAULT_VIEW) ? 'show_month' : $conf->global->AGENDA_DEFAULT_VIEW);
-
-if (GETPOST('viewcal') && $action != 'show_day' && $action != 'show_week' && $action != 'show_peruser') {
-	$action = 'show_month';
-	$day = '';
-} // View by month
-if (GETPOST('viewweek') || $action == 'show_week') {
-	$action = 'show_week';
-	$week = ($week ? $week : date("W"));
-	$day = ($day ? $day : date("d"));
-} // View by week
-if (GETPOST('viewday') || $action == 'show_day') {
-	$action = 'show_day';
-	$day = ($day ? $day : date("d"));
-} // View by day
-
-$langs->load("users");
-$langs->load("agenda");
-$langs->load("other");
-$langs->load("commercial");
-
-// Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
-$hookmanager->initHooks(array (
-		'agenda'
-));
-
-/*
- * Actions
- */
-
-if ($action == 'delete_action') {
-	$event = new ActionComm($db);
-	$event->fetch($actionid);
-	$result = $event->delete();
-}
-
-/*
- * View
- */
-
-$help_url = 'EN:Module_Agenda_En|FR:Module_Agenda|ES:M&oacute;dulo_Agenda';
-
-$form = new Form($db);
-$companystatic = new Societe($db);
-$formagefodd = new FormAgefodd($db);
-
-$now = dol_now();
-$nowarray = dol_getdate($now);
-$nowyear = $nowarray['year'];
-$nowmonth = $nowarray['mon'];
-$nowday = $nowarray['mday'];
-
-// Define list of all external calendars (global setup)
-$listofextcals = array ();
-
-$prev = dol_get_first_day_week($day, $month, $year);
-$first_day = $prev['first_day'];
-$first_month = $prev['first_month'];
-$first_year = $prev['first_year'];
-
-$week = $prev['week'];
-
-$day = ( int ) $day;
-$next = dol_get_next_week($day, $week, $month, $year);
-$next_year = $next['year'];
-$next_month = $next['month'];
-$next_day = $next['day'];
-
-$max_day_in_month = date("t", dol_mktime(0, 0, 0, $month, 1, $year));
-
-$tmpday = $first_day;
 // print 'xx'.$prev_year.'-'.$prev_month.'-'.$prev_day;
 // print 'xx'.$next_year.'-'.$next_month.'-'.$next_day;
 
@@ -324,8 +250,8 @@ $prev_year = $prev['prev_year'];
 $prev_month = $prev['prev_month'];
 $prev_day = $prev['prev_day'];
 $first_day = $prev['first_day'];
-$first_month = $prev['first_month'];
-$first_year = $prev['first_year'];
+$first_month = $prev['month'];
+$first_year = $prev['year'];
 
 $week = $prev['week'];
 
@@ -358,26 +284,29 @@ $param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 // print 'x'.$param;
 
 
-llxHeader('', $langs->trans("Agenda"), $help_url, '',0,0,'','',$param);
-
-$tabactive = '';
-if ($action == 'show_month')
-	$tabactive = 'cardmonth';
-if ($action == 'show_week')
-	$tabactive = 'cardweek';
-if ($action == 'show_day')
-	$tabactive = 'cardday';
-if ($action == 'show_list')
-	$tabactive = 'cardlist';
-if ($action == 'show_peruser')
-	$tabactive = 'cardperuser';
+$tabactive = 'cardperlocation';
 
 $paramnoaction = preg_replace('/action=[a-z_]+/', '', $param);
+$canedit = 1;
 
+// TODO agf_calendars_prepare_head($paramnoaction); pour la version master
 $head = agf_calendars_prepare_head($paramnoaction);
 
 dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status,$filter_trainee);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee);
+
+// TODO remove si intégration dans master
+?>
+<script type="text/javascript">
+	$(function() {
+		$('form[name=listactionsfilter] input[name=viewcal]').hide();
+		$('form[name=listactionsfilter] input[name=viewday]').hide();
+		$('form[name=listactionsfilter] input[name=viewlist]').hide();
+		$('form[name=listactionsfilter] img[class=hideonsmartphone]').hide();
+	});
+</script>
+<?php
+
 dol_fiche_end();
 
 $showextcals = $listofextcals;
@@ -389,82 +318,60 @@ print_fiche_titre('', $link . ' &nbsp; &nbsp; ' . $nav, '');
 // Get event in an array
 $eventarray = array ();
 
-$sql = 'SELECT ';
-$sql .= " DISTINCT";
-$sql .= ' a.id, a.label,';
-$sql .= ' a.datep,';
-$sql .= ' a.datep2,';
-$sql .= ' a.percent,';
-$sql .= ' a.fk_user_author,a.fk_user_action,';
-$sql .= ' a.transparency, a.priority, a.fulldayevent, a.location,';
-$sql .= ' a.fk_soc, a.fk_contact,';
-$sql .= ' a.priority, a.fulldayevent, a.location,';
-if (! empty($filter_trainer)) {
-	$sql .= ' socsess.rowid as fk_soc,';
-} else {
-	$sql .= ' a.fk_soc,';
-}
-$sql .= '  a.fk_contact,';
-$sql .= ' ca.code';
-$sql .= ' ,agf.rowid as sessionid';
-$sql .= ' ,agf.type_session as sessiontype';
-$sql .= ' ,agf_status.code as sessionstatus';
-$sql .= ' ,trainer_session.trainer_status';
-$sql .= ' ,trainer.rowid as trainerid';
-$sql .= " FROM " . MAIN_DB_PREFIX . "actioncomm as a";
-$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_actioncomm as ca ON a.fk_action = ca.id';
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'user as u ON a.fk_user_author = u.rowid ';
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session as agf ON agf.rowid = a.fk_element ';
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON agf.status = agf_status.rowid';
+
+$sql = '
+	(SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent,
+			a.location, a.fk_soc, a.fk_contact, a.fk_contact,
+			ca.code,
+			agf.rowid AS sessionid, agf.type_session AS sessiontype,
+			agf_status.code AS sessionstatus,
+			agf_place.ref_interne AS lieu,
+			trainer_session.trainer_status,
+			trainer.rowid as trainerid
+
+	FROM '.MAIN_DB_PREFIX.'actioncomm a
+	INNER JOIN ' . MAIN_DB_PREFIX . 'c_actioncomm as ca ON (a.fk_action = ca.id)
+
+	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session as agf ON (agf.rowid = a.fk_element)
+	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON (agf.status = agf_status.rowid  AND agf_status.code<>\'NOT\')
+	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_place as agf_place ON (agf.fk_session_place = agf_place.rowid)
+
+	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON (agf.rowid = trainer_session.fk_session)
+	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_formateur as trainer ON (trainer_session.fk_agefodd_formateur = trainer.rowid)';
+
 if (! empty($filter_commercial)) {
-	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_commercial as salesman ON agf.rowid = salesman.fk_session_agefodd ';
+	$sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_commercial as salesman ON (agf.rowid = salesman.fk_session_agefodd) ';
 }
 if (! empty($filter_contact)) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_contact as contact_session ON agf.rowid = contact_session.fk_session_agefodd ';
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_contact as contact ON contact_session.fk_agefodd_contact = contact.rowid ';
 }
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ";
-if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-	if (! empty($filter_trainer)) {
-		$sql .= " AND ca.code='AC_AGF_SESST' ";
+if (! empty($filter_trainer)) {
+	if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON (trainercal.fk_agefodd_session_formateur = trainer_session.rowid) ";
+		$sql .= " AND trainercal.fk_actioncomm=a.id";
 	}
-	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON trainercal.fk_agefodd_session_formateur = trainer_session.rowid ";
+	$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 }
 if (! empty($filter_trainee)) {
-	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as trainee_session ON agf.rowid = trainee_session.fk_session_agefodd ';
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as trainee_session ON (agf.rowid = trainee_session.fk_session_agefodd) ';
 }
-$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 
-$sql .= ' WHERE a.entity IN (' . getEntity('agefodd'/*'session'*/) . ')';
-$sql .= ' AND a.elementtype=\'agefodd_agsession\'';
-if ($action == 'show_day') {
-	$sql .= " AND (";
-	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
-	$sql .= " OR ";
-	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
-	$sql .= " OR ";
-	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
-	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
-	$sql .= ')';
-} else {
-	// To limit array
-	$sql .= " AND (";
-	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; // Start 7 days before
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')"; // End 7 days after + 3 to go from 28 to 31
-	$sql .= " OR ";
-	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
-	$sql .= " OR ";
-	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
-	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
-	$sql .= ')';
+$sql.= '
+	WHERE a.entity IN (' . getEntity('agsession') . ')
+	AND a.elementtype="agefodd_agsession"';
+
+if (!empty($filter_session_status))
+{
+	$sql.= ' AND agf.status IN ('.implode(',', $filter_session_status).')';
+}
+
+if (! empty($filter_trainee)) {
+	$sql .= " AND trainee_session.fk_stagiaire=".$filter_trainee;
 }
 
 if (! empty($filter_commercial)) {
-	$sql .= " AND salesman.fk_user_com=" . $filter_commercial;
+	$sql .= ' AND salesman.fk_user_com=' . $filter_commercial;
 }
 if (! empty($filter_customer)) {
 	$sql .= " AND agf.fk_soc=" . $filter_customer;
@@ -496,20 +403,136 @@ if ($filter_type_session != '') {
 if (! empty($filter_location)) {
 	$sql .= " AND agf.fk_session_place=" . $filter_location;
 }
-if (! empty($filterdatestart)) {
-	$sql .= ' AND a.datep>=\'' . $db->idate($filterdatestart) . '\'';
+if ($action == 'show_day') {
+	$sql .= " AND (";
+	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+	$sql .= " OR ";
+	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+	$sql .= " OR ";
+	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+	$sql .= ')';
+} else {
+	// To limit array
+	$sql .= " AND (";
+	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; // Start 7 days before
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')"; // End 7 days after + 3 to go from 28 to 31
+	$sql .= " OR ";
+	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
+	$sql .= " OR ";
+	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
+	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
+	$sql .= ')';
 }
-if (! empty($filter_session_status)) {
-	$sql .= " AND agf.status IN (" . implode(',',$filter_session_status).")";
-}
-if (! empty($filter_trainee)) {
-	$sql .= " AND trainee_session.fk_stagiaire=".$filter_trainee;
-}
-// Sort on date
-$sql .= ' ORDER BY datep';
-// print $sql;
 
-dol_syslog("agefodd/agenda/pertrainer.php", LOG_DEBUG);
+$parameters=array('from' => 'perlocation', 'target' => 'first_query');
+$reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // Note that $action and $object may have been modified by hook
+$sql.=$hookmanager->resPrint;
+
+$sql .= ')
+
+UNION
+
+(SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent,
+			a.location, a.fk_soc, a.fk_contact, a.fk_contact,
+			ca.code,
+			ae.act_sess AS sessionid, null AS sessiontype,
+			null AS sessionstatus,
+			agf_place.ref_interne AS lieu,
+			null,
+			"-1"
+
+	FROM '.MAIN_DB_PREFIX.'actioncomm a
+	INNER JOIN '.MAIN_DB_PREFIX.'c_actioncomm as ca ON (a.fk_action = ca.id)
+	INNER JOIN '.MAIN_DB_PREFIX.'actioncomm_extrafields as ae ON (a.id = ae.fk_object)
+	INNER JOIN '.MAIN_DB_PREFIX.'agefodd_place as agf_place ON (ae.location = agf_place.rowid)';
+
+if (!empty($filter_location))
+{
+	$sql.= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session as agf ON (agf.rowid = a.fk_element)';
+}
+
+$sql.= '
+	WHERE a.entity IN (' . getEntity('agsession') . ')
+	AND (a.elementtype="agefodd_agsession" OR a.elementtype IS NULL)
+	AND ca.code<>\'AC_AGF_SESST\'
+	AND ca.code<>\'AC_AGF_SESS\' ';
+
+if (! empty($filter_location)) {
+	$sql .= " AND agf.fk_session_place=" . $filter_location;
+}
+if ($action == 'show_day') {
+	$sql .= " AND (";
+	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+	$sql .= " OR ";
+	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+	$sql .= " OR ";
+	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+	$sql .= ')';
+} else {
+	// To limit array
+	$sql .= " AND (";
+	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; // Start 7 days before
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')"; // End 7 days after + 3 to go from 28 to 31
+	$sql .= " OR ";
+	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
+	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
+	$sql .= " OR ";
+	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
+	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
+	$sql .= ')';
+}
+
+$parameters=array('from' => 'perlocation', 'target' => 'second_query');
+$reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // Note that $action and $object may have been modified by hook
+
+$sql.= ') ';
+
+//$sql.= ' ORDER BY agf_place.ref_interne ASC';
+
+
+/*
+ *
+ * SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent, a.location, a.fk_soc, a.fk_contact, a.fk_contact, ca.code, agf.rowid AS sessionid, agf.type_session AS sessiontype, agf_status.code AS sessionstatus, agf_place.ref_interne AS lieu, trainer_session.trainer_status, trainer.rowid as trainerid
+FROM llx_actioncomm a
+INNER JOIN llx_c_actioncomm as ca ON (a.fk_action = ca.id)
+INNER JOIN llx_agefodd_session as agf ON (agf.rowid = a.fk_element)
+INNER JOIN llx_agefodd_session_status_type as agf_status ON (agf.status = agf_status.rowid)
+INNER JOIN llx_agefodd_place as agf_place ON (agf.fk_session_place = agf_place.rowid AND ref_interne LIKE 'Akteos%')
+INNER JOIN llx_agefodd_session_formateur as trainer_session ON (agf.rowid = trainer_session.fk_session)
+INNER JOIN llx_agefodd_formateur as trainer ON (trainer_session.fk_agefodd_formateur = trainer.rowid)
+WHERE a.entity IN (1)
+AND a.elementtype="agefodd_agsession"
+AND ca.code<>'AC_AGF_SESST'
+AND ca.code='AC_AGF_SESS'
+AND ( (a.datep BETWEEN '20160725000000' AND '20160907235959') OR (a.datep2 BETWEEN '20160725000000' AND '20160907235959') OR (a.datep < '20160725000000' AND a.datep2 > '20160907235959'))
+
+UNION
+
+SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent, a.location, a.fk_soc, a.fk_contact, a.fk_contact, ca.code, ae.act_sess AS sessionid, null AS sessiontype, null AS sessionstatus, agf_place.ref_interne AS lieu, null, null
+FROM llx_actioncomm a
+INNER JOIN llx_c_actioncomm as ca ON (a.fk_action = ca.id)
+INNER JOIN llx_actioncomm_extrafields as ae ON (a.id = ae.fk_object)
+INNER JOIN llx_agefodd_place as agf_place ON (ae.location = agf_place.rowid AND ref_interne LIKE 'Akteos%')
+WHERE a.entity IN (1)
+AND (a.elementtype<>"agefodd_agsession" OR a.elementtype IS NULL)
+AND ca.code<>'AC_AGF_SESST'
+AND ca.code<>'AC_AGF_SESS'
+AND ( (a.datep BETWEEN '20160725000000' AND '20160907235959') OR (a.datep2 BETWEEN '20160725000000' AND '20160907235959') OR (a.datep < '20160725000000' AND a.datep2 > '20160907235959'))
+ *
+ */
+
+// TODO remove echo
+//echo $sql.'<br />';
+//echo $sql;exit;
+$TLieu = array();
+dol_syslog("agefodd/agenda/perlocation.php", LOG_DEBUG);
 $resql = $db->query($sql);
 if ($resql) {
 	$num = $db->num_rows($resql);
@@ -523,9 +546,14 @@ if ($resql) {
 			continue;
 		}
 
+		$TLieu[$obj->lieu]++;
+
 		// Create a new object action
 		$event = new ActionComm($db);
 		$event->id = $obj->id;
+
+		$event->lieu = $obj->lieu;
+
 		$event->datep = $db->jdate($obj->datep); // datep and datef are GMT date
 		$event->datef = $db->jdate($obj->datep2);
 		$event->type_code = $obj->code;
@@ -536,7 +564,8 @@ if ($resql) {
 		// $event->author->id=$obj->fk_user_author; // user id of creator
 		$event->authorid = $obj->fk_user_author; // user id of creator
 		$event->userownerid = $obj->fk_user_action; // user id of owner
-		$event->fetch_userassigned(); // This load $event->userassigned
+		// TODO à utiliser pour la version master
+		//$event->fetch_userassigned(); // This load $event->userassigned
 		$event->priority = $obj->priority;
 		$event->fulldayevent = $obj->fulldayevent;
 		$event->location = $obj->location;
@@ -614,7 +643,7 @@ if ($resql) {
 } else {
 	dol_print_error($db);
 }
-
+//var_dump($eventarray);exit;
 $maxnbofchar = 18;
 $cachethirdparties = array ();
 $cachecontacts = array ();
@@ -704,39 +733,28 @@ while ( $i < 7 ) {
 }
 echo "</tr>\n";
 
-// Define $usernames
-$agf_trainer = new Agefodd_teacher($db);
-if (! empty($filter_trainer)) {
-	$filter_trainner_req = array (
-			'f.rowid' => $filter_trainer
-	);
-} else {
-	$filter_trainner_req = array ();
-}
-$result = $agf_trainer->fetch_all('ASC', 'u.lastname,s.lastname', 0, 0, 0, $filter_trainner_req);
-if ($result < 0) {
-	setEventMessages($agf_trainer->error, null, 'errors');
-}
-
 // Load array of colors by type
 $colorsbytype = array ();
 $labelbytype = array ();
-$sql = "SELECT code, color, libelle FROM " . MAIN_DB_PREFIX . "c_actioncomm";
-$resql = $db->query($sql);
+//TODO à décommenter pour la version master
+/*$sql = "SELECT code, color, libelle FROM " . MAIN_DB_PREFIX . "c_actioncomm";
+$resql = $db->query($sql);var_dump($sql);
 while ( $obj = $db->fetch_object($resql) ) {
 	$colorsbytype[$obj->code] = $obj->color;
 	$labelbytype[$obj->code] = $obj->libelle;
-}
+}*/
 
 // Loop on each user to show calendar
 $todayarray = dol_getdate($now, 'fast');
 $sav = $tmpday;
 $showheader = true;
 $var = false;
-foreach ( $agf_trainer->lines as $trainer ) {
+foreach ($TLieu as $lieu => $nb_event)
+{
 	$var = ! $var;
 	echo "<tr>";
-	echo '<td class="cal_current_month cal_peruserviewname"' . ($var ? ' style="background: #F8F8F8"' : '') . '>' . $trainer->getNomUrl('name') . '</td>';
+	echo '<td width="15%" class="cal_current_month cal_peruserviewname"' . ($var ? ' style="background: #F8F8F8"' : '') . '>' . $lieu .'</td>';
+
 	$tmpday = $sav;
 
 	// Lopp on each day of week
@@ -763,7 +781,7 @@ foreach ( $agf_trainer->lines as $trainer ) {
 		if ($today)
 			$style = 'cal_today_peruser';
 
-		show_day_events2($trainer, $tmpday, $tmpmonth, $tmpyear, $monthshown, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300, $showheader, $colorsbytype, $var);
+		show_day_events2($lieu, $tmpday, $tmpmonth, $tmpyear, $monthshown, $style, $eventarray, 0, $maxnbofchar, $newparam, 1, 300, $showheader, $colorsbytype, $var);
 
 		$i ++;
 	}
@@ -773,7 +791,7 @@ foreach ( $agf_trainer->lines as $trainer ) {
 
 echo "</table>\n";
 
-if (! empty($conf->global->AGENDA_USE_EVENT_TYPE)) {
+/*if (! empty($conf->global->AGENDA_USE_EVENT_TYPE)) {
 	$langs->load("commercial");
 	print '<br>' . $langs->trans("Legend") . ': <br>';
 	foreach ( $colorsbytype as $code => $color ) {
@@ -788,44 +806,50 @@ if (! empty($conf->global->AGENDA_USE_EVENT_TYPE)) {
 	print '<div style="float: left; padding: 2px; margin-right: 6px;"><div class="peruser_busy" style="width:16px; float: left; margin-right: 4px;">&nbsp;</div>';
 	print $langs->trans("Other");
 	print '</div>';
-	/* TODO Show this if at least one cumulated event
+	// TODO Show this if at least one cumulated event
 	 print '<div style="float: left; padding: 2px; margin-right: 6px;"><div style="background: #222222; width:16px; float: left; margin-right: 4px;">&nbsp;</div>';
 	 print $langs->trans("SeveralEvents");
 	 print '</div>';
-	 */
-}
+
+}*/
 
 // Add js code to manage click on a box
 print '<script type="text/javascript" language="javascript">
 jQuery(document).ready(function() {
 	jQuery(".onclickopenref").click(function() {
-		var ref=$(this).attr(\'ref\');
-		var res = ref.split("_");
-		var userid = res[1];
-		var year = res[2];
-		var month = res[3];
-		var day = res[4];
-		var hour = res[5];
-		var min = res[6];
-		var ids = res[7];
-		if (ids == \'none\') /* No event */
+		var sessionid = $(this).data("sessionid");
+		var userid = $(this).data("trainerid");
+		var year = $(this).data("year");
+		var month = $(this).data("month");
+		var day = $(this).data("day");
+		var hour = $(this).data("hour");
+		var min = $(this).data("min");
+		var ids = $(this).data("ids-event");
+
+		if (sessionid != "undefined" && sessionid > 0)
+		{
+			/* alert(\'session found\'); */
+			url = "' . dol_buildpath('/agefodd/session/card.php?id=',1). '"+sessionid;
+			window.location.href = url;
+		}
+		else if (userid == "-1") {
+			/* alert(\'normal event\'); */
+			ids = ids.toString();
+			var idsarray=ids.split(\',\');
+			if (idsarray.length>0) {
+			   url = "' . DOL_URL_ROOT . '/comm/action/card.php?id="+idsarray[0];
+			} else {
+				url = "' . DOL_URL_ROOT . '/comm/action/card.php?id="+ids;
+			}
+			window.location.href = url;
+		}
+		else
 		{
 			/* alert(\'no event\'); */
 			url = "' . DOL_URL_ROOT . '/comm/action/card.php?action=create&assignedtouser="+userid+"&datep="+year+month+day+hour+min+"00&backtopage=' . urlencode($_SERVER["PHP_SELF"] . '?year=' . $year . '&month=' . $month . '&day=' . $day) . '"
 			window.location.href = url;
 		}
-		else if (ids.indexOf(",") > -1)	/* There is several events */
-		{
-			/* alert(\'several events\'); */
-			url = "' . dol_buildpath('/agefodd/agenda/listactions.php', 1) . '?trainerid="+userid+"&dt_start_filteryear="+year+"&dt_start_filtermonth="+month+"&dt_start_filterday="+day;
-			window.location.href = url;
-		}
-		else	/* One event */
-		{
-			/* alert(\'one event\'); */
-			url = "' . DOL_URL_ROOT . '/comm/action/card.php?action=view&id="+ids
-			window.location.href = url;
-		}
+
 	});
 });
 </script>';
@@ -837,7 +861,7 @@ $db->close();
 /**
  * Show event of a particular day for a user
  *
- * @param string $username
+ * @param string $lieu
  * @param int $day
  * @param int $month
  * @param int $year
@@ -854,14 +878,15 @@ $db->close();
  * @param bool $var false for alternat style on tr/td
  * @return void
  */
-function show_day_events2($username, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60, $showheader = false, $colorsbytype = array(), $var = false) {
-	global $db;
+function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eventarray, $maxprint = 0, $maxnbofchar = 16, $newparam = '', $showinfo = 0, $minheight = 60, $showheader = false, $colorsbytype = array(), $var = false) {
+	global $db,$user;
 	global $user, $conf, $langs, $hookmanager, $action;
-	global $filter, $status, $actioncode; // Filters used into search form
+	global $filter, $filtert, $status, $actioncode; // Filters used into search form
 	global $theme_datacolor; // Array with a list of different we can use (come from theme)
 	global $cachethirdparties, $cachecontacts, $colorindexused;
 	global $begin_h, $end_h;
 
+	
 	$cases1 = array (); // Color first half hour
 	$cases2 = array (); // Color second half hour
 
@@ -891,11 +916,25 @@ function show_day_events2($username, $day, $month, $year, $monthshown, $style, &
 			foreach ( $eventarray[$daykey] as $index => $event ) {
 				// $keysofuserassigned=array_keys($event->userassigned);
 
-				if ($username->id != $event->trainerid)
+				if ($lieu != $event->lieu)
 					continue; // We discard record if event is from another user than user we want to show
 						          // if ($username->id != $event->userownerid) continue; // We discard record if event is from another user than user we want to show
 
 				// Define $color (Hex string like '0088FF') and $cssclass of event
+				if (isset($event->sessionstatus)) {
+					if (isset($event->sessionstatus)) {
+						if ($event->sessionstatus == 'ENV')
+							$color = '6666ff';
+						if ($event->sessionstatus == 'CONF')
+							$color = '66ff99';
+						if ($event->sessionstatus == 'NOT')
+							$color = 'ff6666';
+						if ($event->sessionstatus == 'ARCH')
+							$color = 'c0c0c0';
+					} else {
+						$color = 'c0c0c0';
+					}
+				} else {
 				if ($event->trainer_status == 0)
 					$color = 'F8F816';
 				if ($event->trainer_status == 1)
@@ -910,6 +949,7 @@ function show_day_events2($username, $day, $month, $year, $monthshown, $style, &
 					$color = 'cc6600';
 				if ($event->trainer_status == 6)
 					$color = 'cc0000';
+				}
 					// $cssclass=$cssclass.' '.$cssclass.'_day_'.$ymd;
 
 				// Define all rects with event (cases1 is first half hour, cases2 is second half hour)
@@ -1028,39 +1068,35 @@ function show_day_events2($username, $day, $month, $year, $monthshown, $style, &
 		else
 			echo '<td class="' . $style . ' cal_peruser"' . ($var ? ' style="background: #F8F8F8"' : '') . '>';
 
-		//var_dump($cases1[$h]);
-		// 1 seul evenement
-		if (is_array($cases1[$h]) && count($cases1[$h]) == 1) {
-			$ids = array_keys($cases1[$h]);
+		if (!empty($cases1[$h])) {
 			$output = array_slice($cases1[$h], 0, 1);
 			if ($output[0]['string'])
 				$title1 .= ($title1 ? ' - ' : '') . $output[0]['string'];
 			if ($output[0]['color'])
 				$color1 = $output[0]['color'];
-		} else if (is_array($cases1[$h]) && count($cases1[$h]) > 1)
-			$color1 = '222222';
+		}
 
 			// 1 seul evenement
-		if (is_array($cases2[$h]) && count($cases2[$h]) == 1) {
-			$ids = array_keys($cases2[$h]);
+		if (!empty($cases2[$h])) {
 			$output = array_slice($cases2[$h], 0, 1);
 			if ($output[0]['string'])
 				$title2 .= ($title2 ? ' - ' : '') . $output[0]['string'];
 			if ($output[0]['color'])
 				$color2 = $output[0]['color'];
-		} else if (is_array($cases2[$h]) && count($cases2[$h]) > 1)
-			$color2 = '222222';
+		}
+
 		$ids1 = '';
 		$ids2 = '';
-		if (is_array($cases1[$h]) && count($cases1[$h]) && array_keys($cases1[$h]))
+		
+		if (!empty($cases1[$h]) && count($cases1[$h]) && array_keys($cases1[$h]))
 			$ids1 = join(',', array_keys($cases1[$h]));
-		if (is_array($cases2[$h]) && count($cases2[$h]) && array_keys($cases2[$h]))
+		if (!empty($cases2[$h]) && count($cases2[$h]) && array_keys($cases2[$h]))
 			$ids2 = join(',', array_keys($cases2[$h]));
 			// var_dump($cases1[$h]);
 		print '<table class="nobordernopadding" width="100%">';
-		print '<tr><td ' . ($color1 ? 'style="background: #' . $color1 . ';"' : '') . 'class="' . ($style1 ? $style1 . ' ' : '') . 'onclickopenref' . ($title1 ? ' cursorpointer' : '') . '" ref="ref_' . $username->id . '_' . sprintf("%04d", $year) . '_' . sprintf("%02d", $month) . '_' . sprintf("%02d", $day) . '_' . sprintf("%02d", $h) . '_00_' . ($ids1 ? $ids1 : 'none') . '"' . ($title1 ? ' title="' . $title1 . '"' : '') . '>';
+		print '<tr><td ' . ($color1 ? 'style="background: #' . $color1 . ';"' : '') . 'class="' . ($style1 ? $style1 . ' ' : '') . 'onclickopenref' . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$event->sessionid.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title1 ? ' title="' . $title1 . '"' : '') . '>';
 		print $string1;
-		print '</td><td ' . ($color2 ? 'style="background: #' . $color2 . ';"' : '') . 'class="' . ($style2 ? $style2 . ' ' : '') . 'onclickopenref' . ($title1 ? ' cursorpointer' : '') . '" ref="ref_' . $username->id . '_' . sprintf("%04d", $year) . '_' . sprintf("%02d", $month) . '_' . sprintf("%02d", $day) . '_' . sprintf("%02d", $h) . '_30_' . ($ids2 ? $ids2 : 'none') . '"' . ($title2 ? ' title="' . $title2 . '"' : '') . '>';
+		print '</td><td ' . ($color2 ? 'style="background: #' . $color2 . ';"' : '') . 'class="' . ($style2 ? $style2 . ' ' : '') . 'onclickopenref' . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$event->sessionid.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title2 ? ' title="' . $title2 . '"' : '') . '>';
 		print $string2;
 		print '</td></tr>';
 		print '</table>';
