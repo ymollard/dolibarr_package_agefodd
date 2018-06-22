@@ -926,5 +926,11 @@ if ($user->rights->agefodd->creer && !empty($search_propalid)) {
 	print '</div>';
 }
 
+if ($user->rights->agefodd->creer && !empty($search_orderid)) {
+    print '<div class="tabsAction">';
+    print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?mainmenu=agefodd&action=create&fk_order=' . $search_orderid . '&fk_soc='.$object_socid.'">' . $langs->trans('AgfMenuSessNew') . '</a>';
+    print '</div>';
+}
+
 llxFooter();
 $db->close();
