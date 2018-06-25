@@ -1812,6 +1812,20 @@ class modAgefodd extends DolibarrModules
 
 		$r ++;
 		$this->menu[$r] = array(
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSessList',
+				'type' => 'left',
+				'titre' => 'AgfMenuSessListOpeInter',
+				'url' => '/agefodd/session/list_ope_inter.php?leftmenu=AgfMenuSessList',
+				'langs' => 'agefodd@agefodd',
+				'position' => 200 + $r,
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && !empty($conf->global->AGEFODD_OPE_INTER_ENABLED)',
+				'perms' => '$user->rights->agefodd->lire',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSess',
 				'type' => 'left',
 				'leftmenu' => 'AgfMenuSessTools',
