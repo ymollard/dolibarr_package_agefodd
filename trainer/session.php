@@ -76,6 +76,7 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 $option = '&id=' . $id;
+if ($limit > 0 && $limit != $conf->liste_limit) $option.='&limit='.urlencode($limit);
 
 $formAgefodd = new FormAgefodd($db);
 $form = new Form($db);
