@@ -2184,7 +2184,8 @@ class Agsession extends CommonObject
 		$sql .= " ,sa.archive as closesessionstatus";
 		$sql .= " ,sorequester.nom as socrequestername";
 		$sql .= " ,soemployer.nom as soemployername";
-		$sql .= " ,c.color as trainingcolor,";
+		$sql .= " ,c.color as trainingcolor";
+		$sql .= " ,agefoddcontact.fk_socpeople as fk_socpeople_client,";
 		// Avoid perf problem with too many trainnee into archive sessions
 		if (is_array($filter) && key_exists('s.status', $filter) && $filter['s.status'] == '4') {
 			$sql .= " 0 as nb_prospect,";
@@ -2321,7 +2322,7 @@ class Agsession extends CommonObject
 			}
 		}
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color";
+		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color,agefoddcontact.fk_socpeople";
 		foreach ($array_options_keys as $key)
 		{
 			$sql.= ',ef.'.$key;
@@ -2353,6 +2354,7 @@ class Agsession extends CommonObject
 					$line->id = $obj->rowid;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
+					$line->fk_socpeople_client = $obj->fk_socpeople_client;
 					$line->socrequesterid = $obj->fk_soc_requester;
 					$line->socrequestername = $obj->socrequestername;
 					$line->fk_socpeople_requester = $obj->fk_socpeople_requester;
