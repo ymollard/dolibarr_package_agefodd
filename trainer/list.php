@@ -55,7 +55,7 @@ if (empty($sortorder)) {
 	$sortorder = "ASC";
 }
 if (empty($sortfield)) {
-//	$sortfield = "s.lastname, s.firstname";
+	$sortfield = "sp_name, sp_firstname";
 }
 if (empty($arch)) {
 	$arch = 0;
@@ -105,7 +105,7 @@ $pagenext = $page + 1;
 $agf = new Agefodd_teacher($db);
 
 $hookmanager->initHooks(array('trainerlist'));
-var_dump($sortorder, $sortfield);
+
 // Count total nb of records
 $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
