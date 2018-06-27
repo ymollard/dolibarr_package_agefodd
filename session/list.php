@@ -106,7 +106,8 @@ $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
 $search_session_status = GETPOST('search_session_status');
 
 $search_sale = GETPOST('search_sale', 'int');
-$search_session_status = GETPOST('search_session_status');
+
+if (empty($status_view)) $status_view = $search_session_status; // retrocompatibilité
 
 // Banner function
 $idforma = GETPOST('idforma', 'int'); // id formation catalogue
@@ -325,9 +326,18 @@ if ($status_view == 1) {
 		$sortorder = "DESC";
 	if (empty($sortfield))
 		$sortfield = "s.datec";
+} elseif ($status_view == 5) {
+	$title = $langs->trans('AgfMenuSessDone');
+} elseif ($status_view == 6) {
+	$title = $langs->trans('AgfMenuSessInProgress');
+} elseif (! empty($site_view)) {
+	$title = $langs->trans("AgfSessPlace");
+} elseif (! empty($training_view)) {
+	$title = $langs->trans("AgfCatalogDetail");
 } else {
 	$title = $langs->trans("AgfMenuSess");
 }
+
 
 
 
@@ -427,22 +437,6 @@ if ($resql != - 1) {
 	$num = $resql;
 
 	$arrayofselected=is_array($toselect)?$toselect:array();
-
-	if ($status_view == 1) {
-		$menu = $langs->trans("AgfMenuSessDraftList");
-	} elseif ($status_view == 2) {
-		$menu = $langs->trans("AgfMenuSessConfList");
-	} elseif ($status_view == 3) {
-		$menu = $langs->trans("AgfMenuSessNotDoneList");
-	} elseif ($status_view == 4) {
-		$menu = $langs->trans("AgfMenuSessArch");
-	} elseif (! empty($site_view)) {
-		$menu = $langs->trans("AgfSessPlace");
-	} elseif (! empty($training_view)) {
-		$menu = $langs->trans("AgfCatalogDetail");
-	} else {
-		$menu = $langs->trans("AgfMenuSess");
-	}
 
 	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
