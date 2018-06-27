@@ -69,12 +69,13 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$limit = $conf->liste_limit;
+$limit = GETPOST('limit');
+if (empty($limit)) $limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$option = 'id=' . $id;
+$option = '&id=' . $id;
 
 $formAgefodd = new FormAgefodd($db);
 $form = new Form($db);
@@ -167,7 +168,7 @@ if ($id) {
 		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="search_form">' . "\n";
 		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";
 		
-		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords);
+		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 		if (empty($search_archive)) {
 			print '<a href="' . $_SERVER ['PHP_SELF'] . '?' . $option . '&search_archive=1">' . $langs->trans("AgfCacherSessionArchives") . '</a>' . "\n";
 		} else {

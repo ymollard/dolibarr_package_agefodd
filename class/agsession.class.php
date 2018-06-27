@@ -792,7 +792,7 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_session_per_trainer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			$i = 0;
