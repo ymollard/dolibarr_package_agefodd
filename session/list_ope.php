@@ -153,7 +153,7 @@ $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 $formother = new FormOther($db);
 
-$title = $langs->trans("AgfMenuSess");
+$title = $langs->trans("AgfMenuSessListOpe");
 llxHeader('', $title);
 
 if ($training_view && ! empty($search_training_ref)) {
