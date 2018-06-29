@@ -43,7 +43,7 @@ require_once '../class/agefodd_formateur.class.php';
 $type = GETPOST("type");
 
 $filter_commercial = GETPOST('commercial', 'int');
-$filter_customer = GETPOST('fk_soc', 'int');
+$filter_customer = GETPOST('fk_soc', 'array');
 $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
@@ -215,7 +215,7 @@ if (!empty($filter_commercial)) {
 	$param .= "&amp;commercial=" . $filter_commercial;
 }
 if (!empty($filter_customer)) {
-	$param .= "&amp;fk_soc=" . $filter_customer;
+	foreach ($filter_customer as $fk_soc) $param .= "&amp;fk_soc[]=" . $fk_soc;
 }
 if (!empty($filter_contact)) {
 	$param .= "&amp;contact=" . $filter_contact;
@@ -293,7 +293,7 @@ $canedit = 1;
 $head = agf_calendars_prepare_head($paramnoaction);
 
 dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, true);
 
 // TODO remove si intégration dans master
 ?>
@@ -374,7 +374,7 @@ if (! empty($filter_commercial)) {
 	$sql .= ' AND salesman.fk_user_com=' . $filter_commercial;
 }
 if (! empty($filter_customer)) {
-	$sql .= " AND agf.fk_soc=" . $filter_customer;
+	$sql .= " AND agf.fk_soc IN (" .implode(',', $filter_customer).")";
 }
 if (! empty($filter_contact)) {
 
