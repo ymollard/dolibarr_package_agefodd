@@ -146,7 +146,7 @@ class Agefodd_convention {
 		$sql .= ",'" . $this->element_type . "'";
 		$sql .= "," . $this->fk_element;
 		$sql .= "," . (! isset($this->model_doc) ? 'NULL' : "'" . $this->db->escape($this->model_doc) . "'");
-		$sql .= "," . (! isset($this->only_product_session) ? '0' : "'" . $this->db->escape($this->only_product_session) . "'");
+		$sql .= "," . (empty($this->only_product_session) ? '0' : "'" . $this->db->escape($this->only_product_session) . "'");
 		$sql .= ")";
 
 		$this->db->begin();
@@ -733,7 +733,7 @@ class Agefodd_convention {
 		$sql .= " fk_agefodd_session=" . $this->sessid . ",";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
 		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null") . ", ";
-		$sql .= " only_product_session=" . (isset($this->only_product_session) ? "'" . $this->db->escape($this->only_product_session) . "'" : "null");
+		$sql .= " only_product_session=" . (!empty($this->only_product_session) ? "'" . $this->db->escape($this->only_product_session) . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();

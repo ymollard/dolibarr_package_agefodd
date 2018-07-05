@@ -209,8 +209,8 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 			$agf->element_type = $element_type;
 		if (! empty($model_doc))
 			$agf->model_doc = $model_doc;
-		if (! empty($only_product_session))
-			$agf->only_product_session = $only_product_session;
+
+		$agf->only_product_session = $only_product_session;
 		$agf->notes = $notes;
 		$agf->socid = $socid;
 		$agf->sessid = $sessid;
@@ -299,8 +299,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$agf->element_type = $element_type;
 			if (! empty($model_doc))
 				$agf->model_doc = $model_doc;
-			if (! empty($only_product_session))
-				$agf->only_product_session = $only_product_session;
+
+			$agf->only_product_session = $only_product_session;
 			$agf->socid = $socid;
 			$agf->sessid = $sessid;
 			$agf->line_trainee = $traine_list;
@@ -651,7 +651,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '</select>';
 	if (!empty($agf->fk_product)) {
 		print '<BR>';
-		print '<input type="checkbox" value="1" name="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
+		print '<input type="checkbox" value="1" name="only_product_session" id="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
 	}
 	print '</td></tr>';
 
@@ -826,7 +826,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '</select>';
 			if (!empty($agf_session->fk_product)) {
 				print '<BR>';
-				print '<input type="checkbox" value="1" name="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
+				print '<input type="checkbox" value="1" name="only_product_session"  id="only_product_session" '.(empty($agf->only_product_session)?'':'checked="checked"').'>'.$langs->trans('AgfOutputOnlySessionProductInConv');
 			}
 			print '</td></tr>';
 

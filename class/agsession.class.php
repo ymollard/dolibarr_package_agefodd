@@ -4963,9 +4963,19 @@ class Agsession extends CommonObject
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
-					$this->conv_amount_ht += $line->total_ht;
-					$this->conv_amount_tva += $line->total_tva;
-					$this->conv_amount_ttc += $line->total_ttc;
+					if (!empty($obj_agefodd_convention->only_product_session) && $line->fk_product==$this->fk_product) {
+						$this->conv_amount_ht += $line->total_ht;
+						$this->conv_amount_tva += $line->total_tva;
+						$this->conv_amount_ttc += $line->total_ttc;
+						$this->conv_qty += $line->qty;
+						$this->conv_products .= $line->description.'<br />';
+					} elseif (empty($obj_agefodd_convention->only_product_session)) {
+						$this->conv_amount_ht += $line->total_ht;
+						$this->conv_amount_tva += $line->total_tva;
+						$this->conv_amount_ttc += $line->total_ttc;
+						$this->conv_qty += $line->qty;
+						$this->conv_products .= $line->description.'<br />';
+					}
 				}
 
 				$this->conv_tva_tx = $this->conv_amount_tva / $this->conv_amount_ht * 100;
@@ -4976,6 +4986,8 @@ class Agsession extends CommonObject
 				$this->conv_amount_ht ='';
 				$this->conv_amount_tva ='';
 				$this->conv_amount_ttc ='';
+				$this->conv_qty ='';
+				$this->conv_products = '';
 			}
 		}
 
