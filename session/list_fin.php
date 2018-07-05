@@ -540,13 +540,14 @@ if ($resql != - 1) {
 
 	$menu = $langs->trans("AgfMenuSessAct");
 
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid, $sortfield, $sortorder, '', $num);
+	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid.'&search_fournorderid='.$search_fournorderid, $sortfield, $sortorder, '', $num);
 
 	$i = 0;
 	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
+	$arg_url .= '&search_fournorderid='.$search_fournorderid;
 	print_liste_field_titre($langs->trans("Id"), $_SERVEUR['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
@@ -741,8 +742,67 @@ if ($resql != - 1) {
 } else {
 	setEventMessage($agf->error, 'errors');
 }
+if (!empty($search_fournorderid)) {
 
-if (empty($search_fourninvoiceref)) {
+	$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+            FROM ".MAIN_DB_PREFIX."agefodd_session as s
+            INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
+            INNER JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
+			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.fk_session = s.rowid
+			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur
+			INNER JOIN " . MAIN_DB_PREFIX . "socpeople as socpf ON f.fk_socpeople = socpf.rowid AND socpf.fk_soc=".$object_socid."
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
+	if (is_array($excludeSessions) && count($excludeSessions)>0) {
+		$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
+	}
+	$sql .=" GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
+            ORDER BY s.dated ASC";
+
+	$resql = $db->query($sql);
+	if($resql){
+		while ($obj = $db->fetch_object($resql)){
+			!empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
+			$sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+		}
+	}
+
+	if (!empty($conf->global->AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS)){
+		$excludeSessions = array();
+		foreach ($agf->lines as $line) $excludeSessions[] = (int)$line->rowid;
+		$excludeSessions = array_merge($excludeSessions, array_keys($sessions));
+
+		$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+            FROM ".MAIN_DB_PREFIX."agefodd_session as s
+            LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
+            LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
+		if (is_array($excludeSessions) && count($excludeSessions)>0) {
+			$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
+		}
+		$sql .=" GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
+            ORDER BY s.dated ASC";
+
+		$resql = $db->query($sql);
+		if($resql){
+			while ($obj = $db->fetch_object($resql)){
+				!empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
+				$sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			}
+		}
+	}
+
+	print '<table class="noborder" width="100%">';
+	print '<tr>';
+	print '<td align="right">';
+	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1,0,0,'',0,0,0,'','',1);
+	print '</td>';
+	print '<td align="left">';
+	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_element"/>';
+	print '</td>';
+	print '</tr>';
+	print "</table>";
+}
+elseif (empty($search_fourninvoiceref)) {
 	$filter=array();
 	$soc = new Societe($db);
 	$result=$soc->fetch($object_socid);
@@ -814,6 +874,7 @@ if (empty($search_fourninvoiceref)) {
 	print "</table>";
 } else {
     $sessids = array();
+
     // session  dans lequel un formateur est un contact du tiers $session_array_id
     $sql = "SELECT s.rowid as sessid, sf.rowid as opsid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, sp.lastname as name_socp, sp.firstname as firstname_socp
         FROM ".MAIN_DB_PREFIX."agefodd_session as s
