@@ -1786,6 +1786,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
+        dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
         $foramtion = new Formation($db);
         $foramtion->fetch($object->formid);
         $morehtmlref.= $foramtion->getNomUrl('intitule');
