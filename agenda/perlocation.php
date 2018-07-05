@@ -320,7 +320,7 @@ $eventarray = array ();
 
 
 $sql = '
-	(SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent,
+	SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent,
 			a.location, a.fk_soc, a.fk_contact, a.fk_contact,
 			ca.code,
 			agf.rowid AS sessionid, agf.type_session AS sessiontype,
@@ -431,68 +431,6 @@ if ($action == 'show_day') {
 $parameters=array('from' => 'perlocation', 'target' => 'first_query');
 $reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
-
-$sql .= ')
-
-UNION
-
-(SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent,
-			a.location, a.fk_soc, a.fk_contact, a.fk_contact,
-			ca.code,
-			ae.act_sess AS sessionid, null AS sessiontype,
-			null AS sessionstatus,
-			agf_place.ref_interne AS lieu,
-			null,
-			"-1"
-
-	FROM '.MAIN_DB_PREFIX.'actioncomm a
-	INNER JOIN '.MAIN_DB_PREFIX.'c_actioncomm as ca ON (a.fk_action = ca.id)
-	INNER JOIN '.MAIN_DB_PREFIX.'actioncomm_extrafields as ae ON (a.id = ae.fk_object)
-	INNER JOIN '.MAIN_DB_PREFIX.'agefodd_place as agf_place ON (ae.location = agf_place.rowid)';
-
-if (!empty($filter_location))
-{
-	$sql.= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session as agf ON (agf.rowid = a.fk_element)';
-}
-
-$sql.= '
-	WHERE a.entity IN (' . getEntity('agsession') . ')
-	AND (a.elementtype="agefodd_agsession" OR a.elementtype IS NULL)
-	AND ca.code<>\'AC_AGF_SESST\'
-	AND ca.code<>\'AC_AGF_SESS\' ';
-
-if (! empty($filter_location)) {
-	$sql .= " AND agf.fk_session_place=" . $filter_location;
-}
-if ($action == 'show_day') {
-	$sql .= " AND (";
-	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
-	$sql .= " OR ";
-	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
-	$sql .= " OR ";
-	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
-	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
-	$sql .= ')';
-} else {
-	// To limit array
-	$sql .= " AND (";
-	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; // Start 7 days before
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')"; // End 7 days after + 3 to go from 28 to 31
-	$sql .= " OR ";
-	$sql .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
-	$sql .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
-	$sql .= " OR ";
-	$sql .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
-	$sql .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
-	$sql .= ')';
-}
-
-$parameters=array('from' => 'perlocation', 'target' => 'second_query');
-$reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // Note that $action and $object may have been modified by hook
-
-$sql.= ') ';
 
 //$sql.= ' ORDER BY agf_place.ref_interne ASC';
 
@@ -886,7 +824,7 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 	global $cachethirdparties, $cachecontacts, $colorindexused;
 	global $begin_h, $end_h;
 
-	
+
 	$cases1 = array (); // Color first half hour
 	$cases2 = array (); // Color second half hour
 
@@ -1087,7 +1025,7 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 
 		$ids1 = '';
 		$ids2 = '';
-		
+
 		if (!empty($cases1[$h]) && count($cases1[$h]) && array_keys($cases1[$h]))
 			$ids1 = join(',', array_keys($cases1[$h]));
 		if (!empty($cases2[$h]) && count($cases2[$h]) && array_keys($cases2[$h]))
