@@ -1755,6 +1755,15 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
         $morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')).'</div>';
+        if (!empty($object->fk_product)) {
+        	dol_include_once('/product/class/product.class.php');
+        	$prod=new Product($db);
+        	$result=$prod->fetch($object->fk_product);
+        	if ($result>0) {
+        		$morehtmlstatus.=$langs->trans('AgfProductServiceLinked').' : '.$prod->getNomUrl(1);
+        	}
+
+        }
 
     } elseif ($object->table_element == 'agefodd_place'){
 
@@ -1777,7 +1786,9 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 2) . '">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
-        $morehtmlref.= $object->formintitule;
+        $foramtion = new Formation($db);
+        $foramtion->fetch($object->formid);
+        $morehtmlref.= $foramtion->getNomUrl('intitule');
 
         if (!empty($object->fk_soc)){
             dol_include_once('/societe/class/societe.class.php');
@@ -1851,7 +1862,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     }
 
     if ($conf->multicompany->enabled) $object->element = 'agefodd';
-    
+
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
     print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
     print '</div><br>';
