@@ -4948,6 +4948,7 @@ class Agsession extends CommonObject
 						setEventMessage($stagiaire_conv->error, 'errors');
 					}
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
+					$this->nb_stagiaire_convention= count($this->TStagiairesSessionConvention);
 				}
 			}
 
@@ -5070,7 +5071,18 @@ class Agsession extends CommonObject
 		    dol_include_once('agefodd/class/agefodd_formation_catalogue.class.php');
 		    $formation = new Formation($db);
 		    $formation->fetch($this->fk_formation_catalogue);
+		    $formation->fetch_objpeda_per_formation($this->fk_formation_catalogue);
 		    $this->formation = $formation;
+
+		    if(empty($this->TFormationObjPeda) && count($formation->lines)>0) {
+
+		    	$this->TFormationObjPeda=$formation->lines;
+
+		    	foreach($formation->lines as $lineobj) {
+		    		$objpeda[]=$lineobj->priorite.'-'.$lineobj->intitule;
+		    	}
+		    	$this->formation_obj_peda=implode(', ',$objpeda);
+		    }
 		}
 
 		if(!empty($id_trainer)) {
