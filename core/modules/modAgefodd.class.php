@@ -753,12 +753,14 @@ class modAgefodd extends DolibarrModules
 				's.tel1' => 'AgfNbreParticipants',
 				's.tel2' => 'AgfNbreParticipants',
 				's.mail' => 'AgfNbreParticipants',
+				's.fonction' => 'AgfNbreParticipants',
 				's.date_birth' => 'AgfNbreParticipants',
 				's.place_birth' => 'AgfNbreParticipants',
 				's.datec' => 'AgfNbreParticipants'
 		);
 		$this->import_tables_array[$r] = array(
 				's' => MAIN_DB_PREFIX . 'agefodd_stagiaire'
+		    ,'extra'=>MAIN_DB_PREFIX.'agefodd_stagiaire_extrafields'
 		);
 		$this->import_fields_array[$r] = array(
 				's.fk_soc' => 'ThirdPartyName*',
@@ -767,14 +769,28 @@ class modAgefodd extends DolibarrModules
 				's.civilite' => 'AgfTitle',
 				's.tel1' => 'AgfTelephone1',
 				's.tel2' => 'AgfTelephone2',
+				's.fonction' => 'AgfTelephone2',
 				's.mail' => 'AgfPDFFicheEvalEmailTrainee',
 				's.date_birth' => 'DateToBirth',
 				's.place_birth' => 'AgfPlaceBirth',
 				's.datec' => 'AgfDateC'
 		);
+		// Add extra fields
+		$sql="SELECT name, label, fieldrequired FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_stagiaire' AND entity IN (0,".$conf->entity.")";
+		$resql=$this->db->query($sql);
+		if ($resql)    // This can fail when class is used on old database (during migration for example)
+		{
+		    while ($obj=$this->db->fetch_object($resql))
+		    {
+		        $fieldname='extra.'.$obj->name;
+		        $fieldlabel=ucfirst($obj->label);
+		        $this->import_fields_array[$r][$fieldname]=$fieldlabel.($obj->fieldrequired?'*':'');
+		    }
+		}
 		$this->import_fieldshidden_array[$r] = array(
 				's.fk_user_author' => 'user->id',
-				's.fk_user_mod' => 'user->id'
+				's.fk_user_mod' => 'user->id',
+		       ,'extra.fk_object'=>'lastrowid-'.MAIN_DB_PREFIX.'agefodd_stagiaire'
 		);
 		$this->import_convertvalue_array[$r] = array(
 				's.fk_soc' => array(
@@ -796,6 +812,7 @@ class modAgefodd extends DolibarrModules
 				's.civilite' => 'MR',
 				's.tel1' => '1234567890',
 				's.tel2' => '0987654321',
+				's.fonction' => 'Boss',
 				's.mail' => 'Jantje@tks.nl',
 				's.date_birth' => '2013-11-12',
 				's.place_birth' => 'Almelo',
