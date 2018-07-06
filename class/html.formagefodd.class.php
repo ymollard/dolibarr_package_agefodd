@@ -1583,12 +1583,12 @@ class FormAgefodd extends Form
 			$sql_status = "SELECT t.rowid, t.code ,t.intitule ";
 			$sql_status .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
 			$sql_status .= ' WHERE active=1';
-			$sql .= " ORDER BY t.sort";
+			$sql_status .= " ORDER BY t.sort";
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$data_status = array();
 			$result_status = $this->db->query($sql_status);
 			if ($result_status) {
-				while ( $obj_status = $this->db->fetch_object($result) ) {
+				while ( $obj_status = $this->db->fetch_object($result_status) ) {
 					$data_status[$obj_status->rowid] = $obj_status->intitule;
 				}
 			}
