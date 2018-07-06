@@ -790,7 +790,7 @@ class modAgefodd extends DolibarrModules
 		$this->import_fieldshidden_array[$r] = array(
 				's.fk_user_author' => 'user->id',
 				's.fk_user_mod' => 'user->id',
-		       ,'extra.fk_object'=>'lastrowid-'.MAIN_DB_PREFIX.'agefodd_stagiaire'
+		       'extra.fk_object'=>'lastrowid-'.MAIN_DB_PREFIX.'agefodd_stagiaire'
 		);
 		$this->import_convertvalue_array[$r] = array(
 				's.fk_soc' => array(
@@ -1591,7 +1591,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights [$r] [3] = 0;
 		$this->rights [$r] [4] = 'agendalocation';
 		$this->rights [$r] [5] = 'all';
-		
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
@@ -2181,7 +2181,7 @@ class modAgefodd extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
-		
+
 		$r ++;
 		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
