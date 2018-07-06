@@ -1620,7 +1620,7 @@ class FormAgefodd extends Form
 		else
 			print '</td></tr></table>';
 
-		print '</div>'; // Close fichecenter
+//		print '</div>'; // Close fichecenter
 		print '<div style="clear:both"></div>';
 
 		print '</form>';
