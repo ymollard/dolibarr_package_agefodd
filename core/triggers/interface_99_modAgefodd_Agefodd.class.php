@@ -360,21 +360,21 @@ class InterfaceAgefodd {
 			}
 		} elseif ($action == 'ATTESTATIONENDTRAINING_SENTBYMAIL') {
 		    dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-		    
+
 		    if ($object->actiontypecode == 'AC_AGF_ATTES') {
-		        
+
 		        dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 		        $langs->load("agefodd@agefodd");
 		        $langs->load("agenda");
-		        
+
 		        if (empty($object->actionmsg2)) {
 		            $object->actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
 		        }
 		        if (empty($object->actionmsg)) {
 		            $object->actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
-		            
+
 		        }
-		        
+
 		        $ok = 1;
 		    }
 		}
@@ -504,29 +504,31 @@ class InterfaceAgefodd {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
 
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			if (empty($conf->global->AGF_NOT_AUTO_LINK_INVOICE)) {
 
-			$object->fetchObjectLinked();
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$object->fetchObjectLinked();
 
-			foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
-				$objectlinked=reset($objectslinked);
-				if (($objectlinked->element == 'propal' || $objectlinked->element == 'commande') && ($objectlinked->socid==$object->socid)) {
+				foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
+					$objectlinked=reset($objectslinked);
+					if (($objectlinked->element == 'propal' || $objectlinked->element == 'commande') && ($objectlinked->socid==$object->socid)) {
 
-					$agf_fin = new Agefodd_session_element($this->db);
+						$agf_fin = new Agefodd_session_element($this->db);
 
-					$result = $agf_fin->add_invoice($user, $objectlinked->id, $objectlinked->element, $object->id);
-					
-					if ($result < 0) {
-						$error = "Failed to add agefodd invoice link : " . $agf_fin->error . " ";
-						$this->error = $error;
+						$result = $agf_fin->add_invoice($user, $objectlinked->id, $objectlinked->element, $object->id);
 
-						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
-						return - 1;
-					} else  {
-						dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
-						$admintask = new Agefodd_sessadm($this->db);
-						
-						$admintask->updateByTriggerName($user, $agf_fin->fk_session_agefodd, 'AGF_BILL_CREATE');
+						if ($result < 0) {
+							$error = "Failed to add agefodd invoice link : " . $agf_fin->error . " ";
+							$this->error = $error;
+
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+							return - 1;
+						} else  {
+							dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
+							$admintask = new Agefodd_sessadm($this->db);
+
+							$admintask->updateByTriggerName($user, $agf_fin->fk_session_agefodd, 'AGF_BILL_CREATE');
+						}
 					}
 				}
 			}
@@ -724,9 +726,12 @@ class InterfaceAgefodd {
 					} else {
 						$desc = $agfsession->formintitule . "\n";
 					}
-					$desc .= "\n" . dol_print_date($agfsession->dated, 'day');
-					if ($agfsession->datef != $agfsession->dated) {
-						$desc .= '-' . dol_print_date($agfsession->datef, 'day');
+
+					if (empty($conf->global->AGF_HIDE_REF_INVOICE_DT_INFO)) {
+						$desc .= "\n" . dol_print_date($agfsession->dated, 'day');
+						if ($agfsession->datef != $agfsession->dated) {
+							$desc .= '-' . dol_print_date($agfsession->datef, 'day');
+						}
 					}
 					if (! empty($agfsession->duree_session)) {
 						$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $agfsession->duree_session . ' ' . $langs->trans('Hour') . '(s)';

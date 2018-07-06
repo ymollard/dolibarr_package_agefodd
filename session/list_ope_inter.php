@@ -176,56 +176,25 @@ if ($resql != - 1) {
 
 	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
+	$moreforfilter = '<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
 	$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
 	$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
+	$moreforfilter.='</div>';
 
-	print '<div class="liste_titre">';
+	print '<div class="liste_titre liste_titre_bydiv centpercent">';
 	print $moreforfilter;
-	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
-
 	print '</div>';
 
 	$i = 0;
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print '<td colspan="4"></td>';
-	print '<td style="border: 1px solid black" id="totalamount"></td>'; // montnant HTHF
-	print '<td colspan="10"></td>';
-	print '<td style="border: 1px solid black" id="totalamountfact"></td>'; // fact HTHF
-	print '<td colspan="5"></td>';
-	print '</tr>';
+	print '<div class="div-table-responsive">';
+	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 
-	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Date Début"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Montant HT"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Formateur RN"), $_SERVER ['PHP_SELF'], "trainerrn", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Part /Soc /Sub"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Prosp./ Ann."), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Convoc"), $_SERVEUR ['PHP_SELF'], 'convoc', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Support"), $_SERVEUR ['PHP_SELF'], 'support', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("FEE Edit"), $_SERVEUR ['PHP_SELF'], 'ffeedit', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/C"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Att RN"), $_SERVEUR ['PHP_SELF'], "attrn", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("FEE Env."), $_SERVEUR ['PHP_SELF'], "ffeenv", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/F"), $_SERVEUR ['PHP_SELF'], "invtrainer", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/L"), $_SERVEUR ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-	print "</tr>\n";
 	// Search Bar
-	print '<tr class="liste_titre">';
+	print '<tr class="liste_titre_filter">';
 
 	// Id
-	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+	print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
 	// Trainer
 	print '<td class="liste_titre">';
@@ -322,8 +291,58 @@ if ($resql != - 1) {
 	print '<td class="liste_titre" align="right">';
 	print '</td>';
 
+	// Action column
+	print '<td class="liste_titre" align="right">';
+	if(method_exists($form, 'showFilterButtons')) {
+		$searchpicto=$form->showFilterButtons();
+		print $searchpicto;
+	} else {
+		print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+		print '&nbsp; ';
+		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	}
+	print '</td>';
+	
 	print "</tr>\n";
-
+	
+	print '<tr class="liste_titre">';
+	print '<th class="liste_titre"><div class="nowrap">';
+	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+	print '&nbsp; ';
+	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	print '</div></th>';
+	print '<th class="liste_titre" colspan="3"></th>';
+	print '<th class="liste_titre nowrap" style="border: 1px solid black" id="totalamount"></th>'; // montnant HTHF
+	print '<th class="liste_titre" colspan="10"></th>';
+	print '<th class="liste_titre nowrap" style="border: 1px solid black" id="totalamountfact"></th>'; // fact HTHF
+	print '<th class="liste_titre" colspan="6"></th>';
+	print '</tr>';
+	
+	print '<tr class="liste_titre">';
+	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Date Début"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Montant HT"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Formateur RN"), $_SERVER ['PHP_SELF'], "trainerrn", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Part /Soc /Sub"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Prosp./ Ann."), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Convoc"), $_SERVEUR ['PHP_SELF'], 'convoc', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Support"), $_SERVEUR ['PHP_SELF'], 'support', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("FEE Edit"), $_SERVEUR ['PHP_SELF'], 'ffeedit', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/C"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Att RN"), $_SERVEUR ['PHP_SELF'], "attrn", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("FEE Env."), $_SERVEUR ['PHP_SELF'], "ffeenv", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/F"), $_SERVEUR ['PHP_SELF'], "invtrainer", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/L"), $_SERVEUR ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre(''); // Action
+	
+	print "</tr>\n";
 
 	$var = true;
 	foreach ( $agf->lines as $line ) {
@@ -507,6 +526,7 @@ if ($resql != - 1) {
 
 			$totalsellprice += $agf_fin->propal_sign_amount;
 
+			print '<td></td>'; // Action
 			print "</tr>\n";
 		} else {
 			print "<tr $bc[$var]>";
@@ -525,7 +545,7 @@ if ($resql != - 1) {
 			}
 			print '</td>';
 			print '<td colspan="15"></td>';
-
+			print '<td></td>'; // Action
 			print "</tr>\n";
 		}
 
@@ -535,6 +555,7 @@ if ($resql != - 1) {
 	}
 
 	print "</table>";
+	print '</div>';
 	print '</form>';
 
 	print '<script type="text/javascript" language="javascript">' . "\n";

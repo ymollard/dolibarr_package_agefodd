@@ -792,7 +792,7 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_session_per_trainer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			$i = 0;
@@ -2184,7 +2184,8 @@ class Agsession extends CommonObject
 		$sql .= " ,sa.archive as closesessionstatus";
 		$sql .= " ,sorequester.nom as socrequestername";
 		$sql .= " ,soemployer.nom as soemployername";
-		$sql .= " ,c.color as trainingcolor,";
+		$sql .= " ,c.color as trainingcolor";
+		$sql .= " ,agefoddcontact.fk_socpeople as fk_socpeople_client,";
 		// Avoid perf problem with too many trainnee into archive sessions
 		if (is_array($filter) && key_exists('s.status', $filter) && $filter['s.status'] == '4') {
 			$sql .= " 0 as nb_prospect,";
@@ -2321,7 +2322,7 @@ class Agsession extends CommonObject
 			}
 		}
 		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color";
+		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color,agefoddcontact.fk_socpeople";
 		foreach ($array_options_keys as $key)
 		{
 			$sql.= ',ef.'.$key;
@@ -2353,6 +2354,7 @@ class Agsession extends CommonObject
 					$line->id = $obj->rowid;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
+					$line->fk_socpeople_client = $obj->fk_socpeople_client;
 					$line->socrequesterid = $obj->fk_soc_requester;
 					$line->socrequestername = $obj->socrequestername;
 					$line->fk_socpeople_requester = $obj->fk_socpeople_requester;
@@ -3082,6 +3084,8 @@ class Agsession extends CommonObject
 	public function fetch_all_by_order_invoice_propal($sortorder='', $sortfield='s.rowid', $limit=0, $offset=0, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '', $fournorderid = '') {
 		global $langs;
 
+		$totalline=0;
+
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref";
 		$sql .= " ,s.intitule_custo";
@@ -3122,7 +3126,7 @@ class Agsession extends CommonObject
 
 		if (! empty($fourninvoiceid)) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn as fourninvoice ";
-			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%'";
+			$sql .= " ON fourninvoice.rowid = ord_inv.fk_element AND  ord_inv.element_type LIKE 'invoice_supplier%' AND ord_inv.element_type NOT LIKE 'invoice_supplierline%'";
 			$sql .= ' AND fourninvoice.rowid=' . $fourninvoiceid;
 		}
 
@@ -3181,12 +3185,9 @@ class Agsession extends CommonObject
 		if ($resql) {
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
-			$i = 0;
 
 			if ($num) {
-				while ( $i < $num ) {
-					$obj = $this->db->fetch_object($resql);
-
+				while ($obj = $this->db->fetch_object($resql)) {
 					$line = new AgfInvoiceOrder();
 
 					$line->rowid = $obj->rowid;
@@ -3223,13 +3224,92 @@ class Agsession extends CommonObject
 					    $line->fournorderref = $obj->fournorderref;
 					}
 
-					$this->lines[$i] = $line;
+					$this->lines[] = $line;
 
-					$i ++;
 				}
 			}
 			$this->db->free($resql);
-			return $num;
+			$totalline=$num;
+
+			if (! empty($fourninvoiceid)) {
+				//Add session link with supplier invoicie lines
+				$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+				$sql .= " c.intitule, c.ref";
+				$sql .= " ,s.intitule_custo";
+				$sql .= " ,s.duree_session,";
+				$sql .= " p.ref_interne";
+				$sql .= " ,fourninvoice.ref as fourninvoiceref";
+				$sql .= " ,ord_inv.rowid as agelemetnid ";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
+				$sql .= " ON c.rowid = s.fk_formation_catalogue";
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
+				$sql .= " ON p.rowid = s.fk_session_place";
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
+				$sql .= " ON s.rowid = ss.fk_session_agefodd";
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
+				$sql .= " ON s.rowid = sa.fk_agefodd_session";
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as ord_inv";
+				$sql .= " ON s.rowid = ord_inv.fk_session_agefodd";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn_det AS fourninvoiceline ON fourninvoiceline.rowid = ord_inv.fk_element ";
+				$sql .= " AND ord_inv.element_type LIKE 'invoice_supplierline%'  ";
+				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn AS fourninvoice ON fourninvoice.rowid = fourninvoiceline.fk_facture_fourn ";
+				$sql .= " AND fourninvoice.rowid = ".$fourninvoiceid;
+				$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
+				$sql .= " ,fourninvoice.ref ";
+				if (!empty($sortfield)) {
+					$sql .= " ORDER BY $sortfield $sortorder ";
+				}
+
+				if (!empty($limit)) {
+					$sql .= $this->db->plimit($limit + 1, $offset);
+				}
+
+				dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal", LOG_DEBUG);
+				$resql = $this->db->query($sql);
+
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($num) {
+						while ($obj = $this->db->fetch_object($resql)) {
+							$line = new AgfInvoiceOrder();
+
+							$line->rowid = $obj->rowid;
+							$line->socid = $obj->fk_soc;
+							$line->type_session = $obj->type_session;
+							$line->is_date_res_site = $obj->is_date_res_site;
+							$line->is_date_res_trainer = $obj->is_date_res_trainer;
+							$line->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
+							$line->fk_session_place = $obj->fk_session_place;
+							$line->dated = $this->db->jdate($obj->dated);
+							$line->datef = $this->db->jdate($obj->datef);
+							$line->intitule = $obj->intitule;
+							$line->ref = $obj->ref;
+							$line->ref_interne = $obj->ref_interne;
+							$line->color = $obj->color;
+							$line->nb_stagiaire = $obj->nb_stagiaire;
+							$line->force_nb_stagiaire = $obj->force_nb_stagiaire;
+							$line->duree_session = $obj->duree_session;
+							$line->intitule_custo = $obj->intitule_custo;
+							$line->notes = $obj->notes;
+							$line->fourninvoiceref = $obj->fourninvoiceref;
+							$line->agelemetnid = $obj->agelemetnid;
+
+							$this->lines[] = $line;
+						}
+					}
+
+					$totalline=+$num;
+				} else {
+					$this->error = "Error " . $this->db->lasterror();
+					dol_syslog(get_class($this) . "::fetch_all_by_order_invoice " . $this->error, LOG_ERR);
+					return - 1;
+				}
+			}
+
+			return $totalline;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all_by_order_invoice " . $this->error, LOG_ERR);
@@ -3981,12 +4061,14 @@ class Agsession extends CommonObject
 			}
 			$refclient = dol_trunc($desc,35);
 
-			$desc .= "\n" . dol_print_date($this->dated, 'day');
+			if (empty($conf->global->AGF_HIDE_REF_PROPAL_DT_INFO)) {
+				$desc .= "\n" . dol_print_date($this->dated, 'day');
 
-			$refclient .= "\n" . dol_print_date($this->dated, 'day');;
-			if ($this->datef != $this->dated) {
-				$desc .= '-' . dol_print_date($this->datef, 'day');
-				$refclient .= '-' . dol_print_date($this->datef, 'day');
+				$refclient .= "\n" . dol_print_date($this->dated, 'day');;
+				if ($this->datef != $this->dated) {
+					$desc .= '-' . dol_print_date($this->datef, 'day');
+					$refclient .= '-' . dol_print_date($this->datef, 'day');
+				}
 			}
 
 			if (! empty($conf->global->AGF_REF_PROPAL_AUTO)) {
@@ -4866,6 +4948,7 @@ class Agsession extends CommonObject
 						setEventMessage($stagiaire_conv->error, 'errors');
 					}
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
+					$this->nb_stagiaire_convention= count($this->TStagiairesSessionConvention);
 				}
 			}
 
@@ -4880,9 +4963,19 @@ class Agsession extends CommonObject
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
-					$this->conv_amount_ht += $line->total_ht;
-					$this->conv_amount_tva += $line->total_tva;
-					$this->conv_amount_ttc += $line->total_ttc;
+					if (!empty($obj_agefodd_convention->only_product_session) && $line->fk_product==$this->fk_product) {
+						$this->conv_amount_ht += $line->total_ht;
+						$this->conv_amount_tva += $line->total_tva;
+						$this->conv_amount_ttc += $line->total_ttc;
+						$this->conv_qty += $line->qty;
+						$this->conv_products .= $line->description.'<br />';
+					} elseif (empty($obj_agefodd_convention->only_product_session)) {
+						$this->conv_amount_ht += $line->total_ht;
+						$this->conv_amount_tva += $line->total_tva;
+						$this->conv_amount_ttc += $line->total_ttc;
+						$this->conv_qty += $line->qty;
+						$this->conv_products .= $line->description.'<br />';
+					}
 				}
 
 				$this->conv_tva_tx = $this->conv_amount_tva / $this->conv_amount_ht * 100;
@@ -4893,6 +4986,8 @@ class Agsession extends CommonObject
 				$this->conv_amount_ht ='';
 				$this->conv_amount_tva ='';
 				$this->conv_amount_ttc ='';
+				$this->conv_qty ='';
+				$this->conv_products = '';
 			}
 		}
 
@@ -4988,7 +5083,18 @@ class Agsession extends CommonObject
 		    dol_include_once('agefodd/class/agefodd_formation_catalogue.class.php');
 		    $formation = new Formation($db);
 		    $formation->fetch($this->fk_formation_catalogue);
+		    $formation->fetch_objpeda_per_formation($this->fk_formation_catalogue);
 		    $this->formation = $formation;
+
+		    if(empty($this->TFormationObjPeda) && count($formation->lines)>0) {
+
+		    	$this->TFormationObjPeda=$formation->lines;
+
+		    	foreach($formation->lines as $lineobj) {
+		    		$objpeda[]=$lineobj->priorite.'-'.$lineobj->intitule;
+		    	}
+		    	$this->formation_obj_peda=implode(', ',$objpeda);
+		    }
 		}
 
 		if(!empty($id_trainer)) {

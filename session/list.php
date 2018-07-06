@@ -30,21 +30,28 @@ if (! $res)
 
 require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
-require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once ('../class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-require_once ('../lib/agefodd.lib.php');
-require_once ('../class/html.formagefodd.class.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
-require_once ('../class/agefodd_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
+
+
+$hookmanager->initHooks(array('agefoddsessionlist'));
+
+$parameters=array('from'=>'original');
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
@@ -99,7 +106,8 @@ $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
 $search_session_status = GETPOST('search_session_status');
 
 $search_sale = GETPOST('search_sale', 'int');
-$search_session_status = GETPOST('search_session_status');
+
+if (empty($status_view)) $status_view = $search_session_status; // retrocompatibilité
 
 // Banner function
 $idforma = GETPOST('idforma', 'int'); // id formation catalogue
@@ -318,9 +326,18 @@ if ($status_view == 1) {
 		$sortorder = "DESC";
 	if (empty($sortfield))
 		$sortfield = "s.datec";
+} elseif ($status_view == 5) {
+	$title = $langs->trans('AgfMenuSessDone');
+} elseif ($status_view == 6) {
+	$title = $langs->trans('AgfMenuSessInProgress');
+} elseif (! empty($site_view)) {
+	$title = $langs->trans("AgfSessPlace");
+} elseif (! empty($training_view)) {
+	$title = $langs->trans("AgfCatalogDetail");
 } else {
 	$title = $langs->trans("AgfMenuSess");
 }
+
 
 
 
@@ -421,22 +438,6 @@ if ($resql != - 1) {
 
 	$arrayofselected=is_array($toselect)?$toselect:array();
 
-	if ($status_view == 1) {
-		$menu = $langs->trans("AgfMenuSessDraftList");
-	} elseif ($status_view == 2) {
-		$menu = $langs->trans("AgfMenuSessConfList");
-	} elseif ($status_view == 3) {
-		$menu = $langs->trans("AgfMenuSessNotDoneList");
-	} elseif ($status_view == 4) {
-		$menu = $langs->trans("AgfMenuSessArch");
-	} elseif (! empty($site_view)) {
-		$menu = $langs->trans("AgfSessPlace");
-	} elseif (! empty($training_view)) {
-		$menu = $langs->trans("AgfCatalogDetail");
-	} else {
-		$menu = $langs->trans("AgfMenuSess");
-	}
-
 	print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
@@ -516,11 +517,12 @@ if ($resql != - 1) {
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
 
 	$i = 0;
+	print '<div class="div-table-responsive">';
 	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 
-	print '<tr class="liste_titre">';
+	print '<tr class="liste_titre_filter">';
 
-	if (! empty($arrayfields['s.rowid']['checked'])) print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+	if (! empty($arrayfields['s.rowid']['checked'])) print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
 	if (! empty($arrayfields['so.nom']['checked']))
 	{
@@ -588,7 +590,7 @@ if ($resql != - 1) {
 	if (! empty($arrayfields['p.ref_interne']['checked']))
 	{
 		print '<td class="liste_titre">';
-		print $formAgefodd->select_site_forma($search_site, 'search_site', 1);
+		print $formAgefodd->select_site_forma($search_site, 'search_site', 1, 0, array(), 'maxwidth200');
 		print '</td>';
 	}
 
@@ -742,7 +744,7 @@ if ($resql != - 1) {
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
 
-			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
+			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="'.dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
 
 			if (! empty($arrayfields['so.nom']['checked']))
 			{
@@ -952,6 +954,7 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['dicstatus.intitule']['checked']))			print '<td></td>';
 			if (! empty($arrayfields['p.ref_interne']['checked']))				print '<td></td>';
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))				print '<td></td>';
+			if (! empty($arrayfields['s.fk_soc_requester']['checked']))			print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
 				if (! empty($arrayfields['s.sell_price']['checked']))			print '<td name="margininfolineb1'.$line->rowid.'" style="display:none"></td>';
 				if (! empty($arrayfields['s.cost_trainer']['checked']))			print '<td name="margininfolineb2'.$line->rowid.'" style="display:none"></td>';
@@ -996,6 +999,7 @@ if ($resql != - 1) {
 		if (! empty($arrayfields['dicstatus.intitule']['checked']))		print '<td></td>';
 		if (! empty($arrayfields['p.ref_interne']['checked']))	print '<td></td>';
 		if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td></td>';
+		if (! empty($arrayfields['s.fk_soc_requester']['checked']))		print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
 			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['s.cost_trainer']['checked']))		print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
@@ -1009,6 +1013,7 @@ if ($resql != - 1) {
 		print "</tr>\n";
 	}
 	print "</table>";
+	print "</div>";
 } else {
 	setEventMessage($agf->error, 'errors');
 }

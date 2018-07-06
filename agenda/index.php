@@ -84,7 +84,7 @@ if ($filter_trainee == -1) {
 $type = GETPOST('type');
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
-$page = GETPOST("page", "int");
+$page = (int) GETPOST("page", "int");
 if ($page == -1) { $page = 0; }
 $limit = $conf->liste_limit;
 $offset = $limit * $page;
@@ -869,6 +869,8 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
 	global $theme_datacolor;
     global $cachethirdparties, $cachecontacts, $cacheusers, $colorindexused;
 
+	if (is_null($colorindexused)) $colorindexused = array();
+	
     if (DOL_VERSION < 6.0) {
     	print "\n".'<div id="dayevent_'.sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day).'" class="dayevent">';
     } else {

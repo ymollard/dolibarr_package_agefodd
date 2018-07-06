@@ -498,6 +498,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		$agf->intitule_custo = GETPOST('intitule_custo', 'alpha');
 
 		$fk_propal=GETPOST('fk_propal','int');
+		$fk_order=GETPOST('fk_order','int');
 
 		if ($error == 0) {
 
@@ -555,6 +556,22 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				setEventMessage($agf_elem->error, 'errors');
 				$error ++;
 			}
+		}
+		
+		if ($error == 0 && !empty($fk_order)) {
+		    dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+		    $agf_elem = new Agefodd_session_element($db);
+		    $agf_elem->fk_element = $fk_order;
+		    $agf_elem->fk_session_agefodd =  $agf->id;
+		    $agf_elem->fk_soc = $custid;
+		    $agf_elem->element_type = 'order';
+		    
+		    $result = $agf_elem->create($user);
+		    
+		    if ($result < 0) {
+		        setEventMessage($agf_elem->error, 'errors');
+		        $error ++;
+		    }
 		}
 
 		if ($error == 0) {
@@ -661,6 +678,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$fk_soc_crea = GETPOST('fk_soc', 'int');
 	$fk_propal = GETPOST('fk_propal', 'int');
+	$fk_order = GETPOST('fk_order','int');
 
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
@@ -669,6 +687,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="action" value="add_confirm">';
 	if (!empty($fk_propal)) {
 		print '<input type="hidden" name="fk_propal" value="'.$fk_propal.'">';
+	}
+	if (!empty($fk_order)) {
+	    print '<input type="hidden" name="fk_order" value="'.$fk_order.'">';
 	}
 
 	print '<table id="session_card" class="border tableforfield" width="100%">';
@@ -684,6 +705,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr class="order_intitule"><td><span class="fieldrequired">' . $langs->trans("AgfFormIntitule") . '</span></td>';
 	print '<td>' . $formAgefodd->select_formation(GETPOST('formation', 'int'), 'formation', 'intitule', 1) . '</td></tr>';
 
+	print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
+	print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . $agf->intitule_custo . '" /></td></tr>';
+
+	
 	print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
 
@@ -840,6 +865,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
 			ajax_set_duration_and_product(data);
+			var option_txt = $(this).find('option[value='+$(this).val()+']').text();
+			$('#intitule_custo').val(option_txt);
 		});
 	});
 

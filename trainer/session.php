@@ -46,7 +46,7 @@ if (! $user->rights->agefodd->lire)
 $id = GETPOST('id', 'int');
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
-$page = GETPOST('page', 'int');
+$page = (int) GETPOST('page', 'int');
 $optioncss = GETPOST('optioncss', 'alpha');
 $search_id = GETPOST('search_id', 'int');
 $search_intitule = GETPOST('search_intitule', 'alpha');
@@ -69,12 +69,14 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$limit = $conf->liste_limit;
+$limit = GETPOST('limit');
+if (empty($limit)) $limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
-$option = 'id=' . $id;
+$option = '&id=' . $id;
+if ($limit > 0 && $limit != $conf->liste_limit) $option.='&limit='.urlencode($limit);
 
 $formAgefodd = new FormAgefodd($db);
 $form = new Form($db);
@@ -167,41 +169,31 @@ if ($id) {
 		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="search_form">' . "\n";
 		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";
 		
-		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords);
+		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 		if (empty($search_archive)) {
 			print '<a href="' . $_SERVER ['PHP_SELF'] . '?' . $option . '&search_archive=1">' . $langs->trans("AgfCacherSessionArchives") . '</a>' . "\n";
 		} else {
 			print '<a href="' . $_SERVER ['PHP_SELF'] . '?' . $option . '">' . $langs->trans("AgfAfficherSessionArchives") . '</a>' . "\n";
 		}
 		
-		$moreforfilter .= $langs->trans('SalesRepresentatives') . ': ';
-		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user);
+		$moreforfilter .= '<div class="divsearchfield">'.$langs->trans('SalesRepresentatives') . ': ';
+		$moreforfilter .= $formother->select_salesrepresentatives($search_sale, 'search_sale', $user).'</div>';
 		
-		$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
+		$moreforfilter .= '<div class="divsearchfield">'.$langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
 		$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
-		$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
+		$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5).'</div>';
 		
 		if ($moreforfilter) {
-			print '<div class="liste_titre">';
+			print '<div class="liste_titre liste_titre_bydiv">';
 			print $moreforfilter;
 			print '</div>';
 		}
 		
-		print '<table class="noborder"  width="100%">';
-		print '<tr class="liste_titre">';
-		print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, 'width="10%"', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Customer"), $_SERVER ['PHP_SELF'], "so.nom", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Type"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfDebutSession"), $_SERVER ['PHP_SELF'], "s.dated", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfFinSession"), $_SERVER ['PHP_SELF'], "s.datef", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfPDFFichePeda1"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "sf.trainer_status", '', $option, '', $sortfield, $sortorder);
-		print '<td></td>';
-		print '</tr>';
+		print '<div class="div-table-responsive">';
+		print '<table class="noborder listwithfilterbefore"  width="100%">';
 		
 		// Filter
-		print '<tr class="liste_titre">';
+		print '<tr class="liste_titre_filter">';
 		// Id session
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_id" value="' . $search_id . '" size="4">';
@@ -227,16 +219,43 @@ if ($id) {
 		// durrée
 		print '<td class="liste_titre">';
 		print '</td>';
+		// durrée jours
+		print '<td class="liste_titre">';
+		print '</td>';
+		// Montant trainer
+		print '<td class="liste_titre">';
+		print '</td>';
+		// Montant HT & HF
+		print '<td class="liste_titre">';
+		print '</td>';
 		// Status
 		print '<td class="liste_titre">';
 		print $formAgefodd->select_trainer_session_status('search_status_in_session', $search_status_in_session, array (), 1);
 		print '</td>';
-		print '<td width="2%">';
+		print '<td class="liste_titre" width="2%">';
+		print '<div class="nowrap">';
 		print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 		print '&nbsp; ';
 		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+		print '</div>';
 		print '</td>';
 		print "</tr>\n";
+		
+		
+		print '<tr class="liste_titre">';
+		print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, 'width="10%"', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Customer"), $_SERVER ['PHP_SELF'], "so.nom", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Type"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDebutSession"), $_SERVER ['PHP_SELF'], "s.dated", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFinSession"), $_SERVER ['PHP_SELF'], "s.datef", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfPDFFichePeda1"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDays"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfEuroTrainerHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfEuroSessionHTHF"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "sf.trainer_status", '', $option, '', $sortfield, $sortorder);
+		print '<th></th>';
+		print '</tr>';
 		
 		$style = 'pair';
 		if (count($agf_session->lines) > 0) {
@@ -250,7 +269,7 @@ if ($id) {
 					$style = 'class="pair"';
 				}
 				
-				if ($line->status == 4) {
+				if (!empty($conf->global->AGEFODD_USE_BG_GRAY) && $line->status == 4) {
 					$style = ' style="background: gray"';
 				}
 				
@@ -301,6 +320,72 @@ if ($id) {
 				
 				// print '<td>'.dol_print_date($line->realdurationsession,'hour').'</td>';
 				print '<td>' . $hour . ':' . $rmin . '</td>';
+				
+				// durrée Jours
+				$duration_days = round($duree / 7 / 3600,1);
+				/*if ($duration_days==0 && $duree!=0) {
+					$duration_days=0.5;
+				}*/
+				$duree_jour_total += $duration_days;
+				print '<td>' . $duration_days . '</td>';
+				
+				// Montant trainer HF
+				$agf_fin = new Agefodd_session_element($db);
+				if (!empty($contact->socid)) {
+					
+					//TODO manage multi contact
+					if ($conf->companycontacts->enabled) {
+						
+						$agf_fin->fk_soc_array=array();
+						
+						$sql_innercontact = "SELECT c.fk_soc_source ";
+						$sql_innercontact.= " FROM ".MAIN_DB_PREFIX."company_contacts as c";
+						$sql_innercontact.= " WHERE c.fk_contact=".$contact->id;
+						
+						$resql_innercontact = $db->query($sql_innercontact);
+						if ($resql_innercontact)
+						{
+							while ($obj_innercontact = $db->fetch_object($resql_innercontact)) {
+								$agf_fin->fk_soc_array[$obj_innercontact->fk_soc_source]=$obj_innercontact->fk_soc_source;
+							}
+							
+						} else {
+							setEventMessage($db->lasterror,'errors');
+						}
+						
+						$agf_fin->fk_soc_array[$contact->socid]=$contact->socid;
+					}
+					
+					$agf_fin->fk_soc=$contact->socid;
+				}
+				$agf_fin->fetch_by_session($line->rowid,$line->trainersessionid);
+				$sellprice = $agf_fin->trainer_cost_amount;
+
+				// Remove charges of product of category 'frais'
+				$result = $agf_fin->get_charges_amount($line->rowid, '66,67', 'invoice_supplier_trainer',$line->trainersessionid);
+				if (! empty($result) && $result != - 1) {
+					$sellprice -= $result;
+				}
+				$totalsellprice += $sellprice;
+				
+				print '<td>' . price($sellprice) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
+				
+				$agf_fin->fetch_by_session($line->rowid);
+				// Montant facturé ht & hors frais
+				$amount_act_invoiced = 0;
+				$amount_act_invoiced = $agf_fin->invoice_ongoing_amount + $agf_fin->invoice_payed_amount;
+				
+				// Remove charges of product of category 'frais'
+				$result = $agf_fin->get_charges_amount($line->rowid, $conf->global->AGF_CAT_PRODUCT_CHARGES, 'invoice');
+				if (! empty($result) && $result != - 1 && $result <= $amount_act_invoiced) {
+					$amount_act_invoiced_less_charges = $amount_act_invoiced - $result;
+				} else {
+					$amount_act_invoiced_less_charges = $amount_act_invoiced;
+				}
+				$totalsellprice_invoice += $amount_act_invoiced_less_charges;
+				
+				print '<td>' . price($amount_act_invoiced_less_charges) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
+				
 				print '<td>' . $trainer->LibStatut($line->trainer_status, 4) . '</td>';
 				print '<td></td>';
 				print '</tr>';
@@ -319,10 +404,14 @@ if ($id) {
 		$rmin = sprintf("%02d", $min % 60);
 		$hour = floor($min / 60);
 		print '<td>' . $hour . ':' . $rmin . '</td>';
+		print '<td>' . $duree_jour_total . '</td>';
+		print '<td>' . price($totalsellprice) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
+		print '<td>' . price($totalsellprice_invoice) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>';
 		print '<td></td>';
 		print '<td></td>';
 		print '</tr>';
 		print '</table>';
+		print '</div>';
 		print '</form>';
 	} else {
 		$langs->trans('AgfNoSession');

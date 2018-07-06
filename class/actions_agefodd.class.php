@@ -76,7 +76,7 @@ class ActionsAgefodd
 		if (is_array($res_array) && count($res_array)>0 && $parameters['mode']=='add') {
 			$head = $parameters['head'];
 			foreach ( $head as $key=>&$val) {
-				if ($val[2]==tabAgefodd) {
+				if ($val[2]=='tabAgefodd') {
 					dol_include_once('/agefodd/class/agsession.class.php');
 					$agf = new Agsession($this->db);
 					$resql = $agf->fetch_all_by_order_invoice_propal('', '', 0, 0,

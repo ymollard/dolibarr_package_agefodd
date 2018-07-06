@@ -336,7 +336,7 @@ class FormAgefodd extends Form
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class='') {
 		global $conf, $langs;
 
 		$sql = "SELECT p.rowid, p.ref_interne";
@@ -352,7 +352,7 @@ class FormAgefodd extends Form
 				$out .= ajax_combobox($htmlname, $event);
 			}
 
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			$out .= '<select id="' . $htmlname . '" class="flat '.$class.'" name="' . $htmlname . '">';
 			if ($showempty) {
 				$out .= '<option value="-1"></option>';
 			}
@@ -1409,9 +1409,10 @@ class FormAgefodd extends Form
 	 * @param string $filter_contact Contact
 	 * @param int $filter_trainer Trainer
 	 * @param int $canedit edit filter
+	 * @param bool $set_select_thirdparty_multiple transforme le select thirdparty en multiselect
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0) {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $set_select_thirdparty_multiple=false) {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1454,6 +1455,13 @@ class FormAgefodd extends Form
 				print '<td class="nowrap">';
 				print $langs->trans("or") . ' ' . $langs->trans("Customer");
 				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
+				
+				$moreparam = '';
+				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
+				{
+					$moreparam = ' name="fk_soc[]" multiple >'.";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
+				}
+				
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 					$events = array();
 					$events[] = array(
@@ -1464,17 +1472,30 @@ class FormAgefodd extends Form
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					print $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+					
+					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events, '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				} else {
-					print $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1);
+					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				}
+				
+				// MOUAHAHAHAH, comme je peux pas hack le 1er param de la méthode select_thirdparty_list() pour réécrire le test, je fist le contenu html qui est retourné par cette même méthode (je suis diabolique, oui je le sais...)
+				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
+				{
+					foreach ($filter_customer as $fk_soc)
+					{
+						 $html_select_thirdparty_list = preg_replace('/<option value="'.$fk_soc.'">/', '<option value="'.$fk_soc.'" selected>', $html_select_thirdparty_list);
+					}
+				}
+				
+				print $html_select_thirdparty_list;
+					
 				print '</td></tr>';
 				print '<tr>';
 				print '<td class="nowrap maxwidthonsmartphone">';
 				print $langs->trans("or") . ' ' . $langs->trans("AgfSessionContact");
 				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
-					if (! empty($filter_customer)) {
+					if (! empty($filter_customer) && !is_array($filter_customer)) {
 						$form->select_contacts($filter_customer, $filter_contact, 'contact', 1, '', '', 1, '', 1);
 					} else {
 						$form->select_contacts(0, $filter_contact, 'contact', 1, '', '', 1, '', 1);

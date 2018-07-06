@@ -297,7 +297,7 @@ class Agefodd_teacher extends CommonObject {
 
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
-		$sql .= " s.rowid as spid , s.lastname as sp_name, s.firstname as sp_firstname, s.civility as sp_civilite, ";
+		$sql .= " s.rowid as spid , IF(u.lastname IS NULL, s.lastname, u.lastname) as sp_name, IF(u.firstname IS NULL, s.firstname, u.firstname) as sp_firstname, IF(u.civility IS NULL, s.civility, u.civility) as sp_civilite, ";
 		$sql .= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
 		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";

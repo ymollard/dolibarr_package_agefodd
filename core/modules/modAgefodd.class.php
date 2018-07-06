@@ -1584,6 +1584,14 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'admin';
 
+		$r ++;
+		$this->rights [$r] [0] = $this->numero.$r;
+		$this->rights [$r] [1] = 'Voir agenda par lieu';
+		$this->rights [$r] [2] = 'r';
+		$this->rights [$r] [3] = 0;
+		$this->rights [$r] [4] = 'agendalocation';
+		$this->rights [$r] [5] = 'all';
+		
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
@@ -1814,6 +1822,20 @@ class modAgefodd extends DolibarrModules
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'perms' => '$user->rights->agefodd->lire',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu[$r] = array(
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuSessList',
+				'type' => 'left',
+				'titre' => 'AgfMenuSessListOpeInter',
+				'url' => '/agefodd/session/list_ope_inter.php?leftmenu=AgfMenuSessList',
+				'langs' => 'agefodd@agefodd',
+				'position' => 200 + $r,
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && !empty($conf->global->AGEFODD_OPE_INTER_ENABLED)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2147,6 +2169,20 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuAgenda',
+				'type' => 'left',
+				'titre' => 'AgfMenuAgendaPerLocation',
+				'url' => '/agefodd/agenda/perlocation.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 700 + $r,
+				'enabled' => '$user->rights->agefodd->agendalocation',
+				'perms' => '$user->rights->agefodd->agendalocation',
+				'target' => '',
+				'user' => 0
+		);
+		
+		$r ++;
 		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
@@ -2408,10 +2444,10 @@ class modAgefodd extends DolibarrModules
 									}
 								}
 							} else {
-								$this->error = "Error " . $this->db->lasterror();
-								dol_syslog(get_class($this) . "::_load_tables_agefodd " . $this->error, LOG_ERR);
+									$this->error = "Error " . $this->db->lasterror();
+									dol_syslog(get_class($this) . "::_load_tables_agefodd " . $this->error, LOG_ERR);
 								$error ++;
-							}
+								}
 
 							if ($dorun) {
 								$result = run_sql($dir . $file, 1, '', 1);
