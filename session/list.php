@@ -486,32 +486,14 @@ if ($resql != - 1) {
 	$moreforfilter.='<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
 	$moreforfilter.='</div>';
-/*
-	if ($user->rights->agefodd->session->margin) {
-		$moreforfilter.='<div class="divsearchfield">';
-		$moreforfilter .= '<span id="showhidemargininfo" style="cursor:pointer">'.$langs->transnoentities('AgfDisplayMarginInfo').'</span>';
-		$moreforfilter.='</div>';
-	}*/
+
 	if ($moreforfilter)
 	{
 		print '<div class="liste_titre liste_titre_bydiv centpercent">';
 		print $moreforfilter;
 		print '</div>';
 	}
-/*
-	print '<script type="text/javascript">'."\n";
-	print '$(document).ready(function () {'."\n";
-	print '	$(\'#showhidemargininfo\').click(function(){'."\n";
-	print '		$(\'[name*=margininfo]\').toggle();'."\n";
-	print '		if ($(this).text()==\''.$langs->transnoentities('AgfDisplayMarginInfo').'\') {'."\n";
-	print '			$(this).text(\''.$langs->transnoentities('AgfHideMarginInfo').'\');'."\n";
-	print '		} else {'."\n";
-	print '			$(this).text(\''.$langs->transnoentities('AgfDisplayMarginInfo').'\');'."\n";
-	print '		}'."\n";
-	print '	});'."\n";
-	print '});'."\n";
-	print '</script>'."\n";
-*/
+
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
