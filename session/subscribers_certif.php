@@ -172,7 +172,7 @@ if (! empty($id)) {
 
 	$head = session_prepare_head($agf);
 
-	dol_fiche_head($head, 'certificate', $langs->trans("AgfCertificate"), 0, 'group');
+	dol_fiche_head($head, 'certificate', $langs->trans("AgfSessionDetail"), 0, 'group');
 
 	/*
 	 * Confirmation de la suppression
