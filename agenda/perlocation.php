@@ -52,7 +52,9 @@ $filter_trainee = GETPOST('traineeid', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth','int'), GETPOST('dt_start_filterday','int'), GETPOST('dt_start_filteryear','int'));
 $filter_session_status = GETPOST('search_session_status', 'array');
-
+$filter_control_occupation = GETPOST('control_occupation');
+if ($filter_control_occupation === '') $filter_control_occupation = -1; // -1 = tous; 0 = Non cochée; 1 = Cochée
+	
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
 	$filter_trainer=$user->id;
@@ -241,6 +243,10 @@ if (is_array($filter_session_status) && count($filter_session_status)>0){
 	}
 
 }
+if (!empty($filter_control_occupation) && $filter_control_occupation !== '')
+{
+	$param.= '&control_occupation='.$filter_control_occupation;
+}
 $param .= "&amp;maxprint=" . $maxprint;
 
 $prev = dol_get_first_day_week($day, $month, $year);
@@ -293,7 +299,7 @@ $canedit = 1;
 $head = agf_calendars_prepare_head($paramnoaction);
 
 dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, true);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, $filter_control_occupation, true);
 
 // TODO remove si intégration dans master
 ?>
@@ -400,6 +406,10 @@ if ($filter_type_session != '') {
 }
 if (! empty($filter_location)) {
 	$sql .= " AND agf.fk_session_place=" . $filter_location;
+}
+if ($filter_control_occupation != -1) {
+	if ($filter_control_occupation) $sql .= " AND agf_place.control_occupation=1";
+	else $sql .= " AND agf_place.control_occupation IS NULL";
 }
 if ($action == 'show_day') {
 	$sql .= " AND (";
