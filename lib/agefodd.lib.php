@@ -153,6 +153,14 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [1] = $langs->trans("AgfCalendrier");
 	$head [$h] [2] = 'calendar';
 	$h ++;
+	
+	if (!empty($conf->fullcalendarscheduler->enabled))
+	{
+		$head [$h] [0] = dol_buildpath('/agefodd/session/scheduler.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfScheduler");
+		$head [$h] [2] = 'scheduler';
+		$h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");

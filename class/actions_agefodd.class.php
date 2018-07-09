@@ -466,4 +466,19 @@ class ActionsAgefodd
 
 		return 0;
 	}
+	
+	
+	function printSearchForm($parameters, &$object, &$action, $hookmanager)
+	{
+		global $user,$conf;
+		
+		$TContext = explode(':', $parameters['context']);
+		if (!empty($user->rights->agefodd->lire) && !empty($conf->fullcalendarscheduler->enabled) && in_array('agefodd_session_scheduler', $TContext))
+		{
+			// Add my mini calendar
+			$this->resprints = '<div id="agf_session_scheduler_mini"></div>';
+		}
+		
+		return 0;
+	}
 }
