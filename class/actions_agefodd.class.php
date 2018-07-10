@@ -406,7 +406,7 @@ class ActionsAgefodd
 
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
-			if ($result > 0) {
+			if ($result >= 0) {
 
 				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
@@ -457,8 +457,6 @@ class ActionsAgefodd
 						dol_print_error('', $agfsess->error);
 					}
 				}
-
-				// if (is_array($linkedobjects)) $this->results = $linkedobjects + $this->results;
 			} else {
 				dol_print_error('', $agfsess->error);
 			}
