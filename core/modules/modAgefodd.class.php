@@ -774,6 +774,18 @@ class modAgefodd extends DolibarrModules
 				's.place_birth' => 'AgfNbreParticipants',
 				's.datec' => 'AgfNbreParticipants'
 		);
+		// Add extra fields
+		$sql="SELECT name, label, fieldrequired FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'agefodd_stagiaire' AND entity IN (0,".$conf->entity.")";
+		$resql=$this->db->query($sql);
+		if ($resql)    // This can fail when class is used on old database (during migration for example)
+		{
+			while ($obj=$this->db->fetch_object($resql))
+			{
+				$fieldname='extra.'.$obj->name;
+				$fieldlabel=ucfirst($obj->label);
+				$this->import_entities_array[$r][$fieldname]='AgfNbreParticipants';
+			}
+		}
 		$this->import_tables_array[$r] = array(
 				's' => MAIN_DB_PREFIX . 'agefodd_stagiaire'
 		    ,'extra'=>MAIN_DB_PREFIX.'agefodd_stagiaire_extrafields'
@@ -785,7 +797,7 @@ class modAgefodd extends DolibarrModules
 				's.civilite' => 'AgfTitle',
 				's.tel1' => 'AgfTelephone1',
 				's.tel2' => 'AgfTelephone2',
-				's.fonction' => 'AgfTelephone2',
+				's.fonction' => 'AgfFonction',
 				's.mail' => 'AgfPDFFicheEvalEmailTrainee',
 				's.date_birth' => 'DateToBirth',
 				's.place_birth' => 'AgfPlaceBirth',

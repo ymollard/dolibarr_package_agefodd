@@ -102,6 +102,26 @@ class InterfaceAgefodd {
 		dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 		// Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
+		
+		global $conf, $mc;
+
+		// multicompagny tweak
+		if (is_object($mc))
+		{
+		    
+		    if(!in_array('agefodd', $mc->sharingelements)){
+		        $mc->sharingelements[] = 'agefodd';
+		    }
+		    
+		    if(!isset($mc->sharingobjects['agefodd'])){
+		        $mc->sharingobjects['agefodd'] = array('element'=>'agefodd');
+		    }
+			
+			$mc->setValues($conf);
+		}
+		
+		
+		
 
 		// Users
 		if ($action == 'ACTION_MODIFY') {
