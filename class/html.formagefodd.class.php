@@ -1765,4 +1765,30 @@ class FormAgefodd extends Form
 
 		return $this->selectMassAction('', $TStatut);
 	}
+	
+	public function select_calendrier_type($selected='', $htmlname='code_c_session_calendrier_type', $emptyvalue=true)
+	{
+		global $conf;
+		
+		$out = '<select name="'.$htmlname.'">';
+		if ($emptyvalue) $out.= '<option value=""></options>';
+		
+		$sql = 'SELECT code, label FROM '.MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type WHERE active = 1 AND entity = '.$conf->entity;
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$out.= '<option value="'.$obj->code.'" '.($selected == $obj->code ? 'selected' : '').'>'.$obj->label.'</options>';
+			}
+		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+		
+		$out.= '</select>';
+		
+		return $out;
+	}
 }

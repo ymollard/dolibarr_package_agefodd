@@ -41,6 +41,7 @@ class Agefodd_sesscalendar {
 	public $heuref;
 	public $sessid;
 	public $fk_actioncomm;
+	public $calendrier_type;
 	public $lines = array ();
 
 	/**
@@ -81,7 +82,7 @@ class Agefodd_sesscalendar {
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_calendrier(";
-		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec";
+		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->sessid . ", ";
 		$sql .= "'" . $this->db->idate($this->date_session) . "', ";
@@ -90,7 +91,8 @@ class Agefodd_sesscalendar {
 		$sql .= " " . (! isset($this->fk_actioncomm) ? 'NULL' : "'" . $this->db->escape($this->fk_actioncomm) . "'") . ",";
 		$sql .= ' ' . $user->id . ', ';
 		$sql .= ' ' . $user->id . ', ';
-		$sql .= "'" . $this->db->idate(dol_now()) . "'";
+		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
+		$sql .= "'" . $this->db->escape($this->calendrier_type) . "'";
 		$sql .= ")";
 
 		$this->db->begin();
@@ -152,8 +154,9 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
+		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
@@ -167,6 +170,8 @@ class Agefodd_sesscalendar {
 				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
+				$this->calendrier_type = $obj->calendrier_type;
+				$this->calendrier_type_label = $obj->calendrier_type_label;
 			}
 			$this->db->free($resql);
 
@@ -188,8 +193,9 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
+		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
 
 		dol_syslog(get_class($this) . "::fetch_by_action", LOG_DEBUG);
@@ -203,6 +209,8 @@ class Agefodd_sesscalendar {
 				$this->heuref = $this->db->jdate($obj->heuref);
 				$this->sessid = $obj->fk_agefodd_session;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
+				$this->calendrier_type = $obj->calendrier_type;
+				$this->calendrier_type_label = $obj->calendrier_type_label;
 			}
 			$this->db->free($resql);
 
@@ -224,8 +232,9 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_agefodd_session, s.calendrier_type, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
+		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_agefodd_session = " . $id;
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 
@@ -244,7 +253,9 @@ class Agefodd_sesscalendar {
 				$line->date_session = $this->db->jdate($obj->date_session);
 				$line->heured = $this->db->jdate($obj->heured);
 				$line->heuref = $this->db->jdate($obj->heuref);
-				$line->sessid = $obj->sessid;
+				$line->sessid = $obj->fk_agefodd_session;
+				$line->calendrier_type = $obj->calendrier_type;
+				$line->calendrier_type_label = $obj->calendrier_type_label;
 
 				$this->lines[$i] = $line;
 			}
@@ -267,10 +278,11 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
+		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
+		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
-
+			
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -281,6 +293,8 @@ class Agefodd_sesscalendar {
 				$this->tms = $obj->tms;
 				$this->user_creation = $obj->fk_user_author;
 				$this->user_modification = $obj->fk_user_mod;
+				$this->calendrier_type = $obj->calendrier_type;
+				$this->calendrier_type_label = $obj->calendrier_type_label;
 			}
 			$this->db->free($resql);
 
@@ -313,7 +327,8 @@ class Agefodd_sesscalendar {
 		$sql .= " date_session='" . $this->db->idate($this->date_session) . "',";
 		$sql .= " heured='" . $this->db->idate($this->heured) . "',";
 		$sql .= " heuref='" . $this->db->idate($this->heuref) . "',";
-		$sql .= " fk_user_mod=" . $user->id . " ";
+		$sql .= " fk_user_mod=" . $user->id . ", ";
+		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "' ";
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();

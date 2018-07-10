@@ -1089,6 +1089,7 @@ AgfCategCostCateg=Produit de Frais (calcul marge)
 AgfCategOverheadCost=Catégorie de services/produits comptabilisés comme Frais
 AgfCategOverheadCostHelp=Les services/produits classés dans ces catégories seront exclus lors du calcul du prix de "vente" et d'achat de la session, donc ils ne seront pas pris en compte dans le calcul des marges
 AgfNewPeriodFromScratch=Créer les horaires par créneaux
+AgfNewPeriod=Créer les horaires
 AgfNewPeriodDayToDate=Créer les horaires de date à date
 AgfAdminCalendarDayToDate=Valeur par defaut des créneaux date à date
 AgfDayWeek=Jour de la semaine coché par defaut

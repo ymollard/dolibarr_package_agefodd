@@ -33,3 +33,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL
 ) ENGINE=InnoDB;
+
+ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN calendrier_type varchar(15);
