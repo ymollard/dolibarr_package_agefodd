@@ -445,89 +445,86 @@ if ($id) {
 			$calendrier = new Agefodd_sesscalendar($db);
 			$calendrier->fetch_all($agf->id);
 			$blocNumber = count($calendrier->lines);
-			if ($blocNumber < 1 && !empty($newperiod)) {
-				print '<tr>';
-				print '<td  colpsan=1 style="color:red; text-decoration: blink;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
-			} else {
-				$old_date = 0;
-				$duree = 0;
-				print '<tr class="liste_titre">';
-				print '<th width="15%" class="liste_titre">' . $langs->trans('Date') . '</th>';
-				print '<th width="35%" class="liste_titre">' . $langs->trans('Hours') . '</th>';
-				print '<th class="liste_titre">' . $langs->trans('CalendarType') . '</th>';
-				if ($user->rights->agefodd->modifier)
-				{
-					print '<th width="1%" class="liste_titre linecoledit center">&nbsp;</th>';
-					print '<th width="1%" class="liste_titre linecoldelete center">&nbsp;</th>';
-					print '<th class="liste_titre center">';
-					print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete', '', false, 1) . '" border="0" align="absmiddle" name="deletecalsel" title="' . $langs->trans("AgfDeleteOnlySelectedLines") . '" alt="' . $langs->trans("AgfDeleteOnlySelectedLines") . '">';
-					print '</th>';
-				}
-				print '</tr>';
-				
-				for($i = 0; $i < $blocNumber; $i ++) {
-					if ($calendrier->lines[$i]->id == $modperiod && ! empty($period_remove))
-						print '<tr bgcolor="#d5baa8">' . "\n";
-					else
-						print '<tr>' . "\n";
+			
+			$old_date = 0;
+			$duree = 0;
+			print '<tr class="liste_titre">';
+			print '<th width="15%" class="liste_titre">' . $langs->trans('Date') . '</th>';
+			print '<th width="35%" class="liste_titre">' . $langs->trans('Hours') . '</th>';
+			print '<th class="liste_titre">' . $langs->trans('CalendarType') . '</th>';
+			if ($user->rights->agefodd->modifier)
+			{
+				print '<th width="1%" class="liste_titre linecoledit center">&nbsp;</th>';
+				print '<th width="1%" class="liste_titre linecoldelete center">&nbsp;</th>';
+				print '<th class="liste_titre center">';
+				print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete', '', false, 1) . '" border="0" align="absmiddle" name="deletecalsel" title="' . $langs->trans("AgfDeleteOnlySelectedLines") . '" alt="' . $langs->trans("AgfDeleteOnlySelectedLines") . '">';
+				print '</th>';
+			}
+			print '</tr>';
 
-						// print '<input type="hidden" name="modperiod" value="' . . '">' . "\n";
-						// print '<input type="hidden" name="anchor" value="period">' . "\n";
+			for($i = 0; $i < $blocNumber; $i ++) {
+				if ($calendrier->lines[$i]->id == $modperiod && ! empty($period_remove))
+					print '<tr bgcolor="#d5baa8">' . "\n";
+				else
+					print '<tr>' . "\n";
 
-					if ($calendrier->lines[$i]->id == $modperiod && ! ! empty($period_remove)) {
-						print '<td  width="20%">' . $langs->trans("AgfPeriodDate") . ' ';
-						$form->select_date($calendrier->lines[$i]->date_session, 'date', '', '', '', 'obj_update_' . $i);
+					// print '<input type="hidden" name="modperiod" value="' . . '">' . "\n";
+					// print '<input type="hidden" name="anchor" value="period">' . "\n";
+
+				if ($calendrier->lines[$i]->id == $modperiod && ! ! empty($period_remove)) {
+					print '<td  width="20%">' . $langs->trans("AgfPeriodDate") . ' ';
+					$form->select_date($calendrier->lines[$i]->date_session, 'date', '', '', '', 'obj_update_' . $i);
+					print '</td>';
+					print '<td width="150px" nowrap>' . $langs->trans("AgfPeriodTimeB") . ' ';
+					print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heured, 'hour'), 'dated');
+					print ' - ' . $langs->trans("AgfPeriodTimeE") . ' ';
+					print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heuref, 'hour'), 'datef');
+					print '</td>';
+
+					print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
+
+					if ($user->rights->agefodd->modifier)
+					{
+						print '<td class="linecoledit center">';
+						print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="period_update" alt="' . $langs->trans("AgfModSave") . '">';
+						print '<input type="hidden" name="modperiod" value="' . $calendrier->lines[$i]->id . '">';
+						print '<input type="hidden" name="period_update" value="1">';
 						print '</td>';
-						print '<td width="150px" nowrap>' . $langs->trans("AgfPeriodTimeB") . ' ';
-						print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heured, 'hour'), 'dated');
-						print ' - ' . $langs->trans("AgfPeriodTimeE") . ' ';
-						print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heuref, 'hour'), 'datef');
-						print '</td>';
-						
-						print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
-						
-						if ($user->rights->agefodd->modifier)
-						{
-							print '<td class="linecoledit center">';
-							print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="period_update" alt="' . $langs->trans("AgfModSave") . '">';
-							print '<input type="hidden" name="modperiod" value="' . $calendrier->lines[$i]->id . '">';
-							print '<input type="hidden" name="period_update" value="1">';
-							print '</td>';
-							print '<td class="linecoldelete center">&nbsp;</td>';
-							print '<td class="center" width="1%">&nbsp;</td>';
-						}
-						
-					} else {
-						print '<td width="20%">' . dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td>';
-						print '<td  width="150px">' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</td>';						
-						print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
-						if ($user->rights->agefodd->modifier)
-						{
-							print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Save"), 'edit') . '</a></td>';
-							print '<td class="linecoldelete center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&period_remove=1&modperiod=' . $calendrier->lines[$i]->id . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
-							print '<td class="center" width="1%"><input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$i]->id . '"/></td>';
-						}
+						print '<td class="linecoldelete center">&nbsp;</td>';
+						print '<td class="center" width="1%">&nbsp;</td>';
 					}
 
-					// We calculated the total session duration time
-					$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
+				} else {
+					print '<td width="20%">' . dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td>';
+					print '<td  width="150px">' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</td>';						
+					print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
+					if ($user->rights->agefodd->modifier)
+					{
+						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Save"), 'edit') . '</a></td>';
+						print '<td class="linecoldelete center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&period_remove=1&modperiod=' . $calendrier->lines[$i]->id . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
+						print '<td class="center" width="1%"><input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$i]->id . '"/></td>';
+					}
+				}
 
-					print '</tr>' . "\n";
-				}
-				
-				if ((($agf->duree_session * 3600) != $duree) && (empty($conf->global->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-					print '<tr><td colspan="4" align="center">'.img_warning();
-					if (($agf->duree_session * 3600) < $duree)
-						print $langs->trans("AgfCalendarSup");
-					if (($agf->duree_session * 3600) > $duree)
-						print $langs->trans("AgfCalendarInf");
-					$min = floor($duree / 60);
-					$rmin = sprintf("%02d", $min % 60);
-					$hour = floor($min / 60);
-					print ' (' . $langs->trans("AgfCalendarDureeProgrammee") . ': ' . $hour . ':' . $rmin . ', ';
-					print $langs->trans("AgfCalendarDureeThéorique") . ' : ' . ($agf->duree_session) . ':00).</td></tr>';
-				}
+				// We calculated the total session duration time
+				$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
+
+				print '</tr>' . "\n";
 			}
+
+			if ((($agf->duree_session * 3600) != $duree) && (empty($conf->global->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
+				print '<tr><td colspan="4" align="center">'.img_warning();
+				if (($agf->duree_session * 3600) < $duree)
+					print $langs->trans("AgfCalendarSup");
+				if (($agf->duree_session * 3600) > $duree)
+					print $langs->trans("AgfCalendarInf");
+				$min = floor($duree / 60);
+				$rmin = sprintf("%02d", $min % 60);
+				$hour = floor($min / 60);
+				print ' (' . $langs->trans("AgfCalendarDureeProgrammee") . ': ' . $hour . ':' . $rmin . ', ';
+				print $langs->trans("AgfCalendarDureeThéorique") . ' : ' . ($agf->duree_session) . ':00).</td></tr>';
+			}
+			
 			
 			print '</table>';
 			if (!empty($calendrier->lines))
@@ -541,171 +538,164 @@ if ($id) {
 				print '</div>';
 			}
 
+			print '<br /><br />';
 			// Fiels for new periodes
 			
-			
-			if (! empty($newperiod)) {
-				// TODO wtf? comment on arrive ici ?
-				print '<tr><td align="right" colspan="4">';
-				print '<input type="hidden" name="newperiod" value="1">' . "\n";
-				print '<input type="submit" class="butAction" value="' . $langs->trans("AgfPeriodAdd") . '">';
-				print '</td></tr>';
-			} else {
+			print '<div class="fichehalfleft">';
+			print load_fiche_titre($langs->trans('AgfCalendarFromTemplate'), '', '');
 
-				print load_fiche_titre($langs->trans('AgfCalendarFromTemplate'), '', '');
-			
-				print '<table class="noborder period" width="100%" id="period_create">';
-				// Add new line from template
-				$tmpl_calendar = new Agefoddcalendrier($db);
-				$result = $tmpl_calendar->fetch_all();
-				if ($result) {
-					print '<tr><td>';
-					print '<input type="hidden" name="periodid" value="' . $stagiaires->lines[$i]->stagerowid . '">' . "\n";
-					print '<input type="hidden" id="datetmplday"   name="datetmplday"   value="' . dol_print_date($agf->dated, "%d") . '">' . "\n";
-					print '<input type="hidden" id="datetmplmonth" name="datetmplmonth" value="' . dol_print_date($agf->dated, "%m") . '">' . "\n";
-					print '<input type="hidden" id="datetmplyear"  name="datetmplyear"  value="' . dol_print_date($agf->dated, "%Y") . '">' . "\n";
-					print '<td></tr>';
-					
-					$tmli = 0;
-					foreach ( $tmpl_calendar->lines as $line ) {
-						if (empty($agf->dated)) {
-							$dated = dol_now();
-						} else {
-							$dated = $agf->dated;
-						}
-						if ($line->day_session != 1) {
-							$tmpldate = dol_time_plus_duree($dated, (($line->day_session) - 1), 'd');
-						} else {
-							$tmpldate = $dated;
-						}
-
-						if ($tmpldate <= $agf->datef) {
-							print '<tr>';
-							print '<td class="nowrap">';
-							print dol_print_date($tmpldate, 'daytext') . ' ' . $line->heured . ' - ' . $line->heuref;
-							print '</td>';
-							print '<td width="1%" class="center"><input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="' . $line->id . '"/></td>';
-							print '</tr>';
-						}
-						$tmli ++;
-					}
-					print '</td>';
-
-					print '</tr>' . "\n";
-				}
-				
-				print '</table>';
-				if (!empty($tmpl_calendar->lines))
-				{
-					print '<div class="tabsAction">';
-					print '<div class="inline-block divButAction">';
-					if ($user->rights->agefodd->creer) {
-						print '<input type="submit" class="butAction" name="period_add" value="'.$langs->trans('AgfNewPeriod').'">';
-					}
-					print '</div>';
-					print '</div>';
-				}
-				
-				
-				print '<div class="fichehalfleft">';
-				print load_fiche_titre($langs->trans('AgfNewPeriodDayToDate'), '', '');
-				print '<table class="noborder period" width="50%" id="period_create_from_date">';
-				
+			print '<table class="noborder period" width="100%" id="period_create">';
+			// Add new line from template
+			$tmpl_calendar = new Agefoddcalendrier($db);
+			$result = $tmpl_calendar->fetch_all();
+			if ($result) {
 				print '<tr class="liste_titre">';
-				print '<th class="liste_titre">'.$langs->trans('AgfWeekdayModels').'</th>';
-				print '<th class="liste_titre">'.$langs->trans('Dates').'</th>';
-				print '<th class="liste_titre">'.$langs->trans('Hours').'</th>';
+				print '<th>'.$langs->trans('Date').' - '.$langs->trans('Hours').'</th>';
+				print '<th width="5%">&nbsp;</th>';
 				print '</tr>';
 				
-				print '<tr>';
-				print '<td>';
-				$TWeekDay = array(1,2,3,4,5,6,0);
-				foreach ($TWeekDay as $daynum )
-				{
-					if ($conf->global->{'AGF_WEEKADAY' . $daynum} == 1) {
-						$checked = ' checked="checked" ';
+				print '<tr style="display:none;"><td>';
+				print '<input type="hidden" name="periodid" value="' . $stagiaires->lines[$i]->stagerowid . '">' . "\n";
+				print '<input type="hidden" id="datetmplday"   name="datetmplday"   value="' . dol_print_date($agf->dated, "%d") . '">' . "\n";
+				print '<input type="hidden" id="datetmplmonth" name="datetmplmonth" value="' . dol_print_date($agf->dated, "%m") . '">' . "\n";
+				print '<input type="hidden" id="datetmplyear"  name="datetmplyear"  value="' . dol_print_date($agf->dated, "%Y") . '">' . "\n";
+				print '<td></tr>';
+
+				$tmli = 0;
+				foreach ( $tmpl_calendar->lines as $line ) {
+					if (empty($agf->dated)) {
+						$dated = dol_now();
 					} else {
-						$checked = '';
+						$dated = $agf->dated;
 					}
-					print '<input type="checkbox" ' . $checked . ' name="fromdaytodate[]" id="fromdaytodate" value="' . $daynum . '"/>' . $langs->trans('Day' . $daynum).'<br />';
+					if ($line->day_session != 1) {
+						$tmpldate = dol_time_plus_duree($dated, (($line->day_session) - 1), 'd');
+					} else {
+						$tmpldate = $dated;
+					}
+
+					if ($tmpldate <= $agf->datef) {
+						print '<tr>';
+						print '<td class="nowrap">';
+						print dol_print_date($tmpldate, 'daytext') . ' ' . $line->heured . ' - ' . $line->heuref;
+						print '</td>';
+						print '<td class="center"><input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="' . $line->id . '"/></td>';
+						print '</tr>';
+					}
+					$tmli ++;
 				}
 				print '</td>';
-				
-				print '<td>' . $langs->trans("AgfPDFFichePres9") . ' ';
-				$form->select_date($agf->dated, 'datedaytodatestart');
-				print $langs->trans("AgfPDFFichePres10") . ' ';
-				$form->select_date($agf->datef, 'datedaytodateend');
-				print '</td>';
-				
-				print '<td>';
-				
-				print $langs->trans("AgfPeriodTimeB"). ' ';
-				print $formAgefodd->select_time(empty($datedaytodate1d) ? $conf->global->AGF_1DAYSHIFT : $datedaytodate1d, 'datedaytodate1d');
 
-				print $langs->trans("AgfPeriodTimeE"). ' ';
-				print $formAgefodd->select_time(empty($datedaytodate1f) ? $conf->global->AGF_2DAYSHIFT : $datedaytodate1f, 'datedaytodate1f');
-				print '<br />';
-				print $langs->trans("AgfPeriodTimeB") . ' ';
-				print $formAgefodd->select_time(empty($datedaytodate2d) ? $conf->global->AGF_3DAYSHIFT : $datedaytodate2d, 'datedaytodate2d');
-
-				print $langs->trans("AgfPeriodTimeE"). ' ';
-				print $formAgefodd->select_time(empty($datedaytodate2f) ? $conf->global->AGF_4DAYSHIFT : $datedaytodate2f, 'datedaytodate2f');
-				print '</td>';
-
-				print '</tr>';
-				print '</table>';
-				
-				if ($user->rights->agefodd->creer)
-				{
-					print '<div class="tabsAction">';
-					print '<div class="inline-block divButAction">';
-					print '<input type="submit" class="butAction" name="period_daytodate" value="'.$langs->trans('AgfNewPeriod').'">';
-					print '</div>';
-					print '</div>';
-				}
-				
-				print '</div>';
-				
-
-				// TODO start new table
-				print '<div class="fichehalfright">';
-				print '<div class="ficheaddleft">';
-				print load_fiche_titre($langs->trans('AgfNewPeriodFromScratch'), '', '');
-				print '<table class="noborder period" width="100%" id="period_create_by_period">';
-				
-				
-				print '<tr class="liste_titre">';
-				print '<th class="liste_titre">'.$langs->trans('Date').'</th>';
-				print '<th class="liste_titre">'.$langs->trans('HourStart').'</th>';
-				print '<th class="liste_titre">'.$langs->trans('EndHour').'</th>';
-				print '</tr>';
-
-				print '<tr>';
-				print '<td>';
-				$form->select_date($agf->dated, 'datenew', '', '', '', 'newperiod');
-				print '</td>';
-				print '<td>';
-				print $formAgefodd->select_time('08:00', 'datenewd');
-				print '</td>';
-				print '<td>';
-				print $formAgefodd->select_time('18:00', 'datenewf');
-				print '</td>';
 				print '</tr>' . "\n";
-				
-				print '</table>';
-				
-				if ($user->rights->agefodd->creer)
-				{
-					print '<div class="tabsAction">';
-					print '<div class="inline-block divButAction">';
+			}
+
+			print '</table>';
+			if (!empty($tmpl_calendar->lines))
+			{
+				print '<div class="tabsAction">';
+				print '<div class="inline-block divButAction">';
+				if ($user->rights->agefodd->creer) {
 					print '<input type="submit" class="butAction" name="period_add" value="'.$langs->trans('AgfNewPeriod').'">';
-					print '</div>';
-					print '</div>';
 				}
-				
-				
-				print '</div>'; // fin ficheaddleft
-				print '</div>'; // fin fichehalfright
+				print '</div>';
+				print '</div>';
+			}
+
+			print '</div>'; // fin fichehalfleft
+
+			print '<div class="fichehalfright">';
+			print '<div class="ficheaddleft">';
+			print load_fiche_titre($langs->trans('AgfNewPeriodDayToDate'), '', '');
+			print '<table class="noborder period" width="100%" id="period_create_from_date">';
+
+			print '<tr class="liste_titre">';
+			print '<th class="liste_titre">'.$langs->trans('AgfWeekdayModels').'</th>';
+			print '<th class="liste_titre">'.$langs->trans('Dates').'</th>';
+			print '<th class="liste_titre">'.$langs->trans('Hours').'</th>';
+			print '</tr>';
+
+			print '<tr>';
+			print '<td>';
+			$TWeekDay = array(1,2,3,4,5,6,0);
+			foreach ($TWeekDay as $daynum )
+			{
+				if ($conf->global->{'AGF_WEEKADAY' . $daynum} == 1) {
+					$checked = ' checked="checked" ';
+				} else {
+					$checked = '';
+				}
+				print '<p><input type="checkbox" ' . $checked . ' name="fromdaytodate[]" id="fromdaytodate" value="' . $daynum . '"/>' . $langs->trans('Day' . $daynum).'</p>';
+			}
+			print '</td>';
+
+			print '<td>' . $langs->trans("AgfPDFFichePres9") . ' ';
+			$form->select_date($agf->dated, 'datedaytodatestart');
+			print $langs->trans("AgfPDFFichePres10") . ' ';
+			$form->select_date($agf->datef, 'datedaytodateend');
+			print '</td>';
+
+			print '<td>';
+
+			print $langs->trans("AgfPeriodTimeB"). ' ';
+			print $formAgefodd->select_time(empty($datedaytodate1d) ? $conf->global->AGF_1DAYSHIFT : $datedaytodate1d, 'datedaytodate1d');
+
+			print $langs->trans("AgfPeriodTimeE"). ' ';
+			print $formAgefodd->select_time(empty($datedaytodate1f) ? $conf->global->AGF_2DAYSHIFT : $datedaytodate1f, 'datedaytodate1f');
+			print '<br />';
+			print $langs->trans("AgfPeriodTimeB") . ' ';
+			print $formAgefodd->select_time(empty($datedaytodate2d) ? $conf->global->AGF_3DAYSHIFT : $datedaytodate2d, 'datedaytodate2d');
+
+			print $langs->trans("AgfPeriodTimeE"). ' ';
+			print $formAgefodd->select_time(empty($datedaytodate2f) ? $conf->global->AGF_4DAYSHIFT : $datedaytodate2f, 'datedaytodate2f');
+			print '</td>';
+
+			print '</tr>';
+			print '</table>';
+
+			if ($user->rights->agefodd->creer)
+			{
+				print '<div class="tabsAction">';
+				print '<div class="inline-block divButAction">';
+				print '<input type="submit" class="butAction" name="period_daytodate" value="'.$langs->trans('AgfNewPeriod').'">';
+				print '</div>';
+				print '</div>';
+			}
+
+			print '</div>'; // fin ficheaddleft
+			print '</div>'; // fin fichehalfright
+
+						
+			print load_fiche_titre($langs->trans('AgfNewPeriodFromScratch'), '', '');
+			print '<table class="noborder period" width="100%" id="period_create_by_period">';
+
+
+			print '<tr class="liste_titre">';
+			print '<th class="liste_titre">'.$langs->trans('Date').'</th>';
+			print '<th class="liste_titre">'.$langs->trans('HourStart').'</th>';
+			print '<th class="liste_titre">'.$langs->trans('EndHour').'</th>';
+			print '</tr>';
+
+			print '<tr>';
+			print '<td>';
+			$form->select_date($agf->dated, 'datenew', '', '', '', 'newperiod');
+			print '</td>';
+			print '<td>';
+			print $formAgefodd->select_time('08:00', 'datenewd');
+			print '</td>';
+			print '<td>';
+			print $formAgefodd->select_time('18:00', 'datenewf');
+			print '</td>';
+			print '</tr>' . "\n";
+
+			print '</table>';
+
+			if ($user->rights->agefodd->creer)
+			{
+				print '<div class="tabsAction">';
+				print '<div class="inline-block divButAction">';
+				print '<input type="submit" class="butAction" name="period_add" value="'.$langs->trans('AgfNewPeriod').'">';
+				print '</div>';
+				print '</div>';
 			}
 
 			print '</form>';
