@@ -111,8 +111,8 @@ $formactions=new FormActions($db);
 $form=new Form($db);
 
 ob_start();
-$formactions->select_type_actions(-1, 'type_code', "' AND type = 'agefodd"); // + petit hack hahahahahaaaha T_T
-$select_type_action .= ob_get_clean();
+$formactions->select_type_actions('AC_AGF_SESS', 'type_code', "' AND type = 'agefodd"); // + petit hack hahahahahaaaha T_T
+$select_type_action = '<div style="display:none;">'.ob_get_clean().'</div>'; // Je le cache car le standard agefodd type les event agenda avec le code AC_AGF_SESS
 
 $input_title_action = '<input type="text" name="label" placeholder="'.$langs->transnoentitiesnoconv('Title').'" style="width:300px" />';
 
@@ -211,9 +211,7 @@ echo '
 								.append('.json_encode($TExtraToPrint).');					
 								
 	fullcalendarscheduler_picto_delete = "'.addslashes(img_delete()).'";
-	fullcalendarscheduler_picto_detail = "'.addslashes(img_picto($langs->transnoentitiesnoconv('Show'), 'detail.png')).'";
 	
-	fullcalendarscheduler_url_event_card = "'.dol_buildpath('/comm/action/card.php', 1).'";
 	fullcalendarscheduler_error_msg_allday_event_exists = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_error_msg_allday_event_exists').'";
 </script>';
 

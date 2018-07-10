@@ -189,12 +189,10 @@ $(document).ready(function() {
 				,dataType: 'json'
 				,data: {
 					json: 1
-					,get: 'getEventsFromDatesAgefoddSession' // get all events from dates and code
+					,get: 'getAgefoddSessionCalendrier' // get all events from dates and code
 					,fk_agefodd_session: fk_agefodd_session
 					,dateStart: view.start.format('YYYY-MM-DD 00:00:00')
 					,dateEnd: view.end.add(-1, 'days').format('YYYY-MM-DD 23:59:59')
-					,code: 'AC_AGF_SESS'
-					,fk_user: fk_user
 				}
 			}).fail(function(jqXHR, textStatus, errorThrown) {
 				console.log('Error: jqXHR, textStatus, errorThrown => ', jqXHR, textStatus, errorThrown);
@@ -208,41 +206,29 @@ $(document).ready(function() {
 		eventRender: function(event, element, view) {
 			if (event.id != null && event.id != 'undefined')
 			{
-				// TODO à finaliser avec un petit picto et l'action associée => reste encore à définir
 				//console.log(event);
-				var link_a = '<a title="action 1" class="ajaxtool_link" href="javascript:action_a('+event.id+');">A</a>';
-				
-				var action_detail = '<a class="ajaxtool_link need_to_be_adjust" href="'+fullcalendarscheduler_url_event_card+'?id='+event.id+'">'+fullcalendarscheduler_picto_detail+'</a>';
 				var action_delete = '<a class="ajaxtool_link" href="javascript:delete_event('+event.id+');">'+fullcalendarscheduler_picto_delete+'</a>';
 				
-				//fullcalendarscheduler_picto_detail
-				element.find('.fc-content').append('<div class="ajaxtool">'+action_detail+' '+action_delete+'</div>');
-				element.find('.fc-content')	.append('<div class="link_thirdparty">'+event.link_company.toString()+'</div>')
-											.append('<div class="link_contact">'+event.link_contact.toString()+'</div>')
-											.append('<div class="extrafields">'+event.showOptionals+'</div>')
-											.append('<p class="desc">'+event.desc+'</p>');
+				if (event.startEditable) element.find('.fc-content').append('<div class="ajaxtool">'+action_delete+'</div>');
 				
-				element.find('.link_thirdparty a, .link_contact a').tipTip();
+				var liste_participant = $('<div class="liste_participant"></div>');
+				var liste_formateur = $('<div class="liste_formateur"></div>');
+				
+				liste_formateur.append(event.TNomUrlFormateur.join('<br />'));
+				
+				element.find('.fc-content').append(liste_participant); // TODO à compléter
+				element.find('.fc-content').append(liste_formateur); // TODO à compléter
 				
 				element.find('.fc-content a').css('color', element.css('color'));
 				
-				if (event.fk_agefodd_session != fk_agefodd_session)
+				if (!event.startEditable)
 				{
 					element.find('.fc-bg').css({
 						background: '#ccc'
 						,opacity:0.95
 					});
 				}
-				// Couleur du corp en fonction de la typologie client (M, Mme, Mlle ...)
-//				if (typeof fullcalendarscheduler_TColorCivility[event.contact_civility] != 'undefined')
-//				{
-//					element.find('.fc-bg').css({
-//						background: fullcalendarscheduler_TColorCivility[event.contact_civility]
-//						,opacity:0.95
-//					});
-//				}
 			}
-			
 		},
 		eventAfterAllRender: function (view) {
 			// Pour un peu plus de confort pour éviter de bataillé avec l'adaptation de la hauteur du bloc sur le hover qui suit
@@ -268,26 +254,9 @@ $(document).ready(function() {
 	});
 	/* Fin Calendar centrale */
 	
-	action_a = function(id)
-	{
-		alert('Update statut rapide de l\'event');
-		var view = $('#agf_session_scheduler').fullCalendar('getView');
-		console.log("view = >", view);
-		
-		var event = $("#agf_session_scheduler").fullCalendar( 'clientEvents', id );
-		console.log("event => ", event);
-		
-		//view.calendar.removeEvents(id);
-		//view.calendar.addEventSource(event);
-	};
-	
-	action_b = function(id)
-	{
-		alert('Reste à faire');
-	};
 	
 	delete_event = function(id)
-	{
+	{	
 		var div = $('<div>').text(fullcalendarscheduler_content_dialog_delete);
 		div.dialog({
 			modal: true

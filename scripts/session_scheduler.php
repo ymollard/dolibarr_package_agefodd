@@ -51,13 +51,18 @@ if (!empty($print))
 	exit;
 }
 
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
+dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+
+$langs->load('agefodd@agefodd');
 $response = new interfaceResponse;
 $get = GETPOST('get', 'alpha');
 
 
 switch ($get) {
-	case 'getEventsFromDatesAgefoddSession':
-		_getEventsFromDatesAgefoddSession(GETPOST('fk_agefodd_session'), GETPOST('dateStart'), GETPOST('dateEnd'), GETPOST('code'), GETPOST('fk_user'));
+	case 'getAgefoddSessionCalendrier':
+		_getAgefoddSessionCalendrier(GETPOST('fk_agefodd_session'), GETPOST('dateStart'), GETPOST('dateEnd'));
 		echo json_encode( $response );
 		break;
 }
@@ -69,87 +74,43 @@ switch ($get) {
  * @param date $date_s	format Y-m-d H:i:s
  * @param date $date_e	format Y-m-d H:i:s
  */
-function _getEventsFromDatesAgefoddSession($fk_agefodd_session, $date_s, $date_e, $c_actioncomm_code, $fk_user)
+function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 {
-	global $db, $response, $conf;
+	global $db, $response, $conf, $langs;
 	
-	require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+	$sql = 'SELECT agsc.rowid';
+	$sql.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier agsc';
+	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = agsc.fk_agefodd_session)';
+	$sql.= ' WHERE s.entity = '.$conf->entity.' AND agsc.fk_agefodd_session = '.$fk_agefodd_session;
+	$sql.= ' AND agsc.heured >= '.$db->idate($date_s);
+	$sql.= ' AND agsc.heuref <= '.$db->idate($date_e);
 	
-	$actioncomm = new ActionComm($db);
-	$extrafields = new ExtraFields($db);
-	$extralabels=$extrafields->fetch_name_optionals_label($actioncomm->table_element);
-	
-	$sql = 'SELECT a.id AS fk_actioncomm, ca.code AS type_code';
-	$sql.= ', a.label, a.note, a.fk_soc, s.nom AS company_name, a.datep, a.datep2, a.fulldayevent';
-	$sql.= ', sp.rowid AS fk_socpeople, sp.civility, sp.lastname, sp.firstname, sp.email AS contact_email, sp.address AS contact_address, sp.zip AS contact_zip, sp.town AS contact_town, sp.phone_mobile AS contact_phone_mobile';
-	$sql.= ', agsc.fk_agefodd_session as fk_agefodd_session';
-	foreach ($extralabels as $key => $label)
-	{
-		$sql .= ', ae.'.$key.' AS extra_'.$key;
-	}
-	$sql.= ' FROM '.MAIN_DB_PREFIX.'actioncomm a';
-	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'c_actioncomm ca ON (ca.id = a.fk_action)';
-	
-	// Je veux les events agenda aux quels l'utilisateur est associé
-	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'actioncomm_resources ar ON (ar.fk_actioncomm = a.id AND ar.element_type=\'user\' AND ar.fk_element = '.$fk_user.')';
-	
-	// Cette jointure me permet de connaitre le fk_agefodd_session dans le select (si null, alors il ne s'agit pas de la session courante donc bg en gris)
-	$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier agsc ON (agsc.fk_actioncomm = a.id)';
-	
-	$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'societe s ON (s.rowid = a.fk_soc)';
-	$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'socpeople sp ON (sp.rowid = a.fk_contact)';
-	$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'actioncomm_extrafields ae ON (ae.fk_object = a.id)';
-	
-	$sql.= ' WHERE a.entity = '.$conf->entity;
-	if (empty($date_e)) $sql.= ' AND DATE_FORMAT(a.datep, "%Y-%m-%d") = \''.date('Y-m-d', $date_s).'\'';
-	else {
-		$sql.= ' AND a.datep >= '.$db->idate($date_s);
-		$sql.= ' AND a.datep2 <= '.$db->idate($date_e);
-	}
-	if (!empty($c_actioncomm_code)) $sql.= ' AND ca.code = \''.$c_actioncomm_code.'\'';
-	
-	dol_syslog("interface.php::_getEventsFromDates", LOG_DEBUG);
+	dol_syslog("session_scheduler.php::_getAgefoddSessionCalendrier SQL=".$sql, LOG_DEBUG);
 	$resql = $db->query($sql);
 	if ($resql)
 	{
-		$societe = new Societe($db);
-		$contact = new Contact($db);
+		$now = dol_now();
 		while ($obj = $db->fetch_object($resql))
 		{
-			$actioncomm->fetch($obj->fk_actioncomm);
-			$actioncomm->fetch_optionals();
+			$agf = new Agefodd_sesscalendar($db);
+			$agf->fetch($obj->rowid);
 			
-			$societe->id = $obj->fk_soc;
-			$societe->nom = $societe->name = $obj->company_name;
-			
-			$contact->id = $obj->fk_socpeople;
-			$contact->firstname = $obj->firstname;
-			$contact->lastname = $obj->lastname;
-			$contact->email = $obj->contact_email;
-			$contact->phone_mobile = $obj->contact_phone_mobile;
-			$contact->address = $obj->contact_address;
-			$contact->zip = $obj->contact_zip;
-			$contact->town = $obj->contact_town;
+			$TParticipant = array();
+			list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf, $fk_agefodd_session);
 			
 			$response->data->TEvent[] = array(
-				'id' => $obj->fk_actioncomm
-				,'type_code' => $obj->type_code
-				,'title' => $obj->label
-				,'desc' => !empty($obj->note) ? $obj->note : ''
-				,'fk_soc' => $obj->fk_soc
-				,'company_name' => $obj->company_name
-				,'link_company' => !empty($societe->id) ? $societe->getNomUrl(1) : ''
-				,'fk_socpeople' => $obj->fk_socpeople
-				,'contact_civility' => $obj->civility
-				,'contact_lastname' => $obj->lastname
-				,'contact_firstname' => $obj->firstname
-				,'link_contact' => !empty($contact->id) ? $contact->getNomUrl(1) : ''
-				,'start' => !empty($obj->fulldayevent) ? dol_print_date($obj->datep, '%Y-%m-%d') : dol_print_date($obj->datep, '%Y-%m-%dT%H:%M:%S', 'gmt') // TODO
-				,'end' => !empty($obj->fulldayevent) ? dol_print_date($obj->datep2, '%Y-%m-%d') : dol_print_date($obj->datep2, '%Y-%m-%dT%H:%M:%S', 'gmt')
-				,'allDay' => (boolean) $obj->fulldayevent // TODO à voir si on garde pour que l'event aparaisse en haut
-				,'showOptionals' => !empty($extralabels) ? customShowOptionals($actioncomm, $extrafields) : ''
-				,'editOptionals' => !empty($extralabels) ? '<table id="extrafield_to_replace" class="extrafields" width="100%">'.$actioncomm->showOptionals($extrafields, 'edit').'</table>' : ''
+				'id' => $agf->id
+				,'title' => $langs->transnoentitiesnoconv('AgfCalendarDates')
+				,'desc' => ''
+				,'start' => dol_print_date($agf->heured, '%Y-%m-%dT%H:%M:%S', 'gmt') // TODO
+				,'end' => dol_print_date($agf->heuref, '%Y-%m-%dT%H:%M:%S', 'gmt') // TODO
+				,'allDay' => false
 				,'fk_agefodd_session' => $obj->fk_agefodd_session
+				,'startEditable' => $agf->heuref < $now ? false : true // si la date de fin est dans le passé, alors plus le droit de déplcer l'event
+//				,'color'=>'#ccc' // background
+				,'TParticipant' => $TParticipant
+				,'TFormateur' => $TFormateur
+				,'TNomUrlFormateur' => $TNomUrlFormateur
 			);
 			
 		}
@@ -161,4 +122,38 @@ function _getEventsFromDatesAgefoddSession($fk_agefodd_session, $date_s, $date_e
 		$response->TError[] = $db->lasterror;
 		return 0;
 	}
+}
+
+function _getTFormateur(&$agf, $fk_agefodd_session)
+{
+	global $db, $response;
+	
+	$TFormateur = array();
+	$TNomUrl = array();
+	
+	$sql = 'SELECT af.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
+	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
+	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur af ON (af.rowid = agsf.fk_agefodd_formateur)';
+	$sql.= ' WHERE agsf.fk_session = '.$fk_agefodd_session;
+	$sql.= ' AND agsfc.heured <= \''.date('Y-m-d H:i:s', $agf->heured).'\'';
+	$sql.= ' AND agsfc.heuref >= \''.date('Y-m-d H:i:s', $agf->heuref).'\'';
+
+	$resql = $db->query($sql);
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$formateur = new Agefodd_teacher($db);
+			$formateur->fetch($obj->rowid);
+			$formateur->getnomurl = $formateur->getNomUrl();
+			$TFormateur[] = $formateur;
+			$TNomUrl[] = $formateur->getnomurl;
+		}
+	}
+	else
+	{
+		$response->TError[] = $db->lasterror;
+	}
+	
+	return array($TFormateur, $TNomUrl);
 }
