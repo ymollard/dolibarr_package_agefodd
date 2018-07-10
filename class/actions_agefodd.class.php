@@ -157,6 +157,22 @@ class ActionsAgefodd
 	 */
 	public function doActions($parameters, &$object, &$action, $hookmanager) {
 		// global $langs,$conf,$user;
+		global $conf, $mc;
+
+		// multicompagny tweak
+		if (is_object($mc))
+		{
+		    
+		    if(!in_array('agefodd', $mc->sharingelements)){
+		        $mc->sharingelements[] = 'agefodd';
+		    }
+		    
+		    if(!isset($mc->sharingobjects['agefodd'])){
+		        $mc->sharingobjects['agefodd'] = array('element'=>'agefodd');
+		    }
+			
+			$mc->setValues($conf);
+		}
 		return 0;
 	}
 
