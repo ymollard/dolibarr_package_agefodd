@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.2';
+		$this->version = '3.3.0';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -671,7 +671,8 @@ class modAgefodd extends DolibarrModules
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_category_dict",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf"
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf",
+						MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type'
 				),
 				'tablib' => array(
 						"AgfTraineeType",
@@ -679,7 +680,8 @@ class modAgefodd extends DolibarrModules
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
 						"AgfTrainerCategoryDict",
-						"AgfTrainingCategTblBPF"
+						"AgfTrainingCategTblBPF",
+						"AgfSessionCreneauType"
 				),
 				'tabsql' => array(
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
@@ -687,7 +689,8 @@ class modAgefodd extends DolibarrModules
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
 						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
-						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f'
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f',
+						'SELECT f.rowid as rowid, f.code, f.label, f.entity, f.active FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type as f WHERE entity = '.$conf->entity
 				),
 				'tabsqlsort' => array(
 						'sort ASC',
@@ -695,7 +698,8 @@ class modAgefodd extends DolibarrModules
 						'sort ASC',
 						'sort ASC',
 						'code ASC',
-						'sort ASC'
+						'sort ASC',
+						'label, code ASC'
 				),
 				'tabfield' => array(
 						"intitule,sort",
@@ -703,7 +707,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldvalue' => array(
 						"intitule,sort",
@@ -711,7 +716,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldinsert' => array(
 						"intitule,sort",
@@ -719,9 +725,11 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label,entity"
 				),
 				'tabrowid' => array(
+						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
@@ -730,6 +738,7 @@ class modAgefodd extends DolibarrModules
 						"rowid"
 				),
 				'tabcond' => array(
+						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
