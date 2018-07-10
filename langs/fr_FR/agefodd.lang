@@ -1315,3 +1315,6 @@ AgfAddIndexOnTraineePresencePDF=Ajouter l'indice de position du participants dan
 AgfHidePropalDtInfo=Masquer les dates de la session sur les propositions crées associées aux sessions
 AgfHideInvoiceDtInfo=Masquer les dates de la session sur les factures crées associées aux sessions
 AgfDoNotAutoLinkInvoice=Ne pas associer les factures aux sessions associés au devis lors de la création de facture depuis des devis qui sont lié à des sessions
+SessionRef=Ref. Session
+AgfSimpleNumRefModelSessionDesc=	Renvoie le numéro sous la forme SESyymm-nnnnn où yy est l'année, mm le mois, et nnnnn un compteur séquentiel sans rupture et sans remise à 0
+AgfAdminSessionNumber=Numérotation des sessions
