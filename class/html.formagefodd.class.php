@@ -1412,7 +1412,7 @@ class FormAgefodd extends Form
 	 * @param bool $set_select_thirdparty_multiple transforme le select thirdparty en multiselect
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $set_select_thirdparty_multiple=false) {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $filter_control_occupation=false, $set_select_thirdparty_multiple=false) {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1583,17 +1583,25 @@ class FormAgefodd extends Form
 			$sql_status = "SELECT t.rowid, t.code ,t.intitule ";
 			$sql_status .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
 			$sql_status .= ' WHERE active=1';
-			$sql .= " ORDER BY t.sort";
+			$sql_status .= " ORDER BY t.sort";
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$data_status = array();
 			$result_status = $this->db->query($sql_status);
 			if ($result_status) {
-				while ( $obj_status = $this->db->fetch_object($result) ) {
+				while ( $obj_status = $this->db->fetch_object($result_status) ) {
 					$data_status[$obj_status->rowid] = $obj_status->intitule;
 				}
 			}
 			print $form->multiselectarray('search_session_status', $data_status, $filter_session_status, '', 0, '', 0, '100%');
 			print '</td></tr>';
+			
+			if ($filter_control_occupation !== false)
+			{
+				print '<tr>';
+				print '<td class="nowrap">'.$langs->trans("AgfOccupationControlSearch").'</td>';
+				print '<td>'.$form->selectarray('control_occupation', array(-1=>$langs->trans('All'), 0=>$langs->trans('ControlOccupationUncheck'), 1=>$langs->trans('ControlOccupationCheck')), $filter_control_occupation).'</td>';
+				print '</tr>';
+			}
 		}
 
 		print '</table>';
@@ -1620,7 +1628,7 @@ class FormAgefodd extends Form
 		else
 			print '</td></tr></table>';
 
-		print '</div>'; // Close fichecenter
+//		print '</div>'; // Close fichecenter
 		print '<div style="clear:both"></div>';
 
 		print '</form>';

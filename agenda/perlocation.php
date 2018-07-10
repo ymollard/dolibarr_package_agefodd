@@ -52,7 +52,9 @@ $filter_trainee = GETPOST('traineeid', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth','int'), GETPOST('dt_start_filterday','int'), GETPOST('dt_start_filteryear','int'));
 $filter_session_status = GETPOST('search_session_status', 'array');
-
+$filter_control_occupation = GETPOST('control_occupation');
+if ($filter_control_occupation === '') $filter_control_occupation = -1; // -1 = tous; 0 = Non cochée; 1 = Cochée
+	
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
 	$filter_trainer=$user->id;
@@ -241,6 +243,10 @@ if (is_array($filter_session_status) && count($filter_session_status)>0){
 	}
 
 }
+if (!empty($filter_control_occupation) && $filter_control_occupation !== '')
+{
+	$param.= '&control_occupation='.$filter_control_occupation;
+}
 $param .= "&amp;maxprint=" . $maxprint;
 
 $prev = dol_get_first_day_week($day, $month, $year);
@@ -293,7 +299,7 @@ $canedit = 1;
 $head = agf_calendars_prepare_head($paramnoaction);
 
 dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, true);
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, $filter_control_occupation, true);
 
 // TODO remove si intégration dans master
 ?>
@@ -306,8 +312,6 @@ $formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $fil
 	});
 </script>
 <?php
-
-dol_fiche_end();
 
 $showextcals = $listofextcals;
 // Legend
@@ -403,6 +407,10 @@ if ($filter_type_session != '') {
 if (! empty($filter_location)) {
 	$sql .= " AND agf.fk_session_place=" . $filter_location;
 }
+if ($filter_control_occupation != -1) {
+	if ($filter_control_occupation) $sql .= " AND agf_place.control_occupation=1";
+	else $sql .= " AND agf_place.control_occupation IS NULL";
+}
 if ($action == 'show_day') {
 	$sql .= " AND (";
 	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
@@ -430,7 +438,7 @@ if ($action == 'show_day') {
 
 $parameters=array('from' => 'perlocation', 'target' => 'first_query');
 $reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
+if (!empty($hookmanager->resPrint)) $sql.=$hookmanager->resPrint;
 
 //$sql.= ' ORDER BY agf_place.ref_interne ASC';
 
@@ -631,17 +639,18 @@ echo '</form>';
 
 // print "begin_d=".$begin_d." end_d=".$end_d;
 
-echo '<table width="100%" class="nocellnopadd cal_month">';
+echo '<div class="div-table-responsive">';
+echo '<table width="100%" class="nocellnopadd cal_month tagtable liste">';
 
 echo '<tr class="liste_titre">';
-echo '<td></td>';
+echo '<td class="liste_titre"></td>';
 $i = 0; // 0 = sunday,
 while ( $i < 7 ) {
 	if (($i + 1) < $begin_d || ($i + 1) > $end_d) {
 		$i ++;
 		continue;
 	}
-	echo '<td align="center" colspan="' . ($end_h - $begin_h) . '">';
+	echo '<td class="liste_titre" align="center" colspan="' . ($end_h - $begin_h) . '">';
 	echo $langs->trans("Day" . (($i + (isset($conf->global->MAIN_START_WEEK) ? $conf->global->MAIN_START_WEEK : 1)) % 7));
 	print "<br>";
 	if ($i)
@@ -654,7 +663,7 @@ while ( $i < 7 ) {
 echo "</tr>\n";
 
 echo '<tr class="liste_titre">';
-echo '<td></td>';
+echo '<th class="liste_titre"></th>';
 $i = 0;
 while ( $i < 7 ) {
 	if (($i + 1) < $begin_d || ($i + 1) > $end_d) {
@@ -662,9 +671,9 @@ while ( $i < 7 ) {
 		continue;
 	}
 	for($h = $begin_h; $h < $end_h; $h ++) {
-		echo '<td align="center">';
+		echo '<th class="liste_titre" align="center">';
 		print '<small style="font-family: courier">' . sprintf("%02d", $h) . '</small>';
-		print "</td>";
+		print "</th>";
 	}
 	echo "</td>\n";
 	$i ++;
@@ -690,7 +699,7 @@ $var = false;
 foreach ($TLieu as $lieu => $nb_event)
 {
 	$var = ! $var;
-	echo "<tr>";
+	echo "<tr class='oddeven'>";
 	echo '<td width="15%" class="cal_current_month cal_peruserviewname"' . ($var ? ' style="background: #F8F8F8"' : '') . '>' . $lieu .'</td>';
 
 	$tmpday = $sav;
@@ -728,6 +737,9 @@ foreach ($TLieu as $lieu => $nb_event)
 }
 
 echo "</table>\n";
+echo '</div>';
+
+dol_fiche_end();
 
 /*if (! empty($conf->global->AGENDA_USE_EVENT_TYPE)) {
 	$langs->load("commercial");
