@@ -525,7 +525,12 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [1] = $langs->trans("AgfCategCostCateg");
 	$head [$h] [2] = 'catcost';
 	$h ++;
-
+	if(!empty($conf->multicompany->enabled)){
+		$head [$h] [0] = dol_buildpath("/agefodd/admin/multicompany_agefodd.php", 1);
+		$head [$h] [1] = $langs->trans("AgefoddSetupMulticompany");
+		$head [$h] [2] = 'multicompany';
+		$h ++;
+	}
 	if (!empty($conf->global->AGF_MANAGE_BPF)) {
 		$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catbpf.php", 1);
 		$head [$h] [1] = $langs->trans("AgfReportBPFCategTabTitle");
