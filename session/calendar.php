@@ -188,14 +188,17 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 
 		// From template
 		$idtemplate_array = GETPOST('fromtemplate');
+		$TCodeSessionCalendrierType = GETPOST('code_c_session_calendrier_type');
 		if (is_array($idtemplate_array)) {
-			foreach ( $idtemplate_array as $idtemplate ) {
+			foreach ( $idtemplate_array as $index => $idtemplate ) {
 
 				$agf = new Agefodd_sesscalendar($db);
 
 				$agf->sessid = GETPOST('sessid', 'int');
 				$agf->date_session = dol_mktime(0, 0, 0, GETPOST('datemonth', 'int'), GETPOST('dateday', 'int'), GETPOST('dateyear', 'int'));
 
+				$agf->calendrier_type = $TCodeSessionCalendrierType[$index];
+				
 				$tmpl_calendar = new Agefoddcalendrier($db);
 				$result = $tmpl_calendar->fetch($idtemplate);
 				$tmpldate = dol_mktime(0, 0, 0, GETPOST('datetmplmonth', 'int'), GETPOST('datetmplday', 'int'), GETPOST('datetmplyear', 'int'));
@@ -223,7 +226,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 
 			$agf->sessid = GETPOST('sessid', 'int');
 			$agf->date_session = dol_mktime(0, 0, 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
-
+			$agf->calendrier_type = GETPOST('calendrier_type');
 			// From calendar selection
 			$heure_tmp_arr = array();
 
@@ -262,6 +265,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 		$error_message = '';
 
 		// From template
+		$calendrier_type = GETPOST('code_c_session_calendrier_type');
 		$weekday = GETPOST('fromdaytodate', 'array');
 		$datedaytodate1d = GETPOST('datedaytodate1d', 'alpha');
 		$datedaytodate1f = GETPOST('datedaytodate1f', 'alpha');
@@ -280,6 +284,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 					$agf = new Agefodd_sesscalendar($db);
 					$agf->sessid = GETPOST('sessid', 'int');
 					$agf->date_session = $treatmentdate;
+					$agf->calendrier_type = $calendrier_type;
 					if (! empty($datedaytodate1d)) {
 						$heure_tmp_arr = explode(':', $datedaytodate1d);
 						$agf->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
@@ -298,6 +303,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 						$agf = new Agefodd_sesscalendar($db);
 						$agf->sessid = GETPOST('sessid', 'int');
 						$agf->date_session = $treatmentdate;
+						$agf->calendrier_type = $calendrier_type;
 						$heure_tmp_arr = explode(':', $datedaytodate2d);
 						$agf->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 						$heure_tmp_arr = explode(':', $datedaytodate2f);
@@ -451,7 +457,7 @@ if ($id) {
 			print '<tr class="liste_titre">';
 			print '<th width="15%" class="liste_titre">' . $langs->trans('Date') . '</th>';
 			print '<th width="35%" class="liste_titre">' . $langs->trans('Hours') . '</th>';
-			print '<th class="liste_titre">' . $langs->trans('CalendarType') . '</th>';
+			print '<th class="liste_titre">' . $langs->trans('AgfCalendarType') . '</th>';
 			if ($user->rights->agefodd->modifier)
 			{
 				print '<th width="1%" class="liste_titre linecoledit center">&nbsp;</th>';
@@ -537,20 +543,33 @@ if ($id) {
 				print '</div>';
 				print '</div>';
 			}
+			print '</form>';
 
 			print '<br /><br />';
 			// Fiels for new periodes
-			
+
 			print '<div class="fichehalfleft">';
 			print load_fiche_titre($langs->trans('AgfCalendarFromTemplate'), '', '');
 
+			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="action" value="edit">' . "\n";
+			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
+			
 			print '<table class="noborder period" width="100%" id="period_create">';
 			// Add new line from template
 			$tmpl_calendar = new Agefoddcalendrier($db);
 			$result = $tmpl_calendar->fetch_all();
 			if ($result) {
+				print '<tr class="liste_titre_filter">';
+				print '<td class="liste_titre">&nbsp;</td>';
+				print '<td class="liste_titre">'.$formAgefodd->select_calendrier_type('', 'up', true, 'onclick="$(\'#period_create .select_calendrier_type\').val(this.value);"').'</td>';
+				print '<td class="liste_titre">&nbsp;</td>';
+				print '</tr">';
+				
 				print '<tr class="liste_titre">';
 				print '<th>'.$langs->trans('Date').' - '.$langs->trans('Hours').'</th>';
+				print '<th>'.$langs->trans('AgfCalendarType').'</th>';
 				print '<th width="5%">&nbsp;</th>';
 				print '</tr>';
 				
@@ -579,6 +598,7 @@ if ($id) {
 						print '<td class="nowrap">';
 						print dol_print_date($tmpldate, 'daytext') . ' ' . $line->heured . ' - ' . $line->heuref;
 						print '</td>';
+						print '<td>'.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type[]').'</td>';
 						print '<td class="center"><input type="checkbox" name="fromtemplate[]" id="fromtemplate" value="' . $line->id . '"/></td>';
 						print '</tr>';
 					}
@@ -600,18 +620,27 @@ if ($id) {
 				print '</div>';
 				print '</div>';
 			}
+			
+			print '</form>';
 
 			print '</div>'; // fin fichehalfleft
 
 			print '<div class="fichehalfright">';
 			print '<div class="ficheaddleft">';
 			print load_fiche_titre($langs->trans('AgfNewPeriodDayToDate'), '', '');
+			
+			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="action" value="edit">' . "\n";
+			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
+			
 			print '<table class="noborder period" width="100%" id="period_create_from_date">';
-
+			
 			print '<tr class="liste_titre">';
 			print '<th class="liste_titre">'.$langs->trans('AgfWeekdayModels').'</th>';
 			print '<th class="liste_titre">'.$langs->trans('Dates').'</th>';
 			print '<th class="liste_titre">'.$langs->trans('Hours').'</th>';
+			print '<th class="liste_titre">'.$langs->trans('AgfCalendarType').'</th>';
 			print '</tr>';
 
 			print '<tr>';
@@ -649,6 +678,8 @@ if ($id) {
 			print $formAgefodd->select_time(empty($datedaytodate2f) ? $conf->global->AGF_4DAYSHIFT : $datedaytodate2f, 'datedaytodate2f');
 			print '</td>';
 
+			print '<td>'.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type').'</td>';
+			
 			print '</tr>';
 			print '</table>';
 
@@ -660,11 +691,17 @@ if ($id) {
 				print '</div>';
 				print '</div>';
 			}
+			print '</form>';
 
 			print '</div>'; // fin ficheaddleft
 			print '</div>'; // fin fichehalfright
 
-						
+			
+			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="action" value="edit">' . "\n";
+			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
+			
 			print load_fiche_titre($langs->trans('AgfNewPeriodFromScratch'), '', '');
 			print '<table class="noborder period" width="100%" id="period_create_by_period">';
 
@@ -673,6 +710,7 @@ if ($id) {
 			print '<th class="liste_titre">'.$langs->trans('Date').'</th>';
 			print '<th class="liste_titre">'.$langs->trans('HourStart').'</th>';
 			print '<th class="liste_titre">'.$langs->trans('EndHour').'</th>';
+			print '<th class="liste_titre">'.$langs->trans('AgfCalendarType').'</th>';
 			print '</tr>';
 
 			print '<tr>';
@@ -685,6 +723,7 @@ if ($id) {
 			print '<td>';
 			print $formAgefodd->select_time('18:00', 'datenewf');
 			print '</td>';
+			print '<td>'.$formAgefodd->select_calendrier_type('', 'calendrier_type').'</td>';
 			print '</tr>' . "\n";
 
 			print '</table>';
