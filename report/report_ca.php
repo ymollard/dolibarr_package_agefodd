@@ -196,12 +196,12 @@ print '<tr>';
 print '<td>' . $langs->trans('AgfTypeRequester') . '</td>';
 print '<td><input type="text" class="flat" name="search_soc_requester" value="' . $search_soc_requester . '" size="20"></td>';
 print '</tr>';
-/*
+
 print '<tr>';
 print '<td>' . $langs->trans('SalesRepresentatives') . '</td>';
 print '<td>' . $formother->select_salesrepresentatives($search_sale, 'search_sale', $user) . '</td>';
 print '</tr>';
-*/
+
 print '<tr>';
 print '<td>' . $langs->trans('Type') . '</td>';
 print '<td>' . $formAgefodd->select_type_session('search_type_session', $search_type_session, 1) . '</td>';
