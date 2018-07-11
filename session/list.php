@@ -441,6 +441,48 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user, array_keys($extrafields->attribute_label));
 
 if ($resql != - 1) {
+	
+	$TTotalBySession = array();
+	
+	$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd.total_ht) as total_ht_without_draft';
+	$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+	$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p ON (p.rowid = s.fk_element AND s.element_type = \'propal\')';
+	$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd ON (pd.fk_propal = p.rowid)';
+	$sql_tmp.= ' WHERE 1';
+	$sql_tmp.= ' AND p.fk_statut > 0'; // Propals non brouillon
+	$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+	
+	$resql_tmp = $db->query($sql_tmp);
+	if ($resql_tmp)
+	{
+		while ($arr = $db->fetch_array($resql_tmp)) $TTotalBySession[$arr['fk_session_agefodd']]['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+	}
+	else
+	{
+		dol_print_error($db);
+	}
+	
+	if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
+	{
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd2.total_ht) as total_ht_from_all_propals';
+		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p2 ON (p2.rowid = s.fk_element AND s.element_type = \'propal\')';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
+		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+		$resql_tmp = $db->query($sql_tmp);
+		if ($resql_tmp)
+		{
+			while ($arr = $db->fetch_array($resql_tmp)) $TTotalBySession[$arr['fk_session_agefodd']]['total_ht_from_all_propals'] = $arr['total_ht_from_all_propals'];
+		}
+		else
+		{
+			dol_print_error($db);
+		}
+	}
+	
 	$num = $resql;
 
 	$arrayofselected=is_array($toselect)?$toselect:array();
@@ -827,7 +869,17 @@ if ($resql != - 1) {
 			}
 
 			if ($user->rights->agefodd->session->margin) {
-				if (! empty($arrayfields['s.sell_price']['checked']))	print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				if (! empty($arrayfields['s.sell_price']['checked']))
+				{
+					$amount = 0;
+					if (!empty($TTotalBySession[$line->rowid]))
+					{
+						if (!empty($TTotalBySession[$line->rowid]['total_ht_without_draft'])) $amount = $TTotalBySession[$line->rowid]['total_ht_without_draft'];
+						if (!empty($TTotalBySession[$line->rowid]['total_ht_from_all_propals'])) $amount-= $TTotalBySession[$line->rowid]['total_ht_from_all_propals'];
+					}
+					print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($amount,0, $langs, 1, -1, -1, 'auto') . '</td>';
+//					print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				}
 				if (! empty($arrayfields['s.cost_trainer']['checked']))	print '<td  nowrap="nowrap"  name="margininfoline2'.$line->rowid.'">' . price($line->cost_trainer,0, $langs, 1, -1, -1, 'auto') . '</td>';
 				if (! empty($arrayfields['AgfCostOther']['checked']))	print '<td  nowrap="nowrap"  name="margininfoline3'.$line->rowid.'" >' . price($line->cost_other,0, $langs, 1, -1, -1, 'auto') . '</td>';
 
