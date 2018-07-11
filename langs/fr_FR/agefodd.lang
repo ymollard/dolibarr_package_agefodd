@@ -1315,3 +1315,7 @@ AgfAddIndexOnTraineePresencePDF=Ajouter l'indice de position du participants dan
 AgfHidePropalDtInfo=Masquer les dates de la session sur les propositions crées associées aux sessions
 AgfHideInvoiceDtInfo=Masquer les dates de la session sur les factures crées associées aux sessions
 AgfDoNotAutoLinkInvoice=Ne pas associer les factures aux sessions associés au devis lors de la création de facture depuis des devis qui sont lié à des sessions
+
+Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
+Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire
+Agf_fullcalendarscheduler_title_dialog_delete_event=Suppression du créneau horaire

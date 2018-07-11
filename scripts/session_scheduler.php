@@ -82,8 +82,8 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 	$sql.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier agsc';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = agsc.fk_agefodd_session)';
 	$sql.= ' WHERE s.entity = '.$conf->entity.' AND agsc.fk_agefodd_session = '.$fk_agefodd_session;
-	$sql.= ' AND agsc.heured >= '.$db->idate($date_s);
-	$sql.= ' AND agsc.heuref <= '.$db->idate($date_e);
+	$sql.= ' AND agsc.heured >= \''.$date_s.'\'';
+	$sql.= ' AND agsc.heuref <= \''.$date_e.'\'';
 	
 	dol_syslog("session_scheduler.php::_getAgefoddSessionCalendrier SQL=".$sql, LOG_DEBUG);
 	$resql = $db->query($sql);
@@ -135,9 +135,9 @@ function _getTFormateur(&$agf, $fk_agefodd_session)
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur af ON (af.rowid = agsf.fk_agefodd_formateur)';
 	$sql.= ' WHERE agsf.fk_session = '.$fk_agefodd_session;
-	$sql.= ' AND agsfc.heured <= \''.date('Y-m-d H:i:s', $agf->heured).'\'';
-	$sql.= ' AND agsfc.heuref >= \''.date('Y-m-d H:i:s', $agf->heuref).'\'';
-
+	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf->heuref).'\'';
+	$sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf->heured).'\'';
+	
 	$resql = $db->query($sql);
 	if ($resql)
 	{

@@ -33,3 +33,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur_calendrier (
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL
 )ENGINE=InnoDB;
+
+ALTER TABLE llx_agefodd_session_formateur_calendrier ADD COLUMN status integer DEFAULT 0;

@@ -35,3 +35,4 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
 ) ENGINE=InnoDB;
 
 ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN calendrier_type varchar(15);
+ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN status integer DEFAULT 0;

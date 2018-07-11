@@ -42,8 +42,13 @@ class Agefodd_sesscalendar {
 	public $sessid;
 	public $fk_actioncomm;
 	public $calendrier_type;
+	public $status = 0;
 	public $lines = array ();
 
+	
+	public static $STATUS_DRAFT = 0;
+	public static $STATUS_CONFIRMED = 1;
+	public static $STATUS_ABANDONED = -1;
 	/**
 	 * Constructor
 	 *
@@ -66,7 +71,7 @@ class Agefodd_sesscalendar {
 		$error = 0;
 
 		// Clean parameters
-
+		if (!is_numeric($this->status)) $this->status = 0;
 		// Check parameters
 		// Put here code to add control on parameters value
 
@@ -82,7 +87,7 @@ class Agefodd_sesscalendar {
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_calendrier(";
-		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type";
+		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type, status";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->sessid . ", ";
 		$sql .= "'" . $this->db->idate($this->date_session) . "', ";
@@ -92,7 +97,8 @@ class Agefodd_sesscalendar {
 		$sql .= ' ' . $user->id . ', ';
 		$sql .= ' ' . $user->id . ', ';
 		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
-		$sql .= "'" . $this->db->escape($this->calendrier_type) . "'";
+		$sql .= "'" . $this->db->escape($this->calendrier_type) . "', ";
+		$sql .= " " . $this->status;
 		$sql .= ")";
 
 		$this->db->begin();
@@ -154,7 +160,7 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
@@ -172,6 +178,7 @@ class Agefodd_sesscalendar {
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
+				$this->status = $obj->status;
 			}
 			$this->db->free($resql);
 
@@ -193,7 +200,7 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
@@ -211,6 +218,7 @@ class Agefodd_sesscalendar {
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
+				$this->status = $obj->status;
 			}
 			$this->db->free($resql);
 
@@ -232,7 +240,7 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_agefodd_session, s.calendrier_type, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_agefodd_session = " . $id;
@@ -256,6 +264,7 @@ class Agefodd_sesscalendar {
 				$line->sessid = $obj->fk_agefodd_session;
 				$line->calendrier_type = $obj->calendrier_type;
 				$line->calendrier_type_label = $obj->calendrier_type_label;
+				$line->status = $obj->status;
 
 				$this->lines[$i] = $line;
 			}
@@ -278,7 +287,7 @@ class Agefodd_sesscalendar {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
@@ -295,6 +304,7 @@ class Agefodd_sesscalendar {
 				$this->user_modification = $obj->fk_user_mod;
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
+				$this->status = $obj->status;
 			}
 			$this->db->free($resql);
 
@@ -318,7 +328,7 @@ class Agefodd_sesscalendar {
 		$error = 0;
 
 		// Clean parameters
-
+		if (!is_numeric($this->status)) $this->status = 0;
 		// Check parameters
 		// Put here code to add control on parameters values
 
@@ -329,6 +339,7 @@ class Agefodd_sesscalendar {
 		$sql .= " heuref='" . $this->db->idate($this->heuref) . "',";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
 		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "' ";
+		$sql .= " status=" . $this->status;
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();

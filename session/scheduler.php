@@ -111,15 +111,6 @@ $formactions=new FormActions($db);
 $form=new Form($db);
 
 ob_start();
-$formactions->select_type_actions('AC_AGF_SESS', 'type_code', "' AND type = 'agefodd"); // + petit hack hahahahahaaaha T_T
-$select_type_action = '<div style="display:none;">'.ob_get_clean().'</div>'; // Je le cache car le standard agefodd type les event agenda avec le code AC_AGF_SESS
-
-$input_title_action = '<input type="text" name="label" placeholder="'.$langs->transnoentitiesnoconv('Title').'" style="width:300px" />';
-
-// on intègre la notion de fulldayevent ??? $langs->trans("EventOnFullDay")   <input type="checkbox" id="fullday" name="fullday" '.(GETPOST('fullday')?' checked':'').' />
-$input_fulldayevent = '<label for="fullday">'.$langs->trans("EventOnFullDay").'</label> <input type="checkbox" id="fullday" name="fullday" value="1" />';
-
-ob_start();
 echo '<label>'.$langs->trans("DateActionStart").'</label> ';
 $form->select_date(null,'date_start',1,1,1,"action",1,1,0,0,'fulldaystart');
 $select_date_start = ob_get_clean();
@@ -129,38 +120,8 @@ echo '<label>'.$langs->trans("DateActionEnd").'</label> ';
 $form->select_date(null,'date_end',1,1,1,"action",1,1,0,0,'fulldayend');
 $select_date_end = ob_get_clean();
 
-/*
-require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
-$doleditor=new DolEditor('note',(GETPOST('note')?GETPOST('note'):$object->note),'',180,'dolibarr_notes','In',true,true,$conf->fckeditor->enabled,ROWS_6,90);
-$doleditor->Create();
-*/
-$input_note = '<textarea name="note" value="" placeholder="'.$langs->trans('Description').'" rows="3" class="minwidth300"></textarea>';
-$options = array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')));
-$select_company = '<label for="fk_soc">'.$langs->transnoentitiesnoconv('ThirdParty').'</label>'.$form->select_company('', 'fk_soc', '', 1, 0, 0, $options, 0, 'minwidth300');
-
-ob_start();
-echo '<label for="contactid">'.$langs->transnoentitiesnoconv('Contact').'</label>';
-$form->select_contacts(-1, -1, 'contactid', 1, '', '', 0, 'minwidth200'); // contactid car nom non pris en compte par l'ajax en vers.<3.9
-$select_contact = ob_get_clean();
-
 $select_user = '<label for="fk_user">'.$langs->transnoentitiesnoconv('User').'</label>'.$form->select_dolusers($user->id, 'fk_user');
 
-//$select_service = '<label for="fk_product">'.$langs->transnoentitiesnoconv('Service').'</label>'.$form->select_produits_list('', 'fk_product', 1);
-ob_start();
-echo '<label for="fk_service">'.$langs->transnoentitiesnoconv('Service').'</label>';
-$form->select_produits('', 'fk_service', 1);
-$select_service = ob_get_clean();
-
-
-$TExtraToPrint = '<table id="extrafield_to_replace" class="extrafields" width="100%">';
-
-$extrafields = new ExtraFields($db);
-$extralabels=$extrafields->fetch_name_optionals_label($actioncomm->table_element);
-if (!empty($extrafields->attribute_label))
-{
-	$TExtraToPrint.= $actioncomm->showOptionals($extrafields, 'edit');
-}
-$TExtraToPrint.= '</table>';
 /**/
 
 // fullcalendarscheduler_TColorCivility
@@ -185,9 +146,9 @@ echo '
 	fullcalendar_scheduler_businessHours_weekend_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START : '10:00').'";
 	fullcalendar_scheduler_businessHours_weekend_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END : '16:00').'";
 	
-	fullcalendarscheduler_title_dialog_create_event = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_title_dialog_create_event').'";
-	fullcalendarscheduler_title_dialog_update_event = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_title_dialog_update_event').'";
-	fullcalendarscheduler_title_dialog_delete_event = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_title_dialog_delete_event').'";
+	fullcalendarscheduler_title_dialog_create_event = "'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_title_dialog_create_event').'";
+	fullcalendarscheduler_title_dialog_update_event = "'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_title_dialog_update_event').'";
+	fullcalendarscheduler_title_dialog_delete_event = "'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_title_dialog_delete_event').'";
 	fullcalendarscheduler_title_dialog_show_detail_event = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_title_dialog_show_detail_event').'";
 	fullcalendarscheduler_button_dialog_add = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_add').'";
 	fullcalendarscheduler_button_dialog_update = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_update').'";
@@ -198,17 +159,9 @@ echo '
 	fullcalendarscheduler_date_format = "'.$langs->trans("FormatDateShortJavaInput").'";
 	
 	fullcalendarscheduler_div = $(\'<form id="form_add_event" action="#"></form>\');
-	fullcalendarscheduler_div	.append("<p>"+'.json_encode($select_type_action).'+"</p>")
-								.append("<p>"+'.json_encode($input_title_action).'+"</p>")
-								.append("<p>"+'.json_encode($input_fulldayevent).'+"</p>")
-								.append("<p>"+'.json_encode($select_date_start).'+"</p>")
+	fullcalendarscheduler_div	.append("<p>"+'.json_encode($select_date_start).'+"</p>")
 								.append("<p>"+'.json_encode($select_date_end).'+"</p>")
-								.append("<p>"+'.json_encode($input_note).'+"</p>")
-								.append("<p>"+'.json_encode($select_company).'+"</p>")
-								.append("<p>"+'.json_encode($select_contact).'+"</p>")
-								.append("<p>"+'.json_encode($select_user).'+"</p>")
-								.append("<p>"+'.json_encode($select_service).'+"</p>")
-								.append('.json_encode($TExtraToPrint).');					
+								.append("<p>"+'.json_encode($select_user).'+"</p>");		
 								
 	fullcalendarscheduler_picto_delete = "'.addslashes(img_delete()).'";
 	

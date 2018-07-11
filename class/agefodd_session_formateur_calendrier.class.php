@@ -49,8 +49,13 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $datec = '';
 	public $fk_user_mod;
 	public $tms = '';
+	public $status = 0;
 	public $lines = array ();
 
+	
+	public static $STATUS_DRAFT = 0;
+	public static $STATUS_CONFIRMED = 1;
+	public static $STATUS_ABANDONED = -1;
 	/**
 	 * Constructor
 	 *
@@ -86,7 +91,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$this->fk_user_author = trim($this->fk_user_author);
 		if (isset($this->fk_user_mod))
 			$this->fk_user_mod = trim($this->fk_user_mod);
-
+		if (!is_numeric($this->status)) $this->status = 0;
 			// Check parameters
 			// Put here code to add control on parameters values
 
@@ -112,7 +117,8 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "fk_actioncomm,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
-		$sql .= "fk_user_mod";
+		$sql .= "fk_user_mod,";
+		$sql .= "status";
 		$sql .= ") VALUES (";
 
 		$sql .= " '" . $conf->entity . "',";
@@ -125,8 +131,8 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " " . (! isset($this->fk_actioncomm) ? 'NULL' : "'" . $this->fk_actioncomm . "'") . ",";
 		$sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
 		$sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "',";
-		$sql .= " " . (! isset($this->fk_user_mod) ? $user->id : "'" . $this->fk_user_mod . "'") . "";
-
+		$sql .= " " . (! isset($this->fk_user_mod) ? $user->id : "'" . $this->fk_user_mod . "'") . ",";
+		$sql .= " " . $this->status;
 		$sql .= ")";
 		$this->db->begin();
 
@@ -189,6 +195,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms";
+		$sql .= " t.status";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as t";
 		$sql .= " WHERE t.rowid = " . $id;
@@ -212,6 +219,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
+				$this->status = $obj->status;
 			}
 			$this->db->free($resql);
 
@@ -233,7 +241,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost,s.trainer_status ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost,s.trainer_status, s.status";
 		$sql .= " ,f.fk_session ";
 		$sql .= " ,f.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
@@ -253,8 +261,9 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$this->sessid = $obj->fk_session;
 				$this->trainer_cost = $obj->trainer_cost;
 				$this->trainer_status = $obj->trainer_status;
+				$this->status = $obj->status;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
-				$line->trainer_status_in_session = $obj->trainer_status_in_session;
+				$this->trainer_status_in_session = $obj->trainer_status_in_session;
 			}
 			$this->db->free($resql);
 
@@ -285,6 +294,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "s.trainer_status,";
 		$sql .= "s.fk_actioncomm,";
 		$sql .= "s.fk_user_author,";
+		$sql .= "s.status,";
 		$sql .= "sf.fk_session,";
 		$sql .= "sf.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
@@ -312,6 +322,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->trainer_status = $obj->trainer_status;
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
+				$line->status = $obj->status;
 				$line->fk_session = $obj->fk_session;
 				$line->trainer_status_in_session = $obj->trainer_status_in_session;
 
@@ -345,6 +356,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "s.trainer_status,";
 		$sql .= "s.fk_actioncomm,";
 		$sql .= "s.fk_user_author,";
+		$sql .= "s.status,";
 		$sql .= "sf.fk_session,";
 		$sql .= "sf.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
@@ -373,6 +385,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->trainer_status = $obj->trainer_status;
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
+				$line->status = $obj->status;
 				$line->fk_session = $obj->fk_session;
 				$line->trainer_status_in_session = $obj->trainer_status_in_session;
 
@@ -412,7 +425,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$this->fk_user_author = trim($this->fk_user_author);
 		if (isset($this->fk_user_mod))
 			$this->fk_user_mod = trim($this->fk_user_mod);
-
+		if (!is_numeric($this->status)) $this->status = 0;
 			// Check parameters
 			// Put here code to add a control on parameters values
 
@@ -440,7 +453,8 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
 		$sql .= " datec=" . (dol_strlen($this->datec) != 0 ? "'" . $this->db->idate($this->datec) . "'" : 'null') . ",";
 		$sql .= " fk_user_mod=" . (isset($this->fk_user_mod) ? $this->fk_user_mod : "null") . ",";
-		$sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . "";
+		$sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . ",";
+		$sql .= " status=" . $this->status . "";
 
 		$sql .= " WHERE rowid=" . $this->id;
 
