@@ -157,6 +157,22 @@ class ActionsAgefodd
 	 */
 	public function doActions($parameters, &$object, &$action, $hookmanager) {
 		// global $langs,$conf,$user;
+		global $conf, $mc;
+
+		// multicompagny tweak
+		if (is_object($mc))
+		{
+		    
+		    if(!in_array('agefodd', $mc->sharingelements)){
+		        $mc->sharingelements[] = 'agefodd';
+		    }
+		    
+		    if(!isset($mc->sharingobjects['agefodd'])){
+		        $mc->sharingobjects['agefodd'] = array('element'=>'agefodd');
+		    }
+			
+			$mc->setValues($conf);
+		}
 		return 0;
 	}
 
@@ -406,7 +422,7 @@ class ActionsAgefodd
 
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
-			if ($result > 0) {
+			if ($result >= 0) {
 
 				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
@@ -457,8 +473,6 @@ class ActionsAgefodd
 						dol_print_error('', $agfsess->error);
 					}
 				}
-
-				// if (is_array($linkedobjects)) $this->results = $linkedobjects + $this->results;
 			} else {
 				dol_print_error('', $agfsess->error);
 			}
