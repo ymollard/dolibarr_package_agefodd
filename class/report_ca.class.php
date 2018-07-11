@@ -364,36 +364,73 @@ class ReportCA extends AgefoddExportExcel {
 					$line_to_output[0] = $this->outputlangs->transnoentities('Month' . $month_todo);
 				}
 				$i = 1;
-				foreach ( $this->year_to_report_array as $year_todo ) {
 
-					$line_to_output[$i] = $this->value_ca_total_hthf[$year_todo][$month_todo];
-					$line_to_output[$i + 1] = $this->value_ca_total_ht[$year_todo][$month_todo];
+				$sessions = array();
+
+				foreach ( $this->year_to_report_array as $year_todo ) {
+var_dump($this->value_ca_total_hthf[$year_todo][$month_todo]);
+					$line_to_output[$i] = $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
+					$line_to_output[$i + 1] = $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
 					$line_to_output[$i + 2] = $this->persent_ca_total_ht[$year_todo][$month_todo];
 					$i = $i + 3;
 
-					$array_total_hthf[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo];
-					$array_total_ht[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo];
-					$array_total_ttc[$year_todo] += $this->value_ca_total_ttc[$year_todo][$month_todo];
+					$array_total_hthf[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
+					$array_total_ht[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
+					$array_total_ttc[$year_todo] += $this->value_ca_total_ttc[$year_todo][$month_todo]['total'];
+
+					$sessions = array_merge($sessions, array_keys($this->value_ca_total_ht[$year_todo][$month_todo]['detail']));
+
 					if ($month_todo == 1 || $month_todo == 2 || $month_todo == 3) {
-						$array_total_hthf_trim1[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo];
-						$array_total_ht_trim1[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo];
+						$array_total_hthf_trim1[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
+						$array_total_ht_trim1[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
 					}
 					if ($month_todo == 4 || $month_todo == 5 || $month_todo == 6) {
-						$array_total_hthf_trim2[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo];
-						$array_total_ht_trim2[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo];
+						$array_total_hthf_trim2[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
+						$array_total_ht_trim2[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
 					}
 					if ($month_todo == 7 || $month_todo == 8 || $month_todo == 9) {
-						$array_total_hthf_trim3[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo];
-						$array_total_ht_trim3[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo];
+						$array_total_hthf_trim3[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
+						$array_total_ht_trim3[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
 					}
 					if ($month_todo == 10 || $month_todo == 11 || $month_todo == 12) {
-						$array_total_hthf_trim4[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo];
-						$array_total_ht_trim4[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo];
+						$array_total_hthf_trim4[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
+						$array_total_ht_trim4[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
 					}
 				}
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
 					return $result;
+				}
+				
+				sort($sessions);
+//var_dump($sessions);
+				foreach($sessions as $sessionId) {
+					
+					$line_to_output = array();
+					$line_to_output[0] = $sessionId;
+					
+					$i = 1;
+
+					$toPrint = false;
+					
+					foreach ( $this->year_to_report_array as $year_todo ) {
+						$totalHTHF = $this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$sessionId];
+						$totalHT = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$sessionId];
+						if(! $toPrint && $totalHT > 0) $toPrint = true;
+
+						$line_to_output[$i] = $totalHTHF;
+						$line_to_output[$i+1] = $totalHT;
+						$line_to_output[$i+2] = '';
+						
+						$i += 3;
+					}
+
+					if($toPrint) {
+						$result = $this->write_line($line_to_output, 0);
+						if ($result < 0) {
+							return $result;
+						}
+					}
 				}
 			}
 
@@ -535,7 +572,7 @@ class ReportCA extends AgefoddExportExcel {
 	 */
 	function fetch_ca($filter = array()) {
 		global $langs, $conf;
-
+//var_dump($filter); exit;
 		$minyear = dol_print_date(dol_now(), '%Y');
 		// find minimum invoice year with dolibarr
 		$sql = "SELECT MIN(YEAR(f.datef)) as minyear";
@@ -592,11 +629,12 @@ class ReportCA extends AgefoddExportExcel {
 
 				// For Total HT/TTC
 				$sql = "SELECT sum(facdet.total_ttc) as amount_ttc, sum(facdet.total_ht) as amount_ht";
+				if(true) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 				$sql .= " ON so.rowid = f.fk_soc";
-				if (array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
+				if (true || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement";
 					$sql .= " ON sesselement.element_type='invoice' AND f.rowid = sesselement.fk_element";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -654,25 +692,37 @@ class ReportCA extends AgefoddExportExcel {
 					}
 				}
 
+				if(true) $sql.= " GROUP BY s.rowid ORDER BY s.rowid ASC";
+
 				dol_syslog(get_class($this) . "::fetch_ca HT TTC sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
+					$this->value_ca_total_ht[$year_todo][$month_todo]['total'] = 0;
+					$this->value_ca_total_ttc[$year_todo][$month_todo]['total'] = 0;
+					$this->value_ca_total_ht[$year_todo][$month_todo]['detail'] = array();
+					$this->value_ca_total_ttc[$year_todo][$month_todo]['detail'] = array();
+
 					if ($this->db->num_rows($resql)) {
+
 						while ( $obj = $this->db->fetch_object($resql) ) {
 							if (! empty($obj->amount_ht)) {
-								$this->value_ca_total_ht[$year_todo][$month_todo] = $obj->amount_ht;
-							} else {
-								$this->value_ca_total_ht[$year_todo][$month_todo] = 0;
+								$this->value_ca_total_ht[$year_todo][$month_todo]['total'] += $obj->amount_ht;
 							}
+
 							if (! empty($obj->amount_ttc)) {
-								$this->value_ca_total_ttc[$year_todo][$month_todo] = $obj->amount_ttc;
-							} else {
-								$this->value_ca_total_ttc[$year_todo][$month_todo] = 0;
+								$this->value_ca_total_ttc[$year_todo][$month_todo]['total'] += $obj->amount_ttc;
+							}
+
+							if(true) {
+								if (! empty($obj->amount_ht)) {
+									$this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid] = $obj->amount_ht;
+								}
+								
+								if (! empty($obj->amount_ttc)) {
+									$this->value_ca_total_ttc[$year_todo][$month_todo]['detail'][$obj->rowid] = $obj->amount_ttc;
+								}
 							}
 						}
-					} else {
-						$this->value_ca_total_ht[$year_todo][$month_todo] = 0;
-						$this->value_ca_total_ttc[$year_todo][$month_todo] = 0;
 					}
 				} else {
 					$this->error = "Error " . $this->db->lasterror();
@@ -683,13 +733,14 @@ class ReportCA extends AgefoddExportExcel {
 
 				// For TotalHF/HT
 				$sql = "SELECT sum(facdet.total_ttc) as amount_ttc, sum(facdet.total_ht) as amount_ht";
+				if(true) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "product as prod ON prod.rowid=facdet.fk_product ";
 				//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . ") AND catprod.fk_product=prod.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 				$sql .= " ON so.rowid = f.fk_soc";
-				if (array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
+				if (true || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement";
 					$sql .= " ON sesselement.element_type='invoice' AND f.rowid = sesselement.fk_element";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -745,15 +796,25 @@ class ReportCA extends AgefoddExportExcel {
 					}
 				}
 
+				if(true) $sql.= " GROUP BY s.rowid ORDER BY s.rowid ASC";
+
 				dol_syslog(get_class($this) . "::fetch_ca HFHT sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
 					if ($this->db->num_rows($resql)) {
 						while ( $obj = $this->db->fetch_object($resql) ) {
 							if (! empty($obj->amount_ht)) {
-								$this->value_ca_total_hthf[$year_todo][$month_todo] = $this->value_ca_total_ht[$year_todo][$month_todo] - $obj->amount_ht;
+								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'] - $obj->amount_ht;
 							} else {
-								$this->value_ca_total_hthf[$year_todo][$month_todo] = $this->value_ca_total_ht[$year_todo][$month_todo];
+								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
+							}
+
+							if(true) {
+								if (! empty($obj->amount_ht)) {
+									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid] - $obj->amount_ht;
+								} else {
+									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid];
+								}
 							}
 						}
 					} else {
@@ -776,16 +837,16 @@ class ReportCA extends AgefoddExportExcel {
 
 		foreach ( $this->year_to_report_array as $year_todo ) {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
-				if (array_key_exists($year_todo - 1, $this->value_ca_total_hthf) && $this->value_ca_total_hthf[$year_todo][$month_todo] != 0) {
-					$this->persent_ca_total_hthf[$year_todo][$month_todo] = ((($this->value_ca_total_hthf[$year_todo][$month_todo] - $this->value_ca_total_hthf[$year_todo - 1][$month_todo]) * 100) / $this->value_ca_total_hthf[$year_todo][$month_todo]);
+				if (array_key_exists($year_todo - 1, $this->value_ca_total_hthf) && $this->value_ca_total_hthf[$year_todo][$month_todo]['total'] != 0) {
+					$this->persent_ca_total_hthf[$year_todo][$month_todo] = ((($this->value_ca_total_hthf[$year_todo][$month_todo]['total'] - $this->value_ca_total_hthf[$year_todo - 1][$month_todo]['total']) * 100) / $this->value_ca_total_hthf[$year_todo][$month_todo]['total']);
 					// In excel file it is formated as percentage so ...
-					$this->persent_ca_total_hthf[$year_todo][$month_todo] = $this->persent_ca_total_hthf[$year_todo][$month_todo] / 100;
+					$this->persent_ca_total_hthf[$year_todo][$month_todo] = $this->persent_ca_total_hthf[$year_todo][$month_todo]['total'] / 100;
 				} else {
 					$this->persent_ca_total_hthf[$year_todo][$month_todo] = 'N/A';
 				}
 
-				if (array_key_exists($year_todo - 1, $this->value_ca_total_ht) && $this->value_ca_total_ht[$year_todo][$month_todo] != 0) {
-					$this->persent_ca_total_ht[$year_todo][$month_todo] = ((($this->value_ca_total_ht[$year_todo][$month_todo] - $this->value_ca_total_ht[$year_todo - 1][$month_todo]) * 100) / $this->value_ca_total_ht[$year_todo][$month_todo]);
+				if (array_key_exists($year_todo - 1, $this->value_ca_total_ht) && $this->value_ca_total_ht[$year_todo][$month_todo]['total'] != 0) {
+					$this->persent_ca_total_ht[$year_todo][$month_todo] = ((($this->value_ca_total_ht[$year_todo][$month_todo]['total'] - $this->value_ca_total_ht[$year_todo - 1][$month_todo]['total']) * 100) / $this->value_ca_total_ht[$year_todo][$month_todo]['total']);
 					// In excel file it is formated as percentage so ...
 					$this->persent_ca_total_ht[$year_todo][$month_todo] = $this->persent_ca_total_ht[$year_todo][$month_todo] / 100;
 				} else {
