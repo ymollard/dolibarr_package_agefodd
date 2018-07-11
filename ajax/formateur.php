@@ -50,15 +50,15 @@ dol_syslog(join(',', $_GET));
 
 if (! empty($action) && $action == 'fetch' && ! empty($id))
 {
-	dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 
 	$outjson = array();
 
-	$object = new Agefodd_stagiaire($db);
+	$object = new Agefodd_formateur($db);
 	$ret = $object->fetch($id);
 	if ($ret > 0)
 	{
-		$outref = $object->nom.' '.$object->prenom;
+		$outref = $object->name.' '.$object->firstname;
 		
 
 	//	$found = false;
@@ -107,7 +107,7 @@ else
 	
 	$form = new FormAgefodd($db);
 	
-	$arrayresult = $form->select_stagiaire_list("", $htmlname,  "(s.nom LIKE '%$searchkey%' OR s.prenom LIKE '%$searchkey%' OR so.nom LIKE '%$searchkey%') ".$filter, 0, 0, array(),1);
+	$arrayresult = $form->select_formateur_liste("", $htmlname,  "(u.lastname LIKE '%$searchkey%' OR u.firstname LIKE '%$searchkey%' OR sp.lastname LIKE '%$searchkey%' OR sp.firstname LIKE '%$searchkey%') ".$filter, 0, 0, array(),1);
 	
 	$db->close();
 
