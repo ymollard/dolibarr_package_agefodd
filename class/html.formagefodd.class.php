@@ -58,7 +58,50 @@ class FormAgefodd extends Form
 	 */
 	public function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
 		global $conf, $user, $langs;
+		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		{
+			$placeholder = '';
 
+			if ($selectid )
+			{
+			
+				$formationtmpselect = new Formation($this->db);
+				$formationtmpselect->fetch($selectid);
+				$selected_input_value = $formationtmpselect->intitule;
+			
+				unset($formationtmpselect);
+			}
+			// mode=1 means customers products
+			$filter=json_encode($filter);
+			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
+			
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/formation.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+
+			
+			
+			return '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			
+		}
+		else
+		{
+			return  $this->select_formation_liste($selectid, $htmlname , $sort , $showempty , $forcecombo, $event, $filters );
+		}
+	}
+	
+	/**
+	 * Affiche un champs select contenant la liste des formations disponibles.
+	 *
+	 * @param int $selectid à preselectionner
+	 * @param string $htmlname select field
+	 * @param string $sort Value to show/edit (not used in this function )
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string select field
+	 */
+	public function select_formation_liste($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array(),$mode=0) {
+		global $conf, $user, $langs;
+		$arrayout=array();
 		$out = '';
 
 		if ($sort == 'code')
@@ -80,7 +123,7 @@ class FormAgefodd extends Form
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox($htmlname, $event);
+				if(empty($mode))$out .= ajax_combobox($htmlname, $event);
 			}
 
 			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
@@ -96,6 +139,7 @@ class FormAgefodd extends Form
 					if (! empty($obj->ref_interne)) {
 						$label .= ' (' . $obj->ref_interne . ')';
 					}
+					$arrayout[] = array('key'=>$obj->rowid,'label'=>$label);
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -109,7 +153,8 @@ class FormAgefodd extends Form
 			dol_print_error($this->db);
 		}
 		$this->db->free($resql);
-		return $out;
+		if(empty($mode))return $out;
+		else return $arrayout;
 	}
 
 	/**
@@ -338,10 +383,55 @@ class FormAgefodd extends Form
 	 */
 	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class='') {
 		global $conf, $langs;
+		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		{
+			$placeholder = '';
+
+			if ($selectid )
+			{
+				dol_include_once('/agefodd/class/agefodd_place.class.php');
+				$placetmpselect = new Agefodd_place($this->db);
+				$placetmpselect->fetch($selectid);
+				$selected_input_value = $placetmpselect->ref_interne;
+				unset($placetmpselect);
+			}
+			// mode=1 means customers products
+			$filter=str_replace('FROM', 'TOREPLACE', $filter);
+			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
+			
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+
+			
+			
+			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			
+		}
+		else
+		{
+			return  $this->select_site_forma_liste($selectid, $htmlname ,  $showempty , $forcecombo , $event,$class );
+		}
+	}
+	
+	/**
+	 * affiche un champs select contenant la liste des sites de formation déjà référéencés.
+	 *
+	 * @param int $selectid Id de la session selectionner
+	 * @param string $htmlname Name of HTML control
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	public function select_site_forma_liste($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class='',$mode=0,$filter='') {
+		global $conf, $langs;
+		$arrayout=array();
 
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " WHERE archive = 0";
+		if (!empty($filter))
+				$sql .= ' AND '.$filter;
+		
 		$sql .= " AND p.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " ORDER BY p.ref_interne";
 
@@ -349,7 +439,7 @@ class FormAgefodd extends Form
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($conf->use_javascript_ajax && $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox($htmlname, $event);
+				if(empty($mode))$out .= ajax_combobox($htmlname, $event);
 			}
 
 			$out .= '<select id="' . $htmlname . '" class="flat '.$class.'" name="' . $htmlname . '">';
@@ -362,7 +452,7 @@ class FormAgefodd extends Form
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($result);
 					$label = $obj->ref_interne;
-
+					$arrayout[]=array('key'=> $obj->rowid, 'label'=>$label);
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -373,13 +463,17 @@ class FormAgefodd extends Form
 			}
 			$out .= '</select>';
 			$this->db->free($result);
-			return $out;
+			if(empty($mode)) return $out;
+			else return $arrayout;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::select_site_forma " . $this->error, LOG_ERR);
-			return - 1;
+			
+			if(empty($mode)) return - 1;
+			else return $arrayout;
 		}
 	}
+	
 
 	/**
 	 * affiche un champs select contenant la liste des stagiaires déjà référéencés.
@@ -392,60 +486,109 @@ class FormAgefodd extends Form
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	public function select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
+	public function select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array())
+	{
 		global $conf, $langs;
+		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		{
+			$placeholder = '';
 
+			if ($selectid )
+			{
+				$traineetmpselect = new Agefodd_stagiaire($this->db);
+				$traineetmpselect->fetch($selectid);
+				$selected_input_value = $traineetmpselect->lastname.' '.$traineetmpselect->firstname;
+				unset($traineetmpselect);
+			}
+			// mode=1 means customers products
+			$filter=str_replace('FROM', 'TOREPLACE', $filter);
+			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
+			
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/stagiaire.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+
+			
+			
+			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			
+		}
+		else
+		{
+			return  $this->select_stagiaire_list($selectid, $htmlname , $filter , $showempty , $forcecombo , $event );
+		}
+	}
+	
+	public function select_stagiaire_list($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $mode=0)
+	{
+		$arrayout= array();
 		$sql = "SELECT";
-		$sql .= " s.rowid, CONCAT(s.nom,' ',s.prenom) as fullname,";
-		$sql .= " so.nom as socname, so.rowid as socid";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
+			$sql .= " s.rowid, CONCAT(s.nom,' ',s.prenom) as fullname,";
+			$sql .= " so.nom as socname, so.rowid as socid";
+			$sql .= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as s";
+			$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 
-		$sql .= " ON so.rowid = s.fk_soc";
-		if (! empty($filter)) {
-			$sql .= ' WHERE ' . $filter;
-			$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-		} else {
-			$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-		}
-		$sql .= " ORDER BY fullname";
-
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-		$result = $this->db->query($sql);
-		if ($result) {
-			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox($htmlname, $event, 1);
+			$sql .= " ON so.rowid = s.fk_soc";
+			
+			if (!empty($filter))
+			{
+				$sql .= ' WHERE '.$filter;
+				$sql .= " AND s.entity IN (".getEntity('agefodd'/* agsession */).")";
 			}
-
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
-			if ($showempty) {
-				$out .= '<option value="-1"></option>';
+			else
+			{
+				$sql .= " WHERE s.entity IN (".getEntity('agefodd'/* agsession */).")";
 			}
-			$num = $this->db->num_rows($result);
-			$i = 0;
-			if ($num) {
-				while ( $i < $num ) {
-					$obj = $this->db->fetch_object($result);
-					$label = $obj->fullname;
-					if ($obj->socname)
-						$label .= ' (' . $obj->socname . ')';
-
-					if ($selectid > 0 && $selectid == $obj->rowid) {
-						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
-					} else {
-						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
-					}
-					$i ++;
+			$sql .= " ORDER BY fullname";
+			
+			dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
+			$result = $this->db->query($sql);
+			if ($result)
+			{
+				if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && !$forcecombo)
+				{
+					if(empty($mode))$out .= ajax_combobox($htmlname, $event, 1);
 				}
+
+				$out .= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+				if ($showempty)
+				{
+					$out .= '<option value="-1"></option>';
+				}
+				$num = $this->db->num_rows($result);
+				$i = 0;
+				if ($num)
+				{
+					while ($i < $num)
+					{
+						$obj = $this->db->fetch_object($result);
+						
+						$label = $obj->fullname;
+						if ($obj->socname)
+							$label .= ' ('.$obj->socname.')';
+						$arrayout[] =  array('key'=> $obj->rowid,'label'=>$label);
+						if ($selectid > 0 && $selectid == $obj->rowid)
+						{
+							$out .= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+						}
+						else
+						{
+							$out .= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+						}
+						$i ++;
+					}
+				}
+				$out .= '</select>';
+				$this->db->free($result);
+				if(empty($mode)) return $out;
+				else return $arrayout;
 			}
-			$out .= '</select>';
-			$this->db->free($result);
-			return $out;
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_stagiaire " . $this->error, LOG_ERR);
-			return - 1;
-		}
+			else
+			{
+				$this->error = "Error ".$this->db->lasterror();
+				dol_syslog(get_class($this)."::select_stagiaire ".$this->error, LOG_ERR);
+				if(empty($mode))return - 1;
+				else return array();
+			
+			}
 	}
 
 	/**

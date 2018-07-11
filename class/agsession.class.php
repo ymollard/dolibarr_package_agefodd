@@ -174,7 +174,6 @@ class Agsession extends CommonObject
 		if (empty($this->fk_product)) {
 			$this->fk_product = $training->fk_product;
 		}
-
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session(";
 		$sql .= "fk_soc,";
@@ -199,8 +198,8 @@ class Agsession extends CommonObject
 		$sql .= "duree_session,";
 		$sql .= "intitule_custo";
 		$sql .= ") VALUES (";
-		$sql .= " " . (! isset($this->fk_soc) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
-		$sql .= " " . (! isset($this->fk_soc_requester) ? 'NULL' : "'" . $this->fk_soc_requester . "'") . ",";
+		$sql .= " " . ( empty($this->fk_soc) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
+		$sql .= " " . ( empty($this->fk_soc_requester) ? 'NULL' : "'" . $this->fk_soc_requester . "'") . ",";
 		$sql .= " " . (empty($this->fk_socpeople_requester) ? 'NULL' : "'" . $this->fk_socpeople_requester . "'") . ",";
 		$sql .= " " . (empty($this->fk_socpeople_presta) ? 'NULL' : "'" . $this->fk_socpeople_presta . "'") . ",";
 		$sql .= " " . (empty($this->fk_soc_employer) ? 'NULL' : "'" . $this->fk_soc_employer . "'") . ",";

@@ -228,6 +228,9 @@ if ($action == 'setvar') {
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT', $default_training_cat, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
+	
+	$value = GETPOST('activate_usesearchtoselectagefodd','alpha');
+	$res = dolibarr_set_const($db, "AGEFODD_USE_SEARCH_TO_SELECT", $value,'chaine',0,'',$conf->entity);
 
 	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
@@ -825,6 +828,30 @@ print '<td align="left">';
 print $formAgefodd->select_training_categ_bpf($conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF, 'AGF_DEFAULT_TRAINNING_CAT_BPF', 't.active=1', 1);
 print '<td align="center">';
 print '</td>';
+print '</tr>';
+
+// Utilisation formulaire Ajax sur choix 
+
+print '<tr class="oddeven">';
+print '<td>'.$form->textwithpicto($langs->trans("UseSearchToSelectAgefodd"),$langs->trans('UseSearchToSelectPictoAgefodd'),1).'</td>';
+if (empty($conf->use_javascript_ajax))
+{
+	print '<td class="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array(
+		'0'=>$langs->trans("No"),
+		'1'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",1).')',
+	    '2'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",2).')',
+	    '3'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",3).')',
+	);
+	print $form->selectarray("activate_usesearchtoselectagefodd",$arrval,$conf->global->AGEFODD_USE_SEARCH_TO_SELECT);
+	print '</td>';
+}
 print '</tr>';
 
 print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
