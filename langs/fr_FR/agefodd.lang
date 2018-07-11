@@ -1319,3 +1319,4 @@ AgfDoNotAutoLinkInvoice=Ne pas associer les factures aux sessions associés au d
 Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
 Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire
 Agf_fullcalendarscheduler_title_dialog_delete_event=Suppression du créneau horaire
+Agf_fullcalendarscheduler_content_dialog_delete_for_calendrier_formateur=Supprimer aussi le/les créneau(x) du/des formateur(s) associé(s) : 

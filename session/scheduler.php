@@ -110,6 +110,10 @@ echo '<div id="agf_session_scheduler"></div>';
 $formactions=new FormActions($db);
 $form=new Form($db);
 
+$inputs_hidden = '<input type="hidden" name="fk_agefodd_session" value="'.$object->id.'" />';
+//$inputs_hidden.= '';
+
+
 ob_start();
 echo '<label>'.$langs->trans("DateActionStart").'</label> ';
 $form->select_date(null,'date_start',1,1,1,"action",1,1,0,0,'fulldaystart');
@@ -154,12 +158,13 @@ echo '
 	fullcalendarscheduler_button_dialog_update = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_update').'";
 	fullcalendarscheduler_button_dialog_cancel = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_cancel').'";
 	fullcalendarscheduler_button_dialog_confirm = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_confirm').'";
-	fullcalendarscheduler_content_dialog_delete = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_content_dialog_delete').'";
+	fullcalendarscheduler_content_dialog_delete = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_content_dialog_delete').' <br />'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_content_dialog_delete_for_calendrier_formateur').'<input type=\'checkbox\' name=\'delete_cal_formateur\' value=\'1\' />";
 	
 	fullcalendarscheduler_date_format = "'.$langs->trans("FormatDateShortJavaInput").'";
 	
 	fullcalendarscheduler_div = $(\'<form id="form_add_event" action="#"></form>\');
-	fullcalendarscheduler_div	.append("<p>"+'.json_encode($select_date_start).'+"</p>")
+	fullcalendarscheduler_div	.append('.json_encode($inputs_hidden).')
+								.append("<p>"+'.json_encode($select_date_start).'+"</p>")
 								.append("<p>"+'.json_encode($select_date_end).'+"</p>")
 								.append("<p>"+'.json_encode($select_user).'+"</p>");		
 								

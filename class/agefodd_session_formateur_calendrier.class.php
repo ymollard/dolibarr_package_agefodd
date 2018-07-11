@@ -194,7 +194,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
+		$sql .= " t.tms,";
 		$sql .= " t.status";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as t";

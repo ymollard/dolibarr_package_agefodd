@@ -58,11 +58,19 @@ dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 $langs->load('agefodd@agefodd');
 $response = new interfaceResponse;
 $get = GETPOST('get', 'alpha');
+$put = GETPOST('put', 'alpha');
 
 
 switch ($get) {
 	case 'getAgefoddSessionCalendrier':
 		_getAgefoddSessionCalendrier(GETPOST('fk_agefodd_session'), GETPOST('dateStart'), GETPOST('dateEnd'));
+		echo json_encode( $response );
+		break;
+}
+
+switch ($put) {
+	case 'deleteCalendrier':
+		_deleteCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('delete_cal_formateur', 'int'));
 		echo json_encode( $response );
 		break;
 }
@@ -92,21 +100,21 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 		$now = dol_now();
 		while ($obj = $db->fetch_object($resql))
 		{
-			$agf = new Agefodd_sesscalendar($db);
-			$agf->fetch($obj->rowid);
+			$agf_calendrier = new Agefodd_sesscalendar($db);
+			$agf_calendrier->fetch($obj->rowid);
 			
 			$TParticipant = array();
-			list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf, $fk_agefodd_session);
+			list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf_calendrier, $fk_agefodd_session);
 			
 			$response->data->TEvent[] = array(
-				'id' => $agf->id
+				'id' => $agf_calendrier->id
 				,'title' => $langs->transnoentitiesnoconv('AgfCalendarDates')
 				,'desc' => ''
-				,'start' => dol_print_date($agf->heured, '%Y-%m-%dT%H:%M:%S', 'gmt') // TODO
-				,'end' => dol_print_date($agf->heuref, '%Y-%m-%dT%H:%M:%S', 'gmt') // TODO
+				,'start' => dol_print_date($agf_calendrier->heured, '%Y-%m-%dT%H:%M:%S') // TODO
+				,'end' => dol_print_date($agf_calendrier->heuref, '%Y-%m-%dT%H:%M:%S') // TODO
 				,'allDay' => false
 				,'fk_agefodd_session' => $obj->fk_agefodd_session
-				,'startEditable' => $agf->heuref < $now ? false : true // si la date de fin est dans le passé, alors plus le droit de déplcer l'event
+				,'startEditable' => $agf_calendrier->heuref < $now ? false : true // si la date de fin est dans le passé, alors plus le droit de déplcer l'event
 //				,'color'=>'#ccc' // background
 				,'TParticipant' => $TParticipant
 				,'TFormateur' => $TFormateur
@@ -124,7 +132,7 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 	}
 }
 
-function _getTFormateur(&$agf, $fk_agefodd_session)
+function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 {
 	global $db, $response;
 	
@@ -135,8 +143,8 @@ function _getTFormateur(&$agf, $fk_agefodd_session)
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur af ON (af.rowid = agsf.fk_agefodd_formateur)';
 	$sql.= ' WHERE agsf.fk_session = '.$fk_agefodd_session;
-	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf->heuref).'\'';
-	$sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf->heured).'\'';
+	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf_calendrier->heuref).'\'';
+	$sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf_calendrier->heured).'\'';
 	
 	$resql = $db->query($sql);
 	if ($resql)
@@ -156,4 +164,65 @@ function _getTFormateur(&$agf, $fk_agefodd_session)
 	}
 	
 	return array($TFormateur, $TNomUrl);
+}
+
+
+
+function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
+{
+	global $db, $response;
+	
+	$TRes = array();
+	
+	$sql = 'SELECT agsfc.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
+	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
+	$sql.= ' WHERE agsf.fk_session = '.$agf_calendrier->sessid;
+	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf_calendrier->heuref).'\'';
+	$sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf_calendrier->heured).'\'';
+	
+	$resql = $db->query($sql);
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
+			$agf_calendrier_formateur->fetch($obj->rowid);
+			$TRes[] = $agf_calendrier_formateur;
+		}
+	}
+	else
+	{
+		$response->TError[] = $db->lasterror;
+	}
+	
+	return $TRes;
+}
+
+function _deleteCalendrier($fk_agefodd_session_calendrier, $delete_cal_formateur=0)
+{
+	global $db,$response;
+	
+	$agf_calendrier = new Agefodd_sesscalendar($db);
+	if ($agf_calendrier->remove($fk_agefodd_session_calendrier) > 0)
+	{
+		$response->TSuccess[] = 'Delete calendrier id = '.$fk_agefodd_session_calendrier.' successful';
+		if ($delete_cal_formateur) 
+		{
+			$TCalendrierFormateur = _getCalendrierFormateurFromCalendrier($agf_calendrier);
+			_deleteCalendrierFormateur($TCalendrierFormateur);
+		}
+		
+	}
+	else $response->TError[] = $agf_calendrier->error;
+}
+
+function _deleteCalendrierFormateur($TCalendrierFormateur)
+{
+	global $response;
+	
+	foreach ($TCalendrierFormateur as &$agf_calendrier_formateur)
+	{
+		if ($agf_calendrier_formateur->remove($agf_calendrier_formateur->id) > 0) $response->TSuccess[] = 'Delete calendrier formateur id = '.$agf_calendrier_formateur->id.' successful';
+		else $response->TError[] = $agf_calendrier_formateur->error;
+	}
 }

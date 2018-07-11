@@ -257,7 +257,7 @@ $(document).ready(function() {
 	
 	delete_event = function(id)
 	{	
-		var div = $('<div>').text(fullcalendarscheduler_content_dialog_delete);
+		var div = $('<div>').html(fullcalendarscheduler_content_dialog_delete);
 		div.dialog({
 			modal: true
 			,width: 'auto'
@@ -275,8 +275,9 @@ $(document).ready(function() {
 							,dataType: 'json'
 							,data: {
 								json: 1
-								,put: 'deleteEvent'
-								,fk_actioncomm: id
+								,put: 'deleteCalendrier'
+								,fk_agefodd_session_calendrier: id
+								,delete_cal_formateur: div.find('[name=delete_cal_formateur]').prop('checked') ? 1 : 0
 							}
 						}).fail(function(jqXHR, textStatus, errorThrown) {
 							console.log('Error: jqXHR, textStatus, errorThrown => ', jqXHR, textStatus, errorThrown);
@@ -332,8 +333,8 @@ $(document).ready(function() {
 						
 						var dataObject = $('#form_add_event').serializeObject();
 						dataObject.json = 1;
-						dataObject.put = 'createOrUpdateEvent';
-						dataObject.fk_actioncomm = (typeof event !== 'undefined') ? event.id : 0;
+						dataObject.put = 'createOrUpdateCalendrier';
+						dataObject.fk_agefodd_session_calendrier = (typeof event !== 'undefined') ? event.id : 0;
 						dataObject.dateFrom = view.start.format('YYYY-MM-DD');
 						
 						$.ajax({
