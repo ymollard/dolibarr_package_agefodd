@@ -98,6 +98,7 @@ $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
 $status_view = GETPOST('status', 'int');
 $search_id = GETPOST('search_id', 'int');
+$search_session_ref = GETPOST('search_session_ref', 'alpha');
 $search_month = GETPOST('search_month', 'aplha');
 $search_year = GETPOST('search_year', 'int');
 $search_socpeople_presta = GETPOST('search_socpeople_presta', 'alpha');
@@ -140,6 +141,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_training_ref_interne = "";
 	$search_type_session = "";
 	$search_id = '';
+	$search_session_ref = '';
 	$search_month = '';
 	$search_year = '';
 	$search_sale = '';
@@ -163,6 +165,7 @@ $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search
 
 $arrayfields=array(
     's.rowid'			=>array('label'=>"Id", 'checked'=>1),
+    's.ref'			=>array('label'=>"SessionRef", 'checked'=>1),
     'so.nom'			=>array('label'=>"Company", 'checked'=>1),
     'f.rowid'			=>array('label'=>"AgfFormateur", 'checked'=>1),
     'c.intitule'		=>array('label'=>"AgfIntitule", 'checked'=>1),
@@ -258,6 +261,10 @@ if (! empty($status_view)) {
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
 	$option .= '&search_id=' . $search_id;
+}
+if (! empty($search_session_ref)) {
+	$filter ['s.ref'] = $search_session_ref;
+	$option .= '&search_session_ref=' . $search_session_ref;
 }
 if (! empty($search_month)) {
 	$filter ['MONTH(s.dated)'] = $search_month;
@@ -506,6 +513,12 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['s.rowid']['checked'])) print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
+	if (! empty($arrayfields['s.ref']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_session_ref" value="' . $search_session_ref . '" size="15">';
+		print '</td>';
+	}
 	if (! empty($arrayfields['so.nom']['checked']))
 	{
 		print '<td class="liste_titre">';
@@ -663,6 +676,7 @@ if ($resql != - 1) {
 
 	print '<tr class="liste_titre">';
 	if (! empty($arrayfields['s.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.ref']['checked']))			print_liste_field_titre($langs->trans("SessionRef"), $_SERVEUR ['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['so.nom']['checked']))				print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['f.rowid']['checked']))			print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
@@ -725,8 +739,8 @@ if ($resql != - 1) {
 			$color_a = '';
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
-
 			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="'.dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
+			if (! empty($arrayfields['s.ref']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="'.dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->sessionref . '</a></td>';
 
 			if (! empty($arrayfields['so.nom']['checked']))
 			{
@@ -911,6 +925,7 @@ if ($resql != - 1) {
 		} else {
 			print "<tr $bc[$var]>";
 			if (! empty($arrayfields['s.rowid']['checked']))	print '<td></td>';
+			if (! empty($arrayfields['s.ref']['checked']))	print '<td></td>';
 			if (! empty($arrayfields['so.nom']['checked']))		print '<td></td>';
 			if (! empty($arrayfields['f.rowid']['checked']))
 			{
@@ -972,7 +987,8 @@ if ($resql != - 1) {
 		
 		print '<tr class="liste_total" name="margininfototal" >';
 		print '<td>'.$langs->trans('Total').'</td>';
-		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['so.nom']['checked']))					print '<td></td>';
+		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['s.ref']['checked']))					print '<td></td>';
+		if (! empty($arrayfields['so.nom']['checked']))				print '<td></td>';
 		if (! empty($arrayfields['f.rowid']['checked']))				print '<td></td>';
 		if (! empty($arrayfields['c.intitule']['checked']))				print '<td></td>';
 		if (! empty($arrayfields['c.ref']['checked']))					print '<td></td>';

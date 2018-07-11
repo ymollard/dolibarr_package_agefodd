@@ -109,6 +109,36 @@ if ($action == 'updateMaskCertif') {
 		setEventMessage($langs->trans("Error"), 'errors');
 	}
 }
+if ($action == 'updateMaskSessionType') {
+	$masktype = GETPOST('value');
+
+	if ($masktype)
+		$res = dolibarr_set_const($db, 'AGF_SESSION_ADDON', $masktype, 'chaine', 0, '', $conf->entity);
+
+	if (! $res > 0)
+		$error ++;
+
+	if (! $error) {
+		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
+	} else {
+		setEventMessage($langs->trans("Error"), 'errors');
+	}
+}
+
+if ($action == 'updateMaskSession') {
+	$mask = GETPOST('maskagefoddsession');
+
+	$res = dolibarr_set_const($db, 'AGF_SESSION_UNIVERSAL_MASK', $mask, 'chaine', 0, '', $conf->entity);
+
+	if (! $res > 0)
+		$error ++;
+
+	if (! $error) {
+		setEventMessage($langs->trans("SetupSaved"), 'mesgs');
+	} else {
+		setEventMessage($langs->trans("Error"), 'errors');
+	}
+}
 
 if ($action == 'setvar') {
 	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
@@ -577,6 +607,105 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 
 	print '</table><br>';
 }
+
+// Agefodd Session numbering module
+	print_titre($langs->trans("AgfAdminSessionNumber"));
+	print '<br>';
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<td width="100px">' . $langs->trans("Name") . '</td>';
+	print '<td>' . $langs->trans("Description") . '</td>';
+	print '<td>' . $langs->trans("Example") . '</td>';
+	print '<td align="center" width="60px">' . $langs->trans("Activated") . '</td>';
+	print '<td align="center" width="80px">' . $langs->trans("Infos") . '</td>';
+	print "</tr>\n";
+
+	clearstatcache();
+
+	$dirmodels = array_merge(array (
+			'/'
+	));
+
+	foreach ( $dirmodels as $reldir ) {
+		$dir = dol_buildpath("/agefodd/core/modules/agefodd/session/");
+
+		if (is_dir($dir)) {
+			$handle = opendir($dir);
+			if (is_resource($handle)) {
+				$var = true;
+
+				while ( ($file = readdir($handle)) !== false ) {
+					if (preg_match('/^(mod_.*)\.php$/i', $file, $reg)) {
+						$file = $reg[1];
+						$classname = substr($file, 4);
+
+						require_once ($dir . $file . ".php");
+
+						$module = new $file();
+
+						// Show modules according to features level
+						if ($module->version == 'development' && $conf->global->MAIN_FEATURES_LEVEL < 2)
+							continue;
+						if ($module->version == 'experimental' && $conf->global->MAIN_FEATURES_LEVEL < 1)
+							continue;
+
+						if ($module->isEnabled()) {
+							$var = ! $var;
+							print '<tr ' . $bc[$var] . '><td>' . $module->nom . "</td><td>\n";
+							print $module->info();
+							print '</td>';
+
+							// Show example of numbering module
+							print '<td nowrap="nowrap">';
+							$tmp = $module->getExample();
+							if (preg_match('/^Error/', $tmp)) {
+								$langs->load("errors");
+								print '<div class="error">' . $langs->trans($tmp) . '</div>';
+							} elseif ($tmp == 'NotConfigured')
+								print $langs->trans($tmp);
+							else
+								print $tmp;
+							print '</td>' . "\n";
+
+							print '<td align="center">';
+							if ($conf->global->AGF_SESSION_ADDON == 'mod_' . $classname) {
+								print img_picto($langs->trans("Activated"), 'switch_on');
+							} else {
+								print '<a href="' . $_SERVER["PHP_SELF"] . '?action=updateMaskSessionType&amp;value=mod_' . $classname . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
+							}
+							print '</td>';
+
+							$agf = new Agsession($db);
+							$agf->initAsSpecimen();
+
+							// Info
+							$htmltooltip = '';
+							$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
+							$nextval = $module->getNextValue($mysoc, $agf);
+							if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
+{
+								$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
+								if ($nextval) {
+									$htmltooltip .= $nextval . '<br>';
+								} else {
+									$htmltooltip .= $langs->trans($module->error) . '<br>';
+								}
+							}
+
+							print '<td align="center">';
+							print $form->textwithpicto('', $htmltooltip, 1, 0);
+							print '</td>';
+
+							print '</tr>';
+						}
+					}
+				}
+				closedir($handle);
+			}
+		}
+	}
+
+	print '</table><br>';
 
 // Admin var of module
 print_titre($langs->trans("AgfAdmVar"));

@@ -111,6 +111,7 @@ class Agsession extends CommonObject
 	public $fk_socpeople_presta;
 	public $fk_soc_employer;
 	public $formrefint;
+	public $ref;
 
 	/**
 	 * Constructor
@@ -174,9 +175,18 @@ class Agsession extends CommonObject
 		if (empty($this->fk_product)) {
 			$this->fk_product = $training->fk_product;
 		}
-
+		$obj = empty($conf->global->AGF_SESSION_ADDON) ? 'mod_agefoddsession_simple' : $conf->global->AGF_SESSION_ADDON;
+		$path_rel = dol_buildpath('/agefodd/core/modules/agefodd/session/' . $conf->global->AGF_SESSION_ADDON . '.php');
+	
+		if (! empty($conf->global->AGF_SESSION_ADDON) && is_readable($path_rel) && (empty($ref))) {
+			dol_include_once('/agefodd/core/modules/agefodd/session/' . $conf->global->AGF_SESSION_ADDON . '.php');
+			$modAgefodd = new $obj();
+			$ref = $modAgefodd->getNextValue();
+			
+		}
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session(";
+		$sql .= "ref,";
 		$sql .= "fk_soc,";
 		$sql .= "fk_soc_requester,";
 		$sql .= "fk_socpeople_requester,";
@@ -199,6 +209,7 @@ class Agsession extends CommonObject
 		$sql .= "duree_session,";
 		$sql .= "intitule_custo";
 		$sql .= ") VALUES (";
+		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref. "'") . ",";
 		$sql .= " " . (! isset($this->fk_soc) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
 		$sql .= " " . (! isset($this->fk_soc_requester) ? 'NULL' : "'" . $this->fk_soc_requester . "'") . ",";
 		$sql .= " " . (empty($this->fk_socpeople_requester) ? 'NULL' : "'" . $this->fk_socpeople_requester . "'") . ",";
@@ -221,7 +232,6 @@ class Agsession extends CommonObject
 		$sql .= " " . (empty($this->duree_session) ? '0' : price2num($this->duree_session)) . ",";
 		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . "";
 		$sql .= ")";
-
 		$this->db->begin();
 
 		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
@@ -440,6 +450,7 @@ class Agsession extends CommonObject
 
 		$sql = "SELECT DISTINCT";
 		$sql .= " t.rowid,";
+		$sql .= " t.ref,";
 		$sql .= " t.fk_soc,";
 		$sql .= " t.fk_soc_requester,";
 		$sql .= " t.fk_socpeople_requester,";
@@ -539,7 +550,7 @@ class Agsession extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 
 				$this->id = $obj->rowid;
-				$this->ref = $obj->rowid; // Use for next prev ref
+				$this->ref = $obj->ref; // Use for next prev ref
 				$this->fk_soc = $obj->fk_soc; // don't work with fetch_thirdparty()
 				$this->socid = $obj->fk_soc; // work with fetch_thirdparty()
 				$this->fk_soc_requester = $obj->fk_soc_requester;
@@ -1599,6 +1610,8 @@ class Agsession extends CommonObject
 			$this->duree_session = trim($this->duree_session);
 		if (isset($this->intitule_custo))
 			$this->intitule_custo = trim($this->intitule_custo);
+		if (isset($this->ref))
+			$this->ref = trim($this->ref);
 
 			// Create or update line in session commercial table and get line number
 		$result = $this->setCommercialSession($this->commercialid, $user);
@@ -1631,7 +1644,8 @@ class Agsession extends CommonObject
 
 			// Update request
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
-
+			
+			$sql .= " ref='" . (isset($this->ref) ? $this->db->escape($this->ref) : "") . "',";
 			$sql .= " fk_soc=" . (isset($this->fk_soc) ? $this->fk_soc : "null") . ",";
 			$sql .= " fk_soc_requester=" . (isset($this->fk_soc_requester) ? $this->fk_soc_requester : "null") . ",";
 			$sql .= " fk_soc_employer=" . (isset($this->fk_soc_employer) ? $this->fk_soc_employer : "null") . ",";
@@ -1673,7 +1687,6 @@ class Agsession extends CommonObject
 			$sql .= " intitule_custo=" . (! empty($this->intitule_custo) ? "'" . $this->db->escape($this->intitule_custo) . "'" : "null") . "";
 
 			$sql .= " WHERE rowid=" . $this->id;
-
 			$this->db->begin();
 
 			dol_syslog(get_class($this) . "::update", LOG_DEBUG);
@@ -2158,7 +2171,7 @@ class Agsession extends CommonObject
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0, $array_options_keys=array()) {
 		global $langs, $conf;
 
-		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
+		$sql = "SELECT s.rowid, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.is_date_res_site, s.is_date_res_trainer, s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
@@ -2352,6 +2365,7 @@ class Agsession extends CommonObject
 
 					$line->rowid = $obj->rowid;
 					$line->id = $obj->rowid;
+					$line->sessionref = $obj->sessionref;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
 					$line->fk_socpeople_client = $obj->fk_socpeople_client;

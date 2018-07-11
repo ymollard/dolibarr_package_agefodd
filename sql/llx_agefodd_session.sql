@@ -24,6 +24,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
+  ref varchar(40) NOT NULL,
   entity integer NOT NULL DEFAULT 1,
   fk_soc int NULL,
   fk_soc_requester int NULL,

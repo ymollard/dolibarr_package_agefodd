@@ -1320,3 +1320,6 @@ ActivateSharing=Activer le partage des formations/sessions entre entités (pense
 ShareWith=Partager avec
 MulticompanyConfiguration=Configuration des partages entre entités
 AgefoddSetupMulticompany=Partage entre entités
+SessionRef=Ref. Session
+AgfSimpleNumRefModelSessionDesc=	Renvoie le numéro sous la forme SESyymm-nnnnn où yy est l'année, mm le mois, et nnnnn un compteur séquentiel sans rupture et sans remise à 0
+AgfAdminSessionNumber=Numérotation des sessions
