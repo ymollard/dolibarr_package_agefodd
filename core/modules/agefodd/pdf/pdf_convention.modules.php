@@ -365,7 +365,7 @@ class pdf_convention extends ModelePDFAgefodd {
 				}
 
 				// Pied de page
-				$this->_pagefoot($pdf, $agf, $outputlangs);
+				$hauteurpied = $this->_pagefoot($pdf, $agf, $outputlangs);
 
 				/*
 				 * Page 1
@@ -474,12 +474,14 @@ class pdf_convention extends ModelePDFAgefodd {
 					$posY = $pdf->GetY() + $this->hApresCorpsArticle;
 				}
 
+				$pdf->startTransaction();
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
 				$this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv13');
 				$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 0);
 				$posY += $this->hApresTitreArticle;
 
+				
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
 				if (preg_match('/List_Participants/',$agf_conv->art3)) {
@@ -517,27 +519,62 @@ class pdf_convention extends ModelePDFAgefodd {
 				$this->str = $art3;
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 				$posY = $pdf->GetY() + $this->hApresCorpsArticle;
+				
+				if($posY > $this->page_hauteur- $hauteurpied)
+				{
+				    $pdf = $pdf->rollbackTransaction();
+				    $art--;
+				    $this->_pagefoot($pdf, $agf, $outputlangs);
+				    
+				    // New page
+				    $pdf->AddPage();
+				    if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				    
+				    $pagenb ++;
+				    $this->_pagehead($pdf, $agf, 1, $outputlangs);
+				    $this->defaultFontSize = 9;
+				    $pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+				    $pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
+				    $pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+				    $posX = $this->marge_gauche;
+				    $posY = $this->marge_haute;
+				    
+				    $pdf->SetXY($posX, $posY);
+				    $pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
+				    $this->str = $outputlangs->transnoentities('AgfPDFConv7') . ' ' . ++ $art . " - " . $outputlangs->transnoentities('AgfPDFConv13');
+				    $pdf->Cell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 0);
+				    $posY += $this->hApresTitreArticle;
+				    
+				    $pdf->SetXY($posX, $posY);
+				    $pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+				    
+				    $pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($art3), 0, 'L');
+				    $posY = $pdf->GetY() + $this->hApresCorpsArticle;
+				}
+				else 
+				{
 
-				// Pied de page
-				$this->_pagefoot($pdf, $agf, $outputlangs);
-
-				/*
-				 * Page 2
-				*/
-
-				// New page
-				$pdf->AddPage();
-				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-
-				$pagenb ++;
-				$this->_pagehead($pdf, $agf, 1, $outputlangs);
-				$this->defaultFontSize = 9;
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
-				$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
-				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-				$posX = $this->marge_gauche;
-				$posY = $this->marge_haute;
-
+    				// Pied de page
+    				$this->_pagefoot($pdf, $agf, $outputlangs);
+    				
+    				/*
+    				 * Page 2
+    				*/
+    
+    				// New page
+    				$pdf->AddPage();
+    				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+    
+    				$pagenb ++;
+    				$this->_pagehead($pdf, $agf, 1, $outputlangs);
+    				$this->defaultFontSize = 9;
+    				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->defaultFontSize);
+    				$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
+    				$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
+    				$posX = $this->marge_gauche;
+    				$posY = $this->marge_haute;
+				}
+				
 				if (empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize + 3);
