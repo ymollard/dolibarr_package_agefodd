@@ -53,6 +53,7 @@ if ($search_parent == - 1)
 $search_soc_requester = GETPOST('search_soc_requester');
 $search_soc = GETPOST("search_soc");
 $search_invoice_status = GETPOST('search_invoice_status');
+$search_by_session = GETPOST('search_by_session');
 
 //$ts_logistique = GETPOST('options_ts_logistique', 'int');
 //$search_session_status=GETPOST('search_session_status','array');
@@ -106,9 +107,14 @@ if (! empty($search_soc_requester)) {
 if (! empty($search_invoice_status)) {
 	$filter['invstatus'] = $search_invoice_status;
 }
+
 /*if (! empty($search_session_status) && count($search_session_status)>0) {
 	$filter['s.status'] = $search_session_status;
 }*/
+
+if (! empty($search_by_session)) {
+	$filter['group_by_session'] = true;
+}
 
 /*
  * Actions
@@ -212,6 +218,11 @@ print '<td>' . $langs->trans('Status') . '</td>';
 $langs->load('bills');
 $report_ca_status = new ReportCA($db, $langs);
 print '<td>' . $formAgefodd->multiselectarray('search_invoice_status', $report_ca_status->status_array, $search_invoice_status);
+print '</tr>';
+
+print '<tr>';
+print '<td>' . $langs->trans('AgfReportCASessionDetail') . '</td>';
+print '<td><input type="checkbox" name="search_by_session" value="1"'.(! empty($search_by_session)?' checked':'').' /></td>';
 print '</tr>';
 
 /*print '<tr>';

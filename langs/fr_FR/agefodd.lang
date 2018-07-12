@@ -1158,6 +1158,7 @@ AgfAdmBPFCreateCategorie=Créer les catégories types BPF
 AgfAdmBPFCreateCategorieHelp=Créer les catégories par defaut utilisées dans le BPF. Ceci n'est utile que si vous n'avez pas déja vos catégories produit et client qui peuvent être utilisées pour le BPF
 AgfMenuReportCA=Rapport synthétique du CA
 NoData=Aucune donnée ne correspond
+AgfReportCASessionDetail=Afficher le détail des sessions
 AgfModifyCalendar=Modifier le calendrier
 AgfContactSign=Signataire convention
 AgfRefPropalAuto=Génération de la référence client de la proposition automatique
