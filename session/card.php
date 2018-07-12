@@ -861,12 +861,23 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$(this).val(result.fk_product);
 			});
 		-->
+		$("body").on('change','#place',function () {
+			var fk_place = $(this).val();
+			var fk_training = $('#formation').val();
+			data = {"action":"get_nb_place","fk_training":fk_training,"fk_place":fk_place};
+			ajax_set_nbplace(data);
+		
+		});
+		
 		$("body").on('change','#formation',function () {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
 			ajax_set_duration_and_product(data);
 			var option_txt = $(this).find('option[value='+$(this).val()+']').text();
 			$('#intitule_custo').val(option_txt);
+			var fk_place = $('#place').val();
+			data = {"action":"get_nb_place","fk_training":fk_training,"fk_place":fk_place};
+			ajax_set_nbplace(data);
 		});
 	});
 
@@ -884,11 +895,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					}else {
 						$("#duree_session").val("");
 					}
-					if((result.nb_place)!= null){
-						$("input[name='nb_place']").val(result.nb_place);
-					}else {
-						$("input[name='nb_place']").val("");
-					}
 					if((result.fk_product)!= null ){
 						$("#productid").val(result.fk_product).change();
 					}else{
@@ -896,6 +902,25 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					}
 					if($('#search_productid').length != 0 ){
 						$('#search_productid').val(result.ref_product).change();
+					}
+				},
+    		    error: function(error){
+    		    	$.jnotify('AjaxError',"error");
+    		    }
+    		});
+    	}
+	function ajax_set_nbplace(data)
+    	{
+    		$.ajax({
+    		    url: "<?php echo dol_buildpath('/agefodd/scripts/interface.php', 1) ; ?>",
+    		    type: "POST",
+    		    dataType: "json",
+    		    data: data,
+    		    success: function(result){
+					if((result.nb_place)!= null){
+						$("input[name='nb_place']").val(result.nb_place);
+					}else {
+						$("input[name='nb_place']").val("");
 					}
 				},
     		    error: function(error){
