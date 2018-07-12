@@ -157,6 +157,79 @@ class ActionsAgefodd
 	 */
 	public function doActions($parameters, &$object, &$action, $hookmanager) {
 		// global $langs,$conf,$user;
+		$TContext = explode(':', $parameters['context']);
+		
+		if (in_array('externalaccesspage', $TContext))
+		{
+			// TODO gérer ici les actions de mes pages pour update les données
+			$context = Context::getInstance();
+			
+			return 1;
+		}
+		
+		return 0;
+	}
+	
+	/**
+	 * Mes nouvelles pages pour l'accés au portail externe
+	 * 
+	 * @param type $parameters
+	 * @param type $object
+	 * @param type $action
+	 * @param type $hookmanager
+	 * @return int
+	 */
+	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+		
+		$TContext = explode(':', $parameters['context']);
+		
+		if (in_array('externalaccesspage', $TContext))
+		{
+			$langs->load('agefodd@agefodd');
+			$context = Context::getInstance();
+			
+			if ($context->controller == 'agefodd')
+			{
+				// TODO affichage de la liste des sous-objets accessibles par l'utilisateur
+				// pour commencer il n'y aura qu'1 seul accés (les sessions)
+				$context->setControllerFound();
+				$link = $context->getRootUrl('agefodd_session_list');
+				printService($langs->trans('AgfMenuSess'),'fa-calendar-alt',$link); // desc : $langs->trans('InvoicesDesc');
+			}
+			else if ($context->controller == 'agefodd_session_list')
+			{
+				$context->setControllerFound();
+				print '<ul><li>Session 1</li><li>Session 2</li><li>Session 3</li></ul>';
+			}
+			
+		}
+		
+		return 0;
+	}
+	
+	/**
+	 * Print en page d'accueil 
+	 */
+	public function PrintServices($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+		
+		$TContext = explode(':', $parameters['context']);
+		
+		if (in_array('externalaccesspage', $TContext))
+		{
+			$langs->load('agefodd@agefodd');
+			$context = Context::getInstance();
+			
+			$link = $context->getRootUrl('agefodd');
+			$this->resprints.= getService($langs->trans('AgfTraining'),'fa-calendar',$link); // desc : $langs->trans('InvoicesDesc')
+			
+			$this->results[] = 1;
+			return 0;
+		}
+		
 		return 0;
 	}
 
