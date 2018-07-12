@@ -136,6 +136,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->control_occupation = GETPOST('control_occupation', 'int');
 			$agf->notes = GETPOST('notes');
+			$agf->nb_place = GETPOST('nb_place');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
 				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
@@ -205,6 +206,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 			$agf->fk_socpeople = GETPOST('contact', 'int');
 			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->control_occupation = GETPOST('control_occupation', 'int');
+			$agf->nb_place = GETPOST('nb_place', 'int');
 			$agf->notes = GETPOST('notes', 'alpha');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
@@ -356,6 +358,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<tr><td valign="top">' . $langs->trans("AgfNbPlace") . '</td>';
+	print '<td><input name="nb_place"  class="flat" style="width:360px;"></input></td></tr>';
 
 	print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 	print '<td><input name="timeschedule" class="flat" size="50" value="' . GETPOST('timeschedule', 'alpha') . '"></td></tr>';
@@ -460,6 +464,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 				print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 				print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';
+				print '<tr><td valign="top">' . $langs->trans("AgfNbPlace") . '</td>';
+				print '<td><input name="nb_place"  class="flat" style="width:360px;" value="'. $agf->nb_place .'"></input></td></tr>';
 
 				print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 				print '<td><input name="timeschedule" class="flat" size="50" value="' . $agf->timeschedule . '"></td></tr>';
@@ -561,6 +567,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 				print '<tr><td valign="top">' . $langs->trans("AgfNotes") . '</td>';
 				print '<td>' . nl2br($agf->notes) . '</td></tr>';
+				print '<tr><td valign="top">' . $langs->trans("AgfNbPlace") . '</td>';
+				print '<td>' . ($agf->nb_place) . '</td></tr>';
 
 				print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 				print '<td>' . $agf->timeschedule . '</td></tr>';

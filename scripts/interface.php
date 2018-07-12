@@ -36,13 +36,14 @@ $data['errorMsg'] = ''; // default message for errors
 		{
 			$fk_training= GETPOST('fk_training');
 			if(!empty($fk_training)){
-				$sql="SELECT cat.duree,cat.fk_product,p.ref FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue cat";
+				$sql="SELECT cat.nb_place,cat.duree,cat.fk_product,p.ref FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue cat";
 				$sql.=" LEFT JOIN ".MAIN_DB_PREFIX."product p on (p.rowid = cat.fk_product)";
 				$sql.=" WHERE cat.rowid=".$fk_training;
 				$resql = $db->query($sql);
 				if(!empty($resql)){
 					$obj = $db->fetch_object($resql);
 					$data['duree']=$obj->duree;
+					$data['nb_place']=$obj->nb_place;
 					$data['fk_product']=$obj->fk_product;
 					$data['ref_product']=$obj->ref;
 					$data['result'] = 1;

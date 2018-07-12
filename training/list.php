@@ -76,6 +76,7 @@ $search_ref = GETPOST("search_ref");
 $search_ref_interne = GETPOST("search_ref_interne");
 $search_datec = dol_mktime(0, 0, 0, GETPOST('search_datecmonth', 'int'), GETPOST('search_datecday', 'int'), GETPOST('search_datecyear', 'int'));
 $search_duree = GETPOST('search_duree');
+$search_nb_place = GETPOST('search_nb_place');
 // $search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear',
 // 'int' ) );
 $search_id = GETPOST('search_id', 'int');
@@ -100,6 +101,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_ref_interne = "";
 	$search_datec = '';
 	$search_duree = "";
+	$search_nb_place = "";
 	// $search_dated = "";
 	$search_id = '';
 	$search_categ = '';
@@ -120,6 +122,7 @@ $arrayfields=array(
     'c.datec'	=>array('label'=>"AgfDateC", 'checked'=>1),
 
     'c.duree'		=>array('label'=>"AgfDuree", 'checked'=>1),
+    'c.nb_place'		=>array('label'=>"AgfNbPlace", 'checked'=>1),
     'a.dated'	=>array('label'=>"AgfDateLastAction", 'checked'=>1),
 	'AgfNbreAction'		=>array('label'=>"AgfNbreAction", 'checked'=>1),
 	'c.fk_product'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>1),
@@ -171,6 +174,10 @@ if (! empty($search_datec)) {
 if (! empty($search_duree)) {
 	$filter ['c.duree'] = $search_duree;
 	$option .= '&search_duree=' . $search_duree;
+}
+if (! empty($search_nb_place)) {
+	$filter ['c.nb_place'] = $search_nb_place;
+	$option .= '&search_nb_place=' . $search_nb_place;
 }
 if (! empty($search_id)) {
 	$filter ['c.rowid'] = $search_id;
@@ -282,6 +289,11 @@ if (! empty($arrayfields['c.duree']['checked'])){
 	print '<input type="text" class="flat" name="search_duree" value="' . $search_duree . '" size="5">';
 	print '</td>';
 }
+if (! empty($arrayfields['c.nb_place']['checked'])){
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_nb_place" value="' . $search_nb_place . '" size="5">';
+	print '</td>';
+}
 if (! empty($arrayfields['a.dated']['checked'])){
 	print '<td class="liste_titre">';
 	// print $form->select_date ( $search_dated, 'search_dated', 0, 0, 1, 'search_form' );
@@ -355,6 +367,7 @@ if (! empty($arrayfields['dictcat.code']['checked']))		print_liste_field_titre($
 if (! empty($arrayfields['dictcatbpf.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVEUR ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs->trans("AgfDateC"), $_SERVEUR ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.nb_place']['checked']))		print_liste_field_titre($langs->trans("AgfNbPlace"), $_SERVEUR ['PHP_SELF'], "c.nb_place", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 if (! empty($arrayfields['c.fk_product']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], 'c.fk_product', '', $option, '', $sortfield, $sortorder);
@@ -426,6 +439,7 @@ if ($resql > 0) {
 		if (! empty($arrayfields['dictcatbpf.code']['checked']))print '<td>' . dol_trunc($line->category_lib_bpf). '</td>';
 		if (! empty($arrayfields['c.datec']['checked']))print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
 		if (! empty($arrayfields['c.duree']['checked']))print '<td>' . $line->duree . '</td>';
+		if (! empty($arrayfields['c.nb_place']['checked']))print '<td>' . $line->nb_place . '</td>';
 		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
 		if (! empty($arrayfields['c.fk_product']['checked'])) {

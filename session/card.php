@@ -884,6 +884,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					}else {
 						$("#duree_session").val("");
 					}
+					if((result.nb_place)!= null){
+						$("input[name='nb_place']").val(result.nb_place);
+					}else {
+						$("input[name='nb_place']").val("");
+					}
 					if((result.fk_product)!= null ){
 						$("#productid").val(result.fk_product).change();
 					}else{
