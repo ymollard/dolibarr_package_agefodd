@@ -1326,3 +1326,4 @@ AgfSimpleNumRefModelSessionDesc=	Renvoie le numéro sous la forme SESyymm-nnnnn 
 AgfAdminSessionNumber=Numérotation des sessions
 AgfShowSession=Voir session
 AgfUpdateObjPeda=Modifier les objectifs pédagogiques
+AgfMergeAdviseAndConvoc=Fusionner les PDF "Conseils Pratiques" et "Convocation"
